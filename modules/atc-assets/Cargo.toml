@@ -1,0 +1,12 @@
+[package]
+name = "atc_assets"
+version = "0.1.0"
+edition = "2021"
+description = "Asset-Management — Fungible Tokens, NFTs, Royalties"
+authors = ["Michael Wroblewski"]
+license = "ALL RIGHTS RESERVED"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]

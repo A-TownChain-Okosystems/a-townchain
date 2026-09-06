@@ -1,0 +1,74 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-85 — Fork Resolution in ATCLang
+// Migriert von: blockchain/consensus/fork_resolution.py → ATCLang
+// Sprint 2.1 — Issue #74
+
+import "std/crypto.atc" as Crypto
+
+struct ForkInfo {
+    blocks: List<Hash256>,
+    total_difficulty: UInt256,
+    total_stake: UInt256,
+    length: UInt64,
+}
+
+// ATC-85: Fork erkennen
+pub fn detect_fork(known_tips: Map<Hash256, UInt64>) -> List<Hash256> {
+    let tips = known_tips.keys()
+    if tips.len() <= 1 {
+        return []
+    }
+    return tips
+}
+
+// ATC-85: Longest Chain Rule (mit Difficulty)
+pub fn select_longest_chain(forks: List<ForkInfo>) -> ForkInfo {
+    let best = forks[0]
+    for fork in forks {
+        if fork.total_difficulty > best.total_difficulty {
+            best = fork
+        } else if fork.total_difficulty == best.total_difficulty {
+            // Tie-break: mehr Stake
+            if fork.total_stake > best.total_stake {
+                best = fork
+            } else if fork.total_stake == best.total_stake {
+                // Tie-break: länger
+                if fork.length > best.length {
+                    best = fork
+                }
+            }
+        }
+    }
+    return best
+}
+
+// ATC-85: Reorg durchführen
+pub fn reorganize(current_chain: List<Hash256>, new_chain: List<Hash256>) -> ReorgResult {
+    let common_ancestor = find_common_ancestor(current_chain, new_chain)
+    let orphaned = current_chain[common_ancestor + 1:]
+    let new_blocks = new_chain[common_ancestor + 1:]
+
+    return ReorgResult {
+        common_ancestor: common_ancestor,
+        orphaned_blocks: orphaned,
+        new_blocks: new_blocks,
+        depth: new_blocks.len(),
+    }
+}
+
+pub fn find_common_ancestor(chain_a: List<Hash256>, chain_b: List<Hash256>) -> UInt64 {
+    let min_len = min(chain_a.len(), chain_b.len())
+    for i in 0..min_len {
+        if chain_a[i] != chain_b[i] {
+            return i - 1
+        }
+    }
+    return min_len - 1
+}
+
+struct ReorgResult {
+    common_ancestor: UInt64,
+    orphaned_blocks: List<Hash256>,
+    new_blocks: List<Hash256>,
+    depth: UInt64,
+}
