@@ -1,3 +1,0 @@
-docker>=6.0
-web3>=6.0
-pytest>=7.0
