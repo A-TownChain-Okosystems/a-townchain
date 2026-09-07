@@ -7,7 +7,7 @@ requests>=2.31
 pyyaml>=6.0
 
 # Consensus & P2P
-cryptography>=41.0
+cryptography>=50.0.1
 
 # Testing
 pytest>=7.0
