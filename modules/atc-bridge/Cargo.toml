@@ -1,0 +1,12 @@
+[package]
+name = "atc_bridge"
+version = "0.1.0"
+edition = "2021"
+description = "Cross-Chain Bridge — Ethereum, Polkadot, Cosmos Interoperability"
+authors = ["Michael Wroblewski"]
+license = "ALL RIGHTS RESERVED"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
