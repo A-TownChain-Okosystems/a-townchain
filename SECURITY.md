@@ -1,27 +1,32 @@
+---
+document_id: ATC-DOC-MIN-SEC-001
+title: Security Policy — atc-mining
+version: 1.0.0
+status: active
+owner: A-TownChain-Okosystems
+created: 2026-09-07
+updated: 2026-09-07
+standard: ATC-STD-MD-001
+---
+
 # Security Policy — atc-mining
 
-**Klassifizierung:** CORE · **Maturity:** R1 · **Security-Level:** S2 (S-Klasse gemaess ATC-STD-202)
+**Klassifizierung:** CORE · **Maturity:** R1 · **Security-Level:** S2 (S-Klasse gemäß ATC-STD-202)
 **Criticality:** medium · **Standard:** ATC-STD-203 (Repository Security & Release)
 
 ## Melde-und-Offenlegungspolitik
 
-1. Schwachstellen werden NICHT oeffentlich als Issue gemeldet, sondern direkt
-   an den Owner (ShivaCoreDev) kommuniziert.
-2. Sicherheitsrelevante Aenderungen laufen als `security(...)`-Commits und
-   werden im zentralen DECISIONS_REGISTER dokumentiert.
-3. Kritische Vorkommnisse folgen dem Emergency-Prozess (ATC-STD-000 §32):
-   Temporary Decision → Implementation → Formal Standard Revision.
+1. Schwachstellen werden NICHT öffentlich als Issue gemeldet, sondern direkt an den Owner (ShivaCoreDev) kommuniziert.
+2. Sicherheitsrelevante Änderungen laufen als `security(...)`-Commits und werden im zentralen DECISIONS_REGISTER dokumentiert.
+3. Kritische Vorkommnisse folgen dem Emergency-Prozess (ATC-STD-000 §32): Temporary Decision -> Implementation -> Formal Standard Revision.
 
 ## Geltende Regeln
 
 - Keine Secrets/Keys/Credentials in diesem Repository (Hygiene-Regel V-11).
-- Abhaengigkeiten: Third-Party nur nach Freigabe (ATC-STD-203 Dependency
-  Policy; AD-021: Python nur AI-Layer/Tooling, nie Konsensus-Ausfuehrung).
+- Abhängigkeiten: Third-Party nur nach Freigabe (ATC-STD-203 Dependency Policy; AD-021: Python nur AI-Layer/Tooling, nie Konsensus-Ausführung).
 - Release-Gates GATE-001…GATE-010 (ATC-STD-203) vor jedem Release ab R3.
-- Lizenzmodell: ATC-LIC/ATS-LIC, ATVM blockt unlizentierte Ausfuehrung.
+- Lizenzmodell: ATC-LIC/ATS-LIC, ATVM blockt unlizentierte Ausführung.
 
 ## Vertrauensgrenzen
 
-Kernel (atc-shivacore) bleibt von Services strikt getrennt (AD-012/028);
-Blockchain-Konsensus laeuft ausschliesslich auf verifiziertem ATVM-Code
-(AD-022: Compiler erzeugt, Verifier entscheidet, ATVM fuehrt aus).
+Kernel (atc-shivacore) bleibt von Services strikt getrennt (AD-012/028); Blockchain-Konsensus läuft ausschließlich auf verifiziertem ATVM-Code (AD-022: Compiler erzeugt, Verifier entscheidet, ATVM führt aus).

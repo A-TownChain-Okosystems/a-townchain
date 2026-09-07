@@ -57,7 +57,7 @@
   Agent-Aufgaben auf Action/Process-Ebene mit Verifikation.
 
 ## BAUHIERARCHIE (AD-026, verbindlich) & ROADMAP (AD-027, verbindlich)
-```
+```text
 [L0] atclang → [L1] atc-shivacore → [L2] aurora-ai → [L3] a-townchain
  → [L4] globus-os → [L5] 13 Blockchain-Services → [L6] genesis-engine →
  genesis-chronicles → [L7] a-townchain-os (Integration, AD-017)

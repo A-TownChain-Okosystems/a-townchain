@@ -1,3 +1,14 @@
+---
+document_id: ATC-DOC-MIN-REP-001
+title: Repository Standard — atc-mining
+version: 1.0.0
+status: active
+owner: A-TownChain-Okosystems
+created: 2026-09-07
+updated: 2026-09-07
+standard: ATC-STD-MD-001
+---
+
 # Repository Standard — atc-mining
 
 **Klassifizierung:** CORE · **Maturity:** R1 · **Layer:** L5 · **Domain:** mining
@@ -18,7 +29,7 @@ Dieses Repository folgt den ATC-Repository-Standards (kanonisch im
 
 ## Struktur
 
-```
+```text
 atc-mining/
 ├── .atc/            Metadaten (repository/ownership/lifecycle/compliance.yaml)
 ├── .github/         CI (governance-ci.yml; Produkt-Pipelines je Meilenstein)

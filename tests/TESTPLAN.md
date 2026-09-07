@@ -1,3 +1,14 @@
+---
+document_id: ATC-DOC-MIN-TST-001
+title: Testplan — atc-mining
+version: 1.0.0
+status: active
+owner: A-TownChain-Okosystems
+created: 2026-09-07
+updated: 2026-09-07
+standard: ATC-STD-MD-001
+---
+
 # Testplan — atc-mining
 
 Bis zur Implementierung (Roadmap M6/M7, AD-027) dokumentiert dieser Plan die
