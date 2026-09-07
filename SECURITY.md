@@ -1,4 +1,15 @@
-# Security Policy — atc-compute
+---
+document_id: ATC-DOC-ZKP-010
+title: "Security Policy"
+version: 1.0.0
+status: active
+owner: A-TownChain-Okosystems
+created: 2026-09-07
+updated: 2026-09-07
+standard: ATC-STD-MD-001
+---
+
+# Security Policy — ATC ZKP Layer
 
 **Klassifizierung:** CORE · **Maturity:** R1 · **Security-Level:** S2 (S-Klasse gemaess ATC-STD-202)
 **Criticality:** medium · **Standard:** ATC-STD-203 (Repository Security & Release)

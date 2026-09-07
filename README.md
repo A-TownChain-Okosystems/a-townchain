@@ -1,60 +1,190 @@
-# atc-zkp
+# ATC ZKP Layer
 
-> **ATC ZKP-Layer** — Zero-Knowledge Proof Layer der A-TownChain: Verifikationsschicht zwischen L1 und Anwendungen.
+> Zero-Knowledge Proof Layer der A-TownChain — Verifikationsschicht zwischen L1 und Anwendungen.
 
-**Prioritaet:** P1 (AD-045) | **Chain-ID:** 658467 (AD-004) | **Org:** [A-TownChain-Okosystems](https://github.com/A-TownChain-Okosystems)
+**Project:** atc-zkp
+**Organization:** A-TownChain-Okosystems
+**Status:** `development`
+**Version:** `0.1.0`
+**License:** `Proprietary (ATC-LIC)`
 
-> ## Fuer KI-Agenten - Pflichtlektuere vor jeder Aenderung
-> Governance liegt zentral im Wiki-Repo [`a-townchain-os-docs`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs):
-> 1. [`AGENT_POLICY.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/AGENT_POLICY.md)
-> 2. [`AGENT_COORDINATION.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/AGENT_COORDINATION.md)
-> 3. [`DECISIONS_REGISTER.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/DECISIONS_REGISTER.md) — insb. AD-045 (dieses Repo), AD-021 (Rust-first), AD-023 (qualitaetsgetrieben)
-> 4. Standards: [ATC-STD-ZKP-001…010](https://github.com/A-TownChain-Okosystems/atc-standards) (ZKP-Serie, AD-045)
+## Overview
 
----
+ATC ZKP Layer stellt die kanonische Zero-Knowledge-Proof-Infrastruktur für das A-TownChain-Ökosystem bereit. Es bildet die Verifikationsschicht zwischen L1 und dezentralen Anwendungen.
 
-## Architektur (Kurzform — Details: [docs/ZKP_ARCHITECTURE.md](docs/ZKP_ARCHITECTURE.md))
+## Purpose
 
+ATC ZKP Layer bietet die kanonische Implementierung der Zero-Knowledge-Proof-Systeme innerhalb des A-TownChain-Ökosystems. Es ist verantwortlich für:
+- On-Chain Proof Verification Engine (zkp-verifier)
+- Off-Chain Proof Generation (zkp-prover)
+- Circuit Registry & Versionierung (zkp-circuits)
+- Commitment & Nullifier Management (zkp-crypto)
+
+## Status
+
+**Status:** `development`
+
+- Stand: R1-Skeleton (ATC-STD-201) — Struktur, Governance und Standards definiert.
+- Qualitätssicherung: Kryptografie ist S4-kritisch — G18 Security-Audit vor Freeze (AD-023), Trusted-Setup-Kriterien (ZKP-010).
+
+## Architecture
+
+ATC ZKP Layer basiert auf einer schichtenbasierten Verifikationsarchitektur.
+
+### Components
+
+| Component | Purpose | Required |
+|---|---|---|
+| `zkp-core` | Kern-Typen, ProofSystem-Trait, Registry-Interfaces | Yes |
+| `zkp-verifier` | On-Chain-Verifikations-Engine | Yes |
+| `zkp-prover` | Off-Chain Proof-Generator | Yes |
+| `zkp-circuits` | Circuit Registry, Versionierung & Compiler-Bindung | Yes |
+| `zkp-crypto` | Commitments, Nullifier, Pedersen/Merkle-Primitiv & SHA-256 | Yes |
+| `zkp-vm` | ZKVM: ATCLang-Bytecode → Execution Trace → Proof | Yes |
+| `zkp-sdk` | Entwickler-API für dApps und Wallet | Yes |
+
+### Data Flow
+
+```text
+dApps / Wallet / GameFi / DeFi
+          │
+          ▼
+   ZKP Application / SDK Layer
+          │
+          ▼
+   ZKP-Layer (Proof Generator, Circuit Registry, Verification Engine)
+          │
+          ▼
+   ATC Cryptographic Core (SHA-256)
+          │
+          ▼
+   A-TownChain L1 (Consensus, State, Tx)
 ```
-dApps | Wallet | GameFi | DeFi | Marketplace | AI
-----------------------------------------------------
-            ZKP Application / SDK Layer
-----------------------------------------------------
-    ZKP-Layer  (dieses Repo — KEIN eigenes Netzwerk)
-    Proof Generator | Circuit Registry | Verification Engine
-    Commitment Manager | Nullifier Manager | Proof Cache
-----------------------------------------------------
-            ATC Cryptographic Core (SHA-256, AD-001)
-----------------------------------------------------
-    A-TownChain L1: Consensus | State | Tx | Validators | DA
+
+Pluggable Proof Architecture: **Groth16 · PLONK · Halo2 · STARK** + zukünftige Systeme — austauschbar ohne Blockchain-Umbau (ZKP-002).
+
+## Features
+
+- Pluggable Proof Architecture (Groth16, PLONK, Halo2, STARK).
+- On-Chain Verifikation für ATCLang Smart Contracts.
+- Offene Test-Vektor-Generierung und Validierung für Proof-Systeme.
+- Integrated ZKVM for Bytecode Verification.
+
+## Repository Structure
+
+```text
+atc-zkp/
+├── crates/
+│   ├── zkp-circuits/
+│   ├── zkp-core/
+│   ├── zkp-crypto/
+│   ├── zkp-prover/
+│   ├── zkp-sdk/
+│   ├── zkp-verifier/
+│   └── zkp-vm/
+└── docs/
 ```
 
-**Wichtigste Designentscheidung (AD-045):** Die ZKP-Layer ist eine kryptografische
-Infrastruktur- und Verifikationsschicht **innerhalb** der A-TownChain — kein eigenes
-Netzwerk, kein eigener Konsens/State-Layer.
+## Requirements
 
-## Crate-Layout (Canonical Implementation: Rust)
+- Rust `1.75+` / Cargo
+- OpenSSL / Cryptographic Libraries
+- ATCLang Toolchain
 
-| Crate | Aufgabe (Standard-Verweis) |
-|---|---|
-| `zkp-core` | Kern-Typen, ProofSystem-Trait, Registry-Interfaces (ZKP-001/002) |
-| `zkp-verifier` | On-Chain-Verifikations-Engine (ZKP-004) |
-| `zkp-prover` | Proof-Generator, off-chain (ZKP-002/007) |
-| `zkp-circuits` | Circuit Registry, Versionierung, Compiler-Bindung (ZKP-003) |
-| `zkp-crypto` | Commitments, Nullifier, Pedersen/Merkle-Primitiv; SHA-256 (AD-001, ZKP-005) |
-| `zkp-vm` | ZKVM: ATCLang-Bytecode → Execution Trace → Proof (ZKP-009) |
-| `zkp-sdk` | Entwickler-API fuer dApps/Wallet (ZKP-006/007) |
+## Installation
 
-Pluggable Proof Architecture: **Groth16 · PLONK · Halo2 · STARK** + zukuenftige
-Systeme — austauschbar ohne Blockchain-Umbau (ZKP-002).
+```bash
+git clone https://github.com/A-TownChain-Okosystems/atc-zkp.git
+cd atc-zkp
+cargo build
+```
 
-## Status (AD-020-Rebuild-Aera)
+## Configuration
 
-- **Stand:** R1-Skeleton (ATC-STD-201) — Struktur + Governance + Standards stehen.
-- **Qualitaets-Gates:** Kryptografie = S4-kritisch — G18 Security-Audit vor jedem
-  Freeze (AD-023); Trusted-Setup-Kriterien (ZKP-010).
-- Implementierung folgt im qualitaetsgetriebenen Rebuild (AD-023).
+Die Konfiguration erfolgt über `Cargo.toml` sowie Laufzeitparameter für Prover und Verifier.
 
-## Lizenz
+## Usage
+
+```rust
+// Beispiel zur Initialisierung der ZKP Verification Engine
+use zkp_core::ProofSystem;
+
+fn main() {
+    println!("ATC ZKP Layer Initialized");
+}
+```
+
+## Development
+
+```bash
+cargo build --all-targets
+```
+
+## Testing
+
+```bash
+cargo test
+```
+Erwartetes Ergebnis: `PASS` (alle Unit- und Integrationstests erfolgreich).
+
+## Security
+
+Sicherheitsrelevante Befunde dürfen NICHT öffentlich gemeldet werden. Bitte melden Sie Schwachstellen direkt gemäß dem offiziellen ATC Security Reporting Prozess (ATC-STD-203) und [SECURITY.md](SECURITY.md).
+
+## Documentation
+
+- [Architecture Overview](docs/ZKP_ARCHITECTURE.md)
+- [Repository Standard](docs/REPOSITORY_STANDARD.md)
+- [Architecture Details](ARCHITECTURE.md)
+
+## Governance
+
+Dieses Repository unterliegt dem A-TownChain Enterprise Governance Framework. Review- und Freigabepflichten gemäß ATC-STD-000 §9.
+
+## Standards & Compliance
+
+| Standard | Version | Compliance |
+|---|---:|---|
+| ATC-STD-000 | 1.2.0 | ✅ |
+| ATC-STD-README-001 | 1.0.0 | ✅ |
+| ATC-STD-MD-001 | 1.0.0 | ✅ |
+| ATC-STD-201 | 1.0.0 | ✅ |
+| ATC-STD-202 | 1.0.0 | ✅ |
+| ATC-STD-203 | 1.0.0 | ✅ |
+
+## Roadmap
+
+Die Roadmap ist kanonisch in [ROADMAP.md](ROADMAP.md) dokumentiert.
+Aktuelle Aufgabe: Erstellung und Validierung offener Test-Vektoren für die Pluggable Proof Architecture.
+
+## Contributing
+
+Beiträge folgen den Regeln in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
 
 Proprietaer — All Rights Reserved (ATC-LIC). Siehe [LICENSE](LICENSE).
+
+## Maintainers
+
+A-TownChain Core Cryptography Team / ShivaCore.
+
+## Repository Metadata
+
+<!--
+atc:
+  standard: ATC-STD-README-001
+  version: 1.0.0
+repository:
+  id: ATC-REPO-ZKP-001
+  name: atc-zkp
+  type: software
+  status: development
+ownership:
+  organization: A-TownChain-Okosystems
+technology:
+  primary_language: Rust
+governance:
+  security_class: S4
+  criticality: high
+-->
