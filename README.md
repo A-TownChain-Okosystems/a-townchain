@@ -37,3 +37,22 @@ Neues Repo ohne Vault-Bestand - Grundstruktur, Implementierung folgt qualitaetsg
 ---
 
 [agent: aurora-base44-superagent-6a2756186106d6f0fbb105b5]
+
+---
+
+## ATC Compliance & Governance (ATC-STD-201 / 202 / 203)
+
+**ATC COMPLIANCE: R1** — auditiert am 2026-09-07 (atc-repo-audit; R-Level aus `.atc/repository.yaml`).
+Architekturentscheidungen: zentral im [DECISIONS_REGISTER](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/DECISIONS_REGISTER.md) (AD-Nummern verbindlich; lokale Entscheidungen in `docs/decisions/`).
+
+- **Purpose:** Oracle-Service (L5, Roadmap M6).
+- **Scope:** Layer L5, Domain oracle — atc-oracle als CORE in der 23-Repo-Landschaft (AD-024/026).
+- **Architecture:** Oracle-Integration gemaess ATC-10 (Median Time Past geplant).
+- **Features:** Skelett.
+- **Installation:** Modul-Build je Sprache (rust); Integration via Monorepo-Workspace (a-townchain-os, sync_modules.py).
+- **Development:** Conventional Commits; Governance-Regeln aus atc-standards; Naming gemaess ATC-STD-000 §7.
+- **Testing:** Testplan bis M6; Governance-CI.
+- **Security:** SECURITY.md; S-Klasse S2; ATC-STD-203 Release-Gates; Emergency-Prozess ATC-STD-000 §32.
+- **Roadmap:** Einordnung in die Lauffaehigkeits-Roadmap M1-M8 (AD-027) und Bauhierarchie L0-L7 (AD-026).
+- **Version:** CHANGELOG.md; SemVer; Releases als ATC-REL-X.Y.Z.
+- **License:** Proprietaer — All Rights Reserved, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC/ATS-LIC).

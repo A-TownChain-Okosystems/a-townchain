@@ -1,0 +1,21 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: atc-oracle
+  classification: CORE
+  maturity: R1
+  status: experimental
+project:
+  organization: A-TownChain-Okosystems
+  domain: oracle
+  component: oracle
+language:
+  primary: rust
+license:
+  type: proprietary
+security:
+  criticality: medium
+api:
+  stability: experimental
+protocol:
+  compatibility: required
