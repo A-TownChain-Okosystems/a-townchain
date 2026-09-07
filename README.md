@@ -21,7 +21,7 @@ Architekturentscheidungen: zentral im [DECISIONS_REGISTER](https://github.com/A-
 
 - **Purpose:** ATC-Wallet (L5) — Adressen ATC+32 Zeichen.
 - **Scope:** Layer L5, Domain wallet — atc-wallet als APPLICATION in der 23-Repo-Landschaft (AD-024/026).
-- **Architecture:** BIP44 m/44'/9000' (Key-Stabilitaet bewusst bei 9000), ECDSA secp256k1, biometrische Gating-Referenzen (ATC-03).
+- **Architecture:** BIP44 m/44'/658467' (Key-Stabilitaet bewusst bei 9000), ECDSA secp256k1, biometrische Gating-Referenzen (ATC-03).
 - **Features:** Wallet-Core, Crypto, Keys.
 - **Installation:** Modul-Build je Sprache (rust); Integration via Monorepo-Workspace (a-townchain-os, sync_modules.py).
 - **Development:** Conventional Commits; Governance-Regeln aus atc-standards; Naming gemaess ATC-STD-000 §7.
