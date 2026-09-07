@@ -1,0 +1,10 @@
+[package]
+name = "atc_cli"
+version = "0.1.0"
+edition = "2021"
+description = "CLI-Tool for Kernel/Blockchain interaction"
+authors = ["Michael Wroblewski"]
+license = "ALL RIGHTS RESERVED"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
