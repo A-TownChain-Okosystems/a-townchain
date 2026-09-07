@@ -1,5 +1,13 @@
 # atc-node
 
+> **Rolle (SCR-0005 Option A, AD-046 — verbindlich):** atc-node ist das
+> **Full-Node-Binary & Runtime** der A-TownChain — das Distribution-Ziel
+> (`git clone && cargo build` -> lauffaehiger Node; Bootstrap, Discovery,
+> Validator-Betrieb). atc-node BAUT AUF a-townchain (Chain-Protokoll/-Bibliothek),
+> atc-algorithm (Hybrid Consensus) und atc-vm (Vertrags-Ausfuehrung) auf und
+> implementiert selbst KEINE Chain-Semantik. Security: **S4** (Netzwerk-
+> Angriffsflaeche: Bootstrap-Node, Validator-Keys).
+
 > Node-Betrieb getrennt vom Protocol-Core: der Core definiert das Protokoll, der Node betreibt eine reale Netzwerk-Instanz.
 
 **Prioritaet:** P0 (Repository-Landkarte AD-024) | **Chain-ID:** 658467 (AD-004) | **Org:** [A-TownChain-Okosystems](https://github.com/A-TownChain-Okosystems)
