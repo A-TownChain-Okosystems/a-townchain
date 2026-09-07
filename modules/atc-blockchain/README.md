@@ -21,7 +21,7 @@
 
 ### Netzwerke & Chain-IDs
 - **Mainnet:** Chain-ID `658467`
-- **Testnet:** Chain-ID `9001`
+- **Testnet:** Chain-ID noch offen (AD-004 finalisiert Mainnet `658467`; Testnet-ID folgt per Owner-Entscheidung, alter Platzhalter `9001` entfallen)
 
 ---
 
