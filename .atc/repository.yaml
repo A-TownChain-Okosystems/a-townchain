@@ -1,0 +1,21 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: atc-explorer
+  classification: APPLICATION
+  maturity: R2
+  status: development
+project:
+  organization: A-TownChain-Okosystems
+  domain: explorer
+  component: explorer
+language:
+  primary: typescript
+license:
+  type: proprietary
+security:
+  criticality: low
+api:
+  stability: experimental
+protocol:
+  compatibility: required
