@@ -5,7 +5,7 @@
 **Status:** SKELETON → INITIALIZING
 
 ## Übersicht
-Dieses Repo ist Teil des A-TownChain OS Ökosystems (70 Repos).
+Dieses Repo ist Teil des A-TownChain OS Ökosystems (23 Repos, AD-024).
 Org: [A-TownChain-Okosystems](https://github.com/A-TownChain-Okosystems)
 
 ## Module
