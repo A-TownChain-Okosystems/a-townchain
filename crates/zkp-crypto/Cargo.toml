@@ -1,0 +1,8 @@
+[package]
+name = "zkp-crypto"
+version = "0.1.0"
+edition = "2021"
+description = "ATC ZKP-Layer crate: zkp-crypto (AD-045, ATC-STD-ZKP-001ff)"
+license = "LicenseRef-Proprietary = ATC-LIC"
+
+[dependencies]

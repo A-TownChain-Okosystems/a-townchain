@@ -1,0 +1,21 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: atc-zkp
+  classification: CORE
+  maturity: R1
+  status: experimental
+project:
+  organization: A-TownChain-Okosystems
+  domain: zkp
+  component: zkp-layer
+language:
+  primary: rust
+license:
+  type: proprietary
+security:
+  criticality: high
+api:
+  stability: experimental
+protocol:
+  compatibility: required
