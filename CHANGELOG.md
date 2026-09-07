@@ -1,7 +1,19 @@
-# Changelog — atc-oracle
+---
+document_id: ATC-DOC-ORACLE-003
+title: "Changelog"
+version: 1.0.0
+status: active
+owner: A-TownChain-Okosystems
+created: 2026-09-07
+updated: 2026-09-07
+standard: ATC-STD-MD-001
+---
 
-## [Unreleased] — 2026-09-07
-- Governance-Ueberarbeitung nach ATC-STD-201/202/203: .atc-Metadaten
-  (repository/ownership/lifecycle/compliance.yaml), SECURITY.md, CODEOWNERS,
-  docs/REPOSITORY_STANDARD.md, Governance-CI (governance-ci.yml),
-  ATC-COMPLIANCE-Anhang im README. R-Level: R1.
+# Changelog — ATC Oracle Services
+
+## [0.1.0] - 2026-09-07
+
+### Added
+- Standardkonforme Dokumentation gemäß ATC-STD-README-001 und ATC-STD-MD-001.
+- Integration der SC-016-Verzahnung (Oracle Contract Standard).
+- Initialer Modulaufbau für Price Feeds und External Data Binding.
