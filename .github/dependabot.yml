@@ -1,0 +1,43 @@
+# Dependabot-Konfiguration — AUD-2026-0002 F-025 (ATC-STD-203 Security)
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: "modules/atc-blockchain/kernel"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: cargo
+    directory: "modules/atc-dns"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: cargo
+    directory: "modules/atc-governance"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: cargo
+    directory: "modules/atc-zkp"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: "modules/atc-blockchain"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: pip
+    directory: "modules/atc-blockchain"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: pip
+    directory: "modules/atc-testnet"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: pip
+    directory: "modules/atcnet"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
