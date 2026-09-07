@@ -1,0 +1,21 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: atc-vm
+  classification: CORE
+  maturity: R1
+  status: experimental
+project:
+  organization: A-TownChain-Okosystems
+  domain: vm
+  component: vm
+language:
+  primary: rust
+license:
+  type: proprietary
+security:
+  criticality: high
+api:
+  stability: experimental
+protocol:
+  compatibility: required
