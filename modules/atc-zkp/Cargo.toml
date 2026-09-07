@@ -1,0 +1,12 @@
+[package]
+name = "atc_zkp"
+version = "0.1.0"
+edition = "2021"
+description = "Zero-Knowledge Proofs — zk-SNARKs, zk-STARKs, Privacy Layer"
+authors = ["Michael Wroblewski"]
+license = "ALL RIGHTS RESERVED"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]

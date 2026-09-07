@@ -1,0 +1,12 @@
+[package]
+name = "atc_dns"
+version = "0.1.0"
+edition = "2021"
+description = "Dezentraler DNS-Resolver — DID-basierte Namensauflösung"
+authors = ["Michael Wroblewski"]
+license = "ALL RIGHTS RESERVED"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]

@@ -1,0 +1,71 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-86 — Gas Fee Mechanism in ATCLang
+// Migriert von: blockchain/consensus/gas_fee.py → ATCLang
+// Sprint 2.1 — Issue #74
+
+import "std/chain.atc" as Chain
+
+struct GasState {
+    base_fee: UInt256,
+    max_gas_per_block: UInt256,
+    target_gas_per_block: UInt256,
+    adjustment_factor: UInt256,  // in basis points (100 = 1%)
+    min_base_fee: UInt256,
+    max_base_fee: UInt256,
+}
+
+struct GasTransaction {
+    gas_limit: UInt256,
+    gas_used: UInt256,
+    priority_fee: UInt256,
+    max_fee: UInt256,
+}
+
+// ATC-86: Base Fee Anpassung (EIP-1559 Style)
+pub fn adjust_base_fee(state: GasState, block_gas_used: UInt256) -> UInt256 {
+    if block_gas_used == state.target_gas_per_block {
+        return state.base_fee  // Keine Änderung
+    }
+
+    let gas_diff = block_gas_used - state.target_gas_per_block
+    let adjustment = (state.base_fee * state.adjustment_factor * gas_diff) / (state.target_gas_per_block * 10000)
+
+    let new_fee = state.base_fee + adjustment
+
+    // Bounds
+    if new_fee < state.min_base_fee {
+        return state.min_base_fee
+    }
+    if new_fee > state.max_base_fee {
+        return state.max_base_fee
+    }
+    return new_fee
+}
+
+// ATC-86: Transaktions-Gas berechnen
+pub fn calculate_gas(tx: GasTransaction, base_fee: UInt256) -> UInt256 {
+    let effective_gas_price = min(tx.max_fee, base_fee + tx.priority_fee)
+    return tx.gas_used * effective_gas_price
+}
+
+// ATC-86: Gas-Refund
+pub fn calculate_refund(tx: GasTransaction, base_fee: UInt256) -> UInt256 {
+    let effective_gas_price = min(tx.max_fee, base_fee + tx.priority_fee)
+    let used_cost = tx.gas_used * effective_gas_price
+    let max_cost = tx.gas_limit * effective_gas_price
+    return max_cost - used_cost
+}
+
+// ATC-86: Block Gas-Limit prüfen
+pub fn check_block_gas(txs: List<GasTransaction>, max_gas: UInt256) -> Bool {
+    let total = 0
+    for tx in txs {
+        total = total + tx.gas_limit
+    }
+    return total <= max_gas
+}
+
+// ATC-86: Priority Fee Queue (für Miner)
+pub fn sort_by_priority(txs: List<GasTransaction>) -> List<GasTransaction> {
+    return txs.sort(fn a, b => a.priority_fee > b.priority_fee)
+}

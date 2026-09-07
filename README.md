@@ -1,10 +1,13 @@
-# a-townchain — REBUILD
+# a-townchain [L3]
 
-A-TownChain Blockchain — Neuaufbau auf Basis des Wiki-Vaults. Chain-ID 658467 bleibt verbindlich; BIP44 m/44'/9000' unberührt.
+A-TownChain Blockchain L1 — Chain-ID 658467, PoW+PoS+PoH, ZKP, Governance, DNS, Testnet (AD-012: Kernel-System-Service).
 
-**Gesamtinhalt vor dem Abbau** (byte-identisch verifiziert am 06.09.2026):
-im Wiki-Vault unter
-[a-townchain-os-docs/docs/archive/monorepo-full/](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/tree/main/docs/archive/monorepo-full)
+**Vault-Restauration (07.09.2026, AD-020/026/027):** Inhalt aus dem Wiki-Vault
+(docs/archive/monorepo-full/) restauriert — vor der Repo-Leerung byte-identisch gesichert. Keine — Chain-ID 658467 im Vault-Stand (24 Dateien verifiziert, 0 x 9000).
 
-Die Git-Historie dieses Repos enthält jede Datei weiterhin (Reversibilität).
-Rebuild-Stand: atclang abgeschlossen (AD-019, Phase 1). Siehe DECISIONS_REGISTER AD-018/AD-020.
+**Module:** atc-blockchain, atcnet, atc-zkp, atc-governance, atc-dns, atc-testnet
+
+**Meile (AD-027):** M4 — Blockchain laeuft: 2 Nodes Gossip-Sync, Transaktion validiert, Genesis Chain-ID 658467, ATCLang-Contract auf ATVM
+
+**Hinweis:** Basis fuer den Rebuild; Gate-Kriterien laut LAUFFAEHIGKEITS_ROADMAP
+(a-townchain-os-docs/docs/roadmap/).

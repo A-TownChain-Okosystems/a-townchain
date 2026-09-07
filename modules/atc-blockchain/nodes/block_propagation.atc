@@ -1,0 +1,87 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// A-TownChain Block Propagation (ATC-01, Sprint 2.2)
+// P2P Gossip-based Block Broadcasting
+// ════════════════════════════════════════════════════════════════
+
+const MAX_HOPS: u8 = 10
+const FANOUT: u8 = 4
+const GOSSIP_INTERVAL: u64 = 2
+
+struct PropagatedBlock {
+    hash:       Hash,
+    height:     u64,
+    prev_hash:  Hash,
+    timestamp:  u64,
+    origin:     Address,
+    hops:       u8
+}
+
+contract BlockPropagation {
+
+    state known_blocks: Map<Hash, bool>
+    state pending_queue: List<PropagatedBlock>
+    state peer_list: List<Address>
+    state propagated_count: u128
+
+    event BlockReceived(hash: Hash, height: u64, origin: Address, hops: u8)
+    event BlockPropagated(hash: Hash, to: Address)
+    event BlockIgnored(hash: Hash, reason: String)
+
+    fn init() {
+        self.propagated_count = 0
+    }
+
+    // ── Block empfangen ───────────────────────────────
+    fn receive_block(block: PropagatedBlock) -> bool {
+        // Duplicate check
+        if exists(self.known_blocks, block.hash) {
+            emit BlockIgnored(block.hash, "Already known")
+            return false
+        }
+        if block.hops >= MAX_HOPS {
+            emit BlockIgnored(block.hash, "Max hops reached")
+            return false
+        }
+
+        self.known_blocks[block.hash] = true
+        self.pending_queue.push(block)
+        emit BlockReceived(block.hash, block.height, block.origin, block.hops)
+        return true
+    }
+
+    // ── Block propagieren ─────────────────────────────
+    fn propagate(block: PropagatedBlock) -> bool {
+        require(self.peer_list.len() > 0, "Propagation: Keine Peers")
+
+        // Fanout: sende an min(FANOUT, peer_count) Peers
+        let sent: u8 = 0
+        let i: u32 = 0
+        while i < self.peer_list.len() && sent < FANOUT {
+            let peer = self.peer_list[i]
+            block.hops += 1
+            emit BlockPropagated(block.hash, peer)
+            sent += 1
+            i += 1
+        }
+
+        self.propagated_count += sent
+        return true
+    }
+
+    // ── Peer hinzufügen ───────────────────────────────
+    fn add_peer(peer: Address) -> bool {
+        self.peer_list.push(peer)
+        return true
+    }
+
+    // ── Known Block check ─────────────────────────────
+    fn is_known(hash: Hash) -> bool {
+        return exists(self.known_blocks, hash)
+    }
+
+    // ── Stats ─────────────────────────────────────────
+    fn get_propagated_count() -> u128 {
+        return self.propagated_count
+    }
+}

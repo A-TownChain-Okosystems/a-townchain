@@ -1,0 +1,98 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// A-TownChain Block Gossip Protocol (ATC-01, Sprint 2.2)
+// Exponentielles Spreading via Gossip
+// ════════════════════════════════════════════════════════════════
+
+const GOSSIP_FANOUT: u8 = 4
+const MAX_GOSSIP_ROUNDS: u8 = 3
+const MESSAGE_TTL: u8 = 10
+
+struct GossipMessage {
+    msg_id:     Hash,
+    msg_type:   String,   // "block", "tx", "vote"
+    payload:    Hash,
+    origin:     Address,
+    ttl:        u8,
+    round:      u8
+}
+
+contract BlockGossip {
+
+    state seen_messages: Map<Hash, bool>
+    state active_messages: List<GossipMessage>
+    state gossip_count: u128
+    state peers: List<Address>
+
+    event GossipReceived(msg_id: Hash, msg_type: String, origin: Address, ttl: u8)
+    event GossipForwarded(msg_id: Hash, to: Address)
+    event GossipDropped(msg_id: Hash, reason: String)
+
+    fn init() {
+        self.gossip_count = 0
+    }
+
+    // ── Gossip senden ─────────────────────────────────
+    fn gossip(msg_type: String, payload: Hash) -> Hash {
+        let origin = msg_sender()
+        let msg_id = sha256(msg_type + to_string(payload) + to_string(origin) + to_string(block_timestamp()))
+        let msg = GossipMessage {
+            msg_id:    msg_id,
+            msg_type:  msg_type,
+            payload:   payload,
+            origin:    origin,
+            ttl:       MESSAGE_TTL,
+            round:     0
+        }
+        self.seen_messages[msg_id] = true
+        self.active_messages.push(msg)
+        emit GossipReceived(msg_id, msg_type, origin, MESSAGE_TTL)
+        return msg_id
+    }
+
+    // ── Gossip empfangen & weiterleiten ───────────────
+    fn receive_gossip(msg: GossipMessage) -> bool {
+        if exists(self.seen_messages, msg.msg_id) {
+            emit GossipDropped(msg.msg_id, "Already seen")
+            return false
+        }
+        if msg.ttl == 0 {
+            emit GossipDropped(msg.msg_id, "TTL expired")
+            return false
+        }
+
+        self.seen_messages[msg.msg_id] = true
+        msg.ttl -= 1
+        msg.round += 1
+        self.active_messages.push(msg)
+        emit GossipReceived(msg.msg_id, msg.msg_type, msg.origin, msg.ttl)
+
+        // Forward to FANOUT peers
+        if msg.round < MAX_GOSSIP_ROUNDS {
+            let sent: u8 = 0
+            let i: u32 = 0
+            while i < self.peers.len() && sent < GOSSIP_FANOUT {
+                emit GossipForwarded(msg.msg_id, self.peers[i])
+                self.gossip_count += 1
+                sent += 1
+                i += 1
+            }
+        }
+        return true
+    }
+
+    // ── Peer verwalten ────────────────────────────────
+    fn add_peer(peer: Address) -> bool {
+        self.peers.push(peer)
+        return true
+    }
+
+    // ── Stats ─────────────────────────────────────────
+    fn get_gossip_count() -> u128 {
+        return self.gossip_count
+    }
+
+    fn is_seen(msg_id: Hash) -> bool {
+        return exists(self.seen_messages, msg_id)
+    }
+}
