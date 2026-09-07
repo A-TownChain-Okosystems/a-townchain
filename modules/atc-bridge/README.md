@@ -12,7 +12,7 @@ Cross-Chain Bridge für das A-TownChain-Ökosystem.
 - Fee-Management & Slippage-Protection
 
 ## Architektur
-```
+```text
 atc-bridge/
 ├── src/
 │   ├── lib.rs
