@@ -188,3 +188,7 @@ Proprietary — A-TownChain-Okosystems. All Rights Reserved (ATC-LIC). See [LICE
 ## Changelog
 
 See detailed release history in [CHANGELOG.md](CHANGELOG.md).
+
+## A-TownChain Standards
+
+**Smart Contract Standards Framework (ATC-STD-SC-001..020, normativ seit 07.09.2026):** Gates SC-G0..G13 gelten verbindlich — kein Gate, kein Mainnet. Contract-Registry: atc-standards/contracts/registry/contracts.yaml (ATC-SC-TOKEN-001..003 = ATC-001/ATC-8300/ATC-9900, Status: development, SC-G0 offen). Agenten-Deploy nur nach ATC-STD-SC-020 (Human/Governance-Approval).
