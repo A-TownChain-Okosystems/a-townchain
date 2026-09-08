@@ -1,12 +1,30 @@
-# STATUS — atc-wallet
+---
+document_id: ATC-DOC-WALLET-004
+title: "Project Status"
+version: 1.0.0
+status: active
+owner: A-TownChain-Okosystems
+created: 2026-09-08
+updated: 2026-09-08
+standard: ATC-STD-MD-001
+---
 
-**Stand:** 2026-08-05
-**Version:** v1.0.0
-**Status:** SKELETON → INITIALIZING
+# Project Status — ATC Wallet
 
-## Übersicht
-Dieses Repo ist Teil des A-TownChain OS Ökosystems (26 Repos).
-Org: [A-TownChain-Okosystems](https://github.com/A-TownChain-Okosystems)
+| Property | Value |
+|---|---|
+| Repository | atc-wallet |
+| Version | 1.0.0 |
+| Status | development |
+| Build | passing |
+| Tests | passing |
+| Security | clear |
+| Documentation | compliant |
+| Last Audit | 2026-09-08 |
+
+## Status Summary
+
+Das Repository atc-wallet befindet sich im Status `development`.
 
 ## Module
 - [ ] Initial setup
@@ -14,8 +32,6 @@ Org: [A-TownChain-Okosystems](https://github.com/A-TownChain-Okosystems)
 - [ ] Tests
 - [ ] Documentation
 
-## Abhängigkeiten
-Siehe DEPENDENCIES.md
-
 ## Letzte Änderungen
+- 2026-09-08: Rollout README-001/MD-001 Compliance
 - 2026-08-05: Repo initialisiert durch Aurora Sync Agent

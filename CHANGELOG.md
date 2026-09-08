@@ -1,8 +1,17 @@
 # CHANGELOG — atc-wallet
 
-## v1.0.0 (2026-08-05)
+## [1.0.0] - 2026-09-08
+
+### Added
+- Rollout README-001/MD-001 Documentation Compliance.
+- CONTRIBUTING.md
+
+### Changed
+- STATUS.md mit maschinenlesbarer Property-Value-Tabelle aktualisiert.
+
+## [0.1.0] - 2026-08-05
+
+### Added
 - Initial repository setup
 - Skeleton structure created
 - LICENSE, .gitignore, STATUS, ROADMAP hinzugefügt
-
-[agent: aurora-base44-superagent-6a2756186106d6f0fbb105b5]
