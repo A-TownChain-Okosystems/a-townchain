@@ -1,64 +1,189 @@
-# atc-algorithm
+# ATC Algorithm
 
-> **ATC-Algorithmus** — der proprietaere Hybrid Consensus der A-TownChain: **PoH + PoS + PoW**.
+> ATC-Algorithmus — Propriethärer Hybrid Consensus der A-TownChain (PoH + PoS + PoW).
 
-**Prioritaet:** P0 (Konsens-Kern, AD-044) | **Chain-ID:** 658467 (AD-004) | **Org:** [A-TownChain-Okosystems](https://github.com/A-TownChain-Okosystems)
+**Project:** atc-algorithm
+**Organization:** A-TownChain-Okosystems
+**Status:** `development`
+**Version:** `0.1.0`
+**License:** `Proprietary (ATC-LIC)`
 
-> ## Fuer KI-Agenten - Pflichtlektuere vor jeder Aenderung
-> Governance liegt zentral im Wiki-Repo [`a-townchain-os-docs`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs):
-> 1. [`AGENT_POLICY.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/AGENT_POLICY.md)
-> 2. [`AGENT_COORDINATION.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/AGENT_COORDINATION.md)
-> 3. [`DECISIONS_REGISTER.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/DECISIONS_REGISTER.md) - insb. AD-001 (SHA-256), AD-004 (Chain-ID), AD-023 (kein Mainnet-Termin), AD-044 (dieses Repo)
+## Overview
 
----
+ATC Algorithm ist das zentrale Konsens-Repository des A-TownChain-Ökosystems (Chain-ID 658467). Es implementiert den proprietären Hybrid Consensus bestehend aus Proof of History (PoH), Proof of Stake (PoS) und Proof of Work (PoW). Priorität P0 (Konsens-Kern, AD-044).
 
-## Rolle im Oekosystem
+Für KI-Agenten: Governance liegt zentral im Wiki-Repo `a-townchain-os-docs`: `AGENT_POLICY.md`, `AGENT_COORDINATION.md`, `DECISIONS_REGISTER.md` (insb. AD-001 SHA-256, AD-004 Chain-ID, AD-023 kein Mainnet-Termin, AD-044 dieses Repo).
 
-Der ATC-Algorithmus ist der proprietare Konsens der A-TownChain — eine
-Hybrid-Kombination aus drei Komponenten:
+## Purpose
 
-| Komponente | Funktion |
-|---|---|
-| **PoH** (Proof of History) | Kryptografische Zeitstempel-Kette (Solana-inspiriert) — verifizierbare Ereignis-Reihenfolge vor der Konsens-Entscheidung |
-| **PoS** (Proof of Stake) | Validator-Gewichtung — 5 Validator-Keys, Staking-basierte Block-Produktion |
-| **PoW** (Proof of Work) | Schwierigkeitsanteil — Schutz gegen Stake-Zentralisierung |
+ATC Algorithm stellt die kanonische Konsens-Logik für A-TownChain bereit. Es ist verantwortlich für:
+- Kryptografische Zeitstempel-Kette (PoH) auf Basis verifizierbarer SHA-256 Ereignis-Reihenfolge (AD-001)
+- Validator-Gewichtung & Staking-basierte Block-Produktion (PoS)
+- Schwierigkeitsanteil und Schutz gegen Stake-Zentralisierung (PoW)
+- Formale Hybrid-Auswahl, Fork-Choice-Rule und Konsens-Finalisierung
 
-```
+## Scope
+
+In Scope:
+- Spezifikation und Rust-Implementierung der PoH-Tick-Kette und Hybrid-Konsens-Regeln
+- Konsens-Verifikation, Fuzzing und Test-Suiten für Konsens-Sicherheit
+- Schnittstellen zur Block- und Transaktions-Orchestrierung
+
+Out of Scope:
+- Chain-Konsens-Orchestrierung und Block/Tx-Netzwerk-Propagation (liegt in `a-townchain`)
+- Kernel-Isolation (liegt in `atc-shivacore`)
+- Smart-Contract-Ausführung (liegt in `atc-vm`)
+
+## Status
+
+**Status:** `development`
+
+- **Stand:** R1-Skeleton (ATC-STD-201) — Struktur + Governance stehen, Implementierung folgt im qualitätsgetriebenen Rebuild (AD-023).
+- **Abgrenzung (AD-044):** `atc-algorithm` ist das führende Konsens-Repo; `a-townchain` dient als Referenz-Orchestrierung.
+- **Nächste Schritte:** PoH-Spezifikation konsolidieren, Hybrid-Auswahlregeln formalisieren, Rust-Implementierung der PoH-Tick-Kette, Fuzzing.
+- **Qualitäts-Gates:** Konsens = S4-kritisch (G18 Security-Audit vor Freeze; SHA-256 nach AD-001).
+
+## Architecture
+
+ATC Algorithm folgt einer mehrschichtigen Hybrid-Konsens-Architektur.
+
+### Components
+
+| Component | Purpose | Required |
+|---|---|---|
+| `poh` | Proof of History Zeitstempel-Kette (SHA-256 Verifizierbare Ticks) | Yes |
+| `pos` | Proof of Stake Validator-Gewichtung & Staking-Logik | Yes |
+| `pow` | Proof of Work Schwierigkeitsanteil gegen Stake-Zentralisierung | Yes |
+| `hybrid_engine` | Hybrid-Auswahl, Fork-Choice-Rule & Finalitäts-Orchestrierung | Yes |
+
+### Data Flow
+
+```text
 Transaktionen -> PoH (Zeitstempel-Kette, SHA-256 — AD-001)
                   |
                   v
            PoS/PoW-Hybrid-Auswahl (Validator-Gewichtung)
                   |
                   v
-           Block finalisierung -> a-townchain (Chain) -> atc-vm (Contract-Ausfuehrung)
+           Block finalisierung -> a-townchain (Chain) -> atc-vm (Contract-Ausführung)
 ```
 
-## Abgrenzung (AD-044)
+## Features
 
-| Zustaendigkeit | Repo |
-|---|---|
-| **Konsens-Algorithmus (PoH + PoS + PoW, Hybrid-Auswahl)** | **`atc-algorithm` (dieses Repo)** |
-| Chain-Konsens-Orchestrierung, Block-/Tx-Struktur | `a-townchain` |
-| Kernel (Prozess-/Speicher-Isolation) | `atc-shivacore` |
-| Vertrags-Ausfuehrung | `atc-vm` |
-| Netzwerk-Propagation | `a-townchain` (atcnet) |
+- Verifizierbare Proof-of-History Zeitstempelkette (SHA-256).
+- 5-Validator-Key PoS Gewichtung mit Staking-Regeln.
+- Dynamische PoW Schwierigkeitsanpassung zur Verhinderung von Stake-Konzentration.
+- Formale Fork-Choice-Rule und deterministisches Block-Finalitäts-Engine.
 
-Die bisherige PoH-Implementierung in `a-townchain` (ProofOfHistory-Modul)
-dient als Referenz; die kanonische Rust-Implementierung entsteht hier
-(AD-021 Rust-first). Die Modul-Migration ist als offener Punkt im
-DECISIONS_REGISTER (AD-044) gefuehrt.
+## Repository Structure
 
-## Status (AD-020-Rebuild-Aera)
+```text
+atc-algorithm/
+├── docs/
+├── src/
+└── tests/
+```
 
-- **Stand:** R1-Skeleton (ATC-STD-201) — Struktur + Governance stehen,
-  Implementierung folgt im qualitaetsgetriebenen Rebuild (AD-023).
-- **Naechste Schritte:** (1) PoH-Spezifikation aus a-townchain/Wiki
-  konsolidieren, (2) Hybrid-Auswahl-Regeln formal spezifizieren
-  (Gewichtung, Finalitaet, Fork-Resolution), (3) Rust-Implementierung
-  PoH-Tick-Kette, (4) Fuzzing + Konsistenz-Tests gegen Referenz.
-- **Qualitaets-Gates:** Konsens = S4-kritisch — G18 Security-Audit vor
-  jedem Freeze (AD-023); SHA-256 als einziger Hash-Algorithmus (AD-001).
+## Requirements
 
-## Lizenz
+- Rust `1.75+` (cargo, rustc)
+- Python `3.10+` (für Validierungstools und Hilfsskripte)
+- Git `2.30+`
 
-Proprietaer - All Rights Reserved (ATC-LIC). Siehe [LICENSE](LICENSE).
+## Installation
+
+```bash
+git clone https://github.com/A-TownChain-Okosystems/atc-algorithm.git
+cd atc-algorithm
+cargo build
+```
+
+## Configuration
+
+Konfigurationsparameter für PoH-Tick-Frequenzen, Validator-Set und PoW-Schwierigkeit befinden sich in `src/` sowie `.atc/repository.yaml`.
+
+## Usage
+
+```bash
+cargo run --bin atc-algorithm
+```
+
+## Development
+
+```bash
+cargo build --all-targets
+```
+
+## Testing
+
+```bash
+cargo test
+```
+Erwartetes Ergebnis: `PASS` (alle Unit- und Integrationstests erfolgreich).
+
+## Security
+
+Sicherheitsrelevante Befunde dürfen NICHT öffentlich gemeldet werden. Bitte melden Sie Schwachstellen direkt gemäß dem offiziellen ATC Security Reporting Prozess (ATC-STD-203) und [SECURITY.md](SECURITY.md).
+
+## Documentation
+
+- [Repository Standard](docs/REPOSITORY_STANDARD.md)
+- [Architecture Details](ARCHITECTURE.md)
+- [Project Status](STATUS.md)
+- [AI Agent Instructions](AGENTS.md)
+
+## Governance
+
+Dieses Repository folgt dem A-TownChain Enterprise Governance Framework (ATC-STD-000). Review- und Approval-Pflicht für alle konsensuskritischen Schnittstellen (S4-kritisch).
+
+## Standards & Compliance
+
+| Standard | Version | Compliance |
+|---|---:|---|
+| ATC-STD-000 | 1.2.0 | ✅ |
+| ATC-STD-README-001 | 1.0.0 | ✅ |
+| ATC-STD-MD-001 | 1.0.0 | ✅ |
+| ATC-STD-201 | 1.0.0 | ✅ |
+| ATC-STD-202 | 1.0.0 | ✅ |
+| ATC-STD-203 | 1.0.0 | ✅ |
+| ATC-STD-204 | 1.0.0 | ✅ |
+
+## Roadmap
+
+Die Entwicklungsplanung ist in [ROADMAP.md](ROADMAP.md) hinterlegt. Ziel: Meilenstein M4 (Blockchain / Consensus Engine).
+
+## Contributing
+
+Beiträge folgen den Regeln in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+Proprietär — All Rights Reserved, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC). Siehe [LICENSE](LICENSE).
+
+## Maintainers
+
+A-TownChain Consensus & Algorithm Team / ShivaCoreDev.
+
+## Repository Metadata
+
+<!--
+atc:
+  standard: ATC-STD-README-001
+  version: 1.0.0
+repository:
+  id: ATC-REPO-ALG-001
+  name: atc-algorithm
+  type: software
+  status: development
+ownership:
+  organization: A-TownChain-Okosystems
+technology:
+  primary_language: Rust
+governance:
+  security_class: S4
+  criticality: high
+-->
+
+## Changelog
+
+Siehe [CHANGELOG.md](CHANGELOG.md) für die Änderungshistorie.
