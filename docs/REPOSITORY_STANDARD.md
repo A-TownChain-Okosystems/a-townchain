@@ -18,7 +18,7 @@ Dieses Repository folgt den ATC-Repository-Standards (kanonisch im
 
 ## Struktur
 
-```
+```text
 atc-indexer/
 ├── .atc/            Metadaten (repository/ownership/lifecycle/compliance.yaml)
 ├── .github/         CI (governance-ci.yml; Produkt-Pipelines je Meilenstein)

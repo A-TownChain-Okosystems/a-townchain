@@ -12,7 +12,7 @@ Analytics-Plattform für das A-TownChain-Ökosystem.
 - Custom-Metrics (User-Defined Queries)
 
 ## Architektur
-```
+```text
 atc-analytics/
 ├── src/
 │   ├── indexer/           # Block-Indexer

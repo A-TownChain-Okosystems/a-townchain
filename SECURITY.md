@@ -1,3 +1,14 @@
+---
+document_id: ATC-DOC-INDEXER-010
+title: "Security Policy"
+version: 1.0.0
+status: active
+owner: A-TownChain-Okosystems
+created: 2026-09-07
+updated: 2026-09-07
+standard: ATC-STD-MD-001
+---
+
 # Security Policy — atc-indexer
 
 **Klassifizierung:** CORE · **Maturity:** R2 · **Security-Level:** S2 (S-Klasse gemaess ATC-STD-202)

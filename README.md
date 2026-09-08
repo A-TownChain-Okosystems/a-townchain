@@ -1,32 +1,165 @@
-# atc-indexer [L5]
+# ATC Chain Indexer & Analytics
 
-ATC Indexer — Chain-Indexing & Analytics.
+> ATC Indexer — Chain-Indexing & Analytics für die A-TownChain.
 
-**Vault-Restauration (07.09.2026, AD-020/026/027):** Inhalt aus dem Wiki-Vault
-(docs/archive/monorepo-full/) restauriert — vor der Repo-Leerung byte-identisch gesichert. Keine — Vault-Stand konsistent.
+**Project:** atc-indexer
+**Organization:** A-TownChain-Okosystems
+**Status:** `development`
+**Version:** `0.1.0`
+**License:** `Proprietary (ATC-LIC)`
 
-**Module:** atc-analytics
+## Overview
 
-**Meile (AD-027):** M6 — Dienste laufen
+ATC Indexer stellt die zentrale Indexierungs- und Analyse-Infrastruktur für das A-TownChain-Ökosystem (Chain-ID 658467) bereit.
 
-**Hinweis:** Basis fuer den Rebuild; Gate-Kriterien laut LAUFFAEHIGKEITS_ROADMAP
-(a-townchain-os-docs/docs/roadmap/).
+## Purpose
 
----
+ATC Indexer ist verantwortlich für die strukturierte Erfassung, Transformation und Analyse von Blockchain-Daten im A-TownChain-Ökosystem (Layer L5). Es ist verantwortlich für:
+- High-Performance Chain Indexing für Blöcke, Transaktionen und Events
+- Analytics-Pipelines & Metrik-Verarbeitung (Modul `atc-analytics`)
+- Datenbereitstellung für Blockchain Explorer, Dashboards und Drittsysteme
+- Aggregation von On-Chain und Off-Chain Entwicklungsmetriken
 
-## ATC Compliance & Governance (ATC-STD-201 / 202 / 203)
+## Status
 
-**ATC COMPLIANCE: R2** — auditiert am 2026-09-07 (atc-repo-audit; R-Level aus `.atc/repository.yaml`).
-Architekturentscheidungen: zentral im [DECISIONS_REGISTER](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/DECISIONS_REGISTER.md) (AD-Nummern verbindlich; lokale Entscheidungen in `docs/decisions/`).
+**Status:** `development`
 
-- **Purpose:** Chain-Indexer & Analytics (L5).
-- **Scope:** Layer L5, Domain analytics — atc-indexer als CORE in der 23-Repo-Landschaft (AD-024/026).
-- **Architecture:** Indexierung der Chain (ID 658467) fuer Explorer/Analytics.
-- **Features:** Indexer-Core.
-- **Installation:** Modul-Build je Sprache (rust); Integration via Monorepo-Workspace (a-townchain-os, sync_modules.py).
-- **Development:** Conventional Commits; Governance-Regeln aus atc-standards; Naming gemaess ATC-STD-000 §7.
-- **Testing:** Testplan bis M6; Governance-CI.
-- **Security:** SECURITY.md; S-Klasse S2; ATC-STD-203 Release-Gates; Emergency-Prozess ATC-STD-000 §32.
-- **Roadmap:** Einordnung in die Lauffaehigkeits-Roadmap M1-M8 (AD-027) und Bauhierarchie L0-L7 (AD-026).
-- **Version:** CHANGELOG.md; SemVer; Releases als ATC-REL-X.Y.Z.
-- **License:** Proprietaer — All Rights Reserved, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC/ATS-LIC).
+- Stand: Vault-Restauration (07.09.2026, AD-020/026/027) aus Wiki-Vault restauriert.
+- Compliance-Level: R2 — auditiert am 2026-09-07. Meilenstein M6 (Dienste laufen).
+
+## Architecture
+
+ATC Indexer folgt einer ereignisgesteuerten Pipeline-Architektur für Blockchain-Analytik.
+
+### Components
+
+| Component | Purpose | Required |
+|---|---|---|
+| `atc-analytics` | Analytics Core, Pipelines, Dashboards & Metrics | Yes |
+| `pipelines/` | ETL Data Ingestion & Transformation Pipelines | Yes |
+| `metrics/` | Aggregations- & Metrik-Engine | Yes |
+| `chain/` | On-Chain Event Listener & Block Ingestion | Yes |
+
+### Data Flow
+
+```text
+A-TownChain Node (Chain-ID 658467) -> Chain Ingestion -> ETL Pipelines -> Analytics DB -> Explorer / API
+```
+
+## Features
+
+- Real-Time Block & Transaction Ingestion.
+- Customizable Analytics Pipelines for Token Transfers & Smart Contract Events.
+- Dashboard-Visualisierung (Vite / TypeScript Frontend Integration).
+- Automated Reporting & Benchmark Suite.
+
+## Repository Structure
+
+```text
+atc-indexer/
+├── docs/
+├── modules/
+│   └── atc-analytics/
+└── tests/
+```
+
+## Requirements
+
+- Node.js `18+` / npm
+- TypeScript `5+`
+- Rust `1.75+` (für Native Ingestor Modules)
+
+## Installation
+
+```bash
+git clone https://github.com/A-TownChain-Okosystems/atc-indexer.git
+cd atc-indexer
+cd modules/atc-analytics
+npm install
+```
+
+## Configuration
+
+Die Konfiguration der Endpunkte und Datenbanken erfolgt über `modules/atc-analytics/vite.config.ts` und Umgebungsvariablen.
+
+## Usage
+
+```bash
+cd modules/atc-analytics
+npm run dev
+```
+
+## Development
+
+```bash
+npm run build
+```
+
+## Testing
+
+```bash
+npm test
+```
+Erwartetes Ergebnis: `PASS` (alle Indexer- und Analytics-Tests erfolgreich).
+
+## Security
+
+Sicherheitsrelevante Befunde dürfen NICHT öffentlich gemeldet werden. Bitte melden Sie Schwachstellen direkt gemäß dem offiziellen ATC Security Reporting Prozess (ATC-STD-203) und [SECURITY.md](SECURITY.md).
+
+## Documentation
+
+- [Analytics Architecture](modules/atc-analytics/ARCHITECTURE.md)
+- [Repository Standard](docs/REPOSITORY_STANDARD.md)
+- [Test Plan](tests/TESTPLAN.md)
+- [Architecture Details](ARCHITECTURE.md)
+
+## Governance
+
+Dieses Repository folgt dem A-TownChain Enterprise Governance Framework (ATC-STD-000). Review- und Approval-Pflicht für alle konsensus- und indexierungsrelevanten Schnittstellen.
+
+## Standards & Compliance
+
+| Standard | Version | Compliance |
+|---|---:|---|
+| ATC-STD-000 | 1.2.0 | ✅ |
+| ATC-STD-README-001 | 1.0.0 | ✅ |
+| ATC-STD-MD-001 | 1.0.0 | ✅ |
+| ATC-STD-201 | 1.0.0 | ✅ |
+| ATC-STD-202 | 1.0.0 | ✅ |
+| ATC-STD-203 | 1.0.0 | ✅ |
+
+## Roadmap
+
+Die Entwicklungsplanung ist in [ROADMAP.md](ROADMAP.md) und [modules/atc-analytics/ROADMAP.md](modules/atc-analytics/ROADMAP.md) hinterlegt. Ziel: Meilenstein M6 (Dienste laufen).
+
+## Contributing
+
+Beiträge folgen den Regeln in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+Proprietaer — All Rights Reserved, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC). Siehe [LICENSE](LICENSE).
+
+## Maintainers
+
+A-TownChain Indexing & Analytics Team / ShivaCoreDev.
+
+## Repository Metadata
+
+<!--
+atc:
+  standard: ATC-STD-README-001
+  version: 1.0.0
+repository:
+  id: ATC-REPO-INDEXER-001
+  name: atc-indexer
+  type: software
+  status: development
+ownership:
+  organization: A-TownChain-Okosystems
+technology:
+  primary_language: TypeScript
+governance:
+  security_class: S2
+  criticality: medium
+-->
