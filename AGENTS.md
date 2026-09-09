@@ -48,3 +48,14 @@ AI-Agenten, die in diesem Repository arbeiten, müssen strikt folgende Standards
 5. **Testing & Validierung:** Lokale Tests ausführen und Validatoren prüfen (`check_readme.py`, `check_md.py`).
 6. **Dokumentation & Changelog:** `CHANGELOG.md` aktualisieren und Konsistenz sicherstellen.
 7. **Commit & Push:** Conventional Commit mit Agent-Signatur erstellen.
+
+## Commit-Format (ATC-STD-AI-DEV-007 §1, normativ)
+
+Agenten-Commits MUESSEN einen Trailer-Block tragen:
+
+Agent-ID: ATC-AI-ARCH-001
+Task-ID: ATC-TASK-NNNN
+AI-Role: software-development
+Validation: PASS|FAIL|PENDING
+
+Conventional-Commit-Typen: feat|fix|docs|test|refactor|security|build|ci|chore|spec. Ohne Trailer gilt ein Commit als menschlicher Commit.
