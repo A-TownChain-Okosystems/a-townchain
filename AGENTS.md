@@ -47,3 +47,14 @@ When working on this repository, AI agents MUST follow this sequence:
 4. Execute test suite: `cargo test`.
 5. Update `CHANGELOG.md` following Keep a Changelog syntax.
 6. Verify documentation consistency using `check_readme.py` and `check_md.py`.
+
+## Commit-Format (ATC-STD-AI-DEV-007 §1, normativ)
+
+Agenten-Commits MUESSEN einen Trailer-Block tragen:
+
+Agent-ID: ATC-AI-ARCH-001
+Task-ID: ATC-TASK-NNNN
+AI-Role: software-development
+Validation: PASS|FAIL|PENDING
+
+Conventional-Commit-Typen: feat|fix|docs|test|refactor|security|build|ci|chore|spec. Ohne Trailer gilt ein Commit als menschlicher Commit.
