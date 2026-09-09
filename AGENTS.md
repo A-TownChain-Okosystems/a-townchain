@@ -1,3 +1,5 @@
+# AI Agent Instructions — atc-storage
+
 ## Org-Regeln (vererbt — Pflicht für jeden Agenten in diesem Repo)
 
 Dieses Repository unterliegt dem **ATC Org-weiten Agent-Governance-System** (SCR-0057):
@@ -19,8 +21,6 @@ standard: ATC-STD-MD-001
 created: 2026-09-08
 updated: 2026-09-08
 ---
-
-# AI Agent Instructions — atc-storage
 
 ## Identity & Normative Standards
 
