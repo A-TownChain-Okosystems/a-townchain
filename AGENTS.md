@@ -1,3 +1,5 @@
+# AI Agent Instructions — ATC Algorithm
+
 ## Org-Regeln (vererbt — Pflicht für jeden Agenten in diesem Repo)
 
 Dieses Repository unterliegt dem **ATC Org-weiten Agent-Governance-System** (SCR-0057):
@@ -20,8 +22,6 @@ created: 2026-09-08
 updated: 2026-09-08
 standard: ATC-STD-MD-001
 ---
-
-# AI Agent Instructions — ATC Algorithm
 
 ## Identity & Standards
 
