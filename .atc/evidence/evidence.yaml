@@ -10,11 +10,11 @@ bound_commit: 0e0e2e653522e00623ca58c6d0b8fc683a840930   # vom jeweiligen CI-Lau
 maturity_class: B          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
 r_level: null
 implementation:
-  status: skeleton        # substantial|partial|skeleton|docs_only
+  status: partial        # substantial|partial|skeleton|docs_only
   summary: "Mining-Execution-Shell (MIN-001..006); Consens-Definition liegt bei atc-algorithm"
 tests:
-  status: not_run       # pass_with_evidence|not_run|not_applicable
-  evidence: "Kein Code-Bestand (F-102)"
+  status: pass_with_evidence       # pass_with_evidence|not_run|not_applicable
+  evidence: "cargo test gruen via CI, test_run-Block gebunden (SCR-0083)"
 security:
   status: not_audited
 conformance:
