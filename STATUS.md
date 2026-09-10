@@ -16,8 +16,8 @@ standard: ATC-STD-MD-001
 | Repository | atc-oracle |
 | Version | 0.1.0 |
 | Status | development |
-| Build | passing |
-| Tests | passing |
+| Build | NOT APPLICABLE (nur Docs/Scaffold, kein Code — SCR-0072) |
+| Tests | NOT RUN (keine Implementierung — SCR-0072) |
 | Security | clear |
 | Documentation | compliant |
 | Last Audit | 2026-09-07 |
