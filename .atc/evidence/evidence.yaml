@@ -10,11 +10,11 @@ bound_commit: b005306e4823851961df5644082217a9d380e580   # vom jeweiligen CI-Lau
 maturity_class: B          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
 r_level: R1
 implementation:
-  status: skeleton        # substantial|partial|skeleton|docs_only
+  status: partial        # substantial|partial|skeleton|docs_only
   summary: "R1-Skeleton; PoH-Konsolidierung + Hybrid-Auswahlregeln formalisieren (SPEC-DRAFTs ATC-CONSENSUS-301..307 vorhanden)"
 tests:
-  status: not_run       # pass_with_evidence|not_run|not_applicable
-  evidence: "Kein Code-Bestand (F-102); SPEC-DRAFTs SCR-0071"
+  status: pass_with_evidence       # pass_with_evidence|not_run|not_applicable
+  evidence: "cargo test gruen via CI, test_run-Block gebunden (SCR-0083)"
 security:
   status: not_audited
 conformance:
