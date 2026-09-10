@@ -1,0 +1,31 @@
+name: ATC Test Suite (Skeleton-Smoke)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  skeleton-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ehrlicher Skeleton-Status (R1, F-102/F-108-Analog)
+        run: |
+          N=$(find . -name Cargo.toml -not -path "*/archive/*" | wc -l)
+          RS=$(find . -name "*.rs" -not -path "*/archive/*" | wc -l)
+          echo "atc-zkp: R1-Skeleton — $RS .rs-Dateien, $N Cargo-Manifest(e)"
+          if [ "$N" -eq 0 ]; then
+            echo "KEIN testbares Projekt: Test-Suite = ehrlicher Skeleton-Smoke (Implementierung folgt laut ROADMAP/Evidence)"
+          fi
+      - name: YAML-Validierung der Governance-Dateien
+        run: |
+          pip install pyyaml -q
+          python3 - <<'PY'
+          import glob, yaml
+          n = 0
+          for f in glob.glob("**/*.yaml", recursive=True):
+              if "archive" in f: continue
+              yaml.safe_load(open(f, encoding="utf-8")); n += 1
+          print(f"YAML OK: {n} Dateien geparst")
+          PY
