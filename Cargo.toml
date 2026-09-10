@@ -13,4 +13,4 @@ members = [
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-license = "LicenseRef-Proprietary = ATC-LIC"
+license = "LicenseRef-Apache-2.0 = ATC-LIC"
