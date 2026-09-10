@@ -1,5 +1,8 @@
 # ATC Chain Indexer & Analytics
 
+> **ATC COMPLIANCE: R2** — auditiert am 2026-09-10 (SCR-0075; R-Level aus `.atc/repository.yaml`).
+
+
 > ATC Indexer — Chain-Indexing & Analytics für die A-TownChain.
 
 **Project:** atc-indexer
