@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 description = "Cross-Chain Bridge — Ethereum, Polkadot, Cosmos Interoperability"
 authors = ["Michael Wroblewski"]
-license = "ALL RIGHTS RESERVED"
+license = "Apache-2.0"
 
 [lib]
 path = "src/lib.rs"
