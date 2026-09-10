@@ -20,8 +20,8 @@ Stand: 07.09.2026 · Self-Compliance: ATC-STD-201 R1 · README: 13/13 CONFORM ·
 | Repository | atc-mining |
 | Version | 0.1.0 |
 | Status | development |
-| Build | passing |
-| Tests | PASS (cargo test --all) |
+| Build | NOT IMPLEMENTED (kein Cargo-Projekt im Repository — SCR-0072) |
+| Tests | NOT RUNNABLE (keine Implementierung — SCR-0072) |
 | Security | S2 (medium criticality, ATC-STD-203) |
 | Documentation | 100% compliant (ATC-STD-README-001, ATC-STD-MD-001) |
 | Last Audit | 2026-09-07 |
