@@ -17,8 +17,8 @@ updated: 2026-09-08
 | Repository | atc-storage |
 | Version | 0.1.0 |
 | Status | development |
-| Build | NOT APPLICABLE — keine ausführbare Implementierung (SCR-0069, ehrlicher Status) |
-| Tests | NOT RUN — keine Implementierung (SCR-0069, No status without evidence) |
+| Build | PASS (cargo, MVP-Kern KV-Store+Root-Hash, CI-gruen SCR-0083) |
+| Tests | PASS WITH EVIDENCE (cargo test gruen, bound_commit+test_run, SCR-0083) |
 | Security | S2 / S-Klasse |
 | Documentation | ATC-STD-README-001 / ATC-STD-MD-001 compliant |
 | Last Audit | 2026-09-07 (Level R1) |
