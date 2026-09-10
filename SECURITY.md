@@ -1,6 +1,6 @@
 # Security Policy — atc-node
 
-**Klassifizierung:** CORE · **Maturity:** R1 · **Security-Level:** S3 (S-Klasse gemaess ATC-STD-202)
+**Klassifizierung:** CORE · **Maturity:** R1 · **Security-Level:** S4 (S-Klasse gemaess ATC-STD-202)
 **Criticality:** high · **Standard:** ATC-STD-203 (Repository Security & Release)
 
 ## Melde-und-Offenlegungspolitik
