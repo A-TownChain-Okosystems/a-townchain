@@ -1,6 +1,6 @@
 # ARCHITECTURE.md — atc-wallet
 
-> Copyright © Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+> Copyright © Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 
 ## File Tree
 ```tree
