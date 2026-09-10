@@ -1,16 +1,3 @@
 [workspace]
+members = ["crates/zkp-core", "crates/zkp-crypto", "crates/zkp-circuits", "crates/zkp-prover", "crates/zkp-verifier", "crates/zkp-sdk", "crates/zkp-vm"]
 resolver = "2"
-members = [
-    "crates/zkp-core",
-    "crates/zkp-verifier",
-    "crates/zkp-prover",
-    "crates/zkp-circuits",
-    "crates/zkp-crypto",
-    "crates/zkp-vm",
-    "crates/zkp-sdk",
-]
-
-[workspace.package]
-version = "0.1.0"
-edition = "2021"
-license = "LicenseRef-Apache-2.0 = ATC-LIC"
