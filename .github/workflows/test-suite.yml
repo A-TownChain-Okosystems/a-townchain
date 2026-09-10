@@ -23,7 +23,7 @@ jobs:
             fi
           done < <(find . -name Cargo.toml -not -path "*/archive/*" -not -path "*/node_modules/*")
           exit $FAIL
-      - name: Evidence-Bindung (SCR-0086: test_run BEI JEDEM LAUF aktualisieren + hartes Push-Gate)
+      - name: Evidence-Bindung (SCR-0086 idempotentes test_run-Update je Lauf + hartes Push-Gate)
         if: success()
         run: |
           python3 - <<'PY'
