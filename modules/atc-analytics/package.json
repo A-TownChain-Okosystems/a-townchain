@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "typescript": "^5", "graphql": "^16", "express": "^4"
+    "typescript": "^5", "graphql": "^16", "express": "^5"
   },
   "devDependencies": {
     "@types/node": "^20",
