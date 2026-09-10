@@ -7,15 +7,16 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "typescript": "^7", "graphql": "^17", "express": "^5"
+    "typescript": "^7",
+    "graphql": "^17",
+    "express": "^5"
   },
   "devDependencies": {
     "@types/node": "^26",
     "@types/jest": "^29",
-    "jest": "^30",
-    "ts-jest": "^29"
+    "jest": "^30"
   }
 }
