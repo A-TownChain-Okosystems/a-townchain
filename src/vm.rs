@@ -124,6 +124,6 @@ mod tests {
     #[test]
     fn swap_und_eq() {
         let mut vm = Vm::new(vec![Op::Push(1), Op::Push(2), Op::Swap, Op::Eq, Op::Halt]);
-        assert_eq!(vm.run(), Ok(vec![0, 0]));
+        assert_eq!(vm.run(), Ok(vec![0]));
     }
 }
