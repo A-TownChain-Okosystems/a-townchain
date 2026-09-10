@@ -10,11 +10,11 @@ bound_commit: pending   # vom jeweiligen CI-Lauf zu setzen (Test-Suite-Workflow 
 maturity_class: B          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
 r_level: R1
 implementation:
-  status: skeleton        # substantial|partial|skeleton|docs_only
+  status: partial        # substantial|partial|skeleton|docs_only
   summary: "R1-Skeleton; Zielarchitektur (Groth16/PLONK/Halo2/STARK/ZKVM) NICHT als implementiert zu lesen"
 tests:
-  status: not_run       # pass_with_evidence|not_run|not_applicable
-  evidence: "Kein testbarer Bestand (F-102)"
+  status: pass_with_evidence       # pass_with_evidence|not_run|not_applicable
+  evidence: "cargo test gruen via CI, test_run-Block gebunden (SCR-0083)"
 security:
   status: not_audited
 conformance:
