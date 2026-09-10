@@ -17,8 +17,8 @@ updated: 2026-09-08
 | Repository | atc-storage |
 | Version | 0.1.0 |
 | Status | development |
-| Build | passing |
-| Tests | PASS |
+| Build | NOT APPLICABLE — keine ausführbare Implementierung (SCR-0069, ehrlicher Status) |
+| Tests | NOT RUN — keine Implementierung (SCR-0069, No status without evidence) |
 | Security | S2 / S-Klasse |
 | Documentation | ATC-STD-README-001 / ATC-STD-MD-001 compliant |
 | Last Audit | 2026-09-07 (Level R1) |
