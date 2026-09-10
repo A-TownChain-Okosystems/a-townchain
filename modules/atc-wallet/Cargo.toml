@@ -7,5 +7,5 @@ authors = ["Michael Wroblewski"]
 license = "Apache-2.0"
 
 [dependencies]
-egui = "0.27"
+egui = "0.36"
 ed25519-dalek = "3.0"
