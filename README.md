@@ -29,4 +29,4 @@ Architekturentscheidungen: zentral im [DECISIONS_REGISTER](https://github.com/A-
 - **Security:** SECURITY.md; S-Klasse S1; ATC-STD-203 Release-Gates; Emergency-Prozess ATC-STD-000 §32.
 - **Roadmap:** Einordnung in die Lauffaehigkeits-Roadmap M1-M8 (AD-027) und Bauhierarchie L0-L7 (AD-026).
 - **Version:** CHANGELOG.md; SemVer; Releases als ATC-REL-X.Y.Z.
-- **License:** Proprietaer — All Rights Reserved, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC/ATS-LIC).
+- **License:** Apache-2.0 — Apache-2.0, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC/ATS-LIC).
