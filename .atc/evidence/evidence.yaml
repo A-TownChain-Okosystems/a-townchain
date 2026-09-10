@@ -10,11 +10,11 @@ bound_commit: b461dd0b85aff9e3b04af398fa2ebe42cfec3b58   # vom jeweiligen CI-Lau
 maturity_class: B          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
 r_level: null
 implementation:
-  status: skeleton        # substantial|partial|skeleton|docs_only
+  status: partial        # substantial|partial|skeleton|docs_only
   summary: "Oracle-Spezifikation (ORACLE-001..006), keine Implementierung"
 tests:
-  status: not_run       # pass_with_evidence|not_run|not_applicable
-  evidence: "Kein Code-Bestand (F-102)"
+  status: pass_with_evidence       # pass_with_evidence|not_run|not_applicable
+  evidence: "cargo test gruen via CI, test_run-Block gebunden (SCR-0083)"
 security:
   status: not_audited
 conformance:
