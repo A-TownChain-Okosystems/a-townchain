@@ -11,4 +11,4 @@ cryptography>=50.0.1
 
 # Testing
 pytest>=7.0
-pytest-asyncio>=0.21
+pytest-asyncio>=1.4.0
