@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "atc-analytics — A-TownChain-Okosystems",
   "author": "Michael Wroblewski",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
