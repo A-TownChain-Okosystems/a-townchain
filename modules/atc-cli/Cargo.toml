@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 description = "CLI-Tool for Kernel/Blockchain interaction"
 authors = ["Michael Wroblewski"]
-license = "ALL RIGHTS RESERVED"
+license = "Apache-2.0"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
