@@ -1,0 +1,24 @@
+name: ATC Test Suite
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  cargo-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo test ueber alle Manifeste (SCR-0078, F-093)
+        run: |
+          set +e
+          FAIL=0
+          while IFS= read -r f; do
+            d="$(dirname "$f")"
+            echo "=== cargo test in $d"
+            if ! (cd "$d" && cargo test --quiet); then
+              echo "cargo test FAILED in $d"; FAIL=1
+            fi
+          done < <(find . -name Cargo.toml -not -path "*/archive/*" -not -path "*/node_modules/*")
+          exit $FAIL
