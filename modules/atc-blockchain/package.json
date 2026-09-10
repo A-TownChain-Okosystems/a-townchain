@@ -8,6 +8,13 @@
     "test": "echo \"no tests\" && exit 0"
   },
   "devDependencies": {
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "@types/node": "^24",
+    "react": "^19.2",
+    "react-dom": "^19.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "lucide-react": "^1.41",
+    "motion": "^12"
   }
 }
