@@ -10,7 +10,7 @@ bound_commit: pending   # vom jeweiligen CI-Lauf zu setzen (Test-Suite-Workflow 
 maturity_class: B          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
 r_level: R1
 implementation:
-  status: skeleton        # substantial|partial|skeleton|docs_only
+  status: partial        # substantial|partial|skeleton|docs_only
   summary: "R1-Skeleton; Migration aus atclang im Rebuild offen; VM-Chain (Bytecode/Verifier/Gas/Host/Conformance) unvollstaendig"
 tests:
   status: not_run       # pass_with_evidence|not_run|not_applicable
