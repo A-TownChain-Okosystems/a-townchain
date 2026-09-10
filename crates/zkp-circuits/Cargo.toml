@@ -2,7 +2,7 @@
 name = "zkp-circuits"
 version = "0.1.0"
 edition = "2021"
-description = "ATC ZKP-Layer crate: zkp-circuits (AD-045, ATC-STD-ZKP-001ff)"
-license = "LicenseRef-Apache-2.0 = ATC-LIC"
+license = "Apache-2.0"
+description = "zkp-circuits — ATC ZKP-Stack (R1-MVP, AD-045)"
 
 [dependencies]
