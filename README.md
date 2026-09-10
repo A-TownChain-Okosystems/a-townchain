@@ -6,11 +6,11 @@
 **Organization:** A-TownChain-Okosystems
 **Status:** `development`
 **Version:** `0.1.0`
-**License:** `Proprietary (ATC-LIC)`
+**License:** `Apache-2.0 (ATC-LIC)`
 
 ## Overview
 
-ATC Algorithm ist das zentrale Konsens-Repository des A-TownChain-Ökosystems (Chain-ID 658467). Es implementiert den proprietären Hybrid Consensus bestehend aus Proof of History (PoH), Proof of Stake (PoS) und Proof of Work (PoW). Priorität P0 (Konsens-Kern, AD-044).
+ATC Algorithm ist das zentrale Konsens-Repository des A-TownChain-Ökosystems (Chain-ID 658467). Es implementiert den Apache-2.0en Hybrid Consensus bestehend aus Proof of History (PoH), Proof of Stake (PoS) und Proof of Work (PoW). Priorität P0 (Konsens-Kern, AD-044).
 
 Für KI-Agenten: Governance liegt zentral im Wiki-Repo `a-townchain-os-docs`: `AGENT_POLICY.md`, `AGENT_COORDINATION.md`, `DECISIONS_REGISTER.md` (insb. AD-001 SHA-256, AD-004 Chain-ID, AD-023 kein Mainnet-Termin, AD-044 dieses Repo).
 
@@ -158,7 +158,7 @@ Beiträge folgen den Regeln in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Proprietär — All Rights Reserved, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC). Siehe [LICENSE](LICENSE).
+Apache-2.0 — Apache-2.0, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC). Siehe [LICENSE](LICENSE).
 
 ## Maintainers
 
