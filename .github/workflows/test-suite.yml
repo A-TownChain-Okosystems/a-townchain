@@ -47,7 +47,7 @@ jobs:
           exit $FAIL
       - name: Consensus-Boundary-Check (F-105, Report-Modus, SCR-0081)
         run: python3 tools/consensus_boundary_check.py
-      - name: Evidence-Bindung (SCR-0086: test_run BEI JEDEM LAUF aktualisieren + hartes Push-Gate)
+      - name: Evidence-Bindung (SCR-0086 idempotentes test_run-Update je Lauf + hartes Push-Gate)
         if: success()
         run: |
           python3 - <<'PY'
