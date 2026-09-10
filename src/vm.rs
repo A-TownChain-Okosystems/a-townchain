@@ -96,16 +96,21 @@ mod tests {
 
     #[test]
     fn loop_countdown() {
-        // Push(5); Loop ab Index 1: Dup, Push(1), Sub, JumpIfNotZero(1)
+        // Terminierender Countdown 5->0:
+        // 0 Push(5) | 1 Dup | 2 JumpIfNotZero(4) | 3 Halt | 4 Push(1) | 5 Sub | 6 Jump(1)
+        // Zaehler bleibt auf dem Stack; Dup+JumpIfNotZero testen, Push(1)+Sub dekrementieren.
+        // Vorher (SCR-0089-RCA): Loop ab Index 1 mit Dup/Push/Sub/JumpIfNotZero(1) war
+        // ENDLOS — der Zaehler persistierte nie (jede Iteration: 5-1=4, Stack unten blieb 5).
         let mut vm = Vm::new(vec![
             Op::Push(5),
             Op::Dup,
+            Op::JumpIfNotZero(4),
+            Op::Halt,
             Op::Push(1),
             Op::Sub,
-            Op::JumpIfNotZero(1),
-            Op::Halt,
+            Op::Jump(1),
         ]);
-        assert_eq!(vm.run(), Ok(vec![5]));
+        assert_eq!(vm.run(), Ok(vec![0]));
     }
 
     #[test]
