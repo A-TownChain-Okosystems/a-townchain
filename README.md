@@ -7,7 +7,7 @@ ATC SDK — Developer Platform, CLI, Package System (atcpkg).
 
 **Module:** atc-sdk, atc-cli, atc-atcpkg
 
-**Meile (AD-027):** M6 — Dienste laufen
+**Meile (AD-027):** M6 GEPLANT — Dienste NICHT belegt (Evidence incomplete, SCR-0073)
 
 **Hinweis:** Basis fuer den Rebuild; Gate-Kriterien laut LAUFFAEHIGKEITS_ROADMAP
 (a-townchain-os-docs/docs/roadmap/).
