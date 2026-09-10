@@ -61,7 +61,7 @@ Architekturentscheidungen: zentral im [DECISIONS_REGISTER](https://github.com/A-
 - **Installation:** Modul-Build je Sprache (rust); Integration via Monorepo-Workspace (a-townchain-os, sync_modules.py).
 - **Development:** Conventional Commits; Governance-Regeln aus atc-standards; Naming gemaess ATC-STD-000 §7.
 - **Testing:** Testplan bis M6 (tests/TESTPLAN.md); Governance-CI.
-- **Security:** SECURITY.md; S-Klasse S3; ATC-STD-203 Release-Gates; Emergency-Prozess ATC-STD-000 §32.
+- **Security:** SECURITY.md; S-Klasse S4 (vereinheitlicht per Audit-Empfehlung, SCR-0073); ATC-STD-203 Release-Gates; Emergency-Prozess ATC-STD-000 §32.
 - **Roadmap:** Einordnung in die Lauffaehigkeits-Roadmap M1-M8 (AD-027) und Bauhierarchie L0-L7 (AD-026).
 - **Version:** CHANGELOG.md; SemVer; Releases als ATC-REL-X.Y.Z.
 - **License:** Apache-2.0 — Apache-2.0, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC/ATS-LIC).
