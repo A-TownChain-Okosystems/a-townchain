@@ -6,7 +6,7 @@
 **Organization:** A-TownChain-Okosystems
 **Status:** `development`
 **Version:** `0.1.0`
-**License:** `Proprietary — A-TownChain-Okosystems`
+**License:** `Apache-2.0 — A-TownChain-Okosystems`
 
 <!-- atc metadata block (ATC-STD-README-001 §14) -->
 <!--
@@ -179,7 +179,7 @@ Beiträge zum Repository richten sich nach den Richtlinien in [CONTRIBUTING.md](
 
 ## License
 
-Proprietär — All Rights Reserved, A-TownChain-Okosystems. Siehe [LICENSE](LICENSE).
+Apache-2.0 — Apache-2.0, A-TownChain-Okosystems. Siehe [LICENSE](LICENSE).
 
 ## Maintainers
 
