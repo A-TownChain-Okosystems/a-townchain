@@ -6,7 +6,7 @@
 **Organization:** A-TownChain-Okosystems
 **Status:** `development`
 **Version:** `0.1.0`
-**License:** `Proprietary — A-TownChain-Okosystems`
+**License:** `Apache-2.0 — A-TownChain-Okosystems`
 **Standard:** `ATC-STD-README-001`
 **Maintainer:** A-TownChain-Okosystems (ShivaCoreDev)
 
@@ -178,7 +178,7 @@ Beiträge erfolgen gemäß [CONTRIBUTING.md](CONTRIBUTING.md) und den Governance
 
 ## License
 
-Proprietary — A-TownChain-Okosystems. All Rights Reserved (ATC-LIC). See [LICENSE](LICENSE).
+Apache-2.0 — A-TownChain-Okosystems. Apache-2.0 (ATC-LIC). See [LICENSE](LICENSE).
 
 ## Maintainers
 
