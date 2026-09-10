@@ -42,3 +42,5 @@ jobs:
               || { echo "pytest FAILED in $d"; FAIL=1; }
           done < <(find . -name requirements.txt -not -path "*/archive/*")
           exit $FAIL
+      - name: Consensus-Boundary-Check (F-105, Report-Modus, SCR-0081)
+        run: python3 tools/consensus_boundary_check.py
