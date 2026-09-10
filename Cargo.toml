@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 description = "Desktop Wallet — Key-Management, TX-Signing, DeFi"
 authors = ["Michael Wroblewski"]
-license = "ALL RIGHTS RESERVED"
+license = "Apache-2.0"
 
 [dependencies]
 egui = "0.27"

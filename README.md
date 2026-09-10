@@ -6,7 +6,7 @@
 **Organization:** A-TownChain-Okosystems
 **Status:** `development`
 **Version:** `1.0.0`
-**License:** `Proprietary — A-TownChain-Okosystems`
+**License:** `Apache-2.0 — A-TownChain-Okosystems`
 
 <!-- atc metadata block (ATC-STD-README-001 §14) -->
 <!--
@@ -189,7 +189,7 @@ Beiträge müssen den Regeln in [CONTRIBUTING.md](CONTRIBUTING.md) entsprechen.
 
 ## License
 
-Proprietary — All Rights Reserved, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Siehe [LICENSE](LICENSE).
+Apache-2.0 — Copyright Michael Wroblewski (Org-Einheitslizenz per AD-F-046). Siehe [LICENSE](LICENSE).
 
 ## Maintainers
 
