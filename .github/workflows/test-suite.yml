@@ -29,7 +29,7 @@ jobs:
               yaml.safe_load(open(f, encoding="utf-8")); n += 1
           print(f"YAML OK: {n} Dateien geparst")
           PY
-      - name: Evidence-Bindung (SCR-0086: test_run BEI JEDEM LAUF aktualisieren + hartes Push-Gate)
+      - name: Evidence-Bindung (SCR-0086 idempotentes test_run-Update je Lauf + hartes Push-Gate)
         if: success()
         run: |
           python3 - <<'PY'
