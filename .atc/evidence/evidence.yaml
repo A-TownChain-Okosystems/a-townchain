@@ -26,7 +26,7 @@ milestone_claims:
   latest_verified: null
 canonical_role:                  # SCR-0080 P0-02: Single-Owner-per-Capability
   capability: blockchain_orchestration
-  canonical: false
+  canonical: true   # Registry-SSOT: blockchain_orchestration canonical=a-townchain (SCR-0086, Deep-Dive P0-02)
 test_run:
   workflow: ATC Test Suite
   run_id: 34467229111
