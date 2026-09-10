@@ -1,5 +1,8 @@
 # ATC Mining
 
+> **ATC COMPLIANCE: R1** — auditiert am 2026-09-10 (SCR-0075; R-Level aus `.atc/repository.yaml`).
+
+
 > Mining-Stack für Rewards und Emissionen im A-TownChain-Ökosystem mit SC-018-Verzahnung und MinerWatcherGPT-Anbindung.
 
 **Project:** atc-mining
