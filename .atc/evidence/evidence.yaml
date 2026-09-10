@@ -10,11 +10,11 @@ bound_commit: 6e67ff547f0e4fe61b455cb5b595a17a8c2638d3   # vom jeweiligen CI-Lau
 maturity_class: B          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
 r_level: R1
 implementation:
-  status: skeleton        # substantial|partial|skeleton|docs_only
+  status: partial        # substantial|partial|skeleton|docs_only
   summary: "R1-Skeleton aus AD-024-Rebuild; Implementierung folgt"
 tests:
-  status: not_run       # pass_with_evidence|not_run|not_applicable
-  evidence: "Kein Code-Bestand (F-102)"
+  status: pass_with_evidence       # pass_with_evidence|not_run|not_applicable
+  evidence: "cargo test gruen via CI, test_run-Block gebunden (SCR-0083)"
 security:
   status: not_audited
 conformance:
