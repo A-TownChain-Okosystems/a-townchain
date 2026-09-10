@@ -16,8 +16,8 @@ standard: ATC-STD-MD-001
 | Repository | atc-oracle |
 | Version | 0.1.0 |
 | Status | development |
-| Build | NOT APPLICABLE (nur Docs/Scaffold, kein Code — SCR-0072) |
-| Tests | NOT RUN (keine Implementierung — SCR-0072) |
+| Build | PASS (cargo, MVP-Kern Feed-Aggregation, CI-gruen SCR-0083) |
+| Tests | PASS WITH EVIDENCE (cargo test gruen, bound_commit+test_run, SCR-0083) |
 | Security | clear |
 | Documentation | compliant |
 | Last Audit | 2026-09-07 |
