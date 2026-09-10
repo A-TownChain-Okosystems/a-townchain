@@ -16,9 +16,9 @@ standard: ATC-STD-MD-001
 | Repository | atc-algorithm |
 | Version | 0.1.0 |
 | Status | development |
-| Build | passing |
-| Tests | passing |
-| Security | clear |
+| Build | NOT APPLICABLE — keine Implementierung (src/ nur .gitkeep, SCR-0070) |
+| Tests | NOT RUN — keine Implementierung (SCR-0070, No status without evidence) |
+| Security | NOT AUDITED — keine Implementierung (SCR-0070) |
 | Documentation | compliant |
 | Last Audit | 2026-09-08 |
 
