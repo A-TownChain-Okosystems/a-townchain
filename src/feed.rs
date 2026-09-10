@@ -15,7 +15,7 @@ pub enum FeedError {
 /// Median der Quellen; Ablehnung unter min_sources (Untrusted-Quellen-Modell).
 pub fn aggregate_median(reports: &[Report], min_sources: usize) -> Result<u64, FeedError> {
     if reports.len() < min_sources {
-        return Err(FeedError { have: reports.len(), need: min_sources });
+        return Err(FeedError::TooFewSources { have: reports.len(), need: min_sources });
     }
     let mut vals: Vec<u64> = reports.iter().map(|r| r.value).collect();
     vals.sort_unstable();
@@ -40,7 +40,7 @@ mod tests {
     fn median_und_min_sources() {
         let rs = vec![r(1, 10), r(2, 20), r(3, 30)];
         assert_eq!(aggregate_median(&rs, 2), Ok(20));
-        assert_eq!(aggregate_median(&rs, 4), Err(FeedError { have: 3, need: 4 }));
+        assert_eq!(aggregate_median(&rs, 4), Err(FeedError::TooFewSources { have: 3, need: 4 }));
     }
 
     #[test]
