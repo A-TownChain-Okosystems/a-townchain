@@ -19,7 +19,7 @@ scr: SCR-0074
 | Repository | ATC Node |
 | Version | 0.1.0 |
 | Status | development |
-| Build | NOT APPLICABLE — Implementierung folgt qualitätsgetrieben (SCR-0074) |
+| Build | PASS (cargo, MVP-Kern Config+PeerTable, CI-gruen SCR-0083) |
 | Tests | NOT RUN — Testplan definiert, Suite entsteht mit Implementierung |
 | Security | NOT AUDITED — SECURITY.md-Prozess aktiv, Audit ausstehend |
 | Documentation | compliant |
