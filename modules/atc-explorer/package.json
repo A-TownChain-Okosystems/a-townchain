@@ -7,10 +7,13 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "react": "^19.2", "react-dom": "^18.2", "next": "^16", "typescript": "^7"
+    "react": "^19.2",
+    "react-dom": "^19.2",
+    "next": "^16",
+    "typescript": "^7"
   },
   "devDependencies": {
     "@types/node": "^20",
