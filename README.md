@@ -1,5 +1,8 @@
 # ATC Cross-Chain Interoperability
 
+> **ATC COMPLIANCE: R2** — auditiert am 2026-09-10 (SCR-0075; R-Level aus `.atc/repository.yaml`).
+
+
 > ATC Interop — Cross-Chain Bridges & Interoperabilität im A-TownChain-Ökosystem.
 
 **Project:** atc-interop
