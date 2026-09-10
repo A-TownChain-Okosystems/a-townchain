@@ -26,15 +26,18 @@ class BootstrapClient:
     """Verbindet neuen Node mit dem ATCNet via Bootstrap."""
 
     def __init__(self, node_id: str, host: str = "0.0.0.0", port: int = 4002,
-                 bootstrap_nodes=None):
+                 timeout: float = 5.0, bootstrap_nodes=None):
         self.node_id   = node_id
         self.host      = host
         self.port      = port
+        self.timeout   = timeout
         self.bootstraps = bootstrap_nodes or BOOTSTRAP_NODES
         self.peers: List[Peer] = []
 
-    def announce(self, timeout: float = 5.0) -> List[Peer]:
+    def announce(self, timeout: float = None) -> List[Peer]:
         """Meldet diesen Node beim Bootstrap an und holt Peer-Liste."""
+        if timeout is None:
+            timeout = self.timeout
         msg = json.dumps({
             "type":    "ANNOUNCE",
             "node_id": self.node_id,
