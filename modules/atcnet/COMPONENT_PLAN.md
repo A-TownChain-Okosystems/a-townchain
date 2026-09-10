@@ -46,7 +46,7 @@
 **Datei:** `atcnet.atc`
 **Zeilen:** 135
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct PeerInfo, struct NetMessage, init, start, stop, connect, disconnect, broadcast (+5 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -58,7 +58,7 @@
 **Datei:** `atcnet.py`
 **Zeilen:** 487
 **Typ:** .py
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** __post_init__, encode, decode, distance, is_alive, generate_node_id, __init__, _bucket_index (+27 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -70,7 +70,7 @@
 **Datei:** `bootstrap_client.atc`
 **Zeilen:** 134
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct Peer, init, announce, ping, get_peers
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -82,7 +82,7 @@
 **Datei:** `bootstrap_client.py`
 **Zeilen:** 97
 **Typ:** .py
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** __init__, announce, ping, get_peers
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -94,7 +94,7 @@
 **Datei:** `discovery.atc`
 **Zeilen:** 138
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct PeerEntry, init, announce, get_peer_list, ping, pong, add_bootstrap_node, cleanup_expired_peers (+4 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -106,7 +106,7 @@
 **Datei:** `discovery.py`
 **Zeilen:** 314
 **Typ:** .py
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** to_dict, __init__, start, stop, announce, listen, _handle, _handle_announce (+11 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -118,7 +118,7 @@
 **Datei:** `gossip.atc`
 **Zeilen:** 171
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct GossipMessage, init, register_default_handlers, compute_msg_id, is_seen, mark_seen, receive, relay (+7 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -130,7 +130,7 @@
 **Datei:** `nat_traversal.atc`
 **Zeilen:** 109
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct STUNResult, init, discover, stun_request, hole_punch, get_external_endpoint, get_nat_type, add_stun_server (+1 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -142,7 +142,7 @@
 **Datei:** `network/atc-02_liquid_state_migration_failover.atc`
 **Zeilen:** 58
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct LiquidStateMigrationFailoverMessage, struct LiquidStateMigrationFailoverState, init, on_message, verify, get_state
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -154,7 +154,7 @@
 **Datei:** `network/atc-05_quantumresistant_signatures.atc`
 **Zeilen:** 58
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct QuantumresistantSignaturesMessage, struct QuantumresistantSignaturesState, init, on_message, verify, get_state
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -166,7 +166,7 @@
 **Datei:** `network/atc-10_global_time_sync_oracles.atc`
 **Zeilen:** 58
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct GlobalTimeSyncOraclesMessage, struct GlobalTimeSyncOraclesState, init, on_message, verify, get_state
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -178,7 +178,7 @@
 **Datei:** `network/core_node_atc01.atc`
 **Zeilen:** 164
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct NodeConfig, struct PeerInfo, struct NodeState, init_node, add_peer, remove_peer, handshake, announce_block (+5 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -190,7 +190,7 @@
 **Datei:** `network/sharding_atc07.atc`
 **Zeilen:** 215
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct ShardConfig, struct Shard, struct CrossShardTx, struct ShardingState, get_shard_for_address, init_shards, route_tx, lock_cross_shard (+7 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -202,7 +202,7 @@
 **Datei:** `node.py`
 **Zeilen:** 100
 **Typ:** .py
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** __init__, connect_peer, broadcast, receive, _validate_and_add_block, get_info, __init__, add_node (+3 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -214,7 +214,7 @@
 **Datei:** `p2p_node.atc`
 **Zeilen:** 159
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct Peer, init, start, stop, connect_peer, disconnect_peer, send_message, receive_message (+5 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -226,7 +226,7 @@
 **Datei:** `p2p_propagation.atc`
 **Zeilen:** 215
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct PeerMessage, init, add_peer, remove_peer, broadcast, receive, send_to_peer, cleanup_seen_messages (+4 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -238,7 +238,7 @@
 **Datei:** `p2p_propagation.py`
 **Zeilen:** 381
 **Typ:** .py
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** to_bytes, from_bytes, __init__, register_handler, register_default_handlers, start, stop, _listener_loop (+13 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -250,7 +250,7 @@
 **Datei:** `service_discovery.atc`
 **Zeilen:** 168
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct ServiceEndpoint, init, register_defaults, register, deregister, check_health, run_health_cycle, get_healthy (+4 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT

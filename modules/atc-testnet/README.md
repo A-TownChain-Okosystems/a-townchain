@@ -30,4 +30,4 @@ atc-testnet/
 - [`A-TownChain-Okosystems/atc-blockchain`](https://github.com/A-TownChain-Okosystems/a-townchain-os/tree/main/src/modules/atc-blockchain)
 
 ## Copyright
-Copyright © Michael Wroblewski / A-TownChain-Okosystems. All Rights Reserved.
+Copyright © Michael Wroblewski / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
