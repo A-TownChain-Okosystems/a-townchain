@@ -1,0 +1,51 @@
+name: ATC Test Suite
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  cargo-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo test ueber alle Manifeste (SCR-0083)
+        run: |
+          set +e
+          FAIL=0
+          while IFS= read -r f; do
+            d="$(dirname "$f")"
+            echo "=== cargo test in $d"
+            if ! (cd "$d" && cargo test --quiet); then
+              echo "cargo test FAILED in $d"; FAIL=1
+            fi
+          done < <(find . -name Cargo.toml -not -path "*/archive/*" -not -path "*/node_modules/*")
+          exit $FAIL
+      - name: Evidence-Bindung (SCR-0081, bound_commit + test_run)
+        if: success()
+        run: |
+          python3 - <<'PY'
+          import os, datetime
+          sha = os.environ["GITHUB_SHA"]
+          rid = os.environ["GITHUB_RUN_ID"]
+          p = ".atc/evidence/evidence.yaml"
+          t = open(p, encoding="utf-8").read()
+          t = t.replace("bound_commit: pending", "bound_commit: " + sha)
+          if "test_run:" not in t:
+              t = t.rstrip() + "\n"
+              t += "test_run:\n"
+              t += "  workflow: " + os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite") + "\n"
+              t += "  run_id: " + rid + "\n"
+              t += "  commit: " + sha + "\n"
+              t += "  timestamp: " + datetime.datetime.now(datetime.timezone.utc).isoformat() + "\n"
+              t += "  result: PASS\n"
+              t += "  runner: github-actions\n"
+              open(p, "w", encoding="utf-8").write(t)
+          PY
+          git config user.name "Aurora-Bot"
+          git config user.email "aurora@base44.ai"
+          git add .atc/evidence/evidence.yaml
+          git commit -m "chore(evidence): bound_commit auto + test_run PASS (SCR-0081) [skip ci]" || echo "nichts zu committen"
+          git push || echo "EVIDENCE_PUSH_BLOCKED"
