@@ -3,7 +3,7 @@
 
 # Core
 pycryptodome>=3.19
-requests>=2.31
+requests>=2.34.2
 pyyaml>=6.0.3
 
 # Consensus & P2P
