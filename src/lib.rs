@@ -3,5 +3,6 @@
 //! Abhaengigkeit: Konsens KANONISCH ueber atc-algorithm — keine eigene
 //! Konsens-Implementierung in atc-node (F-105-Regel).
 
+pub mod bootstrap;
 pub mod config;
 pub mod peers;

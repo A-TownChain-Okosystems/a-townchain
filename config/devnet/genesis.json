@@ -1,0 +1,7 @@
+{
+  "chain_id": 658467,
+  "chain_name": "A-TownChain Devnet",
+  "genesis_height": 0,
+  "initial_peers": ["atc-node-1", "atc-node-2"],
+  "state_root": "0000000000000000000000000000000000000000000000000000000000000000"
+}

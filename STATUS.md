@@ -32,3 +32,5 @@ im Org-Compliance-Scan SCR-0074 nachgezogen, weil das Pflichtartefakt STATUS.md
 fehlte. Nach dem Prinzip **No status without evidence** werden keine PASS-Zustände
 behauptet; Build/Test-Evidence entsteht erst mit der Implementierung und wird
 dann über CI-Records referenziert.
+
+- 11.09.2026 (SCR-0106): Devnet-Bootstrap Stufe 1 — Genesis (config/devnet/genesis.json + src/bootstrap.rs) mit Validierung, deterministischem FNV-1a-Boot-Hash (MVP-Platzhalter, nicht kryptographisch) und 2-Node-Peer-Join-Smoke (6 Unit-Tests, CI-verifiziert). KEIN echtes Netzwerk, KEIN RPC, KEINE Blockproduktion — Devnet-Gate Stufe 2 offen (F-139).
