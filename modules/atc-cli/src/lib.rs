@@ -7,3 +7,4 @@
 pub mod commands;
 pub mod client;
 pub mod format;
+pub mod rpc_client;
