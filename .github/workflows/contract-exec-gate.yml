@@ -53,4 +53,5 @@ jobs:
           git config user.email "aurora@base44.ai"
           git add .atc/evidence
           git commit -m "chore(evidence): EXEC-Gate-Receipt + bound_commit (SCR-0104, ATC-CONTRACT-EXEC-001) [skip ci]" || echo "nichts zu committen"
+          git pull --rebase
           git push
