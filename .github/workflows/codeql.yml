@@ -16,5 +16,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: github/codeql-action/init@v3
         with:
-          languages: javascript,python
+          languages: python,rust
+      - name: Build aller Cargo-Manifeste
+        run: |
+          while IFS= read -r f; do
+            (cd "$(dirname "$f")" && cargo build --quiet)
+          done < <(find . -name Cargo.toml -not -path "*/archive/*")
       - uses: github/codeql-action/analyze@v3
