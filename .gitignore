@@ -7,3 +7,8 @@ dist/
 build/
 *.egg-info/
 .venv/
+
+# Virtual environments — never commit
+.venv*
+venv/
+.venv-t/
