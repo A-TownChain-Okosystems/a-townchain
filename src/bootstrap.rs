@@ -3,13 +3,13 @@
 //! Validierung, deterministischem Boot-Hash und Peer-Join ueber die
 //! PeerTable. Ehrlichkeit: kein echtes Netzwerk-Socket, kein RPC, keine
 //! Kryptographie (FNV-1a 64-bit als dokumentierter MVP-Platzhalter);
-//! config/devnet/genesis.json ist das erklaerte Devnet-Artefakt, das
-//! Rust-Modell spiegelt es (File-Bindung via serde folgt).
+//! config/devnet/genesis.json ist das erklaerte Devnet-Artefakt; die
+//! serde-File-Bindung (SCR-0114) erzwingt Code-Genesis == File-Genesis in CI.
 
 use crate::config::CHAIN_ID;
 use crate::peers::PeerTable;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
 pub struct Genesis {
     pub chain_id: u64,
     pub chain_name: String,
@@ -28,6 +28,13 @@ impl Genesis {
             initial_peers: vec!["atc-node-1".to_string(), "atc-node-2".to_string()],
             state_root: "0".repeat(64),
         }
+    }
+
+    /// Laedt die Genesis aus einer Datei (serde-Bindung, SCR-0114).
+    /// Ehrlichkeit: keine Schema-Pruefung ueber die Feldtypen hinaus.
+    pub fn from_file(path: &str) -> Result<Self, String> {
+        let inhalt = std::fs::read_to_string(path).map_err(|e| format!("lesen {}: {}", path, e))?;
+        serde_json::from_str(&inhalt).map_err(|e| format!("parsen {}: {}", path, e))
     }
 
     pub fn validate(&self) -> Result<(), String> {
@@ -87,6 +94,14 @@ fn fnv1a(data: &str) -> u64 {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn genesis_file_bindung_ist_erzwungen() {
+        let g = Genesis::from_file("config/devnet/genesis.json").expect("genesis.json lesbar");
+        assert_eq!(g, Genesis::devnet(), "genesis.json und Code-Genesis duerfen nicht driften");
+        g.validate().expect("File-Genesis valide");
+        assert_eq!(g.boot_hash(), Genesis::devnet().boot_hash());
+    }
+
     use super::*;
 
     #[test]
