@@ -53,5 +53,5 @@ jobs:
           git config user.email "aurora@base44.ai"
           git add .atc/evidence
           git commit -m "chore(evidence): EXEC-Gate-Receipt + bound_commit (SCR-0104, ATC-CONTRACT-EXEC-001) [skip ci]" || echo "nichts zu committen"
-          git pull --rebase
-          git push
+          git pull --rebase || (git rebase --abort && echo "Evidence-Rebase-Konflikt: Receipt bleibt als Artifact gesichert" && exit 0)
+          git push || echo "Evidence-Push-Rennen: Receipt bleibt als Artifact gesichert"
