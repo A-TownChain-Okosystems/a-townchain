@@ -1,0 +1,6 @@
+# Repo-lokale Policy-Bindung (ATC-AI-GOV-POLICY-001, Control-Plane-Regel SCR-0063/0072)
+# Vererbt vollstaendig vom .github-Hub (ai/policies.yaml): AP-001..016 + ATC-POL-001..010 (MUST/SHOULD/MAY).
+schema_version: "1.0"
+repository: atc-wallet
+binding: "inherit: .github/ai/policies.yaml (Org-SSOT)"
+local_policies: []
