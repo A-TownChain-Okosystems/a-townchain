@@ -34,3 +34,5 @@ behauptet; Build/Test-Evidence entsteht erst mit der Implementierung und wird
 dann über CI-Records referenziert.
 
 - 11.09.2026 (SCR-0106): Devnet-Bootstrap Stufe 1 — Genesis (config/devnet/genesis.json + src/bootstrap.rs) mit Validierung, deterministischem FNV-1a-Boot-Hash (MVP-Platzhalter, nicht kryptographisch) und 2-Node-Peer-Join-Smoke (6 Unit-Tests, CI-verifiziert). KEIN echtes Netzwerk, KEIN RPC, KEINE Blockproduktion — Devnet-Gate Stufe 2 offen (F-139).
+
+- 11.09.2026 (SCR-0108): Devnet-RPC Stufe 2 — src/rpc.rs mit DevnetRpc (Chain-ID/Boot-Hash/Peer-Count-Schnappschuss) und Zeilenprotokoll ueber echtes TCP (CHAIN_ID/BOOT_HASH/PEERS/PING, ein Request pro Verbindung); 2 Unit-Tests inkl. echtem Socket-Roundtrip (CI-verifiziert). Ehrlich: KEIN JSON-RPC, KEINE Auth/TLS (Devnet-only), Gossip/Blockproduktion Stufe 3 offen (F-140).
