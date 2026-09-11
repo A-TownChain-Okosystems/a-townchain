@@ -109,3 +109,38 @@ mod tests {
         assert_eq!(resp.trim(), "658467");
     }
 }
+
+// --- Stufe 3 (SCR-0109): JSON-RPC-2.0-Subset ueber denselben Socket ---
+// Ehrlichkeit: bewusst MINIMALE Extraktion (feste Feldformate "method"/"id"),
+// KEIN voller JSON-Parser, KEINE Batch-Requests, KEINE Notifications.
+
+impl DevnetRpc {
+    /// JSON-RPC-2.0-Teilmenge: chain_id, boot_hash, peers, ping.
+    /// Antwort deterministisch, Fehlercode -32601 fuer unbekannte Methoden.
+    pub fn answer_json(&self, req: &str) -> String {
+        let id = extract_between(req, "\"id\":", '}')
+            .and_then(|v| v.trim().parse::<u64>().ok())
+            .unwrap_or(0);
+        let method = extract_between(req, "\"method\":\"", '"').unwrap_or("");
+        let result = match method {
+            "chain_id" => self.chain_id.to_string(),
+            "boot_hash" => self.boot_hash.to_string(),
+            "peers" => self.peer_count.to_string(),
+            "ping" => "pong".to_string(),
+            other => {
+                return format!(
+                    "{{\"jsonrpc\":\"2.0\",\"id\":{},\"error\":{{\"code\":-32601,\"message\":\"method not found: {}\"}}}}",
+                    id, other
+                )
+            }
+        };
+        format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"result\":\"{}\"}}", id, result)
+    }
+}
+
+fn extract_between<'a>(s: &'a str, start: &str, end: char) -> Option<&'a str> {
+    let i = s.find(start)? + start.len();
+    let rest = &s[i..];
+    let j = rest.find(end)?;
+    Some(&rest[..j])
+}
