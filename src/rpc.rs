@@ -53,8 +53,14 @@ fn handle(stream: TcpStream, state: &DevnetRpc) -> std::io::Result<()> {
     let mut reader = BufReader::new(stream.try_clone()?);
     let mut line = String::new();
     reader.read_line(&mut line)?;
+    let trimmed = line.trim();
+    let resp = if trimmed.starts_with('{') {
+        state.answer_json(&line)
+    } else {
+        state.answer(&line)
+    };
     let mut w = stream;
-    w.write_all(state.answer(&line).as_bytes())?;
+    w.write_all(resp.as_bytes())?;
     w.write_all(b"\n")?;
     Ok(())
 }
@@ -107,6 +113,50 @@ mod tests {
         let mut resp = String::new();
         BufReader::new(c).read_line(&mut resp).expect("keine Antwort");
         assert_eq!(resp.trim(), "658467");
+    }
+
+    #[test]
+    fn jsonrpc_antworten() {
+        let rpc = test_state();
+        let r = rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"chain_id\",\"id\":7}");
+        assert!(r.contains("\"id\":7"), "{}", r);
+        assert!(r.contains("\"result\":\"658467\""), "{}", r);
+        assert!(rpc.answer_json("{\"method\":\"ping\",\"id\":1}").contains("\"result\":\"pong\""));
+    }
+
+    #[test]
+    fn jsonrpc_unbekannte_methode() {
+        let rpc = test_state();
+        let r = rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"gib_nichts\",\"id\":3}");
+        assert!(r.contains("-32601"), "{}", r);
+        assert!(r.contains("\"id\":3"), "{}", r);
+    }
+
+    #[test]
+    fn jsonrpc_tcp_roundtrip() {
+        let rpc = test_state();
+        let listener = TcpListener::bind("127.0.0.1:0").expect("bind fehlgeschlagen");
+        let addr = listener.local_addr().expect("keine lokale Adresse");
+        std::thread::spawn(move || {
+            for stream in listener.incoming() {
+                if let Ok(stream) = stream {
+                    let st = DevnetRpc {
+                        chain_id: rpc.chain_id,
+                        boot_hash: rpc.boot_hash,
+                        peer_count: rpc.peer_count,
+                    };
+                    if handle(stream, &st).is_err() {
+                        break;
+                    }
+                }
+            }
+        });
+        let mut c = TcpStream::connect(addr).expect("connect fehlgeschlagen");
+        c.write_all(b"{\"jsonrpc\":\"2.0\",\"method\":\"chain_id\",\"id\":42}\n").expect("send fehlgeschlagen");
+        let mut resp = String::new();
+        BufReader::new(c).read_line(&mut resp).expect("keine Antwort");
+        assert!(resp.contains("\"result\":\"658467\""), "{}", resp);
+        assert!(resp.contains("\"id\":42"), "{}", resp);
     }
 }
 
