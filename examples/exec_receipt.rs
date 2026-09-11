@@ -55,7 +55,7 @@ fn main() {
         meta.get("source_sha256").cloned().unwrap_or_default(),
         ops_count, result, expected, status
     );
-    std::fs::write(&out_path, receipt).unwrap_or_else(|e| panic!("Receipt nicht schreibbar {}: {}", out_path, e));
+    std::fs::write(&out_path, receipt.as_bytes()).unwrap_or_else(|e| panic!("Receipt nicht schreibbar {}: {}", out_path, e));
     print!("{}", receipt);
     if result != expected {
         std::process::exit(1);
