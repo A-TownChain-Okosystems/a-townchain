@@ -1,0 +1,10 @@
+# Repo-lokale Capability-Bindung (ATC-AI-GOV-CAPABILITY-001, Control-Plane-Regel SCR-0063/0072)
+# Faehigkeiten: explizit je Agent (nie rollen-abgeleitet); P0-Capabilities nur via Owner-Gate.
+schema_version: "1.0"
+repository: a-townchain
+ssot_definition: ".github-Hub ai/capabilities.yaml (Org-Ebene)"
+agents:
+  ATC-AI-ARCH-001:
+    capabilities: [READ_REPOSITORY, ANALYZE_CODE, WRITE_CODE, MODIFY_DOCUMENTATION, RUN_TESTS, CREATE_ISSUES, CREATE_PULL_REQUESTS]
+  ATC-AI-GOV-001:
+    capabilities: [READ_REPOSITORY, PERFORM_AUDITS, CREATE_ISSUES]
