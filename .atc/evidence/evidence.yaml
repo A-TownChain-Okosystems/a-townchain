@@ -6,7 +6,7 @@ schema_version: "1.0.0"
 repository: a-townchain
 generated: "2026-09-10"
 generated_by: "SCR-0080 Enforcement-Welle (Aurora, Owner-P0-Definition 10.09. 12:21)"
-bound_commit: edbffbe6a547d4e07c639e3a28a52795ba9dd793
+bound_commit: a8fdd71a64c2c168c5d811d3d724d89ff2544836
 maturity_class: A          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
 r_level: R4
 implementation:
@@ -29,8 +29,8 @@ canonical_role:                  # SCR-0080 P0-02: Single-Owner-per-Capability
   canonical: true   # Registry-SSOT: blockchain_orchestration canonical=a-townchain (SCR-0086, Deep-Dive P0-02)
 test_run:
   workflow: ATC Test Suite
-  run_id: 34721486027
-  commit: edbffbe6a547d4e07c639e3a28a52795ba9dd793
-  timestamp: 2026-09-12T21:59:42.307625+00:00
+  run_id: 34724453652
+  commit: a8fdd71a64c2c168c5d811d3d724d89ff2544836
+  timestamp: 2026-09-12T23:05:00.138167+00:00
   result: PASS
   runner: github-actions
