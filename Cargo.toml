@@ -5,4 +5,12 @@ edition = "2021"
 license = "Apache-2.0"
 description = "ATC-VM — ATCLang-Bytecode-Stack-Maschine (MVP)"
 
+[[bin]]
+name = "atc-vm-runner"
+path = "src/main.rs"
+
+[lib]
+name = "atc_vm"
+path = "src/lib.rs"
+
 [dependencies]

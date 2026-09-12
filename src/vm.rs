@@ -2,6 +2,10 @@
 //! Stack-Maschine mit Stack-Underflow-Schutz und Sprung-Validierung.
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+// Jump/JumpIfNotZero: Teil der Bytecode-ISA; konstruiert vom kuenftigen
+// Bytecode-Loader (vollstaendiger .atc-Compile-Pfad). Der .ops-Runner nutzt
+// bewusst nur das EXEC-GATE-Subset (fail-closed, siehe ops.rs-Tests).
+#[allow(dead_code)]
 pub enum Op {
     Push(u64),
     Add,
