@@ -1,6 +1,6 @@
 # ATC A-TownChain
 
-> **ATC COMPLIANCE: R4 · Standard ATC-STD-201 v1.0.0 · GATE: AUDITED (09.09.2026, Score 94/100) · README: ATC-STD-README-001 CONFORM**
+> **ATC COMPLIANCE: R4 · Standard ATC-STD-201 v1.0.1 · GATE: AUDITED (09.09.2026, Score 94/100) · README: ATC-STD-README-001 CONFORM**
 
 > A-TownChain Blockchain L3 — Chain-ID 658467, PoW+PoS+PoH, ZKP, Governance, DNS, Testnet (AD-012: Kernel-System-Service).
 
@@ -185,12 +185,12 @@ Sicherheitsrelevante Hinweise:
 
 | Standard | Version | Compliance |
 |---|---:|---|
-| ATC-STD-000 | 1.2.0 | ✅ |
+| ATC-STD-000 | 1.3.0 | ✅ |
 | ATC-STD-README-001 | 1.0.0 | ✅ |
 | ATC-STD-MD-001 | 1.0.0 | ✅ |
 | ATC-STD-201 | 1.0.1 | ✅ |
-| ATC-STD-202 | 1.0.0 | ✅ |
-| ATC-STD-203 | 1.0.0 | ✅ |
+| ATC-STD-202 | 1.2.0 | ✅ |
+| ATC-STD-203 | 1.0.1 | ✅ |
 
 ---
 
