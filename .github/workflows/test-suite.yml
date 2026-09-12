@@ -27,29 +27,60 @@ jobs:
         if: success()
         run: |
           python3 - <<'PY'
-          import os, datetime, re
-          sha = os.environ["GITHUB_SHA"]
-          rid = os.environ["GITHUB_RUN_ID"]
-          wf  = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
-          ts  = datetime.datetime.now(datetime.timezone.utc).isoformat()
-          p = ".atc/evidence/evidence.yaml"
-          t = open(p, encoding="utf-8").read()
-          t = re.sub(r"bound_commit: [^\n]*", "bound_commit: " + sha, t)
-          block = ("test_run:\n"
-                   "  workflow: " + wf + "\n"
-                   "  run_id: " + rid + "\n"
-                   "  commit: " + sha + "\n"
-                   "  timestamp: " + ts + "\n"
-                   "  result: PASS\n"
-                   "  runner: github-actions\n")
-          if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", t):
-              t = re.sub(r"(?m)^test_run:\n(?:  [^\n]*\n)+", block, t)
-          else:
-              t = t.rstrip() + "\n" + block
-          open(p, "w", encoding="utf-8").write(t)
+          import base64, datetime, json, os, re, time, urllib.request, urllib.error
+          REPO = os.environ["GITHUB_REPOSITORY"]
+          sha  = os.environ["GITHUB_SHA"]
+          rid  = os.environ["GITHUB_RUN_ID"]
+          wf   = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
+          ts   = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          p    = ".atc/evidence/evidence.yaml"
+          tok  = os.environ["GITHUB_TOKEN"]
+          def api(method, path, data=None):
+              req = urllib.request.Request("https://api.github.com" + path,
+                  data=json.dumps(data).encode() if data is not None else None, method=method,
+                  headers={"Authorization": "Bearer " + tok,
+                           "Accept": "application/vnd.github+json"})
+              try:
+                  with urllib.request.urlopen(req) as r:
+                      body = r.read()
+                      return r.status, json.loads(body) if body else None
+              except urllib.error.HTTPError as e:
+                  return e.code, json.loads(e.read() or b"{}")
+          def update(content):
+              t = content
+              t = re.sub(r"bound_commit: [^\n]*", "bound_commit: " + sha, t)
+              block = ("test_run:\n"
+                       "  workflow: " + wf + "\n"
+                       "  run_id: " + rid + "\n"
+                       "  commit: " + sha + "\n"
+                       "  timestamp: " + ts + "\n"
+                       "  result: PASS\n"
+                       "  runner: github-actions\n")
+              if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", t):
+                  t = re.sub(r"(?m)^test_run:\n(?:  [^\n]*\n)+", block, t)
+              else:
+                  t = t.rstrip() + "\n" + block
+              return t
+          for attempt in range(1, 4):
+              st, cur = api("GET", "/repos/%s/contents/%s?ref=main" % (REPO, p))
+              if st != 200:
+                  print("Evidence-Datei nicht lesbar: HTTP %s" % st)
+                  raise SystemExit(1)
+              t = update(base64.b64decode(cur["content"]).decode())
+              st, res = api("PUT", "/repos/%s/contents/%s" % (REPO, p), {
+                  "message": "chore(evidence): bound_commit + test_run aktualisiert (SCR-0086) [skip ci]",
+                  "content": base64.b64encode(t.encode()).decode(),
+                  "sha": cur["sha"],
+                  "committer": {"name": "Aurora-Bot", "email": "aurora@base44.ai"}})
+              if st in (200, 201):
+                  print("Evidence gebunden: Commit %s (Versuch %d)" % (res["commit"]["sha"][:10], attempt))
+                  raise SystemExit(0)
+              if st == 409:
+                  print("Race auf main erkannt (409) — neuer Versuch mit frischem Stand")
+                  time.sleep(2)
+                  continue
+              print("Evidence-Bindung fehlgeschlagen: HTTP %s %s" % (st, res.get("message", "")))
+              raise SystemExit(1)
+          print("Evidence-Bindung nach 3 Versuchen abgebrochen (main bewegt sich persistent)")
+          raise SystemExit(1)
           PY
-          git config user.name "Aurora-Bot"
-          git config user.email "aurora@base44.ai"
-          git add .atc/evidence/evidence.yaml
-          git commit -m "chore(evidence): bound_commit + test_run aktualisiert (SCR-0086) [skip ci]" || echo "nichts zu committen"
-          git push
