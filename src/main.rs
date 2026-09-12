@@ -29,11 +29,24 @@ fn main() -> std::io::Result<()> {
         peers.len(),
         addr
     );
-    let kette = atc_node::chain::Chain::from_genesis(&genesis);
-    eprintln!(
-        "Devnet-Kette: Hoehe {} | Best-Hash {} | Blockmodell SCR-0117 (kein Konsens, Devnet-MVP)",
-        kette.height(),
-        kette.best_hash()
-    );
+    let kette = std::sync::Arc::new(std::sync::Mutex::new(atc_node::chain::Chain::from_genesis(&genesis)));
+    {
+        let k = kette.lock().expect("Chain-Lock vergiftet");
+        eprintln!(
+            "Devnet-Kette: Hoehe {} | Best-Hash {} | Blockmodell SCR-0117/0118 (kein Konsens, Devnet-MVP)",
+            k.height(),
+            k.best_hash()
+        );
+    }
+    let gossip_addr = std::env::args()
+        .nth(2)
+        .unwrap_or_else(|| "127.0.0.1:39472".to_string());
+    eprintln!("Gossip-Dienst (Pull-Sync, SCR-0118): {}", gossip_addr);
+    let gossip_kette = std::sync::Arc::clone(&kette);
+    std::thread::spawn(move || {
+        if let Err(e) = atc_node::gossip::serve_gossip(&gossip_addr, gossip_kette) {
+            eprintln!("Gossip-Dienst beendet: {}", e);
+        }
+    });
     serve(&addr, DevnetRpc::from_state(&genesis, &peers))
 }

@@ -72,3 +72,33 @@ fn zwei_ketten_gleiche_genesis_gleiche_bloecke() {
     assert!(k1.verify().is_ok());
     assert!(k2.verify().is_ok());
 }
+
+#[test]
+fn zwei_nodes_syncen_kette_ueber_gossip() {
+    let g = Genesis::devnet();
+    let mut a = atc_node::chain::Chain::from_genesis(&g);
+    for p in ["tx-1", "tx-2", "tx-3", "tx-4"] {
+        a.produce(p).expect("produce a");
+    }
+    let ziel = a.best_hash();
+    let shared = std::sync::Arc::new(std::sync::Mutex::new(a));
+    let handler = std::sync::Arc::clone(&shared);
+    let probe = std::net::TcpListener::bind("127.0.0.1:0").expect("probe fehlgeschlagen");
+    let port = probe.local_addr().expect("keine Adresse").port();
+    drop(probe);
+    std::thread::spawn(move || {
+        let _ = atc_node::gossip::serve_gossip(&format!("127.0.0.1:{}", port), handler);
+    });
+    for _ in 0..50 {
+        if TcpStream::connect(("127.0.0.1", port)).is_ok() {
+            break;
+        }
+        std::thread::sleep(Duration::from_millis(100));
+    }
+    let mut b = atc_node::chain::Chain::from_genesis(&g);
+    let rep = atc_node::gossip::sync_pull(&mut b, &format!("127.0.0.1:{}", port)).expect("sync fehlgeschlagen");
+    assert!(rep.adopted, "Adoption erwartet: {}", rep.grund);
+    assert_eq!(b.height(), 4);
+    assert_eq!(b.best_hash(), ziel, "beide Nodes muessen dieselbe Kettenspitze haben");
+    assert!(b.verify().is_ok());
+}

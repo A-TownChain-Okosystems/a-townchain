@@ -63,6 +63,9 @@ impl Chain {
         if self.blocks.len() >= 64 {
             return Err("Devnet-MVP: Kette auf 64 Bloecke begrenzt".to_string());
         }
+        if payload.contains('|') || payload.contains(';') {
+            return Err("Devnet-MVP: '|' und ';' in Payloads verboten (Gossip-Wire-Format, SCR-0118)".to_string());
+        }
         let (height, prev_hash) = {
             let best = self.best();
             (best.height + 1, best.hash)
@@ -102,6 +105,27 @@ impl Chain {
             }
         }
         Ok(())
+    }
+
+    /// Kompletter Blockzugriff (read-only) fuer Gossip-Sync (SCR-0118).
+    pub fn blocks(&self) -> &[Block] {
+        &self.blocks
+    }
+
+    /// Bloecke ab Index `from` (read-only) fuer Gossip-Wire (SCR-0118).
+    pub fn blocks_from(&self, from: usize) -> &[Block] {
+        &self.blocks[from.min(self.blocks.len())..]
+    }
+
+    /// Baut eine Kette aus einer empfangenen Blockfolge — NUR nach voller
+    /// Verifikation (Hashes, Hoehen, Verkettung). Manipulation schlaegt fehl.
+    pub fn from_blocks(blocks: Vec<Block>) -> Result<Chain, String> {
+        if blocks.is_empty() {
+            return Err("Kandidat-Kette leer".to_string());
+        }
+        let c = Chain { blocks };
+        c.verify()?;
+        Ok(c)
     }
 }
 
