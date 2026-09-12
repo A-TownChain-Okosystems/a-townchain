@@ -8,6 +8,7 @@
 
 use crate::config::CHAIN_ID;
 use crate::peers::PeerTable;
+use atc_algorithm::hash::atc_hash;
 
 #[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
 pub struct Genesis {
@@ -54,9 +55,10 @@ impl Genesis {
     }
 
     /// Deterministischer Boot-Hash ueber kanonische Feldverkettung.
-    /// MVP-Platzhalter FNV-1a (nicht kryptographisch), dokumentiert.
+    /// ATC-HASH-001 TownHash-256, 64-Bit-Traversal (SCR-0120).
+    /// Ehrlich: nicht kryptoanalysiert; Traversal verkuerzt den Digest.
     pub fn boot_hash(&self) -> u64 {
-        fnv1a(&format!(
+        townhash_u64(&format!(
             "{}|{}|{}|{}|{}",
             self.chain_id,
             self.chain_name,
@@ -83,13 +85,15 @@ pub fn devnet_boot(genesis: &Genesis, peers: &[(u64, String)]) -> Result<(PeerTa
     Ok((table, genesis.boot_hash()))
 }
 
-pub(crate) fn fnv1a(data: &str) -> u64 {
-    let mut h: u64 = 0xcbf29ce484222325;
-    for b in data.as_bytes() {
-        h ^= u64::from(*b);
-        h = h.wrapping_mul(0x100000001b3);
-    }
-    h
+pub(crate) fn townhash_u64(data: &str) -> u64 {
+    // SCR-0120: ATC-HASH-001 (TownHash-256) aus atc-algorithm, rev-gepinnt.
+    // Ehrlichkeit: 64-Bit-Traversal des 32-Byte-Digests (Devnet-Feldbreite);
+    /// ATC-HASH-001 ist nicht kryptoanalysiert — Mainnet-Gate bleibt F-067.
+    let digest = atc_hash(data.as_bytes());
+    u64::from_le_bytes([
+        digest[0], digest[1], digest[2], digest[3],
+        digest[4], digest[5], digest[6], digest[7],
+    ])
 }
 
 #[cfg(test)]

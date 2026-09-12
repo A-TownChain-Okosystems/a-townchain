@@ -6,7 +6,8 @@
 //! die Kandidaten-Kette VOLL verifiziert (Hashes, Hoehen, Verkettung) und
 //! die Genesis-Bindung geprueft.
 //! Ehrlichkeit: NUR Pull (kein Push an Peers), keine Periodik, keine
-//! Signaturen, keine Auth/TLS, Devnet-Platzhalter-Hashes (FNV-1a).
+//! Signaturen, keine Auth/TLS, Devnet-Feldbreite: 64-Bit-Traversal von
+//! ATC-HASH-001 TownHash-256 (SCR-0120), nicht kryptoanalysiert.
 
 use crate::chain::{Block, Chain};
 use std::io::{BufRead, BufReader, Write};

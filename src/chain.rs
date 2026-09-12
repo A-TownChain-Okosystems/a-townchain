@@ -2,10 +2,10 @@
 //! Blockmodell + deterministische Devnet-Blockproduktion (SCR-0117, F-139).
 //! Ehrlichkeit: KEIN Konsens (Konsens bleibt kanonisch ueber atc-algorithm,
 //! F-067 offen — dieses Modul ist kein Konsens-Definer und keine Finalitaet),
-//! keine Transaktionssemantik, FNV-1a 64-bit als dokumentierter
-//! nicht-kryptographischer MVP-Platzhalter, kein Merkle-Baum, Devnet-Cap 64.
+//! keine Transaktionssemantik, ATC-HASH-001 TownHash-256 (64-Bit-Traversal,
+//! SCR-0120, nicht kryptoanalysiert, kein Merkle-Baum, Devnet-Cap 64.
 
-use crate::bootstrap::{fnv1a, Genesis};
+use crate::bootstrap::{Genesis, townhash_u64};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Block {
@@ -17,7 +17,7 @@ pub struct Block {
 
 impl Block {
     fn compute_hash(height: u64, prev_hash: u64, payload: &str) -> u64 {
-        fnv1a(&format!("{}|{}|{}", height, prev_hash, payload))
+        townhash_u64(&format!("{}|{}|{}", height, prev_hash, payload))
     }
 
     /// Genesis-Block: Hoehe 0, prev_hash = Genesis-Boot-Hash (SCR-0106/0114)
