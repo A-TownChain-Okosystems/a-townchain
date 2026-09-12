@@ -4,3 +4,4 @@
 //! per VM-Spezifikationen. Kein Produktionstriebwerk.
 
 pub mod vm;
+pub mod ops;
