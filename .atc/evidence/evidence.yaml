@@ -6,7 +6,7 @@ schema_version: "1.0.0"
 repository: atc-zkp
 generated: "2026-09-10"
 generated_by: "SCR-0080 Enforcement-Welle (Aurora, Owner-P0-Definition 10.09. 12:21)"
-bound_commit: 4bf650bf4ffd0afd7f65e6afa49a62f6bcf76e9e
+bound_commit: 31ffd08587bb9853785bc619b0ffe751b3e3b23e
 maturity_class: B          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
 r_level: R1
 implementation:
@@ -29,8 +29,8 @@ canonical_role:                  # SCR-0080 P0-02: Single-Owner-per-Capability
   canonical: true
 test_run:
   workflow: ATC Test Suite (Skeleton-Smoke)
-  run_id: 34686398671
-  commit: 4bf650bf4ffd0afd7f65e6afa49a62f6bcf76e9e
-  timestamp: 2026-09-12T09:38:59.132881+00:00
+  run_id: 34721520383
+  commit: 31ffd08587bb9853785bc619b0ffe751b3e3b23e
+  timestamp: 2026-09-12T22:00:42.470538+00:00
   result: PASS
   runner: github-actions
