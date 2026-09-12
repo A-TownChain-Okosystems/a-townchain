@@ -11,6 +11,7 @@ pub enum Op {
     Add,
     Sub,
     Mul,
+    Div,
     Dup,
     Swap,
     Jump(usize),
@@ -24,6 +25,7 @@ pub enum Op {
 pub enum VmError {
     StackUnderflow,
     InvalidJump(usize),
+    DivisionByZero,
 }
 
 pub struct Vm {
@@ -55,6 +57,15 @@ impl Vm {
                 Op::Add => self.binop(|a, b| a.wrapping_add(b))?,
                 Op::Sub => self.binop(|a, b| a.wrapping_sub(b))?,
                 Op::Mul => self.binop(|a, b| a.wrapping_mul(b))?,
+                Op::Div => {
+                    // Ganzzahlige u64-Division, fail-closed gegen Div/0:
+                    // checked_div statt stillschweigender Panic (Owner-Regel:
+                    // explizite Fehlerbehandlung im konsens-kritischen Pfad).
+                    let b = self.stack.pop().ok_or(VmError::StackUnderflow)?;
+                    let a = self.stack.pop().ok_or(VmError::StackUnderflow)?;
+                    let q = a.checked_div(b).ok_or(VmError::DivisionByZero)?;
+                    self.stack.push(q);
+                }
                 Op::Eq => self.binop(|a, b| (a == b) as u64)?,
                 Op::Lt => self.binop(|a, b| (a < b) as u64)?,
                 Op::Dup => {

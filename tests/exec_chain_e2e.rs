@@ -40,3 +40,20 @@ fn fail_closed_on_wrong_expectation() {
     let result = stack.last().copied().unwrap_or(0);
     assert_ne!(result, 999, "Vektor-Abweichung muss auffallen");
 }
+
+#[test]
+fn div_executes_deterministically() {
+    // Governance-Quorum-Formel: 21_000_000 * 10 / 100 = 2_100_000 (10 % von 21M)
+    let prog = atc_vm::ops::parse_ops("Push 21000000\nPush 10\nMul\nPush 100\nDiv\nHalt\n")
+        .expect("gueltiges .ops");
+    let mut machine = Vm::new(prog);
+    let stack = machine.run().expect("ATVM-Ausfuehrung");
+    assert_eq!(stack.last(), Some(&2_100_000));
+}
+
+#[test]
+fn div_by_zero_fails_closed() {
+    let mut machine = Vm::new(vec![Op::Push(1), Op::Push(0), Op::Div, Op::Halt]);
+    let res = machine.run();
+    assert_eq!(res, Err(atc_vm::vm::VmError::DivisionByZero));
+}

@@ -48,6 +48,7 @@ fn parse_line(line_no: usize, line: &str) -> Result<Op, OpsError> {
         "Add" => Ok(Op::Add),
         "Sub" => Ok(Op::Sub),
         "Mul" => Ok(Op::Mul),
+        "Div" => Ok(Op::Div),
         "Dup" => Ok(Op::Dup),
         "Swap" => Ok(Op::Swap),
         "Eq" => Ok(Op::Eq),
