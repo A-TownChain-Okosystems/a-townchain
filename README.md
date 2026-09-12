@@ -160,12 +160,12 @@ Governed by **ATC-STD-000** (A-TownChain Enterprise Governance Framework).
 
 | Standard | Version | Compliance |
 |---|---:|---|
-| ATC-STD-000 | 1.2.0 | ✅ APPROVED |
+| ATC-STD-000 | 1.3.0 | ✅ APPROVED |
 | ATC-STD-README-001 | 1.0.0 | ✅ APPROVED |
 | ATC-STD-MD-001 | 1.0.0 | ✅ APPROVED |
-| ATC-STD-201 | 1.0.0 | ✅ APPROVED |
-| ATC-STD-202 | 1.1.0 | ✅ APPROVED |
-| ATC-STD-203 | 1.0.0 | ✅ APPROVED |
+| ATC-STD-201 | 1.0.1 | ✅ APPROVED |
+| ATC-STD-202 | 1.2.0 | ✅ APPROVED |
+| ATC-STD-203 | 1.0.1 | ✅ APPROVED |
 
 ## Roadmap
 
