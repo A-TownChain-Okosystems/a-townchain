@@ -18,6 +18,10 @@ pub enum Op {
     JumpIfNotZero(usize),
     Eq,
     Lt,
+    Load(usize),
+    Store(usize),
+    Caller,
+    JumpIfZero(usize),
     Halt,
 }
 
@@ -31,11 +35,35 @@ pub enum VmError {
 pub struct Vm {
     program: Vec<Op>,
     stack: Vec<u64>,
+    // Contract-Execution-Kontext (Inkrement 1, atc-contracts#5):
+    // caller wird vom Host (Node) gesetzt — das Programm kann ihn nur
+    // lesen (Op::Caller), nie schreiben. Storage = persistente Slots.
+    caller: u64,
+    storage: Vec<u64>,
 }
 
 impl Vm {
+    // Oeffentliche Lib-API (Vm::new/caller): im Runner-Bin-Target ungenutzt,
+    // in der Lib (Contract-Hosts, Tests) teils nur aus Tests heraus — daher
+    // explizit freigegeben statt totem Code zu verdächtigen.
+    #[allow(dead_code)]
     pub fn new(program: Vec<Op>) -> Self {
-        Vm { program, stack: Vec::new() }
+        Vm { program, stack: Vec::new(), caller: 0, storage: Vec::new() }
+    }
+
+    /// Contract-Kontext: Caller-Identitaet und vorbelegte Storage-Slots.
+    pub fn with_context(program: Vec<Op>, caller: u64, storage: Vec<u64>) -> Self {
+        Vm { program, stack: Vec::new(), caller, storage }
+    }
+
+    #[allow(dead_code)]
+    pub fn caller(&self) -> u64 {
+        self.caller
+    }
+
+    /// Finaler Storage-Stand (Evidenz nach der Ausfuehrung).
+    pub fn state(&self) -> &[u64] {
+        &self.storage
     }
 
     fn binop(&mut self, f: impl Fn(u64, u64) -> u64) -> Result<(), VmError> {
@@ -78,6 +106,26 @@ impl Vm {
                         return Err(VmError::StackUnderflow);
                     }
                     self.stack.swap(n - 1, n - 2);
+                }
+                Op::Load(slot) => {
+                    // Nie geschriebener Slot = 0 (Standard-Initialisierung)
+                    let v = self.storage.get(slot).copied().unwrap_or(0);
+                    self.stack.push(v);
+                }
+                Op::Store(slot) => {
+                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
+                    if slot >= self.storage.len() {
+                        self.storage.resize(slot + 1, 0);
+                    }
+                    self.storage[slot] = v;
+                }
+                Op::Caller => self.stack.push(self.caller),
+                Op::JumpIfZero(t) => {
+                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
+                    if v == 0 {
+                        pc = self.valid_jump(t)?;
+                        continue;
+                    }
                 }
                 Op::Jump(t) => {
                     pc = self.valid_jump(t)?;

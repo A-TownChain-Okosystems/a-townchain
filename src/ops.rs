@@ -3,8 +3,13 @@
 //! (atc-contracts/exec_chain, ATC-CONTRACT-EXEC-001 / F-084).
 //!
 //! Format: eine Op pro Zeile; `#`-Zeilen sind Header-Kommentare
-//! (contract, fn, source_sha256, expected). Fail-closed: unbekannte
-//! Zeilen sind Fehler, kein stillschweigendes Ueberspringen.
+//! (contract, fn, source_sha256, expected).
+//!
+//! Historie: Das Format begann als EXEC-GATE-Subset (arithmetische
+//! Ops des Assemblers) und waechst inkrementell zum vollstaendigen
+//! Bytecode-Textformat (Contract-Execution: Load/Store/Caller/Jumps).
+//! Fail-closed bleibt: unbekannte Zeilen sind Fehler, kein
+//! stillschweigendes Ueberspringen.
 
 use crate::vm::Op;
 
@@ -12,6 +17,8 @@ use crate::vm::Op;
 pub enum OpsError {
     UnknownOp { line: usize, text: String },
     BadPush { line: usize, value: String },
+    BadSlot { line: usize, value: String },
+    BadTarget { line: usize, value: String },
     Empty,
 }
 
@@ -44,6 +51,22 @@ fn parse_line(line_no: usize, line: &str) -> Result<Op, OpsError> {
         })?;
         return Ok(Op::Push(v));
     }
+    if let Some(rest) = line.strip_prefix("Load ") {
+        let slot = rest.trim();
+        let s: usize = slot.parse().map_err(|_| OpsError::BadSlot {
+            line: line_no,
+            value: slot.to_string(),
+        })?;
+        return Ok(Op::Load(s));
+    }
+    if let Some(rest) = line.strip_prefix("Store ") {
+        let slot = rest.trim();
+        let s: usize = slot.parse().map_err(|_| OpsError::BadSlot {
+            line: line_no,
+            value: slot.to_string(),
+        })?;
+        return Ok(Op::Store(s));
+    }
     match line {
         "Add" => Ok(Op::Add),
         "Sub" => Ok(Op::Sub),
@@ -53,11 +76,35 @@ fn parse_line(line_no: usize, line: &str) -> Result<Op, OpsError> {
         "Swap" => Ok(Op::Swap),
         "Eq" => Ok(Op::Eq),
         "Lt" => Ok(Op::Lt),
+        "Caller" => Ok(Op::Caller),
         "Halt" => Ok(Op::Halt),
-        _ => Err(OpsError::UnknownOp {
-            line: line_no,
-            text: line.to_string(),
-        }),
+        _ => {
+            if let Some(rest) = line.strip_prefix("Jump ") {
+                let t: usize = rest.trim().parse().map_err(|_| OpsError::BadTarget {
+                    line: line_no,
+                    value: rest.trim().to_string(),
+                })?;
+                return Ok(Op::Jump(t));
+            }
+            if let Some(rest) = line.strip_prefix("JumpIfNotZero ") {
+                let t: usize = rest.trim().parse().map_err(|_| OpsError::BadTarget {
+                    line: line_no,
+                    value: rest.trim().to_string(),
+                })?;
+                return Ok(Op::JumpIfNotZero(t));
+            }
+            if let Some(rest) = line.strip_prefix("JumpIfZero ") {
+                let t: usize = rest.trim().parse().map_err(|_| OpsError::BadTarget {
+                    line: line_no,
+                    value: rest.trim().to_string(),
+                })?;
+                return Ok(Op::JumpIfZero(t));
+            }
+            Err(OpsError::UnknownOp {
+                line: line_no,
+                text: line.to_string(),
+            })
+        }
     }
 }
 
@@ -107,10 +154,32 @@ mod tests {
     }
 
     #[test]
-    fn jump_ops_parse_as_unknown_in_ops_format() {
-        // Jump/JumpIfNotZero sind Bytecode-intern; das .ops-Textformat des
-        // EXEC-GATE-Subsets kennt sie nicht — fail-closed, kein Guessing.
-        let res = parse_ops("Jump 2\n");
-        assert!(matches!(res, Err(OpsError::UnknownOp { .. })));
+    fn control_flow_ops_parse() {
+        // Das Format ist zum vollstaendigen Bytecode-Textformat gewachsen
+        // (Contract-Execution): Jumps mit explizitem Ziel-Index.
+        let prog = parse_ops("Jump 2\nJumpIfNotZero 0\nJumpIfZero 1\nHalt\n")
+            .expect("gueltiges .ops");
+        assert_eq!(prog.len(), 4);
+        assert_eq!(prog[0], Op::Jump(2));
+        assert_eq!(prog[1], Op::JumpIfNotZero(0));
+        assert_eq!(prog[2], Op::JumpIfZero(1));
+    }
+
+    #[test]
+    fn storage_ops_parse() {
+        let prog = parse_ops("Load 0\nStore 1\nCaller\nHalt\n").expect("gueltiges .ops");
+        assert_eq!(prog, vec![Op::Load(0), Op::Store(1), Op::Caller, Op::Halt]);
+    }
+
+    #[test]
+    fn bad_slot_and_target_fail_closed() {
+        assert!(matches!(
+            parse_ops("Load x\n"),
+            Err(OpsError::BadSlot { line: 1, .. })
+        ));
+        assert!(matches!(
+            parse_ops("Jump x\n"),
+            Err(OpsError::BadTarget { line: 1, .. })
+        ));
     }
 }

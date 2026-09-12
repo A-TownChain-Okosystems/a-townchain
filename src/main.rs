@@ -17,8 +17,23 @@ use std::fs;
 use std::process::exit;
 
 enum RunOutcome {
-    Passed { result: u64, n_ops: usize },
+    Passed { result: u64, n_ops: usize, state_evidence: Option<String> },
     Failed(String),
+}
+
+/// Parst "idx:val"-Slot-Spezifikationen (explizit, kein unwrap).
+fn parse_slot_pair(flag: &str, raw: &str) -> Result<(usize, u64), String> {
+    let parts: Vec<&str> = raw.split(':').collect();
+    if parts.len() != 2 {
+        return Err(format!("{flag} erwartet <slot>:<wert>, bekam: {raw}"));
+    }
+    let idx: usize = parts[0]
+        .parse()
+        .map_err(|_| format!("{flag}: Slot-Index ist keine Zahl: {raw}"))?;
+    let val: u64 = parts[1]
+        .parse()
+        .map_err(|_| format!("{flag}: Slot-Wert ist keine u64-Zahl: {raw}"))?;
+    Ok((idx, val))
 }
 
 fn usage() -> ! {
@@ -32,9 +47,20 @@ fn usage() -> ! {
     exit(2);
 }
 
-fn parse_args(args: Vec<String>) -> Result<(String, Option<u64>), String> {
+struct Args {
+    ops_path: String,
+    expect: Option<u64>,
+    caller: u64,
+    set_slots: Vec<(usize, u64)>,
+    expect_slots: Vec<(usize, u64)>,
+}
+
+fn parse_args(args: Vec<String>) -> Result<Args, String> {
     let mut ops_path: Option<String> = None;
     let mut expect: Option<u64> = None;
+    let mut caller: u64 = 0;
+    let mut set_slots: Vec<(usize, u64)> = Vec::new();
+    let mut expect_slots: Vec<(usize, u64)> = Vec::new();
     let mut i = 1;
     while i < args.len() {
         match args[i].as_str() {
@@ -55,16 +81,40 @@ fn parse_args(args: Vec<String>) -> Result<(String, Option<u64>), String> {
                 }
                 None => return Err("--expect benoetigt einen u64-Wert".to_string()),
             },
+            "--caller" => match args.get(i + 1) {
+                Some(v) => {
+                    caller = v
+                        .parse()
+                        .map_err(|_| format!("--caller ist keine u64-Zahl: {v}"))?;
+                    i += 2;
+                }
+                None => return Err("--caller benoetigt eine Identitaet (u64)".to_string()),
+            },
+            "--set-slot" => match args.get(i + 1) {
+                Some(v) => {
+                    set_slots.push(parse_slot_pair("--set-slot", v)?);
+                    i += 2;
+                }
+                None => return Err("--set-slot benoetigt <slot>:<wert>".to_string()),
+            },
+            "--expect-slot" => match args.get(i + 1) {
+                Some(v) => {
+                    expect_slots.push(parse_slot_pair("--expect-slot", v)?);
+                    i += 2;
+                }
+                None => return Err("--expect-slot benoetigt <slot>:<wert>".to_string()),
+            },
             other => return Err(format!("unbekanntes Argument: {other}")),
         }
     }
     match ops_path {
-        Some(p) => Ok((p, expect)),
+        Some(p) => Ok(Args { ops_path: p, expect, caller, set_slots, expect_slots }),
         None => Err("--ops ist Pflicht".to_string()),
     }
 }
 
-fn run_ops_file(path: &str, expect: Option<u64>) -> RunOutcome {
+fn run_ops_file(args: &Args) -> RunOutcome {
+    let path = &args.ops_path;
     // Datei lesen — explizit, kein unwrap
     let text = match fs::read_to_string(path) {
         Ok(t) => t,
@@ -82,8 +132,15 @@ fn run_ops_file(path: &str, expect: Option<u64>) -> RunOutcome {
     };
     let n_ops = program.len();
 
-    // ATVM-Ausfuehrung
-    let mut machine = vm::Vm::new(program);
+    // ATVM-Ausfuehrung im Contract-Kontext (Caller-Identitaet + Storage)
+    let mut storage: Vec<u64> = Vec::new();
+    for (idx, val) in &args.set_slots {
+        if *idx >= storage.len() {
+            storage.resize(idx + 1, 0);
+        }
+        storage[*idx] = *val;
+    }
+    let mut machine = vm::Vm::with_context(program, args.caller, storage);
     let stack = match machine.run() {
         Ok(s) => s,
         Err(e) => {
@@ -98,19 +155,34 @@ fn run_ops_file(path: &str, expect: Option<u64>) -> RunOutcome {
     };
 
     // Fail-fast gegen den erwarteten Vektorwert
-    if let Some(expected) = expect {
+    if let Some(expected) = args.expect {
         if result != expected {
             return RunOutcome::Failed(format!(
                 "ERROR: Ausfuehrung {result} != erwartet {expected}"
             ));
         }
     }
-    RunOutcome::Passed { result, n_ops }
+    // Storage-Evidenz: erwartete Slots muessen exakt stimmen
+    let final_state = machine.state();
+    for (idx, want) in &args.expect_slots {
+        let got = final_state.get(*idx).copied().unwrap_or(0);
+        if got != *want {
+            return RunOutcome::Failed(format!(
+                "ERROR: Storage-Slot {idx} = {got}, erwartet {want}"
+            ));
+        }
+    }
+    let state_evidence = if args.expect_slots.is_empty() {
+        None
+    } else {
+        Some(format!("{:?}", final_state))
+    };
+    RunOutcome::Passed { result, n_ops, state_evidence }
 }
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let (ops_path, expect) = match parse_args(args) {
+    let parsed = match parse_args(args) {
         Ok(v) => v,
         Err(e) => {
             eprintln!("ERROR: {e}");
@@ -118,9 +190,18 @@ fn main() {
         }
     };
 
-    match run_ops_file(&ops_path, expect) {
-        RunOutcome::Passed { result, n_ops } => {
-            println!("OK: {ops_path} — {n_ops} Ops ausgefuehrt, Ergebnis {result} (ATVM PASS)");
+    match run_ops_file(&parsed) {
+        RunOutcome::Passed { result, n_ops, state_evidence } => {
+            match state_evidence {
+                Some(ev) => println!(
+                    "OK: {} — {n_ops} Ops, Ergebnis {result}, Storage {ev} (ATVM PASS)",
+                    parsed.ops_path
+                ),
+                None => println!(
+                    "OK: {} — {n_ops} Ops ausgefuehrt, Ergebnis {result} (ATVM PASS)",
+                    parsed.ops_path
+                ),
+            }
             exit(0);
         }
         RunOutcome::Failed(msg) => {
