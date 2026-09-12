@@ -39,7 +39,7 @@ pub fn serve_gossip(addr: &str, kette: Arc<Mutex<Chain>>) -> std::io::Result<()>
                 .iter()
                 .map(|b| format!("{}|{}|{}|{}", b.height, b.prev_hash, b.payload, b.hash))
                 .collect();
-            writeln!(s, teile.join(";"))?;
+            writeln!(s, "{}", teile.join(";"))?;
         } else {
             writeln!(s, "ERR")?;
         }
