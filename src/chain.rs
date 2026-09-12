@@ -173,10 +173,12 @@ mod tests {
     fn devnet_cap_ehrlich() {
         let g = Genesis::devnet();
         let mut c = Chain::from_genesis(&g);
-        for _ in 0..64 {
+        // Cap 64 gilt INKLUSIVE Genesis-Block: 63 produzierbar, dann ehrlich Err
+        for _ in 0..63 {
             c.produce("fuell").unwrap();
         }
-        assert!(c.produce("eins zu viel").is_err());
-        assert_eq!(c.height(), 64);
+        assert_eq!(c.height(), 63);
+        assert!(c.produce("eins zu viel").is_err(), "Cap muss greifen");
+        assert_eq!(c.height(), 63, "Fehlgeschlagene Produktion aendert nichts");
     }
 }
