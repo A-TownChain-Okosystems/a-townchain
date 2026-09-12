@@ -152,7 +152,7 @@ Schwachstellen werden NICHT öffentlich über GitHub Issues gemeldet, sondern di
 
 ## Governance
 
-This repository is governed according to the A-TownChain Enterprise Governance Framework (ATC-STD-000 v1.2.0, ATC-ENT-001..015). Architekturentscheidungen sind im central DECISIONS_REGISTER (`a-townchain-os-docs`, AD-043) dokumentiert.
+This repository is governed according to the A-TownChain Enterprise Governance Framework (ATC-STD-000 v1.3.0, ATC-ENT-001..015). Architekturentscheidungen sind im central DECISIONS_REGISTER (`a-townchain-os-docs`, AD-043) dokumentiert.
 
 ## Standards & Compliance
 
@@ -160,7 +160,7 @@ This repository follows applicable A-TownChain standards:
 
 | Standard | Version | Compliance |
 |---|---:|---|
-| ATC-STD-000 | 1.2.0 | ✅ |
+| ATC-STD-000 | 1.3.0 | ✅ |
 | ATC-STD-201 | 1.0.0 | ✅ |
 | ATC-STD-202 | 1.1.0 | ✅ |
 | ATC-STD-203 | 1.0.0 | ✅ |
