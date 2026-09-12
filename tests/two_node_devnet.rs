@@ -57,3 +57,18 @@ fn zwei_node_devnet_gleiche_genesis() {
     assert!(query(p1, "{\"method\":\"chain_id\",\"id\":1}").contains("658467"));
     assert!(query(p2, "{\"method\":\"ping\",\"id\":2}").contains("pong"));
 }
+
+#[test]
+fn zwei_ketten_gleiche_genesis_gleiche_bloecke() {
+    let g = Genesis::devnet();
+    let mut k1 = atc_node::chain::Chain::from_genesis(&g);
+    let mut k2 = atc_node::chain::Chain::from_genesis(&g);
+    for p in ["tx-a", "tx-b", "tx-c"] {
+        k1.produce(p).expect("produce k1");
+        k2.produce(p).expect("produce k2");
+    }
+    assert_eq!(k1.best_hash(), k2.best_hash(), "beide Node-Instanzen muessen identische Ketten bauen");
+    assert_eq!(k1.height(), 3);
+    assert!(k1.verify().is_ok());
+    assert!(k2.verify().is_ok());
+}

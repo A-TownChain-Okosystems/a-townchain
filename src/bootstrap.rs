@@ -83,7 +83,7 @@ pub fn devnet_boot(genesis: &Genesis, peers: &[(u64, String)]) -> Result<(PeerTa
     Ok((table, genesis.boot_hash()))
 }
 
-fn fnv1a(data: &str) -> u64 {
+pub(crate) fn fnv1a(data: &str) -> u64 {
     let mut h: u64 = 0xcbf29ce484222325;
     for b in data.as_bytes() {
         h ^= u64::from(*b);

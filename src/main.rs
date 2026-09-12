@@ -29,5 +29,11 @@ fn main() -> std::io::Result<()> {
         peers.len(),
         addr
     );
+    let kette = atc_node::chain::Chain::from_genesis(&genesis);
+    eprintln!(
+        "Devnet-Kette: Hoehe {} | Best-Hash {} | Blockmodell SCR-0117 (kein Konsens, Devnet-MVP)",
+        kette.height(),
+        kette.best_hash()
+    );
     serve(&addr, DevnetRpc::from_state(&genesis, &peers))
 }

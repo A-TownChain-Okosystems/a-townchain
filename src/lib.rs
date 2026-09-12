@@ -4,6 +4,7 @@
 //! Konsens-Implementierung in atc-node (F-105-Regel).
 
 pub mod bootstrap;
+pub mod chain;
 pub mod rpc;
 pub mod config;
 pub mod peers;
