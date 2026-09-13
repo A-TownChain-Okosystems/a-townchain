@@ -28,9 +28,9 @@ canonical_role:                  # SCR-0080 P0-02: Single-Owner-per-Capability
   capability: vm_runtime
   canonical: true
 test_run:
-  workflow: Contract Exec Gate
-  run_id: 34737232013
+  workflow: ATC Test Suite
+  run_id: 34737231995
   commit: 0a3df34991fc72ee7812fbbf659fe60ef8b7f64e
-  timestamp: 2026-09-13T06:41:56.631859+00:00
+  timestamp: 2026-09-13T06:42:01.186638+00:00
   result: PASS
   runner: github-actions
