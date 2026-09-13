@@ -1,0 +1,31 @@
+name: Cargo Security Audit (RustSec)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
+permissions:
+  contents: read
+jobs:
+  cargo-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+      - name: cargo audit ueber alle Manifeste (SCR-0083-Muster, P2 Security)
+        run: |
+          set +e
+          FAIL=0
+          while IFS= read -r f; do
+            d="$(dirname "$f")"
+            echo "=== cargo audit in $d"
+            if ! (cd "$d" && { [ -f Cargo.lock ] || cargo generate-lockfile --quiet; } && cargo audit); then
+              echo "cargo audit FAILED in $d"; FAIL=1
+            fi
+          done < <(find . -name Cargo.toml -not -path "*/archive/*" -not -path "*/node_modules/*")
+          exit $FAIL
