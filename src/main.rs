@@ -1,19 +1,16 @@
 // Copyright (c) 2026 Michael Wroblewski — Apache-2.0
-//! atc-vm-runner — fuehrt eine .ops-Datei des EXEC-CHAIN-Assemblers aus.
+//! atc-vm-runner — native ATVM execution and EXEC-GATE assembly.
 //!
-//! AD-008: ATVM ist die Ausfuehrungsgrenze — dieser Runner ist native
-//! Rust-Infrastruktur (keine Consensus-Semantik). Explizite Fehler-
-//! behandlung throughout (Owner-Regel: kein unwrap() im konsens-
-//! kritischen Pfad), Exit-Codes als Evidenz:
-//!   0 = PASS (Simulation/Ausfuehrung erfolgreich, evtl. --expect erfuellt)
-//!   1 = Ausfuehrungsfehler oder Vektor-Abweichung
-//!   2 = Benutzungsfehler (Argumente/Datei)
+//! AD-008: ATVM is the execution boundary — native Rust infrastructure.
+//! The EXEC-GATE assembler replaces the former Python production path.
 
+mod assembler;
 mod ops;
 mod vm;
 
 use std::env;
 use std::fs;
+use std::path::PathBuf;
 use std::process::exit;
 
 enum RunOutcome {
@@ -21,34 +18,41 @@ enum RunOutcome {
     Failed(String),
 }
 
-/// Parst "idx:val"-Slot-Spezifikationen (explizit, kein unwrap).
 fn parse_slot_pair(flag: &str, raw: &str) -> Result<(usize, u64), String> {
     let parts: Vec<&str> = raw.split(':').collect();
     if parts.len() != 2 {
-        return Err(format!("{flag} erwartet <slot>:<wert>, bekam: {raw}"));
+        return Err(format!("{flag} expects <slot>:<value>, got: {raw}"));
     }
-    let idx: usize = parts[0]
-        .parse()
-        .map_err(|_| format!("{flag}: Slot-Index ist keine Zahl: {raw}"))?;
-    let val: u64 = parts[1]
-        .parse()
-        .map_err(|_| format!("{flag}: Slot-Wert ist keine u64-Zahl: {raw}"))?;
+    let idx = parts[0].parse::<usize>().map_err(|_| format!("{flag}: invalid slot index: {raw}"))?;
+    let val = parts[1].parse::<u64>().map_err(|_| format!("{flag}: invalid u64 value: {raw}"))?;
     Ok((idx, val))
 }
 
 fn usage() -> ! {
-    eprintln!("atc-vm-runner — ATVM-Ausfuehrung des EXEC-GATE-Subsets");
-    eprintln!("");
-    eprintln!("Nutzung:");
-    eprintln!("  atc-vm-runner --ops <datei.ops> [--expect <u64>]");
-    eprintln!("");
-    eprintln!("  --ops     Pfad zur .ops-Datei (EXEC-CHAIN-Assembler-Format)");
-    eprintln!("  --expect  erwarteter Vektorwert (fail-fast gegen Testvektor)");
+    eprintln!("atc-vm-runner — native EXEC-GATE assembler + ATVM execution");
+    eprintln!();
+    eprintln!("Execution:");
+    eprintln!("  atc-vm-runner --ops <file.ops> [--expect <u64>]");
+    eprintln!();
+    eprintln!("Native assembly:");
+    eprintln!("  atc-vm-runner --contract <file.atc> --vector <file.json> --out <dir>");
+    eprintln!();
+    eprintln!("  --ops          ATVM .ops input");
+    eprintln!("  --expect       expected vector value");
+    eprintln!("  --contract     ATCLang EXEC-GATE contract input");
+    eprintln!("  --vector       JSON execution vector");
+    eprintln!("  --out          directory for generated .ops");
+    eprintln!("  --caller       contract caller identity (u64)");
+    eprintln!("  --set-slot     initial storage slot <slot>:<value>");
+    eprintln!("  --expect-slot  final storage slot <slot>:<value>");
     exit(2);
 }
 
 struct Args {
-    ops_path: String,
+    ops_path: Option<String>,
+    contract_path: Option<String>,
+    vector_path: Option<String>,
+    out_dir: Option<String>,
     expect: Option<u64>,
     caller: u64,
     set_slots: Vec<(usize, u64)>,
@@ -56,84 +60,73 @@ struct Args {
 }
 
 fn parse_args(args: Vec<String>) -> Result<Args, String> {
-    let mut ops_path: Option<String> = None;
-    let mut expect: Option<u64> = None;
-    let mut caller: u64 = 0;
-    let mut set_slots: Vec<(usize, u64)> = Vec::new();
-    let mut expect_slots: Vec<(usize, u64)> = Vec::new();
-    let mut i = 1;
+    let mut parsed = Args {
+        ops_path: None,
+        contract_path: None,
+        vector_path: None,
+        out_dir: None,
+        expect: None,
+        caller: 0,
+        set_slots: Vec::new(),
+        expect_slots: Vec::new(),
+    };
+    let mut i = 1usize;
     while i < args.len() {
         match args[i].as_str() {
-            "--ops" => match args.get(i + 1) {
-                Some(p) => {
-                    ops_path = Some(p.clone());
-                    i += 2;
-                }
-                None => return Err("--ops benoetigt einen Dateipfad".to_string()),
-            },
-            "--expect" => match args.get(i + 1) {
-                Some(v) => {
-                    let parsed: u64 = v
-                        .parse()
-                        .map_err(|_| format!("--expect ist keine u64-Zahl: {v}"))?;
-                    expect = Some(parsed);
-                    i += 2;
-                }
-                None => return Err("--expect benoetigt einen u64-Wert".to_string()),
-            },
-            "--caller" => match args.get(i + 1) {
-                Some(v) => {
-                    caller = v
-                        .parse()
-                        .map_err(|_| format!("--caller ist keine u64-Zahl: {v}"))?;
-                    i += 2;
-                }
-                None => return Err("--caller benoetigt eine Identitaet (u64)".to_string()),
-            },
-            "--set-slot" => match args.get(i + 1) {
-                Some(v) => {
-                    set_slots.push(parse_slot_pair("--set-slot", v)?);
-                    i += 2;
-                }
-                None => return Err("--set-slot benoetigt <slot>:<wert>".to_string()),
-            },
-            "--expect-slot" => match args.get(i + 1) {
-                Some(v) => {
-                    expect_slots.push(parse_slot_pair("--expect-slot", v)?);
-                    i += 2;
-                }
-                None => return Err("--expect-slot benoetigt <slot>:<wert>".to_string()),
-            },
-            other => return Err(format!("unbekanntes Argument: {other}")),
+            "--ops" => {
+                parsed.ops_path = Some(args.get(i + 1).ok_or_else(|| "--ops requires a path".to_string())?.clone());
+                i += 2;
+            }
+            "--contract" => {
+                parsed.contract_path = Some(args.get(i + 1).ok_or_else(|| "--contract requires a path".to_string())?.clone());
+                i += 2;
+            }
+            "--vector" => {
+                parsed.vector_path = Some(args.get(i + 1).ok_or_else(|| "--vector requires a path".to_string())?.clone());
+                i += 2;
+            }
+            "--out" => {
+                parsed.out_dir = Some(args.get(i + 1).ok_or_else(|| "--out requires a directory".to_string())?.clone());
+                i += 2;
+            }
+            "--expect" => {
+                let raw = args.get(i + 1).ok_or_else(|| "--expect requires a u64".to_string())?;
+                parsed.expect = Some(raw.parse::<u64>().map_err(|_| format!("--expect is not u64: {raw}"))?);
+                i += 2;
+            }
+            "--caller" => {
+                let raw = args.get(i + 1).ok_or_else(|| "--caller requires a u64".to_string())?;
+                parsed.caller = raw.parse::<u64>().map_err(|_| format!("--caller is not u64: {raw}"))?;
+                i += 2;
+            }
+            "--set-slot" => {
+                let raw = args.get(i + 1).ok_or_else(|| "--set-slot requires <slot>:<value>".to_string())?;
+                parsed.set_slots.push(parse_slot_pair("--set-slot", raw)?);
+                i += 2;
+            }
+            "--expect-slot" => {
+                let raw = args.get(i + 1).ok_or_else(|| "--expect-slot requires <slot>:<value>".to_string())?;
+                parsed.expect_slots.push(parse_slot_pair("--expect-slot", raw)?);
+                i += 2;
+            }
+            other => return Err(format!("unknown argument: {other}")),
         }
     }
-    match ops_path {
-        Some(p) => Ok(Args { ops_path: p, expect, caller, set_slots, expect_slots }),
-        None => Err("--ops ist Pflicht".to_string()),
-    }
+    Ok(parsed)
 }
 
-fn run_ops_file(args: &Args) -> RunOutcome {
-    let path = &args.ops_path;
-    // Datei lesen — explizit, kein unwrap
+fn run_ops_file(args: &Args, path: &str) -> RunOutcome {
     let text = match fs::read_to_string(path) {
         Ok(t) => t,
-        Err(e) => {
-            return RunOutcome::Failed(format!("ERROR: Datei nicht lesbar ({path}): {e}"));
-        }
+        Err(e) => return RunOutcome::Failed(format!("ERROR: cannot read .ops file {path}: {e}")),
     };
-
-    // Parsen — fail-closed gegen unbekannte Ops
     let program = match ops::parse_ops(&text) {
         Ok(p) => p,
-        Err(e) => {
-            return RunOutcome::Failed(format!("ERROR: .ops-Parse: {e:?}"));
-        }
+        Err(e) => return RunOutcome::Failed(format!("ERROR: .ops parse: {e:?}")),
     };
     let n_ops = program.len();
 
-    // ATVM-Ausfuehrung im Contract-Kontext (Caller-Identitaet + Storage)
-    let mut storage: Vec<u64> = Vec::new();
+    let mut storage = Vec::new();
     for (idx, val) in &args.set_slots {
         if *idx >= storage.len() {
             storage.resize(idx + 1, 0);
@@ -143,46 +136,28 @@ fn run_ops_file(args: &Args) -> RunOutcome {
     let mut machine = vm::Vm::with_context(program, args.caller, storage);
     let stack = match machine.run() {
         Ok(s) => s,
-        Err(e) => {
-            return RunOutcome::Failed(format!("ERROR: ATVM: {e:?}"));
-        }
+        Err(e) => return RunOutcome::Failed(format!("ERROR: ATVM: {e:?}")),
     };
-
-    // Ergebniswert: Top-of-Stack (leerer Stack = 0, wie die Referenzsimulatoren)
-    let result: u64 = match stack.last() {
-        Some(v) => *v,
-        None => 0,
-    };
-
-    // Fail-fast gegen den erwarteten Vektorwert
+    let result = stack.last().copied().unwrap_or(0);
     if let Some(expected) = args.expect {
         if result != expected {
-            return RunOutcome::Failed(format!(
-                "ERROR: Ausfuehrung {result} != erwartet {expected}"
-            ));
+            return RunOutcome::Failed(format!("ERROR: execution {result} != expected {expected}"));
         }
     }
-    // Storage-Evidenz: erwartete Slots muessen exakt stimmen
     let final_state = machine.state();
     for (idx, want) in &args.expect_slots {
         let got = final_state.get(*idx).copied().unwrap_or(0);
         if got != *want {
-            return RunOutcome::Failed(format!(
-                "ERROR: Storage-Slot {idx} = {got}, erwartet {want}"
-            ));
+            return RunOutcome::Failed(format!("ERROR: storage slot {idx} = {got}, expected {want}"));
         }
     }
-    let state_evidence = if args.expect_slots.is_empty() {
-        None
-    } else {
-        Some(format!("{:?}", final_state))
-    };
+    let state_evidence = if args.expect_slots.is_empty() { None } else { Some(format!("{:?}", final_state)) };
     RunOutcome::Passed { result, n_ops, state_evidence }
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let parsed = match parse_args(args) {
+    let raw_args: Vec<String> = env::args().collect();
+    let args = match parse_args(raw_args) {
         Ok(v) => v,
         Err(e) => {
             eprintln!("ERROR: {e}");
@@ -190,17 +165,46 @@ fn main() {
         }
     };
 
-    match run_ops_file(&parsed) {
+    if let Some(contract) = &args.contract_path {
+        let vector = match &args.vector_path {
+            Some(v) => v,
+            None => {
+                eprintln!("ERROR: --vector is required with --contract");
+                exit(2);
+            }
+        };
+        let out = match &args.out_dir {
+            Some(v) => PathBuf::from(v),
+            None => {
+                eprintln!("ERROR: --out is required with --contract");
+                exit(2);
+            }
+        };
+        match assembler::assemble(std::path::Path::new(contract), std::path::Path::new(vector), &out) {
+            Ok(path) => {
+                println!("OK: native ATCLang assembly -> {} (simulation PASS)", path.display());
+                exit(0);
+            }
+            Err(e) => {
+                eprintln!("ERROR: native assembler: {e}");
+                exit(1);
+            }
+        }
+    }
+
+    let ops = match &args.ops_path {
+        Some(v) => v,
+        None => {
+            eprintln!("ERROR: either --ops or --contract is required");
+            usage();
+        }
+    };
+    match run_ops_file(&args, ops) {
         RunOutcome::Passed { result, n_ops, state_evidence } => {
-            match state_evidence {
-                Some(ev) => println!(
-                    "OK: {} — {n_ops} Ops, Ergebnis {result}, Storage {ev} (ATVM PASS)",
-                    parsed.ops_path
-                ),
-                None => println!(
-                    "OK: {} — {n_ops} Ops ausgefuehrt, Ergebnis {result} (ATVM PASS)",
-                    parsed.ops_path
-                ),
+            if let Some(ev) = state_evidence {
+                println!("OK: {ops} — {n_ops} Ops, result {result}, storage {ev} (ATVM PASS)");
+            } else {
+                println!("OK: {ops} — {n_ops} Ops executed, result {result} (ATVM PASS)");
             }
             exit(0);
         }
