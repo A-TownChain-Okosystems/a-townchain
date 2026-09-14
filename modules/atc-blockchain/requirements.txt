@@ -2,7 +2,7 @@
 # Copyright (c) Michael Wroblewski. All Rights Reserved.
 
 # Core
-pycryptodome>=3.19
+pycryptodome>=3.23.0
 requests>=2.34.2
 pyyaml>=6.0.3
 
