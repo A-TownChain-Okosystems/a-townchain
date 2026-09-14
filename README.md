@@ -1,67 +1,126 @@
 # atc-node
 
-> **Rolle (SCR-0005 Option A, AD-046 — verbindlich):** atc-node ist das
-> **Full-Node-Binary & Runtime** der A-TownChain — das Distribution-Ziel
-> (`git clone && cargo build` -> lauffaehiger Node; Bootstrap, Discovery,
-> Validator-Betrieb). atc-node BAUT AUF a-townchain (Chain-Protokoll/-Bibliothek),
-> atc-algorithm (Hybrid Consensus) und atc-vm (Vertrags-Ausfuehrung) auf und
-> implementiert selbst KEINE Chain-Semantik. Security: **S4** (Netzwerk-
-> Angriffsflaeche: Bootstrap-Node, Validator-Keys).
+> **Role:** Full-Node-Binary und Runtime für eine A-TownChain-Netzwerkinstanz. `atc-node` betreibt den Node; die kanonische Chain-/Protocol-Semantik bleibt in den dafür zuständigen Komponenten.
 
-> Node-Betrieb getrennt vom Protocol-Core: der Core definiert das Protokoll, der Node betreibt eine reale Netzwerk-Instanz.
+**Project:** `atc-node`  
+**Organization:** `A-TownChain-Okosystems`  
+**Status:** `development`  
+**Security class:** `S4`
 
-**Prioritaet:** P0 (Repository-Landkarte AD-024) | **Chain-ID:** 658467 (AD-004) | **Org:** [A-TownChain-Okosystems](https://github.com/A-TownChain-Okosystems)
+## Purpose
 
-> ## Fuer KI-Agenten - Pflichtlektuere vor jeder Aenderung
-> Governance liegt zentral im Wiki-Repo [`a-townchain-os-docs`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs):
-> 1. [`AGENT_POLICY.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/AGENT_POLICY.md)
-> 2. [`AGENT_COORDINATION.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/AGENT_COORDINATION.md)
-> 3. [`DECISIONS_REGISTER.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/DECISIONS_REGISTER.md) - insb. AD-024 (Landkarte), AD-017 (Sync), AD-023 (kein Mainnet-Termin)
+`atc-node` ist das Distribution- und Laufzeitziel für den Betrieb einer A-TownChain-Node-Instanz. Es verbindet Protokoll-Core, VM, Networking, Storage und Node-Lifecycle zu einem ausführbaren Dienst.
 
----
+`atc-node` definiert **nicht** eigenständig die Chain-Semantik. Es baut auf den kanonischen Komponenten auf, insbesondere:
 
-## Architektur
+- `a-townchain` — Chain-Protokoll / Core
+- `atc-algorithm` — Konsens-/Algorithmus-Komponenten, soweit vom aktuellen Protokoll vorgesehen
+- `atc-vm` — Contract-/VM-Ausführung
+- Node-spezifische Netzwerk-, Storage- und Lifecycle-Komponenten in diesem Repository
 
+## Architecture
+
+```text
+a-townchain
+  │  protocol / state-transition rules
+  ▼
+atc-node
+  ├── P2P / Networking
+  ├── RPC
+  ├── Storage
+  ├── Runtime / lifecycle
+  ├── configuration
+  └── validator integration
+       │
+       ▼
+   real network instance
 ```
-a-townchain (Protocol/Core)
-    v  definiert WAS das Protokoll ist
-atc-node (Executable Node)
-    +-- Networking - RPC - Storage
-    +-- Consensus-Integration - P2P
-    +-- Configuration (init/start/status/sync/validator/export)
+
+Die Chain-Identität wird nicht durch eine README-Zahl festgelegt. Chain ID, Network ID, Genesis Identity und Environment gehören zur kanonischen Chain-Identity-/Network-Konfiguration.
+
+## Status
+
+`development` bezeichnet den aktuellen Entwicklungszustand. Aussagen wie `APPROVED`, `AUDITED` oder einzelne Roadmap-Milestones sind keine automatische Aussage über `PRODUCTION_READY`.
+
+Das Repository befindet sich im qualitätsorientierten Rebuild. Vorhandene historische AD-/Vault-Dokumentation kann als Entscheidungs- bzw. Migrationskontext dienen, ersetzt aber keine aktuelle Implementierungs-Evidence.
+
+## Repository Rules
+
+1. `atc-node` ist die kanonische Quelle für Node-Runtime-Code; ein Monorepo darf diesen Code nur kontrolliert integrieren.
+2. Keine neue Node-Funktion ohne passende Tests und aktuelle Governance-Evidence.
+3. Protocol-Semantik nicht duplizieren oder lokal widersprüchlich definieren.
+4. Keine ungeprüften Mainnet-/Production-Termine im README.
+5. Architektur- und Sicherheitsänderungen über den geltenden ATC-Governance-Prozess führen.
+
+## Repository Structure
+
+```text
+.
+├── .atc/          # ATC repository metadata
+├── .github/       # CI / automation
+├── docs/          # Documentation
+├── modules/       # Node modules, where present
+├── tests/         # Tests, where present
+├── AGENTS.md      # Agent instructions, where present
+├── ARCHITECTURE.md
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── LICENSE
+├── README.md
+├── ROADMAP.md
+├── SECURITY.md
+└── STATUS.md
 ```
 
-## Status (AD-020-Rebuild-Aera)
+The current source tree and Cargo manifests are authoritative for exact module names and build targets.
 
-Dieses Repo wurde per AD-024 (06.09.2026) als vertikales Produkt-Repo angelegt.
-Neues Repo ohne Vault-Bestand - Grundstruktur, Implementierung folgt qualitaetsgetrieben (AD-023).
+## Installation
 
-## Regeln (verbindlich)
+```bash
+git clone https://github.com/A-TownChain-Okosystems/atc-node.git
+cd atc-node
+cargo build --workspace
+```
 
-1. Produkt-Repo = kanonische Modul-Quelle (AD-017); Monorepo nur Integration via `scripts/sync_modules.py`.
-2. Kein neuer Code ohne Test; ATCLang First (ATC-99), Rust-first per AD-021/022.
-3. Commits signieren: `[agent: aurora-base44-superagent-<App-ID>]`.
-4. Kein Mainnet-Termin (AD-023) - Rebuild qualitaetsgetrieben.
+## Usage
 
----
+Use the current CLI/help output and repository documentation for the supported commands. Typical lifecycle operations include initialization, start, status, synchronization and validator operation where implemented.
 
-[agent: aurora-base44-superagent-6a2756186106d6f0fbb105b5]
+```bash
+cargo run -- --help
+```
 
----
+Do not assume a command is production-ready solely because it is documented here.
 
-## ATC Compliance & Governance (ATC-STD-201 / 202 / 203)
+## Testing
 
-**ATC COMPLIANCE: R1** — auditiert am 2026-09-07 (atc-repo-audit; R-Level aus `.atc/repository.yaml`).
-Architekturentscheidungen: zentral im [DECISIONS_REGISTER](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/DECISIONS_REGISTER.md) (AD-Nummern verbindlich; lokale Entscheidungen in `docs/decisions/`).
+```bash
+cargo test --workspace
+```
 
-- **Purpose:** Full-Node-Service (L5, Roadmap M6).
-- **Scope:** Layer L5, Domain node — atc-node als CORE in der 23-Repo-Landschaft (AD-024/026).
-- **Architecture:** Kernel-Fundament vorhanden (AD-026-Layer 5); Node-Sync als M6-Kriterium.
-- **Features:** Skelett mit Kernel-Fundament.
-- **Installation:** Modul-Build je Sprache (rust); Integration via Monorepo-Workspace (a-townchain-os, sync_modules.py).
-- **Development:** Conventional Commits; Governance-Regeln aus atc-standards; Naming gemaess ATC-STD-000 §7.
-- **Testing:** Testplan bis M6 (tests/TESTPLAN.md); Governance-CI.
-- **Security:** SECURITY.md; S-Klasse S4 (vereinheitlicht per Audit-Empfehlung, SCR-0073); ATC-STD-203 Release-Gates; Emergency-Prozess ATC-STD-000 §32.
-- **Roadmap:** Einordnung in die Lauffaehigkeits-Roadmap M1-M8 (AD-027) und Bauhierarchie L0-L7 (AD-026).
-- **Version:** CHANGELOG.md; SemVer; Releases als ATC-REL-X.Y.Z.
-- **License:** Apache-2.0 — Apache-2.0, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC/ATS-LIC).
+CI and the current commit determine the authoritative pass/fail state.
+
+## Security
+
+`atc-node` exposes a network attack surface and may handle validator/network credentials. Follow [`SECURITY.md`](SECURITY.md) and never publish sensitive credentials or vulnerability details in public issues.
+
+## Governance
+
+The repository follows `ATC-STD-000` and the canonical ATC standards registry. Family-scoped standard IDs use `ATC-STD-F{family}-{sequence}`. Existing legacy IDs remain immutable historical references until explicitly migrated through governance.
+
+`APPROVED`, `IMPLEMENTED`, `AUDITED`, and `PRODUCTION_READY` are separate lifecycle/evidence states.
+
+## Documentation
+
+Before substantial changes, inspect:
+
+- `AGENTS.md`
+- `STATUS.md`
+- `ROADMAP.md`
+- `ARCHITECTURE.md`
+- applicable standards in `atc-standards`
+- the central governance/decision documentation where referenced by this repository
+
+## License
+
+See [`LICENSE`](LICENSE) for the authoritative license terms.
