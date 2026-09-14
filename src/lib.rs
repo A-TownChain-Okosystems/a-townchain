@@ -1,7 +1,6 @@
 // Copyright (c) 2026 Michael Wroblewski — Apache-2.0
-//! ATC-VM — Stack-Maschine MVP fuer ATCLang-Bytecode.
-//! Ehrlichkeit: kleiner Opcode-Satz; vollstaendiger Bytecode-Satz + Gas-Modell
-//! per VM-Spezifikationen. Kein Produktionstriebwerk.
+//! ATC-VM — Stack-Maschine MVP plus ATC-STD-600 execution gate.
 
 pub mod vm;
 pub mod ops;
+pub mod context;
