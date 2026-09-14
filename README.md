@@ -16,7 +16,7 @@
 
 A-TownChain (`a-townchain`) bildet die kanonische Orchestrierungs- und Integrationsschicht der Layer-3-Blockchain-Architektur.
 
-**Readiness:** Die aktuelle Evidence-SSOT klassifiziert das Repository als **partially implemented prototype / M4 integration evidence** und ausdrücklich **nicht production-ready L1**. Es existiert kein freigegebener Mainnet-Termin. filecite-local
+**Readiness:** Die Evidence-SSOT klassifiziert das Repository als **partially implemented prototype / M4 integration evidence** und ausdrücklich **nicht production-ready L1**. Es existiert kein freigegebener Mainnet-Termin.
 
 **Consensus boundary:** Die kanonische Konsenslogik liegt in `atc-algorithm`; `a-townchain` darf keine konkurrierende Legacy-Konsensimplementierung als kanonisch behandeln.
 
