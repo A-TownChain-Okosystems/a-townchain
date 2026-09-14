@@ -2,7 +2,7 @@
 
 > **ATC COMPLIANCE: R4 · Standard ATC-STD-201 v1.0.1 · GATE: AUDITED (09.09.2026, Score 94/100) · README: ATC-STD-README-001 CONFORM**
 
-> A-TownChain Blockchain L3 — Chain-ID 658467, orchestration layer. **Consensus is canonical in `atc-algorithm`; this repository is not production-ready and has no approved Mainnet date.**
+> A-TownChain is the canonical chain/orchestration layer of the A-TownChain ecosystem. **This repository is not production-ready and has no approved Mainnet date.**
 
 **Project:** a-townchain  
 **Organization:** A-TownChain-Okosystems  
@@ -14,13 +14,13 @@
 
 ## Overview
 
-A-TownChain (`a-townchain`) bildet die kanonische Orchestrierungs- und Integrationsschicht der Layer-3-Blockchain-Architektur.
+A-TownChain (`a-townchain`) bildet die kanonische Orchestrierungs- und Integrationsschicht der Blockchain-Architektur.
 
-**Readiness:** Die Evidence-SSOT klassifiziert das Repository als **partially implemented prototype / M4 integration evidence** und ausdrücklich **nicht production-ready L1**. Es existiert kein freigegebener Mainnet-Termin.
+**Readiness:** Die Evidence-SSOT klassifiziert das Repository als **partially implemented prototype / M4 integration evidence** und ausdrücklich **nicht production-ready**. Es existiert kein freigegebener Mainnet-Termin.
+
+**Execution boundary:** ATCLang ist die on-chain Sprache, ATC-VM (ATVM) die deterministische Ausführungsgrenze und `a-townchain` die Chain-/Node-Orchestrierung. Rust trägt die chain-kritische Infrastruktur.
 
 **Consensus boundary:** Die kanonische Konsenslogik liegt in `atc-algorithm`; `a-townchain` darf keine konkurrierende Legacy-Konsensimplementierung als kanonisch behandeln.
-
-**Module:** `atc-blockchain`, `atcnet`, `atc-zkp`, `atc-governance`, `atc-dns`, `atc-testnet`.
 
 **M4:** Integrations-Evidence für 2-Node-Gossip-Sync, Chain-ID 658467 und ATCLang/ATVM-Flows existiert. M4 ist **kein** Mainnet- oder Production-Readiness-Nachweis.
 
@@ -28,11 +28,13 @@ A-TownChain (`a-townchain`) bildet die kanonische Orchestrierungs- und Integrati
 
 ## Purpose
 
-A-TownChain stellt die kanonische Referenz-Orchestrierung der Layer-3-Blockchain bereit.
+A-TownChain stellt die kanonische Referenz-Orchestrierung der Blockchain bereit.
 
-- **Problemstellung:** Integration von Netzwerk, Mempool, Konsensschnittstelle, VM und State-Commitment.
-- **Einsatzgebiet:** Ausführung von Smart Contracts (ATCLang auf ATVM), dezentrales Namensregister, ZKP-Integration und On-Chain Governance.
-- **Abhängigkeiten:** `atc-shivacore` (Kernel/L1), `atc-algorithm` (kanonischer Konsens), `atc-vm` (Ausführung).
+- **On-chain:** ATCLang-Verträge werden über ATVM ausgeführt.
+- **Chain-bearing infrastructure:** Rust implementiert Node-, Netzwerk-, State- und Integrationskomponenten.
+- **Kernel boundary:** `atc-shivacore` stellt die Kernel-/TCB-Schicht bereit.
+- **Consensus:** `atc-algorithm` ist die kanonische Konsenskomponente.
+- **Governance:** Änderungen an normativen Standards und kritischen Architekturentscheidungen folgen dem A-TownChain-Governance-Modell.
 
 ## Status
 
@@ -49,7 +51,23 @@ Die maschinenlesbare Wahrheit liegt in `.atc/evidence/evidence.yaml`. Claims in 
 
 ## Architecture
 
-Die Architektur basiert auf einer modular getrennten Systemstruktur.
+```text
+ATCLang
+   │ on-chain source
+   ▼
+ATC-VM / ATVM
+   │ deterministic execution boundary
+   ▼
+a-townchain
+   │ chain / node / state orchestration
+   ├── atc-algorithm       canonical consensus
+   ├── atcnet              P2P networking
+   ├── atc-zkp             ZKP integration
+   └── atc-governance      governance integration
+   │
+   ▼
+atc-shivacore             kernel / TCB boundary
+```
 
 ### Components
 
@@ -63,28 +81,18 @@ Die Architektur basiert auf einer modular getrennten Systemstruktur.
 ### Data Flow
 
 ```text
-[Transactions] -> [atcnet Gossip] -> [Mempool] -> [Canonical Consensus Interface] -> [ATVM State Update] -> [Block Commitment]
+[ATCLang Contract] -> [ATVM] -> [State Transition] -> [Consensus Interface] -> [Block Commitment]
+                                      ▲
+                                      │
+                              [a-townchain / atcnet]
 ```
 
-### Component Dependencies
+## Chain Identity
 
-| Component | Purpose | Required |
-|---|---|---|
-| `atc-shivacore` | Kernel & Crypto Primitives | Yes |
-| `atc-algorithm` | Canonical Consensus | Yes |
-| `atcnet` | P2P Network Propagation | Yes |
-| `atc-zkp` | ZK Proof Verification | Yes |
-| `atc-governance` | On-Chain Governance | Optional |
-| `atc-dns` | Name Resolution | Optional |
-
-## Features
-
-- Chain-ID: `658467`.
-- ATCLang VM (ATVM) integration boundary.
-- P2P gossip and node orchestration.
-- ZKP verification integration.
-- Governance and DNS integration points.
-- **Consensus:** interface/orchestration only; canonical consensus implementation is `atc-algorithm` and remains subject to its P0 specification, implementation, security and conformance gates.
+- Current development Chain-ID: `658467`.
+- Chain identity is governed by the canonical Chain Identity specification.
+- Network/environment identity MUST NOT be inferred from repository names, URLs or deployment labels.
+- Legacy identifiers remain immutable during standards migration; no silent renumbering or reuse is permitted.
 
 ## Repository Structure
 
@@ -109,12 +117,6 @@ cd a-townchain
 pip install -r modules/atcnet/requirements.txt
 ```
 
-## Configuration
-
-- `CHAIN_ID`: 658467
-- `LISTEN_PORT`: 8333
-- `RPC_PORT`: 8545
-
 ## Usage
 
 Starten einer Test-Node-Instanz im Testnet-/Development-Modus:
@@ -127,7 +129,8 @@ python3 modules/atcnet/node.py --chain-id 658467 --port 8333
 
 - Conventional Commits.
 - Modul-Synchronisation über den Monorepo-/Workspace-Kontext.
-- Naming gemäß `ATC-STD-000`.
+- Naming und Governance gemäß `ATC-STD-000` und den jeweils geltenden Standards.
+- Neue Family-scoped Standard-IDs werden ausschließlich über den kanonischen Registry-/Governance-Prozess vergeben.
 
 ## Testing
 
@@ -144,6 +147,8 @@ Sicherheitsrelevante Hinweise werden gemäß **ATC-STD-203** behandelt. Producti
 ## Governance
 
 Änderungen an Konsens-, Schnittstellen- oder Sicherheitsmodulen unterliegen dem A-TownChain Governance Framework. Konsensentscheidungen werden in `atc-algorithm` spezifiziert und dort eingefroren; `a-townchain` implementiert die Orchestrierung dagegen nicht als zweite kanonische Konsensquelle.
+
+Die Family-scoped Standard-ID-Architektur verwendet `ATC-STD-F{family_id}-{sequence}`. Die Migration bestehender Legacy-IDs erfolgt kontrolliert; Legacy-IDs werden nicht still umnummeriert, wiederverwendet oder gelöscht.
 
 ## Standards & Compliance
 
