@@ -1,32 +1,110 @@
-# atc-sdk [L5]
+# atc-sdk
 
-ATC SDK — Developer Platform, CLI, Package System (atcpkg).
+> Developer SDK, CLI and package tooling for the A-TownChain ecosystem.
 
-**Vault-Restauration (07.09.2026, AD-020/026/027):** Inhalt aus dem Wiki-Vault
-(docs/archive/monorepo-full/) restauriert — vor der Repo-Leerung byte-identisch gesichert. Keine — Vault-Stand konsistent.
+**Project:** `atc-sdk`  
+**Organization:** `A-TownChain-Okosystems`  
+**Status:** `development`
 
-**Module:** atc-sdk, atc-cli, atc-atcpkg
+## Purpose
 
-**Meile (AD-027):** M6 GEPLANT — Dienste NICHT belegt (Evidence incomplete, SCR-0073)
+`atc-sdk` provides developer-facing libraries and tooling for interacting with the A-TownChain stack. It is an SDK/tooling layer, not the chain protocol implementation and not the ATC-VM itself.
 
-**Hinweis:** Basis fuer den Rebuild; Gate-Kriterien laut LAUFFAEHIGKEITS_ROADMAP
-(a-townchain-os-docs/docs/roadmap/).
+The repository currently contains or is intended to contain:
 
----
+- `atc-sdk` — developer SDK libraries
+- `atc-cli` — command-line tooling
+- `atc-atcpkg` — ATC package-system tooling
 
-## ATC Compliance & Governance (ATC-STD-201 / 202 / 203)
+## Architecture Boundary
 
-**ATC COMPLIANCE: R2** — auditiert am 2026-09-07 (atc-repo-audit; R-Level aus `.atc/repository.yaml`).
-Architekturentscheidungen: zentral im [DECISIONS_REGISTER](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/DECISIONS_REGISTER.md) (AD-Nummern verbindlich; lokale Entscheidungen in `docs/decisions/`).
+```text
+ATCLang
+   ↓
+ATC-VM
+   ↓
+A-TownChain protocol / node
+   ↑
+ATC SDK / CLI / package tooling
+```
 
-- **Purpose:** SDK fuer ATCLang/ATVM und Blockchain-APIs (L5).
-- **Scope:** Layer L5, Domain sdk — atc-sdk als SDK in der 23-Repo-Landschaft (AD-024/026).
-- **Architecture:** Client-Bibliotheken fuer Chain-ID 658467; ATCLang-Toolchain-Anbindung.
-- **Features:** SDK-Bindings, Wallet-Integration.
-- **Installation:** Modul-Build je Sprache (rust); Integration via Monorepo-Workspace (a-townchain-os, sync_modules.py).
-- **Development:** Conventional Commits; Governance-Regeln aus atc-standards; Naming gemaess ATC-STD-000 §7.
-- **Testing:** Testplan bis M6; Governance-CI.
-- **Security:** SECURITY.md; S-Klasse S2; ATC-STD-203 Release-Gates; Emergency-Prozess ATC-STD-000 §32.
-- **Roadmap:** Einordnung in die Lauffaehigkeits-Roadmap M1-M8 (AD-027) und Bauhierarchie L0-L7 (AD-026).
-- **Version:** CHANGELOG.md; SemVer; Releases als ATC-REL-X.Y.Z.
-- **License:** Apache-2.0 — Apache-2.0, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC/ATS-LIC).
+The SDK consumes stable protocol/VM interfaces. It must not silently redefine consensus, state-transition, or chain-identity semantics.
+
+## Status
+
+`development` means the repository is under active implementation/rebuild. Roadmap milestones or audit levels are not equivalent to `PRODUCTION_READY`.
+
+Historical vault-restoration information is retained in repository history and documentation where relevant; it is not treated as evidence that the current implementation is complete.
+
+## Repository Structure
+
+```text
+.
+├── .atc/       # ATC repository metadata
+├── docs/       # Documentation
+├── modules/    # SDK / CLI / package modules, where present
+├── tests/      # Tests, where present
+├── AGENTS.md   # AI agent instructions, where present
+├── CHANGELOG.md
+├── LICENSE
+├── README.md
+├── ROADMAP.md
+├── SECURITY.md
+└── STATUS.md
+```
+
+The exact module layout is authoritative in the current repository tree and Cargo workspace manifests.
+
+## Requirements
+
+- Rust/Cargo for Rust components
+- Python only where repository tooling requires it
+- Git
+
+Use the versions declared by the repository's current toolchain/manifests rather than treating historical README values as permanent requirements.
+
+## Installation
+
+```bash
+git clone https://github.com/A-TownChain-Okosystems/atc-sdk.git
+cd atc-sdk
+cargo build --workspace
+```
+
+If the current workspace contains additional language-specific modules, follow their local build instructions.
+
+## Testing
+
+```bash
+cargo test --workspace
+```
+
+Use CI results for the authoritative status of the current commit. Planned milestone tests must not be reported as completed implementation evidence.
+
+## Development
+
+- Follow `ATC-STD-000` and the current ATC governance process.
+- Use Conventional Commits where required by repository policy.
+- Keep SDK abstractions aligned with canonical protocol and VM interfaces.
+- Do not hard-code a chain identity in client code when the value belongs to the canonical network/chain configuration.
+- Family-scoped standards use `ATC-STD-F{family}-{sequence}`. Legacy IDs remain historical references until explicitly migrated through governance.
+
+## Security
+
+Report vulnerabilities using [`SECURITY.md`](SECURITY.md). Do not disclose security-sensitive issues through public GitHub Issues.
+
+## Documentation
+
+Consult the repository's `docs/`, `STATUS.md`, `ROADMAP.md`, and current manifests before implementation work.
+
+## Governance
+
+`atc-sdk` is governed by the canonical ATC standards registry and `ATC-STD-000`. `APPROVED`, `AUDITED`, `IMPLEMENTED`, and `PRODUCTION_READY` are distinct states and must not be conflated.
+
+## License
+
+See [`LICENSE`](LICENSE) for the authoritative license text.
+
+## AI Agent Instructions
+
+Before making changes, inspect the current `AGENTS.md` (if present), `STATUS.md`, `ROADMAP.md`, Cargo manifests, and applicable ATC standards. Validate SDK behavior against the current protocol/VM interfaces and run the relevant test suite before claiming completion.
