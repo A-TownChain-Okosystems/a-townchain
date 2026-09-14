@@ -2,7 +2,7 @@
   "chain_id": "atc",
   "chain_name": "A-TownChain Devnet",
   "network_id": "devnet",
-  "genesis_id": "45d501e4155c10663925657d408b71a94248e5413ab0d56823cc7d4868bd0f87",
+  "genesis_id": "05945f50ddf3c7282b6196ce64f2a972c32606879b75f546e8a52b2ed5ed9bea",
   "genesis_height": 0,
   "initial_peers": ["atc-node-1", "atc-node-2"],
   "state_root": "0000000000000000000000000000000000000000000000000000000000000000",
