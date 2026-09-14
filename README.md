@@ -2,47 +2,50 @@
 
 > **ATC COMPLIANCE: R4 · Standard ATC-STD-201 v1.0.1 · GATE: AUDITED (09.09.2026, Score 94/100) · README: ATC-STD-README-001 CONFORM**
 
-> A-TownChain Blockchain L3 — Chain-ID 658467, PoW+PoS+PoH, ZKP, Governance, DNS, Testnet (AD-012: Kernel-System-Service).
+> A-TownChain Blockchain L3 — Chain-ID 658467, orchestration layer. **Consensus is canonical in `atc-algorithm`; this repository is not production-ready and has no approved Mainnet date.**
 
-**Project:** a-townchain
-**Organization:** A-TownChain-Okosystems
-**Status:** `development`
-**Version:** `0.1.0`
+**Project:** a-townchain  
+**Organization:** A-TownChain-Okosystems  
+**Status:** `development`  
+**Version:** `0.1.0`  
 **License:** `Apache-2.0`
 
 ---
 
 ## Overview
 
-A-TownChain (`a-townchain`) bildet das kanonische Layer-3-Blockchain-Fundament der A-TownChain-Ökosystem-Architektur.
+A-TownChain (`a-townchain`) bildet die kanonische Orchestrierungs- und Integrationsschicht der Layer-3-Blockchain-Architektur.
 
-**Vault-Restauration (07.09.2026, AD-020/026/027):** Inhalt aus dem Wiki-Vault (`docs/archive/monorepo-full/`) restauriert — vor der Repo-Leerung byte-identisch gesichert. Chain-ID 658467 im Vault-Stand (24 Dateien verifiziert).
+**Readiness:** Die aktuelle Evidence-SSOT klassifiziert das Repository als **partially implemented prototype / M4 integration evidence** und ausdrücklich **nicht production-ready L1**. Es existiert kein freigegebener Mainnet-Termin. filecite-local
+
+**Consensus boundary:** Die kanonische Konsenslogik liegt in `atc-algorithm`; `a-townchain` darf keine konkurrierende Legacy-Konsensimplementierung als kanonisch behandeln.
 
 **Module:** `atc-blockchain`, `atcnet`, `atc-zkp`, `atc-governance`, `atc-dns`, `atc-testnet`.
 
-**Meilenstein (AD-027):** M4 — Blockchain läuft: 2 Nodes Gossip-Sync, Transaktion validiert, Genesis Chain-ID 658467, ATCLang-Contract auf ATVM.
+**M4:** Integrations-Evidence für 2-Node-Gossip-Sync, Chain-ID 658467 und ATCLang/ATVM-Flows existiert. M4 ist **kein** Mainnet- oder Production-Readiness-Nachweis.
 
 ---
 
 ## Purpose
 
-A-TownChain stellt die kanonische Referenz-Implementierung der Layer-3-Blockchain im A-TownChain-Ökosystem bereit.
+A-TownChain stellt die kanonische Referenz-Orchestrierung der Layer-3-Blockchain bereit.
 
-- **Problemstellung:** Bereitstellung eines dezentralen, performanten und kryptografisch gesicherten State Machine Konsensus ohne Abhängigkeiten von externen Drittanbieter-Blockchains oder POSIX-Forks.
-- **Einsatzgebiet:** Ausführung von Smart Contracts (ATCLang auf ATVM), Dezentrales Namensregister (ATC-DNS), Privatsphäre via Zero-Knowledge Proofs (ATC-ZKP) und On-Chain Governance.
-- **Abhängigkeiten:** Baut auf `atc-shivacore` (Kernel/L1) auf und bedient Oberflächen/Dienste wie `globus-os`, `genesis-engine` und `genesis-chronicles`.
-
----
+- **Problemstellung:** Integration von Netzwerk, Mempool, Konsensschnittstelle, VM und State-Commitment.
+- **Einsatzgebiet:** Ausführung von Smart Contracts (ATCLang auf ATVM), dezentrales Namensregister, ZKP-Integration und On-Chain Governance.
+- **Abhängigkeiten:** `atc-shivacore` (Kernel/L1), `atc-algorithm` (kanonischer Konsens), `atc-vm` (Ausführung).
 
 ## Status
 
 **Status:** `development`
 
-- **Compliance Level:** R4 (auditiert 2026-09-07 via `atc-repo-audit`).
-- **Security Class:** S4 (Critical Infrastructure).
-- **Lauffähigkeits-Stufe:** Meilenstein M4 erreicht.
+- **Implementation:** `partial` — prototypischer Blockchain-Kern.
+- **Maturity:** M4-Integrationsstand mit Evidence, nicht production-ready.
+- **Security:** `not_audited` für den Production-Release-Gate.
+- **Conformance:** `not_verified`.
+- **Release:** `development`.
+- **Mainnet:** **NO-GO** bis alle verbindlichen Evidence-Gates erfüllt und auditiert sind.
 
----
+Die maschinenlesbare Wahrheit liegt in `.atc/evidence/evidence.yaml`. Claims in dieser README ersetzen keine Evidence.
 
 ## Architecture
 
@@ -52,15 +55,15 @@ Die Architektur basiert auf einer modular getrennten Systemstruktur.
 
 1. **`atc-blockchain`**: Core State Machine, Block-Erstellung, Transaktions-Pool, State DB.
 2. **`atcnet`**: P2P-Netzwerkschicht (Gossip Protocol, Node Discovery, Peer Bootstrap).
-3. **`atc-zkp`**: Zero-Knowledge Proof Schaltung und Verifikation (Groth16/Plonk Gadgets).
+3. **`atc-zkp`**: Zero-Knowledge Proof Schaltung und Verifikation.
 4. **`atc-governance`**: On-Chain-Abstimmung, Vorschläge, Timelock und Treasury-Verwaltung.
-5. **`atc-dns`**: On-Chain Domain Name System und Dezentrale Namensauflösung.
-6. **`atc-testnet`**: Testnetzwerk-Launcher, Simulations-Skripte und Node-Konfigurationen.
+5. **`atc-dns`**: On-Chain Domain Name System und dezentrale Namensauflösung.
+6. **`atc-testnet`**: Testnetzwerk-Launcher, Simulation und Node-Konfiguration.
 
 ### Data Flow
 
 ```text
-[Transactions] -> [atcnet Gossip] -> [Mempool] -> [ShivaConsensus Validation] -> [ATVM State Update] -> [Block Commitment]
+[Transactions] -> [atcnet Gossip] -> [Mempool] -> [Canonical Consensus Interface] -> [ATVM State Update] -> [Block Commitment]
 ```
 
 ### Component Dependencies
@@ -68,43 +71,35 @@ Die Architektur basiert auf einer modular getrennten Systemstruktur.
 | Component | Purpose | Required |
 |---|---|---|
 | `atc-shivacore` | Kernel & Crypto Primitives | Yes |
+| `atc-algorithm` | Canonical Consensus | Yes |
 | `atcnet` | P2P Network Propagation | Yes |
 | `atc-zkp` | ZK Proof Verification | Yes |
 | `atc-governance` | On-Chain Governance | Optional |
 | `atc-dns` | Name Resolution | Optional |
 
----
-
 ## Features
 
-- **ShivaConsensus:** Hybrider Konsens aus PoW (SHA3-ATC), PoS (reputation-weighted) und PoH (VDF-basiert).
-- **Chain-ID:** 658467.
-- **Token Standards:** ATC-8300 (Fungible) und ATC-9000 (Non-Fungible / Multi-Token).
-- **Kryptografie:** ECDSA secp256k1 & ZKP Circuit Validation.
-- **ATCLang VM (ATVM):** Deterministische Ausführungsumgebung für Smart Contracts.
-
----
+- Chain-ID: `658467`.
+- ATCLang VM (ATVM) integration boundary.
+- P2P gossip and node orchestration.
+- ZKP verification integration.
+- Governance and DNS integration points.
+- **Consensus:** interface/orchestration only; canonical consensus implementation is `atc-algorithm` and remains subject to its P0 specification, implementation, security and conformance gates.
 
 ## Repository Structure
 
 ```text
 a-townchain/
 ├── docs/
-└── modules/
+├── modules/
+└── .atc/evidence/
 ```
-
-- `docs/`: Technische Dokumentation und Architektur-Standards (`REPOSITORY_STANDARD.md`).
-- `modules/`: Quellcode-Module (`atc-blockchain`, `atcnet`, `atc-zkp`, `atc-governance`, `atc-dns`, `atc-testnet`).
-
----
 
 ## Requirements
 
 - **Rust:** 1.70+
-- **Python:** 3.10+ (für Netzwerkskripte und tooling)
+- **Python:** 3.10+
 - **Cargo / Make / Docker:** für Modul-Builds und Test-Stacks
-
----
 
 ## Installation
 
@@ -114,72 +109,41 @@ cd a-townchain
 pip install -r modules/atcnet/requirements.txt
 ```
 
----
-
 ## Configuration
-
-Die Konfiguration der Blockchain-Knoten erfolgt über Umgebungsvariablen oder Konfigurationsdateien in `modules/atc-testnet/config/`:
 
 - `CHAIN_ID`: 658467
 - `LISTEN_PORT`: 8333
 - `RPC_PORT`: 8545
 
----
-
 ## Usage
 
-Starten einer Test-Node-Instanz im Testnet-Modus:
+Starten einer Test-Node-Instanz im Testnet-/Development-Modus:
 
 ```bash
 python3 modules/atcnet/node.py --chain-id 658467 --port 8333
 ```
 
----
-
 ## Development
 
-- **Commit-Konvention:** Conventional Commits (`feat:`, `fix:`, `docs:`, `security:`).
-- **Modul-Synchronisation:** Abgleich über Monorepo-Workspace (`a-townchain-os`).
-- **Naming:** Vorgaben gemäß `ATC-STD-000` §7.
-
----
+- Conventional Commits.
+- Modul-Synchronisation über den Monorepo-/Workspace-Kontext.
+- Naming gemäß `ATC-STD-000`.
 
 ## Testing
-
-Ausführung der Modul-Testsuite für Netzwerkschicht und Konsens:
 
 ```bash
 pytest modules/atcnet/tests
 ```
 
-Erwartetes Ergebnis: **PASS** (100% erfolgreiche Testabdeckung der P2P-Tests).
-
----
+Testergebnisse gelten nur zusammen mit dem zugehörigen Evidence-Bundle als Release-Nachweis.
 
 ## Security
 
-Sicherheitsrelevante Hinweise:
-
-- **Security Reporting:** Sicherheitsrisiken und Vulnerabilities werden NICHT öffentlich als Issue gemeldet, sondern direkt an den Owner (ShivaCoreDev) über den offiziellen Security-Reporting-Prozess nach **ATC-STD-203** übermittelt (nicht öffentlich / not publicly disclosed).
-- **Security Level:** S4 (Core Infrastructure Security Requirements).
-
----
-
-## Documentation
-
-- [STATUS.md](STATUS.md) — Aktueller Projektstatus
-- [ARCHITECTURE.md](ARCHITECTURE.md) — Detaillierte Architekturübersicht
-- [ROADMAP.md](ROADMAP.md) — Entwicklungs-Roadmap M1-M8
-- [AGENTS.md](AGENTS.md) — Instruktionen für KI-Agenten
-- [docs/REPOSITORY_STANDARD.md](docs/REPOSITORY_STANDARD.md) — Repository Compliance Standard
-
----
+Sicherheitsrelevante Hinweise werden gemäß **ATC-STD-203** behandelt. Production-Readiness bleibt `NO-GO`, solange das Security-Gate nicht auf `audited` steht.
 
 ## Governance
 
-Änderungen an Konsens-, Schnittstellen- oder Sicherheitsmodulen unterliegen dem **A-TownChain Enterprise Governance Framework**. Alle architektonischen Entscheidungen werden im zentralen `DECISIONS_REGISTER` erfasst (AD-Nummern verbindlich). Review- und Approval-Pflicht durch `ShivaCoreDev`.
-
----
+Änderungen an Konsens-, Schnittstellen- oder Sicherheitsmodulen unterliegen dem A-TownChain Governance Framework. Konsensentscheidungen werden in `atc-algorithm` spezifiziert und dort eingefroren; `a-townchain` implementiert die Orchestrierung dagegen nicht als zweite kanonische Konsensquelle.
 
 ## Standards & Compliance
 
@@ -192,34 +156,25 @@ Sicherheitsrelevante Hinweise:
 | ATC-STD-202 | 1.2.0 | ✅ |
 | ATC-STD-203 | 1.0.1 | ✅ |
 
----
-
 ## Roadmap
 
-Die Roadmap orientiert sich an der Lauffähigkeits-Roadmap M1-M8 (AD-027). Details siehe [ROADMAP.md](ROADMAP.md).
-Tracked in GitHub Projects & Issues.
+- Konsens-Refactor auf `atc-algorithm`.
+- End-to-End-Conformance ATCLang → VM → Contract → Node → Chain.
+- Security-Audit.
+- Reproducible Build.
+- Release erst nach vollständiger Evidence und Auditierung.
 
----
-
-## Contributing
-
-Beiträge zur Entwicklung folgen den Regeln in [CONTRIBUTING.md](CONTRIBUTING.md).
-
----
+**Kein Mainnet vor Erfüllung aller verbindlichen Gates.**
 
 ## License
 
-Apache-2.0 — Apache-2.0, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC/ATS-LIC). Details siehe [LICENSE](LICENSE).
-
----
+Apache-2.0 — Details siehe [LICENSE](LICENSE).
 
 ## Maintainers
 
 - **Organisation:** A-TownChain-Okosystems
 - **Lead Maintainer:** ShivaCoreDev
 - **Automation Maintainer:** aurora-superagent
-
----
 
 ## Repository Metadata
 
