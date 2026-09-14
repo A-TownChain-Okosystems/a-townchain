@@ -1,82 +1,85 @@
 # ATC Algorithm
 
-> **ATC COMPLIANCE: R1** — auditiert am 2026-09-10 (SCR-0075; R-Level aus `.atc/repository.yaml`).
+> **ATC COMPLIANCE: R1** — repository governance baseline. This repository is the **canonical consensus implementation target**, but it is **not yet production-ready**.
 
-
-> ATC-Algorithmus — Propriethärer Hybrid Consensus der A-TownChain (PoH + PoS + PoW).
-
-**Project:** atc-algorithm
-**Organization:** A-TownChain-Okosystems
-**Status:** `development`
-**Version:** `0.1.0`
-**License:** `Apache-2.0 (ATC-LIC)`
+**Project:** atc-algorithm  
+**Organization:** A-TownChain-Okosystems  
+**Status:** `development`  
+**Repository Version:** `0.1.0`  
+**License:** `Apache-2.0`
 
 ## Overview
 
-ATC Algorithm ist das zentrale Konsens-Repository des A-TownChain-Ökosystems (Chain-ID 658467). Es implementiert den Apache-2.0en Hybrid Consensus bestehend aus Proof of History (PoH), Proof of Stake (PoS) und Proof of Work (PoW). Priorität P0 (Konsens-Kern, AD-044).
+`atc-algorithm` is the canonical consensus repository for A-TownChain (Chain-ID `658467`). It contains the current MVP/skeleton implementation and the normative consensus work required for a production release.
 
-Für KI-Agenten: Governance liegt zentral im Wiki-Repo `a-townchain-os-docs`: `AGENT_POLICY.md`, `AGENT_COORDINATION.md`, `DECISIONS_REGISTER.md` (insb. AD-001 SHA-256, AD-004 Chain-ID, AD-023 kein Mainnet-Termin, AD-044 dieses Repo).
+**Critical truth:** the presence of PoH/selection prototype code and passing local tests does **not** constitute a complete, secure, deterministic or production-ready consensus protocol. Consensus remains a P0 release blocker until specification freeze, complete implementation, conformance, security review and independent evidence are complete.
 
 ## Purpose
 
-ATC Algorithm stellt die kanonische Konsens-Logik für A-TownChain bereit. Es ist verantwortlich für:
-- Kryptografische Zeitstempel-Kette (PoH) auf Basis verifizierbarer SHA-256 Ereignis-Reihenfolge (AD-001)
-- Validator-Gewichtung & Staking-basierte Block-Produktion (PoS)
-- Schwierigkeitsanteil und Schutz gegen Stake-Zentralisierung (PoW)
-- Formale Hybrid-Auswahl, Fork-Choice-Rule und Konsens-Finalisierung
+The repository owns the canonical consensus logic for:
 
-## Scope
+- Proof-of-History sequencing
+- Proof-of-Stake validator weighting
+- Proof-of-Work integration
+- Hybrid selection rules
+- Fork-choice rules
+- Finality rules
+- Consensus verification and adversarial testing
 
-In Scope:
-- Spezifikation und Rust-Implementierung der PoH-Tick-Kette und Hybrid-Konsens-Regeln
-- Konsens-Verifikation, Fuzzing und Test-Suiten für Konsens-Sicherheit
-- Schnittstellen zur Block- und Transaktions-Orchestrierung
-
-Out of Scope:
-- Chain-Konsens-Orchestrierung und Block/Tx-Netzwerk-Propagation (liegt in `a-townchain`)
-- Kernel-Isolation (liegt in `atc-shivacore`)
-- Smart-Contract-Ausführung (liegt in `atc-vm`)
+`a-townchain` is the orchestration/integration layer and must not become a second canonical consensus implementation.
 
 ## Status
 
-**Status:** `development`
+**Current maturity:** `R1-SKELETON / DEVELOPMENT`
 
-- **Stand:** R1-Skeleton (ATC-STD-201) — Struktur + Governance stehen, Implementierung folgt im qualitätsgetriebenen Rebuild (AD-023).
-- **Abgrenzung (AD-044):** `atc-algorithm` ist das führende Konsens-Repo; `a-townchain` dient als Referenz-Orchestrierung.
-- **Nächste Schritte:** PoH-Spezifikation konsolidieren, Hybrid-Auswahlregeln formalisieren, Rust-Implementierung der PoH-Tick-Kette, Fuzzing.
-- **Qualitäts-Gates:** Konsens = S4-kritisch (G18 Security-Audit vor Freeze; SHA-256 nach AD-001).
+Evidence currently supports an MVP/skeleton implementation, not a production consensus engine. The current source tree contains only a limited implementation surface (including `poh`, selection and hash components); the full consensus engine specified by the architecture is not yet complete.
+
+### P0 Release Gates
+
+The consensus P0 remains **OPEN** until all of the following are evidenced:
+
+1. **Consensus specification freeze** — complete normative rules for PoH, PoS, PoW, hybrid selection, fork choice and finality.
+2. **Complete Rust implementation** — implementation matches the frozen specification.
+3. **Determinism/conformance** — cross-node differential and conformance vectors pass.
+4. **Security review** — independent cryptographic and consensus-security assessment.
+5. **Adversarial testing** — equivocation, replay, reorg, fork-choice, validator-set and timing cases.
+6. **Reproducible build/evidence** — release artifacts are reproducible and bound to evidence.
+
+**Mainnet:** `NO-GO` while any P0 gate is open.
 
 ## Architecture
 
-ATC Algorithm folgt einer mehrschichtigen Hybrid-Konsens-Architektur.
+```text
+Transactions / Blocks
+        │
+        ▼
+PoH sequencing
+        │
+        ▼
+Validator / PoS inputs + PoW constraints
+        │
+        ▼
+Hybrid selection
+        │
+        ▼
+Fork choice + finality
+        │
+        ▼
+Canonical consensus result
+        │
+        ▼
+a-townchain orchestration
+```
 
 ### Components
 
-| Component | Purpose | Required |
+| Component | Purpose | Current state |
 |---|---|---|
-| `poh` | Proof of History Zeitstempel-Kette (SHA-256 Verifizierbare Ticks) | Yes |
-| `pos` | Proof of Stake Validator-Gewichtung & Staking-Logik | Yes |
-| `pow` | Proof of Work Schwierigkeitsanteil gegen Stake-Zentralisierung | Yes |
-| `hybrid_engine` | Hybrid-Auswahl, Fork-Choice-Rule & Finalitäts-Orchestrierung | Yes |
-
-### Data Flow
-
-```text
-Transaktionen -> PoH (Zeitstempel-Kette, SHA-256 — AD-001)
-                  |
-                  v
-           PoS/PoW-Hybrid-Auswahl (Validator-Gewichtung)
-                  |
-                  v
-           Block finalisierung -> a-townchain (Chain) -> atc-vm (Contract-Ausführung)
-```
-
-## Features
-
-- Verifizierbare Proof-of-History Zeitstempelkette (SHA-256).
-- 5-Validator-Key PoS Gewichtung mit Staking-Regeln.
-- Dynamische PoW Schwierigkeitsanpassung zur Verhinderung von Stake-Konzentration.
-- Formale Fork-Choice-Rule und deterministisches Block-Finalitäts-Engine.
+| `poh` | Proof-of-History sequencing | MVP/skeleton |
+| `pos` | Validator weighting / staking | Specification work |
+| `pow` | PoW constraints | Specification work |
+| `hybrid_engine` | Hybrid selection/finality | Specification work |
+| `hash` | TownHash development component | Devnet-grade; not cryptographically audited |
 
 ## Repository Structure
 
@@ -89,8 +92,8 @@ atc-algorithm/
 
 ## Requirements
 
-- Rust `1.75+` (cargo, rustc)
-- Python `3.10+` (für Validierungstools und Hilfsskripte)
+- Rust `1.75+`
+- Python `3.10+` for validation tooling
 - Git `2.30+`
 
 ## Installation
@@ -101,47 +104,25 @@ cd atc-algorithm
 cargo build
 ```
 
-## Configuration
-
-Konfigurationsparameter für PoH-Tick-Frequenzen, Validator-Set und PoW-Schwierigkeit befinden sich in `src/` sowie `.atc/repository.yaml`.
-
-## Usage
-
-```bash
-cargo run --bin atc-algorithm
-```
-
-## Development
-
-```bash
-cargo build --all-targets
-```
-
 ## Testing
 
 ```bash
 cargo test
 ```
-Erwartetes Ergebnis: `PASS` (alle Unit- und Integrationstests erfolgreich).
+
+A green test run proves only the tested implementation surface. It does not close the consensus P0 gates above.
 
 ## Security
 
-Sicherheitsrelevante Befunde dürfen NICHT öffentlich gemeldet werden. Bitte melden Sie Schwachstellen direkt gemäß dem offiziellen ATC Security Reporting Prozess (ATC-STD-203) und [SECURITY.md](SECURITY.md).
-
-## Documentation
-
-- [Repository Standard](docs/REPOSITORY_STANDARD.md)
-- [Architecture Details](ARCHITECTURE.md)
-- [Project Status](STATUS.md)
-- [AI Agent Instructions](AGENTS.md)
+Security issues must be reported according to `SECURITY.md` / ATC-STD-203. The repository remains `NOT_AUDITED` for production consensus until the required security review is complete.
 
 ## Governance
 
-Dieses Repository folgt dem A-TownChain Enterprise Governance Framework (ATC-STD-000). Review- und Approval-Pflicht für alle konsensuskritischen Schnittstellen (S4-kritisch).
+This repository follows ATC-STD-000 v1.3.0 and the A-TownChain governance framework. Consensus changes require the applicable protocol authority, review chain, evidence and release gates.
 
 ## Standards & Compliance
 
-| Standard | Version | Compliance |
+| Standard | Version | Status |
 |---|---:|---|
 | ATC-STD-000 | 1.3.0 | ✅ |
 | ATC-STD-README-001 | 1.0.0 | ✅ |
@@ -153,40 +134,19 @@ Dieses Repository folgt dem A-TownChain Enterprise Governance Framework (ATC-STD
 
 ## Roadmap
 
-Die Entwicklungsplanung ist in [ROADMAP.md](ROADMAP.md) hinterlegt. Ziel: Meilenstein M4 (Blockchain / Consensus Engine).
-
-## Contributing
-
-Beiträge folgen den Regeln in [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-Apache-2.0 — Apache-2.0, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (ATC-LIC). Siehe [LICENSE](LICENSE).
+1. Freeze normative consensus specification.
+2. Complete PoH/PoS/PoW/hybrid implementation.
+3. Add deterministic conformance vectors and differential tests.
+4. Complete adversarial/fuzz testing.
+5. Complete independent security review.
+6. Produce reproducible release evidence.
+7. Only then promote toward testnet/mainnet release gates.
 
 ## Maintainers
 
-A-TownChain Consensus & Algorithm Team / ShivaCoreDev.
+**Organization:** A-TownChain-Okosystems  
+**Owner/Maintainer:** governed through the applicable authority and approval records.
 
-## Repository Metadata
+## License
 
-<!--
-atc:
-  standard: ATC-STD-README-001
-  version: 1.0.0
-repository:
-  id: ATC-REPO-ALG-001
-  name: atc-algorithm
-  type: software
-  status: development
-ownership:
-  organization: A-TownChain-Okosystems
-technology:
-  primary_language: Rust
-governance:
-  security_class: S4
-  criticality: high
--->
-
-## Changelog
-
-Siehe [CHANGELOG.md](CHANGELOG.md) für die Änderungshistorie.
+Apache-2.0 — see `LICENSE`.
