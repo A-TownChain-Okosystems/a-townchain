@@ -2,16 +2,193 @@
 
 > **ATC COMPLIANCE: R1** — auditiert am 2026-09-10 (SCR-0075; R-Level aus `.atc/repository.yaml`).
 
+> Verifizierte Bytecode-Ausführung und deterministische Runtime-Engine für ATCLang-Verträge. ATVM ist die technische Grenze zwischen on-chain ATCLang und der Rust-basierten Chain-Infrastruktur.
 
-> Verifizierte Bytecode-Ausführung und deterministische Runtime-Engine für ATCLang-Verträge.
-
-**Project:** atc-vm
-**Organization:** A-TownChain-Okosystems
-**Status:** `development`
-**Version:** `0.1.0`
-**License:** `Apache-2.0 — A-TownChain-Okosystems`
-**Standard:** `ATC-STD-README-001`
+**Project:** atc-vm  
+**Organization:** A-TownChain-Okosystems  
+**Status:** `development`  
+**Version:** `0.1.0`  
+**License:** `Apache-2.0 — A-TownChain-Okosystems`  
+**Standard:** `ATC-STD-README-001`  
 **Maintainer:** A-TownChain-Okosystems (ShivaCoreDev)
+
+## Overview
+
+`atc-vm` (A-TownChain Virtual Machine, ATVM) ist die kanonische Ausführungsumgebung für Smart Contracts im A-TownChain-Ökosystem. ATVM garantiert deterministische, verifizierte und gas-limitierte Bytecode-Ausführung mit strikter Sicherheits- und Speichersandbox.
+
+ATVM ist die **Boundary** zwischen:
+
+- **ATCLang:** on-chain Sprache, Contract- und State-Transition-Logik.
+- **ATVM:** Bytecode-Verifikation und deterministische Ausführung.
+- **Rust Chain Infrastructure:** Node, Networking, State, IPC und weitere chain-tragende Komponenten.
+
+## Purpose
+
+ATVM provides the canonical execution environment and verifier engine within the A-TownChain ecosystem. It is responsible for:
+
+- Bytecode-Verifikation — kein unverifizierter Bytecode wird ausgeführt.
+- Deterministische und gas-limitierte Vertragsausführung.
+- Runtime- und Host-Interfaces für Syscalls, State Storage und Chain-Kontext.
+- Durchsetzung definierter Sicherheitsgrenzen.
+
+## Scope
+
+- **Gilt für:** Kanonische Rust-Implementierung von ATVM, Bytecode-Verifier, Gas-Modell und Host-Syscall-Interface.
+- **Nicht-Gilt für:** Compiler-Frontend und Bytecode-Codegen (`atclang`) sowie Konsens-/Block-Orchestrierung (`a-townchain`).
+- **Kernel boundary:** Kernel- und TCB-Funktionen bleiben in `atc-shivacore`.
+
+## Status
+
+**Status:** `development` — R1-Skeleton. Struktur und Governance sind definiert; die weitere Implementierung folgt den qualitäts- und sicherheitsorientierten Gates.
+
+ATVM ist **nicht automatisch production-ready**, nur weil einzelne Tests oder Integrationspfade erfolgreich sind. Release-Readiness wird aus Evidence, Conformance und Audit-Gates abgeleitet.
+
+## Architecture
+
+```text
+ATCLang source
+     │
+     ▼
+Compiler / Codegen
+     │
+     ▼
+ATC Bytecode
+     │
+     ▼
+ATVM Verifier
+     │
+     ▼
+Deterministic Execution / Gas Engine
+     │
+     ▼
+Host Interface
+     │
+     ▼
+a-townchain State / Chain Infrastructure
+     │
+     ▼
+atc-shivacore kernel boundary
+```
+
+### Components
+
+- `Bytecode Verifier`: Statische Sicherheits- und Validitätsprüfung vor der Ausführung.
+- `Execution Engine`: Deterministischer, gas-limitierter Interpreter.
+- `Host Interface`: Syscall-Handling, Memory Access und State Storage Integration.
+- `Sandbox Boundary`: Sicherheits- und Trust-Boundary für Contract Execution.
+
+### Dependencies
+
+| Component | Purpose | Required |
+|---|---|---|
+| `atclang` | Compiler & Bytecode Format | Yes |
+| `atc-shivacore` | Kernel Process & Memory Isolation | Yes |
+| `atc-standards` | Governance & Security Standards | Yes |
+| `a-townchain` | Chain / State Integration | Yes |
+
+## Features
+
+- Statische Bytecode-Verifikation.
+- Deterministischer Interpreter mit Gas-Kostenmodell.
+- Definiertes Host-/Syscall-Interface.
+- Rust-first Core Implementierung.
+- Fuzzing- und Differential-Testing gegen Referenzpfade.
+
+## Repository Structure
+
+```text
+.
+├── docs/                # Dokumentation, Architektur und Standards
+├── src/                 # ATVM Quellcode
+└── tests/               # Unit-, Integrations- und Fuzzing-Tests
+```
+
+## Requirements
+
+- Rust toolchain >= 1.75 (`cargo`, `rustc`)
+- Python >= 3.11 für Referenz-Vergleichstests
+- Git >= 2.30
+
+## Installation
+
+```bash
+git clone https://github.com/A-TownChain-Okosystems/atc-vm.git
+cd atc-vm
+cargo build
+```
+
+## Usage
+
+```bash
+cargo build
+cargo test
+```
+
+## Development
+
+Entwicklung erfolgt nach dem Rust-first Prinzip. Commits MÜSSEN Conventional Commits entsprechen. ATVM ist eine sicherheitskritische Trust Boundary; Production-Release erfordert vollständige Evidence-, Conformance- und Security-Gates.
+
+## Testing
+
+```bash
+cargo test
+```
+
+Testergebnisse sind nur zusammen mit dem jeweiligen Evidence-Bundle ein Release-Nachweis.
+
+## Security
+
+Security issues must not be disclosed publicly through GitHub Issues. Schwachstellen werden gemäß dem offiziellen ATC-Security-Reporting-Prozess (`ATC-STD-203`, `SECURITY.md`) behandelt.
+
+## Documentation
+
+- `ARCHITECTURE.md` — Technische Architektur der VM
+- `STATUS.md` — Maschinenlesbarer Projektstatus
+- `ROADMAP.md` — Entwicklungsmeilensteine
+- `AGENTS.md` — Instruktionen für KI-Agenten
+- `a-townchain-os-docs` — zentrale technische Dokumentation
+
+## Governance
+
+Dieses Repository unterliegt `ATC-STD-000` und den jeweils geltenden A-TownChain-Standards.
+
+Die Standard-ID-Migration verwendet die Family-scoped Form `ATC-STD-F{family_id}-{sequence}`. Canonical Allocation erfolgt ausschließlich über Registry und Governance. Legacy-IDs bleiben unverändert; es gibt keine stille Umnummerierung oder Wiederverwendung.
+
+## Standards & Compliance
+
+| Standard | Version | Compliance |
+|---|---:|---|
+| ATC-STD-000 | 1.3.0 | ✅ |
+| ATC-STD-201 | 1.0.1 | ✅ |
+| ATC-STD-202 | 1.2.0 | ✅ |
+| ATC-STD-203 | 1.0.1 | ✅ |
+| ATC-STD-README-001 | 1.0.0 | ✅ |
+| ATC-STD-MD-001 | 1.0.0 | ✅ |
+
+## Roadmap
+
+Siehe `ROADMAP.md`, GitHub Issues/Projects und die kanonischen Dokumentationsquellen.
+
+**Kein Production- oder Mainnet-Claim wird allein aus README-Status abgeleitet.**
+
+## Contributing
+
+Beiträge erfolgen gemäß `CONTRIBUTING.md` und den Governance-Regeln von `ATC-STD-000`.
+
+## License
+
+Apache-2.0 — A-TownChain-Okosystems. Siehe `LICENSE`.
+
+## Maintainers
+
+**Organization:** A-TownChain-Okosystems  
+**Maintainer:** ShivaCoreDev / Aurora Superagent
+
+## Changelog
+
+Siehe `CHANGELOG.md`.
+
+## Repository Metadata
 
 <!-- atc metadata block (ATC-STD-README-001 §14) -->
 <!--
@@ -29,169 +206,5 @@ technology:
   primary_language: Rust / Python (Reference)
 governance:
   security_class: S4 — Core VM & Trust Boundary
-  criticality: CRITICAL (P0 Core Runtime)
+  criticality: CRITICAL
 -->
-
-## Overview
-
-atc-vm (A-TownChain Virtual Machine, ATVM) ist die kanonische Ausführungsumgebung für Smart Contracts im A-TownChain-Ökosystem (P0 Kern-Laufzeit per AD-043, Chain-ID 658467). ATVM garantiert deterministische, verifizierte und gas-limitierte Bytecode-Ausführung mit strikter Sicherheits- und Speichersandbox.
-
-## Purpose
-
-ATC ATVM provides the canonical execution environment and verifier engine within the A-TownChain ecosystem. It is responsible for:
-
-- Bytecode-Verifikation (kein unverifizierter Bytecode wird je ausgeführt)
-- Deterministische und gas-limitierte Vertragsausführung (Interpreter & Execution Engine)
-- Bereitstellung des Runtime- und Host-Interfaces (Syscalls, State Storage, Chain-Kontext)
-- Durchsetzung von Sicherheitsgrenzen und Lizenz-Gate-Enforcement (ATC-LIC)
-
-Davon hängen die Ausführung von Smart Contracts in `a-townchain` und die Validierung in `atc-contracts` ab.
-
-## Scope
-
-- **Gilt für:** Kanonische Rust-Implementierung von ATVM (AD-021 Rust-first), Bytecode-Verifier, Gas-Modell und Host-Syscall-Interface.
-- **Nicht-Gilt für:** Compiler-Frontend und Bytecode-Codegen (Zuständigkeit `atclang`) sowie Konsens-Block-Orchestrierung (`a-townchain`).
-
-## Status
-
-**Status:** `development` — R1-Skeleton (ATC-STD-201). Struktur und Governance sind definiert; Modul-Migration aus atclang nach atc-vm erfolgt im qualitätsgetriebenen Rebuild (AD-023, G0–G19 Gates).
-
-## Architecture
-
-### Components
-
-- `Bytecode Verifier`: Statische Sicherheits- und Validitätsprüfung vor der Ausführung
-- `Execution Engine`: Deterministischer, gas-limitierter Interpreter
-- `Host Interface`: Syscall-Handling, Memory Access und State Storage Integration
-- `Sandbox Boundary`: Sicherheits- und Trust-Boundary gemäß ATC-STD-NET-001/002/003
-
-### Data Flow
-
-`atclang` (Compiler) → ATC-Bytecode → `atc-vm` (Verifier → Interpreter / Gas Engine → Host Syscalls) → State Update in `a-townchain`.
-
-### Dependencies
-
-| Component | Purpose | Required |
-|---|---|---|
-| atclang | Compiler & Bytecode Format Specification | Yes |
-| atc-shivacore | Kernel Process & Memory Isolation | Yes |
-| atc-standards | Governance & Security Standards | Yes |
-
-## Features
-
-- Statische Bytecode-Verifikation für maximale Vertrauenswürdigkeit
-- Deterministischer Interpreter mit konfigurierbarem Gas-Kostenmodell
-- Integriertes License-Gate-Interface (ATC-LIC Enforcement)
-- Rust-first Core Implementierung mit Fuzzing-Harness gegen die Python-Referenz
-
-## Repository Structure
-
-```text
-.
-├── docs/                # Dokumentation, Architektur und Standards
-├── src/                 # ATVM Quellcode (Verifier, Interpreter, Host-Interface)
-└── tests/               # Unit-, Integrations- und Fuzzing-Tests
-```
-
-## Requirements
-
-- Rust toolchain >= 1.75 (`cargo`, `rustc`)
-- Python >= 3.11 (für Referenz-Vergleichstests)
-- Git >= 2.30
-
-## Installation
-
-### Setup
-
-```bash
-git clone https://github.com/A-TownChain-Okosystems/atc-vm.git
-cd atc-vm
-cargo build
-```
-
-## Configuration
-
-Die ATVM-Laufzeit wird über Konfigurationsdateien in `src/` sowie Metadaten in `.atc/repository.yaml` gesteuert.
-
-## Usage
-
-ATVM bauen und testen:
-
-```bash
-cargo build
-cargo test
-```
-
-## Development
-
-Entwicklung erfolgt nach dem Rust-first Prinzip (AD-021). Commits MÜSSEN Conventional Commits entsprechen. Qualitätsgate: ATVM ist Trust Boundary (Sicherheitsklasse S4) mit obligatorischem Audit vor dem Freeze (G18).
-
-## Testing
-
-Run the complete test suite:
-
-```bash
-cargo test
-```
-
-Expected result: PASS (alle Unit- und Integrationstests bestanden).
-
-## Security
-
-Security issues must not be disclosed publicly through GitHub Issues.
-
-Schwachstellen werden NICHT öffentlich über GitHub Issues gemeldet, sondern direkt über den offiziellen ATC-Security-Reporting-Prozess (ATC-STD-203, [SECURITY.md](SECURITY.md)). ATVM bildet eine S4-Sicherheitsgrenze.
-
-## Documentation
-
-- `ARCHITECTURE.md` — Technische Architektur der VM
-- `STATUS.md` — Maschinenlesbarer Projektstatus
-- `ROADMAP.md` — Entwicklungsmeilensteine
-- `AGENTS.md` — Instruktionen für KI-Agenten
-- External Wiki: [a-townchain-os-docs](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs)
-
-## Governance
-
-This repository is governed according to the A-TownChain Enterprise Governance Framework (ATC-STD-000 v1.3.0, ATC-ENT-001..015). Architekturentscheidungen sind im central DECISIONS_REGISTER (`a-townchain-os-docs`, AD-043) dokumentiert.
-
-## Standards & Compliance
-
-This repository follows applicable A-TownChain standards:
-
-| Standard | Version | Compliance |
-|---|---:|---|
-| ATC-STD-000 | 1.3.0 | ✅ |
-| ATC-STD-201 | 1.0.1 | ✅ |
-| ATC-STD-202 | 1.2.0 | ✅ |
-| ATC-STD-203 | 1.0.1 | ✅ |
-| ATC-STD-README-001 | 1.0.0 | ✅ |
-| ATC-STD-MD-001 | 1.0.0 | ✅ |
-
-## Roadmap
-
-See the canonical roadmap:
-
-- [ROADMAP.md](ROADMAP.md)
-- GitHub Issues & Projects
-- ATC Development Management (Notion Master Roadmap)
-
-## Contributing
-
-Beiträge erfolgen gemäß [CONTRIBUTING.md](CONTRIBUTING.md) und den Governance-Regeln von ATC-STD-000 §22.
-
-## License
-
-Apache-2.0 — A-TownChain-Okosystems. Apache-2.0 (ATC-LIC). See [LICENSE](LICENSE).
-
-## Maintainers
-
-**Organization:** A-TownChain-Okosystems  
-**Maintainer:** ShivaCoreDev / Aurora Superagent
-
-## Changelog
-
-See detailed release history in [CHANGELOG.md](CHANGELOG.md).
-
-## A-TownChain Standards
-
-**Smart Contract Standards Framework (ATC-STD-SC-001..020, normativ seit 07.09.2026):** Gates SC-G0..G13 gelten verbindlich — kein Gate, kein Mainnet. Contract-Registry: atc-standards/contracts/registry/contracts.yaml (ATC-SC-TOKEN-001..003 = ATC-001/ATC-8300/ATC-9900, Status: development, SC-G0 offen). Agenten-Deploy nur nach ATC-STD-SC-020 (Human/Governance-Approval).
