@@ -8,27 +8,29 @@
 #   VALIDATOR — nimmt am PoS Konsens teil
 #   MINER   — führt PoW aus
 
-import hashlib, time, json, threading
+import time
 from enum import Enum
 
+
 class NodeType(Enum):
-    FULL      = "full"
-    LIGHT     = "light"
+    FULL = "full"
+    LIGHT = "light"
     VALIDATOR = "validator"
-    MINER     = "miner"
+    MINER = "miner"
+
 
 class ATCNode:
     """Ein Knoten im A-TownChain Netzwerk."""
 
     def __init__(self, node_id: str, node_type: NodeType = NodeType.FULL):
-        self.node_id    = node_id
-        self.node_type  = node_type
-        self.peers      = []      # verbundene Nodes
-        self.mempool    = []      # ausstehende Transaktionen
-        self.chain      = []      # lokale Blockchain-Kopie
-        self.stake      = 0       # ATC Stake für PoS
-        self.online     = True
-        self.joined_at  = int(time.time())
+        self.node_id = node_id
+        self.node_type = node_type
+        self.peers = []  # verbundene Nodes
+        self.mempool = []  # ausstehende Transaktionen
+        self.chain = []  # lokale Blockchain-Kopie
+        self.stake = 0  # ATC Stake für PoS
+        self.online = True
+        self.joined_at = int(time.time())
 
     def connect_peer(self, peer_node: "ATCNode"):
         if peer_node.node_id not in [p.node_id for p in self.peers]:
@@ -53,7 +55,7 @@ class ATCNode:
         if not block:
             return False
         # Basis-Validierung
-        if block.get("prev_hash") == (self.chain[-1]["hash"] if self.chain else "0"*64):
+        if block.get("prev_hash") == (self.chain[-1]["hash"] if self.chain else "0" * 64):
             self.chain.append(block)
             # Bestätigte TXs aus Mempool entfernen
             confirmed = {tx["tx_id"] for tx in block.get("transactions", [])}
@@ -63,14 +65,14 @@ class ATCNode:
 
     def get_info(self) -> dict:
         return {
-            "node_id":    self.node_id,
-            "type":       self.node_type.value,
-            "peers":      len(self.peers),
-            "chain_len":  len(self.chain),
-            "mempool":    len(self.mempool),
-            "stake":      self.stake,
-            "online":     self.online,
-            "uptime":     int(time.time()) - self.joined_at
+            "node_id": self.node_id,
+            "type": self.node_type.value,
+            "peers": len(self.peers),
+            "chain_len": len(self.chain),
+            "mempool": len(self.mempool),
+            "stake": self.stake,
+            "online": self.online,
+            "uptime": int(time.time()) - self.joined_at,
         }
 
 
@@ -92,9 +94,9 @@ class NodeNetwork:
     def get_stats(self) -> dict:
         online = sum(1 for n in self.nodes.values() if n.online)
         return {
-            "total_nodes":  len(self.nodes),
-            "online":       online,
-            "offline":      len(self.nodes) - online,
-            "total_stake":  sum(n.stake for n in self.nodes.values()),
-            "avg_peers":    sum(len(n.peers) for n in self.nodes.values()) // max(len(self.nodes),1)
+            "total_nodes": len(self.nodes),
+            "online": online,
+            "offline": len(self.nodes) - online,
+            "total_stake": sum(n.stake for n in self.nodes.values()),
+            "avg_peers": sum(len(n.peers) for n in self.nodes.values()) // max(len(self.nodes), 1),
         }

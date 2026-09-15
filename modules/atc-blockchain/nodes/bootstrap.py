@@ -5,15 +5,14 @@ Bootstrap-Node: DNS Seed & Peer Discovery (Fix #68)
 Implementiert das Bitcoin-artige Seed-Node-Muster (vgl. memory: hardcoded
 DNS-Seeds als Fallback, AddrMan new/tried Tables, Gossip via ADDR/GETADDR).
 """
+
 import ipaddress
 import json
 import os
 import socket
 import time
 import uuid
-from dataclasses import dataclass, field, asdict
-from typing import Dict, List, Optional
-
+from dataclasses import asdict, dataclass, field
 
 BOOTSTRAP_CONFIG = {
     "bootstrap_port": 5005,
@@ -51,11 +50,11 @@ class PeerAddress:
         max_age = BOOTSTRAP_CONFIG["stale_after_days"] * 86400
         return (int(time.time()) - self.last_seen) > max_age
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return asdict(self)
 
     @staticmethod
-    def from_dict(d: Dict) -> "PeerAddress":
+    def from_dict(d: dict) -> "PeerAddress":
         return PeerAddress(
             ip=d["ip"],
             port=d["port"],
@@ -73,8 +72,8 @@ class AddrMan:
 
     def __init__(self, path: str):
         self.path = path
-        self.new_table: Dict[str, PeerAddress] = {}
-        self.tried_table: Dict[str, PeerAddress] = {}
+        self.new_table: dict[str, PeerAddress] = {}
+        self.tried_table: dict[str, PeerAddress] = {}
         self._load()
 
     def add(self, peer: PeerAddress):
@@ -100,19 +99,19 @@ class AddrMan:
             self.new_table.pop(key, None)
             self.tried_table.pop(key, None)
 
-    def get_candidates(self, count: int) -> List[PeerAddress]:
+    def get_candidates(self, count: int) -> list[PeerAddress]:
         fresh = [p for p in self.new_table.values() if not p.is_stale]
         fresh.sort(key=lambda p: p.last_seen, reverse=True)
         return fresh[:count]
 
-    def get_addr_sample(self, count: int) -> List[Dict]:
+    def get_addr_sample(self, count: int) -> list[dict]:
         count = min(count, BOOTSTRAP_CONFIG["max_addr_sample"])
         all_peers = list(self.new_table.values()) + list(self.tried_table.values())
         sample = all_peers[:count]
         return [p.to_dict() for p in sample]
 
     @property
-    def stats(self) -> Dict[str, int]:
+    def stats(self) -> dict[str, int]:
         return {
             "new_count": len(self.new_table),
             "tried_count": len(self.tried_table),
@@ -147,11 +146,15 @@ class AddrMan:
 class DNSSeedResolver:
     """Loest DNS-Seed-Hostnamen zu Peer-IPs auf, mit hardcoded Fallback."""
 
-    def __init__(self, seeds: Optional[List[str]] = None, timeout: float = 5.0):
-        self.seeds = seeds if seeds is not None else [
-            "seed1.a-townchain.dev",
-            "seed2.a-townchain.dev",
-        ]
+    def __init__(self, seeds: list[str] | None = None, timeout: float = 5.0):
+        self.seeds = (
+            seeds
+            if seeds is not None
+            else [
+                "seed1.a-townchain.dev",
+                "seed2.a-townchain.dev",
+            ]
+        )
         self.timeout = timeout
 
     @staticmethod
@@ -164,13 +167,13 @@ class DNSSeedResolver:
             return False
         return True
 
-    def get_hardcoded_seeds(self) -> List[PeerAddress]:
+    def get_hardcoded_seeds(self) -> list[PeerAddress]:
         return [
             PeerAddress(ip=s["ip"], port=s["port"], source="hardcoded")
             for s in BOOTSTRAP_CONFIG["hardcoded_seeds"]
         ]
 
-    def resolve_seed(self, hostname: str) -> List[PeerAddress]:
+    def resolve_seed(self, hostname: str) -> list[PeerAddress]:
         try:
             socket.setdefaulttimeout(self.timeout)
             infos = socket.getaddrinfo(hostname, None)
@@ -178,13 +181,15 @@ class DNSSeedResolver:
             peers = []
             for ip in ips:
                 if self._is_valid_ip(ip):
-                    peers.append(PeerAddress(ip=ip, port=BOOTSTRAP_CONFIG["bootstrap_port"], source="dns"))
+                    peers.append(
+                        PeerAddress(ip=ip, port=BOOTSTRAP_CONFIG["bootstrap_port"], source="dns")
+                    )
             return peers
-        except (socket.gaierror, socket.timeout, OSError):
+        except (TimeoutError, socket.gaierror, OSError):
             return []
 
-    def resolve_all(self) -> List[PeerAddress]:
-        results: List[PeerAddress] = []
+    def resolve_all(self) -> list[PeerAddress]:
+        results: list[PeerAddress] = []
         for seed in self.seeds:
             results.extend(self.resolve_seed(seed))
         return results
@@ -193,14 +198,14 @@ class DNSSeedResolver:
 class BootstrapNode:
     """Seed-Node: beantwortet ADDR/GETADDR, verwaltet Peers via AddrMan."""
 
-    def __init__(self, node_id: Optional[str] = None, data_dir: str = "."):
+    def __init__(self, node_id: str | None = None, data_dir: str = "."):
         self.node_id = node_id or f"BOOTSTRAP-{uuid.uuid4().hex[:12]}"
         self.data_dir = data_dir
         self.addrman = AddrMan(os.path.join(data_dir, "peers.dat"))
         self.resolver = DNSSeedResolver()
-        self.connected: Dict[str, PeerAddress] = {}
+        self.connected: dict[str, PeerAddress] = {}
 
-    def bootstrap(self) -> Dict:
+    def bootstrap(self) -> dict:
         """Versucht DNS-Seeds aufzuloesen, faellt sonst auf hardcoded Seeds zurueck."""
         dns_peers = self.resolver.resolve_all()
         if dns_peers:
@@ -213,7 +218,7 @@ class BootstrapNode:
             self.addrman.add(p)
         return {"source": "hardcoded_fallback", "hardcoded_peers": len(hardcoded)}
 
-    def handle_addr(self, peers: List[Dict], source_ip: str) -> int:
+    def handle_addr(self, peers: list[dict], source_ip: str) -> int:
         """Verarbeitet eingehende ADDR-Nachricht; filtert loopback/private IPs."""
         added = 0
         for p in peers:
@@ -223,11 +228,11 @@ class BootstrapNode:
             added += 1
         return added
 
-    def handle_getaddr(self, requester_ip: str) -> List[Dict]:
+    def handle_getaddr(self, requester_ip: str) -> list[dict]:
         """Beantwortet GETADDR mit einer Stichprobe bekannter Peers (max 1000)."""
         return self.addrman.get_addr_sample(BOOTSTRAP_CONFIG["max_addr_sample"])
 
-    def get_peers_for_new_node(self, requester_ip: str, count: int = 8) -> List[Dict]:
+    def get_peers_for_new_node(self, requester_ip: str, count: int = 8) -> list[dict]:
         """Liefert frische Kandidaten-Peers fuer einen neu beitretenden Node."""
         candidates = self.addrman.get_candidates(count)
         return [p.to_dict() for p in candidates]
@@ -244,7 +249,7 @@ class BootstrapNode:
         self.addrman.mark_failed(key)
         self.connected.pop(key, None)
 
-    def get_status(self) -> Dict:
+    def get_status(self) -> dict:
         return {
             "node_id": self.node_id,
             "connected_peers": len(self.connected),

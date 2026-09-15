@@ -18,16 +18,16 @@ class ZKPLayer:
 
 
 def get_zkp_layer():
-    raise NotImplementedError(
-        "get_zkp_layer() ist PLANNED (Issue #47) — siehe groth16.atc"
-    )
+    raise NotImplementedError("get_zkp_layer() ist PLANNED (Issue #47) — siehe groth16.atc")
 
 
 class ShieldedTransaction:
     """ShieldedTransaction — PLANNED (siehe groth16.atc)."""
+
     __slots__ = ()
 
 
 class Groth16Proof:
     """Groth16Proof — PLANNED (siehe groth16.atc)."""
+
     __slots__ = ()

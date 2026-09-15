@@ -7,7 +7,9 @@
 # durch rekursives SHA-256 Hashing.
 # Jeder Hash beweist, dass Zeit vergangen ist.
 
-import hashlib, time
+import hashlib
+import time
+
 
 class ProofOfHistory:
     """
@@ -17,9 +19,9 @@ class ProofOfHistory:
 
     def __init__(self, genesis_hash: str = None):
         self.current_hash = genesis_hash or hashlib.sha256(b"A-TownChain Genesis").hexdigest()
-        self.sequence     = 0
-        self.history      = []
-        self.start_time   = time.time()
+        self.sequence = 0
+        self.history = []
+        self.start_time = time.time()
 
     def tick(self, data: bytes = None) -> dict:
         """
@@ -32,15 +34,15 @@ class ProofOfHistory:
         else:
             combined = self.current_hash.encode()
 
-        new_hash      = hashlib.sha256(combined).hexdigest()
+        new_hash = hashlib.sha256(combined).hexdigest()
         self.current_hash = new_hash
-        self.sequence    += 1
+        self.sequence += 1
 
         entry = {
             "sequence": self.sequence,
-            "hash":     new_hash,
+            "hash": new_hash,
             "has_data": data is not None,
-            "elapsed":  round(time.time() - self.start_time, 6)
+            "elapsed": round(time.time() - self.start_time, 6),
         }
         self.history.append(entry)
         return entry
@@ -60,8 +62,8 @@ class ProofOfHistory:
 
     def get_state(self) -> dict:
         return {
-            "sequence":     self.sequence,
+            "sequence": self.sequence,
             "current_hash": self.current_hash,
-            "elapsed":      round(time.time() - self.start_time, 3),
-            "ticks_per_sec": round(self.sequence / max(time.time() - self.start_time, 0.001))
+            "elapsed": round(time.time() - self.start_time, 3),
+            "ticks_per_sec": round(self.sequence / max(time.time() - self.start_time, 0.001)),
         }

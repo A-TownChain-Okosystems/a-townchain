@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """SCR-0081 P0-07: Consensus-Boundary-Check (F-105 Code-Gate, Report-Modus).
 
 KANONISCHE REGEL (registry/repositories.yaml, SCR-0080/0081):
@@ -11,12 +10,18 @@ Modus:
 
 Status: Report-Modus aktiv bis der Legacy-Konsensbestand (ShivaConsensus/PoH/PoS/PoW)
 nach atc-algorithm refactored ist (F-105). Strict-Modus wird danach Pflicht."""
-import os, re, sys, subprocess
+
+import os
+import re
+import sys
 
 INDICATORS = re.compile(
-    r"(consensus|/poh/|/pos/|/pow/|validator[_/]|shivaconsensus|finality)", re.I)
+    r"(consensus|/poh/|/pos/|/pow/|validator[_/]|shivaconsensus|finality)",
+    re.IGNORECASE,
+)
 CODE = re.compile(r".*\.(py|rs|ts|tsx)$")
-SKIP = re.compile(r"(archive|node_modules|\.git|docs?/|spec|draft)", re.I)
+SKIP = re.compile(r"(archive|node_modules|\.git|docs?/|spec|draft)", re.IGNORECASE)
+
 
 def scan(root):
     hits = []
@@ -31,6 +36,7 @@ def scan(root):
                     hits.append(os.path.join(rel, f))
     return hits
 
+
 def main():
     strict = "--strict" in sys.argv
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -40,16 +46,19 @@ def main():
     if not hits:
         print("  OK: keine Konsens-Implementierung im a-townchain-Baum")
         return 0
-    print(f"  LEGACY-KONSENS-BESTAND ({len(hits)} Dateien) — Refactor nach atc-algorithm offen (F-105):")
+    print(
+        f"  LEGACY-KONSENS-BESTAND ({len(hits)} Dateien) — Refactor nach atc-algorithm offen (F-105):"
+    )
     for h in hits[:25]:
         print("   -", h)
     if len(hits) > 25:
-        print(f"   ... +{len(hits)-25} weitere")
+        print(f"   ... +{len(hits) - 25} weitere")
     if strict:
         print("  STRICT-GATE: FAIL — zweite Konsens-Implementierung verboten")
         return 1
     print("  REPORT-Modus: kein Gate-Fehler (strict nach F-105-Refactor)")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
