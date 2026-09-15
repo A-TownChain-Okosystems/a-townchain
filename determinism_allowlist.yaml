@@ -1,0 +1,193 @@
+# determinism_allowlist.yaml — SCR-0126 Determinism-Gate-Remediation
+# Jeder Eintrag ist reviewte Ausnahme mit Begruendung. Ziel: iterativ auf 0 reduzieren.
+entries:
+  - file: modules/atcnet/atcnet.py
+    line: 10
+    pattern: "random-Modul"
+    justification: "Import des random-Moduls fuer P2P Node-ID Entropy in generate_node_id"
+    scr: "SCR-0126"
+  - file: modules/atcnet/atcnet.py
+    line: 71
+    pattern: "Wall-Clock"
+    justification: "ATCMessage Netzwerk-Zeitstempel fuer P2P-Nachrichtenverzögerungs-Tracking"
+    scr: "SCR-0126"
+  - file: modules/atcnet/atcnet.py
+    line: 139
+    pattern: "Wall-Clock"
+    justification: "NodeInfo is_alive Ueberpruefung (30s P2P-Peer-Timeout)"
+    scr: "SCR-0126"
+  - file: modules/atcnet/atcnet.py
+    line: 144
+    pattern: "random-Modul / Wall-Clock"
+    justification: "Eindeutige Node-ID Generierung via time + random Hash-Seed"
+    scr: "SCR-0126"
+  - file: modules/atcnet/atcnet.py
+    line: 362
+    pattern: "Wall-Clock"
+    justification: "Kademlia DHT routing table last_seen Zeitstempel-Aktualisierung"
+    scr: "SCR-0126"
+  - file: modules/atcnet/atcnet.py
+    line: 410
+    pattern: "Wall-Clock"
+    justification: "Kademlia DHT discovery peer last_seen Zeitstempel-Aktualisierung"
+    scr: "SCR-0126"
+  - file: modules/atcnet/atcnet.py
+    line: 444
+    pattern: "Wall-Clock"
+    justification: "Kademlia DHT peer response last_seen Zeitstempel-Aktualisierung"
+    scr: "SCR-0126"
+  - file: modules/atcnet/discovery.py
+    line: 191
+    pattern: "Wall-Clock"
+    justification: "UDP Peer discovery Peer-Registrierung last_seen Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atcnet/discovery.py
+    line: 210
+    pattern: "Wall-Clock"
+    justification: "UDP Peer discovery Peer-Liste Empfang last_seen Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atcnet/discovery.py
+    line: 246
+    pattern: "Wall-Clock"
+    justification: "UDP Peer discovery health_check Timeout-Berechnung fuer Offline-Peers"
+    scr: "SCR-0126"
+  - file: modules/atcnet/node.py
+    line: 33
+    pattern: "Wall-Clock"
+    justification: "ATCNode Beitrittszeitstempel (joined_at) fuer Uptime-Statistik"
+    scr: "SCR-0126"
+  - file: modules/atcnet/node.py
+    line: 75
+    pattern: "Wall-Clock"
+    justification: "ATCNode get_info Uptime-Berechnung"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/poh.py
+    line: 24
+    pattern: "Wall-Clock"
+    justification: "PoH-Performance-Metrik (elapsed), kein Konsens-Input; Remediation via injizierbarer Clock in SCR-0126 Welle 3"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/poh.py
+    line: 45
+    pattern: "Wall-Clock"
+    justification: "PoH-Tick elapsed Zeitmessungs-Metrik"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/poh.py
+    line: 67
+    pattern: "Wall-Clock"
+    justification: "PoH State get_state elapsed Zeitmessungs-Metrik"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/poh.py
+    line: 68
+    pattern: "Wall-Clock"
+    justification: "PoH ticks_per_sec Raten-Berechnungsmestrik"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 72
+    pattern: "Wall-Clock"
+    justification: "ATCTransaction Standard-Erstellungszeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 222
+    pattern: "Wall-Clock"
+    justification: "PoH Engine Tick Mikrosekunden-Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 348
+    pattern: "Wall-Clock"
+    justification: "ValidatorVote Stimmen-Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 411
+    pattern: "Wall-Clock"
+    justification: "PoW Mining-Schleife Startzeit-Messung"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 420
+    pattern: "Wall-Clock"
+    justification: "PoW Mining elapsed Zeitmessungs-Statistik"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 519
+    pattern: "Wall-Clock"
+    justification: "Genesis-Block Header-Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 578
+    pattern: "Wall-Clock"
+    justification: "BlockHeader Erstellungszeitstempel bei Block-Vorschlag"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 593
+    pattern: "Wall-Clock"
+    justification: "Block Sealing PoW Mining Startzeit-Messung"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 595
+    pattern: "Wall-Clock"
+    justification: "Block Sealing PoW Mining elapsed Zeitmessung"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/nodes/bootstrap.py
+    line: 37
+    pattern: "Wall-Clock"
+    justification: "PeerAddress default_factory last_seen Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/nodes/bootstrap.py
+    line: 51
+    pattern: "Wall-Clock"
+    justification: "PeerAddress is_stale Ueberpruefung gegen Max-Alter"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/nodes/bootstrap.py
+    line: 61
+    pattern: "Wall-Clock"
+    justification: "PeerAddress from_dict Deserialisierung Fallback-Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/nodes/bootstrap.py
+    line: 88
+    pattern: "Wall-Clock"
+    justification: "AddrMan mark_tried Peer-Verbindungsversuch Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/nodes/bootstrap.py
+    line: 97
+    pattern: "Wall-Clock"
+    justification: "AddrMan mark_failed Peer-Fehlversuch Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/nodes/bootstrap.py
+    line: 202
+    pattern: "Zufalls-UUIDs"
+    justification: "BootstrapNode Fallback-ID Generierung via uuid4"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/nodes/discovery.py
+    line: 191
+    pattern: "Wall-Clock"
+    justification: "Node discovery Peer-Registrierung last_seen Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/nodes/discovery.py
+    line: 210
+    pattern: "Wall-Clock"
+    justification: "Node discovery Peer-Liste last_seen Zeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/nodes/discovery.py
+    line: 246
+    pattern: "Wall-Clock"
+    justification: "Node discovery health_check Peer Timeout-Berechnung"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/wallet/did.py
+    line: 60
+    pattern: "Wall-Clock"
+    justification: "DID Document update Aktualisierungszeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/wallet/did.py
+    line: 68
+    pattern: "Wall-Clock"
+    justification: "DID Document revoke Widerrufszeitstempel"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/wallet/multisig.py
+    line: 65
+    pattern: "Zufalls-UUIDs"
+    justification: "MultiSig Transaktions-ID Generierung via uuid4"
+    scr: "SCR-0126"
+  - file: modules/atc-blockchain/wallet/multisig.py
+    line: 102
+    pattern: "Wall-Clock"
+    justification: "MultiSig execute Transaktions-Hash Entropy mit Wall-Clock Zeitstempel"
+    scr: "SCR-0126"
