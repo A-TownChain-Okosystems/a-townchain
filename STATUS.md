@@ -1,17 +1,17 @@
 ---
 document_id: ATC-DOC-MIN-STA-001
 title: Status — atc-mining
-version: 1.0.0
+version: 1.1.0
 status: active
 owner: A-TownChain-Okosystems
 created: 2026-09-07
-updated: 2026-09-07
+updated: 2026-09-15
 standard: ATC-STD-MD-001
 ---
 
 # STATUS — atc-mining
 
-Stand: 07.09.2026 · Self-Compliance: ATC-STD-201 R1 · README: 13/13 CONFORM · MD: CONFORM
+Stand: 15.09.2026 · Self-Compliance: ATC-STD-201 R1
 
 ## Property-Value-Tabelle
 
@@ -20,23 +20,28 @@ Stand: 07.09.2026 · Self-Compliance: ATC-STD-201 R1 · README: 13/13 CONFORM ·
 | Repository | atc-mining |
 | Version | 0.1.0 |
 | Status | development |
-| Build | NOT IMPLEMENTED (kein Cargo-Projekt im Repository — SCR-0072) |
-| Tests | PASS WITH EVIDENCE (cargo test gruen, Executor-MVP, SCR-0083) |
+| Build | IMPLEMENTED — Cargo crate with executor, deterministic SHA3 mining primitives and bounded reward ledger |
+| Tests | CI PENDING — unit tests are included for executor, hashing, target comparison and reward supply bounds |
 | Security | S2 (medium criticality, ATC-STD-203) |
-| Documentation | 100% compliant (ATC-STD-README-001, ATC-STD-MD-001) |
-| Last Audit | 2026-09-07 |
+| Documentation | compliant |
+| Last Audit | 2026-09-15 |
 
-## Modul-Status & SC-018-Verzahnung
+## Implemented Core
 
-| Komponente | Zweck | Status |
-|---|---|---|
-| `miner/` | CPU/GPU Hashing Engine (SHA3-ATC) | In Entwicklung (L5) |
-| `algorithms/` | ATC PoW-Infrastruktur & Difficulty-Tracking | Skeleton |
-| `sc-018-connector` | Anbindung an SC-018 Mining Reward Contracts | Spezifiziert / Standard-konform |
-| `minerwatcher-telemetry` | Event-Emittierung (SC-008) an MinerWatcherGPT | In Vorbereitung |
+- `src/executor.rs` — FIFO execution queue.
+- `src/miner.rs` — deterministic SHA3-256 candidate hashing and bounded nonce search against an explicit target.
+- `src/reward.rs` — checked reward issuance with a hard supply ceiling.
+- Consensus rules remain owned by `atc-algorithm`; mining does not mutate or redefine consensus.
+- Contract settlement remains external to this crate and is owned by `atc-contracts`.
 
-## Qualitätssicherung
+## Remaining P1
 
-- **README Gate**: 13/13 PASS (ATC-STD-README-001)
-- **MD Gate**: CONFORM (ATC-STD-MD-001)
-- **Security Policy**: Aktiv (SECURITY.md, S2)
+- Hardware-specific CPU/GPU backends.
+- Network job transport and authenticated work distribution.
+- Canonical integration with `atc-algorithm` difficulty rules.
+- SC-018 settlement adapter and MinerWatcher telemetry.
+- Hardware/benchmark evidence before production readiness.
+
+## Quality Assurance
+
+Unit tests are committed with the implementation. GitHub Actions must provide the authoritative build/test evidence before the repository can claim PASS WITH EVIDENCE.
