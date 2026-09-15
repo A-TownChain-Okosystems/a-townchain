@@ -1,8 +1,8 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """ATC Crypto — ECDSA signing and verification utilities."""
+
 import hashlib
 import hmac
-from typing import Optional
 
 
 class CryptoUtils:
@@ -32,7 +32,7 @@ class CryptoUtils:
     @staticmethod
     def derive_key(seed: bytes, index: int) -> bytes:
         """Derive a child key from seed and index."""
-        return hashlib.sha256(seed + index.to_bytes(4, 'big')).digest()
+        return hashlib.sha256(seed + index.to_bytes(4, "big")).digest()
 
     @staticmethod
     def constant_time_compare(a: bytes, b: bytes) -> bool:
