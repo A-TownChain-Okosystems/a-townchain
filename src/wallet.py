@@ -2,9 +2,10 @@
 """ATC Wallet — Core wallet implementation.
 ATC-prefixed addresses with SHA-256 derivation and ECDSA signing.
 """
+
 import hashlib
 import json
-from typing import Optional
+import os
 
 ATC_PREFIX = "ATC"
 ADDRESS_LENGTH = 35  # ATC + 32 hex chars
@@ -28,9 +29,11 @@ class Wallet:
     @staticmethod
     def is_valid_address(address: str) -> bool:
         """Check if address starts with ATC and has correct length."""
-        return (address.startswith(ATC_PREFIX) and
-                len(address) == ADDRESS_LENGTH and
-                all(c in '0123456789abcdef' for c in address[3:]))
+        return (
+            address.startswith(ATC_PREFIX)
+            and len(address) == ADDRESS_LENGTH
+            and all(c in "0123456789abcdef" for c in address[3:])
+        )
 
     def sign_transaction(self, to: str, amount: float, fee: float = 0.001) -> dict:
         """Create and sign a transaction."""
@@ -71,7 +74,6 @@ def generate_wallet() -> Wallet:
 
 
 if __name__ == "__main__":
-    import os as _os
     wallet = generate_wallet()
     print(f"Address: {wallet.address}")
     print(f"Valid: {Wallet.is_valid_address(wallet.address)}")
