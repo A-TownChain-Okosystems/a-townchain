@@ -6,7 +6,7 @@ schema_version: "1.0.0"
 repository: atc-wallet
 generated: "2026-09-10"
 generated_by: "SCR-0080 Enforcement-Welle (Aurora, Owner-P0-Definition 10.09. 12:21)"
-bound_commit: 8bc19895f48f350b4717eb32818dcf5b9f569311
+bound_commit: 4c8444be042dcb2dab257c1fd6a0dade65efdd3c
 maturity_class: B          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
 r_level: null
 implementation:
@@ -29,8 +29,8 @@ canonical_role:                  # SCR-0080 P0-02: Single-Owner-per-Capability
   canonical: true
 test_run:
   workflow: ATC Test Suite
-  run_id: 34898996666
-  commit: 8bc19895f48f350b4717eb32818dcf5b9f569311
-  timestamp: 2026-09-14T21:29:15.350534+00:00
+  run_id: 35023147047
+  commit: 4c8444be042dcb2dab257c1fd6a0dade65efdd3c
+  timestamp: 2026-09-15T21:02:02.047107+00:00
   result: PASS
   runner: github-actions
