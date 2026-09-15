@@ -3,12 +3,12 @@
 MultiSig-Wallet (ATC-18-MULTISIG_AUTH) — M-of-N Multisignatur-Vaults
 fuer Cross-Chain-Bridge und Franchise-Treuhandkonten (Issue #24/#26).
 """
+
 import hashlib
 import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Set
 
 
 class TxStatus(Enum):
@@ -26,24 +26,24 @@ class MultiSigTx:
     amount: float
     asset: str
     metadata: dict = field(default_factory=dict)
-    signatures: Set[str] = field(default_factory=set)
-    rejections: Set[str] = field(default_factory=set)
+    signatures: set[str] = field(default_factory=set)
+    rejections: set[str] = field(default_factory=set)
     status: TxStatus = TxStatus.PENDING
     created_at: float = field(default_factory=time.time)
-    tx_hash: Optional[str] = None
+    tx_hash: str | None = None
 
 
 class MultiSigWallet:
     """M-of-N Multisig-Vault mit Propose/Sign/Execute/Reject-Workflow."""
 
-    def __init__(self, name: str, owners: List[str], threshold: int):
+    def __init__(self, name: str, owners: list[str], threshold: int):
         if threshold > len(owners):
             raise ValueError("threshold darf nicht groesser als Anzahl Owner sein")
         self.name = name
         self.owners = list(owners)
         self.threshold = threshold
-        self.balances: Dict[str, float] = {}
-        self.txs: Dict[str, MultiSigTx] = {}
+        self.balances: dict[str, float] = {}
+        self.txs: dict[str, MultiSigTx] = {}
 
     def deposit(self, asset: str, amount: float):
         self.balances[asset] = self.balances.get(asset, 0.0) + amount
@@ -51,13 +51,23 @@ class MultiSigWallet:
     def balance(self, asset: str) -> float:
         return self.balances.get(asset, 0.0)
 
-    def propose(self, proposer: str, target: str, amount: float,
-                asset: str = "ATC", metadata: Optional[dict] = None) -> MultiSigTx:
+    def propose(
+        self,
+        proposer: str,
+        target: str,
+        amount: float,
+        asset: str = "ATC",
+        metadata: dict | None = None,
+    ) -> MultiSigTx:
         if proposer not in self.owners:
             raise PermissionError(f"'{proposer}' ist kein Owner dieses Vaults")
         tx = MultiSigTx(
-            id=uuid.uuid4().hex, proposer=proposer, target=target,
-            amount=amount, asset=asset, metadata=metadata or {},
+            id=uuid.uuid4().hex,
+            proposer=proposer,
+            target=target,
+            amount=amount,
+            asset=asset,
+            metadata=metadata or {},
         )
         tx.signatures.add(proposer)  # Proposer signiert automatisch mit
         if len(tx.signatures) >= self.threshold:
@@ -95,13 +105,13 @@ class MultiSigWallet:
         return {"tx_hash": tx_hash, "new_balance": self.balances[tx.asset]}
 
 
-def create_bridge_vault(owners: List[str]) -> MultiSigWallet:
+def create_bridge_vault(owners: list[str]) -> MultiSigWallet:
     """Cross-Chain-Bridge-Vault: 2-of-N (Standard fuer 3 Owner)."""
-    threshold = 2 if len(owners) >= 2 else len(owners)
+    threshold = min(2, len(owners))
     return MultiSigWallet("BridgeVault", owners, threshold)
 
 
-def create_franchise_vault(owners: List[str]) -> MultiSigWallet:
+def create_franchise_vault(owners: list[str]) -> MultiSigWallet:
     """Franchise-Treuhandkonto: 3-of-N (Standard fuer 5 Owner)."""
-    threshold = 3 if len(owners) >= 3 else len(owners)
+    threshold = min(3, len(owners))
     return MultiSigWallet("FranchiseVault", owners, threshold)

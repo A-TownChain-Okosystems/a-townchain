@@ -4,14 +4,14 @@
 TCP-basiertes Messaging-System mit Duplikat-Filter und Flood-Fill-Broadcasting.
 """
 
-import socket
 import json
-import threading
 import logging
-from typing import Dict, Optional, Callable, Any
+import socket
+import threading
 from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass
-import time
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -19,17 +19,20 @@ logger = logging.getLogger(__name__)
 @dataclass
 class P2PMessage:
     """Struktur einer P2P-Nachricht."""
+
     type: str
     sender: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
 
     def to_bytes(self) -> bytes:
         """Konvertiert die Nachricht zu Bytes mit Length-Prefix."""
-        data = json.dumps({
-            "type": self.type,
-            "sender": self.sender,
-            "payload": self.payload,
-        }).encode()
+        data = json.dumps(
+            {
+                "type": self.type,
+                "sender": self.sender,
+                "payload": self.payload,
+            }
+        ).encode()
         # Length-Prefix (4 bytes, big-endian)
         return len(data).to_bytes(4, "big") + data
 
@@ -61,10 +64,10 @@ class P2PBroadcaster:
         node_id: str,
         port: int,
         consensus=None,
-        config: Optional[Dict] = None,
+        config: dict | None = None,
     ):
         """Initialisiert das P2P-Netzwerk.
-        
+
         Args:
             node_id: Eindeutige Node-ID
             port: TCP-Port für P2P-Verbindungen
@@ -75,21 +78,21 @@ class P2PBroadcaster:
         self.port = port
         self.consensus = consensus
         self.config = config or {}
-        
+
         # Peer-Verwaltung: node_id → socket
-        self.peers: Dict[str, socket.socket] = {}
+        self.peers: dict[str, socket.socket] = {}
         self.peer_lock = threading.Lock()
-        
+
         # Duplikat-Filter: Message-Hash im Circular Buffer (max 10.000)
         self.seen_msgs = deque(maxlen=10000)
         self.seen_lock = threading.Lock()
-        
+
         # Message-Handler: msg_type → callable
-        self.handlers: Dict[str, Callable] = {}
+        self.handlers: dict[str, Callable] = {}
         self.register_default_handlers()
-        
+
         # Server-Socket
-        self.server_sock: Optional[socket.socket] = None
+        self.server_sock: socket.socket | None = None
         self._running = False
         self._threads: list = []
 
@@ -109,7 +112,7 @@ class P2PBroadcaster:
         if self._running:
             logger.warning(f"P2P-Service für {self.node_id} läuft bereits")
             return
-        
+
         try:
             self.server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -117,7 +120,7 @@ class P2PBroadcaster:
             self.server_sock.listen(50)
             self._running = True
             logger.info(f"P2P-Service gestartet auf Port {self.port}")
-            
+
             # Starte Listener-Thread
             listener_thread = threading.Thread(target=self._listener_loop, daemon=True)
             listener_thread.start()
@@ -130,23 +133,23 @@ class P2PBroadcaster:
     def stop(self) -> None:
         """Stoppt den P2P-Service."""
         self._running = False
-        
+
         # Schließe alle Peer-Verbindungen
         with self.peer_lock:
             for node_id, sock in self.peers.items():
                 try:
                     sock.close()
-                except:
+                except Exception:
                     pass
             self.peers.clear()
-        
+
         # Schließe Server-Socket
         if self.server_sock:
             try:
                 self.server_sock.close()
-            except:
+            except Exception:
                 pass
-        
+
         logger.info(f"P2P-Service für {self.node_id} gestoppt")
 
     def _listener_loop(self) -> None:
@@ -172,12 +175,12 @@ class P2PBroadcaster:
                 raw_len = conn.recv(4)
                 if not raw_len:
                     break
-                
+
                 length = int.from_bytes(raw_len, "big")
                 if length > 1_000_000:  # Max 1MB pro Nachricht
                     logger.warning(f"Nachricht zu groß: {length} bytes von {addr}")
                     break
-                
+
                 # Lese Nachricht-Daten
                 data = b""
                 while len(data) < length:
@@ -185,10 +188,10 @@ class P2PBroadcaster:
                     if not chunk:
                         break
                     data += chunk
-                
+
                 if len(data) < length:
                     break
-                
+
                 # Parse und verarbeite Nachricht
                 try:
                     msg = P2PMessage.from_bytes(data)
@@ -200,24 +203,29 @@ class P2PBroadcaster:
         finally:
             try:
                 conn.close()
-            except:
+            except Exception:
                 pass
 
     def _handle_message(self, msg: P2PMessage) -> None:
         """Verarbeitet eine empfangene Nachricht."""
         # Duplikat-Check
-        msg_hash = hash(json.dumps({
-            "type": msg.type,
-            "sender": msg.sender,
-            "payload": msg.payload,
-        }, sort_keys=True))
-        
+        msg_hash = hash(
+            json.dumps(
+                {
+                    "type": msg.type,
+                    "sender": msg.sender,
+                    "payload": msg.payload,
+                },
+                sort_keys=True,
+            )
+        )
+
         with self.seen_lock:
             if msg_hash in self.seen_msgs:
                 logger.debug(f"Duplikat ignoriert: {msg.type} von {msg.sender}")
                 return
             self.seen_msgs.append(msg_hash)
-        
+
         # Handler aufrufen
         handler = self.handlers.get(msg.type)
         if handler:
@@ -228,7 +236,7 @@ class P2PBroadcaster:
         else:
             logger.debug(f"Kein Handler für {msg.type}")
 
-    def broadcast_block(self, block: Dict[str, Any]) -> None:
+    def broadcast_block(self, block: dict[str, Any]) -> None:
         """Sendet einen neuen Block an alle Peers (Flood-Fill)."""
         msg = P2PMessage(
             type=self.MSG_NEW_BLOCK,
@@ -237,7 +245,7 @@ class P2PBroadcaster:
         )
         self._broadcast(msg)
 
-    def broadcast_tx(self, tx: Dict[str, Any]) -> None:
+    def broadcast_tx(self, tx: dict[str, Any]) -> None:
         """Sendet eine neue Transaktion an alle Peers."""
         msg = P2PMessage(
             type=self.MSG_NEW_TX,
@@ -250,14 +258,14 @@ class P2PBroadcaster:
         """Sendet eine Nachricht an alle verbundenen Peers (Flood-Fill)."""
         data = msg.to_bytes()
         dead_peers = []
-        
+
         with self.peer_lock:
             for node_id, sock in list(self.peers.items()):
                 try:
                     sock.sendall(data)
                 except (OSError, BrokenPipeError):
                     dead_peers.append(node_id)
-        
+
         # Tote Verbindungen entfernen
         for node_id in dead_peers:
             self._remove_peer(node_id)
@@ -276,15 +284,15 @@ class P2PBroadcaster:
             sock.settimeout(timeout)
             sock.connect((host, port))
             sock.settimeout(None)  # Blocking-Mode nach erfolgreicher Verbindung
-            
+
             with self.peer_lock:
                 self.peers[node_id] = sock
-            
+
             logger.info(f"Mit Peer verbunden: {node_id} ({host}:{port})")
-            
+
             # Starte Handshake
             self._send_handshake(sock, node_id)
-            
+
             return True
         except Exception as e:
             logger.error(f"Fehler beim Verbinden mit {node_id}: {e}")
@@ -295,7 +303,7 @@ class P2PBroadcaster:
         chain_height = 0
         if self.consensus:
             chain_height = getattr(self.consensus, "height", 0)
-        
+
         msg = P2PMessage(
             type=self.MSG_HANDSHAKE,
             sender=self.node_id,
@@ -316,7 +324,7 @@ class P2PBroadcaster:
             if node_id in self.peers:
                 try:
                     self.peers[node_id].close()
-                except:
+                except Exception:
                     pass
                 del self.peers[node_id]
 
@@ -326,7 +334,7 @@ class P2PBroadcaster:
         block = msg.payload.get("block")
         if not block:
             return
-        
+
         # Consensus validieren und akzeptieren
         if self.consensus and hasattr(self.consensus, "_validate_block"):
             if self.consensus._validate_block(block):
@@ -344,7 +352,7 @@ class P2PBroadcaster:
         tx = msg.payload.get("tx")
         if not tx:
             return
-        
+
         # TX in Mempool hinzufügen
         if self.consensus:
             if not hasattr(self.consensus, "mempool"):
@@ -356,16 +364,13 @@ class P2PBroadcaster:
         """Handler für HANDSHAKE-Nachrichten."""
         version = msg.payload.get("version")
         chain_height = msg.payload.get("chain_height")
-        logger.info(
-            f"Handshake von {msg.sender}: Version {version}, "
-            f"Chain Height {chain_height}"
-        )
+        logger.info(f"Handshake von {msg.sender}: Version {version}, Chain Height {chain_height}")
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Gibt den aktuellen Status des P2P-Netzwerks zurück."""
         with self.peer_lock:
             peer_list = list(self.peers.keys())
-        
+
         return {
             "node_id": self.node_id,
             "running": self._running,
