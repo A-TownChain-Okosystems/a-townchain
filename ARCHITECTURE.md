@@ -1,38 +1,52 @@
 # ARCHITECTURE.md — atc-sdk
-> Copyright © Michael Wroblewski / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 
-## File Tree
-```tree
-├── .gitignore
-├── CHANGELOG.md
-├── COMPONENT_PLAN.md
-├── FILE_REGISTER.md
-├── LICENSE
-├── README.md
-├── ROADMAP.md
-├── STATUS.md
-├── api_client.atc
-├── client.atc
-├── contract_bindings.atc
-├── event_subscriber.atc
-├── rust/
-│   ├── Cargo.toml
-│   └── src/
-│       └── lib.rs
-├── types.atc
-├── typescript/
-│   ├── package.json
-│   └── src/
-└── utils.atc
+## Scope
+
+`atc-sdk` is the developer-facing integration layer for A-TownChain. It consumes canonical protocol and VM interfaces; it does not own consensus or redefine execution semantics.
+
+## Current file/module model
+
+```text
+.
+├── modules/
+│   ├── atc-sdk/
+│   │   ├── *.atc
+│   │   ├── README.md
+│   │   ├── STATUS.md
+│   │   └── module-specific manifests/tooling
+│   ├── atc-cli/
+│   │   └── CLI, RPC and integration tooling
+│   └── atc-atcpkg/
+│       └── ATC package tooling
+├── .github/
+├── docs/
+└── repository governance files
 ```
 
-## Module Descriptions
-- **rust/src/lib.rs** & **rust/Cargo.toml**: Native Rust SDK library crate providing RPC client abstractions, binary transaction builders, and cryptographic key management.
-- **typescript/src/** & **typescript/package.json**: TypeScript SDK package offering Web3 providers, contract interaction bindings, and event streaming utilities.
-- Common SDK abstractions: RPC node client handlers, contract ABI binding generators, event subscriber sockets, and type definitions.
+The previous documentation described `rust/` and `typescript/` directories at the repository root. Those paths are not present on the current `main` tree and must not be treated as active implementation paths.
 
-## Build System
-Dual build system: Cargo for Rust crate (`cargo build --release`) and npm / `tsc` for TypeScript library publishing (`npm run build`).
+## Architecture boundary
 
-## Dependencies
-Rust (`tokio`, `serde`, `reqwest`, `ethers-core`), TypeScript (`axios`, `ethers`, `@types/node`).
+```text
+ATCLang
+   ↓
+ATC-VM
+   ↓
+A-TownChain protocol / node
+   ↑
+ATC SDK / CLI / package tooling
+```
+
+### Rules
+
+1. Consensus-critical semantics remain canonical in `a-townchain` / `atc-vm` and the applicable standards.
+2. SDK clients may serialize, submit and decode protocol data but must not invent alternative state-transition rules.
+3. Chain/network identity is obtained from canonical configuration or protocol responses rather than duplicated constants.
+4. Cross-repository test dependencies must be revision-pinned when reproducibility or determinism depends on them.
+5. Devnet-only behavior must be explicitly marked and must not be represented as production readiness.
+
+## Build model
+
+Build commands are module-specific. The repository root is not documented as a Cargo workspace unless a root `Cargo.toml` exists.
+
+Use the manifest inside the target module and its CI workflow as the authoritative build/test contract.
