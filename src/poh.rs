@@ -13,12 +13,14 @@ pub struct Tick {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PohError {
     SlotOverflow,
+    MissingGenesis,
 }
 
 impl std::fmt::Display for PohError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             PohError::SlotOverflow => write!(f, "PoH slot counter overflow"),
+            PohError::MissingGenesis => write!(f, "PoH chain has no genesis tick"),
         }
     }
 }
@@ -44,12 +46,11 @@ impl PohChain {
         PohChain { ticks: vec![Tick { slot: 0, hash: seed }] }
     }
 
-    /// Append the next PoH tick and reject counter overflow explicitly.
+    /// Append the next PoH tick and reject invalid chain state explicitly.
     pub fn tick(&mut self) -> Result<Tick, PohError> {
-        let prev = self
-            .ticks
-            .last()
-            .expect("PohChain invariant violated: genesis tick is missing");
+        let Some(prev) = self.ticks.last() else {
+            return Err(PohError::MissingGenesis);
+        };
         let slot = prev.slot.checked_add(1).ok_or(PohError::SlotOverflow)?;
         let next = Tick {
             slot,
@@ -121,5 +122,13 @@ mod tests {
         assert_eq!(c.tick(), Err(PohError::SlotOverflow));
         assert!(!c.verify());
         assert_eq!(c.ticks().len(), 1);
+    }
+
+    #[test]
+    fn missing_genesis_is_rejected() {
+        let mut c = PohChain::genesis(7);
+        c.ticks.clear();
+        assert_eq!(c.tick(), Err(PohError::MissingGenesis));
+        assert!(c.verify());
     }
 }
