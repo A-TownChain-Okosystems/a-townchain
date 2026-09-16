@@ -1,25 +1,34 @@
 # STATUS — atc-sdk
 
-**Stand:** 2026-08-05
-**Version:** v1.0.0
-**Status:** SKELETON → INITIALIZING
+**Stand:** 2026-09-16  
+**Version:** v1.0.0  
+**Status:** DEVELOPMENT / AUDIT REMEDIATION
 
-## Übersicht
-Dieses Repo ist Teil des A-TownChain OS Ökosystems (26 Repos).
-Org: [A-TownChain-Okosystems](https://github.com/A-TownChain-Okosystems)
+## Verified scope
 
-## Module
-- [ ] Initial setup
-- [ ] Core implementation
-- [ ] Tests
-- [ ] Documentation
+The repository was re-checked for documentation-to-tree consistency, architecture boundaries, and build instructions.
 
-## Abhängigkeiten
-Siehe DEPENDENCIES.md
+### Findings and remediation
 
-## Letzte Änderungen
-- 2026-08-05: Repo initialisiert durch Aurora Sync Agent
+- **FIXED:** README previously instructed `cargo build --workspace` from the repository root although the current tree does not contain a root `Cargo.toml`.
+- **FIXED:** `ARCHITECTURE.md` previously described root-level `rust/` and `typescript/` trees that are not present on the current `main` tree.
+- **FIXED:** Documentation now identifies `modules/atc-sdk`, `modules/atc-cli`, and `modules/atc-atcpkg` as the active module structure.
+- **DOCUMENTED:** Module-specific build/test commands must be derived from the module manifests and CI rather than assumed at repository root.
+- **DOCUMENTED:** Devnet-only integration evidence is not production-readiness evidence.
 
-- 11.09.2026 (SCR-0110): Erster Chain-Access-Consumer — modules/atc-cli/src/rpc_client.rs: minimaler JSON-RPC-2.0-Client (chain_id/boot_hash/peers/ping) gegen den atc-node Devnet-RPC (SCR-0109-Protokoll), std-only, 3 Unit-Tests inkl. Mock-Node-Roundtrip und ehrlichem Verbindungsfehler-Fall (CI-verifiziert). Ehrlich: kein TLS, keine Verbindungs-Wiederverwendung, keine Retry-Logik; echte Node-Anbindung im Integrationstest folgt.
+## Existing implementation evidence
 
-- 11.09.2026 (SCR-0111): Cross-Repo-Integrationstest live — modules/atc-cli/tests/devnet_integration.rs: SDK-Client (rpc_client) spricht ueber echtes TCP mit dem ECHTEN atc-node-Code (git-Dependency, rev-gepinnt): devnet_boot + DevnetRpc::serve im Test-Thread, Client prueft chain_id=658467, peers=2 und Boot-Hash-Identitaet Genesis-vs-RPC (CI-verifiziert). Ehrlich: Devnet-only, localhost, kein TLS, Dependency-Floating auf main durch rev-Pin kontrolliert.
+The repository contains module-level implementation and integration material, including the SDK/CLI modules and a devnet integration test described in the historical audit trail. The exact current test result must come from the current CI run; absence of a connector-visible status is not treated as a passing result.
+
+## Remaining verification gates
+
+- Current CI/build/test run on the remediation commits.
+- Dependency/security scan evidence for all active module manifests.
+- Cross-repository API compatibility checks against current `atc-vm` and `atc-node` interfaces.
+- Re-run of the organization fleet audit after remediation.
+
+No `PRODUCTION_READY` claim is made by this status file.
+
+## Organization scope
+
+This repository is one component of the `A-TownChain-Okosystems` fleet. Repository count and integration topology are maintained by `atc-engineering` and the canonical `atc-standards` registry.
