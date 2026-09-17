@@ -10,7 +10,11 @@ ist der zweimalige identische Testlauf, kein synthetischer Nachweis).
 
 Aufruf: python3 tools/determinism_check.py --lang rust|python [--test-cmd "..."]
 """
-import argparse, os, re, subprocess, sys
+import argparse
+import os
+import re
+import subprocess
+import sys
 
 PATTERNS = {
     "rust": [
