@@ -123,7 +123,13 @@ def run_tests(cmd, cwd):
     env = dict(os.environ)
     env["PYTHONHASHSEED"] = "0"  # Hash-Determinismus normalisieren
     p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, env=env)
-    return p.stdout + p.stderr
+    return normalize_output(p.stdout + p.stderr)
+
+
+def normalize_output(raw):
+    """Normalisiert reine Laufzeit-Angaben (z.B. '4 passed in 0.40s').
+    Test-Ergebnisse, Tracebacks und Assertions bleiben byte-geprueft."""
+    return re.sub(rb"in \d+\.\d+s", b"in Xs", raw)
 
 
 def main():
