@@ -1,0 +1,24 @@
+{
+  "name": "atc-explorer",
+  "version": "0.1.0",
+  "description": "atc-explorer — A-TownChain-Okosystems",
+  "author": "Michael Wroblewski",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "react": "^19.2",
+    "react-dom": "^19.2",
+    "next": "^16",
+    "typescript": "^7"
+  },
+  "devDependencies": {
+    "@types/node": "^26",
+    "@types/jest": "^30",
+    "jest": "^30",
+    "ts-jest": "^29"
+  }
+}
