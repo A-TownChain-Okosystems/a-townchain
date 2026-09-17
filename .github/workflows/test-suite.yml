@@ -23,9 +23,10 @@ jobs:
             (cd "$d" && npm install --no-audit --no-fund --silent)
             (cd "$d" && npm test --if-present --silent) || { echo "npm test FAILED in $d"; FAIL=1; }
             (cd "$d" && npm run build --if-present --silent) || { echo "npm build FAILED in $d"; FAIL=1; }
-          done < <(# Monorepo-Import 2026-09-17: Komponenten-NPM-Projekte sind noch nicht gate-onboarded
+          # Monorepo-Import 2026-09-17: Komponenten-NPM-Projekte sind noch nicht gate-onboarded
           # (die Quellrepos hatten kein npm-CI); Onboarding ist Welle-3-Folgeaufgabe (SCR-0126).
-          # Das Kern-Gate deckt exakt den Pre-Merge-Baum ab: find . -name package.json -not -path "*/archive/*" -not -path "*/node_modules/*" -not -path "*/.*/" -not -path "./components/*")
+          # Das Kern-Gate deckt exakt den Pre-Merge-Baum ab.
+          done < <(find . -name package.json -not -path "*/archive/*" -not -path "*/node_modules/*" -not -path "*/.*/" -not -path "./components/*")
           exit $FAIL
   pytest:
     runs-on: ubuntu-latest
