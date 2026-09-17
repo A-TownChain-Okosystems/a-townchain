@@ -3,13 +3,53 @@
 ATCLang REPL — Interactive Shell
 Version: 0.1.0-alpha | Read-Eval-Print Loop
 Eigene Implementierung — kein CPython-REPL-Klon
+
+Status 2026-09-17: VERWAIST/FAIL-CLOSED — die zugrunde liegende Python-Referenz
+von ATCLang wurde geloescht (atclang ist Rust-only). Dieses Modul wirft beim
+Start einen ImportError mit Rebind-Pfad (Rust-CLI / SCR-0128 Stufe 2).
 """
 
 import os
 import readline
 
-from atclang.compiler.compiler import CompileError, compile_source, disassemble
-from atclang.vm.atcvm import ATCVM, ATCVMError
+# Fail-closed seit 2026-09-17: die Python-Referenzimplementierung von ATCLang
+# (atclang.compiler / atclang.vm) wurde am 17.09.2026 aus dem atclang-Repo entfernt
+# (Rust-only, kanonischer Kern: crates/atc-core). Die Imports unten sind bewusste
+# Platzhalter: jede Nutzung wirft einen praegraden ImportError mit Rebind-Pfad.
+REPL_VERWAIST = (
+    "ATCLang-REPL verwaist: die Python-Referenz von ATCLang wurde am 2026-09-17 "
+    "geloescht (atclang ist Rust-only; kanonischer Kern: crates/atc-core). "
+    "Neubindung: Rust-CLI 'atc compile|run|check' bzw. SCR-0128 Stufe 2 "
+    "(ATC-VM-ABI-Bindung). Bis dahin ist dieses Alpha-Modul fail-closed gesperrt."
+)
+
+
+def _verwaist(*args, **kwargs):
+    raise ImportError(REPL_VERWAIST)
+
+
+class _VerwaistTyp:
+    """Platzhalter-Klasse: Instanziierung und Attributzugriff werfen ImportError."""
+
+    def __init__(self, *args, **kwargs):
+        _verwaist()
+
+    def __getattr__(self, name):
+        _verwaist()
+
+
+class CompileError(Exception):
+    """Platzhalter (ehemals atclang.compiler.CompileError) — nie wirksam, siehe REPL_VERWAIST."""
+
+
+class ATCVMError(Exception):
+    """Platzhalter (ehemals atclang.vm.atcvm.ATCVMError) — nie wirksam, siehe REPL_VERWAIST."""
+
+
+compile_source = _verwaist
+disassemble = _verwaist
+ATCVM = _VerwaistTyp
+ATCFunction = _VerwaistTyp
 
 BANNER = """
 ╔══════════════════════════════════════════════════════╗
