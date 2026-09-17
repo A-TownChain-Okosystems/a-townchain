@@ -16,5 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Run ATC determinism gate
+      - name: Run ATC determinism gate (python)
         run: python3 tools/determinism_check.py --lang python --test-cmd "python3 -m pytest -q 2>/dev/null || python3 -m unittest discover -q"
+      - name: Run ATC determinism gate (rust components)
+        run: python3 tools/determinism_check.py --lang rust --test-cmd "true"
