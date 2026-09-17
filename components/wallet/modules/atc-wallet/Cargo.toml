@@ -1,0 +1,11 @@
+[package]
+name = "atc_wallet"
+version = "0.1.0"
+edition = "2021"
+description = "Desktop Wallet — Key-Management, TX-Signing, DeFi"
+authors = ["Michael Wroblewski"]
+license = "Apache-2.0"
+
+[dependencies]
+egui = "0.36"
+ed25519-dalek = "3.0"
