@@ -5,11 +5,11 @@ Version: 0.1.0-alpha | Read-Eval-Print Loop
 Eigene Implementierung — kein CPython-REPL-Klon
 """
 
-import sys, os, time, readline
+import os
+import readline
 
-from atclang.compiler.compiler import compile_source, disassemble, CompileError
+from atclang.compiler.compiler import CompileError, compile_source, disassemble
 from atclang.vm.atcvm import ATCVM, ATCVMError
-
 
 BANNER = """
 ╔══════════════════════════════════════════════════════╗
@@ -75,9 +75,13 @@ class ATCRepl:
             return ""
 
         # REPL-Befehle
-        if line == '.help':   return HELP
-        if line == '.exit':   raise SystemExit(0)
-        if line == '.clear':  os.system('clear'); return ""
+        if line == '.help':
+            return HELP
+        if line == '.exit':
+            raise SystemExit(0)
+        if line == '.clear':
+            os.system('clear')
+            return ""
         if line == '.reset':
             self.vm.reset()
             self.vm.globals.clear()
@@ -158,7 +162,7 @@ class ATCRepl:
 
                 # Multi-Line: { öffnet Block, } schließt
                 buf.append(line)
-                open_braces = sum(l.count('{') - l.count('}') for l in buf)
+                open_braces = sum(ln.count('{') - ln.count('}') for ln in buf)
 
                 if open_braces > 0:
                     continue   # Mehr Input warten
