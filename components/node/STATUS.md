@@ -1,0 +1,54 @@
+---
+document_id: ATC-DOC-ATCNOD-002
+title: "Project Status"
+version: 1.0.0
+status: active
+owner: A-TownChain-Okosystems
+copyright: Michael Wroblewski
+license: Apache-2.0
+created: 2026-09-10
+updated: 2026-09-10
+standard: ATC-STD-MD-001
+scr: SCR-0074
+---
+
+# Project Status — ATC Node
+
+| Property | Value |
+|---|---|
+| Repository | ATC Node |
+| Version | 0.1.0 |
+| Status | development |
+| Build | PASS (cargo, MVP-Kern Config+PeerTable, CI-gruen SCR-0083) |
+| Tests | NOT RUN — Testplan definiert, Suite entsteht mit Implementierung |
+| Security | NOT AUDITED — SECURITY.md-Prozess aktiv, Audit ausstehend |
+| Documentation | compliant |
+| Last Audit | 2026-09-10 (SCR-0074 Org-Compliance-Scan) |
+
+## Status Summary
+
+`ATC Node` befindet sich im Status `development` (ATC-STD-201). Diese Datei wurde
+im Org-Compliance-Scan SCR-0074 nachgezogen, weil das Pflichtartefakt STATUS.md
+fehlte. Nach dem Prinzip **No status without evidence** werden keine PASS-Zustände
+behauptet; Build/Test-Evidence entsteht erst mit der Implementierung und wird
+dann über CI-Records referenziert.
+
+- 11.09.2026 (SCR-0106): Devnet-Bootstrap Stufe 1 — Genesis (config/devnet/genesis.json + src/bootstrap.rs) mit Validierung, deterministischem FNV-1a-Boot-Hash (MVP-Platzhalter, nicht kryptographisch) und 2-Node-Peer-Join-Smoke (6 Unit-Tests, CI-verifiziert). KEIN echtes Netzwerk, KEIN RPC, KEINE Blockproduktion — Devnet-Gate Stufe 2 offen (F-139).
+
+- 11.09.2026 (SCR-0108): Devnet-RPC Stufe 2 — src/rpc.rs mit DevnetRpc (Chain-ID/Boot-Hash/Peer-Count-Schnappschuss) und Zeilenprotokoll ueber echtes TCP (CHAIN_ID/BOOT_HASH/PEERS/PING, ein Request pro Verbindung); 2 Unit-Tests inkl. echtem Socket-Roundtrip (CI-verifiziert). Ehrlich: KEIN JSON-RPC, KEINE Auth/TLS (Devnet-only), Gossip/Blockproduktion Stufe 3 offen (F-140).
+
+- 11.09.2026 (SCR-0109): Devnet-RPC Stufe 3 — JSON-RPC-2.0-Subset (chain_id/boot_hash/peers/ping, -32601-Fehlercode) ueber denselben TCP-Socket mit Auto-Erkennung (Zeile vs. JSON-Objekt); ehrlich minimale Feldextraktion, kein voller JSON-Parser, keine Batch/Notifications; 3 neue Unit-Tests inkl. JSON-TCP-Roundtrip (CI-verifiziert). Auth/TLS, Wallet/Explorer/SDK-Consumer und Gossip bleiben offen (F-140).
+
+- 11.09.2026 (SCR-0112): ATC-Node als Prozess startbar — src/main.rs: Devnet-Bootstrap (Genesis, Peer-Join) beim Start, danach Dauerdienst des Chain-Access auf TCP (Standard-Adresse 127.0.0.1:39471, per Argument ueberschreibbar), stderr-Log mit Chain-ID/Boot-Hash/Peers. Ehrlich: Devnet-only, kein TLS/Auth, kein Gossip, keine Blockproduktion (Stufe offen). Docker/Compose und echte Mehr-Prozess-Devnets bauen darauf auf.
+
+- 11.09.2026 (SCR-0113): Zwei-Node-Devnet-Smoke — tests/two_node_devnet.rs: zwei lebende Node-Dienste (je eigener Thread, eigene Genesis-Instanz und Peer-Tabelle) teilen dieselbe Genesis-Definition; ein Client verifiziert ueber echte TCP-Sockets, dass beide Nodes Chain-ID 658467 und denselben Boot-Hash liefern (Zeilen- und JSON-RPC) (CI-verifiziert). Ehrlich: Thread-Simulation zweier Prozesse, kein Docker, kein Gossip zwischen den Nodes.
+
+- 11.09.2026 (SCR-0114): Genesis-File-Bindung via serde — Genesis::from_file() laedt config/devnet/genesis.json (serde_json), CI-Test erzwingt ab jetzt: Code-Genesis == File-Genesis (Gleichheit inkl. boot_hash) — Drift zwischen Artefakt und Rust-Modell laesst main rot laufen. Ehrlichkeit: keine Schema-Pruefung ueber Feldtypen hinaus.
+
+- 12.09.2026 (SCR-0117): Blockmodell live — src/chain.rs: Block (height/prev_hash/payload/hash) + Chain mit deterministischer Devnet-Blockproduktion (produce, Cap 64), Vollverifikation (Hashes, Hoehen-Monotonie, Verkettung, Genesis-Bindung ueber Boot-Hash) und 6 Unit-Tests inkl. Manipulationserkennung, Zwei-Instanz-Determinismus und Genesis-Drift-Nachweis; zwei_node_devnet.rs um Ketten-Determinismus-Test erweitert; main.rs loggt Hoehe/Best-Hash beim Start. Ehrlich: KEIN Konsens (kanonisch bleibt atc-algorithm, F-067 offen), keine Transaktionssemantik, FNV-1a-Platzhalter, kein Merkle-Baum.
+
+- 12.09.2026 (SCR-0118): Gossip-MVP live — src/gossip.rs: pull-basierte Ketten-Synchronisation ueber TCP (Wire: STATUS -> height/best_hash, BLOCKS -> Blockliste), sync_pull adoptiert NUR nach voller Verifikation (Hashes/Hoehen/Verkettung) und Genesis-Bindungs-Pruefung; 5 Unit-Tests inkl. Falschmuenz-Server (kaputte Hashes abgelehnt), abweichender Genesis (abgelehnt), kuerzerer Peer (kein Adopt) und ehrlichem Verbindungsfehler; two_node_devnet.rs um End-to-End-Sync-Test erweitert; main.rs dient Gossip als zweiten Dauerdienst (Standard 127.0.0.1:39472, Argument 2). Ehrlich: nur Pull, keine Periodik, keine Signaturen, kein TLS, FNV-Platzhalter, Payload-Restriktion ('|'/';' verboten).
+- 12.09.2026 (SCR-0117 Status-Update): Blockmodell stabil und produktiv im Devnet — (1) Zwischenfall ehrlich dokumentiert und behoben: erster CI-Lauf rot (70efed2b, 21 passed/1 failed) durch Off-by-one im devnet_cap_ehrlich-Test (Cap 64 gilt inklusive Genesis-Block); Fix nachgezogen, final GRUEN auf 0c3a2ec2 (22 Tests). (2) chain.rs um Gossip-Schnittstellen erweitert (SCR-0118): blocks()/blocks_from() fuer den Wire-Zugriff, from_blocks()-Konstruktor mit voller Verifikation vor Adoption, Payload-Restriktion ('|'/';' verboten). (3) Produktivnutzung: Gossip-Sync (SCR-0118) synchronisiert die Bloecke dieses Modells zwischen Node-Instanzen mit erzwungener Genesis-Bindung. Unveraendert ehrlich: KEIN Konsens (kanonisch bleibt atc-algorithm, F-067 offen), keine Transaktionssemantik, FNV-1a-Platzhalter, kein Merkle-Baum.
+- 12.09.2026 (SCR-0117 Fortschritt 2): Upgrade-Pfad des Blockmodells ist jetzt konkret — der designierte Nachfolger des FNV-1a-Platzhalters existiert: ATC-HASH-001 "TownHash-256" (SCR-0119, atc-algorithm, CI GRUEN 2ff887aa), ein EIGENSTAENDIGER Hash-Algorithmus per Owner-Direktive mit vollstaendiger Spezifikation (docs/SPEC-ATC-HASH-001.md, 6 differenzialgesicherte Testvektoren Python-Referenz vs. Rust). Ist-Zustand bleibt ehrlich: chain.rs und gossip.rs hashen weiterhin mit FNV-1a; die Adoption von ATC-HASH-001 als rev-gepinnte git-Dependency ist die naechste Welle — danach verschwindet der Platzhalter aus der Kette. Vorb Merk: ATC-HASH-001 ist NICHT kryptoanalysiert, Mainnet erfordert externe Krypto-Pruefung (F-067-Gate).
+
+- 12.09.2026 (SCR-0120): TownHash-256-Adoption — FNV-1a IST AUS atc-node ENTFERNT: boot_hash und Block-Hashes rechnen jetzt ueber ATC-HASH-001 (SCR-0119) als rev-gepinnte git-Dependency (atc-algorithm a9f81887); Traversal-Adapter townhash_u64 nimmt die ersten 8 Bytes des 32-Byte-Digests als u64 (Devnet-Feldbreite). Ehrlich: Traversal verkuerzt den Digest, ATC-HASH-001 ist nicht kryptoanalysiert — Mainnet-Gate bleibt F-067 (externe Krypto-Pruefung); vollstaendige 32-Byte-Feldbreite ist Folge-Welle. genesis.json unberuehrt (enthaelt keinen Hash; serde-Bindung vergleicht ueber dieselbe Funktion).

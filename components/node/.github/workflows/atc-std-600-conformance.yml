@@ -1,0 +1,40 @@
+name: ATC-STD-600 Conformance
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Test node
+        run: cargo test --all-targets --all-features
+
+      - name: Verify canonical devnet identity
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          g = json.load(open('config/devnet/genesis.json', encoding='utf-8'))
+          required = ('chain_id','network_id','genesis_id','protocol_version','vm_version')
+          missing = [k for k in required if not g.get(k)]
+          if missing:
+              raise SystemExit(f'missing identity fields: {missing}')
+          if g['chain_id'] != 'atc':
+              raise SystemExit('chain_id must be atc')
+          if g['network_id'] not in {'devnet','testnet','mainnet'}:
+              raise SystemExit('invalid network_id')
+          if len(g['genesis_id']) != 64:
+              raise SystemExit('genesis_id must be a 32-byte hex digest')
+          print('ATC-STD-600 configuration gate: PASS')
+          PY

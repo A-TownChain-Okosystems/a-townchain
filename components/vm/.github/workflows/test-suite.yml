@@ -1,0 +1,64 @@
+name: ATC Test Suite
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  cargo-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo test ueber alle Manifeste (SCR-0083)
+        run: |
+          set +e
+          FAIL=0
+          while IFS= read -r f; do
+            d="$(dirname "$f")"
+            echo "=== cargo test in $d"
+            if ! (cd "$d" && cargo test --quiet); then
+              echo "cargo test FAILED in $d"; FAIL=1
+            fi
+          done < <(find . -name Cargo.toml -not -path "*/archive/*" -not -path "*/node_modules/*")
+          exit $FAIL
+      - name: Generate immutable evidence bundle (SCR-0086)
+        if: success()
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_WORKFLOW: ${{ github.workflow }}
+        run: |
+          set -euo pipefail
+          mkdir -p evidence-bundle
+          python3 - <<'PY'
+          import datetime
+          import os
+          from pathlib import Path
+          sha = os.environ["GITHUB_SHA"]
+          run_id = os.environ["GITHUB_RUN_ID"]
+          workflow = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
+          ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          Path("evidence-bundle/test_run.yaml").write_text(
+              "schema_version: \"1.0.0\"\n"
+              "repository: atc-vm\n"
+              f"workflow: {workflow}\n"
+              f"run_id: {run_id}\n"
+              f"commit: {sha}\n"
+              f"timestamp: {ts}\n"
+              "result: PASS\n"
+              "runner: github-actions\n",
+              encoding="utf-8",
+          )
+          PY
+          sha256sum evidence-bundle/test_run.yaml > evidence-bundle/SHA256SUMS
+      - name: Publish immutable evidence artifact (SCR-0086)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atc-vm-evidence-${{ github.sha }}
+          path: evidence-bundle/
+          if-no-files-found: error
+          retention-days: 30

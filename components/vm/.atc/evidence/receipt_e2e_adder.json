@@ -1,0 +1,1 @@
+{"chain_id": 658467, "contract": "e2e_adder", "fn": "compute", "source_sha256": "d6ac172d397a408f8860ad6263f6b02c04ab434432c934b027b8f6990c980eea", "ops": 6, "result": 20, "expected": 20, "status": "PASS", "vm": "atc-vm-0.1.0"}

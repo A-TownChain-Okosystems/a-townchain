@@ -1,0 +1,44 @@
+name: Contract Exec Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  exec-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: A-TownChain-Okosystems/atc-contracts
+          path: contracts
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build native ATVM runner
+        run: cargo build --locked --bin atc-vm-runner
+      - name: Native ATCLang assembly
+        run: |
+          mkdir -p build
+          ./target/debug/atc-vm-runner \
+            --contract contracts/exec_chain/e2e_adder.atc \
+            --vector contracts/exec_chain/vector.json \
+            --out build
+      - name: ATVM execution with vector verification
+        run: |
+          ./target/debug/atc-vm-runner \
+            --ops build/e2e_adder.ops \
+            --expect "$(jq -er '.expected' contracts/exec_chain/vector.json)"
+      - name: Receipt verification
+        run: |
+          ATVM_OPS=build/e2e_adder.ops ATVM_OUT=build/receipt.json cargo run --quiet --example exec_receipt
+          cat build/receipt.json
+          grep -q '"status": "PASS"' build/receipt.json
+      - name: Upload execution evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: atvm-native-exec-evidence
+          path: build/receipt.json

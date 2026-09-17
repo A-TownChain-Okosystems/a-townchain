@@ -1,0 +1,22 @@
+{
+  "name": "atc-analytics",
+  "version": "0.1.0",
+  "description": "atc-analytics — A-TownChain-Okosystems",
+  "author": "Michael Wroblewski",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "typescript": "^7",
+    "graphql": "^17",
+    "express": "^5"
+  },
+  "devDependencies": {
+    "@types/node": "^26",
+    "@types/jest": "^30",
+    "jest": "^30"
+  }
+}

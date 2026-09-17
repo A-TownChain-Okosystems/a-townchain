@@ -1,5 +1,5 @@
 schema_version: "1.0"
-status: "migration-prepared"
+status: "components-imported"
 target_repository: "A-TownChain-Okosystems/a-townchain"
 strategy: "namespaced-components"
 root_core: "a-townchain"
@@ -37,3 +37,9 @@ rules:
   validate_before_decommission: true
   dependency_graph: "use-when-available"
   source_of_truth: "a-townchain"
+import:
+  executed: "2026-09-17"
+  method: "git subtree add (no squash, history-preserving per MONOREPO_MIGRATION.md)"
+  component_count: 13
+  source_snapshot: "main (atc-contracts: std/code-quality-gate inkl. PR #7 — Ruff-Fixes + Gate-Workflow, zu dem Zeitpunkt ungemerged)"
+  pending: "Validierung (CI) -> Owner-Freigabe -> Decommission/Archivierung der Quellrepos als separater Schritt"

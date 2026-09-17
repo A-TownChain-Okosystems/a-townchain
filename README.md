@@ -96,12 +96,25 @@ atc-shivacore             kernel / TCB boundary
 
 ## Repository Structure
 
-```text
-a-townchain/
-├── docs/
-├── modules/
-└── .atc/evidence/
-```
+a-townchain ist das kanonische **Blockchain-Monorepo** des A-TownChain-Stacks (MIGRATION_MANIFEST.yaml). Der Kern liegt im Root; alle Blockchain-Komponenten sind unter `components/` integriert (volle Git-Historie, Import 2026-09-17, SCR-0126):
+
+| Komponente | Pfad | Rolle |
+|---|---|---|
+| **Core** | `/` (Root) | L1 Protocol — Konsens-Kern, Ketten-Logik, Governance |
+| atc-node | `components/node` | Node Runtime |
+| atc-algorithm | `components/algorithm` | Consensus/Algorithm |
+| atc-vm | `components/vm` | ATC Virtual Machine |
+| atc-contracts | `components/contracts` | Smart Contracts |
+| atc-sdk | `components/sdk` | Developer SDK / CLI |
+| atc-wallet | `components/wallet` | Wallet |
+| atc-indexer | `components/indexer` | Blockchain Indexing |
+| atc-explorer | `components/explorer` | Blockchain Explorer |
+| atc-mining | `components/mining` | Mining/Validation |
+| atc-zkp | `components/zkp` | Zero-Knowledge Proofs |
+| atc-interop | `components/interop` | Interoperability |
+| atc-oracle | `components/oracle` | Oracle Infrastructure |
+| atc-storage | `components/storage` | Blockchain Storage |
+
 
 ## Requirements
 
