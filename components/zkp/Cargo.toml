@@ -1,0 +1,3 @@
+[workspace]
+members = ["crates/zkp-core", "crates/zkp-crypto", "crates/zkp-circuits", "crates/zkp-prover", "crates/zkp-verifier", "crates/zkp-sdk", "crates/zkp-vm"]
+resolver = "2"

@@ -1,0 +1,8 @@
+[package]
+name = "zkp-crypto"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "zkp-crypto — ATC ZKP-Stack (R1-MVP, AD-045)"
+
+[dependencies]

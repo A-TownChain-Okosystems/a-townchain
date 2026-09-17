@@ -1,0 +1,8 @@
+[package]
+name = "zkp-sdk"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "zkp-sdk — ATC ZKP-Stack (R1-MVP, AD-045)"
+
+[dependencies]
