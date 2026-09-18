@@ -1,0 +1,9 @@
+[package]
+name = "a-townchain-sdk"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Protocol SDK primitives for A-TownChain."
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
