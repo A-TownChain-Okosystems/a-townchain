@@ -35,7 +35,7 @@ contract ShivaConsensus {
     state poh_chain:  Vec<bytes32>
     state validators: Map<Address, u64>   // addr → stake
     state total_stake: u64 = 0
-    state block_reward: u64 = 1_000_000_000_000_000_000  // 1 ATC in Wei
+    // Block subsidy is NOT defined here. Canonical issuance lives in atc-algorithm.
 
     // ── Phase 1: Proof of History ─────────────────────
     fn generate_poh(prev_hash: bytes32, data: string) -> bytes32 {
