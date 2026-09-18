@@ -1,0 +1,27 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// A-TownChain L1 monetary-policy integration boundary.
+// Canonical implementation: A-TownChain-Okosystems/atc-algorithm
+
+const CHAIN_ID: u64 = 658467
+const MAX_SUPPLY: u128 = 360000000000000000000000000
+const TARGET_BLOCK_TIME: u64 = 360
+const HALVING_INTERVAL_BLOCKS: u64 = 360000
+const HALVING_COUNT: u64 = 36
+const INITIAL_BLOCK_SUBSIDY: u128 = 500000000000000000000
+
+fn halving_epoch(height: u64) -> u64 {
+    let epoch = height / HALVING_INTERVAL_BLOCKS
+    if epoch >= HALVING_COUNT { return HALVING_COUNT }
+    return epoch
+}
+
+fn raw_block_subsidy(height: u64) -> u128 {
+    let epoch = halving_epoch(height)
+    if epoch >= HALVING_COUNT { return 0 }
+    return INITIAL_BLOCK_SUBSIDY >> epoch
+}
+
+fn max_supply() -> u128 { return MAX_SUPPLY }
+fn target_block_time() -> u64 { return TARGET_BLOCK_TIME }
+fn halving_interval_blocks() -> u64 { return HALVING_INTERVAL_BLOCKS }
+fn halving_count() -> u64 { return HALVING_COUNT }
