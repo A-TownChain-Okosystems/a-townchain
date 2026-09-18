@@ -1,18 +1,25 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // ════════════════════════════════════════════════════════════════
 // A-TownChain Mainnet Launch Manager (Sprint 4.0)
-// Chain-ID 658467 | SHA-256 | Non-EVM
-// Sprint 4.0 — Migrated from Python stub to ATCLang
+// Chain-ID 658467 | Non-EVM
+// Monetary policy is canonical in atc-algorithm.
 // ════════════════════════════════════════════════════════════════
 
 const CHAIN_ID: u64 = 658467
-const GENESIS_SUPPLY: u128 = 21000000000000000000000000  // 21M * 10^18
-const GENESIS_TIMESTAMP: u64 = 1735689600  // 2025-01-01T00:00:00Z
+const MAX_SUPPLY: u128 = 360000000000000000000000000
+const GENESIS_SUPPLY: u128 = 0
+const GENESIS_TIMESTAMP: u64 = 1735689600
+const TARGET_BLOCK_TIME: u64 = 360
+const HALVING_INTERVAL_BLOCKS: u64 = 360000
+const HALVING_COUNT: u64 = 36
 
 struct GenesisConfig {
     chain_id:           u64,
     genesis_timestamp:  u64,
     initial_supply:     u128,
+    max_supply:         u128,
+    halving_interval:   u64,
+    halving_count:      u64,
     initial_validators: List<Address>,
     consensus_type:     String,
     block_time:         u64,
@@ -26,7 +33,6 @@ struct LaunchPhase {
 }
 
 contract LaunchManager {
-
     state config: GenesisConfig
     state phases: List<LaunchPhase>
     state is_launched: bool
@@ -45,14 +51,16 @@ contract LaunchManager {
             chain_id:           CHAIN_ID,
             genesis_timestamp:  GENESIS_TIMESTAMP,
             initial_supply:     GENESIS_SUPPLY,
+            max_supply:         MAX_SUPPLY,
+            halving_interval:   HALVING_INTERVAL_BLOCKS,
+            halving_count:      HALVING_COUNT,
             initial_validators: [],
             consensus_type:     "hybrid",
-            block_time:         10,
+            block_time:         TARGET_BLOCK_TIME,
             max_block_size:     1048576
         }
     }
 
-    // ── Validator hinzufügen ──────────────────────────
     fn add_validator(addr: Address) -> bool {
         require(msg_sender() == self.owner, "Launch: Nur Owner")
         require(!self.is_launched, "Launch: Already launched")
@@ -61,45 +69,27 @@ contract LaunchManager {
         return true
     }
 
-    // ── Phase abschließen ──────────────────────────────
     fn complete_phase(phase_name: String) -> bool {
         require(msg_sender() == self.owner, "Launch: Nur Owner")
-        let phase = LaunchPhase {
-            phase:     phase_name,
-            completed: true,
-            timestamp: block_timestamp()
-        }
+        let phase = LaunchPhase { phase: phase_name, completed: true, timestamp: block_timestamp() }
         self.phases.push(phase)
         emit PhaseCompleted(phase_name, block_timestamp())
         return true
     }
 
-    // ── Mainnet Launch ────────────────────────────────
     fn launch() -> bool {
         require(msg_sender() == self.owner, "Launch: Nur Owner")
         require(!self.is_launched, "Launch: Already launched")
         require(self.config.initial_validators.len() >= 3, "Launch: Min 3 validators")
-
+        require(self.config.initial_supply <= self.config.max_supply, "Launch: Genesis supply exceeds cap")
         self.is_launched = true
         self.genesis_block = block_number()
         emit MainnetLaunched(CHAIN_ID, self.genesis_block)
         return true
     }
 
-    // ── Config abrufen ────────────────────────────────
-    fn get_config() -> GenesisConfig {
-        return self.config
-    }
-
-    fn is_mainnet_launched() -> bool {
-        return self.is_launched
-    }
-
-    fn get_genesis_block() -> u64 {
-        return self.genesis_block
-    }
-
-    fn get_chain_id() -> u64 {
-        return CHAIN_ID
-    }
+    fn get_config() -> GenesisConfig { return self.config }
+    fn is_mainnet_launched() -> bool { return self.is_launched }
+    fn get_genesis_block() -> u64 { return self.genesis_block }
+    fn get_chain_id() -> u64 { return CHAIN_ID }
 }
