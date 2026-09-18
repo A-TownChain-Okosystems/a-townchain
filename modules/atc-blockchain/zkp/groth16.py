@@ -1,33 +1,53 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
-"""Groth16 Zero-Knowledge Proof Layer — PLANNED (Issue #47, ATC-ZKP).
+"""Canonical ZKP boundary for the A-TownChain blockchain.
 
-Die Referenz-Spezifikation liegt in groth16.atc (ATCLang).
-Python-Implementierung ist laut COMPONENT_PLAN noch nicht umgesetzt;
-das aktive ZKP-Target ist das Rust-Modul atc-zkp (src/modules/atc-zkp).
+The production implementation lives in the Rust ``atc_zkp`` module.
+This Python module is compatibility-only: it never implements or silently
+emulates proof generation/verification. Callers must explicitly select the
+canonical Rust implementation.
 """
+
+from __future__ import annotations
+
+
+class ZKPBackendUnavailable(RuntimeError):
+    """Raised when the canonical Rust ZKP backend is not available."""
 
 
 class ZKPLayer:
-    """ZKPLayer — PLANNED. Siehe COMPONENT_PLAN.md und groth16.atc."""
+    """Compatibility boundary; proof operations are delegated to Rust."""
 
     def __init__(self, *args, **kwargs):
-        raise NotImplementedError(
-            "ZKPLayer ist PLANNED (Issue #47) — Referenz: groth16.atc, "
-            "aktives Rust-Target: src/modules/atc-zkp"
+        raise ZKPBackendUnavailable(
+            "The canonical ZKP backend is Rust module 'atc_zkp'. "
+            "Python proof generation/verification is not supported."
         )
 
 
-def get_zkp_layer():
-    raise NotImplementedError("get_zkp_layer() ist PLANNED (Issue #47) — siehe groth16.atc")
+def get_zkp_layer() -> ZKPLayer:
+    """Fail closed instead of silently selecting a non-canonical backend."""
+    raise ZKPBackendUnavailable(
+        "No Python ZKP backend is registered. Use the canonical Rust 'atc_zkp' backend."
+    )
 
 
 class ShieldedTransaction:
-    """ShieldedTransaction — PLANNED (siehe groth16.atc)."""
+    """Compatibility type; construction requires the canonical Rust backend."""
 
     __slots__ = ()
+
+    def __new__(cls, *args, **kwargs):
+        raise ZKPBackendUnavailable(
+            "ShieldedTransaction is implemented by the canonical Rust ZKP backend."
+        )
 
 
 class Groth16Proof:
-    """Groth16Proof — PLANNED (siehe groth16.atc)."""
+    """Compatibility type; construction requires the canonical Rust backend."""
 
     __slots__ = ()
+
+    def __new__(cls, *args, **kwargs):
+        raise ZKPBackendUnavailable(
+            "Groth16Proof is implemented by the canonical Rust ZKP backend."
+        )
