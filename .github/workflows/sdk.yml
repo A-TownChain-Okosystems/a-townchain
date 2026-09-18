@@ -1,0 +1,14 @@
+name: SDK Build and Test
+on:
+  push:
+  pull_request:
+jobs:
+  cargo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: cargo check --manifest-path components/sdk/Cargo.toml
+      - name: Test
+        run: cargo test --manifest-path components/sdk/Cargo.toml
