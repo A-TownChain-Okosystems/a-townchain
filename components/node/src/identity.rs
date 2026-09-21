@@ -8,57 +8,12 @@ pub const CHAIN_ID: &str = "atc";
 pub const DEVNET_NETWORK_ID: &str = "devnet";
 pub const PROTOCOL_VERSION: &str = "1.0.0";
 pub const VM_VERSION: &str = "1.0.0";
-pub const TX_DOMAIN: &str = "ATC-TX-DOMAIN";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ChainIdentity { pub chain_id: String, pub network_id: String, pub genesis_id: String }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RuntimeContext { pub identity: ChainIdentity, pub protocol_version: String, pub vm_version: String }
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TransactionDomain { pub chain_id: String, pub network_id: String, pub protocol_version: String, pub transaction_type: String }
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum IdentityError {
-    EmptyField(&'static str), InvalidChainId(String), InvalidNetworkId(String), InvalidGenesisId(String),
-    GenesisMismatch { configured: String, computed: String },
-    ProtocolMismatch { expected: String, actual: String }, VmMismatch { expected: String, actual: String },
-}
-
-impl ChainIdentity {
-    pub fn validate(&self) -> Result<(), IdentityError> {
-        if self.chain_id.is_empty() { return Err(IdentityError::EmptyField("chain_id")); }
-        if self.network_id.is_empty() { return Err(IdentityError::EmptyField("network_id")); }
-        if self.genesis_id.is_empty() { return Err(IdentityError::EmptyField("genesis_id")); }
-        if self.chain_id != CHAIN_ID { return Err(IdentityError::InvalidChainId(self.chain_id.clone())); }
-        if !matches!(self.network_id.as_str(), "devnet" | "testnet" | "mainnet") { return Err(IdentityError::InvalidNetworkId(self.network_id.clone())); }
-        if self.genesis_id.len() != 64 || !self.genesis_id.bytes().all(|b| b.is_ascii_hexdigit()) { return Err(IdentityError::InvalidGenesisId(self.genesis_id.clone())); }
-        Ok(())
-    }
-}
-
-impl RuntimeContext {
-    pub fn validate(&self, expected_protocol: &str, expected_vm: &str) -> Result<(), IdentityError> {
-        self.identity.validate()?;
-        if self.protocol_version != expected_protocol { return Err(IdentityError::ProtocolMismatch { expected: expected_protocol.into(), actual: self.protocol_version.clone() }); }
-        if self.vm_version != expected_vm { return Err(IdentityError::VmMismatch { expected: expected_vm.into(), actual: self.vm_version.clone() }); }
-        Ok(())
-    }
-}
-
-impl TransactionDomain {
-    pub fn signing_bytes(&self, nonce: u64, sender: &str, recipient: &str, value: u64, fee: u64, payload: &[u8]) -> Vec<u8> {
-        let payload_hex = hex_encode(payload);
-        let nonce_s = nonce.to_string(); let value_s = value.to_string(); let fee_s = fee.to_string();
-        canonical_fields(&[
-            ("domain", TX_DOMAIN), ("chain_id", self.chain_id.as_str()), ("network_id", self.network_id.as_str()),
-            ("protocol_version", self.protocol_version.as_str()), ("transaction_type", self.transaction_type.as_str()),
-            ("nonce", nonce_s.as_str()), ("sender", sender), ("recipient", recipient), ("value", value_s.as_str()),
-            ("fee", fee_s.as_str()), ("payload_hex", payload_hex.as_str()),
-        ])
-    }
-}
 
 /// Genesis identity = HASH(CANONICAL_ENCODE(genesis_document)).
 /// The genesis_id itself is excluded from its own preimage.
