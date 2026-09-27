@@ -205,20 +205,8 @@ entries:
     pattern: "Wall-Clock"
     justification: "Signatur-Timestamp aus Wall-Clock; Verhalten eingefroren (SCR-0126), injizierbare Clock in Welle 3"
     scr: "SCR-0126"
-    line: 82
-    pattern: "Wall-Clock"
-    justification: "Duplikatbaum modules/ — identische Stelle wie components/wallet/wallet/ecdsa.py:82"
-    scr: "SCR-0126"
-    line: 83
-    pattern: "Wall-Clock"
-    justification: "Duplikatbaum modules/ — identische Stelle wie components/wallet/wallet/ecdsa.py:83"
-    scr: "SCR-0126"
   - file: components/wallet/src/wallet.py
     line: 71
     pattern: "random-Modul"
     justification: "random in Wallet-Keygen; Verhalten eingefroren (SCR-0126), CSPRNG/seedbare Quelle in Welle 3"
-    scr: "SCR-0126"
-    line: 71
-    pattern: "random-Modul"
-    justification: "Duplikatbaum modules/ — identische Stelle wie components/wallet/src/wallet.py:71"
     scr: "SCR-0126"
