@@ -2,7 +2,7 @@
 
 > **ATC COMPLIANCE: R4 · Standard ATC-STD-201 v1.0.1 · GATE: AUDITED (09.09.2026, Score 94/100) · README: ATC-STD-README-001 CONFORM**
 
-> A-TownChain is the canonical chain/orchestration layer of the A-TownChain ecosystem. **This repository is not production-ready and has no approved Mainnet date.**
+> A-TownChain is the canonical chain/orchestration integration layer of the A-TownChain ecosystem. Imported component implementations retain their standalone repositories as Source of Truth; **this repository is not production-ready and has no approved Mainnet date.**
 
 **Project:** a-townchain  
 **Organization:** A-TownChain-Okosystems  
@@ -14,7 +14,7 @@
 
 ## Overview
 
-A-TownChain (`a-townchain`) bildet die kanonische Orchestrierungs- und Integrationsschicht der Blockchain-Architektur.
+A-TownChain (`a-townchain`) bildet die kanonische Orchestrierungs- und Integrationsschicht der Blockchain-Architektur. Die unter `components/` importierten Komponenten sind Integrations-/Subtree-Stände; ihre jeweiligen Standalone-Repositories bleiben die Source of Truth.
 
 **Readiness:** Die Evidence-SSOT klassifiziert das Repository als **partially implemented prototype / M4 integration evidence** und ausdrücklich **nicht production-ready**. Es existiert kein freigegebener Mainnet-Termin.
 
@@ -71,7 +71,7 @@ atc-shivacore             kernel / TCB boundary
 
 ### Components
 
-1. **`atc-blockchain`**: Core State Machine, Block-Erstellung, Transaktions-Pool, State DB.
+1. **`atc-blockchain`**: integrierter L1-State-/Block-/Mempool-Stand; normative Verträge folgen den zuständigen Standalone-SSOTs und `atc-standards`.
 2. **`atcnet`**: P2P-Netzwerkschicht (Gossip Protocol, Node Discovery, Peer Bootstrap).
 3. **`atc-zkp`**: Zero-Knowledge Proof Schaltung und Verifikation.
 4. **`atc-governance`**: On-Chain-Abstimmung, Vorschläge, Timelock und Treasury-Verwaltung.
@@ -96,11 +96,11 @@ atc-shivacore             kernel / TCB boundary
 
 ## Repository Structure
 
-a-townchain ist das kanonische **Blockchain-Monorepo** des A-TownChain-Stacks (MIGRATION_MANIFEST.yaml). Der Kern liegt im Root; alle Blockchain-Komponenten sind unter `components/` integriert (volle Git-Historie, Import 2026-09-17, SCR-0126):
+a-townchain ist das kanonische **Blockchain-Integrationsmonorepo** des A-TownChain-Stacks (MIGRATION_MANIFEST.yaml). Es ist nicht die konkurrierende Source of Truth der importierten Komponenten. Der Kern liegt im Root; alle Blockchain-Komponenten sind unter `components/` integriert (volle Git-Historie, Import 2026-09-17, SCR-0126):
 
 | Komponente | Pfad | Rolle |
 |---|---|---|
-| **Core** | `/` (Root) | L1 Protocol — Konsens-Kern, Ketten-Logik, Governance |
+| **Core** | `/` (Root) | Chain-/Orchestrierungs-Kern von a-townchain |
 | atc-node | `components/node` | Node Runtime |
 | atc-algorithm | `components/algorithm` | Consensus/Algorithm |
 | atc-vm | `components/vm` | ATC Virtual Machine |
@@ -141,7 +141,7 @@ python3 modules/atcnet/node.py --chain-id 658467 --port 8333
 ## Development
 
 - Conventional Commits.
-- Modul-Synchronisation über den Monorepo-/Workspace-Kontext.
+- **Komponenten-Synchronisation:** Standalone-SSOT → `a-townchain` Subtree/Mirror → Ecosystem-Evidence.
 - Naming und Governance gemäß `ATC-STD-000` und den jeweils geltenden Standards.
 - Neue Family-scoped Standard-IDs werden ausschließlich über den kanonischen Registry-/Governance-Prozess vergeben.
 
