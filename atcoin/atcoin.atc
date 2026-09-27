@@ -3,10 +3,10 @@
 // ATC-89 — ATCoin (A-Town Coin Token)
 // Sprint 2.5 | Smart Contract Layer | Chain-ID 658467
 // Migrated from: modules/contracts/atcoin/atcoin.py (138 lines)
-// Symbol: ATC | Max Supply: 21M | Decimals: 18 | Standard: ATC-8300
+// Symbol: ATC | Max Supply: 360M | Decimals: 18 | Native L1 monetary policy: atc-algorithm
 // ─────────────────────────────────────────────────────────────
 
-const ATC_MAX_SUPPLY: u128 = 21000000000000000000000000  // 21M * 10^18
+const ATC_MAX_SUPPLY: u128 = 360000000000000000000000000  // 360M * 10^18; canonical L1 cap
 const ATC_DECIMALS: u8 = 18
 
 struct TxRecord {
