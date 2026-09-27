@@ -36,10 +36,11 @@ rules:
   do_not_delete_source_repositories: true
   validate_before_decommission: true
   dependency_graph: "use-when-available"
-  source_of_truth: "a-townchain"
+  source_of_truth: "standalone component repositories"\n  target_role: "integration_mirror"\n  synchronization_direction: "standalone_to_a-townchain"\n  independent_component_release: false
 import:
   executed: "2026-09-17"
   method: "git subtree add (no squash, history-preserving per MONOREPO_MIGRATION.md)"
   component_count: 13
   source_snapshot: "main (atc-contracts: std/code-quality-gate inkl. PR #7 — Ruff-Fixes + Gate-Workflow, zu dem Zeitpunkt ungemerged)"
-  pending: "Validierung (CI) -> Owner-Freigabe -> Decommission/Archivierung der Quellrepos als separater Schritt"
+  pending: "Validierung (CI) -> Owner-Freigabe -> optionales Decommission/Archivierung der Quellrepos als separater Schritt"
+\nroles:\n  standalone_repositories: "component Source of Truth; own build, tests, API/ABI and release"\n  a-townchain_components: "integration/subtree mirrors; no competing component SSOT or independent component release"\n  ecosystem_mirrors: "integration/evidence mirrors; no competing SSOT"\n  archives: "historical evidence; immutable unless explicitly governed"\n
