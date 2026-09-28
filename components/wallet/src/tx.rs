@@ -146,13 +146,13 @@ mod tests {
     fn wrong_chain_id_is_rejected_before_signing() {
         let mut tx = tx();
         tx.chain_id = 1;
-        let key = WalletKey::from_seed([7u8; 32]);
+        let key = WalletKey::from_seed([7u8; 32]).unwrap();
         assert!(matches!(tx.sign(&key), Err(TxError::InvalidChainId)));
     }
 
     #[test]
     fn transaction_mutation_invalidates_signature() {
-        let key = WalletKey::from_seed([7u8; 32]);
+        let key = WalletKey::from_seed([7u8; 32]).unwrap();
         let tx = tx();
         let signature = tx.sign(&key).unwrap();
         let mut altered = tx.clone();
