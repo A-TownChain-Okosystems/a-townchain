@@ -5,7 +5,6 @@
 //! Rust L1 kernel. No legacy TransactionDomain or ATC-TX-DOMAIN encoding remains.
 
 use crate::keys::WalletKey;
-use ed25519_dalek::{Signature, Verifier, VerifyingKey};
 use sha2::{Digest, Sha256};
 
 pub const NUMERIC_CHAIN_ID: u64 = 658467;
@@ -40,6 +39,7 @@ pub enum TxError {
     InvalidChainId,
     EmptySender,
     InvalidSignature,
+    SigningFailure,
 }
 
 impl Transaction {
@@ -99,12 +99,12 @@ impl Transaction {
     }
 
     pub fn sign(&self, key: &WalletKey) -> Result<[u8; 64], TxError> {
-        Ok(key.sign(&self.signing_bytes()?).to_bytes())
+        key.sign(&self.signing_bytes()?)
+            .map_err(|_| TxError::SigningFailure)
     }
 
-    pub fn verify(&self, public_key: &[u8; 32], signature: &[u8; 64]) -> Result<(), TxError> {
-        let key = VerifyingKey::from_bytes(public_key).map_err(|_| TxError::InvalidSignature)?;
-        key.verify(&self.signing_bytes()?, &Signature::from_bytes(signature))
+    pub fn verify(&self, public_key: &[u8; 33], signature: &[u8; 64]) -> Result<(), TxError> {
+        WalletKey::verify(public_key, &self.signing_bytes()?, signature)
             .map_err(|_| TxError::InvalidSignature)
     }
 }
@@ -136,7 +136,7 @@ mod tests {
 
     #[test]
     fn l1_signature_roundtrip() {
-        let key = WalletKey::from_seed([7u8; 32]);
+        let key = WalletKey::from_seed([7u8; 32]).unwrap();
         let tx = tx();
         let signature = tx.sign(&key).unwrap();
         assert!(tx.verify(&key.public_key(), &signature).is_ok());
