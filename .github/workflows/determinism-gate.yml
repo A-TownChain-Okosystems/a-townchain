@@ -21,13 +21,9 @@ jobs:
         with:
           repository: A-TownChain-Okosystems/atc-vm
           path: atc-vm
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
       - uses: dtolnay/rust-toolchain@stable
-      - name: Install ATCLang toolchain
-        working-directory: atclang
-        run: python3 -m pip install -e .
+      - name: Build canonical ATCLang CLI
+        run: cargo build --locked --release --manifest-path atclang/crates/atc-core/Cargo.toml
       - name: Build native ATVM runner
         working-directory: atc-vm
         run: cargo build --locked --bin atc-vm-runner
@@ -36,14 +32,14 @@ jobs:
           ATCLANG_ROOT: ${{ github.workspace }}/atclang
           ATC_VM_RUNNER: ${{ github.workspace }}/atc-vm/target/debug/atc-vm-runner
         run: |
-          bash tests/run_atclang_conformance.sh | tee /tmp/conformance-1.log
+          ATCLANG_ROOT="${{ github.workspace }}/atclang" ATC_CLI="${{ github.workspace }}/atclang/target/release/atc" bash tests/run_atclang_conformance.sh | tee /tmp/conformance-1.log
           bash exec_chain/tests/run_tests.sh | tee /tmp/exec-1.log
       - name: Deterministic ATCLang + ATVM run 2
         env:
           ATCLANG_ROOT: ${{ github.workspace }}/atclang
           ATC_VM_RUNNER: ${{ github.workspace }}/atc-vm/target/debug/atc-vm-runner
         run: |
-          bash tests/run_atclang_conformance.sh | tee /tmp/conformance-2.log
+          ATCLANG_ROOT="${{ github.workspace }}/atclang" ATC_CLI="${{ github.workspace }}/atclang/target/release/atc" bash tests/run_atclang_conformance.sh | tee /tmp/conformance-2.log
           bash exec_chain/tests/run_tests.sh | tee /tmp/exec-2.log
       - name: Compare deterministic evidence
         run: |
