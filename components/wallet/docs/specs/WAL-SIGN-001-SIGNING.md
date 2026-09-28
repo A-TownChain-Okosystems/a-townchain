@@ -1,7 +1,7 @@
 ---
 spec_id: WAL-SIGN-001
 title: "Transaction Signing Specification (Kanonischer Signaturalgorithmus)"
-version: 0.1.0-DRAFT
+version: 0.2.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
 repository: atc-wallet
 layer: L5-Wallet
@@ -34,8 +34,21 @@ Festlegung des KANONISCHEN ATC-Signaturalgorithmus für Transaktionen — löst 
 
 - **REQ-WSIG-001:** ATC-kanonisch für Transaktionssignaturen: ECDSA secp256k1, deterministic nonce nach RFC 6979 (kein Zufall im Signing) — *Nachweis: unit+vector*
 - **REQ-WSIG-002:** Low-S-Pflicht: s > n/2 ⇒ normalisiert auf n - s; High-S-Signaturen sind ungültig (Anti-Malleability) — *Nachweis: negative+vector*
-- **REQ-WSIG-003:** Domain-Separation: sign(tx_hash) mit Präfix „atc-tx.v1“ (Hash-Präfix vor dem Hashing); verhindert Kreuz-Protokoll-Replay — *Nachweis: unit+negative*
+- **REQ-WSIG-003:** Domain-Separation: `ATC-TX-DOMAIN-V2` ist das erste Feld der kanonischen V2-Signing-Bytes. Danach folgen exakt `chain_id` (u64 BE), `tx_type` (u8), Sender/Recipient mit definierten Längen, wirtschaftliche Felder, Nonce, Timestamp, Payload und `poh_hash`. Die exakten Bytes werden mit SHA-256 gehasht und als ECDSA/secp256k1-Prehash signiert — *Nachweis: vector+negative*
 - **REQ-WSIG-004:** Signierung ausschließlich im Rust Trusted Core (WAL-TB-001); Python ist niemals Teil der Signing Boundary — *Nachweis: architecture+negative*
+
+### 3.1 Canonical cryptographic contract
+
+- Curve: secp256k1
+- Signature: ECDSA
+- Hash: SHA-256 over the exact V2 signing bytes
+- Nonce: RFC 6979 deterministic
+- Signature encoding: fixed 64-byte `r || s`
+- Low-S: mandatory; high-S signatures MUST be rejected
+- Public-key encoding: compressed SEC1, 33 bytes
+- Protocol chain ID: numeric `658467`
+- `network_id`, `genesis_id`, `protocol_version`, and `vm_version` are validated runtime context and are not silently inserted into V2 signing bytes
+- Legacy `ATC-TX-DOMAIN` and `atc-tx.v1` signing are forbidden
 
 ## 4. Datenmodelle & Schnittstellen
 
@@ -58,6 +71,8 @@ Kompatibilität zu ATC-STD-COMPAT-001 (MAJOR-Gate); Änderungen nur via SCR/MINO
 ## 8. Status-Gates (Reihenfolge verbindlich)
 
 - [ ] Spec-Freeze (Owner-Review §9; danach normativ)
+- [x] Initiale Rust Trusted-Core Implementierung auf P0-Fix-Branch
+- [ ] SDK/Node Integration mit gemeinsamem Contract
 - [ ] Implementierung (Rust) mit je-Anforderung-Nachweis
 - [ ] Conformance-Suite grün (CI-Evidence: Run-ID + Commit-SHA)
 - [ ] Security-Review (threat-bezogen)
