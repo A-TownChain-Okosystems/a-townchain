@@ -4,11 +4,64 @@ on:
     branches: [main]
 permissions:
   contents: read
+
 jobs:
+  dependency-graph-preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      available: ${{ steps.graph.outputs.available }}
+    steps:
+      - name: Check Dependency Graph availability
+        id: graph
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set +e
+          code="$(curl -sS -o /tmp/dependency-graph.json -w '%{http_code}' -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GH_TOKEN}" -H "X-GitHub-Api-Version: 2022-11-28" "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/dependency-graph/sbom")"
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            echo "Dependency Graph preflight transport failure (curl rc=${rc})."
+            exit "$rc"
+          fi
+          case "$code" in
+            200)
+              echo "available=true" >> "$GITHUB_OUTPUT"
+              echo "Dependency Graph available."
+              ;;
+            403|404)
+              echo "available=false" >> "$GITHUB_OUTPUT"
+              echo "Dependency Graph unavailable (HTTP ${code}); Dependency Review is N/A."
+              ;;
+            *)
+              echo "Unexpected Dependency Graph API response: HTTP ${code}."
+              cat /tmp/dependency-graph.json
+              exit 1
+              ;;
+          esac
+
   dependency-review:
+    needs: dependency-graph-preflight
+    if: needs.dependency-graph-preflight.outputs.available == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
+
+  dependency-review-na-evidence:
+    needs: dependency-graph-preflight
+    if: needs.dependency-graph-preflight.outputs.available != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record explicit N/A status
+        run: |
+          mkdir -p evidence
+          printf '%s\n' 'dependency_review_status: N/A' 'dependency_graph_available: false' 'reason: "GitHub Dependency Graph unavailable for repository"' 'gate_result: "NOT_EXECUTED"' > evidence/dependency-review-status.yaml
+      - name: Upload N/A evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-review-na-${{ github.sha }}
+          path: evidence/dependency-review-status.yaml
+          if-no-files-found: error
