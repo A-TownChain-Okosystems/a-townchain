@@ -45,11 +45,20 @@ function pushU32BE(out: number[], value: number): void {
   out.push((value >>> 24) & 0xff, (value >>> 16) & 0xff, (value >>> 8) & 0xff, value & 0xff);
 }
 
-function pushU64BE(out: number[], value: bigint): void {
-  if (value < 0n || value > 0xffffffffffffffffn) throw new RangeError("u64 out of range");
-  for (let shift = 56n; shift >= 0n; shift -= 8n) {
+function pushUnsignedBE(out: number[], value: bigint, bytes: number): void {
+  const max = (1n << BigInt(bytes * 8)) - 1n;
+  if (value < 0n || value > max) throw new RangeError(`u${bytes * 8} out of range`);
+  for (let shift = BigInt((bytes - 1) * 8); shift >= 0n; shift -= 8n) {
     out.push(Number((value >> shift) & 0xffn));
   }
+}
+
+function pushU64BE(out: number[], value: bigint): void {
+  pushUnsignedBE(out, value, 8);
+}
+
+function pushU128BE(out: number[], value: bigint): void {
+  pushUnsignedBE(out, value, 16);
 }
 
 function pushBytes(out: number[], value: Uint8Array): void {
@@ -73,8 +82,8 @@ function assert32Bytes(name: string, value: Uint8Array): void {
 /**
  * Exact byte representation used by the Rust L1 kernel:
  * ATC-TX-DOMAIN-V2 || chain_id(u64 BE) || tx_type(u8) ||
- * sender_did || recipient_did(optional) || amount(u64 BE) ||
- * gas_price(u64 BE) || gas_limit(u64 BE) || nonce(u64 BE) ||
+ * sender_did || recipient_did(optional) || amount(u128 BE) ||
+ * gas_price(u128 BE) || gas_limit(u64 BE) || nonce(u64 BE) ||
  * timestamp(u64 BE) || payload || poh_hash(32 bytes).
  */
 export function canonicalSigningPreimage(tx: TransactionSigningInput): Uint8Array {
@@ -91,8 +100,8 @@ export function canonicalSigningPreimage(tx: TransactionSigningInput): Uint8Arra
   out.push(tx.tx_type);
   pushBytes(out, new TextEncoder().encode(tx.sender_did));
   pushOptionalString(out, tx.recipient_did);
-  pushU64BE(out, tx.amount);
-  pushU64BE(out, tx.gas_price);
+  pushU128BE(out, tx.amount);
+  pushU128BE(out, tx.gas_price);
   pushU64BE(out, tx.gas_limit);
   pushU64BE(out, tx.nonce);
   pushU64BE(out, tx.timestamp);
