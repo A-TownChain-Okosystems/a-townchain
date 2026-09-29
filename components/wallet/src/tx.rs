@@ -1,8 +1,8 @@
 // Copyright (c) 2026 A-TownChain-Okosystems — Apache-2.0
 //! Canonical A-TownChain L1 transaction construction and signing.
 //!
-//! This module uses exactly the ATC-TX-DOMAIN-V2 byte layout accepted by the
-//! Rust L1 kernel. No legacy TransactionDomain or ATC-TX-DOMAIN encoding remains.
+//! This module defines the protocol-level transaction preimage. Cryptographic
+//! primitives remain isolated in keys.rs.
 
 use crate::keys::WalletKey;
 use sha2::{Digest, Sha256};
@@ -25,8 +25,11 @@ pub struct Transaction {
     pub tx_type: TxType,
     pub sender_did: String,
     pub recipient_did: Option<String>,
-    pub amount: u64,
-    pub gas_price: u64,
+    /// Economic value: canonical u128 representation.
+    pub amount: u128,
+    /// Economic fee price: canonical u128 representation.
+    pub gas_price: u128,
+    /// Resource limit, not an economic quantity.
     pub gas_limit: u64,
     pub nonce: u64,
     pub timestamp: u64,
@@ -38,6 +41,7 @@ pub struct Transaction {
 pub enum TxError {
     InvalidChainId,
     EmptySender,
+    ValueOverflow,
     InvalidSignature,
     SigningFailure,
 }
@@ -51,7 +55,7 @@ impl Transaction {
             return Err(TxError::EmptySender);
         }
 
-        let mut b = Vec::with_capacity(128 + self.payload.len());
+        let mut b = Vec::with_capacity(160 + self.payload.len());
         b.extend_from_slice(TX_DOMAIN_V2);
         b.extend_from_slice(&self.chain_id.to_be_bytes());
         b.push(self.tx_type as u8);
@@ -76,7 +80,7 @@ impl Transaction {
     }
 
     pub fn id(&self, _signature: &[u8; 64]) -> Result<[u8; 32], TxError> {
-        let mut b = Vec::with_capacity(128 + self.payload.len());
+        let mut b = Vec::with_capacity(160 + self.payload.len());
         b.extend_from_slice(b"ATC-TX-ID-V2");
         b.extend_from_slice(&self.chain_id.to_be_bytes());
         b.push(self.tx_type as u8);
@@ -136,7 +140,7 @@ mod tests {
 
     #[test]
     fn l1_signature_roundtrip() {
-        let key = WalletKey::from_seed([7u8; 32]).unwrap();
+        let key = WalletKey::from_private_key_bytes(&[7u8; 32]).unwrap();
         let tx = tx();
         let signature = tx.sign(&key).unwrap();
         assert!(tx.verify(&key.public_key(), &signature).is_ok());
@@ -146,17 +150,28 @@ mod tests {
     fn wrong_chain_id_is_rejected_before_signing() {
         let mut tx = tx();
         tx.chain_id = 1;
-        let key = WalletKey::from_seed([7u8; 32]).unwrap();
+        let key = WalletKey::from_private_key_bytes(&[7u8; 32]).unwrap();
         assert!(matches!(tx.sign(&key), Err(TxError::InvalidChainId)));
     }
 
     #[test]
     fn transaction_mutation_invalidates_signature() {
-        let key = WalletKey::from_seed([7u8; 32]).unwrap();
+        let key = WalletKey::from_private_key_bytes(&[7u8; 32]).unwrap();
         let tx = tx();
         let signature = tx.sign(&key).unwrap();
         let mut altered = tx.clone();
         altered.amount += 1;
         assert!(altered.verify(&key.public_key(), &signature).is_err());
+    }
+
+    #[test]
+    fn u128_economic_boundaries_are_serialized_without_truncation() {
+        let mut tx = tx();
+        tx.amount = u128::MAX;
+        tx.gas_price = u128::MAX;
+
+        let bytes = tx.signing_bytes().unwrap();
+        assert!(bytes.ends_with(&[9u8; 32]));
+        assert_eq!(&bytes[bytes.len() - 32 - 5 - 8 - 8 - 8 - 8 - 16 - 16..bytes.len() - 32 - 5 - 8 - 8 - 8 - 8 - 16], &[0xffu8; 16]);
     }
 }
