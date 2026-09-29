@@ -213,7 +213,7 @@ mod tests {
         tx.gas_price = u128::MAX;
 
         let bytes = tx.signing_bytes().unwrap();
-        assert_eq!(&bytes[58..74], &[0xff; 16]);
-        assert_eq!(&bytes[74..90], &[0xff; 16]);
+        assert_eq!(&bytes[57..73], &[0xff; 16]);
+        assert_eq!(&bytes[73..89], &[0xff; 16]);
     }
 }
