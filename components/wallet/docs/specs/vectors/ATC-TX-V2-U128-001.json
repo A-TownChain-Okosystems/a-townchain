@@ -1,0 +1,31 @@
+{
+  "vector_id": "ATC-TX-V2-U128-001",
+  "status": "CONFORMANCE-CANDIDATE",
+  "chain_id": 658467,
+  "private_key_hex": "0707070707070707070707070707070707070707070707070707070707070707",
+  "public_key_sec1_compressed_hex": "025cbdf0646e5db4eaa398f365f2ea7a0e3d419b7e0330e39ce92bddedcac4f9bc",
+  "transaction": {
+    "tx_type": 0,
+    "sender_did": "ATC-sender",
+    "recipient_did": "ATC-recipient",
+    "amount": "100",
+    "gas_price": "1",
+    "gas_limit": "1000",
+    "nonce": "7",
+    "timestamp": "1700000000",
+    "payload_hex": "68656c6c6f",
+    "poh_hash_hex": "0909090909090909090909090909090909090909090909090909090909090909"
+  },
+  "signing_preimage_hex": "4154432d54582d444f4d41494e2d563200000000000a0c23000000000a4154432d73656e646572010000000d4154432d726563697069656e74000000000000000000000000000000640000000000000000000000000000000100000000000003e80000000000000007000000006553f1000000000568656c6c6f0909090909090909090909090909090909090909090909090909090909090909",
+  "signing_preimage_sha256_hex": "8608d1530c0c8dd0220793edc6b24071878b36fca0299b2534cef76e79d340be",
+  "signature_r_s_hex": "1c0661f2ecc4ccfca786e5a37a386191a62a301cd2449ce80089e3552220ccfc3a71cbb5903ba6f5df68690bc78ed389ec548f4e9ceef344e36abc7b3b643d78",
+  "signature_encoding": "fixed-64-byte-r||s",
+  "public_key_encoding": "compressed-sec1-33-byte",
+  "hash": "SHA-256",
+  "nonce_generation": "RFC6979",
+  "low_s": true,
+  "notes": [
+    "Candidate vector generated for the P0 implementation; acceptance requires exact-SHA CI.",
+    "network_id, genesis_id, protocol_version and vm_version are not serialized into V2 signing bytes."
+  ]
+}
