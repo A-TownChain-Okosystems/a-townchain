@@ -28,15 +28,10 @@ pub struct WalletKey(SigningKey);
 
 impl WalletKey {
     /// Construct a transaction/account key from a raw 32-byte secp256k1 scalar.
-    pub fn from_bytes(bytes: &[u8; PRIVATE_KEY_LEN]) -> Result<Self, KeyError> {
+    pub fn from_private_key_bytes(bytes: &[u8; PRIVATE_KEY_LEN]) -> Result<Self, KeyError> {
         SigningKey::from_bytes(bytes.into())
             .map(Self)
             .map_err(|_| KeyError::InvalidPrivateKey)
-    }
-
-    /// Deterministic constructor retained for conformance/unit tests.
-    pub fn from_seed(seed: [u8; PRIVATE_KEY_LEN]) -> Result<Self, KeyError> {
-        Self::from_bytes(&seed)
     }
 
     /// Return the canonical compressed SEC1 public key (33 bytes).
@@ -49,7 +44,7 @@ impl WalletKey {
             .expect("compressed secp256k1 public key is exactly 33 bytes")
     }
 
-    /// Sign the SHA-256 prehash of the canonical transaction signing bytes.
+    /// Sign the SHA-256 prehash of canonical protocol bytes.
     ///
     /// k256's ECDSA prehash signer uses RFC6979 deterministic nonce generation.
     /// The resulting signature is normalized to low-S before serialization.
@@ -90,10 +85,15 @@ impl WalletKey {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use k256::elliptic_curve::PrimeField;
+
+    fn key() -> WalletKey {
+        WalletKey::from_private_key_bytes(&[7u8; 32]).unwrap()
+    }
 
     #[test]
     fn secp256k1_roundtrip() {
-        let key = WalletKey::from_seed([7u8; 32]).unwrap();
+        let key = key();
         let message = b"ATC-TX-DOMAIN-V2 test";
         let signature = key.sign(message).unwrap();
 
@@ -103,7 +103,7 @@ mod tests {
 
     #[test]
     fn signing_is_deterministic() {
-        let key = WalletKey::from_seed([7u8; 32]).unwrap();
+        let key = key();
         let message = b"ATC-TX-DOMAIN-V2 deterministic";
 
         assert_eq!(key.sign(message).unwrap(), key.sign(message).unwrap());
@@ -111,7 +111,7 @@ mod tests {
 
     #[test]
     fn wrong_message_is_rejected() {
-        let key = WalletKey::from_seed([7u8; 32]).unwrap();
+        let key = key();
         let signature = key.sign(b"canonical").unwrap();
 
         assert!(WalletKey::verify(&key.public_key(), b"altered", &signature).is_err());
@@ -120,8 +120,40 @@ mod tests {
     #[test]
     fn invalid_private_key_is_rejected() {
         assert!(matches!(
-            WalletKey::from_seed([0u8; 32]),
+            WalletKey::from_private_key_bytes(&[0u8; 32]),
             Err(KeyError::InvalidPrivateKey)
+        ));
+    }
+
+    #[test]
+    fn high_s_signature_is_rejected() {
+        let key = key();
+        let message = b"high-s rejection";
+        let low_s = key.sign(message).unwrap();
+        let r = &low_s[..32];
+        let low_s_scalar =
+            k256::Scalar::from_repr(low_s[32..].try_into().unwrap()).unwrap();
+        let high_s = (-low_s_scalar).to_bytes();
+
+        let mut encoded = [0u8; SIGNATURE_LEN];
+        encoded[..32].copy_from_slice(r);
+        encoded[32..].copy_from_slice(&high_s);
+
+        assert!(matches!(
+            WalletKey::verify(&key.public_key(), message, &encoded),
+            Err(KeyError::HighS)
+        ));
+    }
+
+    #[test]
+    fn malformed_public_key_is_rejected() {
+        let key = key();
+        let signature = key.sign(b"malformed public key").unwrap();
+        let public_key = [0u8; PUBLIC_KEY_LEN];
+
+        assert!(matches!(
+            WalletKey::verify(&public_key, b"malformed public key", &signature),
+            Err(KeyError::InvalidPublicKey)
         ));
     }
 }
