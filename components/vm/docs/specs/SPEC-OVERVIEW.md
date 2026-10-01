@@ -24,9 +24,15 @@ scr: SCR-0071
 
 ATC-VM-001, ATC-BC-001, ATC-VM-CONF-001, IFC-0009 (ATVM Execution-API, derzeit ohne Consumer)
 
-## 3. Bekannte Spezifikations-Gaps (Backlog, folgt via SCR)
+## 3. Bekannte Spezifikations-Gaps
 
-Gas-Kosten-Registry, Fehlercode-Matrix, Conformance-Läufe gegen ATC-VM-CONF-001 — Implementierung folgt nach Spec-Freeze.
+### Gas-Kosten-Registry
+
+Die kanonische Rust-VM erzwingt jetzt Gasabrechnung vor jedem Opcode-Effekt. Der bestehende ATC/ShivaCore-Baseline-Satz ist im `Op::gas_cost()` zentralisiert; Out-of-Gas beendet die Ausführung fail-closed und verhindert den betreffenden Opcode-Effekt.
+
+**Implementation commit:** `473f6411d5ce2c5764800fb14e9ad815b33a5eda`
+
+**Wichtig:** Der Baseline-Satz ist konsensrelevant und darf nicht stillschweigend geändert werden. Die normative ATC-VM-001-Gas-Registry muss diesen Satz explizit einfrieren bzw. eine versionierte Änderung definieren. Bis zum Exact-SHA-Conformance-Lauf bleibt dieser Punkt `IMPLEMENTED / CI_PENDING`, nicht `VERIFIED`.
 
 ## 4. Status-Gates
 
