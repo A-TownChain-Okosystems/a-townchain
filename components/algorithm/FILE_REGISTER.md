@@ -10,7 +10,7 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 33 |
+| **Total Dateien** | 34 |
 | **.md** | 21 |
 | **.yaml** | 6 |
 | **(keine)** | 4 |
@@ -48,6 +48,7 @@
 - `specs/ATC-CONSENSUS-306-FINALITY.md`
 - `specs/ATC-CONSENSUS-307-VALIDATOR.md`
 - `specs/ATC-CONSENSUS-308-POI.md`
+- `specs/ATC-CONSENSUS-309-STATE-MACHINE.md`
 - `specs/ATC-CONSENSUS-DET-DETERMINISM.md`
 - `specs/ATC-CONSENSUS-ENC-ENCODING.md`
 - `specs/ATC-SENSUS-302-POS.md`
