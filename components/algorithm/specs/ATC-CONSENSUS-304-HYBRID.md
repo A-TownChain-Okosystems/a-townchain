@@ -4,7 +4,7 @@ title: "Hybrid Selection Specification — ShivaConsensus Leader-Wahl"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
 repository: atc-algorithm
-layer: L3-Konsens
+layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
@@ -32,8 +32,8 @@ Mathematisch eindeutige Kombination von PoH, PoS-Gewicht und PoW-Beitrag zur Lea
 
 ## 3. Normative Anforderungen (MUST)
 
-- **REQ-HYB-001:** Hybrid-Score pro Kandidat: score = W_S * pos_weight(v) + W_W * pow_work(block); W_S, W_W sind genesis-locked u64-Gewichte — *Nachweis: unit+vector*
-- **REQ-HYB-002:** Leader = argmax(score) über alle validen Kandidaten des Slots; festgelegt durch PoH-Seed + Validator-Set-Hash (deterministisch) — *Nachweis: unit+property*
+- **REQ-HYB-001:** Hybrid-Score MUSS eine deterministische, overflow-sichere Kombination der separat spezifizierten PoS- und PoW-Beiträge sein; konkrete Skalierung, Gewichte, Wertebereiche und Overflow-Regeln sind bis zum Spec-Freeze festzulegen — *Nachweis: unit+vector*
+- **REQ-HYB-002:** Leader = deterministischer argmax über die vollständig validierte Kandidatenmenge eines Slots; Seed, Kandidatenmenge, Tie-Breaking und Beitragsskala müssen bis zum Spec-Freeze vollständig definiert sein — *Nachweis: unit+property*
 - **REQ-HYB-003:** Hybrid-Parameter (W_S, W_W, Zielblockzeit, Difficulty-Start) sind Teil der Network-Identity (ATC-NETWORK-ID-001) und nur per MAJOR + Owner-Freigabe änderbar — *Nachweis: vector+negative*
 - **REQ-HYB-004:** Consensus-Version ist im Block-Header; inkompatible Versionen ⇒ Headers werden verworfen (kein silent upgrade) — *Nachweis: negative*
 
