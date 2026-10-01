@@ -1,8 +1,8 @@
 ---
 spec_id: WAL-TX-001
 title: "Canonical Transaction Specification"
-version: 0.1.0-DRAFT
-status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
+version: 1.0.0
+status: IMPLEMENTATION-BOUND — protocol authority remains outside Wallet
 repository: a-townchain/components/wallet
 layer: L7-Wallet
 owner: A-TownChain-Okosystems
@@ -10,57 +10,56 @@ copyright: Michael Wroblewski
 license: Apache-2.0
 created: 2026-09-10
 scr: SCR-0071
-depends: []
+depends:
+  - ATC-STD-600
 ---
 
-# Canonical Transaction Specification (WAL-TX-001)
+# WAL-TX-001 — Wallet Transaction Mapping
 
-> **Ehrlicher Status:** Spezifikations-Grundgerüst (SCR-0071, Owner-Audit-Backlog).
-> Implementierung, Tests und Evidence PENDING — gemäß „No status without
-> evidence" behauptet diese Datei keinerlei funktionierenden Zustand.
+> **Authority rule:** This document does not define a competing transaction protocol. The normative transaction and cryptographic contract is owned by the L2/standards boundary, currently represented by ATC-STD-600. The Wallet is an L7 implementation and must remain byte-compatible with that contract.
 
-## 1. Zweck
+## 1. Purpose
 
-Das verbindliche Transaktionsobjekt des Wallets inkl. kanonischer Serialisierung (Signatur-Grundlage).
+Define the Wallet-side mapping and conformance obligations for the canonical L1 transaction. Protocol changes MUST be made in the authoritative L2/standards contract first and then propagated to the Wallet implementation.
 
-## 2. Scope (gilt für)
+## 2. Canonical mapping
 
-- Felder (chain_id, nonce, sender, recipient, value, fee, payload, signature)
-- Feldreihenfolge & Encoding
-- Kanonalität
+The Wallet implementation in `components/wallet/src/tx.rs` implements the current contract:
 
-## 3. Normative Anforderungen (MUST)
+- `chain_id`: `u64`, canonical value `658467`
+- `tx_type`: `u8`
+- `sender_did`: length-prefixed UTF-8 bytes
+- `recipient_did`: presence byte + length-prefixed UTF-8 bytes when present
+- `amount`: `u128`, fixed 16-byte big-endian
+- `gas_price`: `u128`, fixed 16-byte big-endian
+- `gas_limit`: `u64`, big-endian
+- `nonce`: `u64`, big-endian
+- `timestamp`: `u64`, big-endian
+- `payload`: u32 length + bytes
+- `poh_hash`: exactly 32 bytes
+- domain separator: `ATC-TX-DOMAIN-V2`
+- transaction digest: SHA-256 of the canonical signing preimage
+- authorization: ECDSA secp256k1 with RFC6979 and low-S enforcement
 
-- **REQ-WTX-001:** Tx-Felder sind fixiert: chain_id(u64=658467 für Mainnet), nonce(u64), sender(addr), recipient(addr), value(u128 micro-ATC), fee(u128), payload(len-bounded bytes), signature(65 Byte: r,s,recid) — *Nachweis: unit+vector*
-- **REQ-WTX-002:** Kanonische Serialisierung: Little-Endian-Integer, fixe Feldreihenfolge, Längenpräfix für Bytes (u32); jede Abweichung ⇒ ungültige Signatur (verhindert malleability) — *Nachweis: vector+negative*
-- **REQ-WTX-003:** payload-Obergrenze (genesis-locked) wird beim Erzeugen erzwungen; darüber ⇒ Tx-Erzeugung verweigert — *Nachweis: negative*
-- **REQ-WTX-004:** tx_hash = SHA-256(canonical(tx_unsigned)) — Basis für Signatur und Nonce-Tracking — *Nachweis: unit*
+## 3. Forbidden legacy contract
 
-## 4. Datenmodelle & Schnittstellen
+The former little-endian / 65-byte-recovery-ID draft in this file is obsolete and MUST NOT be implemented. In particular, the legacy `ATC-TX-DOMAIN` is forbidden.
 
-(Datenmodelle werden beim Spec-Freeze finalisiert; diesem Grundgerüst liegen die untenstehenden Anforderungen zugrunde.)
+## 4. Conformance requirements
 
-## 5. Invarianten
+- Rust and TypeScript preimages MUST be byte-identical.
+- `amount` and `gas_price` MUST remain `u128` end-to-end.
+- Boundary vectors MUST cover `0` and `2^128-1`.
+- Positive low-S and negative high-S signature vectors MUST exist.
+- Legacy-domain and malformed-signature tests MUST fail closed.
+- Exact-SHA CI evidence is required before verification status may be asserted.
 
-- Identische Transaktion ⇒ identischer Hash auf allen Implementierungen
+## 5. Evidence status
 
-## 6. Conformance-Tests (Mindestkategorien)
+This document does not assert `VERIFIED`. Verification requires the exact source SHA, the corresponding CI Run/Job/Step/Log chain, and conformance evidence bound to that SHA.
 
-- tx_serialization.json
-- payload_limit.json
-- malleability_rejection.json (modified payload/recipient/amount ⇒ Verify-FAIL, WAL-VERIFY-001)
+## 6. References
 
-## 7. Abhängigkeiten & Kompatibilität
-
-Kompatibilität zu ATC-STD-COMPAT-001 (MAJOR-Gate); Änderungen nur via SCR/MINOR (ATC-STD-UPDATE-001).
-
-## 8. Status-Gates (Reihenfolge verbindlich)
-
-- [ ] Spec-Freeze (Owner-Review §9; danach normativ)
-- [ ] Implementierung (Rust) mit je-Anforderung-Nachweis
-- [ ] Conformance-Suite grün (CI-Evidence: Run-ID + Commit-SHA)
-- [ ] Security-Review (threat-bezogen)
-
-## 9. Referenzen
-
-- Owner-Audit 10.09. (P1-3 Replay-Struktur)
+- ATC-STD-600 — normative transaction/cryptographic contract
+- `components/wallet/src/tx.rs` — Wallet implementation
+- `components/sdk/typescript/chain-identity.ts` — TypeScript conformance implementation
