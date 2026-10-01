@@ -7,14 +7,14 @@
 atc-blockchain/
 ├── requirements.txt — Core blockchain node python dependencies
 ├── README.md — Core node architecture and setup documentation
-├── consensus/ — Proof-of-Stake / Proof-of-History consensus protocol engine
+├── consensus/ — historical/spec-draft artifacts; canonical implementation is components/algorithm
 ├── contracts/ — Smart contract execution engine and runtime environment
 ├── p2p/ — Peer-to-peer network protocol layer (TCP/WebSockets)
 └── genesis/ — Initial network genesis state configuration and bootstrap generator
 ```
 
 ## Module Descriptions
-- consensus/ — Implements block production, leader election, finality voting, and fork choice rules.
+- consensus/ — Historical/spec-draft artifacts only; MUST NOT be treated as canonical implementation.
 - contracts/ — Contract execution environment processing state transitions and gas accounting.
 - p2p/ — Peer discovery, block propagation, and transaction gossip networking.
 - genesis/ — Generates initial state allocations, validator sets, and network parameters.
