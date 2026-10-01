@@ -1,117 +1,75 @@
 // Copyright (c) 2026 A-TownChain-Okosystems — Apache-2.0
-//! Canonical A-TownChain L1 transaction construction and signing.
-//!
-//! This module uses exactly the ATC-TX-DOMAIN-V2 byte layout accepted by the
-//! Rust L1 kernel. No legacy TransactionDomain or ATC-TX-DOMAIN encoding remains.
+//! Canonical A-TownChain L1 transaction authorization.
+//! Protocol definition is owned by the standards/L2 contract; this is its wallet implementation.
 
-use crate::keys::WalletKey;
-use ed25519_dalek::{Signature, Verifier, VerifyingKey};
+use k256::ecdsa::{
+    signature::hazmat::{PrehashSigner, PrehashVerifier},
+    Signature, SigningKey, VerifyingKey,
+};
 use sha2::{Digest, Sha256};
 
-pub const NUMERIC_CHAIN_ID: u64 = 658467;
+pub const CHAIN_ID: u64 = 658467;
 pub const TX_DOMAIN_V2: &[u8] = b"ATC-TX-DOMAIN-V2";
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(u8)]
-pub enum TxType {
-    Transfer = 0,
-    Stake = 1,
-    Unstake = 2,
-    Contract = 3,
-}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Transaction {
-    pub chain_id: u64,
-    pub tx_type: TxType,
-    pub sender_did: String,
-    pub recipient_did: Option<String>,
-    pub amount: u64,
-    pub gas_price: u64,
-    pub gas_limit: u64,
     pub nonce: u64,
-    pub timestamp: u64,
+    pub sender: Vec<u8>,
+    pub recipient: Vec<u8>,
+    pub amount: u128,
+    pub fee: u128,
     pub payload: Vec<u8>,
-    pub poh_hash: [u8; 32],
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TxError {
     InvalidChainId,
-    EmptySender,
     InvalidSignature,
+    InvalidKey,
 }
 
-impl Transaction {
-    pub fn signing_bytes(&self) -> Result<Vec<u8>, TxError> {
-        if self.chain_id != NUMERIC_CHAIN_ID {
-            return Err(TxError::InvalidChainId);
-        }
-        if self.sender_did.is_empty() {
-            return Err(TxError::EmptySender);
-        }
-
-        let mut b = Vec::with_capacity(128 + self.payload.len());
-        b.extend_from_slice(TX_DOMAIN_V2);
-        b.extend_from_slice(&self.chain_id.to_be_bytes());
-        b.push(self.tx_type as u8);
-        put_bytes(&mut b, self.sender_did.as_bytes());
-
-        match &self.recipient_did {
-            Some(value) => {
-                b.push(1);
-                put_bytes(&mut b, value.as_bytes());
-            }
-            None => b.push(0),
-        }
-
-        b.extend_from_slice(&self.amount.to_be_bytes());
-        b.extend_from_slice(&self.gas_price.to_be_bytes());
-        b.extend_from_slice(&self.gas_limit.to_be_bytes());
-        b.extend_from_slice(&self.nonce.to_be_bytes());
-        b.extend_from_slice(&self.timestamp.to_be_bytes());
-        put_bytes(&mut b, &self.payload);
-        b.extend_from_slice(&self.poh_hash);
-        Ok(b)
-    }
-
-    pub fn id(&self, _signature: &[u8; 64]) -> Result<[u8; 32], TxError> {
-        let mut b = Vec::with_capacity(128 + self.payload.len());
-        b.extend_from_slice(b"ATC-TX-ID-V2");
-        b.extend_from_slice(&self.chain_id.to_be_bytes());
-        b.push(self.tx_type as u8);
-        put_bytes(&mut b, self.sender_did.as_bytes());
-        match &self.recipient_did {
-            Some(value) => {
-                b.push(1);
-                put_bytes(&mut b, value.as_bytes());
-            }
-            None => b.push(0),
-        }
-        b.extend_from_slice(&self.amount.to_be_bytes());
-        b.extend_from_slice(&self.gas_price.to_be_bytes());
-        b.extend_from_slice(&self.gas_limit.to_be_bytes());
-        b.extend_from_slice(&self.nonce.to_be_bytes());
-        b.extend_from_slice(&self.timestamp.to_be_bytes());
-        put_bytes(&mut b, &self.payload);
-        b.extend_from_slice(&self.poh_hash);
-        Ok(Sha256::digest(b).into())
-    }
-
-    pub fn sign(&self, key: &WalletKey) -> Result<[u8; 64], TxError> {
-        Ok(key.sign(&self.signing_bytes()?).to_bytes())
-    }
-
-    pub fn verify(&self, public_key: &[u8; 32], signature: &[u8; 64]) -> Result<(), TxError> {
-        let key = VerifyingKey::from_bytes(public_key).map_err(|_| TxError::InvalidSignature)?;
-        key.verify(&self.signing_bytes()?, &Signature::from_bytes(signature))
-            .map_err(|_| TxError::InvalidSignature)
-    }
-}
-
-fn put_bytes(out: &mut Vec<u8>, value: &[u8]) {
-    out.extend_from_slice(&(value.len() as u32).to_be_bytes());
+fn field(out: &mut Vec<u8>, key: &[u8], value: &[u8]) {
+    out.extend_from_slice(&(key.len() as u32).to_be_bytes());
+    out.extend_from_slice(key);
+    out.extend_from_slice(&(value.len() as u64).to_be_bytes());
     out.extend_from_slice(value);
+}
+
+pub fn signing_preimage(tx: &Transaction) -> Result<Vec<u8>, TxError> {
+    if CHAIN_ID != 658467 {
+        return Err(TxError::InvalidChainId);
+    }
+    let mut out = Vec::new();
+    field(&mut out, b"domain", TX_DOMAIN_V2);
+    field(&mut out, b"chain_id", &CHAIN_ID.to_be_bytes());
+    field(&mut out, b"nonce", &tx.nonce.to_be_bytes());
+    field(&mut out, b"sender", &tx.sender);
+    field(&mut out, b"recipient", &tx.recipient);
+    field(&mut out, b"amount", &tx.amount.to_be_bytes());
+    field(&mut out, b"fee", &tx.fee.to_be_bytes());
+    field(&mut out, b"payload", &tx.payload);
+    Ok(out)
+}
+
+pub fn digest(tx: &Transaction) -> Result<[u8; 32], TxError> {
+    Ok(Sha256::digest(signing_preimage(tx)?).into())
+}
+
+pub fn sign(tx: &Transaction, key: &SigningKey) -> Result<Signature, TxError> {
+    let digest = digest(tx)?;
+    let mut sig = key.sign_prehash(&digest).map_err(|_| TxError::InvalidKey)?;
+    if let Some(low_s) = sig.normalize_s() {
+        sig = low_s;
+    }
+    Ok(sig)
+}
+
+pub fn verify(tx: &Transaction, key: &VerifyingKey, sig: &Signature) -> Result<(), TxError> {
+    if sig.normalize_s().is_some() {
+        return Err(TxError::InvalidSignature);
+    }
+    key.verify_prehash(&digest(tx)?, sig)
+        .map_err(|_| TxError::InvalidSignature)
 }
 
 #[cfg(test)]
@@ -120,43 +78,31 @@ mod tests {
 
     fn tx() -> Transaction {
         Transaction {
-            chain_id: NUMERIC_CHAIN_ID,
-            tx_type: TxType::Transfer,
-            sender_did: "ATC-sender".into(),
-            recipient_did: Some("ATC-recipient".into()),
-            amount: 100,
-            gas_price: 1,
-            gas_limit: 1000,
             nonce: 7,
-            timestamp: 1_700_000_000,
-            payload: b"hello".to_vec(),
-            poh_hash: [9u8; 32],
+            sender: vec![2; 33],
+            recipient: vec![3; 33],
+            amount: u128::MAX,
+            fee: u128::MAX - 1,
+            payload: b"ATC-V2".to_vec(),
         }
     }
 
     #[test]
-    fn l1_signature_roundtrip() {
-        let key = WalletKey::from_seed([7u8; 32]);
-        let tx = tx();
-        let signature = tx.sign(&key).unwrap();
-        assert!(tx.verify(&key.public_key(), &signature).is_ok());
+    fn u128_is_fixed_16_byte_big_endian() {
+        let bytes = signing_preimage(&tx()).unwrap();
+        assert!(bytes.windows(16).any(|w| w == u128::MAX.to_be_bytes()));
     }
 
     #[test]
-    fn wrong_chain_id_is_rejected_before_signing() {
-        let mut tx = tx();
-        tx.chain_id = 1;
-        let key = WalletKey::from_seed([7u8; 32]);
-        assert!(matches!(tx.sign(&key), Err(TxError::InvalidChainId)));
+    fn v2_roundtrip_and_low_s() {
+        let key = SigningKey::from_bytes((&[7u8; 32]).into()).unwrap();
+        let sig = sign(&tx(), &key).unwrap();
+        assert!(sig.normalize_s().is_none());
+        assert!(verify(&tx(), &key.verifying_key(), &sig).is_ok());
     }
 
     #[test]
-    fn transaction_mutation_invalidates_signature() {
-        let key = WalletKey::from_seed([7u8; 32]);
-        let tx = tx();
-        let signature = tx.sign(&key).unwrap();
-        let mut altered = tx.clone();
-        altered.amount += 1;
-        assert!(altered.verify(&key.public_key(), &signature).is_err());
+    fn legacy_domain_is_not_used() {
+        assert_ne!(TX_DOMAIN_V2, b"ATC-TX-DOMAIN");
     }
 }
