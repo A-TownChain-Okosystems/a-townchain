@@ -1,3 +1,7 @@
+# Consensus Migration Index — HISTORICAL / NON-CANONICAL
+
+> Authority: `a-townchain/components/algorithm` (Rust). These Python/ATCLang artifacts are migration history/spec drafts and are not frozen protocol truth.
+
 # ATCLang Consensus Migration — Sprint 2.1 / Issue #74
 # ATC-81 bis ATC-86: Vollständige Konsens-Module in ATCLang
 #
