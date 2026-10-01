@@ -13,7 +13,7 @@ standard: ATC-STD-MD-001
 
 ## Übersicht
 
-`a-townchain` ist der kanonische L1-Blockchain-Core (Protocol Layer L2) der A-TownChain: Chain-ID 658467, Transaktionen, Authorization Entry, Mempool, Block-/Finality-Protokoll und Economics. ATC-VM und deterministische State-Transition-Ausführung gehören zum separaten Protocol Layer L3 unter `a-townchain/components/vm`. Die Implementierung des Konsensusalgorithmus gehört zum kanonischen Algorithmus-Modul unter `a-townchain/components/algorithm`. Diese Repository-Architektur darf keine ältere L3-Zuordnung oder nicht eingefrorene Konsensusvariante als bereits kanonische Implementierung darstellen.
+`a-townchain` ist der kanonische L2-Blockchain-Core der A-TownChain: Chain-ID 658467, Transaktionen, Authorization Entry, Mempool, Block-/Finality-Protokoll und Economics. ATC-VM und deterministische State-Transition-Ausführung gehören zum separaten Protocol Layer L3 unter `a-townchain/components/vm`. Die Implementierung des Konsensusalgorithmus gehört zum kanonischen Algorithmus-Modul unter `a-townchain/components/algorithm`. Diese Repository-Architektur darf keine ältere L3-Zuordnung oder nicht eingefrorene Konsensusvariante als bereits kanonische Implementierung darstellen.
 
 ## Subsysteme
 
@@ -27,7 +27,7 @@ standard: ATC-STD-MD-001
 ## Verantwortungsgrenzen
 
 - `atc-node` betreibt das Protokoll (Full-Node-Binary/Runtime) — hier wird es definiert.
-- `atc-algorithm` implementiert den Konsens — dieses Repo bindet ihn.
+- `components/algorithm` enthält den kanonischen Algorithmuspfad — dieses Repo bindet ihn als L2 Blockchain Core.
 - `a-townchain/components/vm` führt Contracts aus — das Protokoll definiert die Ausführungssemantik.
 
 ## Registry-Einordnung
