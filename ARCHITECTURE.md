@@ -24,7 +24,7 @@ standard: ATC-STD-MD-001
 5. **Chain-DNS:** Namensauflösung auf der Chain.
 6. **Kernel-Service (AD-012):** Dienste-Integration in das KAI-OS.
 
-## Verantwortungsgrenzen
+## SSOT- und Duplikatgrenze\n\n`a-townchain/components/*` sind importierte Integrations-/Subtree-Stände. Für die 13 importierten Komponenten gilt: Standalone-Repository = Source of Truth; `a-townchain` = Integration/Migration; Ecosystem = Integration/Evidence. Kein importierter Component-Pfad darf als konkurrierende eigenständige Release-Quelle behandelt werden.\n\n## Verantwortungsgrenzen
 
 - `atc-node` betreibt das Protokoll (Full-Node-Binary/Runtime) — hier wird es definiert.
 - `atc-algorithm` implementiert den Konsens — dieses Repo bindet ihn.
@@ -38,7 +38,7 @@ standard: ATC-STD-MD-001
 | Criticality | C1 |
 | Security-Klasse | S4 |
 | Maturity | R-Level laut `.atc/repository.yaml` · Statusleiter in `.atc/evidence/evidence.yaml` (SCR-0080) |
-| Canonical | a-townchain (Chain-Protokoll, AD-012 Kernel-Service) |
+| Canonical | `a-townchain` orchestration/integration layer; imported components retain their standalone SSOT |
 | Domäne | domaene laut registry/repositories.yaml |
 
 > Ehrlichkeitsregel: CLAIMED ≠ PASS · IMPLEMENTED ≠ VERIFIED — der verbindliche Implementierungsstand

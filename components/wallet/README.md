@@ -7,8 +7,11 @@
 
 **Project:** atc-wallet
 **Organization:** A-TownChain-Okosystems
+**Role:** `integration-mirror`
 **Status:** `development`
 **Version:** `1.0.0`
+
+> This path is an integration/subtree mirror. The standalone `atc-wallet` repository is the component Source of Truth and release source. Do not implement or release a competing wallet here.
 **License:** `Apache-2.0 — A-TownChain-Okosystems`
 
 <!-- atc metadata block (ATC-STD-README-001 §14) -->
@@ -58,7 +61,7 @@ Maturity: R2 (auditiert am 07.09.2026). Meilenstein-Einordnung: M6 (Dienste lauf
 - **Keystore & Key Derive (`src/keys.rs`, `src/crypto.py`):** Deterministische Schlüsselgenerierung (BIP44) und secp256k1-Kryptographie.
 - **Wallet Core & Transaction Signer (`src/wallet.py`, `src/tx.rs`):** Erstellung, Signierung und Validierung von Transaktionen.
 - **Account Services (`src/balance.rs`, `src/history.rs`):** Schnittstellen für Kontostands- und Verlaufsabfragen.
-- **CLI & Module Interface (`modules/atc-wallet`):** Integration in das A-TownChain Monorepo und ATCLang Workspace.
+- **Integration Interface:** This mirror is consumed by the `a-townchain` integration layer; the former nested `modules/atc-wallet` subtree was removed as an orphaned planned implementation.
 
 ### Data Flow
 
@@ -87,10 +90,8 @@ Nutzer-Eingabe → BIP44-Schlüsselableitung (`m/44'/658467'`) → Transaktionse
 ├── .atc/
 ├── .github/
 ├── docs/
-├── modules/
 ├── src/
 ├── tests/
-├── wallet/
 ├── AGENT_MANIFEST.md
 ├── AGENTS.md
 ├── ARCHITECTURE.md
@@ -138,7 +139,7 @@ cargo run --bin atc-wallet
 
 ## Development
 
-Entwicklung erfolgt nach den Conventional Commits Regeln und A-TownChain Governance-Standards. Modul-Synchronisation wird über `scripts/sync_modules.py` gesteuert.
+Entwicklung und Synchronisation erfolgen nach den Conventional Commits Regeln und A-TownChain Governance-Standards. Änderungen an der Wallet-Implementierung müssen aus dem Standalone-SSOT synchronisiert werden.
 
 ## Testing
 
