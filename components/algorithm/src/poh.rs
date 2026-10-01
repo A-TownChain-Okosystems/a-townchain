@@ -1,8 +1,8 @@
 // Copyright (c) 2026 Michael Wroblewski — Apache-2.0
 //! Proof of History — vereinfachte Tick-Kette (ATC-CONSENSUS-301, MVP).
 //!
-//! The MVP uses FNV-1a only as a deterministic sequencing primitive. It is not
-//! a cryptographic proof and must not be used as a security hash for mainnet.
+//! The MVP uses SHA-256 as a deterministic sequencing primitive. The
+//! final PoH cryptographic proof contract remains SPEC-DRAFT until freeze.
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Tick {
