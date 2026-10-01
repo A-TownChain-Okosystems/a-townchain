@@ -25,14 +25,14 @@ standard: ATC-STD-MD-001
 ## Verantwortungsgrenzen
 
 - `a-townchain`: definiert das Chain-Protokoll — der Node betreibt eine reale Instanz.
-- `atc-algorithm`: Hybrid-Konsens (kanonisch).
+- `atc-algorithm`: Konsens-Bindung; konkrete Variante SPEC-DRAFT.
 - `atc-vm`: Vertrags-Ausführung (kanonisch).
 
 ## Registry-Einordnung
 
 | Property | Value |
 |---|---|
-| Layer | L3 |
+| Layer | L2 |
 | Criticality | C1 |
 | Security-Klasse | S4 |
 | Maturity | R-Level laut `.atc/repository.yaml` · Statusleiter in `.atc/evidence/evidence.yaml` (SCR-0080) |
