@@ -25,6 +25,7 @@ The repository owns the canonical consensus logic for:
 - Hybrid PoH+PoS+PoW+PoI selection rules
 - Fork-choice rules
 - Finality rules
+- Canonical consensus state-machine contract (ATC-CONSENSUS-309)
 - Consensus verification and adversarial testing
 
 The parent `a-townchain` repository owns the blockchain core; this component owns the consensus implementation. No second consensus implementation may exist elsewhere in the monorepo.
@@ -39,7 +40,7 @@ Evidence currently supports an MVP/skeleton implementation, not a production con
 
 The consensus P0 remains **OPEN** until all of the following are evidenced:
 
-1. **Consensus specification freeze** — complete normative rules for PoH, PoS, PoW, hybrid selection, fork choice and finality.
+1. **Consensus specification freeze** — complete normative rules for PoH, PoS, PoW, PoI, hybrid selection, proposal/attestation, fork choice, finality and state transition.
 2. **Complete Rust implementation** — implementation matches the frozen specification.
 3. **Determinism/conformance** — cross-node differential and conformance vectors pass.
 4. **Security review** — independent cryptographic and consensus-security assessment.
@@ -135,8 +136,8 @@ This repository follows ATC-STD-000 v1.3.0 and the A-TownChain governance framew
 
 ## Roadmap
 
-1. Freeze normative consensus specification.
-2. Complete PoH/PoS/PoW/hybrid implementation.
+1. Freeze normative consensus state-machine specification.
+2. Complete PoH/PoS/PoW/PoI/hybrid implementation.
 3. Add deterministic conformance vectors and differential tests.
 4. Complete adversarial/fuzz testing.
 5. Complete independent security review.
