@@ -1,13 +1,35 @@
 // Copyright (c) 2026 A-TownChain-Okosystems — Apache-2.0
-//! Stack-Maschine with stack/jump safety. State-transition entrypoint is gated by ATC-STD-600.
+//! Deterministic ATC-VM stack machine.
+//!
+//! Gas is charged before every opcode effect. This is fail-closed: an instruction
+//! that cannot be paid for is never executed. The schedule below is the recovered
+//! existing ATC/ShivaCore baseline and remains subject to the normative ATC-VM-001
+//! gas-registry freeze; changing it is a consensus-visible change.
 
 use crate::context::{execution_gate, ChainContext, ContextError};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Op {
     Push(u64), Add, Sub, Mul, Div, Dup, Swap,
     Jump(usize), JumpIfNotZero(usize), Eq, Lt,
     Load(usize), Store(usize), Caller, JumpIfZero(usize), Halt,
+}
+
+impl Op {
+    /// Existing ATC/ShivaCore baseline gas schedule.
+    pub const fn gas_cost(self) -> u64 {
+        match self {
+            Op::Push(_) => 3,
+            Op::Add | Op::Sub | Op::Mul => 5,
+            Op::Div => 10,
+            Op::Dup | Op::Swap | Op::Caller => 2,
+            Op::Eq | Op::Lt => 3,
+            Op::Jump(_) | Op::JumpIfNotZero(_) | Op::JumpIfZero(_) => 8,
+            Op::Load(_) => 200,
+            Op::Store(_) => 5000,
+            Op::Halt => 0,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -16,6 +38,8 @@ pub enum VmError {
     InvalidJump(usize),
     DivisionByZero,
     Context(ContextError),
+    OutOfGas { required: u64, remaining: u64 },
+    GasOverflow,
 }
 
 pub struct Vm {
@@ -23,19 +47,53 @@ pub struct Vm {
     stack: Vec<u64>,
     caller: u64,
     storage: Vec<u64>,
+    gas_limit: u64,
+    gas_used: u64,
 }
 
 impl Vm {
+    /// Constructs a VM with an effectively unlimited local budget.
+    /// Consensus/state-transition callers MUST provide an explicit budget.
     pub fn new(program: Vec<Op>) -> Self {
-        Vm { program, stack: Vec::new(), caller: 0, storage: Vec::new() }
+        Self::with_gas(program, u64::MAX)
+    }
+
+    pub fn with_gas(program: Vec<Op>, gas_limit: u64) -> Self {
+        Vm {
+            program,
+            stack: Vec::new(),
+            caller: 0,
+            storage: Vec::new(),
+            gas_limit,
+            gas_used: 0,
+        }
     }
 
     pub fn with_context(program: Vec<Op>, caller: u64, storage: Vec<u64>) -> Self {
-        Vm { program, stack: Vec::new(), caller, storage }
+        Self::with_context_and_gas(program, caller, storage, u64::MAX)
+    }
+
+    pub fn with_context_and_gas(
+        program: Vec<Op>,
+        caller: u64,
+        storage: Vec<u64>,
+        gas_limit: u64,
+    ) -> Self {
+        Vm {
+            program,
+            stack: Vec::new(),
+            caller,
+            storage,
+            gas_limit,
+            gas_used: 0,
+        }
     }
 
     pub fn caller(&self) -> u64 { self.caller }
     pub fn state(&self) -> &[u64] { &self.storage }
+    pub fn gas_limit(&self) -> u64 { self.gas_limit }
+    pub fn gas_used(&self) -> u64 { self.gas_used }
+    pub fn gas_remaining(&self) -> u64 { self.gas_limit.saturating_sub(self.gas_used) }
 
     /// Normative state-transition entrypoint. Identity, Genesis, protocol and VM
     /// compatibility MUST pass before the interpreter is allowed to mutate state.
@@ -51,12 +109,14 @@ impl Vm {
         self.run()
     }
 
-    /// Raw bytecode interpreter. Callers performing chain state transitions MUST
-    /// use execute_state_transition instead of invoking this directly.
+    /// Raw interpreter. Every opcode is metered and charged before its effect.
     pub fn run(&mut self) -> Result<Vec<u64>, VmError> {
         let mut pc = 0usize;
         while pc < self.program.len() {
-            match self.program[pc].clone() {
+            let op = self.program[pc];
+            self.charge(op.gas_cost())?;
+
+            match op {
                 Op::Push(v) => self.stack.push(v),
                 Op::Add => self.binop(|a, b| a.wrapping_add(b))?,
                 Op::Sub => self.binop(|a, b| a.wrapping_sub(b))?,
@@ -100,6 +160,15 @@ impl Vm {
         Ok(std::mem::take(&mut self.stack))
     }
 
+    fn charge(&mut self, cost: u64) -> Result<(), VmError> {
+        let remaining = self.gas_remaining();
+        if cost > remaining {
+            return Err(VmError::OutOfGas { required: cost, remaining });
+        }
+        self.gas_used = self.gas_used.checked_add(cost).ok_or(VmError::GasOverflow)?;
+        Ok(())
+    }
+
     fn binop(&mut self, f: impl Fn(u64, u64) -> u64) -> Result<(), VmError> {
         let b = self.stack.pop().ok_or(VmError::StackUnderflow)?;
         let a = self.stack.pop().ok_or(VmError::StackUnderflow)?;
@@ -117,18 +186,47 @@ mod tests {
     use super::*;
 
     fn context() -> ChainContext {
-        ChainContext { chain_id: "atc".into(), network_id: "devnet".into(), genesis_id: "a".repeat(64), protocol_version: "1.0.0".into(), vm_version: "1.0.0".into() }
+        ChainContext {
+            chain_id: "atc".into(),
+            network_id: "devnet".into(),
+            genesis_id: "a".repeat(64),
+            protocol_version: "1.0.0".into(),
+            vm_version: "1.0.0".into(),
+        }
     }
 
     #[test]
     fn arithmetik() {
         let mut vm = Vm::new(vec![Op::Push(2), Op::Push(3), Op::Add, Op::Push(4), Op::Mul, Op::Halt]);
         assert_eq!(vm.run(), Ok(vec![20]));
+        assert_eq!(vm.gas_used(), 3 + 3 + 5 + 3 + 5);
+    }
+
+    #[test]
+    fn gas_is_charged_before_instruction_effect() {
+        let mut vm = Vm::with_gas(vec![Op::Push(7), Op::Store(0)], 3);
+        assert_eq!(vm.run(), Err(VmError::OutOfGas { required: 5000, remaining: 0 }));
+        assert!(vm.state().is_empty(), "Store darf bei Out-of-Gas nicht ausgeführt werden");
+        assert_eq!(vm.gas_used(), 3);
+    }
+
+    #[test]
+    fn exact_budget_succeeds() {
+        let mut vm = Vm::with_gas(vec![Op::Push(7), Op::Store(0), Op::Halt], 5003);
+        assert_eq!(vm.run(), Ok(Vec::<u64>::new()));
+        assert_eq!(vm.state(), &[7]);
+        assert_eq!(vm.gas_used(), 5003);
+        assert_eq!(vm.gas_remaining(), 0);
     }
 
     #[test]
     fn state_transition_requires_identity_gate() {
-        let mut vm = Vm::with_context(vec![Op::Push(7), Op::Store(0), Op::Halt], 1, vec![]);
+        let mut vm = Vm::with_context_and_gas(
+            vec![Op::Push(7), Op::Store(0), Op::Halt],
+            1,
+            vec![],
+            5003,
+        );
         assert!(vm.execute_state_transition(&context(), &"b".repeat(64), "1.0.0", "1.0.0").is_err());
         assert!(vm.state().is_empty(), "invalid context darf keinen State mutieren");
         assert!(vm.execute_state_transition(&context(), &"a".repeat(64), "1.0.0", "1.0.0").is_ok());
