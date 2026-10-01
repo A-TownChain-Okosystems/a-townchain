@@ -1,5 +1,5 @@
 // Copyright (c) 2026 Michael Wroblewski — Apache-2.0
-//! Deterministic mining primitives.
+//! Non-canonical mining utility primitives.\n//! Consensus validity is owned by `components/algorithm`; this module must not\n//! redefine the protocol hash or encoding contract.
 //! Consensus thresholds are supplied by the canonical consensus layer; this
 //! module only evaluates candidate work against an explicit target.
 
@@ -26,7 +26,7 @@ pub enum MiningError {
     InvalidTarget,
 }
 
-/// Computes the canonical SHA3-256 digest of `header || nonce_le`.
+/// Computes this module's local SHA3-256 candidate digest.\n/// NOT the canonical consensus hash until ATC-CONSENSUS-303 is frozen.
 pub fn hash_candidate(header: &[u8], nonce: u64) -> Result<[u8; 32], MiningError> {
     if header.is_empty() {
         return Err(MiningError::EmptyHeader);
@@ -37,7 +37,7 @@ pub fn hash_candidate(header: &[u8], nonce: u64) -> Result<[u8; 32], MiningError
     Ok(hasher.finalize().into())
 }
 
-/// Returns true when the digest is numerically <= the supplied big-endian target.
+/// Local utility comparison only; canonical target semantics come from consensus.
 pub fn meets_target(digest: &[u8; 32], target: &[u8; 32]) -> bool {
     digest <= target
 }
