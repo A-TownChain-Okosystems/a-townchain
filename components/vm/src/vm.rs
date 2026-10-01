@@ -106,7 +106,16 @@ impl Vm {
     ) -> Result<Vec<u64>, VmError> {
         execution_gate(context, computed_genesis_id, expected_protocol, expected_vm)
             .map_err(VmError::Context)?;
-        self.run()
+        let storage_checkpoint = self.storage.clone();
+        let stack_checkpoint = self.stack.clone();
+        match self.run() {
+            Ok(result) => Ok(result),
+            Err(error) => {
+                self.storage = storage_checkpoint;
+                self.stack = stack_checkpoint;
+                Err(error)
+            }
+        }
     }
 
     /// Raw interpreter. Every opcode is metered and charged before its effect.
