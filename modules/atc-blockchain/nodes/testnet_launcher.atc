@@ -45,7 +45,7 @@ contract TestnetLauncher {
         self.owner = msg_sender()
     }
 
-    fn setup(num_nodes: u8, configured_chain_id: u32) -> bool {
+    fn setup(num_nodes: u8, configured_chain_id: u64) -> bool {
         require(configured_chain_id != 0, "Testnet: chain ID required")
         self.chain_id = configured_chain_id
         let i: u8 = 0
