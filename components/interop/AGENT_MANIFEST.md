@@ -101,19 +101,25 @@
 - **Prompt Engineering:** ATC-SPEC-001 (APOS/ACE) — deterministische
   Agent-Aufgaben auf Action/Process-Ebene mit Verifikation.
 
-## BAUHIERARCHIE (AD-026, verbindlich) & ROADMAP (AD-027, verbindlich)
-```text
-[L0] atclang → [L1] atc-shivacore → [L2] aurora-ai → [L3] a-townchain
- → [L4] globus-os → [L5] 13 Blockchain-Services → [L6] genesis-engine →
- genesis-chronicles → [L7] a-townchain-os (Integration, AD-017)
-[parallel] a-townchain-os-docs (Docs-Hub) · atc-standards (Norm)
-```
-Lauffähigkeits-Roadmap M1-M8 (jede Stufe = lauffähiges Inkrement):
-M1 Sprache (G1 ✅ → G2 offen) → M2 Kernel (✅ 674/674 + Boot) → M3 KI →
-M4 Blockchain (2 Nodes, 658467, Contract auf ATVM) → M5 OS → M6 Dienste →
-M7 Spiel (NFT auf Chain) → M8 Ökosystem (Launch-Stack).
-Volltext: docs/roadmap/LAUFFAEHIGKEITS_ROADMAP.md ·
-Regel: Layer startet erst nach Gate des vorherigen.
+## CURRENT ARCHITECTURE SSOT
+
+The historical AD-026/AD-027 build hierarchy is archival and MUST NOT be used as
+the current layer authority. Current ownership is defined by
+`a-townchain-ecosystem/ARCHITECTURE.md`:
+
+- L0 — System / Network / Kernel boundary
+- L1 — Data / Storage
+- L2 — Blockchain Core / Consensus / Protocol
+- L3 — Deterministic Execution / ATC-VM
+- L4 — Scaling / Execution Domains
+- L5 — Protocol / Economic Domains
+- L6 — AI / Intelligence
+- L7 — Applications / UX
+- X — Cross-layer Control / Integration
+
+For this repository, component-specific ownership is authoritative from the
+ecosystem registry and the local architecture document. Historical references
+below this section are archival only and MUST NOT redefine current layer ownership.
 
 ## Integrationen (17 aktiv)
 | Integration | Status | Zweck |
