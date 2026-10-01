@@ -11,66 +11,81 @@ use sha2::{Digest, Sha256};
 pub const CHAIN_ID: u64 = 658467;
 pub const TX_DOMAIN_V2: &[u8] = b"ATC-TX-DOMAIN-V2";
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum TxType {
+    Transfer = 0,
+    Stake = 1,
+    Unstake = 2,
+    Contract = 3,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Transaction {
-    pub nonce: u64,
-    pub sender: Vec<u8>,
-    pub recipient: Vec<u8>,
+    pub chain_id: u64,
+    pub tx_type: TxType,
+    pub sender_did: String,
+    pub recipient_did: Option<String>,
     pub amount: u128,
-    pub fee: u128,
+    pub gas_price: u128,
+    pub gas_limit: u64,
+    pub nonce: u64,
+    pub timestamp: u64,
     pub payload: Vec<u8>,
+    pub poh_hash: [u8; 32],
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TxError {
     InvalidChainId,
+    EmptySender,
     InvalidSignature,
-    InvalidKey,
 }
 
-fn field(out: &mut Vec<u8>, key: &[u8], value: &[u8]) {
-    out.extend_from_slice(&(key.len() as u32).to_be_bytes());
-    out.extend_from_slice(key);
-    out.extend_from_slice(&(value.len() as u64).to_be_bytes());
+fn put_bytes(out: &mut Vec<u8>, value: &[u8]) {
+    assert!(value.len() <= u32::MAX as usize);
+    out.extend_from_slice(&(value.len() as u32).to_be_bytes());
     out.extend_from_slice(value);
 }
 
-pub fn signing_preimage(tx: &Transaction) -> Result<Vec<u8>, TxError> {
-    if CHAIN_ID != 658467 {
-        return Err(TxError::InvalidChainId);
+impl Transaction {
+    pub fn signing_bytes(&self) -> Result<Vec<u8>, TxError> {
+        if self.chain_id != CHAIN_ID {
+            return Err(TxError::InvalidChainId);
+        }
+        if self.sender_did.is_empty() {
+            return Err(TxError::EmptySender);
+        }
+
+        let mut b = Vec::with_capacity(128 + self.payload.len());
+        b.extend_from_slice(TX_DOMAIN_V2);
+        b.extend_from_slice(&self.chain_id.to_be_bytes());
+        b.push(self.tx_type as u8);
+        put_bytes(&mut b, self.sender_did.as_bytes());
+
+        match &self.recipient_did {
+            Some(value) => {
+                b.push(1);
+                put_bytes(&mut b, value.as_bytes());
+            }
+            None => b.push(0),
+        }
+
+        b.extend_from_slice(&self.amount.to_be_bytes());
+        b.extend_from_slice(&self.gas_price.to_be_bytes());
+        b.extend_from_slice(&self.gas_limit.to_be_bytes());
+        b.extend_from_slice(&self.nonce.to_be_bytes());
+        b.extend_from_slice(&self.timestamp.to_be_bytes());
+        put_bytes(&mut b, &self.payload);
+        b.extend_from_slice(&self.poh_hash);
+        Ok(b)
     }
-    let mut out = Vec::new();
-    field(&mut out, b"domain", TX_DOMAIN_V2);
-    field(&mut out, b"chain_id", &CHAIN_ID.to_be_bytes());
-    field(&mut out, b"nonce", &tx.nonce.to_be_bytes());
-    field(&mut out, b"sender", &tx.sender);
-    field(&mut out, b"recipient", &tx.recipient);
-    field(&mut out, b"amount", &tx.amount.to_be_bytes());
-    field(&mut out, b"fee", &tx.fee.to_be_bytes());
-    field(&mut out, b"payload", &tx.payload);
-    Ok(out)
+
+    pub fn digest(&self) -> Result<[u8; 32], TxError> {
+        Ok(Sha256::digest(self.signing_bytes()?).into())
+    }
 }
 
-pub fn digest(tx: &Transaction) -> Result<[u8; 32], TxError> {
-    Ok(Sha256::digest(signing_preimage(tx)?).into())
-}
-
-pub fn sign(tx: &Transaction, key: &SigningKey) -> Result<Signature, TxError> {
-    let digest = digest(tx)?;
-    let mut sig = key.sign_prehash(&digest).map_err(|_| TxError::InvalidKey)?;
-    if let Some(low_s) = sig.normalize_s() {
-        sig = low_s;
-    }
-    Ok(sig)
-}
-
-pub fn verify(tx: &Transaction, key: &VerifyingKey, sig: &Signature) -> Result<(), TxError> {
-    if sig.normalize_s().is_some() {
-        return Err(TxError::InvalidSignature);
-    }
-    key.verify_prehash(&digest(tx)?, sig)
-        .map_err(|_| TxError::InvalidSignature)
-}
 
 #[cfg(test)]
 mod tests {
@@ -82,8 +97,12 @@ mod tests {
             sender: vec![2; 33],
             recipient: vec![3; 33],
             amount: u128::MAX,
-            fee: u128::MAX - 1,
+            gas_price: u128::MAX - 1,
+            gas_limit: 1000,
+            nonce: 7,
+            timestamp: 1_700_000_000,
             payload: b"ATC-V2".to_vec(),
+            poh_hash: [9u8; 32],
         }
     }
 
