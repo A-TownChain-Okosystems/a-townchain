@@ -4,7 +4,7 @@ criticality: C1
 domain: blockchain
 domain_extension: 'pending (fachliche Standards je Domain via SCR — ehrlich: Kernprofil
   v1.0)'
-layer: L3
+layer: L2
 profile: a-townchain
 profile_source: atc-standards/profiles/a-townchain.yaml
 registry_id: ATC-REPO-CHAIN-001
