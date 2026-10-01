@@ -14,13 +14,13 @@
 
 ## Overview
 
-A-TownChain (`a-townchain`) bildet die kanonische Orchestrierungs- und Integrationsschicht der Blockchain-Architektur.
+A-TownChain (`a-townchain`) ist der kanonische **L2 Blockchain Core** der Blockchain-Architektur.
 
 **Readiness:** Die Evidence-SSOT klassifiziert das Repository als **partially implemented prototype / M4 integration evidence** und ausdrücklich **nicht production-ready**. Es existiert kein freigegebener Mainnet-Termin.
 
 **Execution boundary:** ATCLang ist die on-chain Sprache, ATC-VM (ATVM) die deterministische Ausführungsgrenze und `a-townchain` die Chain-/Node-Orchestrierung. Rust trägt die chain-kritische Infrastruktur.
 
-**Consensus boundary:** Die kanonische Konsenslogik liegt in `atc-algorithm`; `a-townchain` darf keine konkurrierende Legacy-Konsensimplementierung als kanonisch behandeln.
+**Consensus boundary:** Der kanonische Algorithmuspfad ist `components/algorithm`. Das Konsensdesign bleibt `SPEC-DRAFT`, bis Governed Spec-Freeze, vollständige Implementierung, Conformance und Exact-SHA-Evidence vorliegen; `a-townchain` darf keine konkurrierende Legacy-Konsensimplementierung als kanonisch behandeln.
 
 **M4:** Integrations-Evidence für 2-Node-Gossip-Sync, Chain-ID 658467 und ATCLang/ATVM-Flows existiert. M4 ist **kein** Mainnet- oder Production-Readiness-Nachweis.
 
@@ -33,7 +33,7 @@ A-TownChain stellt die kanonische Referenz-Orchestrierung der Blockchain bereit.
 - **On-chain:** ATCLang-Verträge werden über ATVM ausgeführt.
 - **Chain-bearing infrastructure:** Rust implementiert Node-, Netzwerk-, State- und Integrationskomponenten.
 - **Kernel boundary:** `atc-shivacore` stellt die Kernel-/TCB-Schicht bereit.
-- **Consensus:** `atc-algorithm` ist die kanonische Konsenskomponente.
+- **Consensus/Algorithm:** `components/algorithm` ist der kanonische Algorithmuspfad; der konkrete Konsensvertrag bleibt `SPEC-DRAFT`.
 - **Governance:** Änderungen an normativen Standards und kritischen Architekturentscheidungen folgen dem A-TownChain-Governance-Modell.
 
 ## Status
@@ -60,7 +60,7 @@ ATC-VM / ATVM
    ▼
 a-townchain
    │ chain / node / state orchestration
-   ├── atc-algorithm       canonical consensus
+   ├── components/algorithm canonical algorithm path (consensus SPEC-DRAFT)
    ├── atcnet              P2P networking
    ├── atc-zkp             ZKP integration
    └── atc-governance      governance integration
@@ -159,7 +159,7 @@ Sicherheitsrelevante Hinweise werden gemäß **ATC-STD-203** behandelt. Producti
 
 ## Governance
 
-Änderungen an Konsens-, Schnittstellen- oder Sicherheitsmodulen unterliegen dem A-TownChain Governance Framework. Konsensentscheidungen werden in `atc-algorithm` spezifiziert und dort eingefroren; `a-townchain` implementiert die Orchestrierung dagegen nicht als zweite kanonische Konsensquelle.
+Änderungen an Konsens-, Schnittstellen- oder Sicherheitsmodulen unterliegen dem A-TownChain Governance Framework. Konsensentscheidungen werden im kanonischen Algorithmuspfad `components/algorithm` spezifiziert. Der Konsens bleibt `SPEC-DRAFT`, bis der Governed Spec-Freeze und die Exact-SHA-Conformance-Evidence abgeschlossen sind; `a-townchain` bildet keine zweite kanonische Konsensquelle.
 
 Die Family-scoped Standard-ID-Architektur verwendet `ATC-STD-F{family_id}-{sequence}`. Die Migration bestehender Legacy-IDs erfolgt kontrolliert; Legacy-IDs werden nicht still umnummeriert, wiederverwendet oder gelöscht.
 
@@ -176,7 +176,7 @@ Die Family-scoped Standard-ID-Architektur verwendet `ATC-STD-F{family_id}-{seque
 
 ## Roadmap
 
-- Konsens-Refactor auf `atc-algorithm`.
+- Governed Consensus Spec-Freeze und Exact-SHA-Conformance für `components/algorithm`.
 - End-to-End-Conformance ATCLang → VM → Contract → Node → Chain.
 - Security-Audit.
 - Reproducible Build.
