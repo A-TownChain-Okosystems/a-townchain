@@ -1,0 +1,48 @@
+schema_version: "1"
+contract_set: "ATC-L1-IMPLEMENTATION"
+state_machine:
+  function: "F(State, Block) = State'"
+  owner_layer: "L2"
+  canonical_state_owner: "a-townchain"
+  execution_layer: "components/vm"
+  evidence_policy: "exact_sha_only"
+authority:
+  enforcement_model: "WHO-WHAT-WHERE"
+  fail_closed_on_ambiguity: true
+  boundaries:
+    - "L2 owns canonical blockchain state and finality"
+    - "L3 owns deterministic program execution"
+    - "L4 transports and synchronizes claims but creates no authority"
+    - "L5 applies deterministic economic/security rules"
+    - "L7 has no direct canonical-state mutation authority"
+    - "X supplies cross-layer identity/capability/policy/audit/evidence controls"
+p0:
+  - id: P0-NET-001
+    name: Network / P2P
+    enforcement: "L4 validation + L2 protocol validation"
+  - id: P0-ID-001
+    name: Identity / Trust
+    enforcement: "explicit identity and authorization before privileged action"
+  - id: P0-STATE-001
+    name: State Ownership
+    enforcement: "L2 state-transition and ledger boundary"
+  - id: P0-AUTH-001
+    name: Global Authority Matrix
+    enforcement: "WHO-WHAT-WHERE for every privileged action"
+  - id: P0-IF-001
+    name: Canonical Interfaces
+    enforcement: "canonical type/encoding/version checks"
+  - id: P0-FR-001
+    name: Failure / Recovery
+    enforcement: "fail closed; recovery converges to canonical state"
+determinism:
+  canonical_input:
+    - "canonical type"
+    - "canonical encoding"
+    - "canonical commitment/signature preimage"
+    - "canonical validation"
+  forbidden:
+    - "unspecified ordering"
+    - "platform-dependent numeric behavior"
+    - "hidden external state"
+    - "implementation-defined consensus semantics"
