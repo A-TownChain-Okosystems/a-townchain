@@ -3,7 +3,7 @@
 # Regel: Kein Status-Claim ohne Evidence-Bundle (ATC-STD-REPO-AUDIT-001 / ATC-STD-MILESTONE-001).
 # CLAIMED != PASS · DOCUMENTED != IMPLEMENTED · IMPLEMENTED != VERIFIED
 schema_version: "1.0.0"
-repository: atc-sdk
+repository: a-townchain/components/sdk
 generated: "2026-09-10"
 generated_by: "SCR-0080 Enforcement-Welle (Aurora, Owner-P0-Definition 10.09. 12:21)"
 bound_commit: e13ec7686795603be3d7101914ea744f437e8c1b
