@@ -28,8 +28,10 @@ Eine Attestation MUSS mindestens binden:
 - validator identity/key reference
 - validator-set snapshot identifier
 - source/finality context
-- canonical attestation domain/version
++ canonical attestation domain/version
 - validator signature
+
+**Key-domain invariant:** Transaction/account authentication uses the canonical secp256k1 ECDSA domain. Consensus identity/validator keys remain a separate identity/consensus-key contract and MUST NOT be silently substituted with the transaction signing domain.
 
 ## 2. Validation order
 
@@ -66,6 +68,10 @@ Ungültige Signatur, unbekannter Validator, falscher Snapshot, falscher Chain-ID
 - equivocation
 - canonical/non-canonical encoding
 
-## 8. Freeze gate
+## 8. Wire/signature binding
+
+The final attestation signature preimage MUST be a fixed-field canonical encoding. Its domain separator, key type, signature encoding, and exact byte layout MUST be specified before implementation freeze; implementations MUST NOT reuse `ATC-TX-DOMAIN-V2` merely because transaction signing is already standardized.
+
+## 9. Freeze gate
 
 Quorum-Arithmetik, Voting-Domäne, Snapshot-Regel, Signatur-/Domain-Vertrag und Wire-Encoding müssen vor Production-Freeze vollständig spezifiziert und Exact-SHA VERIFIED sein.
