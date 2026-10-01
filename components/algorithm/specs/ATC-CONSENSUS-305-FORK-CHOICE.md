@@ -4,7 +4,7 @@ title: "Fork-Choice Specification"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
 repository: atc-algorithm
-layer: L3-Konsens
+layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
@@ -31,7 +31,7 @@ Deterministische Auswahl der kanonischen Kette bei konkurrierenden Blöcken.
 
 ## 3. Normative Anforderungen (MUST)
 
-- **REQ-FC-001:** Fork-Choice-Priorität: (1) höchste finalisierte Höhe (ATC-CONSENSUS-306), (2) längste PoH-Tick-Kette, (3) byte-lexikografisch kleinster Header-Hash — in genau dieser Reihenfolge — *Nachweis: unit+vector+property*
+- **REQ-FC-001:** Fork-Choice MUSS eine vollständig definierte totale Ordnung über valide Kandidaten verwenden. Die konkrete Prioritätsreihenfolge zwischen Finality, Chain-Weight/PoH und Hash-Tie-Breaking ist bis zum Spec-Freeze festzulegen; keine implizite Priorität — *Nachweis: unit+vector+property*
 - **REQ-FC-002:** Reorgs über die Finality-Grenze hinaus sind verboten (siehe ATC-CONSENSUS-306) und MÜSSEN als Protocol-Violation gewertet werden — *Nachweis: negative+adversarial*
 - **REQ-FC-003:** Bei Gleichstand in (1) und (2) ist die Regel (3) eindeutig — kein Node-Local-Random, kein Timestamp — *Nachweis: vector*
 
