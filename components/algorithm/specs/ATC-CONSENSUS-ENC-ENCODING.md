@@ -4,7 +4,7 @@ title: "Canonical Encoding Specification"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
 repository: atc-algorithm
-layer: L3-Konsens
+layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
@@ -33,7 +33,7 @@ Eindeutige Byte-Darstellung aller Konsensobjekte — Basis für Hashing, Signatu
 ## 3. Normative Anforderungen (MUST)
 
 - **REQ-ENC-001:** Feldreihenfolge ist fixiert je Objekttyp; jede Änderung = MAJOR (COMPAT-001) — *Nachweis: unit+vector*
-- **REQ-ENC-002:** Integer: Little-Endian, feste Breite (u32/u64/u128) — keine Varints im Konsenspfad (Vereinfachung der Verifikation) — *Nachweis: vector*
+- **REQ-ENC-002:** Integer: feste Breite; Endianness wird pro Feld im kanonischen Wire-/Object-Contract festgelegt (u32/u64/u128 je Datenmodell) — keine Varints im Konsenspfad (Vereinfachung der Verifikation) — *Nachweis: vector*
 - **REQ-ENC-003:** Hashes: 32-Byte-Rohwerte; Hex-Darstellung ausschließlich lowercase für Debug/JSON-RPC, niemals für Hashing — *Nachweis: negative*
 - **REQ-ENC-004:** Serialize⇒Deserialize ist verlustfrei und eindeutig; unbekannte Felder ⇒ Decode-Fehler (kein permissives Parsing im Konsenspfad) — *Nachweis: unit+negative*
 
