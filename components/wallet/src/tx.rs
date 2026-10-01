@@ -1,8 +1,8 @@
 // Copyright (c) 2026 A-TownChain-Okosystems — Apache-2.0
 //! Canonical A-TownChain L1 transaction construction and signing.
 //!
-//! This module uses exactly the ATC-TX-DOMAIN-V2 byte layout accepted by the
-//! Rust L1 kernel. No legacy TransactionDomain or ATC-TX-DOMAIN encoding remains.
+//! ATC economic amounts are u128 and are encoded as fixed-width 16-byte
+//! big-endian values in the ATC-TX-DOMAIN-V2 signing preimage.
 
 use crate::keys::WalletKey;
 use ed25519_dalek::{Signature, Verifier, VerifyingKey};
@@ -26,7 +26,7 @@ pub struct Transaction {
     pub tx_type: TxType,
     pub sender_did: String,
     pub recipient_did: Option<String>,
-    pub amount: u64,
+    pub amount: u128,
     pub gas_price: u64,
     pub gas_limit: u64,
     pub nonce: u64,
@@ -51,7 +51,7 @@ impl Transaction {
             return Err(TxError::EmptySender);
         }
 
-        let mut b = Vec::with_capacity(128 + self.payload.len());
+        let mut b = Vec::with_capacity(136 + self.payload.len());
         b.extend_from_slice(TX_DOMAIN_V2);
         b.extend_from_slice(&self.chain_id.to_be_bytes());
         b.push(self.tx_type as u8);
@@ -76,7 +76,7 @@ impl Transaction {
     }
 
     pub fn id(&self, _signature: &[u8; 64]) -> Result<[u8; 32], TxError> {
-        let mut b = Vec::with_capacity(128 + self.payload.len());
+        let mut b = Vec::with_capacity(136 + self.payload.len());
         b.extend_from_slice(b"ATC-TX-ID-V2");
         b.extend_from_slice(&self.chain_id.to_be_bytes());
         b.push(self.tx_type as u8);
@@ -140,6 +140,14 @@ mod tests {
         let tx = tx();
         let signature = tx.sign(&key).unwrap();
         assert!(tx.verify(&key.public_key(), &signature).is_ok());
+    }
+
+    #[test]
+    fn amount_is_fixed_width_u128_big_endian() {
+        let mut tx = tx();
+        tx.amount = u128::MAX;
+        let bytes = tx.signing_bytes().unwrap();
+        assert_eq!(&bytes[bytes.len() - 53 - 16..bytes.len() - 53], &[0xff; 16]);
     }
 
     #[test]
