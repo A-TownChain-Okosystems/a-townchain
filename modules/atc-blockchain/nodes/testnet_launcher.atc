@@ -67,7 +67,7 @@ contract TestnetLauncher {
     }
 
     fn build_genesis() -> Hash {
-        let genesis_input = "ATC-Testnet" + Int::to_string(self.node_count) + Int::to_string(Time::now())
+        let genesis_input = "ATC-Testnet" + Int::to_string(self.chain_id) + Int::to_string(self.node_count)
         let genesis_hash = Hash::sha256(genesis_input)
         self.genesis_config = genesis_hash
         return genesis_hash
