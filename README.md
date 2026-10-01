@@ -118,7 +118,7 @@ a-townchain ist das kanonische **Blockchain-Monorepo** des A-TownChain-Stacks (M
 
 ## Requirements
 
-- **Rust:** 1.70+
+- **Rust:** 1.98.1 stable
 - **Python:** 3.10+
 - **Cargo / Make / Docker:** für Modul-Builds und Test-Stacks
 
