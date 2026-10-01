@@ -1,6 +1,6 @@
 ---
 spec_id: ATC-MIN-001
-title: "PoW-Algorithmus (SHA3-ATC)"
+title: "PoW Integration Boundary (Draft)"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementation PENDING
 repository: atc-mining
@@ -20,15 +20,15 @@ depends: [ATC-STD-000, ATC-STD-PROTOCOL-001]
 > Spec-Freeze (Owner §9) → Implementierung → Conformance-Evidence.
 
 ## 1. Zweck
-Normative PoW-Spezifikation — konsens-gebunden an ATC-CONSENSUS-303.
+Nicht-kanonischer Mining-Integrationsvertrag. Die konkrete PoW-Semantik wird ausschließlich durch den eingefrorenen ATC-CONSENSUS-303-Vertrag bestimmt.
 
 ## 2. Scope
 - Hashing, Nonce-Suche, Proofs
 
 ## 3. Normative Anforderungen (MUST)
-- **REQ-001:** Kanonisches Header-Encoding: Feldfolge, little-endian, algorithm_id versioniert **[Nachweis: vector+unit]**
-- **REQ-002:** H_pow = SHA3-ATC(domain_tag || canonical_header || nonce); nonce 64-bit, extraNonce 32-bit **[Nachweis: vector]**
-- **REQ-003:** difficulty→target und Target-Vergleich deterministisch (u64, kein Float); kanonische Test-Vektoren **[Nachweis: vector]**
+- **REQ-001:** Mining MUST consume the canonical header encoding defined by the frozen consensus contract.
+- **REQ-002:** Hash algorithm, nonce encoding, target derivation and difficulty semantics MUST come exclusively from ATC-CONSENSUS-303 after Spec-Freeze.
+- **REQ-003:** Mining MUST NOT define or override consensus validity.
 
 ## 4. Invarianten
 - Proof nur gültig gegen kanonischen Header und Target des Konsens
