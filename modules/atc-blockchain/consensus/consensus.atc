@@ -1,3 +1,7 @@
+// NON-CANONICAL CONSENSUS DRAFT — DO NOT USE AS PROTOCOL AUTHORITY.
+// Canonical implementation target: a-townchain/components/algorithm.
+// Consensus specification remains unfrozen; retained for migration history.
+
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // ╔══════════════════════════════════════════════════════╗
 // ║  ShivaConsensus — Hybrid PoH + PoS + PoW           ║
