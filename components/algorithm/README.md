@@ -10,7 +10,7 @@
 
 ## Overview
 
-`atc-algorithm` is the canonical consensus repository for A-TownChain (Chain-ID `658467`). It contains the current MVP/skeleton implementation and the normative consensus work required for a production release.
+`a-townchain/components/algorithm` is the canonical consensus implementation path for A-TownChain (Chain-ID `658467`). The former standalone `atc-algorithm` repository was migrated here; it is not a second consensus authority.
 
 **Critical truth:** the presence of PoH/selection prototype code and passing local tests does **not** constitute a complete, secure, deterministic or production-ready consensus protocol. Consensus remains a P0 release blocker until specification freeze, complete implementation, conformance, security review and independent evidence are complete.
 
@@ -26,7 +26,7 @@ The repository owns the canonical consensus logic for:
 - Finality rules
 - Consensus verification and adversarial testing
 
-`a-townchain` is the orchestration/integration layer and must not become a second canonical consensus implementation.
+The parent `a-townchain` repository owns the blockchain core; this component owns the consensus implementation. No second consensus implementation may exist elsewhere in the monorepo.
 
 ## Status
 
@@ -92,7 +92,7 @@ atc-algorithm/
 
 ## Requirements
 
-- Rust `1.75+`
+- Rust `1.98.1` (stable baseline)
 - Python `3.10+` for validation tooling
 - Git `2.30+`
 
