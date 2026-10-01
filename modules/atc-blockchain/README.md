@@ -6,9 +6,9 @@
 > 2. [`AGENT_COORDINATION.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/AGENT_COORDINATION.md) — wer arbeitet gerade woran, Todos, Agent-IDs
 > 3. [`DECISIONS_REGISTER.md`](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/blob/main/docs/DECISIONS_REGISTER.md) — verbindliche Architektur-Entscheidungen
 
-> **Legacy integration module. Canonical blockchain core: `a-townchain`; canonical consensus: `components/algorithm`.**
+> **Legacy integration module. Canonical blockchain core: `a-townchain` (L2); canonical algorithm path: `components/algorithm`. Consensus remains `SPEC-DRAFT` until governed Spec-Freeze, complete Rust implementation, Conformance and Exact-SHA evidence.**
 
-[![Layer](https://img.shields.io/badge/Layer-L2-purple)](https://github.com/A-TownChain-Okosystems)
+[![Layer](https://img.shields.io/badge/Layer-Legacy--Integration-purple)](https://github.com/A-TownChain-Okosystems)
 [![KAI-OS](https://img.shields.io/badge/KAI--OS-v1.0.0-blue)](https://github.com/A-TownChain-Okosystems/a-townchain-os/blob/main/docs/kai-os-wiki.md)
 [![Org](https://img.shields.io/badge/Org-A--TownChain--Okosystems-green)](https://github.com/A-TownChain-Okosystems)
 [![Wiki](https://img.shields.io/badge/Wiki-📖-blue)](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/tree/main/docs/archive/wiki/atc-blockchain-wiki)
@@ -17,7 +17,7 @@
 
 ## 📋 Beschreibung
 
-`atc-blockchain` ist die zentrale Blockchain-Kernkomponente des A-TownChain OS Ökosystems. Das Modul ist ein historisches Integrations-/Migrationsmodul; Konsens ist hier nicht autoritativ und kombiniert **Proof of History (PoH)** zur sequentiellen Zeitverifikation mit einem **Proof of Authority (PoA)** / Proof of Stake (PoS) Hybrid-Mechanismus zur schnellen Blockvalidierung und Finalität.
+`atc-blockchain` ist ein historisches Integrations-/Migrationsmodul. Es ist nicht autoritativ für Consensus, State Transition oder Execution. Die enthaltenen PoH/PoA/PoS-/Hybrid-Artefakte sind historische bzw. SPEC-DRAFT-Artefakte und dürfen nicht als aktueller Konsensvertrag behandelt werden.
 
 ### Netzwerke & Chain-IDs
 - **Mainnet:** Chain-ID `658467`
@@ -84,7 +84,7 @@ Die Architektur von `atc-blockchain` ist modular aufgebaut und trennt Konsens, P
 ### Node starten (Testnet)
 ```bash
 # Python Bootstrap Node starten
-python3 nodes/bootstrap.py --chain-id 9001 --port 658467
+python3 nodes/bootstrap.py --chain-id 658467 --port <P2P_PORT>
 
 # Node Discovery ausführen
 python3 nodes/discovery.py
