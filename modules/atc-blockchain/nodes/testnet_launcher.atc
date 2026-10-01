@@ -114,7 +114,7 @@ contract TestnetLauncher {
         return self.running
     }
 
-    fn get_chain_id() -> u32 {
+    fn get_chain_id() -> u64 {
         return self.chain_id
     }
 
