@@ -3,22 +3,22 @@
 //! deterministische Proposer-Wahl je Slot.
 //! This remains prototype code until ATC-CONSENSUS-304 is frozen.
 
-use crate::poh::hash64;
+use crate::poh::{hash128, hash64};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Validator {
     pub id: u64,
-    pub stake: u64,
+    pub stake: u128,
 }
 
 /// Deterministische, Stake-gewichtete Wahl. None bei leerer/Null-Stake-Menge.
 pub fn select_proposer(validators: &[Validator], slot: u64) -> Option<Validator> {
-    let total = validators.iter().try_fold(0u64, |acc, v| acc.checked_add(v.stake))?;
+    let total = validators.iter().try_fold(0u128, |acc, v| acc.checked_add(v.stake))?;
     if validators.is_empty() || total == 0 {
         return None;
     }
-    let ticket = hash64(&slot.to_le_bytes()) % total;
-    let mut acc: u64 = 0;
+    let ticket = hash128(&slot.to_le_bytes()) % total;
+    let mut acc: u128 = 0;
     for v in validators {
         acc = acc.checked_add(v.stake)?;
         if ticket < acc {
