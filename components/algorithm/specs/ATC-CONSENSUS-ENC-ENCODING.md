@@ -3,7 +3,7 @@ spec_id: ATC-CONSENSUS-ENC
 title: "Canonical Encoding Specification"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
-repository: atc-algorithm
+repository: a-townchain/components/algorithm
 layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
