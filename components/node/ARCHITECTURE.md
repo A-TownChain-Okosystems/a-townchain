@@ -1,43 +1,46 @@
 ---
 document_id: ATC-DOC-ARC-NODE-001
-title: Repository Architecture Specification
-version: 1.0.0
+title: Canonical Node Architecture
+version: 1.1.0
 status: active
 owner: A-TownChain-Okosystems
-created: 2026-09-13
-updated: 2026-09-13
 standard: ATC-STD-MD-001
 ---
 
-# Architecture Specification — atc-node
+# Architecture Specification — a-townchain/components/node
 
-## Übersicht
+## Canonical ownership
 
-`atc-node` ist das Full-Node-Binary & die Runtime der A-TownChain (SCR-0005 Option A, AD-046): das Distribution-Ziel — `git clone && cargo build` → lauffähiger Node mit Bootstrap, Discovery und Validator-Betrieb. Implementiert selbst KEINE Chain-Semantik.
+This component is the canonical Node Runtime / P2P implementation inside the `a-townchain` monorepo.
 
-## Subsysteme
+The former standalone `atc-node` repository is a migration source only. New implementation MUST target `components/node`.
 
-1. **Node-Runtime (`src/`):** Lifecycle eines Netzwerk-Teilnehmers (Start, Bootstrap, Shutdown).
-2. **Bootstrap & Discovery:** Peers finden und verbinden (S4-Netzwerk-Angriffsfläche).
-3. **Validator-Betrieb:** Key-Handling, Block-Produktion-Treiber (Konsens via `atc-algorithm`).
-4. **CLI/Konfiguration (`config/`, `tools/`):** Operator-Schnittstelle.
+## Layer ownership
 
-## Verantwortungsgrenzen
+- **L1:** OS/runtime and capability primitives remain outside this component.
+- **L2:** canonical blockchain state, transaction validation, block validation, ordering, consensus and finality remain owned by the root blockchain core.
+- **L4:** this component owns node networking, peer lifecycle, propagation, synchronization and RPC transport.
+- **X:** identity, capability, policy and evidence controls apply across the component.
 
-- `a-townchain`: definiert das Chain-Protokoll — der Node betreibt eine reale Instanz.
-- `atc-algorithm`: Hybrid-Konsens (kanonisch).
-- `atc-vm`: Vertrags-Ausführung (kanonisch).
+Network transport never creates L2 authority. A received transaction/block/state claim MUST cross the appropriate L2 validation boundary before becoming canonical.
 
-## Registry-Einordnung
+## Subsystems
 
-| Property | Value |
-|---|---|
-| Layer | L3 |
-| Criticality | C1 |
-| Security-Klasse | S4 |
-| Maturity | R-Level laut `.atc/repository.yaml` · Statusleiter in `.atc/evidence/evidence.yaml` (SCR-0080) |
-| Canonical | atc-node (Node-Distribution/Runtime) |
-| Domäne | domaene laut registry/repositories.yaml |
+1. Node lifecycle/bootstrap.
+2. Peer discovery and authenticated peer lifecycle.
+3. Gossip and propagation.
+4. Synchronization/state transfer.
+5. RPC/API transport.
+6. Validator-operation integration without owning consensus semantics.
 
-> Ehrlichkeitsregel: CLAIMED ≠ PASS · IMPLEMENTED ≠ VERIFIED — der verbindliche Implementierungsstand
-> liegt ausschließlich in `.atc/evidence/evidence.yaml`, nicht in dieser Spezifikation.
+## Authority boundary
+
+`connected peer != trusted peer != authorized actor != canonical state authority`.
+
+Privileged network actions require explicit identity/trust and capability checks and fail closed on ambiguity.
+
+## Evidence
+
+`CLAIMED != IMPLEMENTED != VERIFIED`.
+
+This architecture document does not constitute CI evidence. Exact-SHA verification is required for implementation claims.
