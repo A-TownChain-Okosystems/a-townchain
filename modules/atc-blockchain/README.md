@@ -48,11 +48,11 @@ Die Architektur von `atc-blockchain` ist modular aufgebaut und trennt Konsens, P
 
 - **`consensus/`**: historische/spec-draft Artefakte; nicht-kanonisch
   - `poh.py` / `poh.atc`: Proof of History Zeitstempel-Engine & Hash-Kette
-  - `pos.atc` / `pos_atc82.atc`: Validator-Auswahl und Block-Finalität
-  - `hybrid_consensus.atc`: Integrierte PoH+PoA Konsenssteuerung
-  - `fork_resolution.atc`: Gabelungsbehandlung und Longest-Chain-Regel
+  - `pos.atc` / `pos_atc82.atc`: historische Consensus-Artefakte; nicht-kanonisch
+  - `hybrid_consensus.atc`: historischer/spec-draft Consensus; nicht-kanonisch
+  - `fork_resolution.atc`: historisches Fork-Choice-Artefakt; nicht-kanonisch
   - `gas_fee.atc`: Dynamisches Gaspreis- und Gebührenmodell
-- **`nodes/`**: Validator- und Netzwerk-Knoten
+- **`nodes/`**: historische/integrative Knoten-Artefakte; Consensus bleibt außerhalb dieses Moduls
   - `node.atc`: Validator Node Daemon und State Machine
   - `block_propagation.atc`: Block-Senden und Empfangen über P2P
   - `bootstrap.py` / `bootstrap.atc`: Bootstrap Node Service & Initial Sync
