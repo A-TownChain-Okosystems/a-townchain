@@ -21,7 +21,8 @@ The repository owns the canonical consensus logic for:
 - Proof-of-History sequencing
 - Proof-of-Stake validator weighting
 - Proof-of-Work integration
-- Hybrid selection rules
+- Proof-of-Intelligence contribution verification (draft)
+- Hybrid PoH+PoS+PoW+PoI selection rules
 - Fork-choice rules
 - Finality rules
 - Consensus verification and adversarial testing
@@ -53,13 +54,13 @@ The consensus P0 remains **OPEN** until all of the following are evidenced:
 Transactions / Blocks
         │
         ▼
-PoH sequencing
+PoH sequencing / slot-seed context
         │
         ▼
-Validator / PoS inputs + PoW constraints
+Validator / PoS inputs + PoW constraints + PoI proof verification
         │
         ▼
-Hybrid selection
+Hybrid PoH+PoS+PoW+PoI selection
         │
         ▼
 Fork choice + finality
@@ -77,7 +78,7 @@ a-townchain orchestration
 |---|---|---|
 | `poh` | Proof-of-History sequencing | MVP/skeleton |
 | `pos` | Validator weighting / staking | Specification work |
-| `pow` | PoW constraints | Specification work |
+| `pow` | PoW constraints | Specification work |\n| `poi` | Proof-of-Intelligence verification/contribution | Draft specification |
 | `hybrid_engine` | Hybrid selection/finality | Specification work |
 | `hash` | TownHash development component | Devnet-grade; not cryptographically audited |
 
