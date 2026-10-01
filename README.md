@@ -71,7 +71,7 @@ atc-shivacore             kernel / TCB boundary
 
 ### Components
 
-1. **`atc-blockchain`**: Core State Machine, Block-Erstellung, Transaktions-Pool, State DB.
+1. **`atc-blockchain`**: historical/integration state orchestration; canonical consensus is `components/algorithm`, execution is `components/vm`.
 2. **`atcnet`**: P2P-Netzwerkschicht (Gossip Protocol, Node Discovery, Peer Bootstrap).
 3. **`atc-zkp`**: Zero-Knowledge Proof Schaltung und Verifikation.
 4. **`atc-governance`**: On-Chain-Abstimmung, Vorschläge, Timelock und Treasury-Verwaltung.
