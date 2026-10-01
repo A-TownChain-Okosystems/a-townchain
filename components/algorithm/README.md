@@ -79,17 +79,19 @@ a-townchain orchestration
 |---|---|---|
 | `poh` | Proof-of-History sequencing | MVP/skeleton |
 | `pos` | Validator weighting / staking | Specification work |
-| `pow` | PoW constraints | Specification work |\n| `poi` | Proof-of-Intelligence verification/contribution | Draft specification |
+| `pow` | PoW constraints | Specification work |
+| `poi` | Proof-of-Intelligence verification/contribution | Draft specification |
 | `hybrid_engine` | Hybrid selection/finality | Specification work |
 | `hash` | TownHash development component | Devnet-grade; not cryptographically audited |
 
 ## Repository Structure
 
 ```text
-atc-algorithm/
-├── docs/
-├── src/
-└── tests/
+A-TownChain-Okosystems/a-townchain/
+└── components/algorithm/
+    ├── docs/
+    ├── src/
+    └── tests/
 ```
 
 ## Requirements
@@ -101,8 +103,8 @@ atc-algorithm/
 ## Installation
 
 ```bash
-git clone https://github.com/A-TownChain-Okosystems/atc-algorithm.git
-cd atc-algorithm
+git clone https://github.com/A-TownChain-Okosystems/a-townchain.git
+cd a-townchain
 cargo build
 ```
 
