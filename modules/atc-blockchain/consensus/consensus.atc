@@ -1,4 +1,8 @@
-// HISTORICAL / NON-CANONICAL CONSENSUS DRAFT.\n// Protocol authority: a-townchain/components/algorithm.\n// Retained only for migration history; MUST NOT produce protocol blocks/finality.\n\n// NON-CANONICAL CONSENSUS DRAFT — DO NOT USE AS PROTOCOL AUTHORITY.
+// HISTORICAL / NON-CANONICAL CONSENSUS DRAFT.
+// Protocol authority: a-townchain/components/algorithm.
+// Retained only for migration history; MUST NOT produce protocol blocks/finality.
+
+// NON-CANONICAL CONSENSUS DRAFT — DO NOT USE AS PROTOCOL AUTHORITY.
 // Canonical implementation target: a-townchain/components/algorithm.
 // Consensus specification remains unfrozen; retained for migration history.
 
