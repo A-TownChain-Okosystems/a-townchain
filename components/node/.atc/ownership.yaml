@@ -1,10 +1,13 @@
-repository: atc-node
+repository: a-townchain/components/node
+canonical_repository: A-TownChain-Okosystems/a-townchain
+canonical_component: components/node
+source_repository: A-TownChain-Okosystems/atc-node
+source_status: migration-source
 maintainers:
   - ShivaCoreDev
   - aurora-superagent
 security:
   team: ShivaCoreDev
 architecture:
-  team: ShivaCoreDev
-release:
-  team: ShivaCoreDev
+  layer: L4
+  domain: node-runtime-p2p
