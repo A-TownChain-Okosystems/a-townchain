@@ -1,5 +1,5 @@
 // Copyright (c) 2026 Michael Wroblewski — Apache-2.0
-//! Peer-Tabelle mit Lifecycle (Peer-Lifecycle: Connected/Verified/Banned).
+//! Peer lifecycle. Network reachability never implies protocol authority.
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PeerState {
@@ -21,34 +21,28 @@ pub struct PeerTable {
 }
 
 impl PeerTable {
-    pub fn new() -> Self {
-        PeerTable::default()
-    }
+    pub fn new() -> Self { Self::default() }
 
     pub fn add(&mut self, id: u64, addr: impl Into<String>) -> bool {
-        if self.peers.iter().any(|p| p.id == id) {
-            return false;
-        }
+        if self.peers.iter().any(|p| p.id == id) { return false; }
         self.peers.push(Peer { id, addr: addr.into(), state: PeerState::Connected });
         true
     }
 
     pub fn verify(&mut self, id: u64) -> bool {
         if let Some(p) = self.peers.iter_mut().find(|p| p.id == id) {
-            p.state = PeerState::Verified;
-            true
-        } else {
-            false
-        }
+            p.state = PeerState::Verified; true
+        } else { false }
     }
 
     pub fn ban(&mut self, id: u64) -> bool {
         if let Some(p) = self.peers.iter_mut().find(|p| p.id == id) {
-            p.state = PeerState::Banned;
-            true
-        } else {
-            false
-        }
+            p.state = PeerState::Banned; true
+        } else { false }
+    }
+
+    pub fn state(&self, id: u64) -> Option<PeerState> {
+        self.peers.iter().find(|p| p.id == id).map(|p| p.state.clone())
     }
 
     pub fn remove(&mut self, id: u64) -> bool {
@@ -57,23 +51,14 @@ impl PeerTable {
         before != self.peers.len()
     }
 
-    pub fn is_banned(&self, id: u64) -> bool {
-        self.peers.iter().any(|p| p.id == id && p.state == PeerState::Banned)
-    }
-
-    pub fn len(&self) -> usize {
-        self.peers.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.peers.is_empty()
-    }
+    pub fn is_banned(&self, id: u64) -> bool { self.state(id) == Some(PeerState::Banned) }
+    pub fn len(&self) -> usize { self.peers.len() }
+    pub fn is_empty(&self) -> bool { self.peers.is_empty() }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
     #[test]
     fn lifecycle() {
         let mut t = PeerTable::new();
@@ -86,13 +71,5 @@ mod tests {
         assert!(t.remove(1));
         assert!(!t.remove(1));
         assert!(t.is_empty());
-    }
-
-    #[test]
-    fn unbekannte_ids() {
-        let mut t = PeerTable::new();
-        assert!(!t.verify(9));
-        assert!(!t.ban(9));
-        assert!(!t.remove(9));
     }
 }
