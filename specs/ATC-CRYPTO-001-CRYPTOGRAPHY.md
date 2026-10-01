@@ -4,7 +4,7 @@ title: "Cryptographic Specification (kanonische Primitive & Domain-Separation)"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
 repository: a-townchain
-layer: L3-Chain
+layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
@@ -33,7 +33,7 @@ Die verbindliche Krypto-Referenz der Chain: was, wie und mit welcher Trennung si
 ## 3. Normative Anforderungen (MUST)
 
 - **REQ-CRY-001:** Kanonische Zuordnung: TX-Signaturen = ECDSA secp256k1 (RFC 6979, Low-S) — löst F-062 org-weit; P2P-/DID-Layer = Ed25519; Hashes = SHA-256 (Konsens) bzw. BLAKE3 (Storage/CAS); Addressen = RIPEMD160(SHA-256(pubkey)) — *Nachweis: unit+vector*
-- **REQ-CRY-002:** Domain-Separation ist Pflicht je Kontext: atc-tx.v1, atc-p2p.v1, atc-storage.key.v1, atc-compute.attestation.v1, atc-asset.transfer.v1 — Registry in dieser Spec — *Nachweis: unit+negative*
+- **REQ-CRY-002:** Domain-Separation ist Pflicht je Kontext: ATC-TX-DOMAIN-V2, consensus/attestation domain, P2P/identity domain, storage-key domain, compute-attestation domain, asset-transfer domain — Registry in dieser Spec — *Nachweis: unit+negative*
 - **REQ-CRY-003:** Malleability-Verbot: High-S, nicht-kanonische Encodings, fehlende Längen-Checks ⇒ Reject (Verweise auf WAL-VERIFY-001-Tests) — *Nachweis: negative+vector*
 - **REQ-CRY-004:** Key-Lifecycle & Rotation für Validator-/Node-Keys: dokumentierte Verfahren + Notfall-Rotation; PQC-Migration als MAJOR-Roadmap (COMPAT-001), aktuelle Migration ist explizit NICHT behauptet — *Nachweis: governance*
 
