@@ -10,3 +10,6 @@ license = "Apache-2.0"
 egui = "0.36"
 k256 = { version = "0.13", features = ["ecdsa"] }
 sha2 = "0.10"
+
+[dev-dependencies]
+hex = "0.4"
