@@ -85,7 +85,7 @@ function assert32Bytes(name: string, value: Uint8Array): void {
 /**
  * Canonical transaction preimage:
  * domain || chain_id(u64 BE) || tx_type(u8) || sender || recipient? ||
- * amount(u128 BE) || gas_price(u128 BE) || gas_limit(u64 BE) ||
+ * amount(u128 fixed 16-byte BE) || gas_price(u128 fixed 16-byte BE) || gas_limit(u64 BE) ||
  * nonce(u64 BE) || timestamp(u64 BE) || payload || poh_hash(32).
  */
 export function canonicalSigningPreimage(tx: TransactionSigningInput): Uint8Array {
@@ -110,4 +110,35 @@ export function canonicalSigningPreimage(tx: TransactionSigningInput): Uint8Arra
   pushBytes(out, tx.payload);
   out.push(...tx.poh_hash);
   return Uint8Array.from(out);
+}
+
+
+export function bytesToHex(value: Uint8Array): string {
+  return Array.from(value, byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+// Frozen cross-language conformance vector shared with the canonical Rust wallet.
+export const CANONICAL_TX_V2_VECTOR = {
+  preimageHex:
+    "4154432d54582d444f4d41494e2d563200000000000a0c23000000000a4154432d73656e646572010000000d4154432d726563697069656e7400000000000000000000000000000064000000000000000000000000000000000100000000000003e80000000000000007000000006553f1000000000568656c6c6f0909090909090909090909090909090909090909090909090909090909090909",
+  sha256Hex: "8608d1530c0c8dd02207903ec6b24071878b36fca0299b2534cef76e79d340be",
+} as const;
+
+export function assertCanonicalTxV2Vector(): void {
+  const preimage = canonicalSigningPreimage({
+    chain_id: ATC_CHAIN_ID,
+    tx_type: 0,
+    sender_did: "ATC-sender",
+    recipient_did: "ATC-recipient",
+    amount: 100n,
+    gas_price: 1n,
+    gas_limit: 1000n,
+    nonce: 7n,
+    timestamp: 1_700_000_000n,
+    payload: new TextEncoder().encode("hello"),
+    poh_hash: new Uint8Array(32).fill(9),
+  });
+  if (bytesToHex(preimage) !== CANONICAL_TX_V2_VECTOR.preimageHex) {
+    throw new Error("ATC-TX-V2 conformance vector mismatch");
+  }
 }
