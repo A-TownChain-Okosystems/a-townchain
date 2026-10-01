@@ -4,3 +4,4 @@
 pub mod vm;
 pub mod ops;
 pub mod context;
+pub mod value;
