@@ -3,6 +3,9 @@
 //!
 //! Consensus identity keys are a separate contract. This type is only for
 //! transaction/account authentication and uses secp256k1 ECDSA.
+//!
+//! Signing uses k256's RFC6979 deterministic ECDSA implementation and
+//! explicitly normalizes signatures to the canonical low-S form.
 
 use k256::ecdsa::{signature::Signer, Signature, SigningKey, VerifyingKey};
 use sha2::{Digest, Sha256};
@@ -20,7 +23,8 @@ impl WalletKey {
     }
 
     pub fn sign(&self, message: &[u8]) -> Signature {
-        self.signing_key.sign(message)
+        let signature: Signature = self.signing_key.sign(message);
+        signature.normalize_s().unwrap_or(signature)
     }
 
     pub fn public_key(&self) -> [u8; 33] {
@@ -59,10 +63,13 @@ mod tests {
     }
 
     #[test]
-    fn signature_is_verifiable() {
+    fn signature_is_deterministic_and_canonical_low_s() {
         let key = WalletKey::from_seed([7u8; 32]);
-        let signature = key.sign(b"ATC-TX-DOMAIN-V2");
+        let a = key.sign(b"ATC-TX-DOMAIN-V2");
+        let b = key.sign(b"ATC-TX-DOMAIN-V2");
+        assert_eq!(a, b);
+        assert!(a.normalize_s().is_none());
         let verifying_key = VerifyingKey::from_sec1_bytes(&key.public_key()).unwrap();
-        assert!(verifying_key.verify(b"ATC-TX-DOMAIN-V2", &signature).is_ok());
+        assert!(verifying_key.verify(b"ATC-TX-DOMAIN-V2", &a).is_ok());
     }
 }
