@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // ─────────────────────────────────────────────────────────────
 // ATC-01 — Testnet Launcher
-// Sprint 2.2 | Infrastructure Layer | Chain-ID 658467
+// Sprint 2.2 | Infrastructure Layer | chain ID supplied by governed testnet configuration
 // Migrated from: blockchain/nodes/testnet_launcher.py (188 lines)
 // Local multi-node testnet for development
 // ─────────────────────────────────────────────────────────────
@@ -9,7 +9,6 @@
 const DEFAULT_NODES: u8 = 3
 const BASE_PORT: u16 = 9000
 const BASE_RPC_PORT: u16 = 9100
-const GENESIS_CHAIN_ID: u32 = 658467
 
 enum NodeStatus { Stopped, Starting, Running, Error }
 
@@ -28,6 +27,7 @@ contract TestnetLauncher {
     state base_dir: String
     state running: bool
     state genesis_config: Hash
+    state chain_id: u32
     state owner: Address
 
     event NodeStarted(node_id: u8, p2p_port: u16, rpc_port: u16)
@@ -41,10 +41,13 @@ contract TestnetLauncher {
         self.base_dir = "/tmp/atc-testnet"
         self.running = false
         self.genesis_config = Hash::zero()
+        self.chain_id = 0
         self.owner = msg_sender()
     }
 
-    fn setup(num_nodes: u8) -> bool {
+    fn setup(num_nodes: u8, configured_chain_id: u32) -> bool {
+        require(configured_chain_id != 0, "Testnet: chain ID required")
+        self.chain_id = configured_chain_id
         let i: u8 = 0
         while i < num_nodes {
             let node = TestnetNode {
@@ -109,6 +112,10 @@ contract TestnetLauncher {
 
     fn is_running() -> bool {
         return self.running
+    }
+
+    fn get_chain_id() -> u32 {
+        return self.chain_id
     }
 
     fn get_genesis_config() -> Hash {
