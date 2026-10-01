@@ -4,7 +4,7 @@ title: "Proof-of-Stake (PoS) Specification — Validator-Selection & Gewichtung"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
 repository: atc-algorithm
-layer: L3-Konsens
+layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
@@ -32,7 +32,7 @@ Stake-basierte, deterministische Validator-Auswahl als PoS-Komponente des hybrid
 
 ## 3. Normative Anforderungen (MUST)
 
-- **REQ-POS-001:** Gewichtungsfunktion: weight(v) = floor(effective_stake(v) / WEIGHT_UNIT); WEIGHT_UNIT genesis-locked, reine u64-Division — *Nachweis: unit+vector*
+- **REQ-POS-001:** Gewichtungsfunktion: weight(v) = floor(effective_stake(v) / WEIGHT_UNIT); WEIGHT_UNIT genesis-locked, kanonische unsigned integer division mit dem wirtschaftlichen u128-Typ — *Nachweis: unit+vector*
 - **REQ-POS-002:** Selection: aus dem eligible-Set wird deterministisch aus dem PoH-Seed des Slots abgeleitet (kein Global-Random, kein Timestamp) — *Nachweis: unit+property*
 - **REQ-POS-003:** Tie-Breaking: bei identischem Score gewinnt die byte-lexikografisch kleinste Validator-Pubkey (kein weiterer Zufall) — *Nachweis: vector*
 - **REQ-POS-004:** effective_stake = own_stake + sum(delegated) − slashed − pending_unbond; alle Abbuchungen checked-arithmetic (Overflow ⇒ Reject) — *Nachweis: unit+negative*
@@ -51,7 +51,7 @@ Stake-basierte, deterministische Validator-Auswahl als PoS-Komponente des hybrid
 
 - pos_selection.json (deterministische Auswahl)
 - pos_tie.json (Tie-Breaking)
-- stake_overflow.json (u64-Grenzen)
+- stake_overflow.json (u128-Grenzen)
 - duplicate_validator.json ⇒ Reject
 
 ## 7. Abhängigkeiten & Kompatibilität
