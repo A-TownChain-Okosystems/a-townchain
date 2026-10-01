@@ -103,9 +103,9 @@
 
 ## BAUHIERARCHIE (AD-026, verbindlich) & ROADMAP (AD-027, verbindlich)
 ```text
-[L0] atclang → [L1] atc-shivacore → [L2] aurora-ai → [L3] a-townchain
- → [L4] globus-os → [L5] 13 Blockchain-Services → [L6] genesis-engine →
- genesis-chronicles → [L7] a-townchain-os (Integration, AD-017)
+[L0] Secure Platform/System → [L1] Runtime/Data → [L2] A-TownChain Blockchain Core → [L3] deterministic ATC-VM
+ → [L4] Protocol Services/Scaling → [L5] Economic/Security Domains → [L6] AI → [L7] Applications/UX
+ [X] Control Plane: Identity/Capability/Policy/Governance/Crypto/Audit/Evidence/Observability/Interop/Versioning
 [parallel] a-townchain-os-docs (Docs-Hub) · atc-standards (Norm)
 ```
 Lauffähigkeits-Roadmap M1-M8 (jede Stufe = lauffähiges Inkrement):
