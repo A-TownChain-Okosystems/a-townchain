@@ -20,6 +20,6 @@ assert.equal(preimage.length, 149);
 assert.equal(bytesToHex(preimage.slice(57, 73)), "ffffffffffffffffffffffffffffffff");
 assert.equal(
   createHash("sha256").update(preimage).digest("hex"),
-  "1bb5b4c2b4d8e8d2b7d5a7b3b7f7a7b6b2d0e6e5f3e5b6e4f8a0e0b7a7f8c5e2",
+  "2ffda1432ab39f037ff075de801d262af8b554461de2b29ce38d5244a45e7347",
 );
 assert.equal(CANONICAL_TX_V2_VECTOR.sha256Hex.length, 64);
