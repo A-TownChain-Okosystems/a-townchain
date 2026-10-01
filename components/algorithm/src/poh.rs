@@ -35,6 +35,13 @@ pub fn hash64(data: &[u8]) -> u64 {
     u64::from_be_bytes(digest[..8].try_into().expect("fixed SHA-256 prefix"))
 }
 
+/// Deterministic 128-bit SHA-256 prefix for u128 economic weighting.
+pub fn hash128(data: &[u8]) -> u128 {
+    use sha2::{Digest, Sha256};
+    let digest = Sha256::digest(data);
+    u128::from_be_bytes(digest[..16].try_into().expect("fixed SHA-256 prefix"))
+}
+
 pub struct PohChain {
     ticks: Vec<Tick>,
 }
