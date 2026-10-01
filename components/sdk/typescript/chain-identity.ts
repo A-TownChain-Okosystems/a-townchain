@@ -42,12 +42,17 @@ export function validateIdentity(identity: ChainIdentity): void {
 }
 
 function pushU32BE(out: number[], value: number): void {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+    throw new RangeError("u32 out of range");
+  }
   out.push((value >>> 24) & 0xff, (value >>> 16) & 0xff, (value >>> 8) & 0xff, value & 0xff);
 }
 
-function pushU64BE(out: number[], value: bigint): void {
-  if (value < 0n || value > 0xffffffffffffffffn) throw new RangeError("u64 out of range");
-  for (let shift = 56n; shift >= 0n; shift -= 8n) {
+function pushUnsignedBE(out: number[], value: bigint, width: number): void {
+  if (value < 0n) throw new RangeError("unsigned integer out of range");
+  const max = (1n << BigInt(width * 8)) - 1n;
+  if (value > max) throw new RangeError(`u${width * 8} out of range`);
+  for (let shift = BigInt((width - 1) * 8); shift >= 0n; shift -= 8n) {
     out.push(Number((value >> shift) & 0xffn));
   }
 }
@@ -73,7 +78,7 @@ function assert32Bytes(name: string, value: Uint8Array): void {
 /**
  * Exact byte representation used by the Rust L1 kernel:
  * ATC-TX-DOMAIN-V2 || chain_id(u64 BE) || tx_type(u8) ||
- * sender_did || recipient_did(optional) || amount(u64 BE) ||
+ * sender_did || recipient_did(optional) || amount(u128 BE) ||
  * gas_price(u64 BE) || gas_limit(u64 BE) || nonce(u64 BE) ||
  * timestamp(u64 BE) || payload || poh_hash(32 bytes).
  */
@@ -87,15 +92,15 @@ export function canonicalSigningPreimage(tx: TransactionSigningInput): Uint8Arra
 
   const out: number[] = [];
   out.push(...new TextEncoder().encode(ATC_TX_DOMAIN_V2));
-  pushU64BE(out, BigInt(tx.chain_id));
+  pushUnsignedBE(out, BigInt(tx.chain_id), 8);
   out.push(tx.tx_type);
   pushBytes(out, new TextEncoder().encode(tx.sender_did));
   pushOptionalString(out, tx.recipient_did);
-  pushU64BE(out, tx.amount);
-  pushU64BE(out, tx.gas_price);
-  pushU64BE(out, tx.gas_limit);
-  pushU64BE(out, tx.nonce);
-  pushU64BE(out, tx.timestamp);
+  pushUnsignedBE(out, tx.amount, 16);
+  pushUnsignedBE(out, tx.gas_price, 8);
+  pushUnsignedBE(out, tx.gas_limit, 8);
+  pushUnsignedBE(out, tx.nonce, 8);
+  pushUnsignedBE(out, tx.timestamp, 8);
   pushBytes(out, tx.payload);
   out.push(...tx.poh_hash);
   return Uint8Array.from(out);
