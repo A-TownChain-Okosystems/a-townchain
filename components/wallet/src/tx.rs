@@ -102,7 +102,7 @@ impl Transaction {
         Ok(key.sign(&self.signing_bytes()?).to_bytes())
     }
 
-    pub fn verify(&self, public_key: &[u8; 32], signature: &[u8; 64]) -> Result<(), TxError> {
+    pub fn verify(&self, public_key: &[u8; 33], signature: &[u8; 64]) -> Result<(), TxError> {
         let key = VerifyingKey::from_sec1_bytes(public_key).map_err(|_| TxError::InvalidSignature)?;
         let signature = Signature::from_slice(signature).map_err(|_| TxError::InvalidSignature)?;
         key.verify(&self.signing_bytes()?, &signature)
