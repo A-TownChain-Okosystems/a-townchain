@@ -3,7 +3,7 @@ spec_id: SPEC-OVERVIEW-atc-sdk
 title: "Specification Overview & Gap-Inventur (atc-sdk)"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — Inventur, keine Implementierungsbehauptung
-repository: atc-sdk
+repository: a-townchain/components/sdk
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
