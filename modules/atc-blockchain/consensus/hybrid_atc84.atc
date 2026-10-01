@@ -1,4 +1,8 @@
-// HISTORICAL / NON-CANONICAL CONSENSUS DRAFT.\n// Protocol authority: a-townchain/components/algorithm.\n// MUST NOT be used for block production or finality.\n\n// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// HISTORICAL / NON-CANONICAL CONSENSUS DRAFT.
+// Protocol authority: a-townchain/components/algorithm.
+// MUST NOT be used for block production or finality.
+
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // ATC-84 — Hybrid Consensus (PoW + PoS + PoH) in ATCLang
 // Migriert von: blockchain/consensus/hybrid_consensus.py → ATCLang
 // Sprint 2.1 — Issue #74
