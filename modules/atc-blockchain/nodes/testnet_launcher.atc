@@ -27,7 +27,7 @@ contract TestnetLauncher {
     state base_dir: String
     state running: bool
     state genesis_config: Hash
-    state chain_id: u32
+    state chain_id: u64
     state owner: Address
 
     event NodeStarted(node_id: u8, p2p_port: u16, rpc_port: u16)
