@@ -1,45 +1,76 @@
 ---
 document_id: ATC-DOC-ARC-ATCH-001
 title: Repository Architecture Specification
-version: 1.0.0
+version: 1.1.0
 status: active
 owner: A-TownChain-Okosystems
-created: 2026-09-13
-updated: 2026-09-13
 standard: ATC-STD-MD-001
 ---
 
 # Architecture Specification — a-townchain
 
-## Übersicht
+## Canonical role
 
-`a-townchain` ist die Chain-Protokoll-Bibliothek (Layer L3) der A-TownChain: Chain-ID 658467, Hybrid-Konsens (PoW+PoS+PoH), ZKP-Verifikation, On-Chain-Governance und Chain-DNS. Nach AD-012 ist die Chain ein Kernel-System-Service des KAI-OS.
+`a-townchain` is the canonical L1 blockchain monorepo. It owns the authoritative implementation of the blockchain core and migrated components under `components/*`.
 
-## Subsysteme
+The repository is **Layer L2 Blockchain Core + canonical component implementations**, not a generic L3 chain layer.
 
-1. **Chain Protocol Core:** Block-/Transaktionsmodell, Chain-ID 658467, Validierungsregeln (`modules/`).
-2. **Hybrid-Konsens-Bindung:** PoW+PoS+PoH — Konsens-Implementierung liegt kanonisch in `atc-algorithm`.
-3. **ZKP-Integration:** Proof-Verifikation — kryptografische Primitive kanonisch in `atc-zkp`.
-4. **On-Chain-Governance:** Abstimmungs- und Parameter-Änderungsmechanismen.
-5. **Chain-DNS:** Namensauflösung auf der Chain.
-6. **Kernel-Service (AD-012):** Dienste-Integration in das KAI-OS.
+## Canonical layer ownership
 
-## Verantwortungsgrenzen
+| Layer | Responsibility | Canonical location |
+|---|---|---|
+| L0 | Hardware / secure platform | platform-specific repositories |
+| L1 | Node/runtime foundation, ShivaCore integration, IPC/capabilities | `globus-os`, ShivaCore |
+| L2 | Block, transaction, state, ledger, mempool, ordering, consensus, finality, validation | `a-townchain` |
+| L3 | ATC-VM execution, typed values, gas/resource accounting | `components/vm` |
+| L4 | P2P, synchronization, propagation, RPC/API | `components/node` |
+| L5 | Economic/security services and cryptographic policy | L2 services + `atc-standards` |
+| L6 | ATCLang, contracts, ABI, application protocols | `components/contracts`, `atclang`, standards |
+| L7 | Wallet, SDK, explorer and developer applications | `components/wallet`, `components/sdk`, `components/explorer` |
+| X | Identity, capability, policy, governance, crypto, audit, evidence, observability, interop, versioning | cross-layer control plane |
 
-- `atc-node` betreibt das Protokoll (Full-Node-Binary/Runtime) — hier wird es definiert.
-- `atc-algorithm` implementiert den Konsens — dieses Repo bindet ihn.
-- `atc-vm` führt Contracts aus — das Protokoll definiert die Ausführungssemantik.
+## Repository ownership rule
 
-## Registry-Einordnung
+The monorepo migration is authoritative for implementation ownership:
 
-| Property | Value |
-|---|---|
-| Layer | L3 |
-| Criticality | C1 |
-| Security-Klasse | S4 |
-| Maturity | R-Level laut `.atc/repository.yaml` · Statusleiter in `.atc/evidence/evidence.yaml` (SCR-0080) |
-| Canonical | a-townchain (Chain-Protokoll, AD-012 Kernel-Service) |
-| Domäne | domaene laut registry/repositories.yaml |
+- `atc-node` → `components/node`
+- `atc-algorithm` → `components/algorithm`
+- `atc-vm` → `components/vm`
+- `atc-contracts` → `components/contracts`
+- `atc-sdk` → `components/sdk`
+- `atc-wallet` → `components/wallet`
+- `atc-explorer` → `components/explorer`
 
-> Ehrlichkeitsregel: CLAIMED ≠ PASS · IMPLEMENTED ≠ VERIFIED — der verbindliche Implementierungsstand
-> liegt ausschließlich in `.atc/evidence/evidence.yaml`, nicht in dieser Spezifikation.
+The former standalone repositories are historical/migration sources unless explicitly designated otherwise. New canonical implementation MUST NOT be added there.
+
+## Transaction authority boundary
+
+The transaction contract is a protocol/L2 contract, not a Wallet-owned protocol definition.
+
+- `atc-standards` defines the normative transaction and cryptographic contract.
+- L2/node validates and consumes canonical transactions.
+- `components/wallet` implements client-side construction and authorization against that contract.
+- `components/sdk` exposes client protocol primitives and MUST use the same canonical bytes.
+- Wallet/SDK MUST NOT introduce an alternative transaction encoding or signature domain.
+
+Canonical transaction authorization is ECDSA secp256k1 with RFC6979 and low-S. Ed25519 remains reserved for identity/P2P contexts. The mandatory transaction domain is `ATC-TX-DOMAIN-V2`.
+
+## Determinism and authority
+
+The authoritative state transition is:
+
+`F(State, Block) = State'`
+
+The deterministic path is:
+
+Transaction → canonical encoding → authorization validation → transaction validation → mempool → block validation → consensus/finality → VM execution → state transition → state commitment → ledger commit.
+
+Network reachability, wallet intent, SDK output, AI/model output, indexer data, or UI state never grants authority to mutate canonical L2 state. Every authoritative action MUST cross its defined capability/policy validation boundary and produce auditable evidence.
+
+## Evidence rule
+
+Architecture text is descriptive. It does not constitute verification evidence.
+
+`CLAIMED != IMPLEMENTED != VERIFIED`
+
+Exact-SHA evidence MUST bind source SHA → workflow/run → job → step/log → result. Missing or ambiguous evidence is BLOCKED, never PASS.
