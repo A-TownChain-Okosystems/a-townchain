@@ -39,7 +39,7 @@ ATC SDK / CLI / package tooling
 
 ### Rules
 
-1. Consensus-critical semantics remain canonical in `a-townchain` / `atc-vm` and the applicable standards.
+1. Consensus-critical semantics remain canonical in `a-townchain` / `a-townchain/components/vm` and the applicable standards.
 2. SDK clients may serialize, submit and decode protocol data but must not invent alternative state-transition rules.
 3. Chain/network identity is obtained from canonical configuration or protocol responses rather than duplicated constants.
 4. Cross-repository test dependencies must be revision-pinned when reproducibility or determinism depends on them.
