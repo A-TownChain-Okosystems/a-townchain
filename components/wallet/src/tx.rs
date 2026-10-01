@@ -69,7 +69,8 @@ impl Transaction {
 
 pub fn sign(tx: &Transaction, key: &SigningKey) -> Result<Signature, TxError> {
     let digest = tx.digest()?;
-    let mut sig = key.sign_prehash(&digest).map_err(|_| TxError::InvalidSignature)?;
+    let mut sig: Signature =
+        key.sign_prehash(&digest).map_err(|_| TxError::InvalidSignature)?;
     if let Some(low_s) = sig.normalize_s() { sig = low_s; }
     Ok(sig)
 }
