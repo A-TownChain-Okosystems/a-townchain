@@ -4,7 +4,7 @@ title: "Proof-of-Work (PoW) Specification — Difficulty & Work-Beitrag"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
 repository: atc-algorithm
-layer: L3-Konsens
+layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
@@ -34,8 +34,8 @@ Definition des PoW-Beitrags im hybriden Konsens (Ergänzung, nicht Ersatz von Po
 
 - **REQ-POW-001:** Target-Encoding: kompakte Big-Endian-Darstellung (analog Bitcoin-Compact); Block ist gültig, wenn SHA-256(header) numerisch < target — *Nachweis: unit+vector*
 - **REQ-POW-002:** Difficulty-Adjustment je Epoche als EMA über die letzten E Epochendauern mit geklemmten Faktorgrenzen (max ±25 % je Anpassung); Zielblockzeit genesis-locked — *Nachweis: unit+property*
-- **REQ-POW-003:** Work-Beitrag eines Blocks: floor(2^256 / (target+1)) als u128-Arithmetik; Overflow ⇒ ungültig — *Nachweis: unit+negative*
-- **REQ-POW-004:** Anti-Grinding: Der verwendbare PoW-Nonce-Raum ist an den PoH-Slot gebunden (grinding lohnt nicht, weil die Selection ATC-CONSENSUS-304 den PoH-Seed nutzt) — *Nachweis: property+adversarial*
+- **REQ-POW-003:** Work-Beitrag eines Blocks: floor(2^256 / (target+1)) als exakt definierter 256-Bit-Arithmetikwert; die kanonische Repräsentation und Overflow-Regel müssen explizit festgelegt werden; Overflow ⇒ ungültig — *Nachweis: unit+negative*
+- **REQ-POW-004:** Anti-Grinding: Der verwendbare PoW-Nonce-Raum MUSS an den kanonischen Slot/Seed gebunden sein (grinding lohnt nicht, weil die Selection ATC-CONSENSUS-304 den PoH-Seed nutzt) — *Nachweis: property+adversarial*
 
 ## 4. Datenmodelle & Schnittstellen
 

@@ -4,7 +4,7 @@ title: "Block Finality Specification"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
 repository: atc-algorithm
-layer: L3-Konsens
+layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
@@ -32,8 +32,8 @@ Verbindliche Definition, wann ein Block als final gilt und welche Beweise Finali
 
 ## 3. Normative Anforderungen (MUST)
 
-- **REQ-FIN-001:** Ein Block gilt als FINAL, wenn ≥ 2/3 der aktiven Validator-Stake-Gewichte (bezogen auf den letzten finalisierten Validator-Set-Hash) attestiert haben — *Nachweis: unit+integration*
-- **REQ-FIN-002:** Attestations sind signierte Nachrichten über (block_hash, height, source=finalisierte Höhe); ungültige Signaturen zählen nicht — *Nachweis: negative*
+- **REQ-FIN-001:** Ein Block gilt als FINAL, wenn die beim Spec-Freeze definierte Quorum-Funktion auf dem für den Ziel-Slot eingefrorenen Validator-Set-Snapshot erfüllt ist; Quorum-Berechnung, Rundung, Mindestbeteiligung und Snapshot-Bindung MÜSSEN vollständig definiert sein. Die derzeitige 2/3-Angabe bleibt Draft-Vorgabe und ist nicht als implementierungsfertige Semantik zu behandeln — *Nachweis: unit+integration*
+- **REQ-FIN-002:** Attestations sind signierte Nachrichten über (block_hash, height, source=finalisierte Höhe, target=attestierter Block); ungültige Signaturen zählen nicht — *Nachweis: negative*
 - **REQ-FIN-003:** Equivocation (zwei konfliktierende Attestations desselben Validators) ist ein Slashing-Tatbestand mit Beweis-Nachricht (ATC-CONSENSUS-302) — *Nachweis: adversarial*
 - **REQ-FIN-004:** Nach Finalität verworfene Blöcke derselben Höhe sind Protocol-Violations; der Zustand wird NIE über finalisierte Höhe hinaus zurückgerollt — *Nachweis: property+adversarial*
 
@@ -44,7 +44,7 @@ Verbindliche Definition, wann ein Block als final gilt und welche Beweise Finali
 ## 5. Invarianten
 
 - finalität ist monoton: height_final ist nicht fallend
-- 2/3-Quorum bei BFT-Annahme (≤1/3 byzantinisch) garantiert Sicherheit
+- Die Sicherheitsbehauptung eines 2/3-Quorums gilt erst nach formaler Definition von Voting-Regeln, Validator-Set-Snapshot, Quorumarithmetik und Netzwerkannahmen
 
 ## 6. Conformance-Tests (Mindestkategorien)
 

@@ -10,7 +10,7 @@
 
 ## Overview
 
-`atc-algorithm` is the canonical consensus repository for A-TownChain (Chain-ID `658467`). It contains the current MVP/skeleton implementation and the normative consensus work required for a production release.
+`a-townchain/components/algorithm` is the canonical consensus implementation path for A-TownChain (Chain-ID `658467`). The former standalone `atc-algorithm` repository was migrated here; it is not a second consensus authority.
 
 **Critical truth:** the presence of PoH/selection prototype code and passing local tests does **not** constitute a complete, secure, deterministic or production-ready consensus protocol. Consensus remains a P0 release blocker until specification freeze, complete implementation, conformance, security review and independent evidence are complete.
 
@@ -21,12 +21,14 @@ The repository owns the canonical consensus logic for:
 - Proof-of-History sequencing
 - Proof-of-Stake validator weighting
 - Proof-of-Work integration
-- Hybrid selection rules
+- Proof-of-Intelligence contribution verification (draft)
+- Hybrid PoH+PoS+PoW+PoI selection rules
 - Fork-choice rules
 - Finality rules
+- Canonical consensus state-machine contract (ATC-CONSENSUS-309)
 - Consensus verification and adversarial testing
 
-`a-townchain` is the orchestration/integration layer and must not become a second canonical consensus implementation.
+The parent `a-townchain` repository owns the blockchain core; this component owns the consensus implementation. No second consensus implementation may exist elsewhere in the monorepo.
 
 ## Status
 
@@ -38,7 +40,7 @@ Evidence currently supports an MVP/skeleton implementation, not a production con
 
 The consensus P0 remains **OPEN** until all of the following are evidenced:
 
-1. **Consensus specification freeze** — complete normative rules for PoH, PoS, PoW, hybrid selection, fork choice and finality.
+1. **Consensus specification freeze** — complete normative rules for PoH, PoS, PoW, PoI, hybrid selection, proposal/attestation, fork choice, finality and state transition.
 2. **Complete Rust implementation** — implementation matches the frozen specification.
 3. **Determinism/conformance** — cross-node differential and conformance vectors pass.
 4. **Security review** — independent cryptographic and consensus-security assessment.
@@ -53,13 +55,13 @@ The consensus P0 remains **OPEN** until all of the following are evidenced:
 Transactions / Blocks
         │
         ▼
-PoH sequencing
+PoH sequencing / slot-seed context
         │
         ▼
-Validator / PoS inputs + PoW constraints
+Validator / PoS inputs + PoW constraints + PoI proof verification
         │
         ▼
-Hybrid selection
+Hybrid PoH+PoS+PoW+PoI selection
         │
         ▼
 Fork choice + finality
@@ -78,29 +80,31 @@ a-townchain orchestration
 | `poh` | Proof-of-History sequencing | MVP/skeleton |
 | `pos` | Validator weighting / staking | Specification work |
 | `pow` | PoW constraints | Specification work |
+| `poi` | Proof-of-Intelligence verification/contribution | Draft specification |
 | `hybrid_engine` | Hybrid selection/finality | Specification work |
 | `hash` | TownHash development component | Devnet-grade; not cryptographically audited |
 
 ## Repository Structure
 
 ```text
-atc-algorithm/
-├── docs/
-├── src/
-└── tests/
+A-TownChain-Okosystems/a-townchain/
+└── components/algorithm/
+    ├── docs/
+    ├── src/
+    └── tests/
 ```
 
 ## Requirements
 
-- Rust `1.75+`
+- Rust `1.98.1` (stable baseline)
 - Python `3.10+` for validation tooling
 - Git `2.30+`
 
 ## Installation
 
 ```bash
-git clone https://github.com/A-TownChain-Okosystems/atc-algorithm.git
-cd atc-algorithm
+git clone https://github.com/A-TownChain-Okosystems/a-townchain.git
+cd a-townchain
 cargo build
 ```
 
@@ -134,8 +138,8 @@ This repository follows ATC-STD-000 v1.3.0 and the A-TownChain governance framew
 
 ## Roadmap
 
-1. Freeze normative consensus specification.
-2. Complete PoH/PoS/PoW/hybrid implementation.
+1. Freeze normative consensus state-machine specification.
+2. Complete PoH/PoS/PoW/PoI/hybrid implementation.
 3. Add deterministic conformance vectors and differential tests.
 4. Complete adversarial/fuzz testing.
 5. Complete independent security review.

@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 setup(
     name="atc-testnet",
     version="0.1.0",
-    description="ATC Testnet (Chain-ID 9001)",
+    description="ATC Testnet — chain ID is supplied by governed testnet configuration",
     author="Michael Wroblewski / ShivaCore / A-TownChain-Okosystems",
     license="All Rights Reserved",
     packages=find_packages(where="src"),

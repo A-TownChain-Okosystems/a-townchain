@@ -2,7 +2,7 @@
 // ════════════════════════════════════════════════════════════════
 // A-TownChain Mainnet Configuration (Sprint 4.0)
 // Chain-ID 658467 | Non-EVM
-// Canonical monetary policy: atc-algorithm
+// Canonical monetary policy: governed L2 algorithm at a-townchain/components/algorithm
 // ════════════════════════════════════════════════════════════════
 
 const CHAIN_ID: u64 = 658467
@@ -15,7 +15,7 @@ const INITIAL_BLOCK_SUBSIDY: u128 = 500000000000000000000
 const MAX_BLOCK_SIZE: u32 = 1048576
 const MAX_TX_PER_BLOCK: u32 = 500
 const MIN_STAKE: u128 = 1000000000000000000000
-const EPOCH_LENGTH: u32 = 1000
+const EPOCH_LENGTH: u32 = 360000
 const GENESIS_TIMESTAMP: u64 = 1735689600
 
 struct ChainConfig {
@@ -60,8 +60,8 @@ contract MainnetConfig {
             halving_count: HALVING_COUNT, initial_subsidy: INITIAL_BLOCK_SUBSIDY,
             max_block_size: MAX_BLOCK_SIZE, max_tx_per_block: MAX_TX_PER_BLOCK,
             min_stake: MIN_STAKE, epoch_length: EPOCH_LENGTH,
-            genesis_timestamp: GENESIS_TIMESTAMP, consensus_type: "hybrid",
-            hash_algorithm: "canonical-atc-algorithm"
+            genesis_timestamp: GENESIS_TIMESTAMP, consensus_type: "SPEC-DRAFT",
+            hash_algorithm: "governed-atc-algorithm"
         }
         self.network_config = NetworkConfig { p2p_port: 9000, rpc_port: 5000, gateway_port: 4000, max_peers: 50, enable_discovery: true, enable_mempool: true }
     }

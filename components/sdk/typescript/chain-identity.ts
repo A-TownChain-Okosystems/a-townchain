@@ -51,6 +51,12 @@ function pushU64BE(out: number[], value: bigint): void {
     out.push(Number((value >> shift) & 0xffn));
   }
 }
+\nfunction pushU128BE(out: number[], value: bigint): void {
+  if (value < 0n || value > 0xffffffffffffffffffffffffffffffffn) throw new RangeError("u128 out of range");
+  for (let shift = 120n; shift >= 0n; shift -= 8n) {
+    out.push(Number((value >> shift) & 0xffn));
+  }
+}
 
 function pushBytes(out: number[], value: Uint8Array): void {
   pushU32BE(out, value.length);
@@ -73,7 +79,7 @@ function assert32Bytes(name: string, value: Uint8Array): void {
 /**
  * Exact byte representation used by the Rust L1 kernel:
  * ATC-TX-DOMAIN-V2 || chain_id(u64 BE) || tx_type(u8) ||
- * sender_did || recipient_did(optional) || amount(u64 BE) ||
+ * sender_did || recipient_did(optional) || amount(u128 BE) ||
  * gas_price(u64 BE) || gas_limit(u64 BE) || nonce(u64 BE) ||
  * timestamp(u64 BE) || payload || poh_hash(32 bytes).
  */
@@ -91,7 +97,7 @@ export function canonicalSigningPreimage(tx: TransactionSigningInput): Uint8Arra
   out.push(tx.tx_type);
   pushBytes(out, new TextEncoder().encode(tx.sender_did));
   pushOptionalString(out, tx.recipient_did);
-  pushU64BE(out, tx.amount);
+  pushU128BE(out, tx.amount);
   pushU64BE(out, tx.gas_price);
   pushU64BE(out, tx.gas_limit);
   pushU64BE(out, tx.nonce);

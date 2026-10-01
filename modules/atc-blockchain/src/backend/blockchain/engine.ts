@@ -1,3 +1,4 @@
+/** NON-CANONICAL LEGACY SIMULATION. Consensus authority: components/algorithm (canonical Rust path). */
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 import crypto from 'crypto';
 
@@ -68,11 +69,9 @@ export class AtcBlockchainEngine {
     this.pendingTransactions.push(transaction);
   }
 
-  public startConsensus() {
-    // PoI + PoS (Proof-of-Intelligence + Proof-of-Stake) Simulation Pipeline
-    this.miningInterval = setInterval(() => {
-      this.minePendingTransactions("Validator-Node-Alpha");
-    }, 10000); // New block every 10 seconds
+  /** @deprecated Non-canonical simulation; use the canonical Rust consensus component. */
+  public startConsensus(): never {
+    throw new Error("NON_CANONICAL_CONSENSUS_ENGINE: use a-townchain/components/algorithm");
   }
 
   public stopConsensus() {

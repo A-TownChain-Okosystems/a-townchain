@@ -1,8 +1,8 @@
 // Copyright (c) 2026 Michael Wroblewski — Apache-2.0
 //! Proof of History — vereinfachte Tick-Kette (ATC-CONSENSUS-301, MVP).
 //!
-//! The MVP uses FNV-1a only as a deterministic sequencing primitive. It is not
-//! a cryptographic proof and must not be used as a security hash for mainnet.
+//! The MVP uses SHA-256 as a deterministic sequencing primitive. The
+//! final PoH cryptographic proof contract remains SPEC-DRAFT until freeze.
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Tick {
@@ -27,14 +27,19 @@ impl std::fmt::Display for PohError {
 
 impl std::error::Error for PohError {}
 
-/// FNV-1a 64-Bit-Hash (MVP; kein kryptografischer Hash — siehe Moduldoku).
-pub fn fnv1a(data: &[u8]) -> u64 {
-    let mut h: u64 = 0xcbf29ce484222325;
-    for &b in data {
-        h ^= b as u64;
-        h = h.wrapping_mul(0x100000001b3);
-    }
-    h
+/// SHA-256 sequencing primitive for the consensus MVP boundary.
+/// The final consensus hash contract remains SPEC-DRAFT until freeze.
+pub fn hash64(data: &[u8]) -> u64 {
+    use sha2::{Digest, Sha256};
+    let digest = Sha256::digest(data);
+    u64::from_be_bytes(digest[..8].try_into().expect("fixed SHA-256 prefix"))
+}
+
+/// Deterministic 128-bit SHA-256 prefix for u128 economic weighting.
+pub fn hash128(data: &[u8]) -> u128 {
+    use sha2::{Digest, Sha256};
+    let digest = Sha256::digest(data);
+    u128::from_be_bytes(digest[..16].try_into().expect("fixed SHA-256 prefix"))
 }
 
 pub struct PohChain {
@@ -54,7 +59,7 @@ impl PohChain {
         let slot = prev.slot.checked_add(1).ok_or(PohError::SlotOverflow)?;
         let next = Tick {
             slot,
-            hash: fnv1a(&prev.hash.to_le_bytes()),
+            hash: hash64(&prev.hash.to_le_bytes()),
         };
         self.ticks.push(next.clone());
         Ok(next)
@@ -67,7 +72,7 @@ impl PohChain {
             let Some(expected_slot) = prev.slot.checked_add(1) else {
                 return false;
             };
-            if cur.slot != expected_slot || cur.hash != fnv1a(&prev.hash.to_le_bytes()) {
+            if cur.slot != expected_slot || cur.hash != hash64(&prev.hash.to_le_bytes()) {
                 return false;
             }
         }

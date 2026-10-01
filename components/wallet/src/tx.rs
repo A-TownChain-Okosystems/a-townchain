@@ -5,7 +5,7 @@
 //! big-endian values in the ATC-TX-DOMAIN-V2 signing preimage.
 
 use crate::keys::WalletKey;
-use ed25519_dalek::{Signature, Verifier, VerifyingKey};
+use k256::ecdsa::{signature::Verifier, Signature, VerifyingKey};
 use sha2::{Digest, Sha256};
 
 pub const NUMERIC_CHAIN_ID: u64 = 658467;
@@ -102,9 +102,10 @@ impl Transaction {
         Ok(key.sign(&self.signing_bytes()?).to_bytes())
     }
 
-    pub fn verify(&self, public_key: &[u8; 32], signature: &[u8; 64]) -> Result<(), TxError> {
-        let key = VerifyingKey::from_bytes(public_key).map_err(|_| TxError::InvalidSignature)?;
-        key.verify(&self.signing_bytes()?, &Signature::from_bytes(signature))
+    pub fn verify(&self, public_key: &[u8; 33], signature: &[u8; 64]) -> Result<(), TxError> {
+        let key = VerifyingKey::from_sec1_bytes(public_key).map_err(|_| TxError::InvalidSignature)?;
+        let signature = Signature::from_slice(signature).map_err(|_| TxError::InvalidSignature)?;
+        key.verify(&self.signing_bytes()?, &signature)
             .map_err(|_| TxError::InvalidSignature)
     }
 }
@@ -147,7 +148,8 @@ mod tests {
         let mut tx = tx();
         tx.amount = u128::MAX;
         let bytes = tx.signing_bytes().unwrap();
-        let amount_offset = TX_DOMAIN_V2.len() + 8 + 1 + 4 + tx.sender_did.len() + 1 + 4 + tx.recipient_did.as_ref().unwrap().len();\n        assert_eq!(&bytes[amount_offset..amount_offset + 16], &[0xff; 16]);
+        let amount_offset = TX_DOMAIN_V2.len() + 8 + 1 + 4 + tx.sender_did.len() + 1 + 4 + tx.recipient_did.as_ref().unwrap().len();
+        assert_eq!(&bytes[amount_offset..amount_offset + 16], &[0xff; 16]);
     }
 
     #[test]

@@ -55,7 +55,7 @@ contract LaunchManager {
             halving_interval:   HALVING_INTERVAL_BLOCKS,
             halving_count:      HALVING_COUNT,
             initial_validators: [],
-            consensus_type:     "hybrid",
+            consensus_type:     "SPEC-DRAFT",
             block_time:         TARGET_BLOCK_TIME,
             max_block_size:     1048576
         }

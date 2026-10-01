@@ -3,8 +3,8 @@ spec_id: ATC-CONSENSUS-DET
 title: "Consensus Determinism Contract"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
-repository: atc-algorithm
-layer: L3-Konsens
+repository: a-townchain/components/algorithm
+layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
@@ -32,9 +32,9 @@ Der Execution-Contract, der garantiert: gleicher Input ⇒ gleicher Konsensentsc
 
 ## 3. Normative Anforderungen (MUST)
 
-- **REQ-DET-001:** Nur Integer-Arithmetik (u64/u128) mit checked ops; Overflow/Underflow ⇒ Ergebnis invalid, niemals wrap — *Nachweis: unit+property*
+- **REQ-DET-001:** Nur die im jeweiligen kanonischen Datenmodell erlaubten Integer-Typen (einschließlich u64/u128) mit checked ops; Overflow/Underflow ⇒ Ergebnis invalid, niemals wrap — *Nachweis: unit+property*
 - **REQ-DET-002:** Fließkommazahlen sind im Konsenspfad VERBOTEN (statisch prüfbar) — *Nachweis: negative*
-- **REQ-DET-003:** Kanonische Sortierung: byte-lexikografisch über kanonische Serialisierung; Endianness fixiert auf Little-Endian für alle Längen-/Zahlenfelder, Hashes als 32-Byte-Rohwerte — *Nachweis: unit+vector*
+- **REQ-DET-003:** Kanonische Sortierung: byte-lexikografisch über kanonische Serialisierung; Endianness MUSS pro kanonischem Feldvertrag explizit festgelegt werden; keine pauschale Little-Endian-Regel, Hashes als 32-Byte-Rohwerte — *Nachweis: unit+vector*
 - **REQ-DET-004:** Jede Quelle von Nichtdeterminismus (Wallclock, Locale, Map-Iteration-Reihenfolge, Thread-Scheduling) ist ausgeschlossen; Zeitmessung ausschließlich über PoH-Slots — *Nachweis: property+adversarial*
 
 ## 4. Datenmodelle & Schnittstellen

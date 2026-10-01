@@ -3,8 +3,8 @@ spec_id: ATC-CONSENSUS-307
 title: "Validator Lifecycle Specification"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
-repository: atc-algorithm
-layer: L3-Konsens
+repository: a-townchain/components/algorithm
+layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
@@ -35,7 +35,7 @@ Registration, Aktivierung, Pflichten, Exit und Strafen von Validatoren — getre
 - **REQ-VAL-001:** Registration ist on-chain und bindet Pubkey + Stake; Aktivierung frühestens zum Epochenstart nach Inclusion — *Nachweis: unit+integration*
 - **REQ-VAL-002:** Exit (unbonding) ist erst nach UNBOND_EPOCHS (genesis-locked) wirksam; währenddessen bleiben Pflichten und Slashbarkeit bestehen — *Nachweis: vector+negative*
 - **REQ-VAL-003:** Slashing-Katalog (verbindlich): Equivocation (ATC-CONSENSUS-306), Surround-Vote, ungültiger Proposal — jede Strafe ist im Vorhinein deterministisch, keine diskretionären Strafen — *Nachweis: adversarial+vector*
-- **REQ-VAL-004:** „5-Validator-Key«-Set ist als Development-/Genesis-Bootstrap-Konfiguration klassifiziert (kein dauerhaftes Konsenslimit) und MÜSSTE als genesis_parameter mit Limiter dokumentiert sein — *Nachweis: negative+config*
+- **REQ-VAL-004:** „5-Validator-Key-Set ist als Development-/Genesis-Bootstrap-Konfiguration klassifiziert (kein dauerhaftes Konsenslimit) und MÜSSTE als genesis_parameter mit Limiter dokumentiert sein — *Nachweis: negative+config*
 
 ## 4. Datenmodelle & Schnittstellen
 
@@ -43,7 +43,7 @@ Registration, Aktivierung, Pflichten, Exit und Strafen von Validatoren — getre
 
 ## 5. Invarianten
 
-- Validator-Set-Änderungen wirken ausschließlich an Epchengrenzen — nie mitten in einem Slot
+- Validator-Set-Änderungen wirken ausschließlich an Epochengrenzen — nie mitten in einem Slot
 
 ## 6. Conformance-Tests (Mindestkategorien)
 

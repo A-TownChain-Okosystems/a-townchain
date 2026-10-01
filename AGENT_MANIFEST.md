@@ -40,12 +40,12 @@
 | [a-townchain-os-docs](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs) | **DOCS-HUB** — Wiki (kanonisch: `wiki/kai-os/` — SCR-0090), DECISIONS_REGISTER (AD-001…039), Roadmaps, Audits | ✅ aktiv |
 | [atc-standards](https://github.com/A-TownChain-Okosystems/atc-standards) | **KANONISCHE Standards-Heimat** (AD-030): ATC-STD-000…203 + ATC-STD-300 (DTC), Registry, Validator | ✅ ATC-STD-000 v1.2.0 APPROVED |
 | [atclang](https://github.com/A-TownChain-Okosystems/atclang) | ATCLang 1.0 (Rust-first, AD-021/022), Gates G0-G19 | ✅ G1+G2 bestanden, Suite 126/126 (Python-Baseline; Rust-first G0 ausstehend) |
-| [atc-vm](https://github.com/A-TownChain-Okosystems/atc-vm) | A-TownChain Virtual Machine — verifizierte Bytecode-Ausfuehrung (AD-043) | 🆕 R1-Skeleton (07.09.) |
-| [atc-algorithm](https://github.com/A-TownChain-Okosystems/atc-algorithm) | ATC-Algorithmus — Hybrid Consensus PoH+PoS+PoW (AD-044) | 🆕 R1-Skeleton (07.09.) |
+| ATC-VM | `components/vm` | Kanonischer L3-Execution-Pfad im a-townchain-Monorepo; aus `atc-vm` migriert, separates Quellrepo historisch |
+| ATC-Algorithm | `components/algorithm` | Kanonischer Algorithmuspfad im a-townchain-Monorepo; Consensus bleibt SPEC-DRAFT bis Freeze/Conformance/Evidence |
 | [atc-zkp](https://github.com/A-TownChain-Okosystems/atc-zkp) | ATC ZKP-Layer — Zero-Knowledge Proof Layer, Verifikationsschicht L1↔Apps (AD-045, ATC-STD-ZKP-001…010) | 🆕 R1-Skeleton (07.09.) |
 | [a-townchain-os](https://github.com/A-TownChain-Okosystems/a-townchain-os) | Monorepo — NUR Integration (AD-017: `scripts/sync_modules.py`) | ✅ 731/731 Workspace-Tests |
 | [atc-shivacore](https://github.com/A-TownChain-Okosystems/atc-shivacore) | ShivaCore Microkernel (AD-012/013) + Service-Space (AD-028) | ✅ 674/674 Tests, Boot L0-L10 (M2-Gate erfüllt) |
-| [a-townchain](https://github.com/A-TownChain-Okosystems/a-townchain) | Chain-Protokoll & Bibliothek (SCR-0005 A/AD-046): State, Tx, Orchestrierung; Chain-ID 658467 | ✅ vault-restauriert (6 Module) |
+| [a-townchain] Chain-Protokoll & Bibliothek — canonical L2 Blockchain Core (current architecture; historical entries below are archival)
 | [globus-os](https://github.com/A-TownChain-Okosystems/globus-os) | OS-Produkt (Userspace auf ShivaCore) | ✅ vault-restauriert (10 Module) |
 | [aurora-ai](https://github.com/A-TownChain-Okosystems/aurora-ai) | AI-Produkt: Rust Core + Python AI-Layer (AD-021) | ✅ vault-restauriert (6 Module) |
 | [genesis-engine](https://github.com/A-TownChain-Okosystems/genesis-engine) | Game-Engine-Produkt (L6) | ✅ vault-restauriert |
@@ -101,19 +101,25 @@
 - **Prompt Engineering:** ATC-SPEC-001 (APOS/ACE) — deterministische
   Agent-Aufgaben auf Action/Process-Ebene mit Verifikation.
 
-## BAUHIERARCHIE (AD-026, verbindlich) & ROADMAP (AD-027, verbindlich)
-```text
-[L0] atclang → [L1] atc-shivacore → [L2] aurora-ai → [L3] a-townchain
- → [L4] globus-os → [L5] 13 Blockchain-Services → [L6] genesis-engine →
- genesis-chronicles → [L7] a-townchain-os (Integration, AD-017)
-[parallel] a-townchain-os-docs (Docs-Hub) · atc-standards (Norm)
-```
-Lauffähigkeits-Roadmap M1-M8 (jede Stufe = lauffähiges Inkrement):
-M1 Sprache (G1 ✅ → G2 offen) → M2 Kernel (✅ 674/674 + Boot) → M3 KI →
-M4 Blockchain (2 Nodes, 658467, Contract auf ATVM) → M5 OS → M6 Dienste →
-M7 Spiel (NFT auf Chain) → M8 Ökosystem (Launch-Stack).
-Volltext: docs/roadmap/LAUFFAEHIGKEITS_ROADMAP.md ·
-Regel: Layer startet erst nach Gate des vorherigen.
+## CURRENT ARCHITECTURE SSOT
+
+The historical AD-026/AD-027 build hierarchy is archival and MUST NOT be used as
+the current layer authority. Current ownership is defined by
+`a-townchain-ecosystem/ARCHITECTURE.md`:
+
+- L0 — System / Network / Kernel boundary
+- L1 — Data / Storage
+- L2 — Blockchain Core / Consensus / Protocol
+- L3 — Deterministic Execution / ATC-VM
+- L4 — Scaling / Execution Domains
+- L5 — Protocol / Economic Domains
+- L6 — AI / Intelligence
+- L7 — Applications / UX
+- X — Cross-layer Control / Integration
+
+For this repository, component-specific ownership is authoritative from the
+ecosystem registry and the local architecture document. Historical references
+below this section are archival only and MUST NOT redefine current layer ownership.
 
 ## Integrationen (17 aktiv)
 | Integration | Status | Zweck |

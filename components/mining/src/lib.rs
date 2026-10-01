@@ -3,7 +3,7 @@
 //! Evidence: `.atc/evidence/`.
 //!
 //! Mining never defines consensus. Canonical consensus rules remain in
-//! `atc-algorithm` and contract settlement remains in `atc-contracts`.
+//! `a-townchain/components/algorithm` and contract settlement remains in `atc-contracts`.
 
 pub mod executor;
 pub mod miner;

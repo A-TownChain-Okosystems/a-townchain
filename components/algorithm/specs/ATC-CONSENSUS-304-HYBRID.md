@@ -3,8 +3,8 @@ spec_id: ATC-CONSENSUS-304
 title: "Hybrid Selection Specification — ShivaConsensus Leader-Wahl"
 version: 0.1.0-DRAFT
 status: SPEC-DRAFT — normativ erst nach Spec-Freeze; Implementierung PENDING
-repository: atc-algorithm
-layer: L3-Konsens
+repository: a-townchain/components/algorithm
+layer: L2-Blockchain-Core
 owner: A-TownChain-Okosystems
 copyright: Michael Wroblewski
 license: Apache-2.0
@@ -21,19 +21,22 @@ depends: []
 
 ## 1. Zweck
 
-Mathematisch eindeutige Kombination von PoH, PoS-Gewicht und PoW-Beitrag zur Leader-Selection — der kritischste Teil der Spezifikation.
+Mathematisch eindeutige Kombination von PoH, PoS-Gewicht, PoW-Beitrag und einem verifizierten PoI-Beitrag zur Leader-Selection — der kritischste Teil der Spezifikation.
 
 ## 2. Scope (gilt für)
 
 - Hybrid-Score
 - Leader-Selection
+- Integration of PoH, PoS, PoW and PoI contribution signals
 - Parameter-Genesis-Lock
 - Consensus-Version
 
 ## 3. Normative Anforderungen (MUST)
 
-- **REQ-HYB-001:** Hybrid-Score pro Kandidat: score = W_S * pos_weight(v) + W_W * pow_work(block); W_S, W_W sind genesis-locked u64-Gewichte — *Nachweis: unit+vector*
-- **REQ-HYB-002:** Leader = argmax(score) über alle validen Kandidaten des Slots; festgelegt durch PoH-Seed + Validator-Set-Hash (deterministisch) — *Nachweis: unit+property*
+- **REQ-HYB-001:** Hybrid-Score MUSS eine deterministische, overflow-sichere Kombination der separat spezifizierten PoS-, PoW- und PoI-Beiträge unter Verwendung des PoH-Zustands als kanonischer Slot-/Seed-Kontext sein; konkrete Skalierung, Gewichte, Wertebereiche und Overflow-Regeln sind bis zum Spec-Freeze festzulegen — *Nachweis: unit+vector*
+- **REQ-HYB-001a:** Ein PoI-Beitrag darf nur aus einem gemäß ATC-CONSENSUS-308 vollständig validierten Proof stammen; unverifizierte, abgelaufene, replayte oder versionsinkompatible PoI-Proofs MÜSSEN vor der Selection verworfen werden — *Nachweis: negative+vector*
+- **REQ-HYB-001b:** PoI darf weder als IEEE-754-Gleitkommazahl noch als nicht-kanonische Zeichenkette in Consensus-State oder Selection-Inputs auftreten; Beitragsskala und Integer-Repräsentation werden ausschließlich durch ATC-CONSENSUS-308 und den Freeze festgelegt — *Nachweis: schema+negative*
+- **REQ-HYB-002:** Leader = deterministischer argmax über die vollständig validierte Kandidatenmenge eines Slots; Seed, Kandidatenmenge, Tie-Breaking und Beitragsskala müssen bis zum Spec-Freeze vollständig definiert sein — *Nachweis: unit+property*
 - **REQ-HYB-003:** Hybrid-Parameter (W_S, W_W, Zielblockzeit, Difficulty-Start) sind Teil der Network-Identity (ATC-NETWORK-ID-001) und nur per MAJOR + Owner-Freigabe änderbar — *Nachweis: vector+negative*
 - **REQ-HYB-004:** Consensus-Version ist im Block-Header; inkompatible Versionen ⇒ Headers werden verworfen (kein silent upgrade) — *Nachweis: negative*
 
@@ -65,4 +68,4 @@ Kompatibilität zu ATC-STD-COMPAT-001 (MAJOR-Gate); Änderungen nur via SCR/MINO
 ## 9. Referenzen
 
 - Owner-Audit 10.09. (P0-03 Hybrid-Engine, mathematisch eindeutig)
-- ATC-CONSENSUS-302/303
+- ATC-CONSENSUS-302/303/308

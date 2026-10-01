@@ -6,3 +6,4 @@ license = "Apache-2.0"
 description = "ATC Consensus Algorithm — kanonische Konsens-Implementierung (MVP)"
 
 [dependencies]
+sha2 = "0.10"
