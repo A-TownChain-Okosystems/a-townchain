@@ -100,7 +100,7 @@ a-townchain ist das kanonische **Blockchain-Monorepo** des A-TownChain-Stacks (M
 
 | Komponente | Pfad | Rolle |
 |---|---|---|
-| **Core** | `/` (Root) | L1 Protocol — Konsens-Kern, Ketten-Logik, Governance |
+| **Core** | `/` (Root) | L2 Blockchain Core — Chain-Protokoll, Ketten-Logik, Governance |
 | atc-node | `components/node` | Node Runtime |
 | atc-algorithm | `components/algorithm` | Consensus/Algorithm |
 | atc-vm | `components/vm` | ATC Virtual Machine |
