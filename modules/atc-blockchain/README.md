@@ -84,7 +84,7 @@ Die Architektur von `atc-blockchain` ist modular aufgebaut und trennt Konsens, P
 ### Node starten (Testnet)
 ```bash
 # Python Bootstrap Node starten
-python3 nodes/bootstrap.py --chain-id 658467 --port <P2P_PORT>
+python3 nodes/bootstrap.py --chain-id <TESTNET_CHAIN_ID> --port <P2P_PORT>
 
 # Node Discovery ausführen
 python3 nodes/discovery.py
