@@ -1,6 +1,6 @@
 # A-TownChain Monetary Policy Integration
 
-This repository is the orchestration layer. The canonical issuance implementation is owned by `atc-algorithm`.
+This repository is the orchestration layer. The canonical issuance implementation is owned by `a-townchain/components/algorithm`.
 
 ## Bound parameters
 
