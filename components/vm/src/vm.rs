@@ -229,6 +229,19 @@ mod tests {
     }
 
     #[test]
+    fn failed_transition_rolls_back_storage() {
+        let mut vm = Vm::with_context_and_gas(
+            vec![Op::Push(7), Op::Store(0), Op::Push(9), Op::Store(1)],
+            1,
+            vec![],
+            5006,
+        );
+        assert!(vm.execute_state_transition(&context(), &"a".repeat(64), "1.0.0", "1.0.0").is_err());
+        assert!(vm.state().is_empty());
+        assert_eq!(vm.gas_used(), 5006);
+    }
+
+    #[test]
     fn state_transition_requires_identity_gate() {
         let mut vm = Vm::with_context_and_gas(
             vec![Op::Push(7), Op::Store(0), Op::Halt],
