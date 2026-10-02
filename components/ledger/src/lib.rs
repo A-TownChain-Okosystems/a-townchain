@@ -56,6 +56,7 @@ pub struct Ledger {
     accounts: BTreeMap<Address, Account>,
     journal: Vec<LedgerEntry>,
     next_sequence: u64,
+    fee_pool: Amount,
 }
 
 impl Ledger {
@@ -73,6 +74,10 @@ impl Ledger {
 
     pub fn nonce_of(&self, address: &str) -> Nonce {
         self.accounts.get(address).map_or(0, |a| a.nonce)
+    }
+
+    pub fn fee_pool(&self) -> Amount {
+        self.fee_pool
     }
 
     pub fn journal(&self) -> &[LedgerEntry] {
@@ -109,20 +114,17 @@ impl Ledger {
             .next_sequence
             .checked_add(1)
             .ok_or(LedgerError::SequenceOverflow)?;
+        let new_fee_pool = self
+            .fee_pool
+            .checked_add(tx.fee)
+            .ok_or(LedgerError::AmountOverflow)?;
 
         let (sender_balance, recipient_balance) = if tx.from == tx.to {
-            // A self-transfer returns its amount to the same account; only
-            // the fee changes the balance, while the nonce advances.
-            (
-                sender
-                    .balance
-                    .checked_sub(tx.fee)
-                    .ok_or(LedgerError::InsufficientBalance)?,
-                sender
-                    .balance
-                    .checked_sub(tx.fee)
-                    .ok_or(LedgerError::InsufficientBalance)?,
-            )
+            let balance = sender
+                .balance
+                .checked_sub(tx.fee)
+                .ok_or(LedgerError::InsufficientBalance)?;
+            (balance, balance)
         } else {
             let recipient_balance = recipient
                 .balance
@@ -135,6 +137,8 @@ impl Ledger {
             (sender_balance, recipient_balance)
         };
 
+        // Commit only after every fallible calculation succeeds: a failed
+        // transaction therefore has no partial state mutation.
         self.accounts.insert(
             tx.from.clone(),
             Account {
@@ -151,6 +155,7 @@ impl Ledger {
                 },
             );
         }
+        self.fee_pool = new_fee_pool;
         self.next_sequence = sequence;
         self.journal.push(LedgerEntry {
             sequence,
@@ -181,7 +186,7 @@ mod tests {
     }
 
     #[test]
-    fn transfer_updates_balances_and_nonce() {
+    fn transfer_updates_balances_nonce_and_fee_pool() {
         let mut ledger = funded_ledger();
         ledger
             .apply_transfer(Transfer {
@@ -196,6 +201,7 @@ mod tests {
         assert_eq!(ledger.balance_of("alice"), 68);
         assert_eq!(ledger.balance_of("bob"), 30);
         assert_eq!(ledger.nonce_of("alice"), 1);
+        assert_eq!(ledger.fee_pool(), 2);
         assert_eq!(ledger.journal()[0].sequence, 1);
     }
 
@@ -214,6 +220,7 @@ mod tests {
 
         assert_eq!(ledger.balance_of("alice"), 98);
         assert_eq!(ledger.nonce_of("alice"), 1);
+        assert_eq!(ledger.fee_pool(), 2);
     }
 
     #[test]
@@ -279,6 +286,24 @@ mod tests {
 
         assert_eq!(ledger.balance_of("alice"), 0);
         assert_eq!(ledger.balance_of("bob"), u128::MAX);
+    }
+
+    #[test]
+    fn fee_pool_overflow_is_rejected_without_mutation() {
+        let mut ledger = funded_ledger();
+        ledger.fee_pool = u128::MAX;
+        let before = ledger.clone();
+
+        let result = ledger.apply_transfer(Transfer {
+            from: "alice".into(),
+            to: "bob".into(),
+            amount: 1,
+            fee: 1,
+            nonce: 0,
+        });
+
+        assert_eq!(result, Err(LedgerError::AmountOverflow));
+        assert_eq!(ledger, before);
     }
 
     #[test]
