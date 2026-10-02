@@ -1,7 +1,7 @@
 use atc_wallet::{balance::Balance, keys::WalletKey};
 
 fn main() {
-    let key = WalletKey::from_seed([0u8; 32]);
+    let key = WalletKey::from_seed([1u8; 32]).expect("demo seed must be a valid secp256k1 secret");
     let balance = Balance::default();
     println!("atc-wallet module — A-TownChain-Okosystems");
     println!("public_key={}", hex_encode(&key.public_key()));
