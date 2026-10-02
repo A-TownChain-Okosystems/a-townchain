@@ -69,8 +69,17 @@ fn handle(stream: TcpStream, state: &DevnetRpc) -> std::io::Result<()> {
 
 impl DevnetRpc {
     pub fn answer_json(&self, req: &str) -> String {
-        let id = extract_between(req, "\"id\":", '}').and_then(|v| v.trim().parse::<u64>().ok()).unwrap_or(0);
-        let method = extract_between(req, "\"method\":\"", '"').unwrap_or("");
+        let id = match extract_between(req, "\"id\":", ',') {
+            Some(raw) => match raw.trim().trim_end_matches('}').parse::<u64>() {
+                Ok(id) => id,
+                Err(_) => return "{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{\"code\":-32600,\"message\":\"invalid request\"}}".to_string(),
+            },
+            None => return "{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{\"code\":-32600,\"message\":\"invalid request\"}}".to_string(),
+        };
+        let method = match extract_between(req, "\"method\":\"", '"') {
+            Some(method) if !method.is_empty() => method,
+            _ => return format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"error\":{{\"code\":-32600,\"message\":\"invalid request\"}}}}", id),
+        };
         let result = match method {
             "chain_id" => self.chain_id.clone(),
             "boot_hash" => self.boot_hash.to_string(),
@@ -79,6 +88,7 @@ impl DevnetRpc {
             _ => return format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"error\":{{\"code\":-32601,\"message\":\"method not found\"}}}}", id),
         };
         format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"result\":\"{}\"}}", id, result)
+
     }
 }
 
@@ -115,6 +125,22 @@ mod tests {
         let r = rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"chain_id\",\"id\":7}");
         assert!(r.contains("\"id\":7"));
         assert!(r.contains("\"result\":\"atc\""));
+    }
+
+    #[test]
+    fn jsonrpc_fehlende_id_wird_abgelehnt() {
+        let rpc = test_state();
+        let r = rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"ping\"}");
+        assert!(r.contains("-32600"));
+        assert!(r.contains("\"id\":null"));
+    }
+
+    #[test]
+    fn jsonrpc_ungueltige_id_wird_abgelehnt() {
+        let rpc = test_state();
+        let r = rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"ping\",\"id\":\"bad\"}");
+        assert!(r.contains("-32600"));
+        assert!(r.contains("\"id\":null"));
     }
 
     #[test]
