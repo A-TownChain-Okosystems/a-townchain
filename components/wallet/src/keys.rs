@@ -35,7 +35,7 @@ impl WalletKey {
         digest: [u8; 32],
         signature: &Signature,
     ) -> Result<(), WalletKeyError> {
-        let secp = Secp256k1::verification_only();
+        let secp = Secp256k1::new();
         let public_key = PublicKey::from_secret_key(&secp, &self.signing_key);
         secp.verify_ecdsa(
             secp256k1::Message::from_digest(digest),
