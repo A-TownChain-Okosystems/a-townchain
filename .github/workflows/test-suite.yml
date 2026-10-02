@@ -27,11 +27,9 @@ jobs:
             (cd "$d" && npm install --no-audit --no-fund --silent)
             (cd "$d" && npm test --if-present --silent) || { echo "npm test FAILED in $d"; FAIL=1; }
             (cd "$d" && npm run build --if-present --silent) || { echo "npm build FAILED in $d"; FAIL=1; }
-          # Monorepo-Import 2026-09-17: Komponenten-NPM-Projekte sind noch nicht gate-onboarded
-          # (die Quellrepos hatten kein npm-CI); Onboarding ist Welle-3-Folgeaufgabe (SCR-0126).
-          # Das Kern-Gate deckt exakt den Pre-Merge-Baum ab.
           done < <(find . -name package.json -not -path "*/archive/*" -not -path "*/node_modules/*" -not -path "*/.*/" -not -path "./components/*")
           exit $FAIL
+
   pytest:
     runs-on: ubuntu-latest
     steps:
@@ -48,13 +46,11 @@ jobs:
               echo "SKIP $d: keine Tests vorhanden"; continue
             fi
             echo "=== pytest in $d"
-            (cd "$d" && pip install -q -r requirements.txt pytest && python -m pytest -q --no-header) \
-              || { echo "pytest FAILED in $d"; FAIL=1; }
+            (cd "$d" && pip install -q -r requirements.txt pytest && python -m pytest -q --no-header) || { echo "pytest FAILED in $d"; FAIL=1; }
           done < <(find . -name requirements.txt -not -path "*/archive/*")
           exit $FAIL
-      - name: Consensus-Boundary-Check (F-105, Report-Modus, SCR-0081)
-        run: python3 tools/consensus_boundary_check.py
-      consensus-boundary:
+
+  consensus-boundary:
     runs-on: ubuntu-latest
     needs: [npm-tests, pytest]
     steps:
@@ -72,14 +68,15 @@ jobs:
         with:
           fetch-depth: 0
       - name: Evidence-Bindung (SCR-0086 idempotentes test_run-Update je Lauf + hartes Push-Gate)
-        if: success()
         run: |
           python3 - <<'PY'
-          import os, datetime, re
+          import datetime
+          import os
+          import re
           sha = os.environ["GITHUB_SHA"]
           rid = os.environ["GITHUB_RUN_ID"]
-          wf  = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
-          ts  = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          wf = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
+          ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
           p = ".atc/evidence/evidence.yaml"
           t = open(p, encoding="utf-8").read()
           t = re.sub(r"bound_commit: [^\n]*", "bound_commit: " + sha, t)
@@ -101,4 +98,3 @@ jobs:
           git add .atc/evidence/evidence.yaml
           git commit -m "chore(evidence): bound_commit + test_run aktualisiert (SCR-0086) [skip ci]" || echo "nichts zu committen"
           git push
-
