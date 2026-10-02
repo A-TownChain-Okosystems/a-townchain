@@ -31,7 +31,13 @@ fn main() -> std::io::Result<()> {
     );
     let kette = std::sync::Arc::new(std::sync::Mutex::new(atc_node::chain::Chain::from_genesis(&genesis)));
     {
-        let k = kette.lock().expect("Chain-Lock vergiftet");
+        let k = match kette.lock() {
+            Ok(k) => k,
+            Err(_) => {
+                eprintln!("Chain-Lock vergiftet — Node wird beendet");
+                return Err(std::io::Error::other("chain mutex poisoned"));
+            }
+        };
         eprintln!(
             "Devnet-Kette: Hoehe {} | Best-Hash {} | Blockmodell SCR-0117/0118 (kein Konsens, Devnet-MVP)",
             k.height(),
