@@ -10,6 +10,7 @@ use sha2::{Digest, Sha256};
 
 pub const NUMERIC_CHAIN_ID: u64 = 658467;
 pub const TX_DOMAIN_V2: &[u8] = b"ATC-TX-DOMAIN-V2";
+pub const TX_ID_V2: &[u8] = b"ATC-TX-ID-V2";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
@@ -54,48 +55,14 @@ impl Transaction {
 
         let mut b = Vec::with_capacity(136 + self.payload.len());
         b.extend_from_slice(TX_DOMAIN_V2);
-        b.extend_from_slice(&self.chain_id.to_be_bytes());
-        b.push(self.tx_type as u8);
-        put_bytes(&mut b, self.sender_did.as_bytes());
-
-        match &self.recipient_did {
-            Some(value) => {
-                b.push(1);
-                put_bytes(&mut b, value.as_bytes());
-            }
-            None => b.push(0),
-        }
-
-        b.extend_from_slice(&self.amount.to_be_bytes());
-        b.extend_from_slice(&self.gas_price.to_be_bytes());
-        b.extend_from_slice(&self.gas_limit.to_be_bytes());
-        b.extend_from_slice(&self.nonce.to_be_bytes());
-        b.extend_from_slice(&self.timestamp.to_be_bytes());
-        put_bytes(&mut b, &self.payload);
-        b.extend_from_slice(&self.poh_hash);
+        append_canonical_fields(&mut b, self);
         Ok(b)
     }
 
-    pub fn id(&self, _signature: &[u8; 64]) -> Result<[u8; 32], TxError> {
-        let mut b = Vec::with_capacity(136 + self.payload.len());
-        b.extend_from_slice(b"ATC-TX-ID-V2");
-        b.extend_from_slice(&self.chain_id.to_be_bytes());
-        b.push(self.tx_type as u8);
-        put_bytes(&mut b, self.sender_did.as_bytes());
-        match &self.recipient_did {
-            Some(value) => {
-                b.push(1);
-                put_bytes(&mut b, value.as_bytes());
-            }
-            None => b.push(0),
-        }
-        b.extend_from_slice(&self.amount.to_be_bytes());
-        b.extend_from_slice(&self.gas_price.to_be_bytes());
-        b.extend_from_slice(&self.gas_limit.to_be_bytes());
-        b.extend_from_slice(&self.nonce.to_be_bytes());
-        b.extend_from_slice(&self.timestamp.to_be_bytes());
-        put_bytes(&mut b, &self.payload);
-        b.extend_from_slice(&self.poh_hash);
+    pub fn id(&self) -> Result<[u8; 32], TxError> {
+        let mut b = Vec::with_capacity(148 + self.payload.len());
+        b.extend_from_slice(TX_ID_V2);
+        append_canonical_fields(&mut b, self);
         Ok(Sha256::digest(b).into())
     }
 
@@ -118,9 +85,33 @@ impl Transaction {
         let public_key =
             PublicKey::from_slice(public_key).map_err(|_| TxError::InvalidSignature)?;
         Secp256k1::verification_only()
-            .verify_ecdsa(secp256k1::Message::from_digest(self.digest()?), &signature, &public_key)
+            .verify_ecdsa(
+                secp256k1::Message::from_digest(self.digest()?),
+                &signature,
+                &public_key,
+            )
             .map_err(|_| TxError::InvalidSignature)
     }
+}
+
+fn append_canonical_fields(out: &mut Vec<u8>, tx: &Transaction) {
+    out.extend_from_slice(&tx.chain_id.to_be_bytes());
+    out.push(tx.tx_type as u8);
+    put_bytes(out, tx.sender_did.as_bytes());
+    match &tx.recipient_did {
+        Some(value) => {
+            out.push(1);
+            put_bytes(out, value.as_bytes());
+        }
+        None => out.push(0),
+    }
+    out.extend_from_slice(&tx.amount.to_be_bytes());
+    out.extend_from_slice(&tx.gas_price.to_be_bytes());
+    out.extend_from_slice(&tx.gas_limit.to_be_bytes());
+    out.extend_from_slice(&tx.nonce.to_be_bytes());
+    out.extend_from_slice(&tx.timestamp.to_be_bytes());
+    put_bytes(out, &tx.payload);
+    out.extend_from_slice(&tx.poh_hash);
 }
 
 fn put_bytes(out: &mut Vec<u8>, value: &[u8]) {
@@ -177,6 +168,15 @@ mod tests {
             + 4
             + tx.recipient_did.as_ref().unwrap().len();
         assert_eq!(&bytes[amount_offset..amount_offset + 16], &[0xff; 16]);
+    }
+
+    #[test]
+    fn transaction_id_is_signature_independent() {
+        let tx = tx();
+        assert_eq!(
+            hex::encode(tx.id().unwrap()),
+            "043ebe7545f44320394af8211da323afe8d27fe9e99bff5da3aafd2e5c99b9dc"
+        );
     }
 
     #[test]
