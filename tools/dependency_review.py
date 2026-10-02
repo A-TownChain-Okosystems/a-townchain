@@ -124,7 +124,12 @@ def npm_graph(ref: str, paths: list[str], graph: dict):
             doc = json.loads(raw)
         except json.JSONDecodeError as e:
             raise RuntimeError(f"invalid JSON {path}: {e}")
-        for section in ("dependencies", "devDependencies", "peerDependencies", "optionalDependencies"):
+        for section in (
+            "dependencies",
+            "devDependencies",
+            "peerDependencies",
+            "optionalDependencies",
+        ):
             for name, version in doc.get(section, {}).items():
                 add(graph, "npm", name, str(version), path)
     for path in paths:
@@ -162,10 +167,7 @@ def python_graph(ref: str, paths: list[str], graph: dict):
 
 def action_graph(ref: str, paths: list[str], graph: dict):
     for path in paths:
-        if not (
-            path.startswith(".github/workflows/")
-            and path.endswith((".yml", ".yaml"))
-        ):
+        if not (path.startswith(".github/workflows/") and path.endswith((".yml", ".yaml"))):
             continue
         raw = read_at(ref, path) or ""
         for owner, repo, version in re.findall(
