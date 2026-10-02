@@ -8,8 +8,15 @@ dependency version. The gate fails closed on malformed manifests or OSV
 transport errors.
 """
 from __future__ import annotations
-import argparse, json, os, re, subprocess, sys, urllib.error, urllib.request
+import argparse
+import json
+import re
+import subprocess
+import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
+
 import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
