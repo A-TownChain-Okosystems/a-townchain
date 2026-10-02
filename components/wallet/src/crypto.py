@@ -42,7 +42,9 @@ class CryptoUtils:
             r, s = sigdecode_der(signature, SECP256k1.order)
             if not (1 <= r < SECP256k1.order and 1 <= s <= SECP256k1.order // 2):
                 return False
-            return key.verify_digest(signature, CryptoUtils.sha256_bytes(message), sigdecode=sigdecode_der)
+            return key.verify_digest(
+                signature, CryptoUtils.sha256_bytes(message), sigdecode=sigdecode_der
+            )
         except (ValueError, AssertionError):
             return False
 
