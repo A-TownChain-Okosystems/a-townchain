@@ -49,17 +49,31 @@ impl Genesis {
     }
 
     fn canonical_boot_encoding(&self) -> Vec<u8> {
-        let peers = serde_json::to_string(&self.initial_peers).expect("Vec<String> serialization cannot fail");
+        // Serialize peer strings directly: JSON serialization of strings is infallible here,
+        // and avoiding a Result/expect keeps the canonical encoding panic-free.
+        let mut peers = Vec::new();
+        for peer in &self.initial_peers {
+            peers.extend_from_slice(&(peer.len() as u64).to_be_bytes());
+            peers.extend_from_slice(peer.as_bytes());
+        }
         let height = self.genesis_height.to_string();
         let fields = [
             ("chain_id", self.chain_id.as_str()), ("chain_name", self.chain_name.as_str()),
             ("network_id", self.network_id.as_str()), ("genesis_id", self.genesis_id.as_str()),
-            ("genesis_height", height.as_str()), ("initial_peers", peers.as_str()),
+            ("genesis_height", height.as_str()),
             ("state_root", self.state_root.as_str()), ("protocol_version", self.protocol_version.as_str()),
             ("vm_version", self.vm_version.as_str()),
         ];
         let mut out = Vec::new();
-        for (key, value) in fields { out.extend_from_slice(&(key.len() as u32).to_be_bytes()); out.extend_from_slice(key.as_bytes()); out.extend_from_slice(&(value.len() as u64).to_be_bytes()); out.extend_from_slice(value.as_bytes()); }
+        for (key, value) in fields {
+            out.extend_from_slice(&(key.len() as u32).to_be_bytes());
+            out.extend_from_slice(key.as_bytes());
+            out.extend_from_slice(&(value.len() as u64).to_be_bytes());
+            out.extend_from_slice(value.as_bytes());
+        }
+        out.extend_from_slice(b"initial_peers");
+        out.extend_from_slice(&(peers.len() as u64).to_be_bytes());
+        out.extend_from_slice(&peers);
         out
     }
 }
