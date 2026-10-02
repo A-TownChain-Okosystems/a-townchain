@@ -21,7 +21,16 @@ from pathlib import Path
 import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST_NAMES = {"Cargo.toml", "package.json", "requirements.txt", "requirements-dev.txt", "requirements-test.txt", "pyproject.toml"}
+MANIFEST_NAMES = {
+    "Cargo.toml",
+    "package.json",
+    "requirements.txt",
+    "requirements-dev.txt",
+    "requirements-test.txt",
+    "pyproject.toml",
+}
+
+
 
 def run(*args: str, input: str | None = None) -> str:
     p = subprocess.run(args, cwd=ROOT, text=True, input=input, capture_output=True)
@@ -29,8 +38,12 @@ def run(*args: str, input: str | None = None) -> str:
         raise RuntimeError(f"{' '.join(args)}: {p.stderr.strip()}")
     return p.stdout
 
+
+
 def files_at(ref: str) -> list[str]:
     return run("git", "ls-tree", "-r", "--name-only", ref).splitlines()
+
+
 
 def read_at(ref: str, path: str) -> str | None:
     if ref == "HEAD":
@@ -41,13 +54,20 @@ def read_at(ref: str, path: str) -> str | None:
     except RuntimeError:
         return None
 
+
+
 def add(graph: dict[str, dict], ecosystem: str, name: str, version: str, source: str):
     name, version = name.strip(), version.strip()
     if not name:
         return
     key = f"{ecosystem}:{name}@{version}"
-    graph.setdefault(key, {"ecosystem": ecosystem, "name": name, "version": version, "sources": []})
+    graph.setdefault(
+        key,
+        {"ecosystem": ecosystem, "name": name, "version": version, "sources": []},
+    )
     graph[key]["sources"].append(source)
+
+
 
 def cargo_graph(ref: str, paths: list[str], graph: dict):
     for path in paths:
@@ -83,7 +103,15 @@ def cargo_graph(ref: str, paths: list[str], graph: dict):
         except tomllib.TOMLDecodeError as e:
             raise RuntimeError(f"invalid TOML {path}: {e}")
         for pkg in doc.get("package", []):
-            add(graph, "cargo-lock", pkg.get("name",""), str(pkg.get("version","")), path)
+            add(
+                graph,
+                "cargo-lock",
+                pkg.get("name", ""),
+                str(pkg.get("version", "")),
+                path,
+            )
+
+
 
 def npm_graph(ref: str, paths: list[str], graph: dict):
     for path in paths:
@@ -115,6 +143,8 @@ def npm_graph(ref: str, paths: list[str], graph: dict):
             name = key.rsplit("node_modules/", 1)[-1]
             add(graph, "npm-lock", name, str(pkg["version"]), path)
 
+
+
 def python_graph(ref: str, paths: list[str], graph: dict):
     for path in paths:
         base = Path(path).name
@@ -128,13 +158,22 @@ def python_graph(ref: str, paths: list[str], graph: dict):
                 if m:
                     add(graph, "pypi", m.group(1), (m.group(3) if m.group(2) else "unresolved") or "unresolved", path)
 
+
+
 def action_graph(ref: str, paths: list[str], graph: dict):
     for path in paths:
-        if not (path.startswith(".github/workflows/") and path.endswith((".yml",".yaml"))):
+        if not (
+            path.startswith(".github/workflows/")
+            and path.endswith((".yml", ".yaml"))
+        ):
             continue
         raw = read_at(ref, path) or ""
-        for owner, repo, version in re.findall(r"\buses:\s*([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)@([^\s#]+)", raw):
+        for owner, repo, version in re.findall(
+            r"\buses:\s*([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)@([^\s#]+)", raw
+        ):
             add(graph, "github-action", f"{owner}/{repo}", version, path)
+
+
 
 def snapshot(ref: str) -> dict:
     paths = files_at(ref)
@@ -143,21 +182,49 @@ def snapshot(ref: str) -> dict:
     npm_graph(ref, paths, graph)
     python_graph(ref, paths, graph)
     action_graph(ref, paths, graph)
-    return {"schema": "ATC-DEP-001", "ref": ref, "dependencies": sorted(graph.values(), key=lambda x: (x["ecosystem"], x["name"], x["version"]))}
+    return {
+        "schema": "ATC-DEP-001",
+        "ref": ref,
+        "dependencies": sorted(
+            graph.values(), key=lambda x: (x["ecosystem"], x["name"], x["version"])
+        ),
+    }
+
+
 
 def osv_query(dep: dict) -> list[dict]:
-    eco_map = {"cargo-lock": "crates.io", "cargo": "crates.io", "npm-lock": "npm", "npm": "npm", "pypi": "PyPI"}
+    eco_map = {
+        "cargo-lock": "crates.io",
+        "cargo": "crates.io",
+        "npm-lock": "npm",
+        "npm": "npm",
+        "pypi": "PyPI",
+    }
     ecosystem = eco_map.get(dep["ecosystem"])
     version = dep["version"]
-    if not ecosystem or version in {"unresolved", "workspace"} or version.startswith("path:") or any(c in version for c in "^~*<>=| "):
+    if (
+        not ecosystem
+        or version in {"unresolved", "workspace"}
+        or version.startswith("path:")
+        or any(c in version for c in "^~*<>=| ")
+    ):
         return []
-    payload = json.dumps({"package": {"name": dep["name"], "ecosystem": ecosystem}, "version": version}).encode()
-    req = urllib.request.Request("https://api.osv.dev/v1/query", data=payload, headers={"Content-Type":"application/json"}, method="POST")
+    payload = json.dumps(
+        {"package": {"name": dep["name"], "ecosystem": ecosystem}, "version": version}
+    ).encode()
+    req = urllib.request.Request(
+        "https://api.osv.dev/v1/query",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
     try:
         with urllib.request.urlopen(req, timeout=20) as r:
             return json.loads(r.read().decode()).get("vulns", []) or []
     except (urllib.error.URLError, TimeoutError) as e:
         raise RuntimeError(f"OSV query failed for {ecosystem}:{dep['name']}@{version}: {e}")
+
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -167,7 +234,9 @@ def main() -> int:
     args = ap.parse_args()
 
     head = snapshot(args.head)
-    Path(args.output).write_text(json.dumps(head, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    Path(args.output).write_text(
+        json.dumps(head, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     if not args.base:
         print(f"DEPENDENCY GRAPH: PASS ({len(head['dependencies'])} entries)")
         return 0
@@ -175,30 +244,37 @@ def main() -> int:
     base = snapshot(args.base)
     b = {f"{d['ecosystem']}:{d['name']}@{d['version']}": d for d in base["dependencies"]}
     h = {f"{d['ecosystem']}:{d['name']}@{d['version']}": d for d in head["dependencies"]}
-    introduced = [h[k] for k in sorted(set(h)-set(b))]
-    removed = sorted(set(b)-set(h))
+    introduced = [h[k] for k in sorted(set(h) - set(b))]
+    removed = sorted(set(b) - set(h))
     changed_names = sorted({(d["ecosystem"], d["name"]) for d in introduced})
     findings = []
     for dep in introduced:
         for vuln in osv_query(dep):
-            findings.append({
-                "dependency": f"{dep['ecosystem']}:{dep['name']}@{dep['version']}",
-                "id": vuln.get("id"),
-                "summary": vuln.get("summary"),
-                "aliases": vuln.get("aliases", []),
-            })
+            findings.append(
+                {
+                    "dependency": f"{dep['ecosystem']}:{dep['name']}@{dep['version']}",
+                    "id": vuln.get("id"),
+                    "summary": vuln.get("summary"),
+                    "aliases": vuln.get("aliases", []),
+                }
+            )
     report = {
         "schema": "ATC-DEP-001-REVIEW",
         "base": args.base,
         "head": args.head,
         "introduced": introduced,
         "removed": removed,
-        "changed_dependency_names": [{"ecosystem": e, "name": n} for e,n in changed_names],
+        "changed_dependency_names": [{"ecosystem": e, "name": n} for e, n in changed_names],
         "vulnerabilities": findings,
     }
-    Path(args.output).write_text(json.dumps({"graph": head, "review": report}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    Path(args.output).write_text(
+        json.dumps({"graph": head, "review": report}, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     print(f"DEPENDENCY GRAPH: PASS ({len(head['dependencies'])} entries)")
-    print(f"DEPENDENCY REVIEW: {len(introduced)} introduced/changed exact entries; {len(findings)} vulnerabilities")
+    print(
+        f"DEPENDENCY REVIEW: {len(introduced)} introduced/changed exact entries; {len(findings)} vulnerabilities"
+    )
     if findings:
         for f in findings:
             print(f"VULNERABILITY: {f['id']} {f['dependency']} {f.get('summary') or ''}")
