@@ -21,34 +21,44 @@ depends: ['ATC-CRYPTO-001']
 
 ## 1. Zweck
 
-Festlegung des KANONISCHEN ATC-Signaturalgorithmus für Transaktionen — löst den ed25519-vs-secp256k1-Widerspruch (F-062): secp256k1 ist kanonisch für Transaktionen; Ed25519 gilt ausschließlich für den P2P-/DID-Layer (ShivaCore K6b).
+Festlegung des KANONISCHEN ATC-Signaturalgorithmus für L1-Transaktionen: secp256k1/ECDSA mit RFC 6979 und Low-S.
 
 ## 2. Scope (gilt für)
 
-- Algorithmus (secp256k1, ECDSA)
-- Deterministische Nonce (RFC 6979)
-- Low-S-Normalisierung
-- Trust Boundary
+- secp256k1 / ECDSA
+- RFC 6979 deterministic nonce
+- Low-S-Normalisierung und High-S-Rejection
+- 64-Byte-kompakte `r||s`-Signatur
+- 33-Byte-komprimierter SEC1-Public-Key
+- ATC-TX-DOMAIN-V2
+- Rust Trusted Core / Cross-language conformance
 
 ## 3. Normative Anforderungen (MUST)
 
-- **REQ-WSIG-001:** ATC-kanonisch für Transaktionssignaturen: ECDSA secp256k1, deterministic nonce nach RFC 6979 (kein Zufall im Signing) — *Nachweis: unit+vector*
-- **REQ-WSIG-002:** Low-S-Pflicht: s > n/2 ⇒ normalisiert auf n - s; High-S-Signaturen sind ungültig (Anti-Malleability) — *Nachweis: negative+vector*
-- **REQ-WSIG-003:** Domain-Separation: sign(tx_hash) mit Präfix „atc-tx.v1“ (Hash-Präfix vor dem Hashing); verhindert Kreuz-Protokoll-Replay — *Nachweis: unit+negative*
-- **REQ-WSIG-004:** Signierung ausschließlich im Rust Trusted Core (WAL-TB-001); Python ist niemals Teil der Signing Boundary — *Nachweis: architecture+negative*
+- **REQ-WSIG-001:** ATC-kanonisch für L1-Transaktionssignaturen: ECDSA secp256k1, deterministic nonce nach RFC 6979 (kein Zufall im Signing) — *Nachweis: unit+vector*
+- **REQ-WSIG-002:** Low-S-Pflicht: `s > n/2` ⇒ normalisieren auf `n - s`; High-S-Signaturen sind ungültig — *Nachweis: negative+vector*
+- **REQ-WSIG-003:** Signing-Domain ist ausschließlich `ATC-TX-DOMAIN-V2`. `ATC-TX-DOMAIN` und `atc-tx.v1` sind Legacy/forbidden und dürfen für L1-TX-Signaturen nicht akzeptiert werden — *Nachweis: unit+negative*
+- **REQ-WSIG-004:** Signing-Preimage und TX-ID sind bytegenau zum Cross-language Vertrag in ATC-CRYPTO-001; `amount` ist fixed-width u128 BE; variable byte fields verwenden u32 BE Längenpräfixe — *Nachweis: vector*
+- **REQ-WSIG-005:** Signierung erfolgt ausschließlich im Rust Trusted Core. Python ist niemals Teil der Signing Boundary — *Nachweis: architecture+negative*
+- **REQ-WSIG-006:** Die TX-ID ist `SHA-256(ATC-TX-ID-V2 || canonical_tx_fields_without_signature)`; die Signatur darf die TX-ID nicht verändern — *Nachweis: unit+vector*
 
 ## 4. Datenmodelle & Schnittstellen
 
-(Datenmodelle werden beim Spec-Freeze finalisiert; diesem Grundgerüst liegen die untenstehenden Anforderungen zugrunde.)
+Signing-Input, Wire-Encoding und TX-ID müssen exakt dem kanonischen L1-TX-Vertrag entsprechen. Signatur = 64 Byte `r||s`, Public Key = 33 Byte compressed SEC1.
 
 ## 5. Invarianten
 
-- Gleiche Tx + gleicher Key ⇒ bit-identische Signatur (RFC 6979)
+- Gleiche Tx + gleicher Key ⇒ bit-identische Signatur.
+- Gleiche kanonische Tx mit unterschiedlichen gültigen Signaturen ⇒ identische TX-ID.
+- Jede Mutation eines signierten Feldes ⇒ Signaturprüfung FAIL.
 
 ## 6. Conformance-Tests (Mindestkategorien)
 
-- sign_vectors.json (RFC-6979-Testvektoren)
+- sign_vectors.json
+- tx_id_vectors.json
 - high_s_rejection.json
+- malformed_signature_length.json
+- legacy_domain_rejection.json
 - determinism.json
 
 ## 7. Abhängigkeiten & Kompatibilität
@@ -59,7 +69,7 @@ Kompatibilität zu ATC-STD-COMPAT-001 (MAJOR-Gate); Änderungen nur via SCR/MINO
 
 - [ ] Spec-Freeze (Owner-Review §9; danach normativ)
 - [ ] Implementierung (Rust) mit je-Anforderung-Nachweis
-- [ ] Conformance-Suite grün (CI-Evidence: Run-ID + Commit-SHA)
+- [ ] Cross-language Conformance-Suite grün (CI-Evidence: Run-ID + Commit-SHA)
 - [ ] Security-Review (threat-bezogen)
 
 ## 9. Referenzen
