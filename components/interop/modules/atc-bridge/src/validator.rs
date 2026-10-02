@@ -23,7 +23,9 @@ impl BridgeValidator {
         let mut seen = std::collections::HashSet::new();
         let valid_count = sigs
             .iter()
-            .filter(|(v, _)| self.validators.contains(v) && seen.insert(v))
+            .filter(|(v, signature)| {
+                !signature.is_empty() && self.validators.contains(v) && seen.insert(v)
+            })
             .count();
         if valid_count < self.threshold {
             return Err(format!("Insufficient signatures: {}/{}", valid_count, self.threshold));
@@ -39,9 +41,10 @@ mod tests {
     #[test]
     fn test_validator() {
         let bv = BridgeValidator::new(vec!["a".into(),"b".into(),"c".into()], 2).unwrap();
-        assert!(bv.validate_signatures(&[("a".into(), vec![]), ("b".into(), vec![])]).is_ok());
-        assert!(bv.validate_signatures(&[("a".into(), vec![])]).is_err());
-        assert!(bv.validate_signatures(&[("a".into(), vec![]), ("a".into(), vec![])]).is_err());
+        assert!(bv.validate_signatures(&[("a".into(), vec![1]), ("b".into(), vec![2])]).is_ok());
+        assert!(bv.validate_signatures(&[("a".into(), vec![1])]).is_err());
+        assert!(bv.validate_signatures(&[("a".into(), vec![]), ("b".into(), vec![2])]).is_err());
+        assert!(bv.validate_signatures(&[("a".into(), vec![1]), ("a".into(), vec![2])]).is_err());
         assert!(BridgeValidator::new(vec!["a".into(),"b".into(),"a".into()], 1).is_err());
         assert!(BridgeValidator::new(vec!["a".into()], 0).is_err());
     }
