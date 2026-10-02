@@ -34,7 +34,7 @@ Festlegung des KANONISCHEN ATC-Signaturalgorithmus für Transaktionen — löst 
 
 - **REQ-WSIG-001:** ATC-kanonisch für Transaktionssignaturen: ECDSA secp256k1, deterministic nonce nach RFC 6979 (kein Zufall im Signing) — *Nachweis: unit+vector*
 - **REQ-WSIG-002:** Low-S-Pflicht: s > n/2 ⇒ normalisiert auf n - s; High-S-Signaturen sind ungültig (Anti-Malleability) — *Nachweis: negative+vector*
-- **REQ-WSIG-003:** Domain-Separation: sign(tx_hash) mit Präfix „atc-tx.v1“ (Hash-Präfix vor dem Hashing); verhindert Kreuz-Protokoll-Replay — *Nachweis: unit+negative*
+- **REQ-WSIG-003:** Domain-Separation: sign(SHA-256(ATC-TX-DOMAIN-V2 || canonical_tx_fields)) mit dem kanonischen Domain-Tag `ATC-TX-DOMAIN-V2`; Legacy-Domain `ATC-TX-DOMAIN` und `atc-tx.v1` sind für L1-TX-Signaturen ungültig — *Nachweis: unit+negative+vector*
 - **REQ-WSIG-004:** Signierung ausschließlich im Rust Trusted Core (WAL-TB-001); Python ist niemals Teil der Signing Boundary — *Nachweis: architecture+negative*
 
 ## 4. Datenmodelle & Schnittstellen
