@@ -162,8 +162,7 @@ mod tests {
             }
             std::thread::sleep(Duration::from_millis(100));
         }
-        eprintln!("Gossip-Dienst auf Port {} nicht erreichbar", port);
-        return;
+        panic!("Gossip-Dienst auf Port {} nicht erreichbar", port);
     }
 
     fn start_gossip(kette: Chain) -> u16 {
