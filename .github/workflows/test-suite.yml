@@ -4,7 +4,11 @@ on:
   push:
     branches: [main]
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   npm-tests:
@@ -50,6 +54,23 @@ jobs:
           exit $FAIL
       - name: Consensus-Boundary-Check (F-105, Report-Modus, SCR-0081)
         run: python3 tools/consensus_boundary_check.py
+      consensus-boundary:
+    runs-on: ubuntu-latest
+    needs: [npm-tests, pytest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Consensus-Boundary-Check (F-105, Report-Modus, SCR-0081)
+        run: python3 tools/consensus_boundary_check.py
+
+  evidence-binding:
+    runs-on: ubuntu-latest
+    needs: [npm-tests, pytest, consensus-boundary]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Evidence-Bindung (SCR-0086 idempotentes test_run-Update je Lauf + hartes Push-Gate)
         if: success()
         run: |
@@ -80,3 +101,4 @@ jobs:
           git add .atc/evidence/evidence.yaml
           git commit -m "chore(evidence): bound_commit + test_run aktualisiert (SCR-0086) [skip ci]" || echo "nichts zu committen"
           git push
+
