@@ -4,8 +4,8 @@
 //! ATC economic amounts are u128 and are encoded as fixed-width 16-byte
 //! big-endian values in the ATC-TX-DOMAIN-V2 signing preimage.
 
-use crate::keys::WalletKey;
-use ed25519_dalek::{Signature, Verifier, VerifyingKey};
+use crate::keys::{WalletKey, WalletKeyError};
+use secp256k1::{ecdsa::Signature, PublicKey, Secp256k1};
 use sha2::{Digest, Sha256};
 
 pub const NUMERIC_CHAIN_ID: u64 = 658467;
@@ -40,6 +40,7 @@ pub enum TxError {
     InvalidChainId,
     EmptySender,
     InvalidSignature,
+    InvalidKey(WalletKeyError),
 }
 
 impl Transaction {
@@ -98,13 +99,26 @@ impl Transaction {
         Ok(Sha256::digest(b).into())
     }
 
-    pub fn sign(&self, key: &WalletKey) -> Result<[u8; 64], TxError> {
-        Ok(key.sign(&self.signing_bytes()?).to_bytes())
+    fn digest(&self) -> Result<[u8; 32], TxError> {
+        Ok(Sha256::digest(self.signing_bytes()?).into())
     }
 
-    pub fn verify(&self, public_key: &[u8; 32], signature: &[u8; 64]) -> Result<(), TxError> {
-        let key = VerifyingKey::from_bytes(public_key).map_err(|_| TxError::InvalidSignature)?;
-        key.verify(&self.signing_bytes()?, &Signature::from_bytes(signature))
+    pub fn sign(&self, key: &WalletKey) -> Result<[u8; 64], TxError> {
+        Ok(key.sign_digest(self.digest()?).serialize_compact())
+    }
+
+    pub fn verify(&self, public_key: &[u8; 33], signature: &[u8; 64]) -> Result<(), TxError> {
+        let signature =
+            Signature::from_compact(signature).map_err(|_| TxError::InvalidSignature)?;
+        let mut normalized = signature;
+        normalized.normalize_s();
+        if normalized != signature {
+            return Err(TxError::InvalidSignature);
+        }
+        let public_key =
+            PublicKey::from_slice(public_key).map_err(|_| TxError::InvalidSignature)?;
+        Secp256k1::verification_only()
+            .verify_ecdsa(secp256k1::Message::from_digest(self.digest()?), &signature, &public_key)
             .map_err(|_| TxError::InvalidSignature)
     }
 }
@@ -136,10 +150,17 @@ mod tests {
 
     #[test]
     fn l1_signature_roundtrip() {
-        let key = WalletKey::from_seed([7u8; 32]);
+        let key = WalletKey::from_seed([7u8; 32]).unwrap();
         let tx = tx();
         let signature = tx.sign(&key).unwrap();
         assert!(tx.verify(&key.public_key(), &signature).is_ok());
+    }
+
+    #[test]
+    fn signing_is_deterministic() {
+        let key = WalletKey::from_seed([7u8; 32]).unwrap();
+        let tx = tx();
+        assert_eq!(tx.sign(&key).unwrap(), tx.sign(&key).unwrap());
     }
 
     #[test]
@@ -147,24 +168,39 @@ mod tests {
         let mut tx = tx();
         tx.amount = u128::MAX;
         let bytes = tx.signing_bytes().unwrap();
-        let amount_offset = TX_DOMAIN_V2.len() + 8 + 1 + 4 + tx.sender_did.len() + 1 + 4 + tx.recipient_did.as_ref().unwrap().len();\n        assert_eq!(&bytes[amount_offset..amount_offset + 16], &[0xff; 16]);
+        let amount_offset = TX_DOMAIN_V2.len()
+            + 8
+            + 1
+            + 4
+            + tx.sender_did.len()
+            + 1
+            + 4
+            + tx.recipient_did.as_ref().unwrap().len();
+        assert_eq!(&bytes[amount_offset..amount_offset + 16], &[0xff; 16]);
     }
 
     #[test]
     fn wrong_chain_id_is_rejected_before_signing() {
         let mut tx = tx();
         tx.chain_id = 1;
-        let key = WalletKey::from_seed([7u8; 32]);
+        let key = WalletKey::from_seed([7u8; 32]).unwrap();
         assert!(matches!(tx.sign(&key), Err(TxError::InvalidChainId)));
     }
 
     #[test]
     fn transaction_mutation_invalidates_signature() {
-        let key = WalletKey::from_seed([7u8; 32]);
+        let key = WalletKey::from_seed([7u8; 32]).unwrap();
         let tx = tx();
         let signature = tx.sign(&key).unwrap();
         let mut altered = tx.clone();
         altered.amount += 1;
         assert!(altered.verify(&key.public_key(), &signature).is_err());
+    }
+
+    #[test]
+    fn malformed_public_key_is_rejected() {
+        let key = WalletKey::from_seed([7u8; 32]).unwrap();
+        let signature = tx().sign(&key).unwrap();
+        assert!(tx().verify(&[0u8; 33], &signature).is_err());
     }
 }

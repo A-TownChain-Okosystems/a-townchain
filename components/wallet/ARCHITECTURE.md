@@ -1,29 +1,39 @@
 # ARCHITECTURE.md — atc-wallet
 
-> Copyright © Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
+## Role
+components/wallet is the canonical Rust wallet Trusted Core for the A-TownChain ecosystem.
 
-## File Tree
-```tree
-atc-wallet/
-├── requirements.txt — Python dependencies (ecdsa, pysha3, requests)
-├── setup.py — pip installation configuration
-├── README.md — ATC Wallet overview
-└── src/
-    ├── __init__.py — Package initialization
-    ├── wallet.py — Wallet core (address generation, signing, balance)
-    └── crypto.py — Cryptographic helpers (ECDSA, SHA-256)
+## File tree
+```text
+components/wallet/
+├── Cargo.toml
+├── src/
+│   ├── balance.rs
+│   ├── gui.rs
+│   ├── history.rs
+│   ├── keys.rs
+│   ├── lib.rs
+│   ├── main.rs
+│   └── tx.rs
+└── docs/
+    └── specs/
 ```
 
-## Module Descriptions
-- `wallet.py` — Wallet implementation with ATC-prefixed addresses (SHA-256 derivation)
-- `crypto.py` — ECDSA signing and verification, key management
+## Ownership
+- keys.rs owns wallet key APIs.
+- tx.rs owns transaction encoding/signing interfaces.
+- balance.rs owns checked economic balance state.
+- history.rs owns history ordering invariants.
+- gui.rs owns wallet UI state.
+- main.rs owns the native executable entry point.
 
-## Build System
-- Python 3.11+ with pip
+There is no parallel Python wallet implementation.
 
-## Dependencies
-- atc-blockchain (for transaction submission)
-- atc-gateway (API Gateway for blockchain queries)
+## Trust boundary
+Private-key handling and transaction signing belong to the Rust trusted core. Python is not part of the signing boundary. This follows the wallet signing/key-generation specifications.
 
-## Status (Active/Migrated/Legacy)
-Active (Python, Wallet)
+## Canonical crypto status
+The repository specifications require ECDSA secp256k1, RFC 6979 deterministic signing, Low-S enforcement, and canonical transaction-domain separation. Those requirements remain subject to spec freeze and conformance evidence. No legacy Python signer is retained as a compatibility implementation.
+
+## Design rule
+Standalone First, Ecosystem Second: integration modules consume the canonical wallet component; they do not fork or redefine wallet cryptography or economic types.
