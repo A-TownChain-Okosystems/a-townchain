@@ -222,8 +222,4 @@ entries:
     pattern: "random-Modul"
     justification: "random in Wallet-Keygen; Verhalten eingefroren (SCR-0126), CSPRNG/seedbare Quelle in Welle 3"
     scr: "SCR-0126"
-  - file: components/wallet/modules/atc-wallet/src/wallet.py
-    line: 71
-    pattern: "random-Modul"
-    justification: "Duplikatbaum modules/ — identische Stelle wie components/wallet/src/wallet.py:71"
     scr: "SCR-0126"
