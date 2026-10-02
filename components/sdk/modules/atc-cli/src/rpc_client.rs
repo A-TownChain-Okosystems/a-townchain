@@ -20,7 +20,11 @@ impl RpcClient {
 
     fn call(&mut self, method: &str) -> Result<String, String> {
         let id = self.next_id;
-        self.next_id += 1;
+        self.next_id = self.next_id.checked_add(1)
+            .ok_or_else(|| "RPC request id exhausted".to_string())?;
+        if !matches!(method, "chain_id" | "boot_hash" | "peers" | "ping") {
+            return Err(format!("unsupported RPC method: {}", method));
+        }
         let req = format!("{{\"jsonrpc\":\"2.0\",\"method\":\"{}\",\"id\":{}}}\n", method, id);
         let mut stream = TcpStream::connect(&self.addr)
             .map_err(|e| format!("connect {}: {}", self.addr, e))?;
@@ -109,6 +113,21 @@ mod tests {
         // Port 1 auf localhost ist ungenutzt -> connect schlaegt fehl
         let mut c = RpcClient::new("127.0.0.1:1");
         assert!(c.chain_id().is_err());
+    }
+
+    #[test]
+    fn rpc_id_overflow_is_rejected() {
+        let mut c = RpcClient { addr: "127.0.0.1:1".to_string(), next_id: u64::MAX };
+        let err = c.call("ping").unwrap_err();
+        assert_eq!(err, "RPC request id exhausted");
+        assert_eq!(c.next_id, u64::MAX);
+    }
+
+    #[test]
+    fn unsupported_method_is_rejected_before_network_access() {
+        let mut c = RpcClient::new("127.0.0.1:1");
+        let err = c.call("method\"injected").unwrap_err();
+        assert!(err.contains("unsupported RPC method"));
     }
 
     #[test]
