@@ -3,8 +3,10 @@
 
 use crate::bootstrap::Genesis;
 use crate::peers::PeerTable;
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader, Read, Write};
 use std::net::{TcpListener, TcpStream};
+
+const MAX_RPC_REQUEST_BYTES: usize = 8 * 1024;
 
 pub struct DevnetRpc {
     pub chain_id: String,
@@ -31,7 +33,16 @@ impl DevnetRpc {
 pub fn serve(addr: &str, state: DevnetRpc) -> std::io::Result<()> {
     let listener = TcpListener::bind(addr)?;
     for stream in listener.incoming() {
-        if let Ok(stream) = stream { handle(stream, &state)?; }
+        match stream {
+            Ok(stream) => {
+                if let Err(e) = handle(stream, &state) {
+                    eprintln!("RPC-Verbindung beendet: {}", e);
+                }
+            }
+            Err(e) => {
+                eprintln!("RPC-Accept fehlgeschlagen: {}", e);
+            }
+        }
     }
     Ok(())
 }
@@ -39,7 +50,16 @@ pub fn serve(addr: &str, state: DevnetRpc) -> std::io::Result<()> {
 fn handle(stream: TcpStream, state: &DevnetRpc) -> std::io::Result<()> {
     let mut reader = BufReader::new(stream.try_clone()?);
     let mut line = String::new();
-    reader.read_line(&mut line)?;
+    let bytes_read = reader.take((MAX_RPC_REQUEST_BYTES + 1) as u64).read_line(&mut line)?;
+    if bytes_read == 0 {
+        return Ok(());
+    }
+    if bytes_read > MAX_RPC_REQUEST_BYTES || !line.ends_with('\n') {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "RPC request too large or missing newline",
+        ));
+    }
     let resp = if line.trim().starts_with('{') { state.answer_json(&line) } else { state.answer(&line) };
     let mut w = stream;
     w.write_all(resp.as_bytes())?;
@@ -49,16 +69,26 @@ fn handle(stream: TcpStream, state: &DevnetRpc) -> std::io::Result<()> {
 
 impl DevnetRpc {
     pub fn answer_json(&self, req: &str) -> String {
-        let id = extract_between(req, "\"id\":", '}').and_then(|v| v.trim().parse::<u64>().ok()).unwrap_or(0);
-        let method = extract_between(req, "\"method\":\"", '"').unwrap_or("");
+        let id = match extract_between(req, "\"id\":", ',') {
+            Some(raw) => match raw.trim().trim_end_matches('}').parse::<u64>() {
+                Ok(id) => id,
+                Err(_) => return "{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{\"code\":-32600,\"message\":\"invalid request\"}}".to_string(),
+            },
+            None => return "{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{\"code\":-32600,\"message\":\"invalid request\"}}".to_string(),
+        };
+        let method = match extract_between(req, "\"method\":\"", '"') {
+            Some(method) if !method.is_empty() => method,
+            _ => return format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"error\":{{\"code\":-32600,\"message\":\"invalid request\"}}}}", id),
+        };
         let result = match method {
             "chain_id" => self.chain_id.clone(),
             "boot_hash" => self.boot_hash.to_string(),
             "peers" => self.peer_count.to_string(),
             "ping" => "pong".to_string(),
-            other => return format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"error\":{{\"code\":-32601,\"message\":\"method not found: {}\"}}}}", id, other),
+            _ => return format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"error\":{{\"code\":-32601,\"message\":\"method not found\"}}}}", id),
         };
         format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"result\":\"{}\"}}", id, result)
+
     }
 }
 
@@ -98,9 +128,27 @@ mod tests {
     }
 
     #[test]
+    fn jsonrpc_fehlende_id_wird_abgelehnt() {
+        let rpc = test_state();
+        let r = rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"ping\"}");
+        assert!(r.contains("-32600"));
+        assert!(r.contains("\"id\":null"));
+    }
+
+    #[test]
+    fn jsonrpc_ungueltige_id_wird_abgelehnt() {
+        let rpc = test_state();
+        let r = rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"ping\",\"id\":\"bad\"}");
+        assert!(r.contains("-32600"));
+        assert!(r.contains("\"id\":null"));
+    }
+
+    #[test]
     fn jsonrpc_unbekannte_methode() {
         let rpc = test_state();
         let r = rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"gib_nichts\",\"id\":3}");
         assert!(r.contains("-32601"));
+        assert!(r.contains("\"message\":\"method not found\""));
+        assert!(!r.contains("gib_nichts"));
     }
 }
