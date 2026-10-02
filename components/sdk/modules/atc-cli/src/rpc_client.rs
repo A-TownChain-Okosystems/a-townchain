@@ -20,41 +20,73 @@ impl RpcClient {
 
     fn call(&mut self, method: &str) -> Result<String, String> {
         let id = self.next_id;
-        self.next_id = self.next_id.checked_add(1).ok_or_else(|| "RPC request id overflow".to_string())?;
-        let req = format!("{{\"jsonrpc\":\"2.0\",\"method\":\"{}\",\"id\":{}}}\n", method, id);
+        self.next_id = self.next_id
+            .checked_add(1)
+            .ok_or_else(|| "RPC request id overflow".to_string())?;
+        let req = format!(
+            "{{\"jsonrpc\":\"2.0\",\"method\":\"{}\",\"id\":{}}}\n",
+            method, id
+        );
         let mut stream = TcpStream::connect(&self.addr)
             .map_err(|e| format!("connect {}: {}", self.addr, e))?;
-        stream.set_read_timeout(Some(Duration::from_secs(5)))
+        stream
+            .set_read_timeout(Some(Duration::from_secs(5)))
             .map_err(|e| format!("timeout: {}", e))?;
-        stream.write_all(req.as_bytes()).map_err(|e| format!("send: {}", e))?;
+        stream
+            .write_all(req.as_bytes())
+            .map_err(|e| format!("send: {}", e))?;
         let mut line = String::new();
-        BufReader::new(stream).read_line(&mut line).map_err(|e| format!("recv: {}", e))?;
+        BufReader::new(stream)
+            .read_line(&mut line)
+            .map_err(|e| format!("recv: {}", e))?;
         extract_result(&line).ok_or_else(|| format!("kein result in: {}", line.trim()))
     }
 
     pub fn chain_id(&mut self) -> Result<u64, String> {
-        self.call("chain_id")?.parse::<u64>().map_err(|e| format!("kein u64: {}", e))
+        self.call("chain_id")?
+            .parse::<u64>()
+            .map_err(|e| format!("kein u64: {}", e))
     }
+
     pub fn boot_hash(&mut self) -> Result<u64, String> {
-        self.call("boot_hash")?.parse::<u64>().map_err(|e| format!("kein u64: {}", e))
+        self.call("boot_hash")?
+            .parse::<u64>()
+            .map_err(|e| format!("kein u64: {}", e))
     }
+
     pub fn peers(&mut self) -> Result<usize, String> {
-        self.call("peers")?.parse::<usize>().map_err(|e| format!("kein usize: {}", e))
+        self.call("peers")?
+            .parse::<usize>()
+            .map_err(|e| format!("kein usize: {}", e))
     }
+
     pub fn ping(&mut self) -> Result<String, String> {
         self.call("ping")
     }
 }
 
 fn extract_result(resp: &str) -> Option<String> {
-    let i = resp.find("\"result\":\"")? + "\"result\":\"".len();
-    let rest = &resp[i..];
-    let j = rest.find('"')?;
-    Some(rest[..j].to_string())
+    let marker = "\"result\":";
+    let i = resp.find(marker)? + marker.len();
+    let rest = resp[i..].trim_start();
+
+    if let Some(value) = rest.strip_prefix('"') {
+        let j = value.find('"')?;
+        return Some(value[..j].to_string());
+    }
+
+    let end = rest.find([',', '}']).unwrap_or(rest.len());
+    let value = rest[..end].trim();
+    if value.is_empty() || value == "null" {
+        None
+    } else {
+        Some(value.to_string())
+    }
 }
 
 fn extract_id(resp: &str) -> String {
-    let i = resp.find("\"id\":").map(|i| i + "\"id\":".len()).unwrap_or(0);
+    let marker = "\"id\":";
+    let i = resp.find(marker).map(|i| i + marker.len()).unwrap_or(0);
     let rest = &resp[i..];
     let digits: String = rest.chars().take_while(|c| c.is_ascii_digit()).collect();
     if digits.is_empty() { "0".to_string() } else { digits }
@@ -63,13 +95,15 @@ fn extract_id(resp: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::net::TcpListener;
     use std::io::Write as _;
+    use std::net::TcpListener;
 
-    /// Mock-Node: antwortet wie der atc-node Devnet-RPC (SCR-0109-Protokoll).
     fn mock_node(listener: TcpListener) {
         for s in listener.incoming() {
-            let mut s = match s { Ok(s) => s, Err(_) => break };
+            let mut s = match s {
+                Ok(s) => s,
+                Err(_) => break,
+            };
             let mut reader = BufReader::new(s.try_clone().unwrap());
             let mut line = String::new();
             reader.read_line(&mut line).unwrap();
@@ -82,9 +116,13 @@ mod tests {
             } else {
                 "pong"
             };
-            let resp = format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"result\":\"{}\"}}\n", extract_id(&line), body);
+            let resp = format!(
+                "{{\"jsonrpc\":\"2.0\",\"id\":{},\"result\":\"{}\"}}\n",
+                extract_id(&line),
+                body
+            );
             s.write_all(resp.as_bytes()).unwrap();
-            break; // ein Request pro Verbindung (wie atc-node)
+            break;
         }
     }
 
@@ -96,7 +134,6 @@ mod tests {
         let mut c = RpcClient::new(format!("127.0.0.1:{}", addr.port()));
         assert_eq!(c.chain_id().expect("chain_id fehlgeschlagen"), 658467);
 
-        // zweite Verbindung: peers (Mock nimmt nur einen Request je Instanz)
         let listener2 = TcpListener::bind("127.0.0.1:0").expect("bind2 fehlgeschlagen");
         let addr2 = listener2.local_addr().expect("keine Adresse2");
         std::thread::spawn(move || mock_node(listener2));
@@ -106,18 +143,26 @@ mod tests {
 
     #[test]
     fn verbindungsfehler_ehrlich() {
-        // Port 1 auf localhost ist ungenutzt -> connect schlaegt fehl
         let mut c = RpcClient::new("127.0.0.1:1");
         assert!(c.chain_id().is_err());
     }
 
     #[test]
     fn extract_helpers() {
-        assert_eq!(extract_result("{"id":7,"result":"42"}").unwrap(), "42");
-        assert_eq!(extract_result("{"id":7,"result":42}").unwrap(), "42");
-        assert!(extract_result("{"id":7,"result":null}").is_none());
-        assert!(extract_result("{"id":7,"error":{"code":-32601}}").is_none());
-        assert_eq!(extract_id("{"id":42,"result":"x"}"), "42");
+        assert_eq!(
+            extract_result("{\"id\":7,\"result\":\"42\"}").unwrap(),
+            "42"
+        );
+        assert_eq!(
+            extract_result("{\"id\":7,\"result\":42}").unwrap(),
+            "42"
+        );
+        assert!(extract_result("{\"id\":7,\"result\":null}").is_none());
+        assert!(extract_result("{\"id\":7,\"error\":{\"code\":-32601}}").is_none());
+        assert_eq!(
+            extract_id("{\"id\":42,\"result\":\"x\"}"),
+            "42"
+        );
     }
 
     #[test]
