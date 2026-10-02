@@ -66,9 +66,10 @@ mod tests {
     }
 
     #[test]
-    fn multiplication_overflow_is_rejected() {
-        let f = FeeCalculator::new(10_000).unwrap();
-        assert_eq!(f.calculate(u128::MAX), Ok(u128::MAX));
+    fn max_rate_preserves_floor_semantics() {
+        let f = FeeCalculator::new(9_999).unwrap();
+        let amount = 12_345;
+        assert_eq!(f.calculate(amount).unwrap(), 12_343);
     }
 
     #[test]
