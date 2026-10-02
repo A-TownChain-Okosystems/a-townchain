@@ -39,8 +39,8 @@ impl Treasury {
         Ok(amount)
     }
 
-    pub fn available(&self) -> Amount {
-        self.balance.saturating_sub(self.total_allocated)
+    pub fn available(&self) -> Result<Amount, String> {
+        self.balance.checked_sub(self.total_allocated).ok_or("Treasury accounting invariant violated".into())
     }
 
     pub fn balance(&self) -> Amount {
@@ -58,8 +58,8 @@ mod tests {
         assert!(t.allocate("dev", 500).is_ok());
         assert!(t.allocate("dev", 500).is_ok());
         assert!(t.allocate("dev", 1).is_err());
-        assert_eq!(t.available(), 0);
-        assert_eq!(t.release("dev").unwrap(), 1000);
+        assert_eq!(t.available(), Ok(0));
+        assert_eq!(t.release("dev"), Ok(1000));
     }
 
     #[test]
@@ -74,7 +74,14 @@ mod tests {
         let mut t = Treasury::new(u128::MAX);
         assert!(t.allocate("dev", u128::MAX).is_ok());
         assert!(t.allocate("dev", 1).is_err());
-        assert_eq!(t.available(), 0);
+        assert_eq!(t.available(), Ok(0));
         assert_eq!(t.balance(), u128::MAX);
+    }
+
+    #[test]
+    fn accounting_invariant_violation_is_reported() {
+        let mut t = Treasury::new(10);
+        t.total_allocated = 11;
+        assert_eq!(t.available(), Err("Treasury accounting invariant violated".into()));
     }
 }
