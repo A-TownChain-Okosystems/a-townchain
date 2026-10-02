@@ -101,10 +101,6 @@ impl Ledger {
         }
 
         let recipient = self.accounts.get(&tx.to).cloned().unwrap_or_default();
-        let recipient_balance = recipient
-            .balance
-            .checked_add(tx.amount)
-            .ok_or(LedgerError::AmountOverflow)?;
         let sender_nonce = sender
             .nonce
             .checked_add(1)
@@ -114,13 +110,31 @@ impl Ledger {
             .checked_add(1)
             .ok_or(LedgerError::SequenceOverflow)?;
 
-        let sender_balance = sender
-            .balance
-            .checked_sub(debit)
-            .ok_or(LedgerError::InsufficientBalance)?;
+        let (sender_balance, recipient_balance) = if tx.from == tx.to {
+            // A self-transfer returns its amount to the same account; only
+            // the fee changes the balance, while the nonce advances.
+            (
+                sender
+                    .balance
+                    .checked_sub(tx.fee)
+                    .ok_or(LedgerError::InsufficientBalance)?,
+                sender
+                    .balance
+                    .checked_sub(tx.fee)
+                    .ok_or(LedgerError::InsufficientBalance)?,
+            )
+        } else {
+            let recipient_balance = recipient
+                .balance
+                .checked_add(tx.amount)
+                .ok_or(LedgerError::AmountOverflow)?;
+            let sender_balance = sender
+                .balance
+                .checked_sub(debit)
+                .ok_or(LedgerError::InsufficientBalance)?;
+            (sender_balance, recipient_balance)
+        };
 
-        // Commit only after every fallible calculation succeeded: a failed
-        // transaction therefore has no partial state mutation.
         self.accounts.insert(
             tx.from.clone(),
             Account {
@@ -128,13 +142,15 @@ impl Ledger {
                 nonce: sender_nonce,
             },
         );
-        self.accounts.insert(
-            tx.to.clone(),
-            Account {
-                balance: recipient_balance,
-                nonce: recipient.nonce,
-            },
-        );
+        if tx.from != tx.to {
+            self.accounts.insert(
+                tx.to.clone(),
+                Account {
+                    balance: recipient_balance,
+                    nonce: recipient.nonce,
+                },
+            );
+        }
         self.next_sequence = sequence;
         self.journal.push(LedgerEntry {
             sequence,
@@ -181,6 +197,23 @@ mod tests {
         assert_eq!(ledger.balance_of("bob"), 30);
         assert_eq!(ledger.nonce_of("alice"), 1);
         assert_eq!(ledger.journal()[0].sequence, 1);
+    }
+
+    #[test]
+    fn self_transfer_charges_only_fee() {
+        let mut ledger = funded_ledger();
+        ledger
+            .apply_transfer(Transfer {
+                from: "alice".into(),
+                to: "alice".into(),
+                amount: 30,
+                fee: 2,
+                nonce: 0,
+            })
+            .unwrap();
+
+        assert_eq!(ledger.balance_of("alice"), 98);
+        assert_eq!(ledger.nonce_of("alice"), 1);
     }
 
     #[test]
