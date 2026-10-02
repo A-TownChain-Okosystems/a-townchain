@@ -18,10 +18,18 @@ impl FeeCalculator {
 
     pub fn calculate(&self, amount: Amount) -> Result<Amount, String> {
         let rate = self.rate as Amount;
-        amount
+        let base = amount / 10_000;
+        let remainder = amount % 10_000;
+        let whole_fee = base
             .checked_mul(rate)
-            .ok_or_else(|| "fee calculation overflow".into())
-            .map(|value| value / 10_000)
+            .ok_or_else(|| "fee calculation overflow".to_string())?;
+        let remainder_fee = remainder
+            .checked_mul(rate)
+            .ok_or_else(|| "fee calculation overflow".to_string())?
+            / 10_000;
+        whole_fee
+            .checked_add(remainder_fee)
+            .ok_or_else(|| "fee calculation overflow".to_string())
     }
 
     pub fn net(&self, amount: Amount) -> Result<Amount, String> {
@@ -51,9 +59,16 @@ mod tests {
     }
 
     #[test]
+    fn max_amount_at_max_rate_is_supported() {
+        let f = FeeCalculator::new(10_000).unwrap();
+        assert_eq!(f.calculate(u128::MAX).unwrap(), u128::MAX);
+        assert_eq!(f.net(u128::MAX).unwrap(), 0);
+    }
+
+    #[test]
     fn multiplication_overflow_is_rejected() {
         let f = FeeCalculator::new(10_000).unwrap();
-        assert!(f.calculate(u128::MAX).is_err());
+        assert_eq!(f.calculate(u128::MAX), Ok(u128::MAX));
     }
 
     #[test]
