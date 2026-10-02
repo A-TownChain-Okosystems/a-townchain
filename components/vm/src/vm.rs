@@ -15,6 +15,7 @@ pub enum VmError {
     StackUnderflow,
     InvalidJump(usize),
     DivisionByZero,
+    ArithmeticOverflow,
     Context(ContextError),
 }
 
@@ -58,9 +59,9 @@ impl Vm {
         while pc < self.program.len() {
             match self.program[pc].clone() {
                 Op::Push(v) => self.stack.push(v),
-                Op::Add => self.binop(|a, b| a.wrapping_add(b))?,
-                Op::Sub => self.binop(|a, b| a.wrapping_sub(b))?,
-                Op::Mul => self.binop(|a, b| a.wrapping_mul(b))?,
+                Op::Add => self.binop(|a, b| a.checked_add(b))?,
+                Op::Sub => self.binop(|a, b| a.checked_sub(b))?,
+                Op::Mul => self.binop(|a, b| a.checked_mul(b))?,
                 Op::Div => {
                     let b = self.stack.pop().ok_or(VmError::StackUnderflow)?;
                     let a = self.stack.pop().ok_or(VmError::StackUnderflow)?;
@@ -80,7 +81,10 @@ impl Vm {
                 Op::Load(slot) => self.stack.push(self.storage.get(slot).copied().unwrap_or(0)),
                 Op::Store(slot) => {
                     let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if slot >= self.storage.len() { self.storage.resize(slot + 1, 0); }
+                    if slot >= self.storage.len() {
+                        let new_len = slot.checked_add(1).ok_or(VmError::ArithmeticOverflow)?;
+                        self.storage.resize(new_len, 0);
+                    }
                     self.storage[slot] = v;
                 }
                 Op::Caller => self.stack.push(self.caller),
@@ -100,10 +104,10 @@ impl Vm {
         Ok(std::mem::take(&mut self.stack))
     }
 
-    fn binop(&mut self, f: impl Fn(u64, u64) -> u64) -> Result<(), VmError> {
+    fn binop(&mut self, f: impl Fn(u64, u64) -> Option<u64>) -> Result<(), VmError> {
         let b = self.stack.pop().ok_or(VmError::StackUnderflow)?;
         let a = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-        self.stack.push(f(a, b));
+        self.stack.push(f(a, b).ok_or(VmError::ArithmeticOverflow)?);
         Ok(())
     }
 
@@ -133,6 +137,22 @@ mod tests {
         assert!(vm.state().is_empty(), "invalid context darf keinen State mutieren");
         assert!(vm.execute_state_transition(&context(), &"a".repeat(64), "1.0.0", "1.0.0").is_ok());
         assert_eq!(vm.state(), &[7]);
+    }
+
+    #[test]
+    fn arithmetic_overflow_fails_closed() {
+        let mut add = Vm::new(vec![Op::Push(u64::MAX), Op::Push(1), Op::Add]);
+        assert_eq!(add.run(), Err(VmError::ArithmeticOverflow));
+        let mut sub = Vm::new(vec![Op::Push(0), Op::Push(1), Op::Sub]);
+        assert_eq!(sub.run(), Err(VmError::ArithmeticOverflow));
+        let mut mul = Vm::new(vec![Op::Push(u64::MAX), Op::Push(2), Op::Mul]);
+        assert_eq!(mul.run(), Err(VmError::ArithmeticOverflow));
+    }
+
+    #[test]
+    fn storage_slot_overflow_fails_closed() {
+        let mut vm = Vm::new(vec![Op::Push(1), Op::Store(usize::MAX)]);
+        assert_eq!(vm.run(), Err(VmError::ArithmeticOverflow));
     }
 
     #[test]
