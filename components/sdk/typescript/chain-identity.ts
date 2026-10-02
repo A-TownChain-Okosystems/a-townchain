@@ -2,9 +2,12 @@
 // Canonical L1 transaction signing primitives.
 // The byte layout MUST remain identical to the Rust L1 kernel signing_bytes().
 
+import { createHash } from "node:crypto";
+
 export type NetworkId = "devnet" | "testnet" | "mainnet";
 export const ATC_CHAIN_ID = 658467 as const;
 export const ATC_TX_DOMAIN_V2 = "ATC-TX-DOMAIN-V2" as const;
+export const ATC_TX_ID_V2 = "ATC-TX-ID-V2" as const;
 
 export interface ChainIdentity {
   chain_id: typeof ATC_CHAIN_ID;
@@ -77,6 +80,22 @@ function assert32Bytes(name: string, value: Uint8Array): void {
   if (value.length !== 32) throw new Error(`${name} must be exactly 32 bytes`);
 }
 
+function canonicalIdFields(tx: TransactionSigningInput): Uint8Array {
+  const out: number[] = [];
+  pushU64BE(out, BigInt(tx.chain_id));
+  out.push(tx.tx_type);
+  pushBytes(out, new TextEncoder().encode(tx.sender_did));
+  pushOptionalString(out, tx.recipient_did);
+  pushU128BE(out, tx.amount);
+  pushU64BE(out, tx.gas_price);
+  pushU64BE(out, tx.gas_limit);
+  pushU64BE(out, tx.nonce);
+  pushU64BE(out, tx.timestamp);
+  pushBytes(out, tx.payload);
+  out.push(...tx.poh_hash);
+  return Uint8Array.from(out);
+}
+
 /**
  * Exact byte representation used by the Rust L1 kernel:
  * ATC-TX-DOMAIN-V2 || chain_id(u64 BE) || tx_type(u8) ||
@@ -94,16 +113,17 @@ export function canonicalSigningPreimage(tx: TransactionSigningInput): Uint8Arra
 
   const out: number[] = [];
   out.push(...new TextEncoder().encode(ATC_TX_DOMAIN_V2));
-  pushU64BE(out, BigInt(tx.chain_id));
-  out.push(tx.tx_type);
-  pushBytes(out, new TextEncoder().encode(tx.sender_did));
-  pushOptionalString(out, tx.recipient_did);
-  pushU128BE(out, tx.amount);
-  pushU64BE(out, tx.gas_price);
-  pushU64BE(out, tx.gas_limit);
-  pushU64BE(out, tx.nonce);
-  pushU64BE(out, tx.timestamp);
-  pushBytes(out, tx.payload);
-  out.push(...tx.poh_hash);
+  out.push(...canonicalIdFields(tx));
   return Uint8Array.from(out);
+}
+
+/**
+ * Canonical transaction ID. The signature is deliberately excluded.
+ * SHA-256 input = ATC-TX-ID-V2 || canonical transaction fields.
+ */
+export function canonicalTransactionId(tx: TransactionSigningInput): Uint8Array {
+  const hash = createHash("sha256");
+  hash.update(new TextEncoder().encode(ATC_TX_ID_V2));
+  hash.update(canonicalIdFields(tx));
+  return new Uint8Array(hash.digest());
 }
