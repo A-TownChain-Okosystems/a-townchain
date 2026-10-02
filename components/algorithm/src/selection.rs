@@ -4,22 +4,33 @@
 
 use crate::poh::fnv1a;
 
+pub type Stake = u128;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Validator {
     pub id: u64,
-    pub stake: u64,
+    pub stake: Stake,
 }
 
 /// Deterministische, Stake-gewichtete Wahl. None bei leerer/Null-Stake-Menge.
+/// Returns None if the total stake cannot be represented or accumulation overflows.
 pub fn select_proposer(validators: &[Validator], slot: u64) -> Option<Validator> {
-    let total: u64 = validators.iter().map(|v| v.stake).sum();
-    if validators.is_empty() || total == 0 {
+    if validators.is_empty() {
         return None;
     }
-    let ticket = fnv1a(&slot.to_le_bytes()) % total;
-    let mut acc: u64 = 0;
+
+    let total = validators
+        .iter()
+        .try_fold(0u128, |total, validator| total.checked_add(validator.stake))?;
+
+    if total == 0 {
+        return None;
+    }
+
+    let ticket = (fnv1a(&slot.to_le_bytes()) as u128) % total;
+    let mut acc = 0u128;
     for v in validators {
-        acc += v.stake;
+        acc = acc.checked_add(v.stake)?;
         if ticket < acc {
             return Some(v.clone());
         }
@@ -52,5 +63,23 @@ mod tests {
             let sel = select_proposer(&vs, slot).unwrap();
             assert!(sel.id == 1 || sel.id == 2);
         }
+    }
+
+    #[test]
+    fn u128_stake_boundary_is_supported() {
+        let vs = vec![
+            Validator { id: 1, stake: u128::MAX - 1 },
+            Validator { id: 2, stake: 1 },
+        ];
+        assert!(select_proposer(&vs, 0).is_some());
+    }
+
+    #[test]
+    fn total_stake_overflow_fails_closed() {
+        let vs = vec![
+            Validator { id: 1, stake: u128::MAX },
+            Validator { id: 2, stake: 1 },
+        ];
+        assert!(select_proposer(&vs, 0).is_none());
     }
 }
