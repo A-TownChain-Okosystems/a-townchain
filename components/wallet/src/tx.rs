@@ -147,7 +147,8 @@ mod tests {
         let mut tx = tx();
         tx.amount = u128::MAX;
         let bytes = tx.signing_bytes().unwrap();
-        let amount_offset = TX_DOMAIN_V2.len() + 8 + 1 + 4 + tx.sender_did.len() + 1 + 4 + tx.recipient_did.as_ref().unwrap().len();\n        assert_eq!(&bytes[amount_offset..amount_offset + 16], &[0xff; 16]);
+        let amount_offset = TX_DOMAIN_V2.len() + 8 + 1 + 4 + tx.sender_did.len() + 1 + 4 + tx.recipient_did.as_ref().unwrap().len();
+        assert_eq!(&bytes[amount_offset..amount_offset + 16], &[0xff; 16]);
     }
 
     #[test]
