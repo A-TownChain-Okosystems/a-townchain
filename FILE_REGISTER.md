@@ -714,7 +714,6 @@
 - `components/wallet/modules/atc-wallet/src/lib.rs`
 - `components/wallet/modules/atc-wallet/src/main.rs`
 - `components/wallet/modules/atc-wallet/tx_signer.atc`
-- `components/wallet/modules/atc-wallet/wallet/ecdsa.py`
 - `components/wallet/nft_viewer.atc`
 - `components/wallet/ruff.toml`
 - `components/wallet/src/balance.rs`
