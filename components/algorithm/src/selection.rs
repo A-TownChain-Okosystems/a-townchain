@@ -12,14 +12,16 @@ pub struct Validator {
 
 /// Deterministische, Stake-gewichtete Wahl. None bei leerer/Null-Stake-Menge.
 pub fn select_proposer(validators: &[Validator], slot: u64) -> Option<Validator> {
-    let total: u128 = validators.iter().map(|v| v.stake).sum();
+    let total = validators
+        .iter()
+        .try_fold(0u128, |total, validator| total.checked_add(validator.stake))?;
     if validators.is_empty() || total == 0 {
         return None;
     }
     let ticket = (fnv1a(&slot.to_le_bytes()) as u128) % total;
     let mut acc: u128 = 0;
     for v in validators {
-        acc += v.stake;
+        acc = acc.checked_add(v.stake)?;
         if ticket < acc {
             return Some(v.clone());
         }
