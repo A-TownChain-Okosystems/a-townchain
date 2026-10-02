@@ -30,7 +30,10 @@ impl std::error::Error for PohError {}
 
 fn townhash_u64(data: &[u8]) -> u64 {
     let digest = crate::hash::atc_hash(data);
-    u64::from_le_bytes(digest[..8].try_into().expect("digest is 32 bytes"))
+    u64::from_le_bytes([
+        digest[0], digest[1], digest[2], digest[3],
+        digest[4], digest[5], digest[6], digest[7],
+    ])
 }
 
 pub struct PohChain {
