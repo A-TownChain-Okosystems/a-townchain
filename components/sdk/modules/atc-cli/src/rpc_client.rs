@@ -20,7 +20,7 @@ impl RpcClient {
 
     fn call(&mut self, method: &str) -> Result<String, String> {
         let id = self.next_id;
-        self.next_id += 1;
+        self.next_id = self.next_id.checked_add(1).ok_or_else(|| "RPC request id overflow".to_string())?;
         let req = format!("{{\"jsonrpc\":\"2.0\",\"method\":\"{}\",\"id\":{}}}\n", method, id);
         let mut stream = TcpStream::connect(&self.addr)
             .map_err(|e| format!("connect {}: {}", self.addr, e))?;
@@ -113,8 +113,18 @@ mod tests {
 
     #[test]
     fn extract_helpers() {
-        assert_eq!(extract_result("{\"id\":7,\"result\":\"42\"}").unwrap(), "42");
-        assert!(extract_result("{\"id\":7,\"error\":{\"code\":-32601}}").is_none());
-        assert_eq!(extract_id("{\"id\":42,\"result\":\"x\"}"), "42");
+        assert_eq!(extract_result("{"id":7,"result":"42"}").unwrap(), "42");
+        assert_eq!(extract_result("{"id":7,"result":42}").unwrap(), "42");
+        assert!(extract_result("{"id":7,"result":null}").is_none());
+        assert!(extract_result("{"id":7,"error":{"code":-32601}}").is_none());
+        assert_eq!(extract_id("{"id":42,"result":"x"}"), "42");
+    }
+
+    #[test]
+    fn request_id_overflow_fails_closed() {
+        let mut c = RpcClient::new("127.0.0.1:1");
+        c.next_id = u64::MAX;
+        let err = c.call("ping").unwrap_err();
+        assert_eq!(err, "RPC request id overflow");
     }
 }
