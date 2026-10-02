@@ -13,7 +13,8 @@ impl BridgeValidator {
         if threshold == 0 || threshold > validators.len() {
             return Err("validator threshold is outside validator set".into());
         }
-        if validators.windows(2).any(|pair| pair[0] == pair[1]) {
+        let mut unique = std::collections::HashSet::with_capacity(validators.len());
+        if validators.iter().any(|validator| !unique.insert(validator)) {
             return Err("validator set contains duplicates".into());
         }
         Ok(Self { validators, threshold })
@@ -41,7 +42,7 @@ mod tests {
         assert!(bv.validate_signatures(&[("a".into(), vec![]), ("b".into(), vec![])]).is_ok());
         assert!(bv.validate_signatures(&[("a".into(), vec![])]).is_err());
         assert!(bv.validate_signatures(&[("a".into(), vec![]), ("a".into(), vec![])]).is_err());
-        assert!(BridgeValidator::new(vec!["a".into(),"a".into()], 1).is_err());
+        assert!(BridgeValidator::new(vec!["a".into(),"b".into(),"a".into()], 1).is_err());
         assert!(BridgeValidator::new(vec!["a".into()], 0).is_err());
     }
 }
