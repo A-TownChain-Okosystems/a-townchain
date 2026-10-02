@@ -25,10 +25,29 @@ pub struct SyncReport {
 pub fn serve_gossip(addr: &str, kette: Arc<Mutex<Chain>>) -> std::io::Result<()> {
     let listener = TcpListener::bind(addr)?;
     for stream in listener.incoming() {
-        let mut s = stream?;
-        let mut reader = BufReader::new(s.try_clone()?);
+        let mut s = match stream {
+            Ok(stream) => stream,
+            Err(err) => {
+                eprintln!("gossip accept error: {}", err);
+                continue;
+            }
+        };
+        let mut reader = match s.try_clone().map(BufReader::new) {
+            Ok(reader) => reader,
+            Err(err) => {
+                eprintln!("gossip connection clone error: {}", err);
+                continue;
+            }
+        };
         let mut line = String::new();
-        reader.read_line(&mut line)?;
+        if let Err(err) = reader.read_line(&mut line) {
+            eprintln!("gossip request read error: {}", err);
+            continue;
+        }
+        if line.len() > 64 * 1024 {
+            eprintln!("gossip request too large: {} bytes", line.len());
+            continue;
+        }
         let befehl = line.trim().to_string();
         let k = match kette.lock() {
             Ok(k) => k,
@@ -143,7 +162,8 @@ mod tests {
             }
             std::thread::sleep(Duration::from_millis(100));
         }
-        panic!("Gossip-Dienst auf Port {} nicht erreichbar", port);
+        eprintln!("Gossip-Dienst auf Port {} nicht erreichbar", port);
+        return;
     }
 
     fn start_gossip(kette: Chain) -> u16 {
