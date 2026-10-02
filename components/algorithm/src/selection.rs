@@ -7,19 +7,21 @@ use crate::poh::fnv1a;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Validator {
     pub id: u64,
-    pub stake: u64,
+    pub stake: u128,
 }
 
 /// Deterministische, Stake-gewichtete Wahl. None bei leerer/Null-Stake-Menge.
 pub fn select_proposer(validators: &[Validator], slot: u64) -> Option<Validator> {
-    let total: u64 = validators.iter().map(|v| v.stake).sum();
+    let total = validators
+        .iter()
+        .try_fold(0u128, |total, validator| total.checked_add(validator.stake))?;
     if validators.is_empty() || total == 0 {
         return None;
     }
-    let ticket = fnv1a(&slot.to_le_bytes()) % total;
-    let mut acc: u64 = 0;
+    let ticket = (fnv1a(&slot.to_le_bytes()) as u128) % total;
+    let mut acc: u128 = 0;
     for v in validators {
-        acc += v.stake;
+        acc = acc.checked_add(v.stake)?;
         if ticket < acc {
             return Some(v.clone());
         }
@@ -51,6 +53,23 @@ mod tests {
         for slot in 0..100 {
             let sel = select_proposer(&vs, slot).unwrap();
             assert!(sel.id == 1 || sel.id == 2);
+        }
+    }
+}
+
+#[cfg(test)]
+mod u128_boundary_tests {
+    use super::*;
+
+    #[test]
+    fn max_u128_stake_is_supported_without_u64_truncation() {
+        let validators = [
+            Validator { id: 1, stake: u128::MAX - 1 },
+            Validator { id: 2, stake: 1 },
+        ];
+        for slot in [0, 1, 360, u64::MAX] {
+            let selected = select_proposer(&validators, slot).expect("non-zero total stake");
+            assert!(selected.id == 1 || selected.id == 2);
         }
     }
 }
