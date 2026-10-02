@@ -306,7 +306,6 @@
 - `components/interop/modules/atc-bridge/src/validator.rs`
 - `components/interop/modules/atc-bridge/tokens/fee_manager.atc`
 - `components/interop/modules/atc-bridge/tokens/token_registry.atc`
-- `components/interop/modules/atc-bridge/validators/validator_set.atc`
 - `components/interop/tests/TESTPLAN.md`
 - `components/interop/tools/determinism_check.py`
 - `components/mining/.atc/compliance.yaml`
