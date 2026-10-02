@@ -31,14 +31,17 @@ MANIFEST_NAMES = {
     "pyproject.toml",
 }
 
+
 def run(*args: str, input: str | None = None) -> str:
     p = subprocess.run(args, cwd=ROOT, text=True, input=input, capture_output=True)
     if p.returncode:
         raise RuntimeError(f"{' '.join(args)}: {p.stderr.strip()}")
     return p.stdout
 
+
 def files_at(ref: str) -> list[str]:
     return run("git", "ls-tree", "-r", "--name-only", ref).splitlines()
+
 
 def read_at(ref: str, path: str) -> str | None:
     if ref == "HEAD":
@@ -48,6 +51,7 @@ def read_at(ref: str, path: str) -> str | None:
         return run("git", "show", f"{ref}:{path}")
     except RuntimeError:
         return None
+
 
 def add(graph: dict[str, dict], ecosystem: str, name: str, version: str, source: str):
     name, version = name.strip(), version.strip()
@@ -59,6 +63,7 @@ def add(graph: dict[str, dict], ecosystem: str, name: str, version: str, source:
         {"ecosystem": ecosystem, "name": name, "version": version, "sources": []},
     )
     graph[key]["sources"].append(source)
+
 
 def cargo_graph(ref: str, paths: list[str], graph: dict):
     for path in paths:
@@ -102,6 +107,7 @@ def cargo_graph(ref: str, paths: list[str], graph: dict):
                 path,
             )
 
+
 def npm_graph(ref: str, paths: list[str], graph: dict):
     for path in paths:
         if not path.endswith("package.json"):
@@ -137,6 +143,7 @@ def npm_graph(ref: str, paths: list[str], graph: dict):
             name = key.rsplit("node_modules/", 1)[-1]
             add(graph, "npm-lock", name, str(pkg["version"]), path)
 
+
 def python_graph(ref: str, paths: list[str], graph: dict):
     for path in paths:
         base = Path(path).name
@@ -146,9 +153,7 @@ def python_graph(ref: str, paths: list[str], graph: dict):
                 line = line.strip()
                 if not line or line.startswith("#") or line.startswith("-"):
                     continue
-                m = re.match(
-                    r"([A-Za-z0-9_.-]+)\s*(==|~=|>=|<=|>|<)?\s*([^;\s]+)?", line
-                )
+                m = re.match(r"([A-Za-z0-9_.-]+)\s*(==|~=|>=|<=|>|<)?\s*([^;\s]+)?", line)
                 if m:
                     add(
                         graph,
@@ -157,6 +162,7 @@ def python_graph(ref: str, paths: list[str], graph: dict):
                         (m.group(3) if m.group(2) else "unresolved") or "unresolved",
                         path,
                     )
+
 
 def action_graph(ref: str, paths: list[str], graph: dict):
     for path in paths:
@@ -167,6 +173,7 @@ def action_graph(ref: str, paths: list[str], graph: dict):
             r"\buses:\s*([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)@([^\s#]+)", raw
         ):
             add(graph, "github-action", f"{owner}/{repo}", version, path)
+
 
 def snapshot(ref: str) -> dict:
     paths = files_at(ref)
@@ -182,6 +189,7 @@ def snapshot(ref: str) -> dict:
             graph.values(), key=lambda x: (x["ecosystem"], x["name"], x["version"])
         ),
     }
+
 
 def osv_query(dep: dict) -> list[dict]:
     eco_map = {
@@ -214,6 +222,7 @@ def osv_query(dep: dict) -> list[dict]:
             return json.loads(r.read().decode()).get("vulns", []) or []
     except (urllib.error.URLError, TimeoutError) as e:
         raise RuntimeError(f"OSV query failed for {ecosystem}:{dep['name']}@{version}: {e}")
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -270,6 +279,7 @@ def main() -> int:
         return 1
     print("DEPENDENCY REVIEW: PASS")
     return 0
+
 
 if __name__ == "__main__":
     try:
