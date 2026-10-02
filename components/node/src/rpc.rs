@@ -122,5 +122,7 @@ mod tests {
         let rpc = test_state();
         let r = rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"gib_nichts\",\"id\":3}");
         assert!(r.contains("-32601"));
+        assert!(r.contains("\"message\":\"method not found\""));
+        assert!(!r.contains("gib_nichts"));
     }
 }
