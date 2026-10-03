@@ -1,0 +1,17 @@
+name: Ruff Code Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ruff:
+    uses: A-TownChain-Okosystems/.github/.github/workflows/reusable-ruff.yml@533d9f089699d5e1bd1cfe1ea63524bb8119d9e6
+    permissions:
+      contents: read
