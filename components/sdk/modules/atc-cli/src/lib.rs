@@ -5,6 +5,5 @@
 
 // Entry point in src/main.rs
 pub mod commands;
-pub mod client;
 pub mod format;
 pub mod rpc_client;

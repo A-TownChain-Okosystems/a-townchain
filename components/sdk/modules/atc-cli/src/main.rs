@@ -1,23 +1,4 @@
-// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+use atc_cli::{commands::Command,format,rpc_client::RpcClient};
 use std::env;
-
-fn print_help() {
-    println!("atc-cli — A-TownChain-Okosystems");
-    println!();
-    println!("Usage: atc-cli [--help] [--version]");
-    println!();
-    println!("Commands that require RPC/chain integration are exposed by the library modules and will be added only with a verified backend contract.");
-}
-
-fn main() {
-    let mut args = env::args().skip(1);
-    match args.next().as_deref() {
-        None | Some("--help") | Some("-h") => print_help(),
-        Some("--version") | Some("-V") => println!("atc-cli 0.1.0"),
-        Some(command) => {
-            eprintln!("unknown command: {command}");
-            eprintln!("use --help for supported invocation");
-            std::process::exit(2);
-        }
-    }
-}
+fn print_help(){println!("atc-cli 0.1.0");println!("Usage: atc-cli [--addr HOST:PORT] <chain-id|boot-hash|peers|ping>");println!("Default RPC address: 127.0.0.1:6585");}
+fn main(){let mut args=env::args().skip(1);let mut addr=String::from("127.0.0.1:6585");let mut command=None;while let Some(arg)=args.next(){match arg.as_str(){"--help"|"-h"=>{print_help();return},"--version"|"-V"=>{println!("atc-cli 0.1.0");return},"--addr"=>{addr=match args.next(){Some(v)=>v,None=>{eprintln!("--addr requires HOST:PORT");std::process::exit(2)}}},name=>{command=Command::parse(name);if command.is_none(){eprintln!("unknown command: {name}");std::process::exit(2)}break}}}let Some(command)=command else{print_help();std::process::exit(2)};let mut client=RpcClient::new(addr);let result=match command{Command::ChainId=>client.chain_id().map(format::chain_id),Command::BootHash=>client.boot_hash().map(format::boot_hash),Command::Peers=>client.peers().map(format::peers),Command::Ping=>client.ping().map(|v|format::ping(&v))};match result{Ok(v)=>println!("{v}"),Err(e)=>{eprintln!("RPC error: {e}");std::process::exit(1)}}}
