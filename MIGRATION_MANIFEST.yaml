@@ -38,8 +38,14 @@ rules:
   dependency_graph: "use-when-available"
   source_of_truth: "a-townchain"
 import:
-  executed: "2026-09-17"
+  executed: "2026-09-17 (12 Komponenten); components/contracts nachgezogen 2026-10-07"
   method: "git subtree add (no squash, history-preserving per MONOREPO_MIGRATION.md)"
   component_count: 13
-  source_snapshot: "main (atc-contracts: std/code-quality-gate inkl. PR #7 — Ruff-Fixes + Gate-Workflow, zu dem Zeitpunkt ungemerged)"
-  pending: "Validierung (CI) -> Owner-Freigabe -> Decommission/Archivierung der Quellrepos als separater Schritt"
+  source_snapshot: "2026-09-17 main (12 Komponenten); components/contracts: atc-contracts main @ a7c8b417f482665ef30e94fcacae6469c28b1125 (2026-10-07, Issue #64)"
+  contracts_import:
+    executed: "2026-10-07"
+    source_sha: "a7c8b417f482665ef30e94fcacae6469c28b1125"
+    method: "git subtree add --prefix components/contracts (no squash, history-preserving)"
+    issue: "a-townchain#64 (SCR-0127 SSOT/Migration-Completeness Blocker)"
+    note: "Nachzug: Manifest deklarierte components/contracts seit 2026-09-17, Subtree fehlte (12 statt 13 Dirs). Exact-SHA-Evidence: Merge-Commit referenziert Quell-SHA."
+  pending: "Validierung (CI) -> Owner-Freigabe -> Decommission/Archivierung der Quellrepos als separater Schritt; SCR-0127-Abschluss erst nach Registry<->Repo<->Capability-Recheck (Issue #64)"
