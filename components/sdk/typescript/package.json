@@ -5,5 +5,8 @@
   "type": "module",
   "exports": {
     "./chain-identity": "./chain-identity.ts"
+  },
+  "scripts": {
+    "test": "node --experimental-strip-types --test test/*.test.ts"
   }
 }
