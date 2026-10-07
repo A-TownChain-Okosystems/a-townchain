@@ -1,11 +1,7 @@
-//! Desktop Wallet — Key-Management, TX-Signing, DeFi
+//! ATCLang wallet integration module.
 //!
-//! Part of the A-TownChain-Okosystems ecosystem.
-//! Copyright (c) Michael Wroblewski. All Rights Reserved.
+//! Rust wallet functionality is owned by the canonical `components/wallet`
+//! crate. This module intentionally re-exports that implementation instead of
+//! maintaining a second wallet core.
 
-// Entry point in src/main.rs
-pub mod keys;
-pub mod tx;
-pub mod gui;
-pub mod balance;
-pub mod history;
+pub use atc_wallet::{balance, gui, history, keys, tx};
