@@ -1,0 +1,13 @@
+# t10b — positive Mengen werden akzeptiert: Mint 5 -> Supply 5, Flag 1
+Push 5
+Push 0
+Eq
+JumpIfNotZero 10
+Load 0
+Push 5
+Add
+Store 0
+Push 1
+Halt
+Push 0
+Halt

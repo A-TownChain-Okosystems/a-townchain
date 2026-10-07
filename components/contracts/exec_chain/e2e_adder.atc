@@ -1,0 +1,12 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Subset (ATC-CONTRACT-EXEC-001, F-084, SCR-0104): minimale,
+// vollstaendig ATVM-compilierbare Contract-Funktion.
+// Subset: let / return + u64-Arithmetik. Vollcompiler folgt inkrementell.
+
+contract E2EAdder {
+    fn compute(a: u64, b: u64) -> u64 {
+        let s = a + b
+        let d = s * 2
+        return d
+    }
+}

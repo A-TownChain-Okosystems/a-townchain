@@ -1,0 +1,14 @@
+# t10a — portiert aus test_atc8300_token.py::test_mint_positive_amounts_only
+# Mint 0 muss abgewiesen werden (Flag 0, Supply unberuehrt).
+Push 0
+Push 0
+Eq
+JumpIfNotZero 10
+Load 0
+Push 0
+Add
+Store 0
+Push 1
+Halt
+Push 0
+Halt

@@ -1,0 +1,11 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — Ergaenzung zu
+// tests/test_governance_contract.py::test_finalize_quorum_rejected
+// (ATC-95-Testmigration, atc-contracts#5): Bobs 100k-Stimmen gegen Quorum
+// 2.1M -> Fehlmenge 2.000.000 (Evidenz des REJECTED-Pfads).
+contract T05GovernanceQuorumShortfall {
+    fn compute(quorum_needed: u64, votes_cast: u64) -> u64 {
+        let shortfall = quorum_needed - votes_cast
+        return shortfall
+    }
+}

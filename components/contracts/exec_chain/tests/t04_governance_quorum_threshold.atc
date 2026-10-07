@@ -1,0 +1,11 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — portiert aus
+// tests/test_governance_contract.py::test_finalize_quorum_rejected
+// (ATC-95-Testmigration, atc-contracts#5): Quorum-Schwelle = 10 % der
+// Gesamtsupply 21M -> 2.100.000 Stimmen noetig (100k reichen nicht -> REJECTED).
+contract T04GovernanceQuorumThreshold {
+    fn compute(total_supply: u64) -> u64 {
+        let quorum_needed = total_supply * 10 / 100
+        return quorum_needed
+    }
+}

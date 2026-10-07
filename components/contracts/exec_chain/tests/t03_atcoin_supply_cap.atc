@@ -1,0 +1,11 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — portiert aus tests/test_atcoin.py::test_mint_respects_max_supply
+// (ATC-95-Testmigration, atc-contracts#5): Max-Supply 21M ATC erreicht ->
+// verbleibender Mint-Spielraum = 0 (weitere Mints muessen fehlschlagen).
+contract T03AtCoinSupplyCap {
+    fn compute(minted_total: u64) -> u64 {
+        let max_supply = 21000000
+        let remaining_cap = max_supply - minted_total
+        return remaining_cap
+    }
+}
