@@ -10,6 +10,30 @@
 
 `atc-sdk` provides developer-facing libraries and tooling for interacting with the A-TownChain stack. It is an SDK/tooling layer; it is not the consensus implementation and does not define ATC-VM semantics.
 
+## Scope
+
+The SDK covers protocol clients, RPC access, package tooling, language-facing helpers, and developer automation. It does not implement consensus or the VM.
+
+## Features
+
+- Rust protocol client primitives
+- TypeScript client and typed RPC responses
+- ATCLang-facing SDK primitives
+- Fail-closed RPC response handling
+- CI-validated module builds and tests
+
+## Installation
+
+Use the module-specific manifest or package directory documented by the current tree. There is no root Cargo workspace.
+
+## Development
+
+Contributions must preserve the protocol/VM boundary and pass the repository CI gates.
+
+## Versioning
+
+SDK versions follow the repository changelog and module package manifests; protocol semantics remain canonical outside this repository.
+
 ## Current repository layout
 
 ```text

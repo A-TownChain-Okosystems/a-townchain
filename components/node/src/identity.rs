@@ -61,7 +61,7 @@ fn hex_encode(bytes: &[u8]) -> String {
 mod tests {
     use super::*;
     fn peers() -> Vec<String> { vec!["atc-node-1".into(), "atc-node-2".into()] }
-    #[test] fn genesis_id_is_deterministic() { let p=peers(); let a=compute_genesis_id(CHAIN_ID,"A-TownChain Devnet",DEVNET_NETWORK_ID,0,&p,"0".repeat(64),PROTOCOL_VERSION,VM_VERSION); let b=compute_genesis_id(CHAIN_ID,"A-TownChain Devnet",DEVNET_NETWORK_ID,0,&p,"0".repeat(64),PROTOCOL_VERSION,VM_VERSION); assert_eq!(a,b); assert_eq!(a.len(),64); }
-    #[test] fn identity_is_fail_closed() { let p=peers(); let id=compute_genesis_id(CHAIN_ID,"A-TownChain Devnet",DEVNET_NETWORK_ID,0,&p,"0".repeat(64),PROTOCOL_VERSION,VM_VERSION); let i=ChainIdentity{chain_id:CHAIN_ID.into(),network_id:DEVNET_NETWORK_ID.into(),genesis_id:id}; assert!(verify_genesis_id(&i,"A-TownChain Devnet",0,&p,"0".repeat(64),PROTOCOL_VERSION,VM_VERSION).is_ok()); }
+    #[test] fn genesis_id_is_deterministic() { let p=peers(); let a=compute_genesis_id(CHAIN_ID,"A-TownChain Devnet",DEVNET_NETWORK_ID,0,&p,&"0".repeat(64),PROTOCOL_VERSION,VM_VERSION); let b=compute_genesis_id(CHAIN_ID,"A-TownChain Devnet",DEVNET_NETWORK_ID,0,&p,&"0".repeat(64),PROTOCOL_VERSION,VM_VERSION); assert_eq!(a,b); assert_eq!(a.len(),64); }
+    #[test] fn identity_is_fail_closed() { let p=peers(); let id=compute_genesis_id(CHAIN_ID,"A-TownChain Devnet",DEVNET_NETWORK_ID,0,&p,&"0".repeat(64),PROTOCOL_VERSION,VM_VERSION); let i=ChainIdentity{chain_id:CHAIN_ID.into(),network_id:DEVNET_NETWORK_ID.into(),genesis_id:id}; assert!(verify_genesis_id(&i,"A-TownChain Devnet",0,&p,&"0".repeat(64),PROTOCOL_VERSION,VM_VERSION).is_ok()); }
     #[test] fn transaction_encoding_is_unambiguous() { let d=TransactionDomain{chain_id:CHAIN_ID.into(),network_id:DEVNET_NETWORK_ID.into(),protocol_version:PROTOCOL_VERSION.into(),transaction_type:"transfer".into()}; assert_ne!(d.signing_bytes(1,"alice","bob",10,1,b"ab"),d.signing_bytes(1,"alice","bob",10,1,b"a\0b")); }
 }
