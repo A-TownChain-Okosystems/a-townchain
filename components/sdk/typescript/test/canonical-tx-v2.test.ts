@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ATC_CHAIN_ID, ATC_TX_DOMAIN_V2, canonicalSigningPreimage } from "../chain-identity.ts";
+import { ATC_CHAIN_ID, ATC_TX_DOMAIN_V2, ATC_TX_ID_V2, canonicalSigningPreimage, canonicalTransactionId } from "../chain-identity.ts";
 
 const tx = (amount: bigint) => ({
   chain_id: ATC_CHAIN_ID,
@@ -32,4 +32,12 @@ test("amount uses fixed-width u128 encoding", () => {
 
 test("u128 overflow is rejected", () => {
   assert.throws(() => canonicalSigningPreimage(tx(2n ** 128n)), /u128 out of range/);
+});
+
+test("canonical V2 transaction ID is byte-stable and signature-independent", () => {
+  assert.equal(
+    Buffer.from(canonicalTransactionId(tx(100n))).toString("hex"),
+    "043ebe7545f44320394af8211da323afe8d27fe9e99bff5da3aafd2e5c99b9dc",
+  );
+  assert.equal(ATC_TX_ID_V2, "ATC-TX-ID-V2");
 });
