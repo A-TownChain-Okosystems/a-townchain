@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """Canonical ZKP boundary for the A-TownChain blockchain.
 
-The production implementation lives in the Rust ``atc_zkp`` module.
+The canonical implementation lives in the Rust ``components/zkp`` workspace.
 This Python module is compatibility-only: it never implements or silently
 emulates proof generation/verification. Callers must explicitly select the
 canonical Rust implementation.
@@ -19,7 +19,7 @@ class ZKPLayer:
 
     def __init__(self, *args, **kwargs):
         raise ZKPBackendUnavailable(
-            "The canonical ZKP backend is Rust module 'atc_zkp'. "
+            "The canonical ZKP workspace is 'components/zkp'. "
             "Python proof generation/verification is not supported."
         )
 
@@ -27,7 +27,7 @@ class ZKPLayer:
 def get_zkp_layer() -> ZKPLayer:
     """Fail closed instead of silently selecting a non-canonical backend."""
     raise ZKPBackendUnavailable(
-        "No Python ZKP backend is registered. Use the canonical Rust 'atc_zkp' backend."
+        "No Python ZKP backend is registered. Use the canonical Rust 'components/zkp' workspace."
     )
 
 
@@ -38,7 +38,7 @@ class ShieldedTransaction:
 
     def __new__(cls, *args, **kwargs):
         raise ZKPBackendUnavailable(
-            "ShieldedTransaction is implemented by the canonical Rust ZKP backend."
+            "ShieldedTransaction is implemented by the canonical Rust ZKP workspace."
         )
 
 
