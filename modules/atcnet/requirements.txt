@@ -2,5 +2,5 @@
 # Teil des A-TownChain Ökosystems
 
 cryptography>=50.0.2
-python-dotenv>=1.2.3
+python-dotenv>=1.2.4
 pytest>=9.1.1
