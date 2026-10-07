@@ -71,6 +71,12 @@ impl PohChain {
                 return false;
             }
         }
+        // Fail Closed: eine Chain, deren letzter Tick am Slot-Limit (u64::MAX)
+        // steht, ist im Terminal-Zustand und kann nicht erweitert werden —
+        // sie ist nicht verifizierbar (vgl. slot_overflow_is_rejected).
+        if self.ticks.last().is_some_and(|t| t.slot == u64::MAX) {
+            return false;
+        }
         true
     }
 
