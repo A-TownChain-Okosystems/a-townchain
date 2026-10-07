@@ -1,10 +1,16 @@
 name: ATC Test Suite
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   npm-tests:
@@ -23,11 +29,9 @@ jobs:
             (cd "$d" && npm install --no-audit --no-fund --silent)
             (cd "$d" && npm test --if-present --silent) || { echo "npm test FAILED in $d"; FAIL=1; }
             (cd "$d" && npm run build --if-present --silent) || { echo "npm build FAILED in $d"; FAIL=1; }
-          # Monorepo-Import 2026-09-17: Komponenten-NPM-Projekte sind noch nicht gate-onboarded
-          # (die Quellrepos hatten kein npm-CI); Onboarding ist Welle-3-Folgeaufgabe (SCR-0126).
-          # Das Kern-Gate deckt exakt den Pre-Merge-Baum ab.
           done < <(find . -name package.json -not -path "*/archive/*" -not -path "*/node_modules/*" -not -path "*/.*/" -not -path "./components/*")
           exit $FAIL
+
   pytest:
     runs-on: ubuntu-latest
     steps:
@@ -44,21 +48,48 @@ jobs:
               echo "SKIP $d: keine Tests vorhanden"; continue
             fi
             echo "=== pytest in $d"
-            (cd "$d" && pip install -q -r requirements.txt pytest && python -m pytest -q --no-header) \
-              || { echo "pytest FAILED in $d"; FAIL=1; }
+            (cd "$d" && pip install -q -r requirements.txt pytest && python -m pytest -q --no-header) || { echo "pytest FAILED in $d"; FAIL=1; }
           done < <(find . -name requirements.txt -not -path "*/archive/*")
           exit $FAIL
+
+  cargo-wallet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo check wallet
+        run: cargo check --manifest-path components/wallet/Cargo.toml
+      - name: cargo test wallet
+        run: cargo test --manifest-path components/wallet/Cargo.toml
+
+  consensus-boundary:
+    runs-on: ubuntu-latest
+    needs: [npm-tests, pytest, cargo-wallet]
+    steps:
+      - uses: actions/checkout@v4
       - name: Consensus-Boundary-Check (F-105, Report-Modus, SCR-0081)
         run: python3 tools/consensus_boundary_check.py
+
+  evidence-binding:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    needs: [npm-tests, pytest, cargo-wallet, consensus-boundary]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Evidence-Bindung (SCR-0086 idempotentes test_run-Update je Lauf + hartes Push-Gate)
-        if: success()
         run: |
           python3 - <<'PY'
-          import os, datetime, re
+          import datetime
+          import os
+          import re
           sha = os.environ["GITHUB_SHA"]
           rid = os.environ["GITHUB_RUN_ID"]
-          wf  = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
-          ts  = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          wf = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
+          ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
           p = ".atc/evidence/evidence.yaml"
           t = open(p, encoding="utf-8").read()
           t = re.sub(r"bound_commit: [^\n]*", "bound_commit: " + sha, t)
