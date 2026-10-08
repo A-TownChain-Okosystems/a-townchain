@@ -233,8 +233,7 @@ def main() -> int:
 
     head = snapshot(args.head)
     Path(args.output).write_text(
-        json.dumps(head, indent=2, sort_keys=True) + "
-", encoding="utf-8"
+        json.dumps(head, indent=2, sort_keys=True) + "\n"
     )
     if not args.base:
         print(f"DEPENDENCY GRAPH: PASS ({len(head['dependencies'])} entries)")
@@ -267,8 +266,7 @@ def main() -> int:
         "vulnerabilities": findings,
     }
     Path(args.output).write_text(
-        json.dumps({"graph": head, "review": report}, indent=2, sort_keys=True) + "
-",
+        json.dumps({"graph": head, "review": report}, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     print(f"DEPENDENCY GRAPH: PASS ({len(head['dependencies'])} entries)")
