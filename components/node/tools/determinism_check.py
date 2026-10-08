@@ -16,7 +16,6 @@ import re
 import subprocess
 import sys
 
-
 PATTERNS = {
     "rust": [
         (r"SystemTime::now", "Wall-Clock im Quellcode"),
