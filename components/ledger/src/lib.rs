@@ -10,20 +10,12 @@ pub type Address = String;
 pub type Amount = u128;
 pub type Nonce = u64;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Account {
     pub balance: Amount,
     pub nonce: Nonce,
 }
 
-impl Default for Account {
-    fn default() -> Self {
-        Self {
-            balance: 0,
-            nonce: 0,
-        }
-    }
-}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Transfer {
