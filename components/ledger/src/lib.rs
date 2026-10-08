@@ -16,7 +16,6 @@ pub struct Account {
     pub nonce: Nonce,
 }
 
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Transfer {
     pub from: Address,
