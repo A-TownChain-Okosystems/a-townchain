@@ -10,6 +10,7 @@ ist der zweimalige identische Testlauf, kein synthetischer Nachweis).
 
 Aufruf: python3 tools/determinism_check.py --lang rust|python [--test-cmd "..."]
 """
+
 import argparse
 import os
 import re
@@ -44,6 +45,7 @@ SKIP_DIRS = {
     "tools/determinism_check.py",
 }
 
+
 def scan_sources(root, lang):
     findings = []
     ext = EXT[lang]
@@ -63,9 +65,11 @@ def scan_sources(root, lang):
                 continue
     return findings
 
+
 def run_tests(cmd, cwd):
     r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
     return (r.returncode, (r.stdout or "") + (r.stderr or ""))
+
 
 def main():
     ap = argparse.ArgumentParser()
