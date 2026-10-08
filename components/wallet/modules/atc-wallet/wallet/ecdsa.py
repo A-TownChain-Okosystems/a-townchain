@@ -1,6 +1,5 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 import json
-import time
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
@@ -68,17 +67,21 @@ class ECDSASigner:
         from_addr: str,
         to_addr: str,
         amount: float,
+        nonce: int,
+        timestamp: int,
         fee: float = 0.001,
-        nonce: int = None,
     ) -> dict:
-        """Erstellt ein standardisiertes TX-Dict (vor dem Signieren).
-        Der Nonce verhindert Replay-Attacks.
+        """Erstellt ein standardisiertes TX-Dict mit expliziten Konsens-Metadaten.
+
+        Nonce und Timestamp muessen vom aufrufenden Transaktionskontext geliefert
+        werden. Der Signierer liest keine Wall-Clock und erzeugt keine impliziten
+        Werte, damit identische Eingaben identische Transaktionsdaten ergeben.
         """
         return {
             "from": from_addr,
             "to": to_addr,
             "amount": float(amount),
             "fee": fee,
-            "nonce": nonce or int(time.time() * 1000),
-            "timestamp": int(time.time()),
+            "nonce": nonce,
+            "timestamp": timestamp,
         }

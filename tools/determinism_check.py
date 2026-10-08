@@ -73,6 +73,7 @@ def code_view_py(path):
     for tok in toks:
         if tok.type in (
             tokenize.COMMENT,
+            tokenize.STRING,
             tokenize.NL,
             tokenize.NEWLINE,
             tokenize.INDENT,
@@ -123,7 +124,7 @@ def run_tests(cmd, cwd):
     env = dict(os.environ)
     env["PYTHONHASHSEED"] = "0"  # Hash-Determinismus normalisieren
     p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, env=env)
-    return normalize_output(p.stdout + p.stderr)
+    return p.returncode, normalize_output(p.stdout + p.stderr)
 
 
 def normalize_output(raw):
@@ -165,15 +166,30 @@ def main():
 
     if args.test_cmd:
         print("== Saeule 2: Reproduzierbare Testlaeufe (2x, Byte-Vergleich, PYTHONHASHSEED=0) ==")
-        out1 = run_tests(args.test_cmd, root)
-        out2 = run_tests(args.test_cmd, root)
-        if out1 == out2:
-            print("  OK: zwei identische Testlaeufe (Evidenz per Byte-Vergleich)")
-        else:
+        warm_rc, _ = run_tests(args.test_cmd, root)
+        if warm_rc != 0:
             print(
-                "  FINDING: Testausgaben unterscheiden sich zwischen Lauf 1 und Lauf 2 — nichtdeterministisch!"
+                f"  FINDING: Initial test warm-up failed (rc={warm_rc}) — "
+                "determinism not testable (Fail Closed)"
             )
             ok = False
+        else:
+            rc1, out1 = run_tests(args.test_cmd, root)
+            rc2, out2 = run_tests(args.test_cmd, root)
+            if rc1 != 0 or rc2 != 0:
+                print(
+                    f"  FINDING: Tests schlagen fehl (rc={rc1}/{rc2}) — "
+                    "Determinismus nicht pruefbar (Fail Closed)"
+                )
+                ok = False
+            elif out1 != out2:
+                print(
+                    "  FINDING: Testausgaben unterscheiden sich zwischen Lauf 1 "
+                    "und Lauf 2 — nichtdeterministisch!"
+                )
+                ok = False
+            else:
+                print("  OK: zwei identische Testlaeufe (Evidenz per Byte-Vergleich)")
     else:
         print("== Saeule 2: kein Test-Kommando angegeben — uebersprungen ==")
 

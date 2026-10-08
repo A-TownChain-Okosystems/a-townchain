@@ -232,9 +232,7 @@ def main() -> int:
     args = ap.parse_args()
 
     head = snapshot(args.head)
-    Path(args.output).write_text(
-        json.dumps(head, indent=2, sort_keys=True) + "\n"
-    )
+    Path(args.output).write_text(json.dumps(head, indent=2, sort_keys=True) + "\n")
     if not args.base:
         print(f"DEPENDENCY GRAPH: PASS ({len(head['dependencies'])} entries)")
         return 0
