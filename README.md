@@ -1,6 +1,6 @@
 # ATC A-TownChain
 
-> **ATC COMPLIANCE: R4 · Standard ATC-STD-201 v1.0.1 · GATE: AUDITED (09.09.2026, Score 94/100) · README: ATC-STD-README-001 CONFORM**
+> **Historical audit note:** a score of 94/100 was recorded on 2026-09-09. This dated record is not current release approval; the repository remains development / not production-ready, and Mainnet is NO-GO. Check `STATUS.md` and exact-SHA evidence for current gate state.
 
 > A-TownChain is the canonical chain/orchestration layer of the A-TownChain ecosystem. **This repository is not production-ready and has no approved Mainnet date.**
 
