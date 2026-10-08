@@ -1,7 +1,5 @@
 // Copyright (c) 2026 Michael Wroblewski — Apache-2.0
-//! Deterministic mining primitives.
-//! Consensus thresholds are supplied by the canonical consensus layer; this
-//! module only evaluates candidate work against an explicit target.
+//! Deterministic mining primitives & device classification.
 
 use sha3::{Digest, Sha3_256};
 
@@ -24,6 +22,35 @@ pub enum MiningError {
     EmptyHeader,
     NoSolution,
     InvalidTarget,
+    DoubleClaim,
+    JobNotFound,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MinerDeviceClass {
+    Cpu,
+    Gpu,
+    Mobile,
+    Provisional,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DeviceConfig {
+    pub class: MinerDeviceClass,
+    pub thread_count: usize,
+}
+
+pub fn classify_device(hardware_info: &str) -> MinerDeviceClass {
+    let lower = hardware_info.to_lowercase();
+    if lower.contains("nvidia") || lower.contains("cuda") || lower.contains("radeon") || lower.contains("gpu") {
+        MinerDeviceClass::Gpu
+    } else if lower.contains("arm") || lower.contains("android") || lower.contains("ios") || lower.contains("mobile") {
+        MinerDeviceClass::Mobile
+    } else if lower.contains("x86") || lower.contains("intel") || lower.contains("amd") || lower.contains("cpu") {
+        MinerDeviceClass::Cpu
+    } else {
+        MinerDeviceClass::Provisional
+    }
 }
 
 /// Computes the canonical SHA3-256 digest of `header || nonce_le`.
@@ -89,5 +116,27 @@ mod tests {
         let result = mine(&job, 0, 1).unwrap();
         assert_eq!(result.job_id, 42);
         assert_eq!(result.nonce, 0);
+    }
+
+    // --- NEW TESTS (atc-mining) ---
+
+    #[test]
+    fn test_device_classification() {
+        assert_eq!(classify_device("NVIDIA RTX 4090"), MinerDeviceClass::Gpu);
+        assert_eq!(classify_device("Apple ARM M2 Mobile"), MinerDeviceClass::Mobile);
+        assert_eq!(classify_device("Intel Core i9 x86 CPU"), MinerDeviceClass::Cpu);
+        assert_eq!(classify_device("Unknown Device"), MinerDeviceClass::Provisional);
+    }
+
+    #[test]
+    fn test_mine_empty_header_error() {
+        let job = MiningJob { job_id: 1, header: vec![], target: [0xffu8; 32] };
+        assert_eq!(mine(&job, 0, 10), Err(MiningError::EmptyHeader));
+    }
+
+    #[test]
+    fn test_mine_zero_target_error() {
+        let job = MiningJob { job_id: 1, header: b"test".to_vec(), target: [0u8; 32] };
+        assert_eq!(mine(&job, 0, 10), Err(MiningError::InvalidTarget));
     }
 }

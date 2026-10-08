@@ -5,6 +5,10 @@
 //! Mining never defines consensus. Canonical consensus rules remain in
 //! `atc-algorithm` and contract settlement remains in `atc-contracts`.
 
+pub mod algorithms;
 pub mod executor;
+pub mod manager;
 pub mod miner;
+pub mod network;
 pub mod reward;
+pub mod telemetry;
