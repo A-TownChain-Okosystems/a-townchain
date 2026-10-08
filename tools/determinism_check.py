@@ -165,10 +165,7 @@ def main():
         print("  OK: keine Wall-Clock/RNG-Fundstellen im Code")
 
     if args.test_cmd:
-        print(
-            "== Saeule 2: Reproduzierbare Testlaeufe "
-            "(2x, Byte-Vergleich, PYTHONHASHSEED=0) =="
-        )
+        print("== Saeule 2: Reproduzierbare Testlaeufe (2x, Byte-Vergleich, PYTHONHASHSEED=0) ==")
         warm_rc, _ = run_tests(args.test_cmd, root)
         if warm_rc != 0:
             print(
