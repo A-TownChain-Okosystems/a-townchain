@@ -132,9 +132,9 @@ fn simulate(ops: &[String], expected: u64) -> Result<(), String> {
         let b = stack.pop().ok_or_else(|| format!("stack underflow at {op}"))?;
         let a = stack.pop().ok_or_else(|| format!("stack underflow at {op}"))?;
         let value = match op.as_str() {
-            "Add" => a.wrapping_add(b),
-            "Sub" => a.wrapping_sub(b),
-            "Mul" => a.wrapping_mul(b),
+            "Add" => a.checked_add(b).ok_or_else(|| "ArithmeticOverflow in native assembler simulation".to_string())?,
+            "Sub" => a.checked_sub(b).ok_or_else(|| "ArithmeticOverflow in native assembler simulation".to_string())?,
+            "Mul" => a.checked_mul(b).ok_or_else(|| "ArithmeticOverflow in native assembler simulation".to_string())?,
             "Div" => {
                 if b == 0 { return Err("DivisionByZero in native assembler simulation".to_string()); }
                 a / b
@@ -146,6 +146,18 @@ fn simulate(ops: &[String], expected: u64) -> Result<(), String> {
     let result = stack.last().copied().unwrap_or(0);
     if result != expected { return Err(format!("native assembly simulation {result} != expected {expected}")); }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::simulate;
+
+    #[test]
+    fn arithmetic_overflow_matches_vm_semantics() {
+        assert!(simulate(&["Push 18446744073709551615".into(), "Push 1".into(), "Add".into()], 0).is_err());
+        assert!(simulate(&["Push 0".into(), "Push 1".into(), "Sub".into()], 0).is_err());
+        assert!(simulate(&["Push 18446744073709551615".into(), "Push 2".into(), "Mul".into()], 0).is_err());
+    }
 }
 
 pub fn assemble(contract: &Path, vector: &Path, out_dir: &Path) -> Result<PathBuf, String> {
