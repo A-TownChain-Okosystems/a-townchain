@@ -18,7 +18,10 @@ pub struct Account {
 
 impl Default for Account {
     fn default() -> Self {
-        Self { balance: 0, nonce: 0 }
+        Self {
+            balance: 0,
+            nonce: 0,
+        }
     }
 }
 
@@ -354,7 +357,11 @@ mod tests {
             .unwrap();
 
         assert_eq!(
-            ledger.journal().iter().map(|e| e.sequence).collect::<Vec<_>>(),
+            ledger
+                .journal()
+                .iter()
+                .map(|e| e.sequence)
+                .collect::<Vec<_>>(),
             vec![1, 2]
         );
     }
