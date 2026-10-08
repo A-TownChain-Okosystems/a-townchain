@@ -67,9 +67,9 @@ class ECDSASigner:
         from_addr: str,
         to_addr: str,
         amount: float,
-        fee: float = 0.001,
         nonce: int,
         timestamp: int,
+        fee: float = 0.001,
     ) -> dict:
         """Erstellt ein standardisiertes TX-Dict mit expliziten Konsens-Metadaten.
 
