@@ -43,7 +43,8 @@ fn handle(stream: TcpStream, state: &DevnetRpc) -> std::io::Result<()> {
     let resp = if line.trim().starts_with('{') { state.answer_json(&line) } else { state.answer(&line) };
     let mut w = stream;
     w.write_all(resp.as_bytes())?;
-    w.write_all(b"\n")?;
+    w.write_all(b"
+")?;
     Ok(())
 }
 

@@ -22,7 +22,8 @@ fn start_node() -> (u16, u64) {
 fn query(port: u16, cmd: &str) -> String {
     for _ in 0..50 {
         if let Ok(mut s) = TcpStream::connect(("127.0.0.1", port)) {
-            s.write_all(format!("{}\n", cmd).as_bytes()).unwrap();
+            s.write_all(format!("{}
+", cmd).as_bytes()).unwrap();
             let mut line = String::new();
             BufReader::new(s).read_line(&mut line).unwrap();
             return line.trim().to_string();

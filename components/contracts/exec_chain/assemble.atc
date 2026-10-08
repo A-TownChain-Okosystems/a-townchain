@@ -400,7 +400,8 @@ fn assemble_body(body_src: string, inputs: map, expected: u64) -> AssembleResult
         k = k + 1
     }
 
-    let lines = body_src.split("\n")
+    let lines = body_src.split("
+")
     let final_ops: List<string> = []
     let has_return = false
     let li: u64 = 0
@@ -443,7 +444,8 @@ fn assemble_body(body_src: string, inputs: map, expected: u64) -> AssembleResult
     let text = ""
     let oi: u64 = 0
     while oi < final_ops.len() {
-        text = text + final_ops[oi] + "\n"
+        text = text + final_ops[oi] + "
+"
         oi = oi + 1
     }
     return AssembleResult { ok: true, msg: "OK: Simulation PASS", ops_text: text, n_ops: final_ops.len() }
@@ -459,7 +461,10 @@ fn e2e_adder_selftest() -> bool {
     let inputs: map = {}
     inputs["a"] = 7
     inputs["b"] = 3
-    let body = "        let s = a + b\n        let d = s * 2\n        return d\n"
+    let body = "        let s = a + b
+        let d = s * 2
+        return d
+"
     let r = assemble_body(body, inputs, 20)
     return r.ok
 }

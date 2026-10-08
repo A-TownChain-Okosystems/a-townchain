@@ -185,7 +185,9 @@ pub fn assemble(contract: &Path, vector: &Path, out_dir: &Path) -> Result<PathBu
     fs::create_dir_all(out_dir).map_err(|e| format!("cannot create output directory: {e}"))?;
     let stem = contract.file_stem().and_then(|s| s.to_str()).ok_or_else(|| "invalid contract filename".to_string())?;
     let out = out_dir.join(format!("{stem}.ops"));
-    let mut text = format!("# contract: {stem}\n# expected: {expected}\n");
+    let mut text = format!("# contract: {stem}
+# expected: {expected}
+");
     for op in &ops { text.push_str(op); text.push('\n'); }
     fs::write(&out, text).map_err(|e| format!("cannot write ops output: {e}"))?;
     Ok(out)

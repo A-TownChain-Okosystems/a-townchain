@@ -53,7 +53,8 @@ fn peer_antwort(peer_addr: &str, befehl: &str) -> Result<String, String> {
         .map_err(|e| format!("connect {}: {}", peer_addr, e))?;
     s.set_read_timeout(Some(Duration::from_secs(5)))
         .map_err(|e| format!("timeout: {}", e))?;
-    s.write_all(format!("{}\n", befehl).as_bytes())
+    s.write_all(format!("{}
+", befehl).as_bytes())
         .map_err(|e| format!("send: {}", e))?;
     let mut line = String::new();
     BufReader::new(s)

@@ -55,4 +55,5 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"  ❌ {t.__name__}: {e}")
             fail += 1
-    print(f"\n{ok} passed, {fail} failed")
+    print(f"
+{ok} passed, {fail} failed")
