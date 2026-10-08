@@ -11,6 +11,8 @@ ist der zweimalige identische Testlauf, kein synthetischer Nachweis).
 Aufruf: python3 tools/determinism_check.py --lang rust|python [--test-cmd "..."]
 """
 
+from __future__ import annotations
+
 import argparse
 import os
 import re
