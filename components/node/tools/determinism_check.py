@@ -87,16 +87,25 @@ def main():
         warm_rc, _ = run_tests(cmd, root)
         if warm_rc != 0:
             ok = False
-            print(f"  FINDING: Initial test warm-up failed (rc={warm_rc}) — determinism not testable (Fail Closed)")
+            print(
+                f"  FINDING: Initial test warm-up failed (rc={warm_rc}) — "
+                "determinism not testable (Fail Closed)"
+            )
         else:
             rc1, out1 = run_tests(cmd, root)
             rc2, out2 = run_tests(cmd, root)
         if warm_rc == 0 and (rc1 != 0 or rc2 != 0):
             ok = False
-            print(f"  FINDING: Tests schlagen fehl (rc={rc1}/{rc2}) — Determinismus nicht pruefbar (Fail Closed)")
+            print(
+                f"  FINDING: Tests schlagen fehl (rc={rc1}/{rc2}) — "
+                "Determinismus nicht pruefbar (Fail Closed)"
+            )
         elif warm_rc == 0 and out1 != out2:
             ok = False
-            print("  FINDING: Testausgaben unterscheiden sich zwischen Lauf 1 und Lauf 2 — nichtdeterministisch!")
+            print(
+                "  FINDING: Testausgaben unterscheiden sich zwischen Lauf 1 "
+                "und Lauf 2 — nichtdeterministisch!"
+            )
         elif warm_rc == 0:
             print("  OK: zwei identische Testlaeufe (Evidenz per Byte-Vergleich)")
 
