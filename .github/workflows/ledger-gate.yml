@@ -1,0 +1,29 @@
+name: ATC Ledger Gate
+
+on:
+  pull_request:
+    paths:
+      - "components/ledger/**"
+      - "components/sdk/**"
+      - ".github/workflows/ledger-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ledger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Rust format
+        run: cargo fmt --manifest-path components/ledger/Cargo.toml -- --check
+      - name: Ledger tests
+        run: cargo test --manifest-path components/ledger/Cargo.toml
+      - name: Ledger clippy
+        run: cargo clippy --manifest-path components/ledger/Cargo.toml --all-targets -- -D warnings
+      - name: SDK tests
+        run: cargo test --manifest-path components/sdk/Cargo.toml

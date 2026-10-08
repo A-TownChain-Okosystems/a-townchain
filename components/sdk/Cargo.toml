@@ -6,4 +6,5 @@ license = "Apache-2.0"
 description = "Protocol SDK primitives for A-TownChain."
 
 [dependencies]
+atc-ledger = { path = "../ledger" }
 serde = { version = "1", features = ["derive"] }
