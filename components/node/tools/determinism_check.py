@@ -16,6 +16,7 @@ import re
 import subprocess
 import sys
 
+
 PATTERNS = {
     "rust": [
         (r"SystemTime::now", "Wall-Clock im Quellcode"),
@@ -33,7 +34,16 @@ PATTERNS = {
     ],
 }
 EXT = {"rust": ".rs", "python": ".py"}
-SKIP_DIRS = {"target", "node_modules", ".git", ".github", "tests", "docs", "examples", "tools/determinism_check.py"}
+SKIP_DIRS = {
+    "target",
+    "node_modules",
+    ".git",
+    ".github",
+    "tests",
+    "docs",
+    "examples",
+    "tools/determinism_check.py",
+}
 
 def scan_sources(root, lang):
     findings = []
@@ -62,7 +72,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--lang", choices=["rust", "python"], required=True)
     ap.add_argument("--test-cmd", default=None)
-    ap.add_argument("--skip-tests", action="store_true", help="nur Quellcode-Scan (nicht empfohlen)")
+    ap.add_argument(
+        "--skip-tests", action="store_true", help="nur Quellcode-Scan (nicht empfohlen)"
+    )
     args = ap.parse_args()
 
     root = os.getcwd()
@@ -80,7 +92,11 @@ def main():
 
     if not args.skip_tests:
         print("== Saeule 2: Reproduzierbare Testlaeufe (2x, Byte-Vergleich) ==")
-        cmd = args.test_cmd or ("cargo test --quiet" if args.lang == "rust" else "python3 -m pytest -q 2>/dev/null || python3 -m unittest discover -q")
+        cmd = args.test_cmd or (
+            "cargo test --quiet"
+            if args.lang == "rust"
+            else "python3 -m pytest -q 2>/dev/null || python3 -m unittest discover -q"
+        )
         # Warm the build cache before capturing the two evidence runs. This
         # prevents Cargo's first-build diagnostics (stderr) from being
         # mistaken for nondeterministic test output.
@@ -111,6 +127,8 @@ def main():
 
     print("DETERMINISM GATE:", "PASS" if ok else "FAIL")
     sys.exit(0 if ok else 1)
+
+
 
 if __name__ == "__main__":
     main()
