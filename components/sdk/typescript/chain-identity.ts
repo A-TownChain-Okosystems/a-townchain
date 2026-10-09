@@ -2,9 +2,12 @@
 // Canonical L1 transaction signing primitives.
 // The byte layout MUST remain identical to the Rust L1 kernel signing_bytes().
 
+import { createHash } from "node:crypto";
+
 export type NetworkId = "devnet" | "testnet" | "mainnet";
 export const ATC_CHAIN_ID = 658467 as const;
 export const ATC_TX_DOMAIN_V2 = "ATC-TX-DOMAIN-V2" as const;
+export const ATC_TX_ID_V2 = "ATC-TX-ID-V2" as const;
 
 export interface ChainIdentity {
   chain_id: typeof ATC_CHAIN_ID;
@@ -45,6 +48,13 @@ function pushU32BE(out: number[], value: number): void {
   out.push((value >>> 24) & 0xff, (value >>> 16) & 0xff, (value >>> 8) & 0xff, value & 0xff);
 }
 
+function pushU128BE(out: number[], value: bigint): void {
+  if (value < 0n || value > 0xffffffffffffffffffffffffffffffffn) throw new RangeError("u128 out of range");
+  for (let shift = 120n; shift >= 0n; shift -= 8n) {
+    out.push(Number((value >> shift) & 0xffn));
+  }
+}
+
 function pushU64BE(out: number[], value: bigint): void {
   if (value < 0n || value > 0xffffffffffffffffn) throw new RangeError("u64 out of range");
   for (let shift = 56n; shift >= 0n; shift -= 8n) {
@@ -70,10 +80,26 @@ function assert32Bytes(name: string, value: Uint8Array): void {
   if (value.length !== 32) throw new Error(`${name} must be exactly 32 bytes`);
 }
 
+function canonicalIdFields(tx: TransactionSigningInput): Uint8Array {
+  const out: number[] = [];
+  pushU64BE(out, BigInt(tx.chain_id));
+  out.push(tx.tx_type);
+  pushBytes(out, new TextEncoder().encode(tx.sender_did));
+  pushOptionalString(out, tx.recipient_did);
+  pushU128BE(out, tx.amount);
+  pushU64BE(out, tx.gas_price);
+  pushU64BE(out, tx.gas_limit);
+  pushU64BE(out, tx.nonce);
+  pushU64BE(out, tx.timestamp);
+  pushBytes(out, tx.payload);
+  out.push(...tx.poh_hash);
+  return Uint8Array.from(out);
+}
+
 /**
  * Exact byte representation used by the Rust L1 kernel:
  * ATC-TX-DOMAIN-V2 || chain_id(u64 BE) || tx_type(u8) ||
- * sender_did || recipient_did(optional) || amount(u64 BE) ||
+ * sender_did || recipient_did(optional) || amount(u128 BE) ||
  * gas_price(u64 BE) || gas_limit(u64 BE) || nonce(u64 BE) ||
  * timestamp(u64 BE) || payload || poh_hash(32 bytes).
  */
@@ -87,16 +113,17 @@ export function canonicalSigningPreimage(tx: TransactionSigningInput): Uint8Arra
 
   const out: number[] = [];
   out.push(...new TextEncoder().encode(ATC_TX_DOMAIN_V2));
-  pushU64BE(out, BigInt(tx.chain_id));
-  out.push(tx.tx_type);
-  pushBytes(out, new TextEncoder().encode(tx.sender_did));
-  pushOptionalString(out, tx.recipient_did);
-  pushU64BE(out, tx.amount);
-  pushU64BE(out, tx.gas_price);
-  pushU64BE(out, tx.gas_limit);
-  pushU64BE(out, tx.nonce);
-  pushU64BE(out, tx.timestamp);
-  pushBytes(out, tx.payload);
-  out.push(...tx.poh_hash);
+  out.push(...canonicalIdFields(tx));
   return Uint8Array.from(out);
+}
+
+/**
+ * Canonical transaction ID. The signature is deliberately excluded.
+ * SHA-256 input = ATC-TX-ID-V2 || canonical transaction fields.
+ */
+export function canonicalTransactionId(tx: TransactionSigningInput): Uint8Array {
+  const hash = createHash("sha256");
+  hash.update(new TextEncoder().encode(ATC_TX_ID_V2));
+  hash.update(canonicalIdFields(tx));
+  return new Uint8Array(hash.digest());
 }

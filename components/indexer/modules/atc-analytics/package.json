@@ -1,7 +1,7 @@
 {
   "name": "atc-analytics",
   "version": "0.1.0",
-  "description": "atc-analytics — A-TownChain-Okosystems",
+  "description": "atc-analytics \u2014 A-TownChain-Okosystems",
   "author": "Michael Wroblewski",
   "license": "Apache-2.0",
   "scripts": {
@@ -18,5 +18,8 @@
     "@types/node": "^26",
     "@types/jest": "^30",
     "jest": "^30"
+  },
+  "overrides": {
+    "proxy-addr": "2.0.8"
   }
 }

@@ -546,7 +546,7 @@ class ShivaConsensus:
         height = len(self.chain)
         self.slot += 1
 
-        print(f"\n{'═' * 55}")
+        print(f"{'═' * 55}")
         print(f"  ⛓  ShivaConsensus | Block #{height} | Slot {self.slot}")
         print(f"{'═' * 55}")
 
@@ -629,7 +629,7 @@ class ShivaConsensus:
         self.pow.adjust_difficulty(height)
         self.pos.update_epoch(height)
 
-        print(f"\n  ✅ Block #{height} produziert | Hash: {block.block_hash[:20]}...")
+        print(f"{'═' * 55}")
         return block
 
     def verify_block(self, block: ATCBlock) -> tuple[bool, str]:

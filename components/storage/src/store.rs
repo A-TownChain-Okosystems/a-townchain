@@ -1,5 +1,10 @@
 // Copyright (c) 2026 Michael Wroblewski — Apache-2.0
-//! In-Memory-KV-Store mit deterministischem Root-Hash (STORAGE-Spezifikationen, MVP).
+//! In-Memory-KV-Store mit deterministischem MVP-Root-Hash.
+//!
+//! The current root is a deterministic development-only fingerprint.
+//! It is intentionally FNV-1a based and MUST NOT be treated as a
+//! cryptographic state root, consensus commitment, or security hash.
+//! Canonical state-root/Merkle semantics remain a separate contract.
 
 pub trait KvStore {
     fn put(&mut self, key: &str, value: &[u8]);
@@ -38,8 +43,11 @@ impl KvStore for InMemoryStore {
 }
 
 impl InMemoryStore {
-    /// Deterministischer Root-Hash ueber sortierte Eintraege (MVP-Hash FNV-1a).
-    pub fn root(&self) -> u64 {
+    /// Deterministic development fingerprint over sorted entries.
+    ///
+    /// This is NOT a cryptographic state root and must not be used for
+    /// consensus, authentication, proof verification, or mainnet security.
+    pub fn mvp_root_hash(&self) -> u64 {
         let mut acc: u64 = 0;
         for (k, v) in &self.data {
             acc ^= fnv1a(k.as_bytes()).wrapping_add(fnv1a(v));
@@ -64,16 +72,16 @@ mod tests {
     }
 
     #[test]
-    fn root_aendert_sich_deterministisch() {
+    fn mvp_root_aendert_sich_deterministisch() {
         let mut a = InMemoryStore::default();
         let mut b = InMemoryStore::default();
         a.put("x", &[9]);
         b.put("x", &[9]);
-        assert_eq!(a.root(), b.root());
-        let before = a.root();
+        assert_eq!(a.mvp_root_hash(), b.mvp_root_hash());
+        let before = a.mvp_root_hash();
         a.put("y", &[1]);
-        assert_ne!(a.root(), before);
+        assert_ne!(a.mvp_root_hash(), before);
         a.delete("y");
-        assert_eq!(a.root(), before);
+        assert_eq!(a.mvp_root_hash(), before);
     }
 }

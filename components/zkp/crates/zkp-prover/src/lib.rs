@@ -27,9 +27,11 @@ impl Proof {
         let system_id = bytes[0];
         let mut commitment = [0u8; 32];
         commitment.copy_from_slice(&bytes[1..33]);
-        let n = u64::from_le_bytes(bytes[33..41].try_into().ok()?) as usize;
+        let n64 = u64::from_le_bytes(bytes[33..41].try_into().ok()?);
+        let n = usize::try_from(n64).ok()?;
+        let expected_len = n.checked_mul(8)?;
         let rest = &bytes[41..];
-        if rest.len() != n * 8 {
+        if rest.len() != expected_len {
             return None;
         }
         let mut public_inputs = Vec::with_capacity(n);
@@ -44,6 +46,13 @@ impl Proof {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn rejects_length_overflow_without_panicking() {
+        let mut bytes = vec![0u8; 41];
+        bytes[33..41].copy_from_slice(&u64::MAX.to_le_bytes());
+        assert!(Proof::from_bytes(&bytes).is_none());
+    }
+
     #[test]
     fn roundtrip() {
         let p = Proof { system_id: 1, commitment: [7; 32], public_inputs: vec![1, 2, 3] };

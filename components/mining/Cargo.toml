@@ -7,3 +7,4 @@ description = "ATC Mining — execution and deterministic mining primitives; con
 
 [dependencies]
 sha3 = "0.10"
+atc-algorithm = { git = "https://github.com/A-TownChain-Okosystems/atc-algorithm.git", rev = "bf2d0fa21b8abaad8edd502ed169982d407ed721" }

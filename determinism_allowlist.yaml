@@ -191,22 +191,3 @@ entries:
     pattern: "Wall-Clock"
     justification: "MultiSig execute Transaktions-Hash Entropy mit Wall-Clock Zeitstempel"
     scr: "SCR-0126"
-
-  # ECDSA-Signatur-Fallback (Nonce/Timestamp). Verhaltensaenderung in Wallet-Logik
-  # ist explizit ausgeschlossen; Remediation via injizierbare Clock/Nonce in
-  # Folgeaufgabe dokumentiert — die Eintraege entfallen mit der Dedup.
-  - file: components/wallet/wallet/ecdsa.py
-    line: 82
-    pattern: "Wall-Clock"
-    justification: "ECDSA-Fallback-Nonce aus Wall-Clock; Verhalten eingefroren (SCR-0126), injizierbare Nonce in Welle 3"
-    scr: "SCR-0126"
-  - file: components/wallet/wallet/ecdsa.py
-    line: 83
-    pattern: "Wall-Clock"
-    justification: "Signatur-Timestamp aus Wall-Clock; Verhalten eingefroren (SCR-0126), injizierbare Clock in Welle 3"
-    scr: "SCR-0126"
-  - file: components/wallet/src/wallet.py
-    line: 71
-    pattern: "random-Modul"
-    justification: "random in Wallet-Keygen; Verhalten eingefroren (SCR-0126), CSPRNG/seedbare Quelle in Welle 3"
-    scr: "SCR-0126"

@@ -114,7 +114,16 @@ mod tests {
 
     #[test]
     fn parses_e2e_adder_program() {
-        let text = "# contract: e2e_adder\n# fn: compute\n# expected: 20\nPush 7\nPush 3\nAdd\nPush 2\nMul\nHalt\n";
+        let text = "# contract: e2e_adder
+# fn: compute
+# expected: 20
+Push 7
+Push 3
+Add
+Push 2
+Mul
+Halt
+";
         let prog = parse_ops(text).expect("gueltiges Programm");
         assert_eq!(
             prog,
@@ -131,7 +140,9 @@ mod tests {
 
     #[test]
     fn rejects_unknown_op_fail_closed() {
-        let res = parse_ops("Push 1\nFrobnicate\n");
+        let res = parse_ops("Push 1
+Frobnicate
+");
         assert_eq!(
             res,
             Err(OpsError::UnknownOp {
@@ -143,13 +154,16 @@ mod tests {
 
     #[test]
     fn rejects_bad_push_value() {
-        let res = parse_ops("Push abc\n");
+        let res = parse_ops("Push abc
+");
         assert!(matches!(res, Err(OpsError::BadPush { line: 1, .. })));
     }
 
     #[test]
     fn rejects_empty_program() {
-        let res = parse_ops("# nur kommentare\n\n");
+        let res = parse_ops("# nur kommentare
+
+");
         assert_eq!(res, Err(OpsError::Empty));
     }
 
@@ -157,7 +171,11 @@ mod tests {
     fn control_flow_ops_parse() {
         // Das Format ist zum vollstaendigen Bytecode-Textformat gewachsen
         // (Contract-Execution): Jumps mit explizitem Ziel-Index.
-        let prog = parse_ops("Jump 2\nJumpIfNotZero 0\nJumpIfZero 1\nHalt\n")
+        let prog = parse_ops("Jump 2
+JumpIfNotZero 0
+JumpIfZero 1
+Halt
+")
             .expect("gueltiges .ops");
         assert_eq!(prog.len(), 4);
         assert_eq!(prog[0], Op::Jump(2));
@@ -167,18 +185,24 @@ mod tests {
 
     #[test]
     fn storage_ops_parse() {
-        let prog = parse_ops("Load 0\nStore 1\nCaller\nHalt\n").expect("gueltiges .ops");
+        let prog = parse_ops("Load 0
+Store 1
+Caller
+Halt
+").expect("gueltiges .ops");
         assert_eq!(prog, vec![Op::Load(0), Op::Store(1), Op::Caller, Op::Halt]);
     }
 
     #[test]
     fn bad_slot_and_target_fail_closed() {
         assert!(matches!(
-            parse_ops("Load x\n"),
+            parse_ops("Load x
+"),
             Err(OpsError::BadSlot { line: 1, .. })
         ));
         assert!(matches!(
-            parse_ops("Jump x\n"),
+            parse_ops("Jump x
+"),
             Err(OpsError::BadTarget { line: 1, .. })
         ));
     }

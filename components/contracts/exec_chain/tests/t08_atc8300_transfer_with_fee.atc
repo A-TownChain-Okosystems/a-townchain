@@ -1,0 +1,12 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — portiert aus
+// tests/test_atc8300_token.py::test_transfer_with_fee_routing
+// (ATC-95-Testmigration, atc-contracts#5): Transfer mit Fix-Fee 0.001 ATC
+// (Fee-Route zum Owner). Deterministische Ganzzahl-Darstellung in
+// Milli-Einheiten: Bob 1000000 - 100000 - 1 = 899999.
+contract T08Atc8300TransferWithFee {
+    fn compute(sender_balance: u64, amount: u64, fee: u64) -> u64 {
+        let sender_after = sender_balance - amount - fee
+        return sender_after
+    }
+}

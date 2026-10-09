@@ -49,7 +49,8 @@ fn main() {
     let result = stack.last().copied().unwrap_or(0);
     let status = if result == expected { "PASS" } else { "FAIL" };
     let receipt = format!(
-        "{{\"chain_id\": 658467, \"contract\": \"{}\", \"fn\": \"{}\", \"source_sha256\": \"{}\", \"ops\": {}, \"result\": {}, \"expected\": {}, \"status\": \"{}\", \"vm\": \"atc-vm-0.1.0\"}}\n",
+        "{{\"chain_id\": 658467, \"contract\": \"{}\", \"fn\": \"{}\", \"source_sha256\": \"{}\", \"ops\": {}, \"result\": {}, \"expected\": {}, \"status\": \"{}\", \"vm\": \"atc-vm-0.1.0\"}}
+",
         meta.get("contract").cloned().unwrap_or_default(),
         meta.get("fn").cloned().unwrap_or_default(),
         meta.get("source_sha256").cloned().unwrap_or_default(),

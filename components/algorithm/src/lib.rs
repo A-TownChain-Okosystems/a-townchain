@@ -5,7 +5,11 @@
 //! Algorithmus ATC-HASH-001 (SCR-0119, Owner-Direktive 12.09.2026) ersetzt
 //! die SHA-256-Richtung; Adoption im Devnet-Pfad als eigene Welle, danach
 //! keine FNV-Platzhalter mehr. Kein Mainnet-Claim ohne externe Krypto-Pruefung.
+//!
+//! Monetary policy is canonical here and must be consumed by orchestration,
+//! mining and genesis configuration without redefining consensus locally.
 
+pub mod economics;
 pub mod hash;
 pub mod poh;
 pub mod selection;

@@ -10,14 +10,16 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
+    "next": "^16.3.8",
     "react": "^19.2",
     "react-dom": "^19.2",
-    "next": "^16.3.5",
+    "sharp": "^0.35.5",
+    "source-map-js": "^1.2.2",
     "typescript": "^7"
   },
   "devDependencies": {
-    "@types/node": "^26",
     "@types/jest": "^30",
+    "@types/node": "^26",
     "jest": "^30",
     "ts-jest": "^29"
   }

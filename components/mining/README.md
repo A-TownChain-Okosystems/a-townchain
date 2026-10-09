@@ -170,7 +170,7 @@ Ownership: `ShivaCoreDev` / `aurora-superagent`.
 | ATC-STD-203 | 1.0.1 | ✅ |
 | ATC-STD-README-001 | 1.0.0 | ✅ |
 | ATC-STD-MD-001 | 1.0.0 | ✅ |
-| ATC-STD-SC-018 | 1.0.0 | ✅ |
+| ATC-STD-SC-018 | 1.1.0 | ✅ |
 
 ## Roadmap
 

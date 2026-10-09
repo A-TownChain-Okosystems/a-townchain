@@ -36,11 +36,37 @@ rules:
   do_not_delete_source_repositories: true
   validate_before_decommission: true
   dependency_graph: "use-when-available"
-  source_of_truth: "standalone component repositories"\n  target_role: "integration_mirror"\n  synchronization_direction: "standalone_to_a-townchain"\n  independent_component_release: false
+  source_of_truth: "a-townchain"
 import:
-  executed: "2026-09-17"
+  executed: "2026-09-17 (12 Komponenten); components/contracts nachgezogen 2026-10-07"
   method: "git subtree add (no squash, history-preserving per MONOREPO_MIGRATION.md)"
   component_count: 13
-  source_snapshot: "main (atc-contracts: std/code-quality-gate inkl. PR #7 — Ruff-Fixes + Gate-Workflow, zu dem Zeitpunkt ungemerged)"
-  pending: "Validierung (CI) -> Owner-Freigabe -> optionales Decommission/Archivierung der Quellrepos als separater Schritt"
-\nroles:\n  standalone_repositories: "component Source of Truth; own build, tests, API/ABI and release"\n  a-townchain_components: "integration/subtree mirrors; no competing component SSOT or independent component release"\n  ecosystem_mirrors: "integration/evidence mirrors; no competing SSOT"\n  archives: "historical evidence; immutable unless explicitly governed"\n
+  source_snapshot: "2026-09-17 main (12 Komponenten); components/contracts: atc-contracts main @ a7c8b417f482665ef30e94fcacae6469c28b1125 (2026-10-07, Issue #64)"
+  contracts_import:
+    executed: "2026-10-07"
+    source_sha: "a7c8b417f482665ef30e94fcacae6469c28b1125"
+    method: "git subtree add --prefix components/contracts (no squash, history-preserving)"
+    issue: "a-townchain#64 (SCR-0127 SSOT/Migration-Completeness Blocker)"
+    note: "Nachzug: Manifest deklarierte components/contracts seit 2026-09-17, Subtree fehlte (12 statt 13 Dirs). Exact-SHA-Evidence: Merge-Commit referenziert Quell-SHA."
+  pending: "Validierung (CI) -> Owner-Freigabe -> Decommission/Archivierung der Quellrepos als separater Schritt; SCR-0127-Abschluss erst nach Registry<->Repo<->Capability-Recheck (Issue #64)"
+
+decommission:
+  decision_date: "2026-10-07"
+  decision: "Owner: 7 ARCHIVE / 6 FREEZE / 0 DELETE (SCR-0127)"
+  evidence: "A-TownChain-Okosystems/a-townchain#64"
+  gate: "Exact-SHA-Decommission-Gate: canonical subtree vorhanden, Tests gruen, Registry/Capability -> components/*, keine aktiven Abhaendigkeiten"
+  archived:
+    - {repo: atc-wallet,    source_head: 812a31d, note: "P0-PRs #19/#20/#22/#23/#24 als superseded geschlossen"}
+    - {repo: atc-explorer,  source_head: c4da053}
+    - {repo: atc-indexer,   source_head: 7f3da49}
+    - {repo: atc-mining,    source_head: 227f2d7}
+    - {repo: atc-oracle,    source_head: 8087d34, note: "finaler Evidence-Stand 07.10. nachgezogen (f18ae49)"}
+    - {repo: atc-storage,   source_head: 230746c, note: "Ancestry 07.10. via -s ours gepfropft (16f68d5)"}
+    - {repo: atc-interop,   source_head: 5905fca, note: "components/interop ist Superset (u128-Bridge-Fixes #51)"}
+  frozen:
+    - {repo: atc-node,      source_head: 1b7ab81, reason: "aktive CI-/Markdown-Nacharbeiten"}
+    - {repo: atc-algorithm, source_head: 69eeed5, reason: "Dependency-Graph-/Review-Residual"}
+    - {repo: atc-vm,        source_head: 21132a4, reason: "offener P1 Gas-Metering + Bytecode-Verifikation"}
+    - {repo: atc-contracts, source_head: a7c8b41, reason: "aktive PRs + SCR-0127 muss VERIFIED sein vor Archiv"}
+    - {repo: atc-sdk,       source_head: 6c5dab6, reason: "mehrere P0 TX-V2/u128-Korrekturen"}
+    - {repo: atc-zkp,       source_head: 9771ffe, reason: "upstream gebrochen, Residual kontrolliert erhalten"}
