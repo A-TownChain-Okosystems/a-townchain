@@ -1,6 +1,21 @@
 # determinism_allowlist.yaml — SCR-0126 Determinism-Gate-Remediation
 # Jeder Eintrag ist reviewte Ausnahme mit Begruendung. Ziel: iterativ auf 0 reduzieren.
 entries:
+  - file: components/wallet/modules/atc-wallet/wallet/ecdsa.py
+    line: 82
+    pattern: "Wall-Clock"
+    justification: "Transaktions-Nonce und Timestamp fuer signierte Wallet-Transaktionen"
+    scr: "SCR-0126"
+  - file: components/wallet/modules/atc-wallet/wallet/ecdsa.py
+    line: 83
+    pattern: "Wall-Clock"
+    justification: "Transaktions-Timestamp fuer signierte Wallet-Transaktionen"
+    scr: "SCR-0126"
+  - file: components/wallet/modules/atc-wallet/src/wallet.py
+    line: 71
+    pattern: "random-Modul"
+    justification: "Kryptografische Wallet-Key-Generierung via os.urandom"
+    scr: "SCR-0126"
   - file: modules/atcnet/atcnet.py
     line: 10
     pattern: "random-Modul"
