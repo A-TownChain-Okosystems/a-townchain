@@ -1,11 +1,11 @@
 ---
 document_id: ATC-DOC-TOWNCHAIN-004
 title: "Project Status"
-version: 1.1.0
+version: 1.2.0
 status: active
 owner: A-TownChain-Okosystems
 created: 2026-09-08
-updated: 2026-09-14
+updated: 2026-09-29
 standard: ATC-STD-MD-001
 ---
 
@@ -17,30 +17,53 @@ standard: ATC-STD-MD-001
 | Version | 0.1.0 |
 | Status | development |
 | Implementation | partial / prototype |
-| Build | PASS with evidence |
-| Tests | PASS WITH EVIDENCE |
+| Build | exact-SHA evidence exists for individual gates; no release-candidate green SHA |
+| Tests | individual gates pass; complete launch suite not verified |
 | Security | NOT AUDITED |
-| Conformance | NOT VERIFIED |
+| Conformance | IN PROGRESS |
 | Production Readiness | NO-GO |
 | Mainnet Date | NONE APPROVED |
-| Last Evidence Update | 2026-09-12 |
+| Current Documentation Update | 2026-09-29 |
 
 ## Status Summary
 
-Das Repository `a-townchain` befindet sich im Status `development`. Die Evidence-SSOT weist ausdrücklich darauf hin, dass der Blockchain-Kern nur teilweise implementiert ist und **nicht production-ready** ist.
+a-townchain remains in development. The core contains working components and verified development/test gates, but the complete L1 mainnet path is not yet implemented and evidenced as one production release.
 
-`a-townchain` ist die Orchestrierungs- und Integrationsschicht. Die kanonische Konsenslogik liegt in `atc-algorithm`. Der aktuelle M4-Integrationsstand ist kein Mainnet-Nachweis.
+The canonical readiness source is docs/MAINNET_READINESS.md.
 
-## Release Gate
+## P0 progress
 
-Ein Release über `development` hinaus erfordert mindestens:
+The current crypto P0 work on PR #32 establishes the transaction/account trusted core around secp256k1 ECDSA, SHA-256, RFC6979 and Low-S. The canonical transaction encoding now uses u128 for economic fields and u64 for counters/resource limits.
 
-1. kanonische Konsens-Spezifikation und Freeze,
-2. vollständige Konsens-Implementierung in `atc-algorithm`,
-3. ATVM-Determinismus und End-to-End-Conformance,
-4. kryptografische Spezifikation und unabhängige Prüfung,
-5. reproduzierbaren Build,
-6. Security-Audit,
-7. vollständiges Evidence-Bundle und Audit-Freigabe.
+This work is NOT yet a mainnet release. SDK/Node integration, Rust↔TypeScript conformance, consensus-key contract, mainnet genesis, production networking, state recovery, VM conformance, independent security audit and the final exact-SHA release gate remain open.
 
-**Mainnet: NO-GO.** Ein Mainnet-Termin ist derzeit nicht freigegeben.
+Purpose separation is mandatory: Transaction Key ≠ Consensus Key ≠ Node Identity ≠ Service Identity ≠ Aurora Agent Identity.
+
+Ed25519 is not globally removed; it remains available only where explicitly defined by a purpose-bound identity contract.
+
+## Mainnet release gate
+
+Mainnet remains NO-GO until all mandatory gates reach RELEASED on one immutable release-candidate SHA.
+
+Minimum gates:
+1. canonical monetary and transaction contracts
+2. frozen consensus/finality and consensus-key contract
+3. reproducible mainnet genesis/bootstrap
+4. production P2P and multi-node operation
+5. state sync, restart and recovery
+6. deterministic ATC-VM execution/state-transition conformance
+7. Rust↔TypeScript↔Node transaction conformance
+8. independent security audit and remediation
+9. reproducible signed release artifacts
+10. complete Wallet → SDK → Node → Mempool → Consensus → VM → State → Storage path
+11. exact-SHA evidence bundle
+
+Historical CI results or source-file presence do not satisfy the release gate.
+
+## Evidence rule
+
+SPECIFIED → IMPLEMENTED → TESTED → VERIFIED → AUDITED → RELEASED
+
+**No evidence, no trust.**
+
+For the detailed gate matrix, see docs/MAINNET_READINESS.md.
