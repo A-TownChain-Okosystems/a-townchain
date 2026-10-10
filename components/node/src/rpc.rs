@@ -70,7 +70,8 @@ fn handle(stream: TcpStream, state: &DevnetRpc) -> std::io::Result<()> {
 
 impl DevnetRpc {
     pub fn answer_json(&self, req: &str) -> String {
-        let id = match extract_between(req, "\"id\":", ',') {
+        // ID steht nicht immer vor einem Komma; auch "...,\"id\":7}" (letztes Feld) ist valider JSON-RPC.
+        let id = match extract_between(req, "\"id\":", ',').or_else(|| extract_between(req, "\"id\":", '}')) {
             Some(raw) => match raw.trim().trim_end_matches('}').parse::<u64>() {
                 Ok(id) => id,
                 Err(_) => return "{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{\"code\":-32600,\"message\":\"invalid request\"}}".to_string(),
