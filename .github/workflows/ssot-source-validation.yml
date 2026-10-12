@@ -1,0 +1,59 @@
+name: Canonical SSOT Source Validation
+
+on:
+  pull_request:
+    paths:
+      - "components/algorithm/**"
+      - "components/node/**"
+      - "components/mining/**"
+      - ".github/workflows/ssot-source-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "components/algorithm/**"
+      - "components/node/**"
+      - "components/mining/**"
+      - ".github/workflows/ssot-source-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ssot-source-validation-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  canonical-algorithm-consumers:
+    name: Validate ${{ matrix.package }} against components/algorithm
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: atc-node
+            manifest: components/node/Cargo.toml
+          - package: atc-mining
+            manifest: components/mining/Cargo.toml
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+      - name: Install stable Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Record exact revision and toolchain
+        run: |
+          echo "GITHUB_SHA=$GITHUB_SHA"
+          git rev-parse HEAD
+          rustc --version
+          cargo --version
+      - name: Format check
+        run: cargo fmt --manifest-path ${{ matrix.manifest }} -- --check
+      - name: Cargo check (locked)
+        run: cargo check --locked --manifest-path ${{ matrix.manifest }} --all-targets
+      - name: Cargo tests (locked)
+        run: cargo test --locked --manifest-path ${{ matrix.manifest }} --all-targets
+      - name: Clippy (locked, warnings denied)
+        run: cargo clippy --locked --manifest-path ${{ matrix.manifest }} --all-targets -- -D warnings
