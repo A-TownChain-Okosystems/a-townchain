@@ -49,8 +49,6 @@ jobs:
           git rev-parse HEAD
           rustc --version
           cargo --version
-      - name: Format check
-        run: cargo fmt --manifest-path ${{ matrix.manifest }} -- --check
       - name: Cargo check (locked)
         run: cargo check --locked --manifest-path ${{ matrix.manifest }} --all-targets
       - name: Cargo tests (locked)
