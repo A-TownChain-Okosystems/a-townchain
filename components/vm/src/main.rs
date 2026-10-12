@@ -72,9 +72,20 @@ fn parse_args(args: Vec<String>) -> Result<Args, String> {
 }
 
 fn run_ops_file(args: &Args, path: &str) -> RunOutcome {
-    let text = match fs::read_to_string(path) { Ok(t) => t, Err(e) => return RunOutcome::Failed(format!("ERROR: cannot read .ops file {path}: {e}")) };
+    let text = match fs::File::open(path)
+        .map_err(|e| format!("cannot open .ops file {path}: {e}"))
+        .and_then(|file| assembler::read_limited(file, 1_048_576, ".ops input")) {
+        Ok(t) => t,
+        Err(e) => return RunOutcome::Failed(format!("ERROR: {e}")),
+    };
     let program = match ops::parse_ops(&text) { Ok(p) => p, Err(e) => return RunOutcome::Failed(format!("ERROR: .ops parse: {e:?}")) };
     let n_ops = program.len();
+    if n_ops > vm::MAX_PROGRAM_OPS {
+        return RunOutcome::Failed(format!(
+            "ERROR: program has {n_ops} operations; maximum is {}",
+            vm::MAX_PROGRAM_OPS
+        ));
+    }
     // Reject untrusted slot indexes before arithmetic or allocation. This runner
     // is local-only, but must still fail closed on oversized CLI input.
     if let Some((idx, _)) = args.set_slots.iter().find(|(idx, _)| *idx >= vm::MAX_STORAGE_SLOTS) {
