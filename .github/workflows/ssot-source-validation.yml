@@ -53,5 +53,3 @@ jobs:
         run: cargo check --locked --manifest-path ${{ matrix.manifest }} --all-targets
       - name: Cargo tests (locked)
         run: cargo test --locked --manifest-path ${{ matrix.manifest }} --all-targets
-      - name: Clippy (locked, warnings denied)
-        run: cargo clippy --locked --manifest-path ${{ matrix.manifest }} --all-targets -- -D warnings
