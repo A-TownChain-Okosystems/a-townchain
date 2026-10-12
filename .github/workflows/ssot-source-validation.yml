@@ -37,16 +37,21 @@ jobs:
           - package: atc-mining
             manifest: components/mining/Cargo.toml
     steps:
-      - name: Checkout exact event revision
+      - name: Checkout exact PR head or push revision
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Install stable Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
       - name: Record exact revision and toolchain
         run: |
-          echo "GITHUB_SHA=$GITHUB_SHA"
-          git rev-parse HEAD
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual="$(git rev-parse HEAD)"
+          echo "EXPECTED_SOURCE_SHA=$expected"
+          echo "ACTUAL_CHECKOUT_SHA=$actual"
+          test "$actual" = "$expected"
           rustc --version
           cargo --version
       - name: Cargo check (locked)
