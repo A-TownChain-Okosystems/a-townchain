@@ -8,6 +8,12 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+/// Fail-closed limits for local source/vector parsing and generated textual ops.
+const MAX_SOURCE_BYTES: usize = 1_048_576;
+const MAX_VECTOR_BYTES: usize = 1_048_576;
+const MAX_EXPRESSION_TOKENS: usize = 65_536;
+const MAX_GENERATED_OPS: usize = 65_536;
+
 #[derive(Debug, Clone)]
 struct Parser {
     tokens: Vec<String>,
@@ -74,16 +80,20 @@ fn tokenize(source: &str) -> Result<Vec<String>, String> {
             let start = i; i += 1;
             while i < chars.len() && chars[i].is_ascii_digit() { i += 1; }
             out.push(chars[start..i].iter().collect());
+            if out.len() > MAX_EXPRESSION_TOKENS { return Err("expression token limit exceeded".to_string()); }
             continue;
         }
         if c.is_ascii_alphabetic() || c == '_' {
             let start = i; i += 1;
             while i < chars.len() && (chars[i].is_ascii_alphanumeric() || chars[i] == '_') { i += 1; }
             out.push(chars[start..i].iter().collect());
+            if out.len() > MAX_EXPRESSION_TOKENS { return Err("expression token limit exceeded".to_string()); }
             continue;
         }
         if matches!(c, '+' | '-' | '*' | '/' | '(' | ')') {
-            out.push(c.to_string()); i += 1; continue;
+            out.push(c.to_string()); i += 1;
+            if out.len() > MAX_EXPRESSION_TOKENS { return Err("expression token limit exceeded".to_string()); }
+            continue;
         }
         return Err(format!("invalid character in expression: {c}"));
     }
@@ -163,6 +173,12 @@ mod tests {
 pub fn assemble(contract: &Path, vector: &Path, out_dir: &Path) -> Result<PathBuf, String> {
     let source = fs::read_to_string(contract).map_err(|e| format!("cannot read contract: {e}"))?;
     let vector_json = fs::read_to_string(vector).map_err(|e| format!("cannot read vector: {e}"))?;
+    if source.len() > MAX_SOURCE_BYTES {
+        return Err(format!("contract exceeds maximum source size of {} bytes", MAX_SOURCE_BYTES));
+    }
+    if vector_json.len() > MAX_VECTOR_BYTES {
+        return Err(format!("vector exceeds maximum size of {} bytes", MAX_VECTOR_BYTES));
+    }
     let (params, body) = find_function(&source)?;
     let expected = json_u64_for_key(&vector_json, "expected")?;
     let mut env = HashMap::new();
@@ -192,6 +208,9 @@ pub fn assemble(contract: &Path, vector: &Path, out_dir: &Path) -> Result<PathBu
     }
     let mut ops = final_ops.ok_or_else(|| "no return statement in EXEC-GATE subset".to_string())?;
     ops.push("Halt".to_string());
+    if ops.len() > MAX_GENERATED_OPS {
+        return Err(format!("generated program exceeds {} operations", MAX_GENERATED_OPS));
+    }
     simulate(&ops, expected)?;
 
     fs::create_dir_all(out_dir).map_err(|e| format!("cannot create output directory: {e}"))?;
