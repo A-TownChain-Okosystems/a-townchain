@@ -366,4 +366,26 @@ mod tests {
         let mut vm = Vm::new(vec![Op::Push(1), Op::Jump(99)]);
         assert_eq!(vm.run(), Err(VmError::InvalidJump(99)));
     }
+    #[test]
+    fn public_run_enforces_stack_limit() {
+        let mut vm = Vm::new(vec![Op::Push(1); MAX_STACK_ITEMS + 1]);
+        assert_eq!(vm.run(), Err(VmError::StackLimitExceeded));
+        assert!(vm.stack.is_empty());
+    }
+
+    #[test]
+    fn public_run_rolls_back_storage_when_limit_is_exceeded() {
+        let mut vm = Vm::with_context(
+            vec![Op::Push(7), Op::Store(MAX_STORAGE_SLOTS)],
+            0,
+            vec![3],
+        );
+        assert!(matches!(
+            vm.run(),
+            Err(VmError::StorageLimitExceeded { .. })
+        ));
+        assert_eq!(vm.state(), &[3]);
+        assert!(vm.stack.is_empty());
+    }
+
 }
