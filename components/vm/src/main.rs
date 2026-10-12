@@ -75,8 +75,23 @@ fn run_ops_file(args: &Args, path: &str) -> RunOutcome {
     let text = match fs::read_to_string(path) { Ok(t) => t, Err(e) => return RunOutcome::Failed(format!("ERROR: cannot read .ops file {path}: {e}")) };
     let program = match ops::parse_ops(&text) { Ok(p) => p, Err(e) => return RunOutcome::Failed(format!("ERROR: .ops parse: {e:?}")) };
     let n_ops = program.len();
-    let mut storage = Vec::new();
-    for (idx, val) in &args.set_slots { if *idx >= storage.len() { storage.resize(idx + 1, 0); } storage[*idx] = *val; }
+    // Reject untrusted slot indexes before arithmetic or allocation. This runner
+    // is local-only, but must still fail closed on oversized CLI input.
+    if let Some((idx, _)) = args.set_slots.iter().find(|(idx, _)| *idx >= vm::MAX_STORAGE_SLOTS) {
+        return RunOutcome::Failed(format!(
+            "ERROR: storage slot {idx} exceeds maximum index {}",
+            vm::MAX_STORAGE_SLOTS - 1
+        ));
+    }
+    if let Some((idx, _)) = args.expect_slots.iter().find(|(idx, _)| *idx >= vm::MAX_STORAGE_SLOTS) {
+        return RunOutcome::Failed(format!(
+            "ERROR: expected storage slot {idx} exceeds maximum index {}",
+            vm::MAX_STORAGE_SLOTS - 1
+        ));
+    }
+    let initial_len = args.set_slots.iter().map(|(idx, _)| idx + 1).max().unwrap_or(0);
+    let mut storage = vec![0; initial_len];
+    for (idx, val) in &args.set_slots { storage[*idx] = *val; }
     let mut machine = vm::Vm::with_context(program, args.caller, storage);
     let stack = match machine.run() { Ok(s) => s, Err(e) => return RunOutcome::Failed(format!("ERROR: ATVM: {e:?}")) };
     let result = stack.last().copied().unwrap_or(0);
