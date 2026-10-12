@@ -29,24 +29,20 @@ jobs:
       - name: Run ATCLang consensus conformance
         env:
           ATCLANG_ROOT: ${{ github.workspace }}/atclang
-        run: bash tests/run_atclang_conformance.sh
+        run: bash components/contracts/tests/run_atclang_conformance.sh
 
   exec-chain-native:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with:
-          repository: A-TownChain-Okosystems/atc-vm
-          path: atc-vm
       - uses: dtolnay/rust-toolchain@stable
-      - name: Build native ATVM runner
-        working-directory: atc-vm
+      - name: Build canonical ATVM runner
+        working-directory: components/vm
         run: cargo build --locked --bin atc-vm-runner
-      - name: Run migrated EXEC-CHAIN tests
+      - name: Run EXEC-CHAIN tests against canonical ATVM
         env:
-          ATC_VM_RUNNER: ${{ github.workspace }}/atc-vm/target/debug/atc-vm-runner
-        run: bash exec_chain/tests/run_tests.sh
+          ATC_VM_RUNNER: ${{ github.workspace }}/components/vm/target/debug/atc-vm-runner
+        run: bash components/contracts/exec_chain/tests/run_tests.sh
 
   npm-tests:
     runs-on: ubuntu-latest
@@ -83,12 +79,12 @@ jobs:
           wf = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
           ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
           t = open(".atc/evidence/evidence.yaml", encoding="utf-8").read()
-          t = re.sub(r"bound_commit: [^\n]*", "bound_commit: " + sha, t)
-          block = ("test_run:\n  workflow: " + wf + "\n  run_id: " + rid + "\n  commit: " + sha + "\n  timestamp: " + ts + "\n  result: PASS\n  runner: github-actions\n")
-          if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", t):
-              t = re.sub(r"(?m)^test_run:\n(?:  [^\n]*\n)+", block, t)
+          t = re.sub(r"bound_commit: [^\\n]*", "bound_commit: " + sha, t)
+          block = ("test_run:\\n  workflow: " + wf + "\\n  run_id: " + rid + "\\n  commit: " + sha + "\\n  timestamp: " + ts + "\\n  result: PASS\\n  runner: github-actions\\n")
+          if re.search(r"(?m)^test_run:\\n(?:  [^\\n]*\\n)+", t):
+              t = re.sub(r"(?m)^test_run:\\n(?:  [^\\n]*\\n)+", block, t)
           else:
-              t = t.rstrip() + "\n" + block
+              t = t.rstrip() + "\\n" + block
           open("evidence/evidence.yaml", "w", encoding="utf-8").write(t)
           PY
       - name: Upload immutable evidence
