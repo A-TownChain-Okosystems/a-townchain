@@ -5,7 +5,6 @@ version = 4
 [[package]]
 name = "atc-algorithm"
 version = "0.1.0"
-source = "git+https://github.com/A-TownChain-Okosystems/atc-algorithm.git?rev=bf2d0fa21b8abaad8edd502ed169982d407ed721#bf2d0fa21b8abaad8edd502ed169982d407ed721"
 
 [[package]]
 name = "atc-mining"

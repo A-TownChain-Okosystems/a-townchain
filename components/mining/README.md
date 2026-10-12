@@ -32,7 +32,7 @@ governance:
 
 ## Overview
 
-`atc-mining` bildet den spezialisierten Mining-Stack des A-TownChain-Ökosystems. Es trennt die hardwarenahe Hashing- und Node-Logik strikt vom Konsensus-Core (`a-townchain` / `atc-algorithm`), um den Core regeldefinierend und nicht hardwaretreibend zu halten. Das Repository implementiert Mining-Rewards, Emissionen, Double-Claim-Schutz und Event-Emittierung gemäß ATC-STD-SC-018 zur Echtzeitüberwachung durch MinerWatcherGPT.
+`atc-mining` bildet den spezialisierten Mining-Stack des A-TownChain-Ökosystems. Es trennt die hardwarenahe Hashing- und Node-Logik strikt vom kanonischen Konsens-Core (`a-townchain/components/algorithm`), um den Core regeldefinierend und nicht hardwaretreibend zu halten. Das Repository implementiert Mining-Rewards, Emissionen, Double-Claim-Schutz und Event-Emittierung gemäß ATC-STD-SC-018 zur Echtzeitüberwachung durch MinerWatcherGPT.
 
 ## Purpose
 
@@ -68,8 +68,8 @@ Das Repository befindet sich in der aktiven Entwicklung (L5, Roadmap-Meilenstein
 | Component | Purpose | Required |
 |---|---|---|
 | `a-townchain` | Blockchain-Core, State & Tx-Orchestrierung | Ja |
-| `atc-algorithm` | Konsensus- und Difficulty-Regeln (PoH+PoS+PoW) | Ja |
-| `atc-contracts` | SC-018 Mining Contracts & Event-Interfaces | Ja |
+| `a-townchain/components/algorithm` | Kanonische Konsens-/Algorithmus-Implementierung und Difficulty-Regeln, soweit spezifiziert | Ja |
+| `a-townchain/components/contracts` | Kanonische SC-018 Mining Contracts & Event-Interfaces | Ja |
 | MinerWatcherGPT | KI-Service für Mining-Monitoring & Forensik | Ja |
 
 ## Features

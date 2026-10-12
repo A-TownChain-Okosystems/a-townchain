@@ -14,13 +14,19 @@
 `atc-node` definiert **nicht** eigenständig die Chain-Semantik. Es baut auf den kanonischen Komponenten auf, insbesondere:
 
 - `a-townchain` — Chain-Protokoll / Core
-- `atc-algorithm` — Konsens-/Algorithmus-Komponenten, soweit vom aktuellen Protokoll vorgesehen
-- `atc-vm` — Contract-/VM-Ausführung
+- `a-townchain/components/algorithm` — kanonische Konsens-/Algorithmus-Implementierung, soweit vom aktuellen Protokoll vorgesehen
+- `a-townchain/components/vm` — kanonische Contract-/VM-Ausführung
 - Node-spezifische Netzwerk-, Storage- und Lifecycle-Komponenten in diesem Repository
 
 ## Architecture
 
 ```text
+a-townchain/components/algorithm
+  │  canonical consensus / algorithm implementation
+  ▼
+a-townchain/components/vm
+  │  canonical contract execution
+  ▼
 a-townchain
   │  protocol / state-transition rules
   ▼
