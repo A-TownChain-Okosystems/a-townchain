@@ -9,6 +9,9 @@ pub const MAX_PROGRAM_OPS: usize = 65_536;
 pub const MAX_STACK_ITEMS: usize = 4_096;
 /// Maximum number of storage slots retained by a VM state.
 pub const MAX_STORAGE_SLOTS: usize = 65_536;
+/// Default gas budget for non-consensus local/unit execution only.
+/// This is a safety policy, not a protocol or consensus parameter.
+pub const LOCAL_DEFAULT_GAS_BUDGET: u64 = 1_000_000;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Op {
@@ -228,7 +231,7 @@ impl Vm {
     /// Consensus state transitions MUST still use execute_state_transition_with_gas
     /// so the chain context and protocol-supplied gas budget are checked.
     pub fn run(&mut self) -> Result<Vec<u64>, VmError> {
-        self.run_with_gas(u64::MAX)
+        self.run_with_gas(LOCAL_DEFAULT_GAS_BUDGET)
     }
 
     fn binop(&mut self, f: impl Fn(u64, u64) -> u64) -> Result<(), VmError> {
@@ -366,6 +369,16 @@ mod tests {
         let mut vm = Vm::new(vec![Op::Push(1), Op::Jump(99)]);
         assert_eq!(vm.run(), Err(VmError::InvalidJump(99)));
     }
+    #[test]
+    fn public_run_stops_non_terminating_control_flow() {
+        let mut vm = Vm::new(vec![Op::Jump(0)]);
+        assert!(matches!(
+            vm.run(),
+            Err(VmError::OutOfGas { .. })
+        ));
+        assert!(vm.stack.is_empty());
+    }
+
     #[test]
     fn public_run_enforces_stack_limit() {
         let mut vm = Vm::new(vec![Op::Push(1); MAX_STACK_ITEMS + 1]);
