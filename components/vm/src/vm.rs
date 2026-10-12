@@ -223,53 +223,12 @@ impl Vm {
         Ok(())
     }
 
-    /// Raw interpreter retained for local/unit use. Consensus state transitions
-    /// MUST use execute_state_transition_with_gas.
+    /// Local/unit execution uses the same verifier, stack/storage bounds, gas
+    /// accounting, and transactional rollback as the canonical interpreter.
+    /// Consensus state transitions MUST still use execute_state_transition_with_gas
+    /// so the chain context and protocol-supplied gas budget are checked.
     pub fn run(&mut self) -> Result<Vec<u64>, VmError> {
-        let mut pc = 0usize;
-        while pc < self.program.len() {
-            match self.program[pc].clone() {
-                Op::Push(v) => self.stack.push(v),
-                Op::Add => self.binop(|a, b| a.wrapping_add(b))?,
-                Op::Sub => self.binop(|a, b| a.wrapping_sub(b))?,
-                Op::Mul => self.binop(|a, b| a.wrapping_mul(b))?,
-                Op::Div => {
-                    let b = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    let a = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    self.stack.push(a.checked_div(b).ok_or(VmError::DivisionByZero)?);
-                }
-                Op::Eq => self.binop(|a, b| (a == b) as u64)?,
-                Op::Lt => self.binop(|a, b| (a < b) as u64)?,
-                Op::Dup => {
-                    let v = *self.stack.last().ok_or(VmError::StackUnderflow)?;
-                    self.stack.push(v);
-                }
-                Op::Swap => {
-                    let n = self.stack.len();
-                    if n < 2 { return Err(VmError::StackUnderflow); }
-                    self.stack.swap(n - 1, n - 2);
-                }
-                Op::Load(slot) => self.stack.push(self.storage.get(slot).copied().unwrap_or(0)),
-                Op::Store(slot) => {
-                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if slot >= self.storage.len() { self.storage.resize(slot + 1, 0); }
-                    self.storage[slot] = v;
-                }
-                Op::Caller => self.stack.push(self.caller),
-                Op::JumpIfZero(t) => {
-                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if v == 0 { pc = self.valid_jump(t)?; continue; }
-                }
-                Op::Jump(t) => { pc = self.valid_jump(t)?; continue; }
-                Op::JumpIfNotZero(t) => {
-                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if v != 0 { pc = self.valid_jump(t)?; continue; }
-                }
-                Op::Halt => break,
-            }
-            pc += 1;
-        }
-        Ok(std::mem::take(&mut self.stack))
+        self.run_with_gas(u64::MAX)
     }
 
     fn binop(&mut self, f: impl Fn(u64, u64) -> u64) -> Result<(), VmError> {
