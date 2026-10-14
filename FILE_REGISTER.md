@@ -10,20 +10,20 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 986 |
+| **Total Dateien** | 992 |
 | .md | 362 |
 | .atc | 142 |
 | .yaml | 110 |
 | .yml | 87 |
 | .rs | 83 |
-| .py | 53 |
+| .py | 57 |
 | (keine) | 42 |
 | .toml | 26 |
 | .gitignore | 24 |
 | .ts | 20 |
 | .json | 18 |
 | .gitkeep | 11 |
-| .txt | 5 |
+| .txt | 6 |
 | .tsx | 2 |
 
 ---
@@ -306,6 +306,7 @@
 - `components/interop/modules/atc-bridge/src/validator.rs`
 - `components/interop/modules/atc-bridge/tokens/fee_manager.atc`
 - `components/interop/modules/atc-bridge/tokens/token_registry.atc`
+- `components/interop/modules/atc-bridge/validators/validator_set.atc`
 - `components/interop/tests/TESTPLAN.md`
 - `components/interop/tools/determinism_check.py`
 - `components/mining/.atc/compliance.yaml`
@@ -696,36 +697,24 @@
 - `components/wallet/faucet.atc`
 - `components/wallet/history.atc`
 - `components/wallet/keymanager.atc`
-- `components/wallet/modules/atc-wallet/.gitignore`
-- `components/wallet/modules/atc-wallet/ARCHITECTURE.md`
-- `components/wallet/modules/atc-wallet/CHANGELOG.md`
-- `components/wallet/modules/atc-wallet/COMPONENT_PLAN.md`
-- `components/wallet/modules/atc-wallet/Cargo.toml`
-- `components/wallet/modules/atc-wallet/FILE_REGISTER.md`
-- `components/wallet/modules/atc-wallet/LICENSE`
-- `components/wallet/modules/atc-wallet/README.md`
-- `components/wallet/modules/atc-wallet/ROADMAP.md`
-- `components/wallet/modules/atc-wallet/STATUS.md`
-- `components/wallet/modules/atc-wallet/balance.atc`
-- `components/wallet/modules/atc-wallet/faucet.atc`
-- `components/wallet/modules/atc-wallet/history.atc`
-- `components/wallet/modules/atc-wallet/keymanager.atc`
-- `components/wallet/modules/atc-wallet/nft_viewer.atc`
-- `components/wallet/modules/atc-wallet/src/lib.rs`
-- `components/wallet/modules/atc-wallet/src/main.rs`
-- `components/wallet/modules/atc-wallet/tx_signer.atc`
 - `components/wallet/nft_viewer.atc`
+- `components/wallet/requirements.txt`
 - `components/wallet/ruff.toml`
+- `components/wallet/setup.py`
+- `components/wallet/src/__init__.py`
 - `components/wallet/src/balance.rs`
+- `components/wallet/src/crypto.py`
 - `components/wallet/src/gui.rs`
 - `components/wallet/src/history.rs`
 - `components/wallet/src/keys.rs`
 - `components/wallet/src/lib.rs`
 - `components/wallet/src/main.rs`
 - `components/wallet/src/tx.rs`
+- `components/wallet/src/wallet.py`
 - `components/wallet/tests/TESTPLAN.md`
 - `components/wallet/tools/determinism_check.py`
 - `components/wallet/tx_signer.atc`
+- `components/wallet/wallet/ecdsa.py`
 - `components/zkp/.atc/compliance.yaml`
 - `components/zkp/.atc/evidence/evidence.yaml`
 - `components/zkp/.atc/lifecycle.yaml`
