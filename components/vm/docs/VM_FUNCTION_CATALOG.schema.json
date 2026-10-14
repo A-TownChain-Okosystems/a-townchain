@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ATC-VM Function Catalog Schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "catalog_id",
+    "status",
+    "canonical_owner",
+    "source_snapshot",
+    "function_count",
+    "functions"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "catalog_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "AUDIT_BASELINE_NOT_COMPLETE",
+        "RECONCILIATION_BLOCKED",
+        "RECONCILED"
+      ]
+    },
+    "canonical_owner": {
+      "type": "string"
+    },
+    "source_snapshot": {
+      "type": "object"
+    },
+    "function_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "functions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "domain",
+          "function",
+          "purpose",
+          "owner",
+          "source_binding",
+          "contract",
+          "status",
+          "traceability",
+          "residuals"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^ATC-VM-"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "function": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "source_binding": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "contract": {
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              "SPECIFIED",
+              "INCOMPLETE",
+              "BLOCKED",
+              "IMPLEMENTED",
+              "TESTED",
+              "CI-VERIFIED",
+              "E2E-VERIFIED",
+              "AUDITED",
+              "RELEASE-READY"
+            ]
+          },
+          "traceability": {
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "INCOMPLETE",
+              "BROKEN"
+            ]
+          },
+          "residuals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

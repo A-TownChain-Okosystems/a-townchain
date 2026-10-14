@@ -1,0 +1,45 @@
+name: ATC-VM Exact Validation
+
+on:
+  pull_request:
+    paths:
+      - "components/vm/**"
+      - ".github/workflows/atc-vm-validation.yml"
+  push:
+    branches:
+      - "fix/atc-vm-read-limits-followup-2026-10-12"
+    paths:
+      - "components/vm/**"
+      - ".github/workflows/atc-vm-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atc-vm-validation-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  atc-vm:
+    name: ATC-VM fmt, tests, clippy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+      - name: Install stable Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Record revision and toolchain
+        run: |
+          echo "GITHUB_SHA=$GITHUB_SHA"
+          git rev-parse HEAD
+          rustc --version
+          cargo --version
+      - name: cargo fmt --check
+        working-directory: components/vm
+        run: cargo fmt --check
+      - name: cargo test --manifest-path components/vm/Cargo.toml
+        run: cargo test --manifest-path components/vm/Cargo.toml
+      - name: cargo clippy --manifest-path components/vm/Cargo.toml --all-targets -- -D warnings
+        run: cargo clippy --manifest-path components/vm/Cargo.toml --all-targets -- -D warnings
