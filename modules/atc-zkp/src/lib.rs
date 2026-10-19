@@ -10,3 +10,4 @@ pub mod starks;
 pub mod circuits;
 pub mod verifier;
 pub mod merkle;
+pub mod verification_engine;
