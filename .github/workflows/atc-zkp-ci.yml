@@ -35,7 +35,7 @@ jobs:
         run: rustc --version && cargo --version
 
       - name: Compile no_std library
-        run: cargo check --locked --manifest-path modules/atc-zkp/Cargo.toml --lib
+        run: cargo check --manifest-path modules/atc-zkp/Cargo.toml --lib
 
       - name: Run atc-zkp unit tests
-        run: cargo test --locked --manifest-path modules/atc-zkp/Cargo.toml --lib -- --test-threads=1
+        run: cargo test --manifest-path modules/atc-zkp/Cargo.toml --lib -- --test-threads=1
