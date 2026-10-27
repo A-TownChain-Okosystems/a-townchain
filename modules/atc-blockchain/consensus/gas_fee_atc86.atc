@@ -23,16 +23,39 @@ struct GasTransaction {
 
 // ATC-86: Base Fee Anpassung (EIP-1559 Style)
 pub fn adjust_base_fee(state: GasState, block_gas_used: UInt256) -> UInt256 {
-    if block_gas_used == state.target_gas_per_block {
-        return state.base_fee  // Keine Änderung
+    // A zero target makes the adjustment denominator invalid. The state
+    // configuration must reject this before consensus execution; fail closed
+    // here rather than divide by zero.
+    if state.target_gas_per_block == 0 {
+        return state.max_base_fee
     }
 
-    let gas_diff = block_gas_used - state.target_gas_per_block
+    if block_gas_used == state.target_gas_per_block {
+        if state.base_fee < state.min_base_fee {
+            return state.min_base_fee
+        }
+        if state.base_fee > state.max_base_fee {
+            return state.max_base_fee
+        }
+        return state.base_fee
+    }
+
+    let gas_diff = if block_gas_used > state.target_gas_per_block {
+        block_gas_used - state.target_gas_per_block
+    } else {
+        state.target_gas_per_block - block_gas_used
+    }
     let adjustment = (state.base_fee * state.adjustment_factor * gas_diff) / (state.target_gas_per_block * 10000)
 
-    let new_fee = state.base_fee + adjustment
+    let new_fee = if block_gas_used > state.target_gas_per_block {
+        state.base_fee + adjustment
+    } else {
+        // Clamp before subtraction so an invalid adjustment factor cannot
+        // underflow the unsigned fee value.
+        let bounded_adjustment = min(adjustment, state.base_fee)
+        state.base_fee - bounded_adjustment
+    }
 
-    // Bounds
     if new_fee < state.min_base_fee {
         return state.min_base_fee
     }
@@ -52,7 +75,9 @@ pub fn calculate_gas(tx: GasTransaction, base_fee: UInt256) -> UInt256 {
 pub fn calculate_refund(tx: GasTransaction, base_fee: UInt256) -> UInt256 {
     let effective_gas_price = min(tx.max_fee, base_fee + tx.priority_fee)
     let used_cost = tx.gas_used * effective_gas_price
-    let max_cost = tx.gas_limit * effective_gas_price
+    // The sender reserves gas_limit * max_fee. Refund the difference
+    // between that reservation and the actual consumed cost.
+    let max_cost = tx.gas_limit * tx.max_fee
     return max_cost - used_cost
 }
 
