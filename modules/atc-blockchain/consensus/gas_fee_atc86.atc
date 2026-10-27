@@ -78,6 +78,9 @@ pub fn calculate_refund(tx: GasTransaction, base_fee: UInt256) -> UInt256 {
     // The sender reserves gas_limit * max_fee. Refund the difference
     // between that reservation and the actual consumed cost.
     let max_cost = tx.gas_limit * tx.max_fee
+    if used_cost >= max_cost {
+        return 0
+    }
     return max_cost - used_cost
 }
 
