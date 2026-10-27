@@ -24,8 +24,8 @@ struct GasTransaction {
 // ATC-86: Base Fee Anpassung (EIP-1559 Style)
 pub fn adjust_base_fee(state: GasState, block_gas_used: UInt256) -> UInt256 {
     // A zero target makes the adjustment denominator invalid. The state
-    // configuration must reject this before consensus execution; fail closed
-    // here rather than divide by zero.
+    // configuration MUST be rejected by the caller before consensus execution.
+    // This return is only a deterministic defensive fallback, not validation.
     if state.target_gas_per_block == 0 {
         return state.max_base_fee
     }
