@@ -35,7 +35,7 @@ The decision must be approved by the accountable owner and the applicable §9 re
 
 Advantages: matches the migration manifest and current implementation path; reduces the risk of two production implementations.
 
-Risks/residuals: requires SCR-0131 owner/§9 decision, registry reconciliation, consumer audit, and evidence for the exact source snapshot.
+Risks/residuals: requires SCR-0131 Owner decision and applicable ATC-STD-000 review/approval, registry reconciliation, consumer audit, and evidence for the exact source snapshot.
 
 ### Option B — Standalone implementation boundary
 
@@ -97,7 +97,7 @@ Strict mode must not be activated until the legacy inventory is resolved and the
 
 Before AD-02 can become APPROVED/VERIFIED:
 
-1. Owner and §9 approval record, with reviewer identities and decision date.
+1. Owner decision under ATC-STD-000 §14.1, applicable reviews under §§14–17, and approval under §18; SCR decision under §20, with reviewer identities and decision date.
 2. Approved protocol specification with immutable version and normative registry reference.
 3. Consumer/dependency inventory showing which source is compiled and executed by node, mining, validator and testnet paths.
 4. Exact branch HEAD commit SHA for every repository involved.
@@ -113,7 +113,7 @@ A green CI run alone does not establish protocol correctness or VERIFIED status.
 ## 9. Non-goals and safety constraints
 
 - No changes to consensus rules, hash primitives, stake types, encoding, fork choice or finality.
-- No registry or generated-view changes before owner/§9 approval.
+- No registry or generated-view changes before Owner decision and applicable ATC-STD-000 review/approval.
 - No repository archive, deletion, unfreeze or source movement.
 - No automatic promotion of draft specifications to normative status.
 - No CI, security, review or release-gate weakening.
@@ -122,3 +122,8 @@ A green CI run alone does not establish protocol correctness or VERIFIED status.
 ## 10. Current disposition
 
 **BLOCKED / RESIDUAL.** This draft makes the decision alternatives and required evidence explicit. It is not an approval, migration completion, protocol freeze, or release authorization.
+
+## Governance-reference correction
+
+The phrase `Owner-Freigabe (§9)` occurs in legacy repository guidance, but current approved ATC-STD-000 v1.3.0 assigns standard structure to §9, review chain and role authority to §§14–17, approval conditions to §18, and SCR change decisions to §20. New evidence must cite these current sections. Historical §9 references are not silently reinterpreted or deleted; their intended legacy numbering must be established if relied upon.
+
