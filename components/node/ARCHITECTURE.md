@@ -19,13 +19,13 @@ standard: ATC-STD-MD-001
 
 1. **Node-Runtime (`src/`):** Lifecycle eines Netzwerk-Teilnehmers (Start, Bootstrap, Shutdown).
 2. **Bootstrap & Discovery:** Peers finden und verbinden (S4-Netzwerk-Angriffsfläche).
-3. **Validator-Betrieb:** Key-Handling, Block-Produktion-Treiber (Konsens via `atc-algorithm`).
+3. **Validator-Betrieb:** Key-Handling, Block-Produktion-Treiber (Konsens-Prototyp über `components/algorithm` (Capability-Ownership pending SCR-0131)).
 4. **CLI/Konfiguration (`config/`, `tools/`):** Operator-Schnittstelle.
 
 ## Verantwortungsgrenzen
 
 - `a-townchain`: definiert das Chain-Protokoll — der Node betreibt eine reale Instanz.
-- `atc-algorithm`: Hybrid-Konsens (kanonisch).
+- `components/algorithm`: migrierter Hybrid-Konsens-Prototyp; normative Ownership pending SCR-0131/§9.
 - `atc-vm`: Vertrags-Ausführung (kanonisch).
 
 ## Registry-Einordnung

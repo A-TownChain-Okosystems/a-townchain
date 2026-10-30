@@ -3,7 +3,7 @@ name = "atc-mining"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
-description = "ATC Mining — execution and deterministic mining primitives; consensus remains canonical in atc-algorithm"
+description = "ATC Mining — execution and deterministic mining primitives; consumes migrated components/algorithm implementation"
 
 [dependencies]
 sha3 = "0.10"

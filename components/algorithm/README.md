@@ -1,6 +1,6 @@
 # ATC Algorithm
 
-> **ATC COMPLIANCE: R1** — repository governance baseline. This repository is the **canonical consensus implementation target**, but it is **not yet production-ready**.
+> **ATC COMPLIANCE: R1** — migrated Rust component under `a-townchain/components/algorithm`. The production capability owner remains subject to SCR-0131 owner/§9 approval; this component is **not production-ready**.
 
 **Project:** atc-algorithm  
 **Organization:** A-TownChain-Okosystems  
@@ -10,13 +10,13 @@
 
 ## Overview
 
-`atc-algorithm` is the canonical consensus repository for A-TownChain (Chain-ID `658467`). It contains the current MVP/skeleton implementation and the normative consensus work required for a production release.
+`a-townchain/components/algorithm` is the recorded migration target for the former `atc-algorithm` source repository (Chain-ID `658467`). The component contains an MVP/skeleton implementation. Normative protocol authority and final capability ownership are not established by this README and remain subject to approved governance.
 
 **Critical truth:** the presence of PoH/selection prototype code and passing local tests does **not** constitute a complete, secure, deterministic or production-ready consensus protocol. Consensus remains a P0 release blocker until specification freeze, complete implementation, conformance, security review and independent evidence are complete.
 
 ## Purpose
 
-The repository owns the canonical consensus logic for:
+The component is the proposed implementation location for the following consensus workstreams; production ownership remains pending formal approval:
 
 - Proof-of-History sequencing
 - Proof-of-Stake validator weighting
@@ -26,7 +26,7 @@ The repository owns the canonical consensus logic for:
 - Finality rules
 - Consensus verification and adversarial testing
 
-`a-townchain` is the orchestration/integration layer and must not become a second canonical consensus implementation.
+`modules/atc-blockchain` is the orchestration/integration layer and must not become a second consensus authority.
 
 ## Status
 

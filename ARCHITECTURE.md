@@ -18,7 +18,7 @@ standard: ATC-STD-MD-001
 ## Subsysteme
 
 1. **Chain Protocol Core:** Block-/Transaktionsmodell, Chain-ID 658467, Validierungsregeln (`modules/`).
-2. **Hybrid-Konsens-Bindung:** PoW+PoS+PoH — Konsens-Implementierung liegt kanonisch in `atc-algorithm`.
+2. **Konsens-Implementierungsgrenze:** Der migrierte Quellbestand liegt in `components/algorithm`; formelle Capability-Ownership und normative Protokollautorität bleiben bis zur SCR-0131-/§9-Entscheidung offen.
 3. **ZKP-Integration:** Proof-Verifikation — kryptografische Primitive kanonisch in `atc-zkp`.
 4. **On-Chain-Governance:** Abstimmungs- und Parameter-Änderungsmechanismen.
 5. **Chain-DNS:** Namensauflösung auf der Chain.
@@ -27,7 +27,7 @@ standard: ATC-STD-MD-001
 ## Verantwortungsgrenzen
 
 - `atc-node` betreibt das Protokoll (Full-Node-Binary/Runtime) — hier wird es definiert.
-- `atc-algorithm` implementiert den Konsens — dieses Repo bindet ihn.
+- `components/algorithm` enthält den migrierten Konsens-Prototyp; `a-townchain` integriert ihn. Die formelle Ownership bleibt bis zur genehmigten SCR-0131-Entscheidung offen.
 - `atc-vm` führt Contracts aus — das Protokoll definiert die Ausführungssemantik.
 
 ## Registry-Einordnung
