@@ -47,24 +47,28 @@ impl ValidatorSet {
         self.validators.iter().filter(|v| v.is_active).collect()
     }
 
-    pub fn total_voting_power(&self) -> u64 {
-        self.active_validators().iter().map(|v| v.voting_power).sum()
+    /// Returns None when the active voting power cannot be represented as u64.
+    pub fn total_voting_power(&self) -> Option<u64> {
+        self.validators
+            .iter()
+            .filter(|v| v.is_active)
+            .try_fold(0u64, |total, v| total.checked_add(v.voting_power))
     }
 
-    /// Deterministische Proposer-Auswahl fuer eine gegebenen Blockhoehe (Weighted Round Robin)
+    /// Deterministische Proposer-Auswahl fuer eine gegebene Blockhoehe.
+    ///
+    /// Returns None when there are no active validators or the total/partial
+    /// voting-power accumulation overflows u64.
     pub fn select_proposer(&self, height: u64) -> Option<&Validator> {
-        let active = self.active_validators();
-        if active.is_empty() {
-            return None;
-        }
-        let total = self.total_voting_power();
+        let total = self.total_voting_power()?;
         if total == 0 {
             return None;
         }
+
         let slot = height % total;
-        let mut accumulated = 0;
-        for v in active {
-            accumulated += v.voting_power;
+        let mut accumulated = 0u64;
+        for v in self.validators.iter().filter(|v| v.is_active) {
+            accumulated = accumulated.checked_add(v.voting_power)?;
             if slot < accumulated {
                 return Some(v);
             }
@@ -104,7 +108,7 @@ impl ValidatorProposal {
     pub fn verify(&self, val_set: &ValidatorSet, secret_key: &str) -> Result<(), String> {
         let expected_proposer = val_set
             .select_proposer(self.height)
-            .ok_or_else(|| "Keine aktiven Validatoren im ValidatorSet".to_string())?;
+            .ok_or_else(|| "Keine aktiven Validatoren oder ungueltige Voting-Power-Summe im ValidatorSet".to_string())?;
 
         if expected_proposer.id != self.proposer_id {
             return Err(format!(
@@ -191,5 +195,54 @@ mod tests {
         let secret = "sec123";
 
         assert!(ValidatorProposal::create(0, &v, 1234, secret).is_err());
+        assert_eq!(set.total_voting_power(), Some(0));
+        assert!(set.select_proposer(0).is_none());
+    }
+
+    #[test]
+    fn voting_power_sum_overflow_fails_closed() {
+        let mut set = ValidatorSet::new();
+        set.add(Validator {
+            id: 1,
+            pubkey: "p1".into(),
+            voting_power: u64::MAX,
+            is_active: true,
+        }).unwrap();
+        set.add(Validator {
+            id: 2,
+            pubkey: "p2".into(),
+            voting_power: 1,
+            is_active: true,
+        }).unwrap();
+
+        assert_eq!(set.total_voting_power(), None);
+        assert!(set.select_proposer(0).is_none());
+    }
+
+    #[test]
+    fn voting_power_u64_boundary_is_supported() {
+        let mut set = ValidatorSet::new();
+        set.add(Validator {
+            id: 1,
+            pubkey: "p1".into(),
+            voting_power: u64::MAX,
+            is_active: true,
+        }).unwrap();
+
+        assert_eq!(set.total_voting_power(), Some(u64::MAX));
+        assert_eq!(set.select_proposer(u64::MAX), set.get(1));
+    }
+
+    #[test]
+    fn inactive_voting_power_is_excluded_from_total() {
+        let mut set = setup_val_set();
+        set.add(Validator {
+            id: 3,
+            pubkey: "pub3".into(),
+            voting_power: u64::MAX,
+            is_active: false,
+        }).unwrap();
+
+        assert_eq!(set.total_voting_power(), Some(30));
     }
 }
