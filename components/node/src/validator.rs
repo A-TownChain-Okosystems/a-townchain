@@ -190,7 +190,7 @@ mod tests {
 
     #[test]
     fn proposal_inaktiver_validator_abgelehnt() {
-        let mut set = ValidatorSet::new();
+        let set = ValidatorSet::new();
         let v = Validator { id: 1, pubkey: "p1".into(), voting_power: 10, is_active: false };
         let secret = "sec123";
 
