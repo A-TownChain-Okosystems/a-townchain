@@ -34,5 +34,5 @@ atc-mining/
 ## Abhängigkeiten
 
 - `a-townchain`: Blockchain-Core & Transaktionsverwaltung
-- `atc-algorithm`: Konsensus-Spezifikation (PoH+PoS+PoW)
+- `components/algorithm`: migrierter Konsens-Prototyp; normative Spezifikationsautorität und Capability-Ownership bleiben bis SCR-0131-/§9-Freigabe offen.
 - `atc-contracts`: Referenzverträge für ATC-STD-SC-018
