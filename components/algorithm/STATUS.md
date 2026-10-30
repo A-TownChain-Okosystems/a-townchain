@@ -20,9 +20,9 @@ standard: ATC-STD-MD-001
 | Tests | PASS WITH EVIDENCE (cargo test gruen, bound_commit+test_run, SCR-0083) |
 | Security | NOT AUDITED — MVP-Code vorhanden, kein Audit (SCR-0083) |
 | Documentation | compliant |
-| Last Audit | 2026-09-08 |
+| Last Audit | 2026-09-08 (historical snapshot; not current exact-HEAD verification) |
 
-## Status Summary
+> **Evidence qualification:** Build/Test PASS entries above refer to the historical SCR-0083 evidence snapshot dated 2026-09-08. They do not establish current branch-HEAD verification, consensus conformance, or production readiness. Re-run and bind all checks to the exact reviewed commit before any VERIFIED claim.\n\n## Status Summary
 
 Der migrierte Komponentenpfad `a-townchain/components/algorithm` befindet sich im Status `development` (Maturity R1-Skeleton). Die Capability-Ownership und normative Protokollzuordnung bleiben bis zur SCR-0131-/§9-Freigabe offen.
 
