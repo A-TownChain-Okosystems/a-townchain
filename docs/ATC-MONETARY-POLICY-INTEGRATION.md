@@ -1,6 +1,6 @@
 # A-TownChain Monetary Policy Integration
 
-This repository is the orchestration layer. The canonical issuance implementation is owned by `atc-algorithm`.
+This repository is the orchestration layer. The migrated algorithm component is located at `components/algorithm`; final capability ownership and normative monetary-policy authority remain subject to SCR-0131 and owner/§9 approval.
 
 ## Bound parameters
 
@@ -20,7 +20,7 @@ This repository is the orchestration layer. The canonical issuance implementatio
 
 `modules/atc-blockchain/mainnet/mainnet_config.atc` and `launch_manager.atc` now use the same block time, cap and halving parameters.
 
-The Rust consensus implementation in `atc-algorithm` remains the source of truth. Any future change MUST update the canonical repository first, then update this binding and conformance vectors.
+The Rust implementation currently resides in `components/algorithm`. Any future monetary-policy change MUST follow the approved normative specification and ownership decision first, then update the implementation, this binding and conformance vectors.
 
 ## Current validation status
 
