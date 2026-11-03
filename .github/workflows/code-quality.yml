@@ -62,14 +62,14 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p evidence
-          git ls-tree -r --full-tree "$EXECUTION_SHA" components/vm > evidence/vm-source-tree.txt
-          source_tree_sha256="$(sha256sum evidence/vm-source-tree.txt | cut -d ' ' -f 1)"
+          git ls-tree -r --full-tree "$EXECUTION_SHA" components/vm > vm-source-tree.txt
+          source_tree_sha256="$(sha256sum vm-source-tree.txt | cut -d ' ' -f 1)"
           cat > evidence/manifest.txt <<EOF
           workflow=ATC Code Quality (STD-081/082)
           run_id=$GITHUB_RUN_ID
           commit=$EXECUTION_SHA
           jobs=ATC-VM tests;ATC-VM clippy
-          source_tree_file=evidence/vm-source-tree.txt
+          source_tree_file=vm-source-tree.txt
           source_tree_sha256=$source_tree_sha256
           rustc=$(rustc --version)
           cargo=$(cargo --version)
