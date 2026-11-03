@@ -25,18 +25,61 @@ jobs:
       - name: Format-Pruefung (ATC-STD-082)
         run: ruff format --check .
   vm:
-    name: ATC-VM tests and clippy
+    name: ATC-VM tests, clippy and evidence
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Record exact revision and toolchain
+      - name: Resolve exact execution SHA
+        id: revision
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          echo "GITHUB_SHA=$GITHUB_SHA"
-          git rev-parse HEAD
+          if [ -n "$PR_HEAD_SHA" ]; then
+            echo "sha=$PR_HEAD_SHA" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.revision.outputs.sha }}
+      - name: Verify exact revision and record toolchain
+        env:
+          EXPECTED_SHA: ${{ steps.revision.outputs.sha }}
+        run: |
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$EXPECTED_SHA"
+          echo "EXECUTION_SHA=$actual" >> "$GITHUB_ENV"
+          echo "commit=$actual"
           rustc --version
           cargo --version
+      - uses: dtolnay/rust-toolchain@stable
       - name: ATC-VM tests
-        run: cargo test --manifest-path components/vm/Cargo.toml
+        run: cargo test --manifest-path components/vm/Cargo.toml --all-targets
       - name: ATC-VM clippy
         run: cargo clippy --manifest-path components/vm/Cargo.toml --all-targets -- -D warnings
+      - name: Build immutable exact-head evidence
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          git ls-tree -r --full-tree "$EXECUTION_SHA" components/vm > evidence/vm-source-tree.txt
+          source_tree_sha256="$(sha256sum evidence/vm-source-tree.txt | cut -d ' ' -f 1)"
+          cat > evidence/manifest.txt <<EOF
+          workflow=ATC Code Quality (STD-081/082)
+          run_id=$GITHUB_RUN_ID
+          commit=$EXECUTION_SHA
+          jobs=ATC-VM tests;ATC-VM clippy
+          source_tree_file=evidence/vm-source-tree.txt
+          source_tree_sha256=$source_tree_sha256
+          rustc=$(rustc --version)
+          cargo=$(cargo --version)
+          result=PASS
+          EOF
+          sha256sum evidence/manifest.txt > evidence/manifest.sha256
+      - name: Upload immutable ATC-VM evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: atc-vm-evidence-${{ github.event.pull_request.head.sha || github.sha }}
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 90
