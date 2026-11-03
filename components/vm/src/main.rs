@@ -14,6 +14,9 @@ use std::fs;
 use std::path::PathBuf;
 use std::process::exit;
 
+/// Hard ceiling for local CLI execution; consensus execution uses the chain-supplied gas budget.
+const LOCAL_RUNNER_GAS_LIMIT: u64 = 1_000_000;
+
 enum RunOutcome {
     Passed { result: u64, n_ops: usize, state_evidence: Option<String> },
     Failed(String),
@@ -44,6 +47,7 @@ fn usage() -> ! {
     eprintln!("  --caller       contract caller identity (u64)");
     eprintln!("  --set-slot     initial storage slot <slot>:<value>");
     eprintln!("  --expect-slot  final storage slot <slot>:<value>");
+    eprintln!("  Local .ops execution is capped at {LOCAL_RUNNER_GAS_LIMIT} gas.");
     exit(2);
 }
 
@@ -93,7 +97,7 @@ fn run_ops_file(args: &Args, path: &str) -> RunOutcome {
     let mut storage = vec![0; initial_len];
     for (idx, val) in &args.set_slots { storage[*idx] = *val; }
     let mut machine = vm::Vm::with_context(program, args.caller, storage);
-    let stack = match machine.run() { Ok(s) => s, Err(e) => return RunOutcome::Failed(format!("ERROR: ATVM: {e:?}")) };
+    let stack = match machine.run_with_gas(LOCAL_RUNNER_GAS_LIMIT) { Ok(s) => s, Err(e) => return RunOutcome::Failed(format!("ERROR: ATVM: {e:?}")) };
     let result = stack.last().copied().unwrap_or(0);
     if let Some(expected) = args.expect { if result != expected { return RunOutcome::Failed(format!("ERROR: execution {result} != expected {expected}")); } }
     let final_state = machine.state();
