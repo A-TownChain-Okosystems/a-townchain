@@ -67,6 +67,8 @@ jobs:
     needs: [npm-tests, pytest, cargo-wallet]
     steps:
       - uses: actions/checkout@v4
+      - name: Consensus-Boundary-Scanner regression tests
+        run: python3 -m unittest discover -s tests -p 'test_consensus_boundary_check.py' -v
       - name: Consensus-Boundary-Check (F-105, Report-Modus, SCR-0081)
         run: python3 tools/consensus_boundary_check.py
 
