@@ -5,10 +5,10 @@
 //! The EXEC-GATE assembler replaces the former Python production path.
 
 mod assembler;
-mod context;
-mod ops;
-mod vm;
 
+use atc_vm::context::ChainContext;
+use atc_vm::ops::parse_ops;
+use atc_vm::vm::{Vm, MAX_STORAGE_SLOTS};
 use std::env;
 use std::fs;
 use std::path::PathBuf;
@@ -77,11 +77,11 @@ fn parse_args(args: Vec<String>) -> Result<Args, String> {
 
 fn run_ops_file(args: &Args, path: &str) -> RunOutcome {
     let text = match fs::read_to_string(path) { Ok(t) => t, Err(e) => return RunOutcome::Failed(format!("ERROR: cannot read .ops file {path}: {e}")) };
-    let program = match ops::parse_ops(&text) { Ok(p) => p, Err(e) => return RunOutcome::Failed(format!("ERROR: .ops parse: {e:?}")) };
+    let program = match parse_ops(&text) { Ok(p) => p, Err(e) => return RunOutcome::Failed(format!("ERROR: .ops parse: {e:?}")) };
     let n_ops = program.len();
     // Reject untrusted slot indexes before arithmetic or allocation. This runner
     // is local-only, but must still fail closed on oversized CLI input.
-    if let Some((idx, _)) = args.set_slots.iter().find(|(idx, _)| *idx >= vm::MAX_STORAGE_SLOTS) {
+    if let Some((idx, _)) = args.set_slots.iter().find(|(idx, _)| *idx >= MAX_STORAGE_SLOTS) {
         return RunOutcome::Failed(format!(
             "ERROR: storage slot {idx} exceeds maximum index {}",
             vm::MAX_STORAGE_SLOTS - 1
@@ -96,8 +96,25 @@ fn run_ops_file(args: &Args, path: &str) -> RunOutcome {
     let initial_len = args.set_slots.iter().map(|(idx, _)| idx + 1).max().unwrap_or(0);
     let mut storage = vec![0; initial_len];
     for (idx, val) in &args.set_slots { storage[*idx] = *val; }
-    let mut machine = vm::Vm::with_context(program, args.caller, storage);
-    let stack = match machine.run_with_gas(LOCAL_RUNNER_GAS_LIMIT) { Ok(s) => s, Err(e) => return RunOutcome::Failed(format!("ERROR: ATVM: {e:?}")) };
+    let mut machine = Vm::with_context(program, args.caller, storage);
+    let genesis_id = "a".repeat(64);
+    let context = ChainContext {
+        chain_id: "atc".into(),
+        network_id: "devnet".into(),
+        genesis_id: genesis_id.clone(),
+        protocol_version: "1.0.0".into(),
+        vm_version: "1.0.0".into(),
+    };
+    let stack = match machine.execute_state_transition_with_gas(
+        &context,
+        &genesis_id,
+        "1.0.0",
+        "1.0.0",
+        LOCAL_RUNNER_GAS_LIMIT,
+    ) {
+        Ok(s) => s,
+        Err(e) => return RunOutcome::Failed(format!("ERROR: ATVM: {e:?}")),
+    };
     let result = stack.last().copied().unwrap_or(0);
     if let Some(expected) = args.expect { if result != expected { return RunOutcome::Failed(format!("ERROR: execution {result} != expected {expected}")); } }
     let final_state = machine.state();
