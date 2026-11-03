@@ -84,13 +84,13 @@ fn run_ops_file(args: &Args, path: &str) -> RunOutcome {
     if let Some((idx, _)) = args.set_slots.iter().find(|(idx, _)| *idx >= MAX_STORAGE_SLOTS) {
         return RunOutcome::Failed(format!(
             "ERROR: storage slot {idx} exceeds maximum index {}",
-            vm::MAX_STORAGE_SLOTS - 1
+            MAX_STORAGE_SLOTS - 1
         ));
     }
-    if let Some((idx, _)) = args.expect_slots.iter().find(|(idx, _)| *idx >= vm::MAX_STORAGE_SLOTS) {
+    if let Some((idx, _)) = args.expect_slots.iter().find(|(idx, _)| *idx >= MAX_STORAGE_SLOTS) {
         return RunOutcome::Failed(format!(
             "ERROR: expected storage slot {idx} exceeds maximum index {}",
-            vm::MAX_STORAGE_SLOTS - 1
+            MAX_STORAGE_SLOTS - 1
         ));
     }
     let initial_len = args.set_slots.iter().map(|(idx, _)| idx + 1).max().unwrap_or(0);
