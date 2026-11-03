@@ -158,18 +158,6 @@ fn simulate(ops: &[String], expected: u64) -> Result<(), String> {
     Ok(())
 }
 
-#[cfg(test)]
-mod tests {
-    use super::simulate;
-
-    #[test]
-    fn arithmetic_overflow_matches_vm_semantics() {
-        assert!(simulate(&["Push 18446744073709551615".into(), "Push 1".into(), "Add".into()], 0).is_err());
-        assert!(simulate(&["Push 0".into(), "Push 1".into(), "Sub".into()], 0).is_err());
-        assert!(simulate(&["Push 18446744073709551615".into(), "Push 2".into(), "Mul".into()], 0).is_err());
-    }
-}
-
 pub fn assemble(contract: &Path, vector: &Path, out_dir: &Path) -> Result<PathBuf, String> {
     let source = fs::read_to_string(contract).map_err(|e| format!("cannot read contract: {e}"))?;
     let vector_json = fs::read_to_string(vector).map_err(|e| format!("cannot read vector: {e}"))?;
@@ -222,4 +210,16 @@ pub fn assemble(contract: &Path, vector: &Path, out_dir: &Path) -> Result<PathBu
     for op in &ops { text.push_str(op); text.push('\n'); }
     fs::write(&out, text).map_err(|e| format!("cannot write ops output: {e}"))?;
     Ok(out)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::simulate;
+
+    #[test]
+    fn arithmetic_overflow_matches_vm_semantics() {
+        assert!(simulate(&["Push 18446744073709551615".into(), "Push 1".into(), "Add".into()], 0).is_err());
+        assert!(simulate(&["Push 0".into(), "Push 1".into(), "Sub".into()], 0).is_err());
+        assert!(simulate(&["Push 18446744073709551615".into(), "Push 2".into(), "Mul".into()], 0).is_err());
+    }
 }

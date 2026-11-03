@@ -130,7 +130,7 @@ impl Vm {
         Ok(())
     }
 
-    pub fn run_with_gas(&mut self, mut gas_remaining: u64) -> Result<Vec<u64>, VmError> {
+    pub(crate) fn run_with_gas(&mut self, mut gas_remaining: u64) -> Result<Vec<u64>, VmError> {
         self.verify()?;
 
         // State transitions are transactional: no partial stack/storage mutation
@@ -223,55 +223,6 @@ impl Vm {
         Ok(())
     }
 
-    /// Raw interpreter retained for local/unit use. Consensus state transitions
-    /// MUST use execute_state_transition_with_gas.
-    pub fn run(&mut self) -> Result<Vec<u64>, VmError> {
-        let mut pc = 0usize;
-        while pc < self.program.len() {
-            match self.program[pc].clone() {
-                Op::Push(v) => self.stack.push(v),
-                Op::Add => self.binop(|a, b| a.wrapping_add(b))?,
-                Op::Sub => self.binop(|a, b| a.wrapping_sub(b))?,
-                Op::Mul => self.binop(|a, b| a.wrapping_mul(b))?,
-                Op::Div => {
-                    let b = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    let a = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    self.stack.push(a.checked_div(b).ok_or(VmError::DivisionByZero)?);
-                }
-                Op::Eq => self.binop(|a, b| (a == b) as u64)?,
-                Op::Lt => self.binop(|a, b| (a < b) as u64)?,
-                Op::Dup => {
-                    let v = *self.stack.last().ok_or(VmError::StackUnderflow)?;
-                    self.stack.push(v);
-                }
-                Op::Swap => {
-                    let n = self.stack.len();
-                    if n < 2 { return Err(VmError::StackUnderflow); }
-                    self.stack.swap(n - 1, n - 2);
-                }
-                Op::Load(slot) => self.stack.push(self.storage.get(slot).copied().unwrap_or(0)),
-                Op::Store(slot) => {
-                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if slot >= self.storage.len() { self.storage.resize(slot + 1, 0); }
-                    self.storage[slot] = v;
-                }
-                Op::Caller => self.stack.push(self.caller),
-                Op::JumpIfZero(t) => {
-                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if v == 0 { pc = self.valid_jump(t)?; continue; }
-                }
-                Op::Jump(t) => { pc = self.valid_jump(t)?; continue; }
-                Op::JumpIfNotZero(t) => {
-                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if v != 0 { pc = self.valid_jump(t)?; continue; }
-                }
-                Op::Halt => break,
-            }
-            pc += 1;
-        }
-        Ok(std::mem::take(&mut self.stack))
-    }
-
     fn binop(&mut self, f: impl Fn(u64, u64) -> u64) -> Result<(), VmError> {
         let b = self.stack.pop().ok_or(VmError::StackUnderflow)?;
         let a = self.stack.pop().ok_or(VmError::StackUnderflow)?;
@@ -279,9 +230,6 @@ impl Vm {
         Ok(())
     }
 
-    fn valid_jump(&self, t: usize) -> Result<usize, VmError> {
-        if t < self.program.len() { Ok(t) } else { Err(VmError::InvalidJump(t)) }
-    }
 }
 
 #[cfg(test)]
@@ -295,7 +243,7 @@ mod tests {
     #[test]
     fn arithmetik() {
         let mut vm = Vm::new(vec![Op::Push(2), Op::Push(3), Op::Add, Op::Push(4), Op::Mul, Op::Halt]);
-        assert_eq!(vm.run(), Ok(vec![20]));
+        assert_eq!(vm.run_with_gas(100), Ok(vec![20]));
     }
 
     #[test]
@@ -356,7 +304,7 @@ mod tests {
     #[test]
     fn stack_growth_is_bounded() {
         let mut program = Vec::with_capacity(MAX_STACK_ITEMS + 1);
-        program.extend(std::iter::repeat(Op::Push(1)).take(MAX_STACK_ITEMS + 1));
+        program.extend(std::iter::repeat_n(Op::Push(1), MAX_STACK_ITEMS + 1));
         program.push(Op::Halt);
         let mut vm = Vm::new(program);
         let result = vm.execute_state_transition_with_gas(
@@ -372,8 +320,8 @@ mod tests {
     #[test]
     fn program_size_is_bounded() {
         let mut program = Vec::with_capacity(MAX_PROGRAM_OPS + 1);
-        program.extend(std::iter::repeat(Op::Halt).take(MAX_PROGRAM_OPS + 1));
-        let mut vm = Vm::new(program);
+        program.extend(std::iter::repeat_n(Op::Halt, MAX_PROGRAM_OPS + 1));
+        let vm = Vm::new(program);
         assert_eq!(
             vm.verify(),
             Err(VmError::ProgramTooLarge {
@@ -403,8 +351,8 @@ mod tests {
     #[test]
     fn underflow_und_invalid_jump() {
         let mut vm = Vm::new(vec![Op::Add]);
-        assert_eq!(vm.run(), Err(VmError::StackUnderflow));
+        assert_eq!(vm.run_with_gas(100), Err(VmError::StackUnderflow));
         let mut vm = Vm::new(vec![Op::Push(1), Op::Jump(99)]);
-        assert_eq!(vm.run(), Err(VmError::InvalidJump(99)));
+        assert_eq!(vm.run_with_gas(100), Err(VmError::InvalidProgram("jump target out of range")));
     }
 }

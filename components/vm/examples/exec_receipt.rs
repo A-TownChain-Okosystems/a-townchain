@@ -4,8 +4,11 @@
 //! das erwartete Ergebnis und schreibt einen deterministischen Receipt
 //! (JSON, keine Zeitstempel). Exit 1 bei Mismatch (Fail-Gate).
 
+use atc_vm::context::ChainContext;
 use atc_vm::vm::{Op, Vm};
 use std::collections::BTreeMap;
+
+const RECEIPT_GAS_LIMIT: u64 = 1_000_000;
 
 fn main() {
     let ops_path = std::env::var("ATVM_OPS").unwrap_or_else(|_| "build/e2e_adder.ops".to_string());
@@ -45,7 +48,23 @@ fn main() {
     }
     let ops_count = program.len();
     let mut vm = Vm::new(program);
-    let stack = vm.run().unwrap_or_else(|e| panic!("ATVM-Ausfuehrungsfehler: {:?}", e));
+    let genesis_id = "a".repeat(64);
+    let context = ChainContext {
+        chain_id: "atc".into(),
+        network_id: "devnet".into(),
+        genesis_id: genesis_id.clone(),
+        protocol_version: "1.0.0".into(),
+        vm_version: "1.0.0".into(),
+    };
+    let stack = vm
+        .execute_state_transition_with_gas(
+            &context,
+            &genesis_id,
+            "1.0.0",
+            "1.0.0",
+            RECEIPT_GAS_LIMIT,
+        )
+        .unwrap_or_else(|e| panic!("ATVM-Ausfuehrungsfehler: {:?}", e));
     let result = stack.last().copied().unwrap_or(0);
     let status = if result == expected { "PASS" } else { "FAIL" };
     let receipt = format!(
