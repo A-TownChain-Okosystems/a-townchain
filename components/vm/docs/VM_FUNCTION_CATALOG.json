@@ -1,0 +1,3497 @@
+{
+  "schema_version": "1.0.0",
+  "catalog_id": "ATC-VM-FUNCTION-CATALOG-001",
+  "title": "Canonical ATC-VM Function and Contract Catalog",
+  "status": "AUDIT_BASELINE_NOT_COMPLETE",
+  "canonical_owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+  "supporting_repository_role": "A-TownChain-Okosystems/atc-vm is specs/governance/support only, not a second production VM.",
+  "source_snapshot": {
+    "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+    "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+    "note": "Selected source files were fetched from this branch; complete language-aware symbol census and exact HEAD/tree reconciliation are still required."
+  },
+  "limits": {
+    "MAX_PROGRAM_OPS": 65536,
+    "MAX_STACK_ITEMS": 4096,
+    "MAX_STORAGE_SLOTS": 65536,
+    "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+  },
+  "opcodes": [
+    "Push(u64)",
+    "Add",
+    "Sub",
+    "Mul",
+    "Div",
+    "Dup",
+    "Swap",
+    "Jump(usize)",
+    "JumpIfNotZero(usize)",
+    "Eq",
+    "Lt",
+    "Load(usize)",
+    "Store(usize)",
+    "Caller",
+    "JumpIfZero(usize)",
+    "Halt"
+  ],
+  "hard_blockers": [
+    "VM uses wrapping add/sub/mul while assembler simulation uses checked arithmetic; normative semantics remain BLOCKED.",
+    "Normative consensus gas schedule must be frozen/versioned by protocol governance; local default gas is not a consensus parameter.",
+    "Canonical binary ATCB decoder/version/encoding validation not established in inspected source.",
+    "Full ATCLang grammar and structural JSON parsing are not established in inspected assembler.",
+    "Host storage/event/balance/syscall interfaces and atomic state-commit boundary require versioned contracts.",
+    "Runner .ops path still uses fs::read_to_string in inspected source; bounded-input coverage must be reconciled with open PR changes."
+  ],
+  "function_count": 62,
+  "functions": [
+    {
+      "id": "ATC-VM-VM_CORE-001",
+      "domain": "VM_CORE",
+      "function": "construct_empty",
+      "purpose": "Create an empty VM instance",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::new"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VM_CORE-002",
+      "domain": "VM_CORE",
+      "function": "construct_with_context",
+      "purpose": "Create VM with caller and initial storage",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::with_context"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VM_CORE-003",
+      "domain": "VM_CORE",
+      "function": "read_caller",
+      "purpose": "Read configured caller identifier",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::caller"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VM_CORE-004",
+      "domain": "VM_CORE",
+      "function": "read_state",
+      "purpose": "Expose storage as read-only slice",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::state"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VM_CORE-005",
+      "domain": "VM_CORE",
+      "function": "verify_program",
+      "purpose": "Validate program size, initial bounds and jump targets",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::verify"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VM_CORE-006",
+      "domain": "VM_CORE",
+      "function": "run_local",
+      "purpose": "Execute with local-only default gas budget",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VM_CORE-007",
+      "domain": "VM_CORE",
+      "function": "run_with_gas",
+      "purpose": "Execute with explicit gas and rollback on error",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run_with_gas"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VM_CORE-008",
+      "domain": "VM_CORE",
+      "function": "execute_state_transition",
+      "purpose": "Gate context/genesis/protocol/VM before state execution",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::execute_state_transition"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VM_CORE-009",
+      "domain": "VM_CORE",
+      "function": "execute_state_transition_with_gas",
+      "purpose": "Execute state transition with protocol-supplied gas",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::execute_state_transition_with_gas"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-001",
+      "domain": "OPCODES",
+      "function": "push",
+      "purpose": "Push u64 value",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Op::Push"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-002",
+      "domain": "OPCODES",
+      "function": "add",
+      "purpose": "Add two u64 values",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-003",
+      "domain": "OPCODES",
+      "function": "subtract",
+      "purpose": "Subtract two u64 values",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-004",
+      "domain": "OPCODES",
+      "function": "multiply",
+      "purpose": "Multiply two u64 values",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-005",
+      "domain": "OPCODES",
+      "function": "divide",
+      "purpose": "Divide and reject zero divisor",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run_with_gas_inner"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-006",
+      "domain": "OPCODES",
+      "function": "duplicate",
+      "purpose": "Duplicate stack top",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run_with_gas_inner"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-007",
+      "domain": "OPCODES",
+      "function": "swap",
+      "purpose": "Swap two stack top values",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run_with_gas_inner"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-008",
+      "domain": "OPCODES",
+      "function": "equal_less_than",
+      "purpose": "Compare values and push boolean as u64",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run_with_gas_inner"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-009",
+      "domain": "OPCODES",
+      "function": "load_store",
+      "purpose": "Read/write bounded storage slots",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run_with_gas_inner"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-010",
+      "domain": "OPCODES",
+      "function": "caller_opcode",
+      "purpose": "Push caller id",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run_with_gas_inner"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-011",
+      "domain": "OPCODES",
+      "function": "jumps",
+      "purpose": "Absolute and conditional jump operations",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run_with_gas_inner"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-OPCODES-012",
+      "domain": "OPCODES",
+      "function": "halt",
+      "purpose": "Stop interpreter",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run_with_gas_inner"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VERIFY-001",
+      "domain": "VERIFY",
+      "function": "program_limit",
+      "purpose": "Enforce 65536 opcode limit",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "MAX_PROGRAM_OPS / Vm::verify"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VERIFY-002",
+      "domain": "VERIFY",
+      "function": "stack_limit",
+      "purpose": "Enforce 4096 stack items",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "MAX_STACK_ITEMS / Vm::push_stack"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VERIFY-003",
+      "domain": "VERIFY",
+      "function": "storage_limit",
+      "purpose": "Enforce 65536 storage slots",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "MAX_STORAGE_SLOTS"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VERIFY-004",
+      "domain": "VERIFY",
+      "function": "jump_validation",
+      "purpose": "Reject out-of-range control-flow targets",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::verify"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VERIFY-005",
+      "domain": "VERIFY",
+      "function": "gas_accounting",
+      "purpose": "Charge gas before opcode effects",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "gas_cost / Vm::run_with_gas_inner"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VERIFY-006",
+      "domain": "VERIFY",
+      "function": "transactional_rollback",
+      "purpose": "Restore stack and storage on runtime error",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/vm.rs",
+        "blob_sha": "b76305d05e5cc60d79a917f52e6915faaa0c533b",
+        "symbol": "Vm::run_with_gas"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-VERIFY-007",
+      "domain": "VERIFY",
+      "function": "binary_atcb_decode",
+      "purpose": "Decode and validate canonical ATCB binary bytecode",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-VERIFY-008",
+      "domain": "VERIFY",
+      "function": "static_stack_analysis",
+      "purpose": "Statically prove stack safety and control flow",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-VERIFY-009",
+      "domain": "VERIFY",
+      "function": "canonical_arithmetic",
+      "purpose": "Freeze overflow/underflow semantics across VM and assembler",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-PARSER_ASSEMBLER-001",
+      "domain": "PARSER_ASSEMBLER",
+      "function": "parse_ops",
+      "purpose": "Parse text .ops instructions",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/ops.rs",
+        "blob_sha": "2b5efdff367b72e0025a6bfe7c05e89d23cf0a43",
+        "symbol": "parse_ops"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-PARSER_ASSEMBLER-002",
+      "domain": "PARSER_ASSEMBLER",
+      "function": "reject_unknown_ops",
+      "purpose": "Reject unknown instructions",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/ops.rs",
+        "blob_sha": "2b5efdff367b72e0025a6bfe7c05e89d23cf0a43",
+        "symbol": "parse_line"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-PARSER_ASSEMBLER-003",
+      "domain": "PARSER_ASSEMBLER",
+      "function": "bounded_input",
+      "purpose": "Bound contract/vector/ops input before full allocation",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/assembler.rs",
+        "blob_sha": "3211cb93248e60f5ade8bf1d6947dfa146b1d94e",
+        "symbol": "read_limited"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-PARSER_ASSEMBLER-004",
+      "domain": "PARSER_ASSEMBLER",
+      "function": "tokenize_expression",
+      "purpose": "Tokenize EXEC-GATE expression subset",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/assembler.rs",
+        "blob_sha": "3211cb93248e60f5ade8bf1d6947dfa146b1d94e",
+        "symbol": "tokenize"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-PARSER_ASSEMBLER-005",
+      "domain": "PARSER_ASSEMBLER",
+      "function": "parse_expression",
+      "purpose": "Parse supported arithmetic expression subset",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/assembler.rs",
+        "blob_sha": "3211cb93248e60f5ade8bf1d6947dfa146b1d94e",
+        "symbol": "Parser::expr"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-PARSER_ASSEMBLER-006",
+      "domain": "PARSER_ASSEMBLER",
+      "function": "resolve_params_lets",
+      "purpose": "Resolve vector inputs, parameters and let bindings",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/assembler.rs",
+        "blob_sha": "3211cb93248e60f5ade8bf1d6947dfa146b1d94e",
+        "symbol": "assemble"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-PARSER_ASSEMBLER-007",
+      "domain": "PARSER_ASSEMBLER",
+      "function": "strict_atclang_parser",
+      "purpose": "Parse full canonical ATCLang grammar",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-PARSER_ASSEMBLER-008",
+      "domain": "PARSER_ASSEMBLER",
+      "function": "strict_json_parser",
+      "purpose": "Structurally parse JSON and reject duplicate/invalid fields",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-PARSER_ASSEMBLER-009",
+      "domain": "PARSER_ASSEMBLER",
+      "function": "emit_ops",
+      "purpose": "Emit deterministic textual .ops artifact",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/assembler.rs",
+        "blob_sha": "3211cb93248e60f5ade8bf1d6947dfa146b1d94e",
+        "symbol": "assemble"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-PARSER_ASSEMBLER-010",
+      "domain": "PARSER_ASSEMBLER",
+      "function": "vm_assembler_equivalence",
+      "purpose": "Guarantee identical arithmetic/state/gas/error semantics",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-CONTEXT-001",
+      "domain": "CONTEXT",
+      "function": "validate_chain_id",
+      "purpose": "Validate canonical chain id",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/context.rs",
+        "blob_sha": "ef0a0cee2ff6a73adc19870a75fc1ed5e00ac7bc",
+        "symbol": "ChainContext::validate"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-CONTEXT-002",
+      "domain": "CONTEXT",
+      "function": "validate_network_id",
+      "purpose": "Validate network id enum",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/context.rs",
+        "blob_sha": "ef0a0cee2ff6a73adc19870a75fc1ed5e00ac7bc",
+        "symbol": "ChainContext::validate"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-CONTEXT-003",
+      "domain": "CONTEXT",
+      "function": "validate_genesis_format",
+      "purpose": "Validate genesis identifier format",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/context.rs",
+        "blob_sha": "ef0a0cee2ff6a73adc19870a75fc1ed5e00ac7bc",
+        "symbol": "ChainContext::validate"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-CONTEXT-004",
+      "domain": "CONTEXT",
+      "function": "validate_versions",
+      "purpose": "Validate protocol and VM versions",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/context.rs",
+        "blob_sha": "ef0a0cee2ff6a73adc19870a75fc1ed5e00ac7bc",
+        "symbol": "ChainContext::validate"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-CONTEXT-005",
+      "domain": "CONTEXT",
+      "function": "verify_genesis",
+      "purpose": "Compare supplied and computed genesis ids",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/context.rs",
+        "blob_sha": "ef0a0cee2ff6a73adc19870a75fc1ed5e00ac7bc",
+        "symbol": "ChainContext::verify_genesis_id"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-CONTEXT-006",
+      "domain": "CONTEXT",
+      "function": "canonical_context_encoding",
+      "purpose": "Define canonical encoding/hash rules for execution context",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-HOST_SECURITY-001",
+      "domain": "HOST_SECURITY",
+      "function": "host_storage_abi",
+      "purpose": "Versioned host storage read/write contract",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-HOST_SECURITY-002",
+      "domain": "HOST_SECURITY",
+      "function": "host_event_abi",
+      "purpose": "Deterministic event emission contract",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-HOST_SECURITY-003",
+      "domain": "HOST_SECURITY",
+      "function": "host_balance_transfer",
+      "purpose": "Deterministic transfer host call",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-HOST_SECURITY-004",
+      "domain": "HOST_SECURITY",
+      "function": "host_call_registry",
+      "purpose": "Versioned capability-limited host syscall registry",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-HOST_SECURITY-005",
+      "domain": "HOST_SECURITY",
+      "function": "atomic_chain_commit",
+      "purpose": "Atomic commit boundary from VM output to chain state",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-HOST_SECURITY-006",
+      "domain": "HOST_SECURITY",
+      "function": "consensus_gas_registry",
+      "purpose": "Freeze versioned normative consensus gas schedule",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-HOST_SECURITY-007",
+      "domain": "HOST_SECURITY",
+      "function": "execution_receipt",
+      "purpose": "Canonical receipt with result, gas, state changes and provenance",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-HOST_SECURITY-008",
+      "domain": "HOST_SECURITY",
+      "function": "determinism_conformance",
+      "purpose": "Cross-platform deterministic conformance vectors",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-HOST_SECURITY-009",
+      "domain": "HOST_SECURITY",
+      "function": "fuzz_property_gates",
+      "purpose": "Fuzz parser/verifier/runtime/rollback properties",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-RUNNER-001",
+      "domain": "RUNNER",
+      "function": "parse_cli",
+      "purpose": "Parse runner flags and reject malformed/unknown arguments",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/main.rs",
+        "blob_sha": "ae010fc16ac310e8a98316f63c89e7d9b96cbca8",
+        "symbol": "parse_args"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-RUNNER-002",
+      "domain": "RUNNER",
+      "function": "run_ops_file",
+      "purpose": "Load and execute .ops file",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/main.rs",
+        "blob_sha": "ae010fc16ac310e8a98316f63c89e7d9b96cbca8",
+        "symbol": "run_ops_file"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-RUNNER-003",
+      "domain": "RUNNER",
+      "function": "assemble_contract_vector",
+      "purpose": "Run native contract/vector assembler",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/main.rs",
+        "blob_sha": "ae010fc16ac310e8a98316f63c89e7d9b96cbca8",
+        "symbol": "main"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-RUNNER-004",
+      "domain": "RUNNER",
+      "function": "set_initial_slots",
+      "purpose": "Apply initial storage slot flags",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/main.rs",
+        "blob_sha": "ae010fc16ac310e8a98316f63c89e7d9b96cbca8",
+        "symbol": "parse_slot_pair / run_ops_file"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-RUNNER-005",
+      "domain": "RUNNER",
+      "function": "assert_expected_result_state",
+      "purpose": "Validate expected result and final storage",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": {
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "branch": "fix/atc-vm-read-limits-followup-2026-10-12",
+        "head_sha": "b463c8f82bb64aa1dbc195ce0caa06cf31a33fb3",
+        "path": "components/vm/src/main.rs",
+        "blob_sha": "ae010fc16ac310e8a98316f63c89e7d9b96cbca8",
+        "symbol": "run_ops_file"
+      },
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "IMPLEMENTED",
+      "traceability": "PARTIAL",
+      "residuals": [
+        "Reconcile exact symbols against full current source census and obtain exact-SHA test/CI evidence."
+      ]
+    },
+    {
+      "id": "ATC-VM-RUNNER-006",
+      "domain": "RUNNER",
+      "function": "stable_json_output",
+      "purpose": "Versioned machine-readable CLI output and stable exit codes",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    },
+    {
+      "id": "ATC-VM-RUNNER-007",
+      "domain": "RUNNER",
+      "function": "bounded_runner_ops_read",
+      "purpose": "Bound runner .ops file reads before allocation",
+      "owner": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "source_binding": null,
+      "contract": {
+        "inputs": "Must be specified per function; see source signature where mapped.",
+        "outputs": "Must specify typed result, side effects and failure semantics.",
+        "preconditions": "Valid bounded input; canonical chain context required for state transitions.",
+        "postconditions": "Successful operation follows its function-specific state/result contract; failure semantics require tests.",
+        "invariants": [
+          "Fail closed on malformed or unauthorized input",
+          "Deterministic semantics for canonical identical inputs",
+          "Resource limits enforced where applicable"
+        ],
+        "errors": "Map every failure to stable typed error and externally observable behavior.",
+        "authorization": "Consensus state transition requires execution_gate; local runner is not chain authority.",
+        "concurrency": "No shared concurrent host semantics are implied; host ABI is BLOCKED.",
+        "resource_limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536,
+          "LOCAL_DEFAULT_GAS_BUDGET": 1000000
+        },
+        "interfaces": [
+          "Rust API",
+          "ATC-VM opcode model",
+          "Text .ops / native runner where applicable"
+        ],
+        "tests_required": [
+          "positive",
+          "negative",
+          "boundary",
+          "rollback/fault injection",
+          "determinism"
+        ],
+        "evidence": {
+          "source": "SOURCE_PRESENT_NOT_FUNCTIONALLY_VERIFIED",
+          "exact_sha_ci": "NOT_VERIFIED",
+          "e2e": "NOT_VERIFIED",
+          "security_audit": "NOT_VERIFIED"
+        }
+      },
+      "status": "BLOCKED",
+      "traceability": "INCOMPLETE",
+      "residuals": [
+        "Normative contract and implementation/verification evidence outstanding."
+      ]
+    }
+  ]
+}

@@ -6,6 +6,7 @@
 
 use std::collections::HashMap;
 use std::fs;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 
 /// Fail-closed limits for local source/vector parsing and generated textual ops.
@@ -13,6 +14,19 @@ const MAX_SOURCE_BYTES: usize = 1_048_576;
 const MAX_VECTOR_BYTES: usize = 1_048_576;
 const MAX_EXPRESSION_TOKENS: usize = 65_536;
 const MAX_GENERATED_OPS: usize = 65_536;
+
+/// Read at most max_bytes + 1 bytes so oversized files are rejected before
+/// their complete contents are allocated in memory.
+pub(super) fn read_limited<R: Read>(reader: R, max_bytes: usize, label: &str) -> Result<String, String> {
+    let mut content = String::new();
+    reader.take(max_bytes as u64 + 1)
+        .read_to_string(&mut content)
+        .map_err(|e| format!("cannot read {label}: {e}"))?;
+    if content.len() > max_bytes {
+        return Err(format!("{label} exceeds maximum size of {max_bytes} bytes"));
+    }
+    Ok(content)
+}
 
 #[derive(Debug, Clone)]
 struct Parser {
@@ -160,7 +174,19 @@ fn simulate(ops: &[String], expected: u64) -> Result<(), String> {
 
 #[cfg(test)]
 mod tests {
-    use super::simulate;
+    use super::{read_limited, simulate};
+    use std::io::Cursor;
+
+    #[test]
+    fn bounded_reader_accepts_exact_limit() {
+        assert_eq!(read_limited(Cursor::new(b"1234"), 4, "test input").unwrap(), "1234");
+    }
+
+    #[test]
+    fn bounded_reader_rejects_limit_plus_one() {
+        let err = read_limited(Cursor::new(b"12345"), 4, "test input").unwrap_err();
+        assert!(err.contains("exceeds maximum size of 4 bytes"));
+    }
 
     #[test]
     fn arithmetic_overflow_matches_vm_semantics() {
@@ -171,14 +197,8 @@ mod tests {
 }
 
 pub fn assemble(contract: &Path, vector: &Path, out_dir: &Path) -> Result<PathBuf, String> {
-    let source = fs::read_to_string(contract).map_err(|e| format!("cannot read contract: {e}"))?;
-    let vector_json = fs::read_to_string(vector).map_err(|e| format!("cannot read vector: {e}"))?;
-    if source.len() > MAX_SOURCE_BYTES {
-        return Err(format!("contract exceeds maximum source size of {} bytes", MAX_SOURCE_BYTES));
-    }
-    if vector_json.len() > MAX_VECTOR_BYTES {
-        return Err(format!("vector exceeds maximum size of {} bytes", MAX_VECTOR_BYTES));
-    }
+    let source = read_limited(fs::File::open(contract).map_err(|e| format!("cannot open contract: {e}"))?, MAX_SOURCE_BYTES, "contract")?;
+    let vector_json = read_limited(fs::File::open(vector).map_err(|e| format!("cannot open vector: {e}"))?, MAX_VECTOR_BYTES, "vector")?;
     let (params, body) = find_function(&source)?;
     let expected = json_u64_for_key(&vector_json, "expected")?;
     let mut env = HashMap::new();
