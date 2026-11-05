@@ -14,6 +14,7 @@ Aufruf: python3 tools/determinism_check.py --lang rust|python [--test-cmd "..."]
 import argparse
 import os
 import re
+import shlex
 import subprocess
 import sys
 
@@ -67,7 +68,16 @@ def scan_sources(root, lang):
 
 
 def run_tests(cmd, cwd):
-    r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
+    # Haertung (Security-Assessment 05.11.2026): kein shell=True; Argumente werden
+    # gesplittet, Shell-Metazeichen werden abgelehnt statt interpretiert.
+    if re.search(r"[|&;<>$`\n]", cmd):
+        raise SystemExit(
+            "determinism_check: Shell-Metazeichen im --test-cmd sind nicht erlaubt; "
+            "bitte ein Skript aufrufen."
+        )
+    r = subprocess.run(
+        shlex.split(cmd), shell=False, cwd=cwd, capture_output=True, text=True
+    )
     return (r.returncode, (r.stdout or "") + (r.stderr or ""))
 
 
