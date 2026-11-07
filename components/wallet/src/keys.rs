@@ -2,6 +2,25 @@
 //! Deterministic secp256k1 wallet key management for transaction/account use.
 
 use secp256k1::{ecdsa::Signature, PublicKey, Secp256k1, SecretKey};
+use sha2::{Digest, Sha256};
+
+/// Kanonische ATC-Adresse (SEC-P0-005): Praefix `ATC:` + 20-Byte-Prefix von
+/// SHA-256(compressed_pubkey), hex-kodiert. Bindet Adresse/DID deterministisch
+/// an den Public Key, statt sie als freien String zu behandeln.
+pub fn address_from_pubkey(public_key: &[u8; 33]) -> String {
+    let digest = Sha256::digest(public_key);
+    format!("ATC:{}", hex_lower(&digest[..20]))
+}
+
+fn hex_lower(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut out = String::with_capacity(bytes.len() * 2);
+    for &b in bytes {
+        out.push(HEX[(b >> 4) as usize] as char);
+        out.push(HEX[(b & 0x0f) as usize] as char);
+    }
+    out
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum WalletKeyError {
@@ -23,6 +42,11 @@ impl WalletKey {
     pub fn public_key(&self) -> [u8; 33] {
         let secp = Secp256k1::new();
         PublicKey::from_secret_key(&secp, &self.signing_key).serialize()
+    }
+
+    /// Kanonische Adresse dieses Schluessels (siehe `address_from_pubkey`).
+    pub fn address(&self) -> String {
+        address_from_pubkey(&self.public_key())
     }
 
     pub fn sign_digest(&self, digest: [u8; 32]) -> Signature {
