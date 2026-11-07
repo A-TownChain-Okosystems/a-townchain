@@ -6,8 +6,32 @@ use atc_oracle::consensus_bridge::{
 };
 use atc_oracle::feed::Report;
 use atc_oracle::verification::{
-    SignatureVerifierAdapter, StandardVerifierAdapter, VerificationError,
+    Ed25519VerifierAdapter, Secp256k1VerifierAdapter, SignatureVerifierAdapter, VerificationError,
 };
+
+/// Test-Double NUR fuer Konsens-Bridge-Tests. Es prueft bewusst keine Krypto;
+/// Produktionscode darf diesen Typ nicht verwenden (siehe SEC-P0-002).
+struct TestVerifier {
+    require_matching_key: bool,
+}
+
+impl TestVerifier {
+    fn new(require_matching_key: bool) -> Self {
+        Self { require_matching_key }
+    }
+}
+
+impl SignatureVerifierAdapter for TestVerifier {
+    fn verify_signature(&self, message: &[u8], signature: &[u8], pubkey: &[u8]) -> Result<bool, VerificationError> {
+        if message.is_empty() || signature.is_empty() || pubkey.is_empty() {
+            return Err(VerificationError::MalformedData);
+        }
+        if self.require_matching_key && pubkey.len() < 4 {
+            return Err(VerificationError::PublicKeyMismatch);
+        }
+        Ok(signature.starts_with(b"VALID"))
+    }
+}
 
 #[test]
 fn test_01_data_source_adapter_fetch_success() {
@@ -28,29 +52,49 @@ fn test_02_data_source_adapter_missing_key() {
 }
 
 #[test]
-fn test_03_signature_verifier_adapter_valid() {
-    let verifier = StandardVerifierAdapter::new(true);
-    let res = verifier.verify_signature(b"ATC/USD", b"VALID_SIG", b"PUBKEY_1234");
-    assert_eq!(res, Ok(true));
+fn test_03_ed25519_verifier_accepts_real_signature() {
+    use ed25519_dalek::{Signer, SigningKey};
+    let sk = SigningKey::from_bytes(&[7u8; 32]);
+    let pk = sk.verifying_key().to_bytes();
+    let msg = b"ATC/USD:1500";
+    let sig = sk.sign(msg);
+    let verifier = Ed25519VerifierAdapter;
+    assert_eq!(verifier.verify_signature(msg, &sig.to_bytes(), &pk), Ok(true));
+    // Manipulierte Nachricht muss scheitern
+    assert_eq!(verifier.verify_signature(b"ATC/USD:9999", &sig.to_bytes(), &pk), Ok(false));
+    // Fremder Schluessel muss scheitern
+    let other = SigningKey::from_bytes(&[8u8; 32]).verifying_key().to_bytes();
+    assert_eq!(verifier.verify_signature(msg, &sig.to_bytes(), &other), Ok(false));
 }
 
 #[test]
-fn test_04_signature_verifier_adapter_invalid() {
-    let verifier = StandardVerifierAdapter::new(true);
-    let res = verifier.verify_signature(b"ATC/USD", b"BAD_SIG", b"PUBKEY_1234");
-    assert_eq!(res, Ok(false));
+fn test_04_secp256k1_verifier_accepts_real_signature() {
+    use secp256k1::{Message, Secp256k1, SecretKey};
+    use sha2::{Digest, Sha256};
+    let secp = Secp256k1::new();
+    let sk = SecretKey::from_byte_array([7u8; 32]).unwrap();
+    let pk = secp256k1::PublicKey::from_secret_key(&secp, &sk).serialize();
+    let msg = b"ATC-TX-DOMAIN-V2|transfer|1";
+    let digest: [u8; 32] = Sha256::digest(msg).into();
+    let sig = secp.sign_ecdsa(Message::from_digest(digest), &sk).serialize_compact();
+    let verifier = Secp256k1VerifierAdapter;
+    assert_eq!(verifier.verify_signature(msg, &sig, &pk), Ok(true));
+    assert_eq!(verifier.verify_signature(b"ATC-TX-DOMAIN-V2|transfer|2", &sig, &pk), Ok(false));
 }
 
 #[test]
-fn test_05_signature_verifier_adapter_malformed() {
-    let verifier = StandardVerifierAdapter::new(true);
-    let res = verifier.verify_signature(b"", b"", b"");
-    assert_eq!(res, Err(VerificationError::MalformedData));
+fn test_05_verifier_rejects_malformed_input() {
+    let verifier = Secp256k1VerifierAdapter;
+    assert_eq!(verifier.verify_signature(b"", b"", b""), Err(VerificationError::MalformedData));
+    // Falsche Laengen duerfen nie als gueltig durchgehen
+    let ed = Ed25519VerifierAdapter;
+    assert_eq!(ed.verify_signature(b"x", &[0u8; 12], &[0u8; 32]), Err(VerificationError::MalformedData));
+    assert_eq!(ed.verify_signature(b"x", &[0u8; 64], &[0u8; 3]), Err(VerificationError::PublicKeyMismatch));
 }
 
 #[test]
 fn test_06_consensus_bridge_successful_commit() {
-    let verifier = StandardVerifierAdapter::new(false);
+    let verifier = TestVerifier::new(false);
     let mut buffer = OracleStagingBuffer::new("ATC/USD", 60, 10, 2);
 
     buffer.stage_payload(SignedOraclePayload {
@@ -80,7 +124,7 @@ fn test_06_consensus_bridge_successful_commit() {
 
 #[test]
 fn test_07_consensus_bridge_rejects_unverified_oracle_data() {
-    let verifier = StandardVerifierAdapter::new(false);
+    let verifier = TestVerifier::new(false);
     let mut buffer = OracleStagingBuffer::new("ATC/USD", 60, 10, 2);
 
     buffer.stage_payload(SignedOraclePayload {
@@ -105,7 +149,7 @@ fn test_07_consensus_bridge_rejects_unverified_oracle_data() {
 
 #[test]
 fn test_08_consensus_bridge_rejects_stale_data() {
-    let verifier = StandardVerifierAdapter::new(false);
+    let verifier = TestVerifier::new(false);
     let mut buffer = OracleStagingBuffer::new("ATC/USD", 30, 10, 1);
 
     buffer.stage_payload(SignedOraclePayload {
@@ -123,7 +167,7 @@ fn test_08_consensus_bridge_rejects_stale_data() {
 
 #[test]
 fn test_09_consensus_bridge_rejects_excessive_deviation() {
-    let verifier = StandardVerifierAdapter::new(false);
+    let verifier = TestVerifier::new(false);
     let mut buffer = OracleStagingBuffer::new("ATC/USD", 60, 5, 2);
 
     buffer.stage_payload(SignedOraclePayload {
@@ -148,7 +192,7 @@ fn test_09_consensus_bridge_rejects_excessive_deviation() {
 
 #[test]
 fn test_10_consensus_bridge_rejects_insufficient_sources() {
-    let verifier = StandardVerifierAdapter::new(false);
+    let verifier = TestVerifier::new(false);
     let mut buffer = OracleStagingBuffer::new("ATC/USD", 60, 10, 3);
 
     buffer.stage_payload(SignedOraclePayload {
@@ -168,7 +212,7 @@ fn test_10_consensus_bridge_rejects_insufficient_sources() {
 
 #[test]
 fn test_11_consensus_bridge_emergency_pause() {
-    let verifier = StandardVerifierAdapter::new(false);
+    let verifier = TestVerifier::new(false);
     let mut buffer = OracleStagingBuffer::new("ATC/USD", 60, 10, 1);
     buffer.set_emergency_paused(true);
 
