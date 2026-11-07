@@ -9,6 +9,9 @@ pub const MAX_PROGRAM_OPS: usize = 65_536;
 pub const MAX_STACK_ITEMS: usize = 4_096;
 /// Maximum number of storage slots retained by a VM state.
 pub const MAX_STORAGE_SLOTS: usize = 65_536;
+/// Default gas budget for non-consensus local/unit execution only.
+/// This is a safety policy, not a protocol or consensus parameter.
+pub const LOCAL_DEFAULT_GAS_BUDGET: u64 = 1_000_000;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Op {
@@ -223,53 +226,12 @@ impl Vm {
         Ok(())
     }
 
-    /// Raw interpreter retained for local/unit use. Consensus state transitions
-    /// MUST use execute_state_transition_with_gas.
+    /// Local/unit execution uses the same verifier, stack/storage bounds, gas
+    /// accounting, and transactional rollback as the canonical interpreter.
+    /// Consensus state transitions MUST still use execute_state_transition_with_gas
+    /// so the chain context and protocol-supplied gas budget are checked.
     pub fn run(&mut self) -> Result<Vec<u64>, VmError> {
-        let mut pc = 0usize;
-        while pc < self.program.len() {
-            match self.program[pc].clone() {
-                Op::Push(v) => self.stack.push(v),
-                Op::Add => self.binop(|a, b| a.wrapping_add(b))?,
-                Op::Sub => self.binop(|a, b| a.wrapping_sub(b))?,
-                Op::Mul => self.binop(|a, b| a.wrapping_mul(b))?,
-                Op::Div => {
-                    let b = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    let a = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    self.stack.push(a.checked_div(b).ok_or(VmError::DivisionByZero)?);
-                }
-                Op::Eq => self.binop(|a, b| (a == b) as u64)?,
-                Op::Lt => self.binop(|a, b| (a < b) as u64)?,
-                Op::Dup => {
-                    let v = *self.stack.last().ok_or(VmError::StackUnderflow)?;
-                    self.stack.push(v);
-                }
-                Op::Swap => {
-                    let n = self.stack.len();
-                    if n < 2 { return Err(VmError::StackUnderflow); }
-                    self.stack.swap(n - 1, n - 2);
-                }
-                Op::Load(slot) => self.stack.push(self.storage.get(slot).copied().unwrap_or(0)),
-                Op::Store(slot) => {
-                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if slot >= self.storage.len() { self.storage.resize(slot + 1, 0); }
-                    self.storage[slot] = v;
-                }
-                Op::Caller => self.stack.push(self.caller),
-                Op::JumpIfZero(t) => {
-                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if v == 0 { pc = self.valid_jump(t)?; continue; }
-                }
-                Op::Jump(t) => { pc = self.valid_jump(t)?; continue; }
-                Op::JumpIfNotZero(t) => {
-                    let v = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if v != 0 { pc = self.valid_jump(t)?; continue; }
-                }
-                Op::Halt => break,
-            }
-            pc += 1;
-        }
-        Ok(std::mem::take(&mut self.stack))
+        self.run_with_gas(LOCAL_DEFAULT_GAS_BUDGET)
     }
 
     fn binop(&mut self, f: impl Fn(u64, u64) -> u64) -> Result<(), VmError> {
@@ -407,4 +369,36 @@ mod tests {
         let mut vm = Vm::new(vec![Op::Push(1), Op::Jump(99)]);
         assert_eq!(vm.run(), Err(VmError::InvalidJump(99)));
     }
+    #[test]
+    fn public_run_stops_non_terminating_control_flow() {
+        let mut vm = Vm::new(vec![Op::Jump(0)]);
+        assert!(matches!(
+            vm.run(),
+            Err(VmError::OutOfGas { .. })
+        ));
+        assert!(vm.stack.is_empty());
+    }
+
+    #[test]
+    fn public_run_enforces_stack_limit() {
+        let mut vm = Vm::new(vec![Op::Push(1); MAX_STACK_ITEMS + 1]);
+        assert_eq!(vm.run(), Err(VmError::StackLimitExceeded));
+        assert!(vm.stack.is_empty());
+    }
+
+    #[test]
+    fn public_run_rolls_back_storage_when_limit_is_exceeded() {
+        let mut vm = Vm::with_context(
+            vec![Op::Push(7), Op::Store(MAX_STORAGE_SLOTS)],
+            0,
+            vec![3],
+        );
+        assert!(matches!(
+            vm.run(),
+            Err(VmError::StorageLimitExceeded { .. })
+        ));
+        assert_eq!(vm.state(), &[3]);
+        assert!(vm.stack.is_empty());
+    }
+
 }
