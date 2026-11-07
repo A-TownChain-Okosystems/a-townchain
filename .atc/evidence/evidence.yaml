@@ -6,15 +6,14 @@ schema_version: "1.0.0"
 repository: a-townchain
 generated: "2026-09-10"
 generated_by: "SCR-0080 Enforcement-Welle (Aurora, Owner-P0-Definition 10.09. 12:21)"
-bound_commit: 720c3271016700860afdaf8c009887dd7b9075a5
+bound_commit: UNVERIFIED
 maturity_class: A          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
 r_level: R4
 implementation:
   status: partial        # substantial|partial|skeleton|docs_only
   summary: "Prototypischer Blockchain-Kern, M4 mit Integrations-Evidence; KEIN production-ready L1"
 tests:
-  status: pass_with_evidence       # pass_with_evidence|not_run|not_applicable
-  evidence: "pytest+npm gruen (SCR-0078); Konsens nur ORCHESTRIERUNG, kanonisch = atc-algorithm"
+  status: not_run       # pass_with_evidence|not_run|not_applicable
 security:
   status: not_audited
 conformance:
@@ -27,10 +26,3 @@ milestone_claims:
 canonical_role:                  # SCR-0080 P0-02: Single-Owner-per-Capability
   capability: blockchain_orchestration
   canonical: true   # Registry-SSOT: blockchain_orchestration canonical=a-townchain (SCR-0086, Deep-Dive P0-02)
-test_run:
-  workflow: ATC Test Suite
-  run_id: 41374452511
-  commit: 720c3271016700860afdaf8c009887dd7b9075a5
-  timestamp: 2026-11-02T01:54:28.563958+00:00
-  result: PASS
-  runner: github-actions

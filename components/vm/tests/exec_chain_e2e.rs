@@ -3,7 +3,21 @@
 //! auf der ATVM ausgefuehrt. Fixtures entsprechen der echten Ausgabe von
 //! atc-contracts/exec_chain/assemble.py am E2E-Vektor (a=7, b=3, d=20).
 
+use atc_vm::context::ChainContext;
 use atc_vm::vm::{Op, Vm};
+
+fn execute(machine: &mut Vm) -> Result<Vec<u64>, atc_vm::vm::VmError> {
+    let genesis_id = "a".repeat(64);
+    let context = ChainContext {
+        chain_id: "atc".into(),
+        network_id: "devnet".into(),
+        genesis_id: genesis_id.clone(),
+        protocol_version: "1.0.0".into(),
+        vm_version: "1.0.0".into(),
+    };
+    machine.execute_state_transition_with_gas(&context, &genesis_id, "1.0.0", "1.0.0", 1_000_000)
+}
+
 
 #[test]
 fn e2e_adder_fixture_passes() {
@@ -21,7 +35,7 @@ Halt
 ";
     let prog = atc_vm::ops::parse_ops(text).expect("gueltiges .ops");
     let mut machine = Vm::new(prog);
-    let stack = machine.run().expect("ATVM-Ausfuehrung");
+    let stack = execute(&mut machine).expect("ATVM-Ausfuehrung");
     let result = *stack.last().expect("nicht-leerer Stack");
     assert_eq!(result, 20, "E2E-Vektor: (7+3)*2 == 20");
 }
@@ -38,7 +52,7 @@ fn direct_program_matches_assembler_sequence() {
         Op::Mul,
         Op::Halt,
     ]);
-    let stack = machine.run().expect("ATVM-Ausfuehrung");
+    let stack = execute(&mut machine).expect("ATVM-Ausfuehrung");
     assert_eq!(stack.last(), Some(&20));
 }
 
@@ -48,7 +62,7 @@ fn fail_closed_on_wrong_expectation() {
 Halt
 ").expect("gueltiges .ops");
     let mut machine = Vm::new(prog);
-    let stack = machine.run().expect("ATVM-Ausfuehrung");
+    let stack = execute(&mut machine).expect("ATVM-Ausfuehrung");
     let result = stack.last().copied().unwrap_or(0);
     assert_ne!(result, 999, "Vektor-Abweichung muss auffallen");
 }
@@ -65,14 +79,14 @@ Halt
 ")
         .expect("gueltiges .ops");
     let mut machine = Vm::new(prog);
-    let stack = machine.run().expect("ATVM-Ausfuehrung");
+    let stack = execute(&mut machine).expect("ATVM-Ausfuehrung");
     assert_eq!(stack.last(), Some(&2_100_000));
 }
 
 #[test]
 fn div_by_zero_fails_closed() {
     let mut machine = Vm::new(vec![Op::Push(1), Op::Push(0), Op::Div, Op::Halt]);
-    let res = machine.run();
+    let res = execute(&mut machine);
     assert_eq!(res, Err(atc_vm::vm::VmError::DivisionByZero));
 }
 
@@ -90,7 +104,7 @@ Halt
 ")
         .expect("gueltiges .ops");
     let mut machine = Vm::new(prog);
-    let stack = machine.run().expect("ATVM");
+    let stack = execute(&mut machine).expect("ATVM");
     assert_eq!(stack.last(), Some(&1000));
     assert_eq!(machine.state(), &[1000], "Storage muss persistiert sein");
 }
@@ -101,7 +115,7 @@ fn unwritten_slot_defaults_to_zero() {
 Halt
 ").expect("gueltiges .ops");
     let mut machine = Vm::new(prog);
-    let stack = machine.run().expect("ATVM");
+    let stack = execute(&mut machine).expect("ATVM");
     assert_eq!(stack.last(), Some(&0));
 }
 
@@ -112,7 +126,7 @@ fn caller_is_host_set_and_readable() {
 Halt
 ").expect("gueltiges .ops");
     let mut machine = Vm::with_context(prog, 42, vec![]);
-    let stack = machine.run().expect("ATVM");
+    let stack = execute(&mut machine).expect("ATVM");
     assert_eq!(stack.last(), Some(&42));
     assert_eq!(machine.caller(), 42);
 }
@@ -136,7 +150,7 @@ Halt
 ",
     ).expect("gueltiges .ops");
     let mut machine = Vm::with_context(prog, 42, vec![0, 42]); // Slot 1 = owner 42
-    let stack = machine.run().expect("ATVM");
+    let stack = execute(&mut machine).expect("ATVM");
     assert_eq!(stack.last(), Some(&1), "Owner-Mint muss erlaubt sein");
     assert_eq!(machine.state(), &[500, 42]);
 }
@@ -159,7 +173,7 @@ Halt
 ",
     ).expect("gueltiges .ops");
     let mut machine = Vm::with_context(prog, 7, vec![0, 42]);
-    let stack = machine.run().expect("ATVM");
+    let stack = execute(&mut machine).expect("ATVM");
     assert_eq!(stack.last(), Some(&0), "Fremder Caller muss abgewiesen werden");
     assert_eq!(machine.state(), &[0, 42], "Storage darf unberuehrt bleiben");
 }
@@ -187,7 +201,7 @@ Halt
 ",
     ).expect("gueltiges .ops");
     let mut machine = Vm::with_context(prog, 0, vec![0, 0, 100, 0]);
-    let stack = machine.run().expect("ATVM");
+    let stack = execute(&mut machine).expect("ATVM");
     assert_eq!(stack.last(), Some(&0));
     assert_eq!(machine.state(), &[0, 0, 100, 0], "Guthaben darf nicht sinken");
 }
@@ -214,7 +228,7 @@ Halt
 ",
     ).expect("gueltiges .ops");
     let mut machine = Vm::with_context(prog, 0, vec![0, 0, 100, 0]);
-    let stack = machine.run().expect("ATVM");
+    let stack = execute(&mut machine).expect("ATVM");
     assert_eq!(stack.last(), Some(&1));
     assert_eq!(machine.state(), &[0, 0, 50, 50], "Sender 50, Empfaenger 50");
 }
