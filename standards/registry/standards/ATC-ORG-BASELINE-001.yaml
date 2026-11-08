@@ -1,0 +1,14 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: enterprise
+family: LEGACY-SERIES
+family_id: LEGACY
+file: standards/enterprise/ATC-ORG-BASELINE-001.md
+mandate: Owner-Direktive 11.09. 17:30 (Sicherheit/Geschwindigkeit/Stabilitaet als
+  ein einheitliches Engineering-Governance-System) + Freigabe 17:33; SCR-0103
+registry_version: 1
+standard_id: ATC-ORG-BASELINE-001
+status: approved
+title: ATC Organization Engineering Baseline (5 Schutzschichten, Repo-Tiers T0-T4
+  mit Ableitungsregel, Merge-Gate je Tier, P0-P3-Roadmap mit ehrlichem IST-Stand)
+version: 1.0.0
