@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a-townchain-okosystems.github.io/globus-os/settings.schema.json",
+  "title": "GlobusOS Settings",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "system": { "$ref": "#/$defs/domain" },
+    "security": { "$ref": "#/$defs/domain" },
+    "privacy": { "$ref": "#/$defs/domain" },
+    "network": { "$ref": "#/$defs/domain" },
+    "display": { "$ref": "#/$defs/domain" },
+    "audio": { "$ref": "#/$defs/domain" },
+    "storage": { "$ref": "#/$defs/domain" },
+    "applications": { "$ref": "#/$defs/domain" },
+    "identity": { "$ref": "#/$defs/domain" },
+    "ai": { "$ref": "#/$defs/domain" },
+    "blockchain": { "$ref": "#/$defs/domain" },
+    "developer": { "$ref": "#/$defs/domain" },
+    "updates": { "$ref": "#/$defs/domain" }
+  },
+  "$defs": {
+    "domain": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["boolean", "integer", "string"]
+      }
+    }
+  }
+}
