@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-110",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #110: docs(architecture): add machine-readable component and function catalog",
+  "context": "Pull request 110 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/110",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\n- Add `docs/architecture/ATC-COMPONENT-FUNCTION-SPEC-001.json` as a machine-readable initial baseline for ATCLang, ATC-VM, ATC-Algorithm, ShivaCore Kernel, A-TownChain, GlobusOS and Genesis Engine.\n- Define 42 stable function IDs, acceptance criteria, specifications, dependencies, architectural boundaries and required verification evidence.\n- Keep `AUDIT_REQUIRED`/`PROPOSED` distinct from `IMPLEMENTED` and `VERIFIED`; the catalog does not authorize merges.\n- Preserve canonical implementation ownership in the component repositories; Genesis Engine repository ownership remains explicitly unconfirmed.\n\n## Validation performed\n- Parsed the committed JSON after fetching it back from the branch.\n- Confirmed 7 systems, 42 functions and unique function IDs.\n- Commit: `2de6c986c59c078b7e360698614f590ed3c08062`.\n\n## Limitations\nThis is an initial governance catalog, not evidence that the listed functions exist or pass tests. Repository/source/specification reconciliation and exact-SHA CI evidence remain follow-up work. No merge performed.\n\n## Soll-/Ist-Inventur und automatische Katalog-Gates\n\n- Catalog schema: `1.2.0`; 7 Systeme, 42 eindeutige Funktions-IDs.\n- Repository-Inventur: sechs tatsächliche Repositories für sieben Systeme; ATC-VM und ATC-Algorithm bleiben kanonische Unterpfade in `A-TownChain-Okosystems/a-townchain`.\n- Standard-Branch und SHA sind für die System-Inventur erfasst. Systemzustand `PRESENT_UNVERIFIED` bedeutet nur, dass Repository und ausgewählte Pfade vorhanden sind.\n- Alle 42 Funktions-Ist-Stände bleiben `NOT_ASSESSED`, bis Funktion, Quellpfad, Tests, normative Spezifikation und Evidenz miteinander abgeglichen wurden.\n- `tools/validate_component_function_spec.py` validiert IDs, Statuswerte, Abhängigkeiten, Soll/Ist/Delta-Felder und fail-closed VERIFIED-Evidenzregeln; der JSON-Bericht enthält außerdem maschinenlesbare Abdeckungs- und Referenzlücken.\n- `.github/workflows/component-function-catalog.yml` führt den Validator bei relevanten PRs und Main-Änderungen aus und lädt den JSON-Bericht als Artefakt hoch.\n\n**Nicht behauptet:** Ein grüner Strukturvalidator beweist nicht die korrekte Implementierung einer Funktion. Für `VERIFIED` sind weiterhin exact-SHA Run → Job → Step → Exit-Code plus Log/Artefakt erforderlich. Keine automatische Merge-Freigabe."
+}
