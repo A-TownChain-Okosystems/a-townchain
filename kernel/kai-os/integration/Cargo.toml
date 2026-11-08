@@ -1,0 +1,17 @@
+[package]
+name = "kai-os-integration"
+version = "0.1.0"
+edition = "2021"
+description = "KAI-OS Integration: deterministische Boot-Pipeline über alle Crates (S25-S26, AD-008)"
+license = "Apache-2.0"
+
+[dependencies]
+kai-os-node = { path = "../node" }
+kai-os-runtime = { path = "../runtime" }
+kai-os-state = { path = "../state" }
+kai-os-ai = { path = "../ai" }
+kai-os-keyring = { path = "../keyring" }
+kai-os-health = { path = "../health" }
+secp256k1 = "0.31"
+serde_json = "1"
+sha2 = "0.10"
