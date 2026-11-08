@@ -1,0 +1,75 @@
+# ATC Registry Capacity Matrix — generiert aus registry/standards.yaml (Bestands-SSOT)
+# und registry/families/FAMILY-*.yaml (normative Familiendefinition). Audit: 12.09.2026.
+# KERNREGEL: Kapazitaet != Verfuegbarkeit. free_slots sind NICHT allocatable ohne Allocation Audit (ALLOC-01..10) + SCR.
+capacity_matrix:
+  audited: "2026-09-12"
+  standards_total: 476
+  numeric_prefix_standards: 304
+  named_prefix_standards: 172
+  families:
+    000:
+      name: "?"
+      range: "ATC-STD-000..ATC-STD-099"
+      allocated: 61
+      free_slots: 39
+      free_is_allocatable: false
+    100:
+      name: "?"
+      range: "ATC-STD-100..ATC-STD-199"
+      allocated: 45
+      free_slots: 55
+      free_is_allocatable: false
+    200:
+      name: "?"
+      range: "ATC-STD-200..ATC-STD-299"
+      allocated: 39
+      free_slots: 61
+      free_is_allocatable: false
+    300:
+      name: "?"
+      range: "ATC-STD-300..ATC-STD-399"
+      allocated: 42
+      free_slots: 58
+      free_is_allocatable: false
+    400:
+      name: "?"
+      range: "ATC-STD-400..ATC-STD-499"
+      allocated: 51
+      free_slots: 49
+      free_is_allocatable: false
+    500:
+      name: "?"
+      range: "ATC-STD-500..ATC-STD-599"
+      allocated: 27
+      free_slots: 73
+      free_is_allocatable: false
+    600:
+      name: "?"
+      range: "ATC-STD-600..ATC-STD-699"
+      allocated: 31
+      free_slots: 69
+      free_is_allocatable: false
+    700:
+      name: "?"
+      range: "ATC-STD-700..ATC-STD-799"
+      allocated: 7
+      free_slots: 93
+      free_is_allocatable: false
+    800:
+      name: "?"
+      range: "ATC-STD-800..ATC-STD-899"
+      allocated: 0
+      free_slots: 100
+      free_is_allocatable: false
+    900:
+      name: "?"
+      range: "ATC-STD-900..ATC-STD-999"
+      allocated: 1
+      free_slots: 99
+      free_is_allocatable: false
+  named_prefixes_note: "Nicht-numerische Praefixe (ATC-AAS, ATC-STD-AI-DEV, ATC-STD-BUG, ...) werden separat per Familien-Definition verwaltet."
+  allocation_policy:
+    registry_ssot: true
+    id_recycling: false
+    all_gates_required: true
+    family_allocation_precedes_standard_allocation: true
