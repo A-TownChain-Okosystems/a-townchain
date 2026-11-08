@@ -1,0 +1,8 @@
+[package]
+name = "atc-storage"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "ATC Storage — KV-Store MVP mit deterministischem Root-Hash"
+
+[dependencies]
