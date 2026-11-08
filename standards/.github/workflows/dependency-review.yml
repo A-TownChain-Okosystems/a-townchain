@@ -1,0 +1,145 @@
+name: ATC Dependency Security Gate
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  dependency-security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Setup deterministic Python runtime
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          check-latest: false
+      - name: Install validator runtime dependencies
+        run: python3 -m pip install -r requirements.txt
+      - name: Run dependency security unit tests
+        run: python3 -m unittest discover -s tests -p "test_dependency_guard.py" -v
+      - name: Build current dependency graph
+        run: python3 tools/dependency_guard.py graph --out artifacts/dependency
+      - name: Fetch authoritative OSV snapshot
+        run: |
+          set -euo pipefail
+          python3 tools/osv_fetch.py \
+            --graph artifacts/dependency/dependency-graph.json \
+            --raw-output artifacts/dependency/osv-response.json \
+            --query-output artifacts/dependency/osv-query.json \
+            --advisory-output artifacts/dependency/advisories.json
+
+      - name: Build exact base dependency graph
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          ATC_DEP_BASE_REF: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/atc-dependency-base /tmp/atc-dependency-base-artifact
+          mkdir -p /tmp/atc-dependency-base
+          git fetch --no-tags origin "$ATC_DEP_BASE_REF"
+          git archive "$ATC_DEP_BASE_REF" | tar -x -C /tmp/atc-dependency-base
+          set +e
+          python3 tools/dependency_guard.py graph --root /tmp/atc-dependency-base --out /tmp/atc-dependency-base-artifact
+          rc=$?
+          set -e
+          test -s /tmp/atc-dependency-base-artifact/dependency-graph.json
+          test -s /tmp/atc-dependency-base-artifact/dependency-result.json
+          cp /tmp/atc-dependency-base-artifact/dependency-graph.json artifacts/dependency/base-dependency-graph.json
+          cp /tmp/atc-dependency-base-artifact/dependency-result.json artifacts/dependency/base-dependency-result.json
+          python3 - <<PY
+          import json
+          import sys
+          from pathlib import Path
+
+          sys.path.insert(0, "tools")
+          from dependency_guard import classify_base_graph_result
+
+          result = json.loads(Path("/tmp/atc-dependency-base-artifact/dependency-result.json").read_text())
+          classification = classify_base_graph_result(result)
+
+          if "$rc" == "0" and classification != "PASS":
+              raise SystemExit(f"base graph returned zero but result was {classification}: {result}")
+          if "$rc" != "0" and classification != "EXPECTED_BLOCKED":
+              raise SystemExit(f"unexpected base graph failure class: {classification}: {result}")
+
+          if classification == "EXPECTED_BLOCKED":
+              print("Base graph has only expected unpinned/unsupported requirement violations; retained as informational evidence.")
+          else:
+              print("Base graph PASS; no historical pin violation detected.")
+          PY
+
+      - name: Validate OSV evidence provenance
+        run: |
+          set -euo pipefail
+          test -s artifacts/dependency/osv-response.json
+          test -s artifacts/dependency/osv-query.json
+          test -s artifacts/dependency/advisories.json
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root=Path("artifacts/dependency")
+          raw=(root/"osv-response.json").read_bytes()
+          query=(root/"osv-query.json").read_bytes()
+          payload=json.loads((root/"advisories.json").read_text())
+          expected=hashlib.sha256(raw).hexdigest()
+          source=payload.get("source", {})
+          assert source.get("input_sha256")==hashlib.sha256(query).hexdigest()
+          assert source.get("format")=="OSV"
+          assert source.get("input_sha256")
+          assert len(source.get("input_sha256"))==64
+          assert source.get("raw_response_sha256")==expected
+          PY
+
+      - name: Native dependency review (pull request)
+        if: github.event_name == 'pull_request'
+        env:
+          ATC_DEP_BASE_REF: ${{ github.event.pull_request.base.sha }}
+          ATC_DEP_BASE_JSON: /tmp/atc-dependency-base-artifact/dependency-graph.json
+        run: python3 tools/dependency_guard.py review --out artifacts/dependency --advisories artifacts/dependency/advisories.json
+      - name: Native dependency review (main push)
+        if: github.event_name == 'push'
+        run: python3 tools/dependency_guard.py review --out artifacts/dependency --advisories artifacts/dependency/advisories.json
+      - name: Generate deterministic SPDX SBOM
+        run: python3 tools/dependency_sbom.py --out artifacts/dependency
+      - name: Validate security evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s artifacts/dependency/dependency-graph.json
+          test -s artifacts/dependency/dependency-result.json
+          test -s artifacts/dependency/dependency-review.json
+          test -s artifacts/dependency/sbom.spdx.json
+          test -s artifacts/dependency/sbom-result.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("artifacts/dependency")
+          review=json.loads((root/"dependency-review.json").read_text())
+          sbom=json.loads((root/"sbom-result.json").read_text())
+          graph=json.loads((root/"dependency-result.json").read_text())
+          assert review.get("schema")=="ATC-DEP-REVIEW-1"
+          assert sbom.get("schema")=="ATC-DEP-SBOM-1"
+          assert graph.get("schema")=="ATC-DEP-RESULT-1"
+          event="${{ github.event_name }}"
+          if event=="pull_request":
+              assert review.get("base_ref")=="${{ github.event.pull_request.base.sha }}"
+          elif event=="push":
+              assert review.get("base_ref") in (None,"")
+          else:
+              raise SystemExit("unsupported event")
+          PY
+      - name: Upload dependency evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: atc-dependency-evidence-${{ github.sha }}
+          path: artifacts/dependency/
+          if-no-files-found: error
