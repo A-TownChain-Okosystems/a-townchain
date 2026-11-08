@@ -1,0 +1,13 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: sc
+family: SC
+family_id: PREFIX
+file: standards/sc/ATC-STD-SC-004.md
+mandate: Owner-Entwurf 07.09. — Unit/Fuzz/Invariant/Negative/Security/Upgrade/Gas-Tests,
+  Invarianten
+registry_version: 1
+standard_id: ATC-STD-SC-004
+status: approved
+title: Smart Contract Testing Standard
+version: 1.1.0
