@@ -3,18 +3,23 @@
 # kind: identical = byte-gleiche Spiegelkopie, divergent = getrennte Implementierung
 contracts:
   ATC8300Token:
-    kind: divergent
-    copies: 9
-    variants: 2
+    kind: identical
+    copies: 5
+    variants: 1
     files:
       - ai/atclang/examples/atc8300.atc
       - apps/atc-contracts/atc8300/atc8300.atc
-      - apps/atc-contracts/atc8300/atc8300_token.atc
       - apps/atc-contracts/modules/atc-contracts/atc8300/atc8300.atc
-      - apps/atc-contracts/modules/atc-contracts/atc8300/atc8300_token.atc
       - components/contracts/atc8300/atc8300.atc
-      - components/contracts/atc8300/atc8300_token.atc
       - components/contracts/modules/atc-contracts/atc8300/atc8300.atc
+  ATC8300TokenInstance:
+    kind: identical
+    copies: 4
+    variants: 1
+    files:
+      - apps/atc-contracts/atc8300/atc8300_token.atc
+      - apps/atc-contracts/modules/atc-contracts/atc8300/atc8300_token.atc
+      - components/contracts/atc8300/atc8300_token.atc
       - components/contracts/modules/atc-contracts/atc8300/atc8300_token.atc
   ATCIssuesSummary:
     kind: identical
@@ -24,18 +29,13 @@ contracts:
       - apps/atc-sdk/modules/atc-cli/atc_issues_summary.atc
       - components/sdk/modules/atc-cli/atc_issues_summary.atc
   ATCoin:
-    kind: divergent
-    copies: 9
-    variants: 2
+    kind: identical
+    copies: 4
+    variants: 1
     files:
-      - ai/atclang/examples/atc8300.atc
-      - apps/atc-contracts/atc8300/atc8300.atc
       - apps/atc-contracts/atcoin/atcoin.atc
-      - apps/atc-contracts/modules/atc-contracts/atc8300/atc8300.atc
       - apps/atc-contracts/modules/atc-contracts/atcoin/atcoin.atc
-      - components/contracts/atc8300/atc8300.atc
       - components/contracts/atcoin/atcoin.atc
-      - components/contracts/modules/atc-contracts/atc8300/atc8300.atc
       - components/contracts/modules/atc-contracts/atcoin/atcoin.atc
   AgentRegistry:
     kind: identical
@@ -96,9 +96,9 @@ contracts:
       - components/contracts/modules/atc-contracts/smart_contracts.atc
       - components/contracts/smart_contracts.atc
   FractionalAssetOwnership:
-    kind: divergent
+    kind: identical
     copies: 7
-    variants: 2
+    variants: 1
     files:
       - apps/atc-contracts/modules/atc-contracts/standards/atc-13_fractional_asset_ownership.atc
       - apps/atc-contracts/modules/atc-standards-refs/standards/atc-13_fractional_asset_ownership.atc
@@ -108,9 +108,9 @@ contracts:
       - components/contracts/standards/atc-13_fractional_asset_ownership.atc
       - standards/references/standards/atc-13_fractional_asset_ownership.atc
   FranchiseRegistry:
-    kind: divergent
+    kind: identical
     copies: 4
-    variants: 3
+    variants: 1
     files:
       - ai/genesis-franchise-factory/specs/contracts/registry.atc
       - apps/atc-contracts/modules/atc-standards-refs/contracts/registry.atc
@@ -126,9 +126,9 @@ contracts:
       - components/contracts/contracts/token.atc
       - components/contracts/modules/atc-contracts/contracts/token.atc
   GenesisChroniclesContract:
-    kind: divergent
+    kind: identical
     copies: 4
-    variants: 4
+    variants: 1
     files:
       - ai/genesis-chronicles/contracts/genesis_chronicles.atc
       - ai/genesis-chronicles/genesis_chronicles_contract.atc
@@ -184,9 +184,9 @@ contracts:
       - components/contracts/modules/atc-contracts/smart_contracts.atc
       - components/contracts/smart_contracts.atc
   ProofOfAiMining:
-    kind: divergent
+    kind: identical
     copies: 7
-    variants: 2
+    variants: 1
     files:
       - apps/atc-contracts/modules/atc-contracts/standards/atc-15_proof_of_ai_mining.atc
       - apps/atc-contracts/modules/atc-standards-refs/standards/atc-15_proof_of_ai_mining.atc
@@ -196,9 +196,9 @@ contracts:
       - components/contracts/standards/atc-15_proof_of_ai_mining.atc
       - standards/references/standards/atc-15_proof_of_ai_mining.atc
   ReferralMultitierRewards:
-    kind: divergent
+    kind: identical
     copies: 7
-    variants: 2
+    variants: 1
     files:
       - apps/atc-contracts/modules/atc-contracts/standards/atc-16_referral_multitier_rewards.atc
       - apps/atc-contracts/modules/atc-standards-refs/standards/atc-16_referral_multitier_rewards.atc
@@ -217,9 +217,9 @@ contracts:
       - components/contracts/modules/atc-contracts/smart_contracts.atc
       - components/contracts/smart_contracts.atc
   RevenueShare:
-    kind: divergent
+    kind: identical
     copies: 5
-    variants: 2
+    variants: 1
     files:
       - ai/genesis-franchise-factory/specs/contracts/revenue.atc
       - apps/atc-contracts/contracts/revenue.atc
@@ -299,9 +299,9 @@ contracts:
       - apps/atc-contracts/exec_chain/tests/t09_atc8300_burn_supply.atc
       - components/contracts/exec_chain/tests/t09_atc8300_burn_supply.atc
   WrappedSyntheticAssets:
-    kind: divergent
+    kind: identical
     copies: 7
-    variants: 2
+    variants: 1
     files:
       - apps/atc-contracts/modules/atc-contracts/standards/atc-20_wrapped_synthetic_assets.atc
       - apps/atc-contracts/modules/atc-standards-refs/standards/atc-20_wrapped_synthetic_assets.atc
