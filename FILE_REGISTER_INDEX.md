@@ -1,9 +1,9 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-08 18:14 UTC+2 aus `origin/main` @ `598f88d01`.
+> Vollständige Dateiliste. Erzeugt 2026-11-08 18:14 UTC+2 aus `origin/main` @ `1ba68a228`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 12327 Dateien**
+**Total: 12329 Dateien**
 
 ## docs (5061)
 
@@ -12301,7 +12301,7 @@
 - `tooling/atc-toolchain/docs/REPOSITORY_STANDARD.md`
 - `tooling/atc-toolchain/tests/test_governance_smoke.py`
 
-## (root) (20)
+## (root) (21)
 
 - `.gitignore`
 - `AGENTS.md`
@@ -12315,6 +12315,7 @@
 - `Cargo.toml`
 - `ECOSYSTEM_RUNBOOK.md`
 - `FILE_REGISTER.md`
+- `FILE_REGISTER_INDEX.md`
 - `LICENSE`
 - `MIGRATION_MANIFEST.yaml`
 - `README.md`
@@ -12361,6 +12362,15 @@
 - `.atc/repository.yaml`
 - `.atc/standards.yaml`
 
+## tools (6)
+
+- `tools/consensus_boundary_check.py`
+- `tools/consolidate_monorepo.py`
+- `tools/dependency_review.py`
+- `tools/determinism_check.py`
+- `tools/ecosystem.sh`
+- `tools/file_register.py`
+
 ## specs (5)
 
 - `specs/ATC-CRYPTO-001-CRYPTOGRAPHY.md`
@@ -12368,11 +12378,3 @@
 - `specs/ATC-NETWORK-ID-001-NETWORK-IDENTITY.md`
 - `specs/ATC-STATE-001-STATE-TRANSITION.md`
 - `specs/ATC-VM-CONF-001-VM-CONFORMANCE.md`
-
-## tools (5)
-
-- `tools/consensus_boundary_check.py`
-- `tools/consolidate_monorepo.py`
-- `tools/dependency_review.py`
-- `tools/determinism_check.py`
-- `tools/ecosystem.sh`
