@@ -1,0 +1,168 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-02 — CommandBus: Befehle + Undo/Redo für Editor
+// Layer 2 der Genesis Engine Bus-Architektur
+// Sprint 2.4 Extension — Issue #77
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+// ── Command-Struktur ─────────────────────────────────
+struct Command {
+    id: Hash256,
+    name: String,
+    description: String,
+    execute: fn() -> Bool,
+    undo: fn() -> Bool,
+    timestamp: UInt64,
+    category: String,
+    can_undo: Bool,
+    is_executed: Bool,
+}
+
+struct CommandHistory {
+    undo_stack: List<Command>,
+    redo_stack: List<Command>,
+    max_history: UInt16,
+    current_macro: List<Command>,
+    recording_macro: Bool,
+}
+
+struct CommandRegistry {
+    commands: Map<String, CommandTemplate>,
+    shortcuts: Map<String, String>,  // Key → Command name
+    enabled: Bool,
+}
+
+struct CommandTemplate {
+    name: String,
+    description: String,
+    factory: fn(List<Any>) -> Command,
+    category: String,
+    default_shortcut: String,
+}
+
+// CommandBus: Command registrieren
+pub fn register_command(registry: CommandRegistry, name: String, template: CommandTemplate) -> Bool {
+    registry.commands[name] = template
+    if template.default_shortcut != "" {
+        registry.shortcuts[template.default_shortcut] = name
+    }
+    return true
+}
+
+// CommandBus: Command ausführen
+pub fn execute_command(history: CommandHistory, cmd: Command) -> Bool {
+    if not cmd.can_undo {
+        // Non-undoable: direkt ausführen
+        return cmd.execute()
+    }
+
+    let success = cmd.execute()
+    if success {
+        cmd.is_executed = true
+        history.undo_stack.append(cmd)
+        // Redo-Stack leeren (neuer Branch)
+        history.redo_stack = []
+        // History-Limit
+        if history.undo_stack.len() > history.max_history {
+            history.undo_stack.pop(0)
+        }
+        emit CommandExecuted(cmd.id, cmd.name)
+    }
+    return success
+}
+
+// CommandBus: Undo
+pub fn undo(history: CommandHistory) -> Bool {
+    if history.undo_stack.len() == 0 {
+        return false
+    }
+    let cmd = history.undo_stack.pop()
+    let success = cmd.undo()
+    if success {
+        history.redo_stack.append(cmd)
+        emit CommandUndone(cmd.id, cmd.name)
+    }
+    return success
+}
+
+// CommandBus: Redo
+pub fn redo(history: CommandHistory) -> Bool {
+    if history.redo_stack.len() == 0 {
+        return false
+    }
+    let cmd = history.redo_stack.pop()
+    let success = cmd.execute()
+    if success {
+        history.undo_stack.append(cmd)
+        emit CommandRedone(cmd.id, cmd.name)
+    }
+    return success
+}
+
+// CommandBus: Macro-Aufnahme starten
+pub fn begin_macro(history: CommandHistory) -> Bool {
+    history.recording_macro = true
+    history.current_macro = []
+    return true
+}
+
+// CommandBus: Macro beenden und als einzelner Command speichern
+pub fn end_macro(history: CommandHistory, name: String) -> Command {
+    history.recording_macro = false
+    let cmds = history.current_macro
+
+    let macro_cmd = Command {
+        id: Crypto::sha256(serialize(name, Chain::timestamp())),
+        name: name,
+        description: "Macro: " + name + " (" + cmds.len() + " commands)",
+        execute: fn() -> Bool {
+            for c in cmds { c.execute() }
+            return true
+        },
+        undo: fn() -> Bool {
+            // Reverse order undo
+            let reversed = cmds.reverse()
+            for c in reversed { c.undo() }
+            return true
+        },
+        timestamp: Chain::timestamp(),
+        category: "macro",
+        can_undo: true,
+        is_executed: false,
+    }
+    return macro_cmd
+}
+
+// CommandBus: Shortcut auslösen
+pub fn handle_shortcut(registry: CommandRegistry, key: String, history: CommandHistory, args: List<Any>) -> Bool {
+    if not registry.enabled {
+        return false
+    }
+    if not registry.shortcuts.contains(key) {
+        return false
+    }
+    let cmd_name = registry.shortcuts[key]
+    if not registry.commands.contains(cmd_name) {
+        return false
+    }
+    let template = registry.commands[cmd_name]
+    let cmd = template.factory(args)
+    return execute_command(history, cmd)
+}
+
+// CommandBus: History leeren
+pub fn clear_history(history: CommandHistory) -> Bool {
+    history.undo_stack = []
+    history.redo_stack = []
+    return true
+}
+
+// CommandBus: History-Größe
+pub fn history_size(history: CommandHistory) -> UInt16 {
+    return history.undo_stack.len() + history.redo_stack.len()
+}
+
+event CommandExecuted(id: Hash256, name: String)
+event CommandUndone(id: Hash256, name: String)
+event CommandRedone(id: Hash256, name: String)
