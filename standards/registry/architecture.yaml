@@ -1,0 +1,55 @@
+# ATC Architecture Registry — ATC-STD-FRAMEWORK-001 §2 (SSOT, SCR-0029)
+# Architektur-Komponenten mit Layer-, Repo- und Standard-Bindung.
+# DECISIONS_REGISTER (AD-NNN) lebt kanonisch in a-townchain-os-docs; hier Verweis.
+architecture:
+  version: 1.0.0
+  generated: '2026-09-08'
+  layers:
+    - id: L0
+      name: Sprache (ATCLang)
+      repos: [atclang]
+      components: ["Lexer/Parser/TypeChecker/compile_source (Referenz-Pipeline)", "SEM-001..012 semantisches Gate"]
+      standards: [ATC-STD-000]
+    - id: L1
+      name: Kernel (ShivaCore)
+      repos: [atc-shivacore]
+      components: ["Capability-Microkernel K0-K40", "K14 p2p.rs (v0.9) + p2p_secure.rs (ATC-PROTO-P2P-001 v1.0.0, SCR-0028)", "K16 Konsens (DAG+PoH+Validator+Voting+Finality)", "K15 Security (Multi-Sig/Audit/Reputation/Rate-Limit/Secure-Channel)"]
+      standards: [ATC-STD-PROTOCOL-001, ATC-STD-PROTOCOL-002, ATC-STD-PROTOCOL-003]
+    - id: L2
+      name: KI (aurora-ai)
+      repos: [aurora-ai]
+      components: ["Kernel-Event-Bridge (ATC-M-003, K-Sprint 41, IN_PROGRESS)"]
+      standards: [ATC-STD-AOS-001]
+    - id: L3
+      name: Blockchain (a-townchain)
+      repos: [a-townchain]
+      components: ["Chain-ID 658467", "Block/Tx/Consensus/Mempool/Staking"]
+      standards: [ATC-STD-PROTOCOL-001, ATC-STD-COMPAT-001]
+    - id: L4
+      name: Userspace (globus-os)
+      repos: [globus-os]
+      components: ["Userspace-Bibliotheken auf ShivaCore"]
+      standards: [ATC-STD-000]
+    - id: L5
+      name: Dev-Plattform
+      repos: [atc-sdk, atc-node, atc-contracts, atc-wallet, atc-explorer, atc-indexer, atc-mining, atc-interop, atc-oracle, atc-storage, atc-launchpad, atc-marketplace, atc-compute]
+      components: ["SDK/API/Tooling je Komponente"]
+      standards: [ATC-STD-203, ATC-STD-204]
+    - id: L6
+      name: Vision-Engine
+      repos: [genesis-engine, genesis-chronicles]
+      components: ["Vision/Lore (ATC-41-80-Ordnung, keine Engineering-Relevanz)"]
+      standards: []
+    - id: L7
+      name: Integration (a-townchain-os)
+      repos: [a-townchain-os]
+      components: ["Cargo-Workspace-Shell, sync_modules.py"]
+      standards: [ATC-STD-000]
+  protocol_envelope:
+    spec: ATC-STD-PROTOCOL-001 §4
+    fields: 9
+    chain_id: 658467
+    first_implementation: "atc-shivacore p2p_secure.rs (Envelope 9+1, kanonische Serialisierung, Signatur-Domain-Separation)"
+  decisions_register:
+    source: "a-townchain-os-docs DECISIONS_REGISTER (AD-001..AD-048)"
+    note: "Architektur-Entscheidungen werden dort kanonisch geführt; diese Registry verweist."
