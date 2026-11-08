@@ -1,0 +1,20 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: framework
+family: FRAMEWORK
+family_id: PREFIX
+file: standards/framework/ATC-STD-FRAMEWORK-001.md
+mandate: 'Owner-Entwurf 07.09. 23:41 — 12 REQ-FW, 43-Familien-Katalog (registry/framework.yaml,
+  433 Slots: 264 NEU/150 VERWEIST/10 BELEGT/6 KONFLIKT/3 GEPLANT; FAM-20/40/41/42/43
+  via SCR-0019..0025, FRAMEWORK v1.0.6), Kollisionsauflösung 100/201-204/300, einheitliche
+  Status-/Change-/Traceability-Modelle auf Bestand gemappt, 11 Register (6 existieren,
+  5 GEPLANT), RR-G01..G08 Release-Readiness, Agent Operating Mandate (14 Fragen, AOS-001
+  GEPLANT), Master-Audit ATC-STD-999 GEPLANT, Gap-Roadmap P1-P3; maschinenlesbar (framework.yaml
+  + Validator S-21); SCR-0019; §9-Freigabe 07.09. 23:48, APPROVED, normativ, §30-eingefroren'
+registry_version: 1
+standard_id: ATC-STD-FRAMEWORK-001
+status: approved
+title: 'ATC Enterprise Standards Framework — Master-Dokument (ATC-STANDARDS-MASTER):
+  Zusammenführung aller Standards, Katalog, Kollisionsauflösung, einheitliche Status-/Change-/Traceability-Modelle,
+  Register-Architektur'
+version: 1.0.7
