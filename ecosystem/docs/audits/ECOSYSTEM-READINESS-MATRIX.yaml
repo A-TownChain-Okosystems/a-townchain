@@ -1,0 +1,131 @@
+schema_version: "1"
+audit:
+  id: "ECOSYSTEM-AUDIT-2026-09-25"
+  date: "2026-09-25"
+  mode: "evidence-first-fail-closed"
+  initial_scope: "G1-G2"
+
+status_definitions:
+  IMPLEMENTED: "Production source exists."
+  TESTED: "Behaviour is demonstrated by tests."
+  CI_VERIFIED: "Relevant CI execution is green."
+  E2E_VERIFIED: "Real components are proven together."
+  STUB: "Placeholder or mock implementation."
+  DUPLICATE: "Competing implementation exists."
+  DISCONNECTED: "Source exists but is not on the claimed runtime path."
+  BROKEN: "Integration exists but fails."
+  MISSING: "Required component or connection is absent."
+  UNKNOWN: "Evidence has not yet been collected."
+
+repositories:
+  - id: "R01"
+    name: "atc-algorithm"
+    role: "Consensus/economics algorithm SSOT"
+    canonical_repo: "A-TownChain-Okosystems/atc-algorithm"
+    status: "UNKNOWN"
+  - id: "R02"
+    name: "a-townchain"
+    role: "L1 blockchain/state machine"
+    canonical_repo: "A-TownChain-Okosystems/a-townchain"
+    status: "UNKNOWN"
+  - id: "R03"
+    name: "atc-node"
+    role: "Node/network runtime"
+    canonical_repo: "A-TownChain-Okosystems/atc-node"
+    status: "UNKNOWN"
+  - id: "R04"
+    name: "atc-vm"
+    role: "ATC VM execution"
+    canonical_repo: "A-TownChain-Okosystems/atc-vm"
+    status: "UNKNOWN"
+  - id: "R05"
+    name: "atc-storage"
+    role: "Durable state/storage"
+    canonical_repo: "A-TownChain-Okosystems/atc-storage"
+    status: "UNKNOWN"
+  - id: "R06"
+    name: "atc-indexer"
+    role: "Chain/state indexing"
+    canonical_repo: "A-TownChain-Okosystems/atc-indexer"
+    status: "UNKNOWN"
+
+edges:
+  - id: "G2-001"
+    from: "atc-algorithm"
+    to: "a-townchain"
+    status: "UNKNOWN"
+    ssot: null
+    source_evidence: []
+    test_evidence: []
+    ci_evidence: []
+    e2e_evidence: []
+    findings: []
+  - id: "G2-002"
+    from: "a-townchain"
+    to: "atc-node"
+    status: "UNKNOWN"
+    ssot: null
+    source_evidence: []
+    test_evidence: []
+    ci_evidence: []
+    e2e_evidence: []
+    findings: []
+  - id: "G2-003"
+    from: "atc-node"
+    to: "atc-vm"
+    status: "UNKNOWN"
+    ssot: null
+    source_evidence: []
+    test_evidence: []
+    ci_evidence: []
+    e2e_evidence: []
+    findings: []
+  - id: "G2-004"
+    from: "atc-vm"
+    to: "atc-storage"
+    status: "UNKNOWN"
+    ssot: null
+    source_evidence: []
+    test_evidence: []
+    ci_evidence: []
+    e2e_evidence: []
+    findings: []
+  - id: "G2-005"
+    from: "atc-storage"
+    to: "atc-indexer"
+    status: "UNKNOWN"
+    ssot: null
+    source_evidence: []
+    test_evidence: []
+    ci_evidence: []
+    e2e_evidence: []
+    findings: []
+
+gates:
+  G1:
+    name: "Repository Reality"
+    status: "IN_PROGRESS"
+  G2:
+    name: "Core Dependency Chain"
+    status: "IN_PROGRESS"
+  G3:
+    name: "Execution Stack"
+    status: "REGISTERED"
+  G4:
+    name: "Financial Stack"
+    status: "REGISTERED"
+  G5:
+    name: "OS Stack"
+    status: "REGISTERED"
+  G6:
+    name: "AI Integration"
+    status: "REGISTERED"
+  G7:
+    name: "Genesis"
+    status: "REGISTERED"
+  G8:
+    name: "Security/Governance"
+    status: "REGISTERED"
+  G9:
+    name: "Ecosystem E2E"
+    status: "REGISTERED"
