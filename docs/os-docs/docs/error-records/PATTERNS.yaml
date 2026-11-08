@@ -1,0 +1,15 @@
+# ATC Error Pattern Library (ATC-STD-ERR-010, REQ-ER-100/101)
+# SSOT: diese Datei; Kategorie-Flags + BUG-005-Fehlerklassen als Referenz.
+version: "1.0.0"
+updated: "2026-09-08"
+patterns:
+  ATC-ERR-PATTERN-001: {title: "Versionierungsfehler",            examples: "falsche/uneinheitliche Versionsangaben, Tag-Manifest-Drift"}
+  ATC-ERR-PATTERN-002: {title: "Dokumentation-Code-Divergenz",    examples: "Doku beschreibt Feature, das Code nicht hat (und umgekehrt)"}
+  ATC-ERR-PATTERN-003: {title: "Fehlende Dependency",             examples: "nicht deklarierte, fehlende oder abweichende Abhaengigkeiten"}
+  ATC-ERR-PATTERN-004: {title: "API-Kompatibilitaetsfehler",      examples: "gebrochene Schnittstellen, nicht deklarierte Breaking Changes"}
+  ATC-ERR-PATTERN-005: {title: "Fehlende Tests",                   examples: "Kern-Logik ohne Test-Abdeckung (Tests: 0)"}
+  ATC-ERR-PATTERN-006: {title: "Inkonsistente Standards",         examples: "Standard-IDs/Duplikate/Registry-Drift"}
+  ATC-ERR-PATTERN-007: {title: "Repository-Strukturfehler",       examples: "fehlende Dateien, kaputte Struktur, fehlende Manifeste"}
+  ATC-ERR-PATTERN-008: {title: "Security-Konfigurationsfehler",   examples: "offene Rechte, fehlende Scans, unsichere Defaults"}
+  ATC-ERR-PATTERN-009: {title: "Fehlende abstrakte Methoden-Implementierung", examples: "Subklasse implementiert @abstractmethod der Basisklasse nicht (ABC-Verstoss, Instanziierung unmoeglich)", added: "2026-09-08 via ATC-ERR-0001 (ERR-010 REQ-ER-100: offener Katalog)"}
+  ATC-ERR-PATTERN-010: {title: "Undeklarierte CI-Dependency / Workflow ohne Dependency-Installation", examples: "Workflow fuehrt Werkzeuge aus, deren externe Abhaengigkeiten weder deklariert (requirements.txt) noch installiert (pip install) sind; Erfolg haengt vom Runner-Zufallszustand ab", added: "2026-09-08 via ATC-ERR-0002 (ERR-010 REQ-ER-100: offener Katalog)"}
