@@ -15,9 +15,11 @@
 //!   stillgelegt — historische Signaturen bleiben damit pruefbar.
 
 use std::collections::HashMap;
+use std::path::Path;
 
 use atc_wallet::keys::address_from_pubkey;
 use secp256k1::{ecdsa::Signature, Message, PublicKey, Secp256k1};
+use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 /// Domain-Tag der Rotationsnachricht.
@@ -35,10 +37,13 @@ pub enum DidError {
     /// Rotation auf einen bereits verwendeten Schluessel.
     KeyReuse,
     MalformedKey,
+    /// Gespeichertes Dokument passt nicht zur DID oder ist inkonsistent.
+    InconsistentDocument,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DidKey {
+    #[serde(with = "hex33")]
     pub pubkey: [u8; 33],
     /// Ab dieser Registry-Epoche autoritativ.
     pub valid_from_epoch: u64,
@@ -46,7 +51,7 @@ pub struct DidKey {
     pub retired_at_epoch: Option<u64>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DidDocument {
     pub did: String,
     pub keys: Vec<DidKey>,
@@ -77,7 +82,7 @@ impl DidDocument {
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DidRegistry {
     docs: HashMap<String, DidDocument>,
     epoch: u64,
@@ -199,6 +204,32 @@ impl DidRegistry {
         Ok(())
     }
 
+    /// Prueft die geladene Registry gegen die DID-Ableitungsregel: die DID muss
+    /// aus dem Erst-Schluessel folgen, genau ein Schluessel aktiv sein und die
+    /// Version zur Schluesselzahl passen. Manipulierte Dateien werden abgelehnt.
+    pub fn validate(&self) -> Result<(), DidError> {
+        for (did, doc) in &self.docs {
+            if &doc.did != did {
+                return Err(DidError::InconsistentDocument);
+            }
+            let first = doc.keys.first().ok_or(DidError::InconsistentDocument)?;
+            if address_from_pubkey(&first.pubkey) != *did {
+                return Err(DidError::InconsistentDocument);
+            }
+            let active = doc.keys.iter().filter(|k| k.retired_at_epoch.is_none()).count();
+            if active != 1 {
+                return Err(DidError::InconsistentDocument);
+            }
+            if doc.version as usize != doc.keys.len() {
+                return Err(DidError::InconsistentDocument);
+            }
+            for key in &doc.keys {
+                Self::validate_key(&key.pubkey)?;
+            }
+        }
+        Ok(())
+    }
+
     fn validate_key(pubkey: &[u8; 33]) -> Result<(), DidError> {
         PublicKey::from_slice(pubkey)
             .map(|_| ())
@@ -225,6 +256,66 @@ pub fn verify_with(pubkey: &[u8; 33], message: &[u8], signature: &[u8; 64]) -> b
     Secp256k1::verification_only()
         .verify_ecdsa(Message::from_digest(digest), &sig, &pk)
         .is_ok()
+}
+
+impl DidRegistry {
+    pub fn to_json(&self) -> Result<String, String> {
+        serde_json::to_string_pretty(self).map_err(|e| format!("Serialisierung: {e}"))
+    }
+
+    pub fn from_json(text: &str) -> Result<Self, String> {
+        let reg: DidRegistry =
+            serde_json::from_str(text).map_err(|e| format!("Parse-Fehler: {e}"))?;
+        reg.validate().map_err(|e| format!("Registry inkonsistent: {e:?}"))?;
+        Ok(reg)
+    }
+
+    pub fn save(&self, path: &Path) -> Result<(), String> {
+        std::fs::write(path, self.to_json()?).map_err(|e| format!("Schreiben: {e}"))
+    }
+
+    pub fn load(path: &Path) -> Result<Self, String> {
+        let text = std::fs::read_to_string(path).map_err(|e| format!("Lesen: {e}"))?;
+        Self::from_json(&text)
+    }
+}
+
+/// Serialisierung des 33-Byte-Pubkeys als Hex (serde kennt nur Arrays bis 32).
+mod hex33 {
+    use serde::{Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<S: Serializer>(v: &[u8; 33], s: S) -> Result<S::Ok, S::Error> {
+        s.serialize_str(&super::hex_lower(v))
+    }
+
+    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<[u8; 33], D::Error> {
+        let text = String::deserialize(d)?;
+        super::parse_hex33(&text).map_err(serde::de::Error::custom)
+    }
+}
+
+pub(crate) fn hex_lower(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut out = String::with_capacity(bytes.len() * 2);
+    for &b in bytes {
+        out.push(HEX[(b >> 4) as usize] as char);
+        out.push(HEX[(b & 0x0f) as usize] as char);
+    }
+    out
+}
+
+pub(crate) fn parse_hex33(text: &str) -> Result<[u8; 33], String> {
+    let t = text.trim();
+    if t.len() != 66 {
+        return Err(format!("Pubkey muss 66 Hex-Zeichen haben, hat {}", t.len()));
+    }
+    let mut out = [0u8; 33];
+    for (i, chunk) in t.as_bytes().chunks(2).enumerate() {
+        let hi = (chunk[0] as char).to_digit(16).ok_or_else(|| "kein Hex".to_string())?;
+        let lo = (chunk[1] as char).to_digit(16).ok_or_else(|| "kein Hex".to_string())?;
+        out[i] = ((hi << 4) | lo) as u8;
+    }
+    Ok(out)
 }
 
 #[cfg(test)]
@@ -326,5 +417,39 @@ mod tests {
         let mut reg = DidRegistry::new();
         assert_eq!(reg.current_key("ATC:unbekannt"), Err(DidError::UnknownDid));
         assert_eq!(reg.register([0u8; 33]), Err(DidError::MalformedKey));
+    }
+    #[test]
+    fn registry_ueberlebt_speichern_und_laden() {
+        let (sk1, pk1) = keypair(1);
+        let (_, pk2) = keypair(2);
+        let mut reg = DidRegistry::new();
+        let did = reg.register(pk1).unwrap();
+        let msg = DidRegistry::rotation_message(&did, &pk2, 2, reg.epoch());
+        let proof = sign(&sk1, &msg);
+        reg.rotate(&did, pk2, &proof, 2).unwrap();
+
+        let path = std::env::temp_dir().join("atc-did-registry-test.json");
+        reg.save(&path).unwrap();
+        let geladen = DidRegistry::load(&path).unwrap();
+        assert_eq!(geladen, reg, "Roundtrip muss Zustand inkl. Epoche erhalten");
+        assert_eq!(geladen.current_key(&did).unwrap(), pk2);
+        assert!(geladen.is_known_key(&did, &pk1));
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn manipuliertes_dokument_wird_abgelehnt() {
+        let (_, pk1) = keypair(1);
+        let mut reg = DidRegistry::new();
+        let did = reg.register(pk1).unwrap();
+        let json = reg.to_json().unwrap();
+        // DID auf eine fremde Zeichenkette umbiegen -> Ableitung passt nicht mehr
+        let manipuliert = json.replace(&did, "ATC:0000000000000000000000000000000000000000");
+        assert!(DidRegistry::from_json(&manipuliert).is_err());
+    }
+
+    #[test]
+    fn kaputtes_json_wird_abgelehnt() {
+        assert!(DidRegistry::from_json("{ kein json").is_err());
     }
 }
