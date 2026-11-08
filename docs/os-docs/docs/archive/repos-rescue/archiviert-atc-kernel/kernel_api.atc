@@ -1,0 +1,1054 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═════════════════════════════════════════════════════════════════
+// ATC-97 — KAI-OS Kernel API for Decentralized AI Operating System
+// Sprint 3.2 | Kernel Layer | Chain-ID 9000
+// ATCLang v0.4 | Non-EVM | ATCLang First Policy (ATC-99)
+// ═════════════════════════════════════════════════════════════════
+// Unified Kernel API — der zentrale Syscall-Layer für dezentrale
+// KI-Prozesse, Agenten, Consensus und Resource-Management.
+//
+// Architektur:
+//   ┌──────────────────────────────────────────────────┐
+//   │              Kernel API (Syscall Layer)            │
+//   ├──────────┬──────────┬───────────┬────────────────┤
+//   │ Process  │ Memory   │ IPC       │ AI Kernel       │
+//   │ Manager  │ Manager  │ Bus       │ Orchestrator    │
+//   ├──────────┼──────────┼───────────┼────────────────┤
+//   │ Capabil. │ Consensus│ Resource  │ Distributed AI  │
+//   │ Manager  │ Layer    │ Monitor   │ Mesh            │
+//   └──────────┴──────────┴───────────┴────────────────┘
+//                    │
+//              GCL Core (13 Buses)
+//                    │
+//         ┌──────────┼──────────┐
+//    P2P Network   ATCFS    Blockchain
+// ═════════════════════════════════════════════════════════════════
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+// ── Syscall Numbers (Stable ABI) ─────────────────────────
+enum Syscall {
+    // Process Management (0x01-0x0F)
+    SPAWN,
+    KILL,
+    WAIT,
+    SIGNAL,
+    SLEEP,
+    WAKE,
+    YIELD,
+    PROCESS_LIST,
+    PROCESS_INFO,
+    SET_PRIORITY,
+
+    // Memory Management (0x10-0x1F)
+    ALLOC,
+    FREE,
+    MEM_READ,
+    MEM_WRITE,
+    MEM_SHARE,
+    MEM_PROTECT,
+
+    // IPC (0x20-0x2F)
+    CHAN_CREATE,
+    CHAN_SEND,
+    CHAN_RECV,
+    CHAN_CLOSE,
+    CHAN_SUBSCRIBE,
+    CHAN_BROADCAST,
+
+    // AI Kernel (0x30-0x3F)
+    AI_ROUTE,
+    AI_INFER,
+    AI_DECISION,
+    AI_APPROVE,
+    AI_EXECUTE,
+    AI_REJECT,
+    AI_AUDIT,
+
+    // Capabilities (0x40-0x4F)
+    CAP_GRANT,
+    CAP_REVOKE,
+    CAP_DELEGATE,
+    CAP_CHECK,
+
+    // Consensus (0x50-0x5F)
+    VALIDATOR_REGISTER,
+    VALIDATOR_VOTE,
+    FORK_RESOLVE,
+    CHECKPOINT,
+
+    // Agent Lifecycle (0x60-0x6F)
+    AGENT_REGISTER,
+    AGENT_DEREGISTER,
+    AGENT_MIGRATE,
+    AGENT_SNAPSHOT,
+
+    // Resource (0x70-0x7F)
+    GAS_REPORT,
+    STAKE_LOCK,
+    STAKE_UNLOCK,
+    RESOURCE_LIMITS,
+
+    // Distributed Intelligence (0x80-0x8F)
+    FEDERATED_TRAIN,
+    MODEL_SYNC,
+    KNOWLEDGE_TRANSFER,
+    NEURAL_MESH_JOIN,
+    NEURAL_MESH_LEAVE,
+
+    // Kernel (0x90-0x9F)
+    KERNEL_STATS,
+    KERNEL_LOG,
+    KERNEL_SHUTDOWN,
+    KERNEL_REBOOT,
+}
+
+// ── Core Types ──────────────────────────────────────────
+
+enum ProcessState {
+    CREATED,
+    RUNNING,
+    SLEEPING,
+    WAITING,
+    STOPPED,
+    ZOMBIE,
+    KILLED,
+}
+
+enum ProcessType {
+    AGENT,
+    SERVICE,
+    CONTRACT,
+    SYSTEM,
+    VALIDATOR,
+    ORACLE,
+}
+
+enum AgentStatus {
+    REGISTERED,
+    ACTIVE,
+    SUSPENDED,
+    MIGRATING,
+    TERMINATED,
+}
+
+enum DecisionStatus {
+    PENDING,
+    APPROVED,
+    REJECTED,
+    EXECUTED,
+    EXPIRED,
+}
+
+struct KernelProcess {
+    pid: u64,
+    name: String,
+    ptype: ProcessType,
+    state: ProcessState,
+    parent_pid: u64,
+    owner: Address,
+    priority: u8,
+    cpu_time_ms: u64,
+    gas_used: u64,
+    memory_bytes: u64,
+    stake: u128,
+    channels: List<u64>,
+    created_at: u64,
+}
+
+struct AgentDescriptor {
+    agent_id: Hash,
+    owner: Address,
+    name: String,
+    status: AgentStatus,
+    capabilities: List<String>,
+    model_endpoint: String,
+    stake: u128,
+    reputation: u32,
+    last_active: u64,
+    node_id: u64,
+}
+
+struct MemoryRegion {
+    region_id: u64,
+    owner_pid: u64,
+    size: u64,
+    cap_id: Hash,
+    protected: bool,
+    shared_with: List<u64>,
+}
+
+struct IPCChannel {
+    channel_id: u64,
+    sender_pid: u64,
+    msg_type: String,
+    buffer_size: u32,
+    queued: u32,
+    subscribers: List<u64>,
+}
+
+struct AIDecision {
+    decision_id: Hash,
+    agent: Address,
+    task: String,
+    input_hash: Hash,
+    output_hash: Hash,
+    model: String,
+    status: DecisionStatus,
+    reasoning: String,
+    confidence: f32,
+    timestamp: u64,
+    block_height: u64,
+}
+
+struct GasReport {
+    pid: u64,
+    total_gas: u64,
+    gas_limit: u64,
+    gas_used: u64,
+    gas_remaining: u64,
+    refund: u64,
+}
+
+struct ValidatorInfo {
+    validator_id: Address,
+    stake: u128,
+    active: bool,
+    uptime: u32,
+    blocks_proposed: u64,
+    blocks_validated: u64,
+    last_vote: u64,
+}
+
+struct FederatedTask {
+    task_id: Hash,
+    model_hash: Hash,
+    participants: List<Address>,
+    round: u32,
+    max_rounds: u32,
+    status: String,
+    gradient_hash: Hash,
+}
+
+struct KernelStats {
+    version: String,
+    uptime_ms: u64,
+    total_processes: u32,
+    running_processes: u32,
+    total_channels: u32,
+    total_gas: u64,
+    total_stake: u128,
+    validator_count: u32,
+    agent_count: u32,
+    ai_requests: u64,
+    ai_tokens_used: u64,
+    decisions_pending: u32,
+    decisions_executed: u32,
+}
+
+// ── Syscall Request/Response ────────────────────────────
+
+struct SyscallRequest {
+    syscall: Syscall,
+    caller_pid: u64,
+    args: List<Any>,
+    cap_id: Hash,
+}
+
+struct SyscallResponse {
+    success: bool,
+    error: String,
+    data: Any,
+    gas_used: u64,
+}
+
+// ═════════════════════════════════════════════════════════
+//  KERNEL API CONTRACT
+// ═════════════════════════════════════════════════════════
+
+contract KernelAPI {
+    // ── State ──────────────────────────────────────────
+    state processes: Map<u64, KernelProcess>
+    state agents: Map<Hash, AgentDescriptor>
+    state channels: Map<u64, IPCChannel>
+    state decisions: Map<Hash, AIDecision>
+    state validators: Map<Address, ValidatorInfo>
+    state memory_regions: Map<u64, MemoryRegion>
+    state gas_ledger: Map<u64, GasReport>
+    state federated_tasks: Map<Hash, FederatedTask>
+    state next_pid: u64 = 1
+    state next_chan: u64 = 1
+    state next_region: u64 = 1
+    state kernel_start: u64 = 0
+    state owner: Address
+    state max_processes: u32 = 1024
+    state max_memory_per_process: u64 = 268435456  // 256 MB
+    state gas_per_cpu_ms: u64 = 100
+    state total_ai_requests: u64 = 0
+    state total_ai_tokens: u64 = 0
+
+    // ── Events ─────────────────────────────────────────
+    event ProcessSpawned(pid: u64, name: String, ptype: ProcessType, owner: Address)
+    event ProcessKilled(pid: u64, signal: u8, by: Address)
+    event MemoryAllocated(region_id: u64, pid: u64, size: u64)
+    event MemoryFreed(region_id: u64, pid: u64)
+    event ChannelCreated(channel_id: u64, sender: u64, msg_type: String)
+    event ChannelMessage(channel_id: u64, from_pid: u64, msg_type: String)
+    event AIDecisionMade(decision_id: Hash, agent: Address, status: DecisionStatus)
+    event AgentRegistered(agent_id: Hash, owner: Address, name: String)
+    event AgentDeregistered(agent_id: Hash, reason: String)
+    event ValidatorRegistered(validator: Address, stake: u128)
+    event GasConsumed(pid: u64, amount: u64, total: u64)
+    event FederatedRound(task_id: Hash, round: u32, participants: u32)
+    event CapabilityGranted(cap_id: Hash, owner_pid: u64, resource: String)
+    event CapabilityRevoked(cap_id: Hash, reason: String)
+    event KernelShutdown(by: Address, graceful: bool)
+    event SyscallExecuted(syscall: Syscall, caller: u64, gas: u64, success: bool)
+
+    // ═════════════════════════════════════════════════════════
+    //  PROCESS MANAGEMENT (Syscall 0x01-0x0F)
+    // ═════════════════════════════════════════════════════════
+
+    fn init() {
+        self.owner = msg_sender()
+        self.kernel_start = ATC::Crypto::timestamp()
+        self.next_pid = 1
+        self.next_chan = 1
+        self.next_region = 1
+        self.processes = {}
+        self.agents = {}
+        self.channels = {}
+        self.decisions = {}
+        self.validators = {}
+        self.memory_regions = {}
+        self.gas_ledger = {}
+        self.federated_tasks = {}
+        // Spawn kernel idle process (PID 1)
+        self._spawn_system("kernel_idle", ProcessType::SYSTEM, 0)
+        // Spawn IPC daemon (PID 2)
+        self._spawn_system("ipc_daemon", ProcessType::SERVICE, 200)
+        // Spawn AI orchestrator (PID 3)
+        self._spawn_system("ai_orchestrator", ProcessType::AGENT, 240)
+    }
+
+    fn _spawn_system(name: String, ptype: ProcessType, priority: u8) -> u64 {
+        let pid = self.next_pid
+        self.next_pid = self.next_pid + 1
+        let proc = KernelProcess {
+            pid: pid,
+            name: name,
+            ptype: ptype,
+            state: ProcessState::RUNNING,
+            parent_pid: 0,
+            owner: self.owner,
+            priority: priority,
+            cpu_time_ms: 0,
+            gas_used: 0,
+            memory_bytes: 1048576,
+            stake: 0,
+            channels: [],
+            created_at: ATC::Crypto::timestamp(),
+        }
+        self.processes[pid] = proc
+        emit ProcessSpawned(pid, name, ptype, self.owner)
+        return pid
+    }
+
+    // ── SPAWN: Neuen Prozess starten ────────────────────
+    fn spawn(name: String, ptype: ProcessType, owner: Address, priority: u8, mem_size: u64, stake: u128) -> u64 {
+        require(self.processes.len() < self.max_processes, "Max processes reached")
+        require(mem_size <= self.max_memory_per_process, "Memory limit exceeded")
+        let pid = self.next_pid
+        self.next_pid = self.next_pid + 1
+        let proc = KernelProcess {
+            pid: pid,
+            name: name,
+            ptype: ptype,
+            state: ProcessState::CREATED,
+            parent_pid: 0,
+            owner: owner,
+            priority: priority,
+            cpu_time_ms: 0,
+            gas_used: 0,
+            memory_bytes: mem_size,
+            stake: stake,
+            channels: [],
+            created_at: ATC::Crypto::timestamp(),
+        }
+        self.processes[pid] = proc
+        // Initialize gas ledger
+        self.gas_ledger[pid] = GasReport {
+            pid: pid,
+            total_gas: 0,
+            gas_limit: 10000000,
+            gas_used: 0,
+            gas_remaining: 10000000,
+            refund: 0,
+        }
+        emit ProcessSpawned(pid, name, ptype, owner)
+        return pid
+    }
+
+    // ── KILL: Prozess beenden ──────────────────────────
+    fn kill(pid: u64, signal: u8) -> bool {
+        let proc = self.processes.get(pid)
+        if proc == null { return false }
+        require(msg_sender() == proc.owner || msg_sender() == self.owner, "Not authorized")
+        proc.state = ProcessState::KILLED
+        emit ProcessKilled(pid, signal, msg_sender())
+        return true
+    }
+
+    // ── WAIT: Auf Prozessende warten ───────────────────
+    fn wait(pid: u64, timeout_ms: u64) -> i32 {
+        let proc = self.processes.get(pid)
+        if proc == null { return -1 }
+        if proc.state == ProcessState::STOPPED || proc.state == ProcessState::KILLED {
+            return 0
+        }
+        // In real implementation: would block with timeout
+        // In contract context: return current state
+        if proc.state == ProcessState::RUNNING { return 1 }
+        return 0
+    }
+
+    // ── SLEEP: Prozess schlafen legen ──────────────────
+    fn sleep(pid: u64, duration_ms: u64) -> bool {
+        let proc = self.processes.get(pid)
+        if proc == null { return false }
+        proc.state = ProcessState::SLEEPING
+        return true
+    }
+
+    // ── WAKE: Prozess wecken ───────────────────────────
+    fn wake(pid: u64) -> bool {
+        let proc = self.processes.get(pid)
+        if proc == null { return false }
+        if proc.state != ProcessState::SLEEPING { return false }
+        proc.state = ProcessState::RUNNING
+        return true
+    }
+
+    // ── PROCESS_LIST: Alle Prozesse auflisten ──────────
+    fn process_list() -> List<KernelProcess> {
+        let result: List<KernelProcess> = []
+        for pid in self.processes.keys() {
+            result.push(self.processes[pid])
+        }
+        return result
+    }
+
+    // ── PROCESS_INFO: Info für einen Prozess ───────────
+    fn process_info(pid: u64) -> KernelProcess {
+        let proc = self.processes.get(pid)
+        if proc == null { return KernelProcess {
+            pid: 0, name: "", ptype: ProcessType::SYSTEM,
+            state: ProcessState::ZOMBIE, parent_pid: 0,
+            owner: Address::zero(), priority: 0, cpu_time_ms: 0,
+            gas_used: 0, memory_bytes: 0, stake: 0, channels: [], created_at: 0
+        }}
+        return proc
+    }
+
+    // ── SET_PRIORITY: Priorität ändern ─────────────────
+    fn set_priority(pid: u64, priority: u8) -> bool {
+        let proc = self.processes.get(pid)
+        if proc == null { return false }
+        require(msg_sender() == proc.owner || msg_sender() == self.owner, "Not authorized")
+        proc.priority = priority
+        return true
+    }
+
+    // ═════════════════════════════════════════════════════════
+    //  MEMORY MANAGEMENT (Syscall 0x10-0x1F)
+    // ═════════════════════════════════════════════════════════
+
+    // ── ALLOC: Speicher allokieren ─────────────────────
+    fn alloc(pid: u64, size: u64) -> u64 {
+        let proc = self.processes.get(pid)
+        if proc == null { return 0 }
+        require(size <= self.max_memory_per_process, "Memory request too large")
+        let region_id = self.next_region
+        self.next_region = self.next_region + 1
+        let cap_id = Hash::sha256(Int::to_string(region_id) + Int::to_string(pid))
+        let region = MemoryRegion {
+            region_id: region_id,
+            owner_pid: pid,
+            size: size,
+            cap_id: cap_id,
+            protected: false,
+            shared_with: [],
+        }
+        self.memory_regions[region_id] = region
+        emit MemoryAllocated(region_id, pid, size)
+        return region_id
+    }
+
+    // ── FREE: Speicher freigeben ───────────────────────
+    fn free(region_id: u64) -> bool {
+        let region = self.memory_regions.get(region_id)
+        if region == null { return false }
+        require(msg_sender() == self.processes[region.owner_pid].owner, "Not owner")
+        self.memory_regions.remove(region_id)
+        emit MemoryFreed(region_id, region.owner_pid)
+        return true
+    }
+
+    // ── MEM_PROTECT: Speicherregion schützen ───────────
+    fn mem_protect(region_id: u64) -> bool {
+        let region = self.memory_regions.get(region_id)
+        if region == null { return false }
+        region.protected = true
+        return true
+    }
+
+    // ── MEM_SHARE: Speicher mit anderem Prozess teilen ─
+    fn mem_share(region_id: u64, target_pid: u64) -> bool {
+        let region = self.memory_regions.get(region_id)
+        if region == null { return false }
+        if region.protected { return false }
+        region.shared_with.push(target_pid)
+        return true
+    }
+
+    // ═════════════════════════════════════════════════════════
+    //  IPC — INTER-PROCESS COMMUNICATION (Syscall 0x20-0x2F)
+    // ═════════════════════════════════════════════════════════
+
+    // ── CHAN_CREATE: IPC-Kanal erstellen ──────────────
+    fn chan_create(sender_pid: u64, msg_type: String, buffer_size: u32) -> u64 {
+        let chan_id = self.next_chan
+        self.next_chan = self.next_chan + 1
+        let chan = IPCChannel {
+            channel_id: chan_id,
+            sender_pid: sender_pid,
+            msg_type: msg_type,
+            buffer_size: buffer_size,
+            queued: 0,
+            subscribers: [],
+        }
+        self.channels[chan_id] = chan
+        // Register channel with process
+        let proc = self.processes.get(sender_pid)
+        if proc != null {
+            proc.channels.push(chan_id)
+        }
+        emit ChannelCreated(chan_id, sender_pid, msg_type)
+        return chan_id
+    }
+
+    // ── CHAN_CLOSE: Kanal schließen ────────────────────
+    fn chan_close(channel_id: u64) -> bool {
+        let chan = self.channels.get(channel_id)
+        if chan == null { return false }
+        self.channels.remove(channel_id)
+        return true
+    }
+
+    // ── CHAN_SUBSCRIBE: Kanal abonnieren ───────────────
+    fn chan_subscribe(channel_id: u64, subscriber_pid: u64) -> bool {
+        let chan = self.channels.get(channel_id)
+        if chan == null { return false }
+        if !chan.subscribers.contains(subscriber_pid) {
+            chan.subscribers.push(subscriber_pid)
+        }
+        return true
+    }
+
+    // ── CHAN_SEND: Nachricht senden ────────────────────
+    fn chan_send(channel_id: u64, from_pid: u64, msg_type: String, payload: String) -> bool {
+        let chan = self.channels.get(channel_id)
+        if chan == null { return false }
+        if chan.queued >= chan.buffer_size { return false }
+        chan.queued = chan.queued + 1
+        emit ChannelMessage(channel_id, from_pid, msg_type)
+        return true
+    }
+
+    // ── CHAN_RECV: Nachricht empfangen ─────────────────
+    fn chan_recv(channel_id: u64, receiver_pid: u64) -> String {
+        let chan = self.channels.get(channel_id)
+        if chan == null { return "" }
+        if chan.queued == 0 { return "" }
+        if !chan.subscribers.contains(receiver_pid) {
+            return ""
+        }
+        chan.queued = chan.queued - 1
+        return "msg_payload"
+    }
+
+    // ═════════════════════════════════════════════════════════
+    //  AI KERNEL (Syscall 0x30-0x3F)
+    // ═════════════════════════════════════════════════════════
+
+    // ── AI_ROUTE: Modell für Task routen ───────────────
+    fn ai_route(task: String) -> String {
+        if task == "reasoning" { return "mistral-7b" }
+        if task == "code" { return "phi-2" }
+        if task == "summarize" { return "llama-3.2-3b" }
+        return "gemma-2-2b"
+    }
+
+    // ── AI_INFER: Inference-Anfrage ─────────────────────
+    fn ai_infer(agent: Address, task: String, input: String, model: String, max_tokens: u32) -> (String, u32) {
+        self.total_ai_requests = self.total_ai_requests + 1
+        let effective_tokens = max_tokens
+        if effective_tokens > 4096 { effective_tokens = 4096 }
+        self.total_ai_tokens = self.total_ai_tokens + effective_tokens
+        // Create decision record
+        let decision_id = Hash::sha256(Address::to_hex(agent) + task + input + Int::to_string(ATC::Crypto::timestamp()))
+        let input_hash = Hash::sha256(input)
+        let output_hash = Hash::sha256(decision_id)
+        let decision = AIDecision {
+            decision_id: decision_id,
+            agent: agent,
+            task: task,
+            input_hash: input_hash,
+            output_hash: output_hash,
+            model: model,
+            status: DecisionStatus::PENDING,
+            reasoning: "",
+            confidence: 0.0,
+            timestamp: ATC::Crypto::timestamp(),
+            block_height: 0,
+        }
+        self.decisions[decision_id] = decision
+        emit AIDecisionMade(decision_id, agent, DecisionStatus::PENDING)
+        return ("queued", effective_tokens)
+    }
+
+    // ── AI_DECISION: Entscheidung erfassen ──────────────
+    fn ai_decision(agent: Address, task: String, input: String, output: String, model: String, reasoning: String, confidence: f32) -> Hash {
+        let decision_id = Hash::sha256(Address::to_hex(agent) + task + Int::to_string(ATC::Crypto::timestamp()))
+        let decision = AIDecision {
+            decision_id: decision_id,
+            agent: agent,
+            task: task,
+            input_hash: Hash::sha256(input),
+            output_hash: Hash::sha256(output),
+            model: model,
+            status: DecisionStatus::PENDING,
+            reasoning: reasoning,
+            confidence: confidence,
+            timestamp: ATC::Crypto::timestamp(),
+            block_height: 0,
+        }
+        self.decisions[decision_id] = decision
+        emit AIDecisionMade(decision_id, agent, DecisionStatus::PENDING)
+        return decision_id
+    }
+
+    // ── AI_APPROVE: Entscheidung genehmigen ─────────────
+    fn ai_approve(decision_id: Hash, approver: Address) -> bool {
+        let d = self.decisions.get(decision_id)
+        if d == null { return false }
+        if d.status != DecisionStatus::PENDING { return false }
+        d.status = DecisionStatus::APPROVED
+        emit AIDecisionMade(decision_id, d.agent, DecisionStatus::APPROVED)
+        return true
+    }
+
+    // ── AI_EXECUTE: Entscheidung ausführen ──────────────
+    fn ai_execute(decision_id: Hash, block_height: u64) -> bool {
+        let d = self.decisions.get(decision_id)
+        if d == null { return false }
+        if d.status != DecisionStatus::APPROVED { return false }
+        d.status = DecisionStatus::EXECUTED
+        d.block_height = block_height
+        emit AIDecisionMade(decision_id, d.agent, DecisionStatus::EXECUTED)
+        return true
+    }
+
+    // ── AI_REJECT: Entscheidung ablehnen ───────────────
+    fn ai_reject(decision_id: Hash, reason: String) -> bool {
+        let d = self.decisions.get(decision_id)
+        if d == null { return false }
+        d.status = DecisionStatus::REJECTED
+        emit AIDecisionMade(decision_id, d.agent, DecisionStatus::REJECTED)
+        return true
+    }
+
+    // ── AI_AUDIT: Audit-Trail abfragen ─────────────────
+    fn ai_audit(agent: Address) -> List<AIDecision> {
+        let result: List<AIDecision> = []
+        for did in self.decisions.keys() {
+            let d = self.decisions[did]
+            if d.agent == agent {
+                result.push(d)
+            }
+        }
+        return result
+    }
+
+    // ═════════════════════════════════════════════════════════
+    //  CAPABILITIES (Syscall 0x40-0x4F)
+    // ═════════════════════════════════════════════════════════
+
+    // ── CAP_GRANT: Capability vergeben ─────────────────
+    fn cap_grant(owner_pid: u64, resource_type: String, resource_id: u64, rights: String) -> Hash {
+        let cap_id = Hash::sha256(Int::to_string(owner_pid) + resource_type + Int::to_string(resource_id) + Int::to_string(ATC::Crypto::timestamp()))
+        emit CapabilityGranted(cap_id, owner_pid, resource_type + ":" + Int::to_string(resource_id))
+        return cap_id
+    }
+
+    // ── CAP_REVOKE: Capability entziehen ────────────────
+    fn cap_revoke(cap_id: Hash, reason: String) -> bool {
+        emit CapabilityRevoked(cap_id, reason)
+        return true
+    }
+
+    // ── CAP_CHECK: Capability prüfen ───────────────────
+    fn cap_check(cap_id: Hash, required_right: String) -> bool {
+        // In real implementation: check capability manager
+        return true
+    }
+
+    // ═════════════════════════════════════════════════════════
+    //  AGENT LIFECYCLE (Syscall 0x60-0x6F)
+    // ═════════════════════════════════════════════════════════
+
+    // ── AGENT_REGISTER: Agent registrieren ─────────────
+    fn agent_register(owner: Address, name: String, model_endpoint: String, stake: u128, capabilities: List<String>) -> Hash {
+        let agent_id = Hash::sha256(Address::to_hex(owner) + name + Int::to_string(ATC::Crypto::timestamp()))
+        let agent = AgentDescriptor {
+            agent_id: agent_id,
+            owner: owner,
+            name: name,
+            status: AgentStatus::REGISTERED,
+            capabilities: capabilities,
+            model_endpoint: model_endpoint,
+            stake: stake,
+            reputation: 100,
+            last_active: ATC::Crypto::timestamp(),
+            node_id: 0,
+        }
+        self.agents[agent_id] = agent
+        emit AgentRegistered(agent_id, owner, name)
+        return agent_id
+    }
+
+    // ── AGENT_DEREGISTER: Agent abmelden ────────────────
+    fn agent_deregister(agent_id: Hash, reason: String) -> bool {
+        let agent = self.agents.get(agent_id)
+        if agent == null { return false }
+        require(msg_sender() == agent.owner, "Not authorized")
+        agent.status = AgentStatus::TERMINATED
+        emit AgentDeregistered(agent_id, reason)
+        return true
+    }
+
+    // ── AGENT_MIGRATE: Agent zu anderem Node migrieren ─
+    fn agent_migrate(agent_id: Hash, target_node: u64) -> bool {
+        let agent = self.agents.get(agent_id)
+        if agent == null { return false }
+        require(msg_sender() == agent.owner, "Not authorized")
+        agent.status = AgentStatus::MIGRATING
+        agent.node_id = target_node
+        return true
+    }
+
+    // ── AGENT_SNAPSHOT: Agent-State sichern ─────────────
+    fn agent_snapshot(agent_id: Hash) -> Hash {
+        let agent = self.agents.get(agent_id)
+        if agent == null { return Hash::zero() }
+        let snapshot_hash = Hash::sha256(agent.name + Int::to_string(agent.stake) + Int::to_string(agent.reputation))
+        return snapshot_hash
+    }
+
+    // ═════════════════════════════════════════════════════════
+    //  RESOURCE MANAGEMENT (Syscall 0x70-0x7F)
+    // ═════════════════════════════════════════════════════════
+
+    // ── GAS_REPORT: Gas-Verbrauch abfragen ─────────────
+    fn gas_report(pid: u64) -> GasReport {
+        let report = self.gas_ledger.get(pid)
+        if report == null { return GasReport {
+            pid: 0, total_gas: 0, gas_limit: 0, gas_used: 0, gas_remaining: 0, refund: 0
+        }}
+        return report
+    }
+
+    // ── STAKE_LOCK: Stake hinterlegen ──────────────────
+    fn stake_lock(pid: u64, amount: u128) -> bool {
+        let proc = self.processes.get(pid)
+        if proc == null { return false }
+        proc.stake = proc.stake + amount
+        return true
+    }
+
+    // ── STAKE_UNLOCK: Stake freigeben ───────────────────
+    fn stake_unlock(pid: u64, amount: u128) -> bool {
+        let proc = self.processes.get(pid)
+        if proc == null { return false }
+        if proc.stake < amount { return false }
+        proc.stake = proc.stake - amount
+        return true
+    }
+
+    // ── RESOURCE_LIMITS: Limits abfragen ───────────────
+    fn resource_limits() -> (u32, u64, u64) {
+        return (self.max_processes, self.max_memory_per_process, self.gas_per_cpu_ms)
+    }
+
+    // ═════════════════════════════════════════════════════════
+    //  CONSENSUS (Syscall 0x50-0x5F)
+    // ═════════════════════════════════════════════════════════
+
+    // ── VALIDATOR_REGISTER: Validator anmelden ──────────
+    fn validator_register(validator: Address, stake: u128) -> bool {
+        require(stake >= 10000, "Minimum stake: 10000 ATC")
+        let info = ValidatorInfo {
+            validator_id: validator,
+            stake: stake,
+            active: true,
+            uptime: 100,
+            blocks_proposed: 0,
+            blocks_validated: 0,
+            last_vote: 0,
+        }
+        self.validators[validator] = info
+        emit ValidatorRegistered(validator, stake)
+        return true
+    }
+
+    // ── VALIDATOR_VOTE: Validator-Stimme abgeben ────────
+    fn validator_vote(validator: Address, proposal_hash: Hash, vote: bool) -> bool {
+        let v = self.validators.get(validator)
+        if v == null { return false }
+        if !v.active { return false }
+        v.last_vote = ATC::Crypto::timestamp()
+        return true
+    }
+
+    // ── FORK_RESOLVE: Fork-Auflösung ───────────────────
+    fn fork_resolve(chain_a: u64, chain_b: u64) -> u64 {
+        // Heaviest chain wins (most accumulated work)
+        if chain_a >= chain_b { return chain_a }
+        return chain_b
+    }
+
+    // ── CHECKPOINT: State-Checkpoint setzen ────────────
+    fn checkpoint(block_height: u64) -> Hash {
+        let cp_hash = Hash::sha256("checkpoint_" + Int::to_string(block_height))
+        return cp_hash
+    }
+
+    // ═════════════════════════════════════════════════════════
+    //  DISTRIBUTED INTELLIGENCE (Syscall 0x80-0x8F)
+    // ═════════════════════════════════════════════════════════
+
+    // ── FEDERATED_TRAIN: Federated Learning starten ────
+    fn federated_train(model_hash: Hash, participants: List<Address>, max_rounds: u32) -> Hash {
+        let task_id = Hash::sha256(Hash::to_hex(model_hash) + Int::to_string(ATC::Crypto::timestamp()))
+        let task = FederatedTask {
+            task_id: task_id,
+            model_hash: model_hash,
+            participants: participants,
+            round: 0,
+            max_rounds: max_rounds,
+            status: "initializing",
+            gradient_hash: Hash::zero(),
+        }
+        self.federated_tasks[task_id] = task
+        emit FederatedRound(task_id, 0, participants.len())
+        return task_id
+    }
+
+    // ── MODEL_SYNC: Modell synchronisieren ─────────────
+    fn model_sync(task_id: Hash, gradient_hash: Hash, round: u32) -> bool {
+        let task = self.federated_tasks.get(task_id)
+        if task == null { return false }
+        if round != task.round + 1 { return false }
+        task.round = round
+        task.gradient_hash = gradient_hash
+        if round >= task.max_rounds {
+            task.status = "completed"
+        } else {
+            task.status = "training"
+        }
+        emit FederatedRound(task_id, round, task.participants.len())
+        return true
+    }
+
+    // ── KNOWLEDGE_TRANSFER: Wissen zwischen Agenten übertragen
+    fn knowledge_transfer(from_agent: Hash, to_agent: Hash, knowledge_hash: Hash) -> bool {
+        let src = self.agents.get(from_agent)
+        let dst = self.agents.get(to_agent)
+        if src == null || dst == null { return false }
+        src.last_active = ATC::Crypto::timestamp()
+        dst.last_active = ATC::Crypto::timestamp()
+        return true
+    }
+
+    // ── NEURAL_MESH_JOIN: Neural Mesh beitreten ────────
+    fn neural_mesh_join(agent_id: Hash, mesh_id: u64) -> bool {
+        let agent = self.agents.get(agent_id)
+        if agent == null { return false }
+        agent.node_id = mesh_id
+        return true
+    }
+
+    // ── NEURAL_MESH_LEAVE: Neural Mesh verlassen ───────
+    fn neural_mesh_leave(agent_id: Hash) -> bool {
+        let agent = self.agents.get(agent_id)
+        if agent == null { return false }
+        agent.node_id = 0
+        return true
+    }
+
+    // ═════════════════════════════════════════════════════════
+    //  KERNEL (Syscall 0x90-0x9F)
+    // ═════════════════════════════════════════════════════════
+
+    // ── KERNEL_STATS: System-Statistiken ───────────────
+    fn kernel_stats() -> KernelStats {
+        let running = 0
+        for pid in self.processes.keys() {
+            if self.processes[pid].state == ProcessState::RUNNING {
+                running = running + 1
+            }
+        }
+        let total_stake: u128 = 0
+        for addr in self.validators.keys() {
+            total_stake = total_stake + self.validators[addr].stake
+        }
+        let pending = 0
+        let executed = 0
+        for did in self.decisions.keys() {
+            if self.decisions[did].status == DecisionStatus::PENDING { pending = pending + 1 }
+            if self.decisions[did].status == DecisionStatus::EXECUTED { executed = executed + 1 }
+        }
+        return KernelStats {
+            version: "1.0.0-alpha",
+            uptime_ms: ATC::Crypto::timestamp() - self.kernel_start,
+            total_processes: self.processes.len(),
+            running_processes: running,
+            total_channels: self.channels.len(),
+            total_gas: 0,
+            total_stake: total_stake,
+            validator_count: self.validators.len(),
+            agent_count: self.agents.len(),
+            ai_requests: self.total_ai_requests,
+            ai_tokens_used: self.total_ai_tokens,
+            decisions_pending: pending,
+            decisions_executed: executed,
+        }
+    }
+
+
+    // ═══════════════════════════════════════════════════════════
+    //  DRIVER SYSCALLS (Sprint 3.1 — Treiber Layer)
+    // ═══════════════════════════════════════════════════════════
+
+    fn driver_register(name: String, version: String, device_class: u8, init_fn: String, cleanup_fn: String, gas_per_io: u64) -> u64 {
+        return 1
+    }
+
+    fn driver_init(driver_id: u64) -> bool {
+        return true
+    }
+
+    fn driver_activate(driver_id: u64) -> bool {
+        return true
+    }
+
+    fn driver_unload(driver_id: u64, reason: String) -> bool {
+        return true
+    }
+
+    fn device_enumerate(class: u8, bus: u8, vendor_id: u16, product_id: u16, name: String) -> u64 {
+        return 1
+    }
+
+    fn device_bind(device_id: u64, driver_id: u64) -> bool {
+        return true
+    }
+
+    fn device_open(device_id: u64, flags: u8, owner_pid: u64) -> u64 {
+        return 1
+    }
+
+    fn device_read(handle_id: u64, buffer_size: u64) -> String {
+        return ""
+    }
+
+    fn device_write(handle_id: u64, data: String) -> u64 {
+        return data.length as u64
+    }
+
+    fn device_ioctl(handle_id: u64, code: u8, arg: u64) -> u64 {
+        return 0
+    }
+
+    fn device_close(handle_id: u64) -> bool {
+        return true
+    }
+
+    fn device_seek(handle_id: u64, offset: u64, whence: u8) -> u64 {
+        return offset
+    }
+
+    fn irq_register(irq_line: u8, device_id: u64, driver_id: u64, handler_fn: String, priority: u8) -> bool {
+        return true
+    }
+
+    fn irq_enable(irq_line: u8) -> bool {
+        return true
+    }
+
+    fn irq_disable(irq_line: u8) -> bool {
+        return true
+    }
+
+    fn dma_setup(device_id: u64, size: u64) -> u64 {
+        return 1
+    }
+
+    fn dma_complete(transfer_id: u64) -> bool {
+        return true
+    }
+
+    fn driver_stats() -> (u64, u64, u64, u64, u64) {
+        return (0, 0, 0, 0, 0)
+    }
+
+    fn device_list_by_class(device_class: u8) -> List<u64> {
+        return []
+    }
+
+    // ── UNIFIED SYSCALL DISPATCH ────────────────────────
+    fn syscall(req: SyscallRequest) -> SyscallResponse {
+        let gas_before = self.gas_ledger.get(req.caller_pid)
+        let gas_used: u64 = 0
+        let success = true
+        let error_msg: String = ""
+        let result: Any = null
+
+        match req.syscall {
+            Syscall::SPAWN => {
+                // Dispatch to spawn
+                result = 0
+            }
+            Syscall::KILL => {
+                result = true
+            }
+            Syscall::KERNEL_STATS => {
+                result = self.kernel_stats()
+            }
+            else => {
+                success = false
+                error_msg = "Unknown syscall"
+            }
+        }
+
+        emit SyscallExecuted(req.syscall, req.caller_pid, gas_used, success)
+
+        return SyscallResponse {
+            success: success,
+            error: error_msg,
+            data: result,
+            gas_used: gas_used,
+        }
+    }
+}
