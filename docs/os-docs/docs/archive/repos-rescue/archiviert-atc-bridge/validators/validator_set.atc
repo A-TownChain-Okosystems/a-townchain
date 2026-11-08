@@ -1,0 +1,29 @@
+// ATCLang v0.3 — Bridge Validator Set
+// Validator-Set für Bridge-Security (Multi-Sig)
+// ATC-Standard: ATC-91
+
+module validator_set {
+    struct BridgeValidator {
+        address: string,
+        stake: int,
+        active: bool,
+        signed_count: int,
+        missed_count: int,
+    }
+    
+    fn add_validator(address: string, stake: int) {
+        // Validator hinzufügen
+    }
+    
+    fn remove_validator(address: string) {
+        // Validator entfernen
+    }
+    
+    fn sign_deposit(deposit_id: string) {
+        // Deposit signieren
+    }
+    
+    fn check_quorum(deposit_id: string) {
+        // Quorum erreicht?
+    }
+}
