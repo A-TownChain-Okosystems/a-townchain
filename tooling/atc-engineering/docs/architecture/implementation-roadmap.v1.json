@@ -1,0 +1,396 @@
+{
+  "roadmap_id": "ATC-IMPLEMENTATION-ROADMAP",
+  "schema_version": "1.0.0",
+  "status": "PLANNED_NOT_EXECUTED",
+  "decision_rule": "Execute phases in priority order. Parallelize only independent tasks with resolved interfaces and ownership. Never auto-merge or weaken gates.",
+  "priorities": {
+    "P0": "Blocking safety, ownership, standards and evidence foundations.",
+    "P1": "Canonical kernel, VM, blockchain and reproducible toolchain.",
+    "P2": "Language, OS, node and end-to-end integration.",
+    "P3": "Aurora AI and Genesis Engine behind approved boundaries.",
+    "P4": "Hardening, audit closure, release readiness and rollback."
+  },
+  "global_gates": [
+    "Resolve SSOT conflicts or track them as blocking RESIDUALs.",
+    "IMPLEMENTED requires code connected to the intended runtime path.",
+    "VERIFIED requires exact-SHA test/gate evidence with Run -> Job -> Step -> exit/log/artifact.",
+    "No duplicate production VM, algorithm or kernel in specification/governance repositories.",
+    "No automatic merge and no gate weakening.",
+    "Preserve failed runs; fix, rerun and keep the evidence history."
+  ],
+  "phases": [
+    {
+      "phase_id": "PHASE-1",
+      "priority": "P0",
+      "name": "Foundation and safety gates",
+      "execution_order": 1,
+      "entry_gate": "Canonical ownership is recorded; critical safety requirements and evidence plan are identified.",
+      "exit_gate": "Ownership decisions, safety plan and evidence infrastructure are versioned; security-critical blockers are closed or remain hard blockers.",
+      "work_items": [
+        {
+          "work_id": "P0-01",
+          "title": "Resolve canonical repository and SSOT ownership conflicts before moving or duplicating code.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [],
+          "completion_evidence": [
+            "registry and path mapping",
+            "decision record",
+            "exact source SHA"
+          ],
+          "notes": "Planning only."
+        },
+        {
+          "work_id": "P0-02",
+          "title": "Establish exact-SHA evidence registry, reproducible toolchain and required CI gates.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [],
+          "completion_evidence": [
+            "workflow run/job/step/log/artifact",
+            "reproducible build evidence"
+          ],
+          "notes": "Planning only."
+        },
+        {
+          "work_id": "P0-03",
+          "title": "Close ShivaCore TCB blockers: VMM mutation/rollback, object/mapping lifetime, ABI and boot/security evidence.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P0-01"
+          ],
+          "completion_evidence": [
+            "targeted tests",
+            "boot evidence",
+            "exact SHA"
+          ],
+          "notes": "Security blocker."
+        },
+        {
+          "work_id": "P0-04",
+          "title": "Freeze ATC-Standards contracts for encoding, cryptography, transactions, bytecode and host ABI.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P0-01"
+          ],
+          "completion_evidence": [
+            "versioned normative spec",
+            "conformance vectors"
+          ],
+          "notes": "Do not infer a standard from code alone."
+        },
+        {
+          "work_id": "P0-05",
+          "title": "Enforce capability and service boundaries for IPC, networking, Aurora tools and privileged operations.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P0-03",
+            "P0-04"
+          ],
+          "completion_evidence": [
+            "negative authorization tests",
+            "security review",
+            "exact SHA"
+          ],
+          "notes": "No ambient authority."
+        }
+      ]
+    },
+    {
+      "phase_id": "PHASE-2",
+      "priority": "P1",
+      "name": "Canonical runtime foundations",
+      "execution_order": 2,
+      "entry_gate": "P0 exit gate has exact-SHA evidence or explicitly approved non-security residuals.",
+      "exit_gate": "Kernel, VM, blockchain and toolchain have exact-SHA test evidence; consensus status is explicit.",
+      "work_items": [
+        {
+          "work_id": "P1-01",
+          "title": "Verify ShivaCore capability, memory, IPC, scheduler, syscall/ABI and fault-handling invariants.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "PHASE-1"
+          ],
+          "completion_evidence": [
+            "unit/integration tests",
+            "fault-path evidence",
+            "exact SHA"
+          ],
+          "notes": "Canonical kernel: globus-os/modules/atc-shivacore/kernel/."
+        },
+        {
+          "work_id": "P1-02",
+          "title": "Implement and verify canonical ATC-VM bytecode, verifier, deterministic engine, gas/resource limits and rollback.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P0-04",
+            "PHASE-1"
+          ],
+          "completion_evidence": [
+            "golden vectors",
+            "malformed-bytecode tests",
+            "fuzz results",
+            "exact SHA"
+          ],
+          "notes": "Canonical VM: a-townchain/components/vm/."
+        },
+        {
+          "work_id": "P1-03",
+          "title": "Verify A-TownChain transaction validation, state transition, persistence/recovery and node integration.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P0-04",
+            "P1-02"
+          ],
+          "completion_evidence": [
+            "transaction vectors",
+            "state-root tests",
+            "recovery tests",
+            "exact SHA"
+          ],
+          "notes": "Canonical blockchain repository: a-townchain."
+        },
+        {
+          "work_id": "P1-04",
+          "title": "Resolve consensus status with explicit threat model, safety/liveness analysis and conformance vectors.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P0-04"
+          ],
+          "completion_evidence": [
+            "approved decision record",
+            "adversarial tests",
+            "simulation evidence"
+          ],
+          "notes": "PoH/PoW/PoS/PoI candidates are not presumed finalized."
+        },
+        {
+          "work_id": "P1-05",
+          "title": "Establish reproducible ATC-Toolchain builds, test vectors, provenance and SBOM.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P0-02",
+            "P0-04"
+          ],
+          "completion_evidence": [
+            "clean-room build",
+            "artifact hashes",
+            "SBOM/provenance",
+            "exact SHA"
+          ],
+          "notes": "No weakened gates."
+        }
+      ]
+    },
+    {
+      "phase_id": "PHASE-3",
+      "priority": "P2",
+      "name": "Language, OS and end-to-end integration",
+      "execution_order": 3,
+      "entry_gate": "P1 exit gate has evidence or approved scoped residuals.",
+      "exit_gate": "Language, OS and node integration tests pass against pinned interfaces.",
+      "work_items": [
+        {
+          "work_id": "P2-01",
+          "title": "Connect ATC-Lang grammar/parser/semantic analysis/codegen to canonical ATC-VM and vectors.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "PHASE-2"
+          ],
+          "completion_evidence": [
+            "language fixtures",
+            "bytecode vectors",
+            "integration tests"
+          ],
+          "notes": "ATC-Lang does not create a second VM."
+        },
+        {
+          "work_id": "P2-02",
+          "title": "Integrate canonical ShivaCore into GlobusOS boot and service lifecycle; keep network and AI in service space.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P1-01"
+          ],
+          "completion_evidence": [
+            "boot logs",
+            "service lifecycle tests",
+            "isolation tests"
+          ],
+          "notes": "No duplicate kernel."
+        },
+        {
+          "work_id": "P2-03",
+          "title": "Verify A-TownChain P2P, sync, RPC, operations, upgrades and recovery.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P1-03",
+            "P1-04"
+          ],
+          "completion_evidence": [
+            "protocol tests",
+            "upgrade/recovery tests",
+            "exact SHA"
+          ],
+          "notes": ""
+        },
+        {
+          "work_id": "P2-04",
+          "title": "Run cross-repository ABI/protocol compatibility and end-to-end tests from language/compiler through VM and node.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P2-01",
+            "P2-02",
+            "P2-03"
+          ],
+          "completion_evidence": [
+            "compatibility matrix",
+            "end-to-end run logs",
+            "exact SHA"
+          ],
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "phase_id": "PHASE-4",
+      "priority": "P3",
+      "name": "AI and product-facing capabilities",
+      "execution_order": 4,
+      "entry_gate": "P2 integration contracts and cross-system tests pass.",
+      "exit_gate": "AI and game product paths pass subsystem tests without bypassing security boundaries.",
+      "work_items": [
+        {
+          "work_id": "P3-01",
+          "title": "Verify Aurora model/data lineage, evaluation, inference limits, policy/capability mediation, tool sandbox and rollback.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P2-02"
+          ],
+          "completion_evidence": [
+            "model/data provenance",
+            "evaluation reports",
+            "tool authorization tests"
+          ],
+          "notes": "Aurora is not TCB, consensus authority or canonical VM."
+        },
+        {
+          "work_id": "P3-02",
+          "title": "Complete Genesis Engine editor/project, scene/asset/render/runtime/build pipelines and testable APIs.",
+          "status": "PLANNED",
+          "blocking": false,
+          "depends_on": [
+            "P1-05"
+          ],
+          "completion_evidence": [
+            "subsystem tests",
+            "project round-trip fixtures",
+            "build/export evidence"
+          ],
+          "notes": "Product work can be parallelized if dependencies are independent."
+        },
+        {
+          "work_id": "P3-03",
+          "title": "Enable optional AI/chain integration only through explicit least-privilege service APIs after core gates pass.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P2-04",
+            "P3-01"
+          ],
+          "completion_evidence": [
+            "policy tests",
+            "service API tests",
+            "security review"
+          ],
+          "notes": "Optional feature; must not bypass boundaries."
+        }
+      ]
+    },
+    {
+      "phase_id": "PHASE-5",
+      "priority": "P4",
+      "name": "Hardening and release",
+      "execution_order": 5,
+      "entry_gate": "P3 subsystem acceptance tests pass.",
+      "exit_gate": "Release bundle contains provenance, SBOM, test/security results, residuals and rollback instructions.",
+      "work_items": [
+        {
+          "work_id": "P4-01",
+          "title": "Complete adversarial fuzzing, property/differential tests, security review and recovery exercises.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "PHASE-4"
+          ],
+          "completion_evidence": [
+            "fuzz corpus/results",
+            "security review",
+            "recovery logs"
+          ],
+          "notes": ""
+        },
+        {
+          "work_id": "P4-02",
+          "title": "Close documentation/source/test traceability residuals and produce release evidence bundles.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P4-01"
+          ],
+          "completion_evidence": [
+            "requirement-to-symbol-to-test mapping",
+            "run/job/step/log/artifact",
+            "exact SHA"
+          ],
+          "notes": ""
+        },
+        {
+          "work_id": "P4-03",
+          "title": "Mark release-ready only when exact-SHA required gates, artifacts and rollback evidence pass.",
+          "status": "PLANNED",
+          "blocking": true,
+          "depends_on": [
+            "P4-02"
+          ],
+          "completion_evidence": [
+            "signed release manifest",
+            "SBOM/provenance",
+            "all required gates green"
+          ],
+          "notes": ""
+        }
+      ]
+    }
+  ],
+  "scheduling_policy": {
+    "mode": "dependency-driven",
+    "concurrency": "Parallelize only where dependency graph and SSOT ownership prove independence.",
+    "calendar_estimates": "Do not estimate dates until baseline and measured throughput exist.",
+    "stop_conditions": [
+      "security invariant violation",
+      "canonical ownership conflict",
+      "required gate failure",
+      "missing exact-SHA evidence for VERIFIED claim"
+    ]
+  },
+  "current_baseline": {
+    "requirements_file": "docs/architecture/system-requirements.v1.json",
+    "system_count": 10,
+    "requirement_count": 74,
+    "requirement_status": "REQUIRED",
+    "caveat": "This roadmap defines order and priorities; it is not evidence that implementation is complete."
+  }
+}
