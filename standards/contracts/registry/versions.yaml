@@ -1,0 +1,8 @@
+# Contract-Versionshistorie — ATC-STD-SC-019
+versions:
+  ATC-SC-TOKEN-001:
+    - {version: "2.1.0", date: "2026-09-07", change: "Registry-Ersteintrag (Implementierung existiert in a-townchain-os v2.1.0); SC-Framework-Registrierung"}
+  ATC-SC-TOKEN-002:
+    - {version: "2.1.0", date: "2026-09-07", change: "Registry-Ersteintrag (Implementierung existiert in a-townchain-os v2.1.0); SC-Framework-Registrierung"}
+  ATC-SC-TOKEN-003:
+    - {version: "2.1.0", date: "2026-09-07", change: "Registry-Ersteintrag (Implementierung existiert in a-townchain-os v2.1.0); SC-Framework-Registrierung"}
