@@ -1,0 +1,39 @@
+schema: ATC-CONTRACT-FORMAT-1
+format:
+  name: native-atc
+  extension: .atc
+  version: "1.0"
+  execution_target: ATC-VM
+  independent_language: true
+  canonical_source: true
+
+directives:
+  required:
+    - "@version"
+  repeatable:
+    - "@standard"
+  optional:
+    - "@type"
+    - "@name"
+    - "@symbol"
+    - "@capability"
+    - "@policy"
+
+native_types:
+  asset:
+    - NFT721
+    - NFT1155
+    - Token20
+    - Token777
+    - Governance
+    - Oracle
+    - Bridge
+    - Rental
+    - Hybrid
+
+evidence:
+  required:
+    - source_sha256
+    - specification_version
+    - compiler_version
+    - bytecode_sha256
