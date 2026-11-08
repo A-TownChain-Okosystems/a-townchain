@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-53",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #53: feat(aurora): establish executable runtime foundation",
+  "context": "Pull request 53 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/53",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Summary\n- bring Aurora Core and Aurora Memory Rust crates into the ecosystem Cargo workspace\n- add an executable `atc-aurora-runtime` userspace integration crate\n- replace synthetic ModelHub inference as an implicit default with an explicit `InferenceBackend` contract\n- keep `EchoBackend` only as a clearly named development/test backend\n- enforce model context-window limits\n- preserve the UTF-8-safe inference path\n- connect runtime tests to Aurora Core + Memory\n\n## Verified findings addressed\n1. Aurora Rust crates were outside the root Cargo workspace, so ecosystem CI did not automatically build them.\n2. ModelHub returned a fabricated response without an explicit model backend.\n3. The runtime had no Rust integration boundary connecting Core and Memory.\n\nThis PR establishes the executable boundary without granting Aurora implicit kernel, chain, governance, or filesystem authority. A production/local LLM provider can implement `InferenceBackend` behind an explicitly authorized userspace integration.\n\n## Scope\nThis does not claim that an actual LLM model is bundled. The next provider-specific implementation should target an approved local model runtime or OpenAI-compatible userspace service and be integrated through the backend trait."
+}
