@@ -28,7 +28,8 @@ pub struct ConsensusStatus {
 
 pub struct DevnetRpc {
     pub chain_id: String,
-    pub boot_hash: u64,
+    /// 256-Bit-Bindungs-Hash der Genesis, hex (kein 64-Bit-Traversal).
+    pub boot_hash: String,
     pub peer_count: usize,
     /// DID-Registry (SEC-P0-004) — lesbar ueber `DID <did>`.
     pub registry: DidRegistry,
@@ -40,7 +41,7 @@ impl DevnetRpc {
     pub fn from_state(genesis: &Genesis, peers: &PeerTable) -> Self {
         DevnetRpc {
             chain_id: genesis.chain_id.clone(),
-            boot_hash: genesis.boot_hash(),
+            boot_hash: crate::chain::hash_hex(&genesis.boot_hash256()),
             peer_count: peers.len(),
             registry: DidRegistry::new(),
             consensus: Arc::new(Mutex::new(ConsensusStatus::default())),
@@ -85,7 +86,7 @@ impl DevnetRpc {
         }
         match cmd {
             "CHAIN_ID" => self.chain_id.clone(),
-            "BOOT_HASH" => self.boot_hash.to_string(),
+            "BOOT_HASH" => self.boot_hash.clone(),
             "PEERS" => self.peer_count.to_string(),
             "PING" => "PONG".to_string(),
             "DID_COUNT" => self.registry.len().to_string(),
@@ -166,7 +167,7 @@ impl DevnetRpc {
         };
         let result = match method {
             "chain_id" => self.chain_id.clone(),
-            "boot_hash" => self.boot_hash.to_string(),
+            "boot_hash" => self.boot_hash.clone(),
             "peers" => self.peer_count.to_string(),
             "ping" => "pong".to_string(),
             "did_count" => self.registry.len().to_string(),
@@ -211,6 +212,21 @@ mod tests {
         assert_eq!(rpc.answer("PEERS"), "2");
         assert_eq!(rpc.answer("PING"), "PONG");
         assert!(!rpc.answer("BOOT_HASH").is_empty());
+    }
+
+    #[test]
+    fn boot_hash_ist_256_bit_hex_und_nicht_trunkiert() {
+        let genesis = Genesis::devnet();
+        let rpc = DevnetRpc::from_state(&genesis, &PeerTable::new());
+        let wert = rpc.answer("BOOT_HASH");
+        assert_eq!(wert.len(), 64, "Boot-Hash muss 32 Byte breit sein: {}", wert);
+        assert!(wert.bytes().all(|b| b.is_ascii_hexdigit()), "kein Hex: {}", wert);
+        assert_eq!(wert, crate::chain::hash_hex(&genesis.boot_hash256()));
+        // Ein 64-Bit-Traversal waere eine reine Zahl und damit kein Bindungs-Hash.
+        assert!(wert.parse::<u64>().is_err(), "Boot-Hash darf nicht als Zahl lesbar sein");
+        // JSON-RPC liefert denselben Digest.
+        let json = rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"boot_hash\",\"id\":3}");
+        assert!(json.contains(&wert), "JSON-RPC weicht ab: {}", json);
     }
 
     #[test]
