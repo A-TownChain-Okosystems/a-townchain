@@ -1,9 +1,9 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-08 21:24 UTC+2 aus `origin/main` @ `b9ebb43`.
+> Vollständige Dateiliste. Erzeugt 2026-11-08 21:30 UTC+2 aus `origin/main` @ `bb54de6`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 12355 Dateien**
+**Total: 12357 Dateien**
 
 ## docs (5067)
 
@@ -12365,12 +12365,13 @@
 - `.github/workflows/ssot-source-validation.yml`
 - `.github/workflows/test-suite.yml`
 
-## tools (11)
+## tools (13)
 
 - `tools/atc-sc-validator/audit_contract_copies.py`
 - `tools/atc-sc-validator/check_contract_registry.py`
 - `tools/atc-sc-validator/tests/test_contract_copies.py`
 - `tools/atc-sc-validator/tests/test_contract_registry_gate.py`
+- `tools/atc-sc-validator/tests/test_links.py`
 - `tools/atc-sc-validator/tests/test_supply_cap_invariant.py`
 - `tools/consensus_boundary_check.py`
 - `tools/consolidate_monorepo.py`
@@ -12378,6 +12379,7 @@
 - `tools/determinism_check.py`
 - `tools/ecosystem.sh`
 - `tools/file_register.py`
+- `tools/linkcheck.py`
 
 ## "docs (6)
 
