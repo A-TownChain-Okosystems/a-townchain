@@ -1,0 +1,303 @@
+schema: AURORA-001
+version: "1.0.0"
+title: "Aurora Platform Completeness & Authority Gate"
+status: active
+owner: A-TownChain-Okosystems
+principle: "No Evidence, No Trust"
+
+status_order:
+  - MISSING
+  - ARCHITECTURE_ONLY
+  - SPECIFIED
+  - IMPLEMENTED
+  - TESTED
+  - CI_VERIFIED
+  - INTEGRATED
+  - E2E_VERIFIED
+
+exceptional_status:
+  - BLOCKED
+  - DUPLICATE
+  - DISCONNECTED
+
+evidence_requirements:
+  architecture:
+    required: true
+  canonical_module:
+    required: true
+    unique: true
+  source_symbol:
+    required: true
+    exact_reference: true
+  interface_contract:
+    required: true
+  tests:
+    unit_or_integration_required: true
+  ci:
+    exact_commit_required: true
+    passing_required: true
+  security:
+    required_for_authority_and_execution: true
+  e2e:
+    required_for_integrated_status: true
+
+authority_model:
+  model:
+    proposes: true
+    executes: false
+    authorizes: false
+  agent:
+    requests: true
+    executes: false
+    authorizes: false
+  capability:
+    requires_policy_check: true
+  policy:
+    checks: true
+    is_execution_authority: false
+  approval:
+    may_be_required: true
+    authorizes: true
+  tool:
+    executes: true
+    requires_authorization: true
+
+system_boundaries:
+  aurora_kernel_authority: false
+  aurora_consensus_authority: false
+  direct_aurora_shivacore_access: false
+  required_os_boundary:
+    - Aurora
+    - GlobusOS
+    - ShivaCore
+  required_blockchain_path:
+    - Aurora
+    - A-TownChain Interface
+    - Node
+    - Consensus
+    - ATC-VM
+    - State
+
+rules:
+  file_exists_is_implementation: false
+  documentation_is_implementation: false
+  module_directory_is_implementation: false
+  test_without_source_is_implementation: false
+  ci_without_exact_commit_is_evidence: false
+  mock_execution_is_production_execution: false
+  direct_kernel_access_is_allowed: false
+  direct_consensus_access_is_allowed: false
+  unauthorized_tool_execution_is_allowed: false
+  disconnected_source_is_integrated: false
+  duplicate_source_is_canonical: false
+
+components:
+  - id: AURORA-MODELHUB
+    plane: MODEL
+    name: ModelHub
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-PROVIDERS
+    plane: MODEL
+    name: Provider Adapters
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-REGISTRY
+    plane: MODEL
+    name: Model Registry
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-VERSIONING
+    plane: MODEL
+    name: Versioning
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-MODEL-POLICY
+    plane: MODEL
+    name: Model Policy
+    status: ARCHITECTURE_ONLY
+
+  - id: AURORA-SCHEDULER
+    plane: RUNTIME
+    name: Scheduler
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-CONTEXT
+    plane: RUNTIME
+    name: Context Engine
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-AGENT-RUNTIME
+    plane: RUNTIME
+    name: Agent Runtime
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-PLANNER
+    plane: RUNTIME
+    name: Planner
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-EXECUTION
+    plane: RUNTIME
+    name: Execution
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-EVENT-BRIDGE
+    plane: RUNTIME
+    name: Event Bridge
+    status: ARCHITECTURE_ONLY
+
+  - id: AURORA-AGENT-REGISTRY
+    plane: AGENT
+    name: Agent Registry
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-LIFECYCLE
+    plane: AGENT
+    name: Agent Lifecycle
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-ROLES
+    plane: AGENT
+    name: Agent Roles
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-PLANNING
+    plane: AGENT
+    name: Agent Planning
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-SKILLS
+    plane: AGENT
+    name: Skills
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-MULTIAGENT
+    plane: AGENT
+    name: Multi-Agent Coordination
+    status: ARCHITECTURE_ONLY
+
+  - id: AURORA-CAPABILITIES
+    plane: AUTHORITY
+    name: Capabilities
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-POLICY
+    plane: AUTHORITY
+    name: Policy Engine
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-APPROVAL
+    plane: AUTHORITY
+    name: Approval
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-HUMAN-GATE
+    plane: AUTHORITY
+    name: Human Gate
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-AUTHORIZATION
+    plane: AUTHORITY
+    name: Authorization
+    status: ARCHITECTURE_ONLY
+
+  - id: AURORA-TOOL-REGISTRY
+    plane: TOOL
+    name: Tool Registry
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-TOOL-ADAPTERS
+    plane: TOOL
+    name: Tool Adapters
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-TOOL-EXECUTION
+    plane: TOOL
+    name: Tool Execution
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-SANDBOX
+    plane: TOOL
+    name: Tool Sandboxing
+    status: ARCHITECTURE_ONLY
+
+  - id: AURORA-WORKING-MEMORY
+    plane: MEMORY_KNOWLEDGE
+    name: Working Memory
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-EPISODIC-MEMORY
+    plane: MEMORY_KNOWLEDGE
+    name: Episodic Memory
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-SEMANTIC-MEMORY
+    plane: MEMORY_KNOWLEDGE
+    name: Semantic Memory
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-FEDERATED-MEMORY
+    plane: MEMORY_KNOWLEDGE
+    name: Federated Memory
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-RAG
+    plane: MEMORY_KNOWLEDGE
+    name: RAG
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-RETRIEVAL
+    plane: MEMORY_KNOWLEDGE
+    name: Retrieval
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-KNOWLEDGE-GRAPH
+    plane: MEMORY_KNOWLEDGE
+    name: Knowledge Graph
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-PROVENANCE
+    plane: MEMORY_KNOWLEDGE
+    name: Provenance
+    status: ARCHITECTURE_ONLY
+
+  - id: AURORA-MULTIMODAL
+    plane: MULTIMODAL
+    name: Multimodal Plane
+    status: ARCHITECTURE_ONLY
+
+  - id: AURORA-DIALOGUE
+    plane: DOMAIN_INTELLIGENCE
+    name: Dialogue AI
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-QUEST
+    plane: DOMAIN_INTELLIGENCE
+    name: Quest AI
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-WORLD
+    plane: DOMAIN_INTELLIGENCE
+    name: World AI
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-CHARACTER
+    plane: DOMAIN_INTELLIGENCE
+    name: Character AI
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-CREATURE
+    plane: DOMAIN_INTELLIGENCE
+    name: Creature AI
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-FACTION
+    plane: DOMAIN_INTELLIGENCE
+    name: Faction AI
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-SECURITY
+    plane: DOMAIN_INTELLIGENCE
+    name: Security AI
+    status: ARCHITECTURE_ONLY
+
+  - id: AURORA-AUDIT
+    plane: GOVERNANCE_EVIDENCE
+    name: Audit
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-TELEMETRY
+    plane: GOVERNANCE_EVIDENCE
+    name: Telemetry
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-EVALUATION
+    plane: GOVERNANCE_EVIDENCE
+    name: Evaluation
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-EVIDENCE
+    plane: GOVERNANCE_EVIDENCE
+    name: Evidence
+    status: ARCHITECTURE_ONLY
+
+  - id: AURORA-GLOBUSOS
+    plane: INTEGRATION
+    name: GlobusOS IPC
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-GENESIS
+    plane: INTEGRATION
+    name: Genesis Interface
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-ATC
+    plane: INTEGRATION
+    name: A-TownChain Interface
+    status: ARCHITECTURE_ONLY
+  - id: AURORA-EXTERNAL
+    plane: INTEGRATION
+    name: External Services
+    status: ARCHITECTURE_ONLY
