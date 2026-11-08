@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-59",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #59: docs: formalize decentralized federation architecture",
+  "context": "Pull request 59 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/59",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Summary\n\nFormalizes the decentralized/federated System-of-Systems architecture in `ARCHITECTURE.md`.\n\n### Added\n- Decentralized Federation Architecture\n- domain responsibility boundaries\n- on-chain/off-chain data authority rules\n- federation protocol requirements\n- Decentralization Evidence Rule\n- normative implementation/verification maturity states\n- FEDERATION VERIFIED definition\n- MEMORY-001 federation foundation\n- architecture/implementation/verification separation\n- federation roadmap\n- evidence/governance requirements\n\n### Governance intent\n\nThis change documents the architecture and evidence contract only. It does not claim that currently unimplemented capabilities are implemented or federation-verified.\n\nIt preserves Standalone First, Ecosystem Second: canonical source repositories remain authoritative for implementation, builds, tests, releases, APIs/ABIs, and runtime contracts."
+}
