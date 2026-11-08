@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-123",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #123: audit: triage duplicate code across active repositories",
+  "context": "Pull request 123 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/123",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Purpose\nRecord a fail-closed first-pass audit of duplicate-looking code across the active A-TownChain-Okosystems repositories and define the evidence gate for safe removals.\n\n## What this PR does\n- Records the 26 non-archived repository inventory and explicitly protects the 7 archived repositories.\n- Classifies duplicate-looking canonical/subtree snapshot paths, migrated legacy implementations, and likely stale/divergent code.\n- Preserves SSOT ownership, references, build/release evidence, archive history, and exact-SHA verification requirements.\n- States explicitly that this is a targeted search/triage pass, not an exhaustive file-hash census.\n\n## Important limits\n- No source code is deleted in this PR.\n- Safe deletions proven: 0. The current evidence is insufficient to prove that any candidate can be removed without breaking subtree sync, consumers, tests, CI, release packaging, or audit provenance.\n- Follow-up owning-repository PRs must include exact 40-character SHAs, file hashes/diffs, reference analysis, and exact-head test/build evidence.\n\n## Governance\nDraft only. No merge, no auto-merge, no source implementation changes, no weakened CI gates. Archived repositories remain untouched."
+}
