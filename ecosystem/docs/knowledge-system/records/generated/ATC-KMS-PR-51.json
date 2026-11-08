@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-51",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #51: governance: enforce evidence and preserve release diagnostics",
+  "context": "Pull request 51 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/51",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Governance enforcement implementation\n\nThis PR turns the governance baseline into repository/CI controls without weakening existing gates.\n\n### Implemented\n\n- Adds `docs/governance/GOVERNANCE-ENFORCEMENT-BASELINE-2026-09-24.md`.\n- Adds `SCR-0129` for the Governance-100 assessment path.\n- Adds deterministic `components/atc-standards/tools/governance_assessment.py`.\n- Implements hard Phase-1 checks G01-G07:\n  - registry integrity and version binding\n  - lifecycle data integrity\n  - standard metadata completeness\n  - approval evidence\n  - evidence-root structure\n  - change-control data integrity\n  - repository traceability\n- Adds a Release Readiness CI gate that runs G01-G07 with `--strict`.\n- Publishes machine-readable Governance-100 Phase-1 evidence as a CI artifact.\n- Preserves complete Rust gate logs as CI artifacts for audit/root-cause analysis.\n\n### Explicitly not claimed yet\n\nG08-G16 are reported as non-PASS until their actual implementation/evidence exists. No missing control is converted into PASS.\n\nThe eventual 100/100 condition remains:\n\n`G01..G16 = PASS` + no unapproved open governance findings.\n\n### Existing gates\n\n- No Rust format/check/test/clippy gate was weakened.\n- No compiler error was suppressed.\n- No ShivaCore source was modified.\n- No governance rule was silently relaxed.\n\n### Next verification\n\nRelease Readiness CI must now execute the new G01-G07 gate. Any failure is treated as a real repository inconsistency and fixed at the source."
+}
