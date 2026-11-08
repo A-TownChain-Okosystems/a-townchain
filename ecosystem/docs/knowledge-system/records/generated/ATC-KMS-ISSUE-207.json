@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-207",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #207: [P1] Demonstrate a persistent multi-node ATC compute worker path",
+  "context": "Issue 207 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/207",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Goal\nDemonstrate real distributed worker execution rather than only an in-process scheduler/agent abstraction.\n\n## Scope\nImplement or integrate persistent queueing, authenticated worker registration, leases, heartbeats, retries, cancellation and worker-loss recovery using the normative job contract.\n\n## Acceptance criteria\n- [ ] At least two independently operated worker processes/nodes register with authenticated identities.\n- [ ] A job is persisted, leased to a worker and correlated by task_id/run_id/node_id.\n- [ ] Heartbeat expiry, worker crash, retry and recovery reach defined terminal states.\n- [ ] Duplicate, stale-lease and late results cannot cause duplicate settlement.\n- [ ] A repeatable integration test demonstrates job execution across the independent workers.\n- [ ] Logs/results include exact repository SHAs and test-run evidence.\n\n## Dependencies\nNormative contracts; durable Aurora identity/task lifecycle.\n\n## Non-claim\nTwo local agents or two in-process workers are not sufficient evidence of independent multi-node execution."
+}
