@@ -1,0 +1,12 @@
+# atc-blockchain: gemischtes Modul (Python + Rust + TypeScript) — Rust-Crate: kernel/ (dieses Manifest), Python: setup.py, TS: package.json
+[package]
+name = "atc-blockchain"
+version = "1.0.0"
+edition = "2021"
+license = "All Rights Reserved"
+
+[lib]
+name = "atc_blockchain"
+path = "src/blockchain.rs"
+
+[dependencies]
