@@ -1,0 +1,178 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-89 — ATC-8300 Fungible Token Standard
+// Sprint 2.5 | Smart Contract Layer | Chain-ID 9000
+// Migrated from: modules/contracts/atc8300/atc8300_token.py (125 lines)
+// ERC-20 equivalent: mint, burn, transfer, pause, snapshot, allowances
+// ─────────────────────────────────────────────────────────────
+
+struct Snapshot {
+    timestamp: u64,
+    total_supply: u128,
+    holder_count: u32,
+    root_hash: Hash,
+}
+
+contract ATC8300Token {
+    state token_name: String
+    state symbol: String
+    state decimals: u8
+    state balances: Map<Address, u128>
+    state allowances: Map<Address, Map<Address, u128>>
+    state snapshots: List<Hash>
+    state total_supply: u128
+    state owner: Address
+    state paused: bool
+    state created_at: u64
+
+    event Transfer(from_addr: Address, to_addr: Address, amount: u128)
+    event Approval(owner: Address, spender: Address, amount: u128)
+    event Mint(to_addr: Address, amount: u128)
+    event Burn(from_addr: Address, amount: u128)
+    event SnapshotTaken(root_hash: Hash)
+
+    fn init(name: String, sym: String, dec: u8) {
+        self.token_name = name
+        self.symbol = sym
+        self.decimals = dec
+        self.balances = {}
+        self.allowances = {}
+        self.snapshots = []
+        self.total_supply = 0
+        self.owner = msg_sender()
+        self.paused = false
+        self.created_at = Time::now()
+    }
+
+    fn name() -> String {
+        return self.token_name
+    }
+
+    fn total_supply() -> u128 {
+        return self.total_supply
+    }
+
+    fn balance_of(addr: Address) -> u128 {
+        let bal = self.balances.get(addr)
+        if bal == null {
+            return 0
+        }
+        return bal
+    }
+
+    fn mint(to: Address, amount: u128) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.balances[to] = self.balance_of(to) + amount
+        self.total_supply += amount
+        emit Mint(to, amount)
+        return true
+    }
+
+    fn burn(amount: u128) -> bool {
+        if self.paused {
+            return false
+        }
+        let addr = msg_sender()
+        if self.balance_of(addr) < amount {
+            return false
+        }
+        self.balances[addr] = self.balance_of(addr) - amount
+        self.total_supply -= amount
+        emit Burn(addr, amount)
+        return true
+    }
+
+    fn transfer(receiver: Address, amount: u128) -> bool {
+        if self.paused {
+            return false
+        }
+        let sender = msg_sender()
+        if self.balance_of(sender) < amount {
+            return false
+        }
+        self.balances[sender] = self.balance_of(sender) - amount
+        self.balances[receiver] = self.balance_of(receiver) + amount
+        emit Transfer(sender, receiver, amount)
+        return true
+    }
+
+    fn approve(spender: Address, amount: u128) -> bool {
+        let owner_addr = msg_sender()
+        let existing = self.allowances.get(owner_addr)
+        if existing == null {
+            self.allowances[owner_addr] = {}
+        }
+        self.allowances[owner_addr][spender] = amount
+        emit Approval(owner_addr, spender, amount)
+        return true
+    }
+
+    fn allowance(owner_addr: Address, spender: Address) -> u128 {
+        let owner_allowances = self.allowances.get(owner_addr)
+        if owner_allowances == null {
+            return 0
+        }
+        let amt = owner_allowances.get(spender)
+        if amt == null {
+            return 0
+        }
+        return amt
+    }
+
+    fn transfer_from(owner_addr: Address, receiver: Address, amount: u128) -> bool {
+        if self.paused {
+            return false
+        }
+        let spender = msg_sender()
+        if self.allowance(owner_addr, spender) < amount {
+            return false
+        }
+        if self.balance_of(owner_addr) < amount {
+            return false
+        }
+        self.allowances[owner_addr][spender] = self.allowance(owner_addr, spender) - amount
+        self.balances[owner_addr] = self.balance_of(owner_addr) - amount
+        self.balances[receiver] = self.balance_of(receiver) + amount
+        emit Transfer(owner_addr, receiver, amount)
+        return true
+    }
+
+    fn take_snapshot() -> Hash {
+        let paths = self.balances.keys()
+        let hashes: List<Hash> = []
+        let i: u16 = 0
+        while i < paths.len() {
+            let bal = self.balances.get(paths[i])
+            if bal != null {
+                hashes.push(Hash::sha256(Address::to_string(paths[i]) + Int::to_string(bal)))
+            }
+            i += 1
+        }
+        let root = ATCMerkleTree::compute_root(hashes)
+        self.snapshots.push(root)
+        emit SnapshotTaken(root)
+        return root
+    }
+
+    fn pause() -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.paused = true
+        return true
+    }
+
+    fn unpause() -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.paused = false
+        return true
+    }
+
+    fn holder_count() -> u32 {
+        return self.balances.len()
+    }
+}
