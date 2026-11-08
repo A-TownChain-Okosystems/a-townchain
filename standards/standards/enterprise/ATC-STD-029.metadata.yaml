@@ -1,0 +1,16 @@
+# GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Phase 1) - NICHT MANUELL BEARBEITEN
+authority: A-TownChain-Okosystems
+category: enterprise
+conformance:
+  required: true
+dependencies: []
+id: ATC-STD-029
+implementation:
+  status: specification_only
+normative: true
+owner: Michael (Owner-Entwurf) / Standards Governance
+source_file: standards/enterprise/ATC-STD-029.md
+status: approved
+title: Threat Modeling Standard (8-Glied-Analysekette Asset..Residual Risk, Pflicht
+  fuer 18 kritische Komponenten, Evidence-Pflicht)
+version: 1.0.0
