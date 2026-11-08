@@ -1,0 +1,11 @@
+[package]
+name = "aurora-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Aurora AI control-plane contracts embedded into GlobusOS"
+
+[lints]
+workspace = true
+
+[dependencies]
