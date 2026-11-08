@@ -15,6 +15,15 @@ pub struct ParseError {
     pub message: String,
 }
 
+/// Text eines Namens- oder Feldpfads (`self.owner`, `A::b`).
+fn path_text(e: &Expr) -> Option<String> {
+    match e {
+        Expr::Ident(name) => Some(name.clone()),
+        Expr::Field { base, name } => Some(format!("{}.{}", path_text(base)?, name)),
+        _ => None,
+    }
+}
+
 pub fn parse_program(src: &str) -> Result<Program, ParseError> {
     let toks = tokenize(src).map_err(|e| ParseError {
         message: format!("Lex-Fehler bei Position {}: {:?}", e.pos, e.ch),
@@ -157,6 +166,28 @@ impl Parser {
         })
     }
     fn simple_type(&mut self) -> Result<TypeHint, ParseError> {
+        // Tupeltyp `(A, B)` — fuer Mehrfach-Rueckgaben.
+        if self.cur() == Token::LParen {
+            self.pos += 1;
+            let mut parts = Vec::new();
+            while self.cur() != Token::RParen {
+                parts.push(self.simple_type()?.name);
+                if self.cur() == Token::Comma {
+                    self.pos += 1;
+                } else {
+                    break;
+                }
+            }
+            if self.cur() != Token::RParen {
+                return Err(ParseError {
+                    message: "')' nach Tupeltyp erwartet".to_string(),
+                });
+            }
+            self.pos += 1;
+            return Ok(TypeHint {
+                name: format!("({})", parts.join(", ")),
+            });
+        }
         let mut name = match self.cur() {
             Token::Ident(n) => {
                 self.pos += 1;
@@ -164,7 +195,7 @@ impl Parser {
             }
             other => {
                 return Err(ParseError {
-                    message: format!("Typ erwartet, fand {:?}", other),
+                    message: format!("Typ erwartet, fand {:?} (Umfeld: {})", other, self.context_window()),
                 })
             }
         };
@@ -413,35 +444,137 @@ impl Parser {
             });
         }
         self.pos += 1;
-        let mut depth = 1usize;
-        let mut body_tokens = Vec::new();
-        while depth > 0 {
-            let token = self.cur();
-            if token == Token::Eof {
+        let mut body = Vec::new();
+        while self.cur() != Token::RBrace {
+            if self.cur() == Token::Eof {
                 return Err(ParseError {
                     message: "Nicht geschlossener contract-Block".into(),
                 });
             }
-            self.pos += 1;
-            match token {
-                Token::LBrace => {
-                    depth += 1;
-                    body_tokens.push(Self::token_text(&Token::LBrace));
-                }
-                Token::RBrace => {
-                    depth -= 1;
-                    if depth > 0 {
-                        body_tokens.push(Self::token_text(&Token::RBrace));
+            body.extend(self.contract_item()?);
+        }
+        self.pos += 1; // schliessende '}'
+        Ok(Stmt::Contract { name, bases, body })
+    }
+
+    /// Item im Contract-Koerper: state/event/fn/const/struct/enum/use.
+    fn contract_item(&mut self) -> Result<Vec<Stmt>, ParseError> {
+        match self.cur() {
+            // Im Contract gibt es keinen Native-Fallback: der Koerper MUSS parsen.
+            Token::Fn | Token::Function => Ok(vec![Stmt::Fn(self.function()?)]),
+            Token::Const | Token::Let => Ok(vec![Stmt::Let(self.let_stmt()?)]),
+            Token::Struct => Ok(vec![self.struct_decl()?]),
+            Token::Enum => Ok(vec![self.enum_decl()?]),
+            Token::Use => Ok(vec![self.use_decl()?]),
+            Token::State => self.state_decl(),
+            Token::Ident(name) if name == "event" => Ok(vec![self.event_decl()?]),
+            // Annotation wie `@capability mint` ist Metadatum vor dem Item.
+            Token::At => {
+                self.pos += 1;
+                while self.cur() != Token::Eof {
+                    match self.cur() {
+                        Token::Fn
+                        | Token::Function
+                        | Token::State
+                        | Token::Struct
+                        | Token::Enum
+                        | Token::Use
+                        | Token::Const
+                        | Token::Let
+                        | Token::RBrace => break,
+                        Token::Ident(name) if name == "event" => break,
+                        _ => self.pos += 1,
                     }
                 }
-                _ => body_tokens.push(Self::token_text(&token)),
+                Ok(Vec::new())
             }
+            other => Err(ParseError {
+                message: format!(
+                    "Deklaration im contract erwartet, fand {:?} (Umfeld: {})",
+                    other,
+                    self.context_window()
+                ),
+            }),
         }
-        Ok(Stmt::Contract {
-            name,
-            bases,
-            body_tokens,
-        })
+    }
+
+    /// `state name: Typ [= default]` oder Blockform `state { a: T = v; ... }`.
+    fn state_decl(&mut self) -> Result<Vec<Stmt>, ParseError> {
+        self.pos += 1; // 'state'
+        if self.cur() == Token::LBrace {
+            self.pos += 1;
+            let mut fields = Vec::new();
+            while self.cur() != Token::RBrace {
+                let name = self.expect_name("Feldname im state-Block")?;
+                if self.cur() != Token::Colon {
+                    return Err(ParseError {
+                        message: format!("':' nach state-Feld {name} erwartet"),
+                    });
+                }
+                self.pos += 1;
+                let ty = self.simple_type()?;
+                let default = if self.cur() == Token::Assign {
+                    self.pos += 1;
+                    Some(self.expr()?)
+                } else {
+                    None
+                };
+                if self.cur() == Token::Semi {
+                    self.pos += 1;
+                }
+                fields.push((name, ty, default));
+            }
+            self.pos += 1; // '}'
+            return Ok(vec![Stmt::StateBlock { fields }]);
+        }
+        let name = self.expect_name("Zustandsname nach 'state'")?;
+        if self.cur() != Token::Colon {
+            return Err(ParseError {
+                message: format!("':' nach state {name} erwartet"),
+            });
+        }
+        self.pos += 1;
+        let ty = self.simple_type()?;
+        let default = if self.cur() == Token::Assign {
+            self.pos += 1;
+            Some(self.expr()?)
+        } else {
+            None
+        };
+        Ok(vec![Stmt::State { name, ty, default }])
+    }
+
+    /// `event Name(feld: Typ, ...)`
+    fn event_decl(&mut self) -> Result<Stmt, ParseError> {
+        self.pos += 1; // 'event'
+        let name = self.expect_name("Event-Name nach 'event'")?;
+        let mut fields = Vec::new();
+        if self.cur() == Token::LParen {
+            self.pos += 1;
+            while self.cur() != Token::RParen {
+                let field = self.expect_name("Feldname im Event")?;
+                if self.cur() != Token::Colon {
+                    return Err(ParseError {
+                        message: format!("':' nach Event-Feld {field} erwartet"),
+                    });
+                }
+                self.pos += 1;
+                let ty = self.simple_type()?;
+                fields.push((field, ty));
+                if self.cur() == Token::Comma {
+                    self.pos += 1;
+                } else {
+                    break;
+                }
+            }
+            if self.cur() != Token::RParen {
+                return Err(ParseError {
+                    message: format!("')' nach Event {name} erwartet"),
+                });
+            }
+            self.pos += 1;
+        }
+        Ok(Stmt::Event { name, fields })
     }
 
     fn skip_file_annotations(&mut self) {
@@ -496,7 +629,7 @@ impl Parser {
     }
 
     fn function(&mut self) -> Result<FunctionDef, ParseError> {
-        self.pos += 1; // 'fn'
+        self.pos += 1; // 'fn' oder 'function'
         let name = match self.cur() {
             Token::Ident(n) => n,
             other => {
@@ -516,6 +649,12 @@ impl Parser {
         while self.cur() != Token::RParen {
             let pname = match self.cur() {
                 Token::Ident(n) => n,
+                // Schluesselwoerter als Parameternamen (z. B. `capability: String`);
+                // die Position rueckt erst in der naechsten Zeile weiter.
+                Token::Capability => "capability".to_string(),
+                Token::State => "state".to_string(),
+                Token::Function => "function".to_string(),
+                Token::Policy => "policy".to_string(),
                 other => {
                     return Err(ParseError {
                         message: format!("Parametername erwartet, fand {:?}", other),
@@ -525,7 +664,11 @@ impl Parser {
             self.pos += 1;
             if self.cur() != Token::Colon {
                 return Err(ParseError {
-                    message: "Parameter-Typ ist Pflicht (': typ'), Referenz-Regel".to_string(),
+                    message: format!(
+                        "Parameter-Typ ist Pflicht (': typ'), Referenz-Regel; Token {}; Umfeld: {}",
+                        self.pos,
+                        self.context_window()
+                    ),
                 });
             }
             self.pos += 1;
@@ -542,7 +685,7 @@ impl Parser {
         }
         if self.cur() != Token::RParen {
             return Err(ParseError {
-                message: "')' erwartet".to_string(),
+                message: format!("\")\" erwartet (Umfeld: {})", self.context_window()),
             });
         }
         self.pos += 1;
@@ -580,6 +723,79 @@ impl Parser {
         Ok(stmts)
     }
 
+    /// Bezeichner, der auch Schluesselwoerter akzeptiert (Namen wie `capability`).
+    fn ident_like(&mut self, what: &str) -> Result<String, ParseError> {
+        let text = match self.cur() {
+            Token::Ident(name) => Some(name),
+            Token::Capability => Some("capability".to_string()),
+            Token::State => Some("state".to_string()),
+            Token::Function => Some("function".to_string()),
+            Token::Policy => Some("policy".to_string()),
+            Token::Require => Some("require".to_string()),
+            _ => None,
+        };
+        match text {
+            Some(text) => {
+                self.pos += 1;
+                Ok(text)
+            }
+            None => Err(ParseError {
+                message: format!("{} erwartet, fand {:?}", what, self.cur()),
+            }),
+        }
+    }
+
+    /// Textfenster um die aktuelle Position fuer Fehlermeldungen.
+    fn context_window(&self) -> String {
+        let from = self.pos.saturating_sub(4);
+        let to = (self.pos + 3).min(self.toks.len());
+        self.toks[from..to]
+            .iter()
+            .map(Self::token_text)
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+
+    /// Prueft, ob nach dem aktuellen '{' ein Struct-Literal folgt.
+    fn struct_literal_ahead(&self) -> bool {
+        if self.cur() != Token::LBrace {
+            return false;
+        }
+        match self.toks.get(self.pos + 1) {
+            Some(Token::RBrace) => true,
+            Some(Token::Ident(_)) => self.toks.get(self.pos + 2) == Some(&Token::Colon),
+            _ => false,
+        }
+    }
+
+    /// Argumentliste einer Call-Syntax; setzt voraus, dass '('-Token kommt.
+    fn call_args(&mut self) -> Result<Vec<Expr>, ParseError> {
+        if self.cur() != Token::LParen {
+            return Err(ParseError {
+                message: "'(' erwartet".into(),
+            });
+        }
+        self.pos += 1;
+        let mut args = Vec::new();
+        if self.cur() != Token::RParen {
+            loop {
+                args.push(self.expr()?);
+                if self.cur() == Token::Comma {
+                    self.pos += 1;
+                } else {
+                    break;
+                }
+            }
+        }
+        if self.cur() != Token::RParen {
+            return Err(ParseError {
+                message: format!("\")\" erwartet (Umfeld: {})", self.context_window()),
+            });
+        }
+        self.pos += 1;
+        Ok(args)
+    }
+
     fn statement(&mut self) -> Result<Stmt, ParseError> {
         match self.cur() {
             Token::Let | Token::Const => Ok(Stmt::Let(self.let_stmt()?)),
@@ -597,8 +813,71 @@ impl Parser {
                 }
                 Ok(Stmt::Return { value })
             }
+            Token::Ident(name) if name == "emit" => {
+                self.pos += 1;
+                let mut event = self.expect_name("Event-Name nach 'emit'")?;
+                while self.cur() == Token::Colon
+                    && self.toks.get(self.pos + 1) == Some(&Token::Colon)
+                {
+                    self.pos += 2;
+                    event.push_str("::");
+                    event.push_str(&self.expect_name("Pfadsegment nach '::'")?);
+                }
+                let args = if self.cur() == Token::LParen {
+                    self.call_args()?
+                } else {
+                    Vec::new()
+                };
+                if self.cur() == Token::Semi {
+                    self.pos += 1;
+                }
+                Ok(Stmt::Emit { event, args })
+            }
+            Token::Require => {
+                self.pos += 1;
+                let args = self.call_args()?;
+                if self.cur() == Token::Semi {
+                    self.pos += 1;
+                }
+                let mut it = args.into_iter();
+                let cond = it.next().ok_or_else(|| ParseError {
+                    message: "require ohne Bedingung".into(),
+                })?;
+                Ok(Stmt::Require {
+                    cond,
+                    message: it.next(),
+                })
+            }
             _ => {
                 let e = self.expr()?;
+                let op = match self.cur() {
+                    Token::Assign => Some(None),
+                    Token::Plus | Token::Minus | Token::Star
+                        if self.toks.get(self.pos + 1) == Some(&Token::Assign) =>
+                    {
+                        Some(Some(
+                            match self.cur() {
+                                Token::Plus => "+",
+                                Token::Minus => "-",
+                                _ => "*",
+                            }
+                            .to_string(),
+                        ))
+                    }
+                    _ => None,
+                };
+                if let Some(op) = op {
+                    self.pos += if op.is_some() { 2 } else { 1 };
+                    let value = self.expr()?;
+                    if self.cur() == Token::Semi {
+                        self.pos += 1;
+                    }
+                    return Ok(Stmt::Assign {
+                        target: e,
+                        op,
+                        value,
+                    });
+                }
                 if self.cur() == Token::Semi {
                     self.pos += 1;
                 }
@@ -658,7 +937,53 @@ impl Parser {
     }
 
     fn expr(&mut self) -> Result<Expr, ParseError> {
-        self.comparison()
+        self.logic_or()
+    }
+
+    /// `||` (und einzelnes `|` als bitor) — unterster Rang, linksassoziativ.
+    fn logic_or(&mut self) -> Result<Expr, ParseError> {
+        let mut left = self.logic_and()?;
+        loop {
+            let pipe = self.cur() == Token::Pipe;
+            if !pipe {
+                break;
+            }
+            // `||` und `|` werden beide als Pipe-Token(s) gelesen.
+            self.pos += 1;
+            let double = self.cur() == Token::Pipe;
+            if double {
+                self.pos += 1;
+            }
+            let right = self.logic_and()?;
+            left = Expr::Binary {
+                op: if double { "||" } else { "|" }.to_string(),
+                left: Box::new(left),
+                right: Box::new(right),
+            };
+        }
+        Ok(left)
+    }
+
+    /// `&&` (und einzelnes `&` als bitand).
+    fn logic_and(&mut self) -> Result<Expr, ParseError> {
+        let mut left = self.comparison()?;
+        loop {
+            if self.cur() != Token::Ampersand {
+                break;
+            }
+            self.pos += 1;
+            let double = self.cur() == Token::Ampersand;
+            if double {
+                self.pos += 1;
+            }
+            let right = self.comparison()?;
+            left = Expr::Binary {
+                op: if double { "&&" } else { "&" }.to_string(),
+                left: Box::new(left),
+                right: Box::new(right),
+            };
+        }
+        Ok(left)
     }
 
     /// Vergleiche: linksassoziativ, unter der Addition (SCR-0128 Stufe 1).
@@ -688,6 +1013,10 @@ impl Parser {
     fn addition(&mut self) -> Result<Expr, ParseError> {
         let mut left = self.multiplication()?;
         loop {
+            // `a += 1` ist eine Zuweisung, kein Binaerausdruck.
+            if self.toks.get(self.pos + 1) == Some(&Token::Assign) {
+                break;
+            }
             let op = match self.cur() {
                 Token::Plus => "+",
                 Token::Minus => "-",
@@ -724,6 +1053,14 @@ impl Parser {
     }
 
     fn unary(&mut self) -> Result<Expr, ParseError> {
+        if self.cur() == Token::Bang {
+            self.pos += 1;
+            let operand = self.unary()?;
+            return Ok(Expr::Unary {
+                op: "!".to_string(),
+                operand: Box::new(operand),
+            });
+        }
         if self.cur() == Token::Minus {
             self.pos += 1;
             let operand = self.unary()?;
@@ -737,29 +1074,82 @@ impl Parser {
 
     fn postfix(&mut self) -> Result<Expr, ParseError> {
         let mut node = self.primary()?;
-        while self.cur() == Token::LParen {
-            self.pos += 1;
-            let mut args = Vec::new();
-            if self.cur() != Token::RParen {
-                loop {
-                    args.push(self.expr()?);
-                    if self.cur() == Token::Comma {
-                        self.pos += 1;
-                    } else {
-                        break;
-                    }
+        loop {
+            match self.cur() {
+                // Pfad `A::b` — wird als ein Name "A::b" gefuehrt.
+                Token::Colon if self.toks.get(self.pos + 1).is_some_and(|t| *t == Token::Colon) => {
+                    let Some(base) = path_text(&node) else {
+                        return Err(ParseError {
+                            message: "Pfadoperator '::' nur nach einem Namen erlaubt".into(),
+                        });
+                    };
+                    self.pos += 2;
+                    let segment = self.expect_name("Pfadsegment nach '::'")?;
+                    node = Expr::Ident(format!("{base}::{segment}"));
                 }
+                Token::Dot => {
+                    self.pos += 1;
+                    let name = self.expect_name("Feldname nach '.'")?;
+                    node = Expr::Field {
+                        base: Box::new(node),
+                        name,
+                    };
+                }
+                Token::LBracket => {
+                    self.pos += 1;
+                    let index = self.expr()?;
+                    if self.cur() != Token::RBracket {
+                        return Err(ParseError {
+                            message: "']' nach Index erwartet".into(),
+                        });
+                    }
+                    self.pos += 1;
+                    node = Expr::Index {
+                        base: Box::new(node),
+                        index: Box::new(index),
+                    };
+                }
+                // Struct-Literal `Name { feld: wert }` — nur wenn der Lookahead
+                // eindeutig ist (sonst waere `if name {` ein Block).
+                Token::LBrace if path_text(&node).is_some() && self.struct_literal_ahead() => {
+                    let Some(name) = path_text(&node) else {
+                        unreachable!("Lookahead garantiert einen Namen");
+                    };
+                    self.pos += 1;
+                    let mut fields = Vec::new();
+                    while self.cur() != Token::RBrace {
+                        let field = self.expect_name("Feldname im Struct-Literal")?;
+                        if self.cur() != Token::Colon {
+                            return Err(ParseError {
+                                message: format!("':' nach Feld {field} im Struct-Literal erwartet"),
+                            });
+                        }
+                        self.pos += 1;
+                        let value = self.expr()?;
+                        fields.push((field, value));
+                        if self.cur() == Token::Comma {
+                            self.pos += 1;
+                        } else {
+                            break;
+                        }
+                    }
+                    if self.cur() != Token::RBrace {
+                        return Err(ParseError {
+                            message: "}' nach Struct-Literal erwartet".into(),
+                        });
+                    }
+                    self.pos += 1;
+                    node = Expr::StructLiteral { name, fields };
+                }
+                Token::LParen => {
+                    let args = self.call_args()?;
+                    node = Expr::Call {
+                        target: Box::new(node),
+                        args,
+                    };
+                }
+                _ => break,
             }
-            if self.cur() != Token::RParen {
-                return Err(ParseError {
-                    message: "')' erwartet".to_string(),
-                });
-            }
-            self.pos += 1;
-            node = Expr::Call {
-                target: Box::new(node),
-                args,
-            };
         }
         Ok(node)
     }
@@ -782,19 +1172,102 @@ impl Parser {
                 self.pos += 1;
                 Ok(Expr::Ident(n))
             }
+            // Schluesselwoerter als Wert (z. B. `xs[i] == capability`).
+            Token::Capability => {
+                self.pos += 1;
+                Ok(Expr::Ident("capability".to_string()))
+            }
+            Token::State => {
+                self.pos += 1;
+                Ok(Expr::Ident("state".to_string()))
+            }
+            Token::Policy => {
+                self.pos += 1;
+                Ok(Expr::Ident("policy".to_string()))
+            }
+            Token::LBrace => {
+                self.pos += 1;
+                let mut entries = Vec::new();
+                while self.cur() != Token::RBrace {
+                    let key = self.expr()?;
+                    if self.cur() != Token::Colon {
+                        return Err(ParseError {
+                            message: "':' in Map-Literal erwartet".to_string(),
+                        });
+                    }
+                    self.pos += 1;
+                    let value = self.expr()?;
+                    entries.push((key, value));
+                    if self.cur() == Token::Comma {
+                        self.pos += 1;
+                    } else {
+                        break;
+                    }
+                }
+                if self.cur() != Token::RBrace {
+                    return Err(ParseError {
+                        message: "}' nach Map-Literal erwartet".to_string(),
+                    });
+                }
+                self.pos += 1;
+                Ok(Expr::MapLiteral(entries))
+            }
+            Token::LBracket => {
+                self.pos += 1;
+                let mut items = Vec::new();
+                if self.cur() != Token::RBracket {
+                    loop {
+                        items.push(self.expr()?);
+                        if self.cur() == Token::Comma {
+                            self.pos += 1;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                if self.cur() != Token::RBracket {
+                    return Err(ParseError {
+                        message: "']' nach Array-Literal erwartet".to_string(),
+                    });
+                }
+                self.pos += 1;
+                Ok(Expr::Array(items))
+            }
             Token::LParen => {
                 self.pos += 1;
                 let e = self.expr()?;
+                if self.cur() == Token::Comma {
+                    let mut items = vec![e];
+                    while self.cur() == Token::Comma {
+                        self.pos += 1;
+                        if self.cur() == Token::RParen {
+                            break;
+                        }
+                        items.push(self.expr()?);
+                    }
+                    if self.cur() != Token::RParen {
+                        return Err(ParseError {
+                            message: format!("\")\" nach Tupel erwartet (Umfeld: {})", self.context_window()),
+                        });
+                    }
+                    self.pos += 1;
+                    return Ok(Expr::Tuple(items));
+                }
                 if self.cur() != Token::RParen {
                     return Err(ParseError {
-                        message: "')' erwartet".to_string(),
+                        message: format!("\")\" erwartet (Umfeld: {})", self.context_window()),
                     });
                 }
                 self.pos += 1;
                 Ok(e)
             }
             other => Err(ParseError {
-                message: format!("Ausdruck erwartet, fand {:?}", other),
+                message: format!(
+                    "Ausdruck erwartet, fand {:?} (Token {}; Umfeld: {})",
+                    other,
+                    self.pos,
+                    self.context_window()
+                ),
             }),
         }
     }
@@ -899,7 +1372,9 @@ mod tests {
     }
 
     #[test]
-    fn native_function_body_falls_back_to_balanced_token_ast() {
+    fn funktionskoerper_mit_string_literal_parst_als_ast() {
+        // Frueanlegung: dieser Koerper landete frueher als Token-Liste im
+        // NativeFunction-Fallback. Heute muss er echt geparst werden.
         let source = r#"
             fn tokenize(s: string) -> ScanResult {
                 let tokens: List<string> = []
@@ -909,10 +1384,11 @@ mod tests {
                 return tokens
             }
         "#;
-        let program = parse_program(source).expect("native function body must parse");
-        assert!(program
-            .to_json()
-            .contains("\"kind\":\"NativeFunctionDef\",\"name\":\"tokenize\""));
+        let program = parse_program(source).expect("Funktionskoerper muss parsen");
+        let json = program.to_json();
+        assert!(json.contains("\"kind\":\"FunctionDef\""), "{json}");
+        assert!(!json.contains("NativeFunctionDef"), "{json}");
+        assert!(json.contains("\"&&\""), "Logikoperator fehlt: {json}");
     }
 
     #[test]
