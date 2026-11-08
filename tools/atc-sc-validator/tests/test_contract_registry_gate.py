@@ -67,8 +67,15 @@ def deployments(tmp_path: Path, body: str = "deployments: []\n") -> Path:
     return path
 
 
-def run(tmp_path: Path, registry: Path, deps: Path):
-    return GATE.check_registry(tmp_path, registry, deps)
+def run(tmp_path: Path, registry: Path, deps: Path, atc_bin=None):
+    return GATE.check_registry(tmp_path, registry, deps, atc_bin)
+
+
+def fake_atc(tmp_path: Path, exit_code: int = 0) -> Path:
+    binary = tmp_path / "atc"
+    binary.write_text(f"#!/bin/sh\nexit {exit_code}\n", encoding="utf-8")
+    binary.chmod(0o755)
+    return binary
 
 
 def gates(findings):
@@ -163,6 +170,26 @@ def test_a6_kategorie_passt_nicht_zur_id(tmp_path):
     reg.write_text(reg.read_text().replace("category: SC-TOKEN", "category: SC-DEFI"))
     findings, _ = run(tmp_path, reg, deployments(tmp_path))
     assert any("passt nicht zur ID" in f["detail"] for f in findings)
+
+
+def test_a8_kompilierbarkeit_besteht(tmp_path):
+    reg = make_tree(tmp_path)
+    findings, _ = run(tmp_path, reg, deployments(tmp_path), fake_atc(tmp_path, 0))
+    assert findings == [], f"unerwartet: {findings}"
+
+
+def test_a8_kompilierfehler_wird_gemeldet(tmp_path):
+    reg = make_tree(tmp_path)
+    findings, _ = run(tmp_path, reg, deployments(tmp_path), fake_atc(tmp_path, 3))
+    assert "A8" in gates(findings)
+    assert any("atc check fehlgeschlagen" in f["detail"] for f in findings)
+
+
+def test_a8_ohne_binary_wird_als_fehler_gemeldet(tmp_path):
+    reg = make_tree(tmp_path)
+    fehlend = tmp_path / "gibtsnicht"
+    findings, _ = run(tmp_path, reg, deployments(tmp_path), fehlend)
+    assert "A8" in gates(findings)
 
 
 def test_a7_unbekannte_kategorie(tmp_path):
