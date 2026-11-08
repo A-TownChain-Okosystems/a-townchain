@@ -1,0 +1,103 @@
+// K-Sprint 39 — Threading + Futex (ATCLang Interface)
+// Rust: kernel/src/threads.rs (1467 lines, 62 tests)
+// Agent: Aurora #2 (6a275618)
+
+enum ThreadState {
+    READY,
+    RUNNING,
+    BLOCKED,
+    EXITED,
+}
+
+enum BlockReason {
+    FUTEX,
+    IO,
+    SLEEP,
+    SIGNAL,
+}
+
+enum ExitCode {
+    SUCCESS(i32),
+    FAILURE(i32),
+}
+
+enum SignalType {
+    KILL,
+    TERM,
+    STOP,
+    CONT,
+}
+
+struct Thread {
+    tid: u64,
+    pid: u64,
+    state: ThreadState,
+    stack_top: u64,
+    stack_size: u64,
+}
+
+struct ThreadStats {
+    total_threads: u32,
+    alive_threads: u32,
+    process_count: u32,
+}
+
+struct CloneFlags {
+    flags: u64,
+}
+
+module Kernel::Threads {
+    contract ThreadManager {
+        fn create_process(main_rsp: u64, main_rip: u64) -> u64
+        fn create_thread(pid: u64, stack_top: u64, stack_size: u64, entry: u64, arg: u64, flags: CloneFlags) -> Result<u64, String>
+        fn exit_thread(pid: u64, tid: u64, code: ExitCode) -> Result<(), String>
+        fn join_thread(pid: u64, tid: u64) -> Result<ExitCode, String>
+        fn kill_thread(pid: u64, tid: u64, sig: SignalType) -> Result<(), String>
+        fn block_thread(pid: u64, tid: u64, reason: BlockReason) -> Result<(), String>
+        fn unblock_thread(pid: u64, tid: u64) -> Result<(), String>
+        fn destroy_process(pid: u64) -> Result<(), String>
+        fn total_threads() -> u32
+        fn alive_threads() -> u32
+        fn process_count() -> u32
+        fn stats() -> ThreadStats
+    }
+
+    contract FutexTable {
+        fn wait(tid: u64, pid: u64, addr: u64, val: u32, current_val: u32) -> Result<bool, String>
+        fn wake(addr: u64, max_count: u32) -> u32
+        fn wake_bitset(addr: u64, max_count: u32, bitset: u32) -> u32
+        fn requeue(addr1: u64, addr2: u64, max_wake: u32, max_requeue: u32) -> (u32, u32)
+        fn waiting_count() -> u32
+    }
+
+    contract FutexMutex {
+        fn new(addr: u64) -> FutexMutex
+        fn try_lock() -> bool
+        fn lock() -> bool
+        fn unlock() -> bool
+        fn is_locked() -> bool
+    }
+
+    contract FutexCondvar {
+        fn new(seq_addr: u64) -> FutexCondvar
+        fn signal() -> u32
+        fn broadcast() -> u32
+        fn current_seq() -> u32
+    }
+
+    contract FutexBarrier {
+        fn new(count_addr: u64, target: u32) -> FutexBarrier
+        fn arrive() -> String
+        fn is_complete() -> bool
+    }
+
+    contract FutexRwLock {
+        fn new() -> FutexRwLock
+        fn try_read_lock() -> bool
+        fn try_write_lock() -> bool
+        fn read_unlock() -> bool
+        fn write_unlock() -> bool
+        fn is_write_locked() -> bool
+        fn reader_count() -> u32
+    }
+}
