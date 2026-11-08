@@ -1,0 +1,25 @@
+# Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# A-TownChain OS — Coverage Configuration (K7 Konsolidierung)
+
+[run]
+source = src, modules
+omit =
+    tests/*
+    */__pycache__/*
+    */migrations/*
+    atclang/tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod
+precision = 2
+show_missing = True
+skip_covered = False
+
+[html]
+directory = tests/coverage_html
