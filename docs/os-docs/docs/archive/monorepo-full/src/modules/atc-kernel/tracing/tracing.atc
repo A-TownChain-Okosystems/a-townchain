@@ -1,0 +1,129 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// K-Sprint 46 — Kernel Tracing & Profiling (ATC-92)
+// ftrace / strace / perf-Äquivalent für Kernel-Observability
+
+contract Kernel::TraceManager {
+    // ── Trace Categories ──
+    enum TraceCategory {
+        Function = 0,
+        Syscall = 1,
+        Irq = 2,
+        Sched = 3,
+        Mem = 4,
+        Net = 5,
+        Block = 6,
+        Signal = 7,
+        Container = 8,
+        User = 9,
+        Custom = 10
+    }
+
+    enum TraceEventType {
+        Entry = 0,
+        Exit = 1,
+        Event = 2,
+        Begin = 3,
+        End = 4
+    }
+
+    // ── Trace Event ──
+    struct TraceEvent {
+        seq: u64,
+        timestamp_ns: u64,
+        cpu: u32,
+        pid: u32,
+        category: TraceCategory,
+        event_type: TraceEventType,
+        name: String,
+        arg1: u64,
+        arg2: u64,
+        arg3: u64,
+        duration_ns: Option<u64>
+    }
+
+    // ── Ring Buffer ──
+    struct RingBuffer {
+        capacity: usize,
+        event_count: usize,
+        total_count: u64,
+        dropped: u64,
+        enabled: bool
+    }
+
+    // ── Trace Filter ──
+    struct TraceFilter {
+        categories: Set<TraceCategory>,
+        pids: Set<u32>,
+        cpus: Set<u32>,
+        name_contains: Option<String>,
+        min_duration_ns: Option<u64>
+    }
+
+    // ── Histogram ──
+    struct Histogram {
+        name: String,
+        count: u64,
+        min_value: u64,
+        max_value: u64,
+        sum: u64,
+        p50: u64,
+        p95: u64,
+        p99: u64
+    }
+
+    // ── Function Tracer ──
+    struct FunctionTracer {
+        max_depth: usize,
+        enabled: bool,
+        max_depth_reached: usize
+    }
+
+    // ── Syscall Tracer ──
+    struct SyscallTracer {
+        capacity: usize,
+        enabled: bool,
+        record_count: usize
+    }
+
+    // ── Profiler ──
+    struct Profiler {
+        capacity: usize,
+        sample_period_ns: u64,
+        enabled: bool,
+        total_samples: u64,
+        kernel_samples: u64,
+        user_samples: u64
+    }
+
+    // ── Latency Tracker ──
+    struct LatencyTracker {
+        threshold_ns: u64,
+        alert_count: usize
+    }
+
+    // ── Latency Alert ──
+    struct LatencyAlert {
+        name: String,
+        latency_ns: u64,
+        timestamp_ns: u64,
+        message: String
+    }
+
+    // ── Operations ──
+    fn enable() -> void
+    fn disable() -> void
+    fn set_filter(filter: TraceFilter) -> void
+    fn trace(event: TraceEvent) -> bool
+    fn function_enter(cpu: u32, pid: u32, name: String) -> bool
+    fn function_exit(cpu: u32) -> Option<(String, u64)>
+    fn syscall(pid: u32, cpu: u32, name: String, ret: i64, duration_ns: u64) -> bool
+    fn sample(cpu: u32, pid: u32, pc: u64, label: String, in_kernel: bool) -> bool
+    fn report() -> String
+    fn clear_all() -> void
+
+    // ── Events ──
+    event trace_enabled(category: TraceCategory)
+    event trace_disabled(category: TraceCategory)
+    event latency_alert(name: String, latency_ns: u64, message: String)
+    event buffer_overflow(dropped: u64)
+}
