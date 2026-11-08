@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-COMMIT-56997218D832",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "Commit: Merge pull request #223 from A-TownChain-Okosystems/chore/competitor-radar-2026-10-22-conventional-history",
+  "context": "Git commit 56997218d8326441fd7e04c0fe4c574c261dd4dc on A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "commit",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/commit/56997218d8326441fd7e04c0fe4c574c261dd4dc",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "commit",
+    "generated",
+    "git"
+  ],
+  "links": [],
+  "content": "Merge pull request #223 from A-TownChain-Okosystems/chore/competitor-radar-2026-10-22-conventional-history\n\nCompetitive monitoring baseline and snapshots (2026-10-19–2026-10-22) — conventional history"
+}
