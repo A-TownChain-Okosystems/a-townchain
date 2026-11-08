@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-67",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #67: fix(blockchain): port verified u128 compile corrections",
+  "context": "Pull request 67 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/67",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: False\n\nSelective port of the already-reviewed PR #57 core corrections for the current blockchain workspace. Includes only blockchain.rs, mempool.rs, storage.rs and validator_state.rs. No PR #57 documentation, wallet changes, or architecture files are included."
+}
