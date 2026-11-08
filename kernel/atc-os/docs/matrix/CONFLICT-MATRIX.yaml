@@ -1,0 +1,138 @@
+# Canonical Conflict Matrix — Core Domains
+
+schema_version: "1.2.0"
+generated: "2026-10-01"
+scope: "Verified architectural contradictions, duplicate ownership, boundary violations and potentially blocking component interactions across the five core domains."
+evidence_rule: "A conflict is recorded only when the conflicting behavior/boundary is directly evidenced by repository source or architecture documentation. Suspected conflicts are not promoted to VERIFIED_CONFLICT."
+status_semantics: "ANALYZED means the conflict was directly observed. RESOLVED means the conflict condition is absent from the current source-of-truth state. RESIDUAL means it remains unresolved. FIXED requires a minimal fix plus exact-SHA rerun/verification evidence."
+conflict_types:
+  - "CONTRADICTION"
+  - "DUPLICATE_OWNERSHIP"
+  - "LAYER_VIOLATION"
+  - "BLOCKING_DEPENDENCY"
+  - "INTERFACE_CONFLICT"
+conflicts:
+  - id: "CONFLICT-001"
+    subsystem_ids:
+      - "SUB-GLOBUSOS-ATC-SHIVACORE"
+    type: "DUPLICATE_OWNERSHIP"
+    severity: "HIGH"
+    status: "RESOLVED"
+    component_a:
+      domain: "SHIVACORE"
+      repository: "A-TownChain-Okosystems/atc-shivacore"
+      path: "STATUS.md"
+    component_b:
+      domain: "GLOBUSOS"
+      repository: "A-TownChain-Okosystems/globus-os"
+      path: "modules/atc-shivacore/kernel/"
+    conflict: "Historical duplicate-looking kernel ownership existed between the standalone ShivaCore repository and the GlobusOS-integrated kernel source."
+    expected_architecture: "One canonical ShivaCore kernel source/ownership location; the standalone repository provides contracts, governance and support material."
+    observed_architecture: "The current atc-shivacore STATUS.md and README.md explicitly declare globus-os/modules/atc-shivacore/kernel/ as the canonical active kernel source and state that the standalone repository is no longer an active kernel source tree."
+    evidence:
+      - "atc-shivacore: STATUS.md declares the canonical source as A-TownChain-Okosystems/globus-os/modules/atc-shivacore/."
+      - "atc-shivacore: README.md states that this repository is not a second canonical kernel source of truth."
+      - "atc-shivacore: current modules directory contains supporting atc-security and atc-shivacore-tools material, not a competing active kernel tree."
+    impact: "The previously observed duplicate source-of-truth condition is no longer present in the current repository state."
+    minimal_fix: "Migration of the canonical kernel implementation into GlobusOS and explicit source-of-truth declaration in the standalone repository."
+    verification:
+      state: "ANALYZED"
+      finding: "Current source-of-truth documents explicitly resolve the historical ownership conflict. Exact-SHA CI verification of the migration is not claimed here."
+      root_cause: "Historical kernel source was relocated into the GlobusOS canonical implementation repository."
+      rerun: null
+
+  - id: "CONFLICT-002"
+    subsystem_ids:
+      - "SUB-GLOBUSOS-ATC-SHIVACORE"
+    type: "LAYER_VIOLATION"
+    severity: "HIGH"
+    status: "RESIDUAL"
+    component_a:
+      domain: "SHIVACORE"
+      repository: "A-TownChain-Okosystems/atc-shivacore"
+      path: "ARCHITECTURE.md"
+    component_b:
+      domain: "GLOBUSOS"
+      repository: "A-TownChain-Okosystems/globus-os"
+      path: "modules/atc-shivacore/kernel/src/net.rs"
+    conflict: "ShivaCore architecture explicitly places network protocol stacks outside the TCB, while the canonical integrated ShivaCore kernel contains Ethernet, ARP and IPv4 NetworkStack functionality."
+    expected_architecture: "Kernel/TCB exposes minimal networking primitives/interfaces; network protocol stacks and policy live above the microkernel."
+    observed_architecture: "The canonical kernel implements EthernetFrame, ArpTable, ArpPacket, NetworkDevice and NetworkStack including ARP/IPv4 handling."
+    evidence:
+      - "atc-shivacore: ARCHITECTURE.md states that network protocol stacks SHOULD remain outside the TCB."
+      - "atc-shivacore: ARCHITECTURE.md states that ATCLang -> ATC-VM -> A-TownChain is separate from the ShivaCore kernel contract."
+      - "globus-os: modules/atc-shivacore/kernel/src/net.rs implements Ethernet, ARP and IPv4 network-stack behavior."
+    impact: "Protocol implementation inside the kernel expands the stated TCB boundary and conflicts with the OS-neutral microkernel contract."
+    minimal_fix: "Separate hardware/network primitives from protocol implementation and expose a minimal kernel-facing network interface."
+    verification:
+      state: "ANALYZED"
+      finding: "Direct source/documentation contradiction."
+      root_cause: "Protocol-stack implementation is located inside the canonical ShivaCore kernel despite the documented TCB boundary."
+      rerun: null
+
+  - id: "CONFLICT-005"
+    subsystem_ids:
+      - "SUB-GLOBUSOS-ATC-SHIVACORE"
+      - "SUB-ATC-ATC-BLOCKCHAIN"
+    type: "CONTRADICTION"
+    severity: "HIGH"
+    status: "RESIDUAL"
+    component_a:
+      domain: "SHIVACORE"
+      repository: "A-TownChain-Okosystems/atc-shivacore"
+      path: "ARCHITECTURE.md"
+    component_b:
+      domain: "GLOBUSOS"
+      repository: "A-TownChain-Okosystems/globus-os"
+      path: "modules/atc-shivacore/kernel/src/vm.rs"
+    conflict: "The ShivaCore architecture separates blockchain execution from the kernel contract, while the canonical kernel contains a contract VM with blockchain-specific operations and state."
+    expected_architecture: "ATC-VM/blockchain execution remains outside the ShivaCore kernel/TCB; kernel VM facilities must be limited to hardware virtualization or userspace execution primitives."
+    observed_architecture: "vm.rs defines ShivaVM, ContractRegistry, ContractStorage and opcodes including Balance and Transfer, with contract addresses, owner DIDs, balances and bytecode execution."
+    evidence:
+      - "atc-shivacore: ARCHITECTURE.md explicitly states that ATCLang -> ATC-VM -> A-TownChain is separate from the ShivaCore kernel contract."
+      - "globus-os: modules/atc-shivacore/kernel/src/vm.rs defines ShivaVM and ContractRegistry."
+      - "globus-os: modules/atc-shivacore/kernel/src/vm.rs includes Balance and Transfer opcodes plus contract balance/storage state."
+    impact: "Blockchain contract semantics are directly coupled to the kernel module and can expand the TCB with chain-specific execution semantics."
+    minimal_fix: "Remove blockchain contract execution from the kernel boundary or relocate it to the canonical ATC-VM/service layer; retain only clearly defined userspace/virtualization primitives in the kernel."
+    verification:
+      state: "ANALYZED"
+      finding: "Function-level source inspection confirms that vm.rs is a blockchain contract VM, not merely a hardware virtualization helper."
+      root_cause: "A blockchain contract-execution implementation was placed under the ShivaCore kernel source tree."
+      rerun: null
+
+  - id: "CONFLICT-006"
+    subsystem_ids:
+      - "SUB-GLOBUSOS-ATC-SHIVACORE"
+    type: "DUPLICATE_VERIFICATION"
+    severity: "MEDIUM"
+    status: "RESIDUAL"
+    component_a:
+      domain: "GLOBUSOS"
+      repository: "A-TownChain-Okosystems/globus-os"
+      path: ".github/workflows/rust-ci.yml"
+    component_b:
+      domain: "GLOBUSOS"
+      repository: "A-TownChain-Okosystems/globus-os"
+      path: ".github/workflows/shivacore-kernel.yml"
+    conflict: "The canonical ShivaCore kernel is independently validated by the general Rust CI workflow and the dedicated ShivaCore boot workflow."
+    expected_architecture: "Kernel verification must have explicit gate authority and evidence semantics; overlapping workflows must be classified as authoritative, prerequisite or supplemental."
+    observed_architecture: "rust-ci.yml runs kernel library tests and clippy, while shivacore-kernel.yml builds the kernel and performs BIOS/UEFI and QEMU CPU/scheduler smoke checks."
+    evidence:
+      - "globus-os: .github/workflows/rust-ci.yml contains ShivaCore kernel library tests and ShivaCore kernel clippy."
+      - "globus-os: .github/workflows/shivacore-kernel.yml builds the kernel and performs Intel/AMD QEMU smoke validation."
+    impact: "Overlapping verification can produce ambiguous gate ownership and duplicate evidence unless the relationship is explicitly defined."
+    minimal_fix: "Declare authoritative versus supplemental kernel verification responsibilities and make the release/evidence chain consume the authoritative result."
+    verification:
+      state: "ANALYZED"
+      finding: "Overlapping verification paths are directly evidenced; actual release-blocking dependency is not yet proven."
+      root_cause: "Two workflows independently validate different aspects of the same canonical kernel."
+      rerun: null
+
+matrix_rules:
+  - "Do not mark a conflict FIXED from documentation alone."
+  - "RESOLVED means the conflict condition is directly absent from the current source-of-truth state; it does not claim exact-SHA CI verification."
+  - "FIXED requires a minimal source/architecture fix plus exact-SHA rerun/verification evidence."
+  - "Do not infer runtime deadlocks or cycles from filenames alone."
+  - "A RESIDUAL conflict remains open until its minimal fix is committed and exact-SHA rerun evidence exists."
+  - "Finding evidence, error-log evidence and verification evidence remain separate."
+  - "Every conflict must reference one or more canonical subsystem IDs from SUBSYSTEM-MATRIX.yaml."
