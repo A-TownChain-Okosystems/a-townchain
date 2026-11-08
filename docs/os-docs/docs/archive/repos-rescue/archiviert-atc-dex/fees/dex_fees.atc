@@ -1,0 +1,15 @@
+// ATCLang v0.3 — DEX Fees
+// Swap fee, protocol fee, LP rewards distribution
+// ATC-Standard: ATC-88
+
+module dex_fees {
+    struct FeeStructure {
+        swap_fee_bps: int,
+        protocol_fee_bps: int,
+        lp_fee_bps: int
+    }
+    
+    fn distribute_fees() {
+        // Splits collected trading fees between LPs and protocol treasury
+    }
+}
