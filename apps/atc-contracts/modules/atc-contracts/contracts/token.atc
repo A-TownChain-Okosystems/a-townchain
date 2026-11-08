@@ -16,6 +16,12 @@ contract FranchiseToken {
     state allowances:   Map<Address, Map<Address, u128>>
     state MAX_SUPPLY:   u128  = 100_000_000_000_000_000_000_000_000  // 100 Mio FFT
 
+    event TokenInitialized(name: string, symbol: string, owner: Address)
+    event Transfer(sender: Address, to: Address, amount: u128)
+    event Approval(sender: Address, spender: Address, amount: u128)
+    event Mint(to: Address, amount: u128)
+    event Burn(sender: Address, amount: u128)
+
     fn init(owner_addr: Address) {
         self.owner = owner_addr
         emit TokenInitialized("FranchiseToken", "FFT", owner_addr)
