@@ -1,0 +1,90 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-45 — Franchise API Routes
+// Sprint 3.2 | Business Layer | Chain-ID 9000
+// Migrated from: modules/franchise/api/routes.py (66 lines)
+// REST endpoints for decentralized franchise management
+// ─────────────────────────────────────────────────────────────
+
+struct FranchiseInfo {
+    fid: Hash,
+    name: String,
+    owner: Address,
+    members: u16,
+    treasury: u128,
+    active: bool,
+    created_at: u64,
+}
+
+contract FranchiseRoutes {
+    state franchises: Map<Hash, FranchiseInfo>
+    state franchise_count: u32
+    state total_members: u16
+    state owner: Address
+
+    event FranchiseCreated(fid: Hash, name: String)
+    event FranchiseJoined(fid: Hash, member: Address)
+    event FranchiseStatsUpdated(fid: Hash, members: u16)
+
+    fn init() {
+        self.franchises = {}
+        self.franchise_count = 0
+        self.total_members = 0
+        self.owner = msg_sender()
+    }
+
+    fn list_franchises() -> List<Hash> {
+        return self.franchises.keys()
+    }
+
+    fn create(name: String, initial_treasury: u128) -> Hash {
+        let fid = Hash::sha256(name, msg_sender(), Time::now())
+        let franchise = FranchiseInfo {
+            fid: fid,
+            name: name,
+            owner: msg_sender(),
+            members: 1,
+            treasury: initial_treasury,
+            active: true,
+            created_at: Time::now(),
+        }
+        self.franchises[fid] = franchise
+        self.franchise_count += 1
+        self.total_members += 1
+        emit FranchiseCreated(fid, name)
+        return fid
+    }
+
+    fn get_franchise(fid: Hash) -> (String, Address, u16, u128, bool, u64) {
+        let f = self.franchises.get(fid)
+        if f == null {
+            return ("", Address::zero(), 0, 0, false, 0)
+        }
+        return (f.name, f.owner, f.members, f.treasury, f.active, f.created_at)
+    }
+
+    fn join(fid: Hash) -> bool {
+        let f = self.franchises.get(fid)
+        if f == null || !f.active {
+            return false
+        }
+        f.members += 1
+        self.total_members += 1
+        emit FranchiseJoined(fid, msg_sender())
+        return true
+    }
+
+    fn stats() -> (u32, u16, u128) {
+        let total_treasury: u128 = 0
+        let keys = self.franchises.keys()
+        let i: u16 = 0
+        while i < keys.len() {
+            let f = self.franchises.get(keys[i])
+            if f != null {
+                total_treasury += f.treasury
+            }
+            i += 1
+        }
+        return (self.franchise_count, self.total_members, total_treasury)
+    }
+}
