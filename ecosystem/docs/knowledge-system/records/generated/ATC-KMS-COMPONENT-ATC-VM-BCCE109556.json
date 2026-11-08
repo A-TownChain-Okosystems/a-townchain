@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-COMPONENT-ATC-VM-BCCE109556",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "module",
+  "title": "Component: atc-vm",
+  "context": "Component subtree indexed from A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "file",
+    "ref": "components/atc-vm",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "atc-vm",
+    "component",
+    "generated"
+  ],
+  "links": [
+    {
+      "relation": "part-of",
+      "target": "ATC-KMS-REPOSITORY-STRUCTURE"
+    }
+  ],
+  "content": "Files: 49\n\nManifests: components/atc-vm/Cargo.toml"
+}
