@@ -310,7 +310,7 @@ pub fn referenced_types(stmt: &Stmt) -> Vec<String> {
 }
 
 fn push_hint(hint: &crate::ast::TypeHint, out: &mut Vec<String>) {
-    for name in hint.name.split(|c| c == '<' || c == '>' || c == ',' || c == '(' || c == ')') {
+    for name in hint.name.split(['<', '>', ',', '(', ')']) {
         let name = name.trim();
         if !name.is_empty() && !name.chars().all(|c| c.is_ascii_digit()) {
             out.push(name.to_string());
