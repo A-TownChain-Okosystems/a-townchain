@@ -1,0 +1,15 @@
+// Copyright (c) 2026 Michael Wroblewski — Apache-2.0
+//! ATCLang Canonical Core (Rust).
+//! Rust is the canonical compiler-side implementation boundary; Python is
+//! reference tooling and differential-test infrastructure.
+
+pub mod artifact;
+pub mod ast;
+pub mod bytecode;
+pub mod ir;
+pub mod lexer;
+pub mod lower;
+pub mod native;
+pub mod parser;
+pub mod value;
+pub mod vm;
