@@ -1,0 +1,13 @@
+compliance:
+  standard: ATC-STD-201
+  version: "1.0.1"
+  level: R1
+  gates:
+    structure: pass
+    documentation: pass
+    security: pass
+    ci: pass
+    architecture: pass
+  last_audit: "2026-09-13"
+  auditor: AUD-2026-0005-Follow-up (Superagent Live-Audit, Base44)
+  exempt: true   # Template-Repo; PR-Pflicht bleibt bestehen
