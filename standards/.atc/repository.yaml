@@ -1,0 +1,22 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: atc-standards
+  classification: SPEC
+  maturity: R3
+  status: beta
+project:
+  organization: A-TownChain-Okosystems
+  domain: governance
+  component: standards
+language:
+  primary: markdown
+  tooling: python
+license:
+  type: apache-2.0
+security:
+  criticality: critical
+api:
+  stability: stable
+protocol:
+  compatibility: required
