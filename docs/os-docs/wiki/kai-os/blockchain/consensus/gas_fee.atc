@@ -1,0 +1,130 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-87 — Gas Fee System (EIP-1559 style)
+// Sprint 2.3 | Consensus Layer | Chain-ID 9000
+// Upgraded to v0.3 ATCLang syntax
+// Base fee + priority fee with dynamic adjustment
+// ─────────────────────────────────────────────────────────────
+
+const BASE_FEE_INIT: u128 = 1000       // wei
+const BASE_FEE_MAX_CHANGE: u8 = 25     // 25% max change per block
+const TARGET_GAS: u64 = 10000000       // 10M gas target per block
+const MAX_GAS_PER_BLOCK: u64 = 20000000
+const MIN_PRIORITY_FEE: u128 = 1
+
+struct GasSnapshot {
+    block_height: u64,
+    base_fee: u128,
+    gas_used: u64,
+    gas_target: u64,
+    timestamp: u64,
+}
+
+contract GasFeeSystem {
+    state base_fee: u128
+    state gas_used_last_block: u64
+    state gas_target: u64
+    state max_gas_per_block: u64
+    state history: List<GasSnapshot>
+    state total_fees_burned: u128
+    state total_priority_fees: u128
+    state owner: Address
+
+    event BaseFeeChanged(old: u128, new: u128, gas_used: u64)
+    event GasBurned(amount: u128, block_height: u64)
+
+    fn init() {
+        self.base_fee = BASE_FEE_INIT
+        self.gas_used_last_block = 0
+        self.gas_target = TARGET_GAS
+        self.max_gas_per_block = MAX_GAS_PER_BLOCK
+        self.history = []
+        self.total_fees_burned = 0
+        self.total_priority_fees = 0
+        self.owner = msg_sender()
+    }
+
+    fn calculate_fee(gas_limit: u64, priority_fee: u128) -> (u128, u128) {
+        let effective_gas_price = self.base_fee + priority_fee
+        let total_cost = effective_gas_price * gas_limit
+        let total_priority = priority_fee * gas_limit
+        return (total_cost, total_priority)
+    }
+
+    fn post_block(block_height: u64, gas_used: u64) -> u128 {
+        let snapshot = GasSnapshot {
+            block_height: block_height,
+            base_fee: self.base_fee,
+            gas_used: gas_used,
+            gas_target: self.gas_target,
+            timestamp: Time::now(),
+        }
+        self.history.push(snapshot)
+        self.gas_used_last_block = gas_used
+        let old_fee = self.base_fee
+        self.adjust_base_fee(gas_used)
+        if old_fee != self.base_fee {
+            emit BaseFeeChanged(old_fee, self.base_fee, gas_used)
+        }
+        let burned = self.base_fee * gas_used
+        self.total_fees_burned += burned
+        emit GasBurned(burned, block_height)
+        return self.base_fee
+    }
+
+    fn adjust_base_fee(gas_used: u64) {
+        if gas_used == self.gas_target {
+            return
+        }
+        let diff: i64 = gas_used - self.gas_target
+        let change_percent = diff * BASE_FEE_MAX_CHANGE / self.gas_target
+        if gas_used > self.gas_target {
+            self.base_fee += self.base_fee * change_percent / 100
+        } else {
+            let reduction = self.base_fee * change_percent / 100
+            if self.base_fee > reduction {
+                self.base_fee -= reduction
+            } else {
+                self.base_fee = 1
+            }
+        }
+    }
+
+    fn get_base_fee() -> u128 {
+        return self.base_fee
+    }
+
+    fn get_gas_target() -> u64 {
+        return self.gas_target
+    }
+
+    fn get_gas_used_last_block() -> u64 {
+        return self.gas_used_last_block
+    }
+
+    fn set_gas_target(target: u64) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.gas_target = target
+        return true
+    }
+
+    fn get_history(limit: u16) -> List<GasSnapshot> {
+        if limit >= self.history.len() {
+            return self.history
+        }
+        let start = self.history.len() - limit
+        let result: List<GasSnapshot> = []
+        let i: u16 = 0
+        while i < limit {
+            result.push(self.history[start + i])
+            i += 1
+        }
+        return result
+    }
+
+    fn get_stats() -> (u128, u128, u64, u64, u32) {
+        return (self.total_fees_burned, self.total_priority_fees, self.gas_used_last_block, self.gas_target, self.history.len())
+    }
+}
