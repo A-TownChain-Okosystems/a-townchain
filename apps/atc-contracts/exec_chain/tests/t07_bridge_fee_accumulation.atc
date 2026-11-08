@@ -1,0 +1,11 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — Ergaenzung zu
+// tests/test_bridge_contract.py::test_lock_mint_burn_release
+// (ATC-95-Testmigration, atc-contracts#5): Fee-Akkumulation ueber mehrere
+// Locks: 3 Locks je 1000 ATC -> Gesamtfee 3 ATC (0.1 % je Lock).
+contract T07BridgeFeeAccumulation {
+    fn compute(lock_count: u64, lock_amount: u64) -> u64 {
+        let total_fees = lock_count * lock_amount / 1000
+        return total_fees
+    }
+}
