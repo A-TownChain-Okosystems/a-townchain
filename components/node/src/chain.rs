@@ -2,7 +2,8 @@
 //! Blockmodell + deterministische Devnet-Blockproduktion (SCR-0117, F-139).
 //! Ehrlichkeit: KEIN Konsens (Konsens bleibt kanonisch ueber atc-algorithm,
 //! F-067 offen — dieses Modul ist kein Konsens-Definer und keine Finalitaet),
-//! keine Transaktionssemantik, ATC-HASH-001 TownHash-256 (64-Bit-Traversal,
+//! Transaktionen werden geprueft (Signatur, DID-Bindung, Nonce-Ledger),
+//! aber ohne Gebuehren-/State-Semantik, ATC-HASH-001 TownHash-256 (64-Bit-Traversal,
 //! SCR-0120, nicht kryptoanalysiert, kein Merkle-Baum, Devnet-Cap 64.
 
 use crate::bootstrap::{Genesis, townhash_u64};
@@ -107,6 +108,55 @@ impl Chain {
         Ok(())
     }
 
+    /// Produziert einen Block aus geprueften Transaktionen (SEC-P0-001).
+    ///
+    /// Reihenfolge: Ledger-Pruefung (Signatur, DID-Bindung, Nonce, Replay) ->
+    /// Payload aus den Tx-IDs -> Blockanhang -> Ledger-Commit. Schlaegt die
+    /// Pruefung fehl, bleibt die Kette unveraendert und der Ledger unberuehrt.
+    pub fn produce_tx_block(
+        &mut self,
+        txs: &[crate::mempool::TxEnvelope],
+        ledger: &mut crate::mempool::TxLedger,
+    ) -> Result<u64, String> {
+        let ids = ledger
+            .check_block(txs)
+            .map_err(|e| format!("Tx-Pruefung fehlgeschlagen: {:?}", e))?;
+        let payload = encode_tx_ids(&ids);
+        let hash = self.produce(&payload)?;
+        ledger
+            .commit_block(txs)
+            .map_err(|e| format!("Ledger-Commit fehlgeschlagen: {:?}", e))?;
+        Ok(hash)
+    }
+
+    /// Importiert einen empfangenen Block mit Transaktionen (SEC-P0-001).
+    ///
+    /// Prueft Hoehe gegen den Best-Block und alle Transaktionen, bevor der
+    /// Block angehaengt wird. Kein Reorg, keine Finalitaet.
+    pub fn import_tx_block(
+        &mut self,
+        height: u64,
+        txs: &[crate::mempool::TxEnvelope],
+        ledger: &mut crate::mempool::TxLedger,
+    ) -> Result<u64, String> {
+        if height != self.height() + 1 {
+            return Err(format!(
+                "Blockhoehe {} passt nicht zur Kette (erwartet {})",
+                height,
+                self.height() + 1
+            ));
+        }
+        let ids = ledger
+            .check_block(txs)
+            .map_err(|e| format!("Tx-Pruefung fehlgeschlagen: {:?}", e))?;
+        let payload = encode_tx_ids(&ids);
+        let hash = self.produce(&payload)?;
+        ledger
+            .commit_block(txs)
+            .map_err(|e| format!("Ledger-Commit fehlgeschlagen: {:?}", e))?;
+        Ok(hash)
+    }
+
     /// Kompletter Blockzugriff (read-only) fuer Gossip-Sync (SCR-0118).
     pub fn blocks(&self) -> &[Block] {
         &self.blocks
@@ -127,6 +177,23 @@ impl Chain {
         c.verify()?;
         Ok(c)
     }
+}
+
+/// Kanonische Payload-Kodierung eines Tx-Blocks: Tx-IDs als hex, durch Komma
+/// getrennt (Gossip-Wire-Format verbietet '|' und ';', SCR-0118).
+fn encode_tx_ids(ids: &[[u8; 32]]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut out = String::with_capacity(ids.len() * 65);
+    for (i, id) in ids.iter().enumerate() {
+        if i > 0 {
+            out.push(',');
+        }
+        for &b in id {
+            out.push(HEX[(b >> 4) as usize] as char);
+            out.push(HEX[(b & 0x0f) as usize] as char);
+        }
+    }
+    out
 }
 
 #[cfg(test)]
