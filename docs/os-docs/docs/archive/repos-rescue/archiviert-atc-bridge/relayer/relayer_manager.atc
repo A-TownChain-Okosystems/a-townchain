@@ -1,0 +1,39 @@
+// ATCLang v0.3 — Relayer Manager
+// Verwaltet Cross-Chain-Relayer: Discovery, Health, Job-Queue
+// ATC-Standard: ATC-91
+
+module relayer_manager {
+    struct Relayer {
+        relayer_id: string,
+        address: string,
+        chains: List[int],
+        active: bool,
+        fee: int,
+        stake: int,
+    }
+    
+    struct RelayJob {
+        job_id: string,
+        source_chain: int,
+        target_chain: int,
+        deposit_id: string,
+        proof: string,
+        status: string,
+    }
+    
+    fn register_relayer(address: string, chains: List[int]) {
+        // Relayer registrieren
+    }
+    
+    fn submit_relay(job: RelayJob) {
+        // Relay-Job einreichen
+    }
+    
+    fn verify_relay(job_id: string) {
+        // Relay-Job verifizieren
+    }
+    
+    fn slash_relayer(relayer_id: string, reason: string) {
+        // Relayer bei Fehlverhalten slaschen
+    }
+}
