@@ -1,0 +1,28 @@
+// ATCLang v0.3 — Token Registry
+// Registry für alle bridgebaren Tokens
+// ATC-Standard: ATC-91
+
+module token_registry {
+    struct BridgeToken {
+        source_chain: int,
+        source_address: string,
+        target_chain: int,
+        target_address: string,
+        name: string,
+        symbol: string,
+        decimals: int,
+        active: bool,
+    }
+    
+    fn register_token(source_chain: int, source_address: string, target_chain: int) {
+        // Token für Bridge registrieren
+    }
+    
+    fn get_mapping(source_chain: int, source_address: string, target_chain: int) {
+        // Token-Mapping abrufen
+    }
+    
+    fn list_bridgeable() {
+        // Alle bridgebaren Tokens auflisten
+    }
+}
