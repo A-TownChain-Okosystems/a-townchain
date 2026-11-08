@@ -1,0 +1,171 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-45 — Mobile Wallet API
+// Sprint 3.0 | Mobile Layer | Chain-ID 9000
+// Migrated from: mobile/wallet_api.py (180 lines)
+// iOS + Android wallet: accounts, QR codes, biometric, transactions
+// ─────────────────────────────────────────────────────────────
+
+const FAUCET_AMOUNT: u128 = 100000000000000000000  // 100 ATC
+
+struct MobileAccount {
+    addr: Address,
+    public_key: Hash,
+    encrypted_key: Hash,
+    label: String,
+    created_at: u64,
+    last_backup: u64,
+    biometric_linked: bool,
+    push_token: String,
+}
+
+contract MobileWalletManager {
+    state accounts: Map<Address, MobileAccount>
+    state account_count: u32
+    state tx_history: Map<Address, List<Hash>>
+    state nft_holdings: Map<Address, List<Hash>>
+    state owner: Address
+
+    event WalletCreated(addr: Address, label: String)
+    event WalletRestored(addr: Address)
+    event TransactionSent(from_addr: Address, to_addr: Address, amount: u128)
+    event NFTTransferred(token_id: Hash, from_addr: Address, to_addr: Address)
+    event BackupCompleted(addr: Address)
+    event BiometricLinked(addr: Address)
+
+    fn init() {
+        self.accounts = {}
+        self.account_count = 0
+        self.tx_history = {}
+        self.nft_holdings = {}
+        self.owner = msg_sender()
+    }
+
+    fn create_wallet(label: String, passphrase: String) -> (Address, Hash, List<String>) {
+        let entropy = Hash::random()
+        let pub_key = Hash::sha256(entropy)
+        let addr = Address::from_hash(Hash::sha256(pub_key))
+        let mnemonic = ATCKeyGenerator::generate_mnemonic(entropy)
+        let encrypted = Hash::sha256(entropy, passphrase)
+        let account = MobileAccount {
+            addr: addr,
+            public_key: pub_key,
+            encrypted_key: encrypted,
+            label: label,
+            created_at: Time::now(),
+            last_backup: 0,
+            biometric_linked: false,
+            push_token: "",
+        }
+        self.accounts[addr] = account
+        self.account_count += 1
+        // Faucet: 100 ATC
+        ATCoin::mint(addr, FAUCET_AMOUNT)
+        emit WalletCreated(addr, label)
+        return (addr, pub_key, mnemonic)
+    }
+
+    fn restore_wallet(mnemonic: List<String>, passphrase: String) -> Address {
+        let seed = ATCKeyGenerator::mnemonic_to_seed(mnemonic)
+        let priv_key = Hash::hmac_sha256("seed", seed)
+        let pub_key = Hash::sha256(priv_key)
+        let addr = Address::from_hash(Hash::sha256(pub_key))
+        let encrypted = Hash::sha256(priv_key, passphrase)
+        let account = MobileAccount {
+            addr: addr,
+            public_key: pub_key,
+            encrypted_key: encrypted,
+            label: "Restored Wallet",
+            created_at: Time::now(),
+            last_backup: 0,
+            biometric_linked: false,
+            push_token: "",
+        }
+        self.accounts[addr] = account
+        self.account_count += 1
+        emit WalletRestored(addr)
+        return addr
+    }
+
+    fn get_balance(addr: Address) -> u128 {
+        return ATCoin::balance_of(addr)
+    }
+
+    fn send(from_addr: Address, to_addr: Address, amount: u128) -> bool {
+        let success = ATCoin::transfer(from_addr, to_addr, amount)
+        if success {
+            emit TransactionSent(from_addr, to_addr, amount)
+            let history = self.tx_history.get(from_addr)
+            let tx_id = Hash::sha256(from_addr, to_addr, amount, Time::now())
+            if history == null {
+                self.tx_history[from_addr] = [tx_id]
+            } else {
+                history.push(tx_id)
+            }
+        }
+        return success
+    }
+
+    fn get_qr_data(addr: Address, amount: u128, memo: String) -> String {
+        let base = "atc:" + Address::to_string(addr)
+        let params = ""
+        if amount > 0 {
+            params = "amount=" + Int::to_string(amount)
+        }
+        if memo.len() > 0 {
+            if params.len() > 0 {
+                params = params + "&memo=" + memo
+            } else {
+                params = "memo=" + memo
+            }
+        }
+        if params.len() > 0 {
+            return base + "?" + params
+        }
+        return base
+    }
+
+    fn link_biometric(addr: Address) -> bool {
+        let account = self.accounts.get(addr)
+        if account == null {
+            return false
+        }
+        account.biometric_linked = true
+        emit BiometricLinked(addr)
+        return true
+    }
+
+    fn backup_wallet(addr: Address) -> bool {
+        let account = self.accounts.get(addr)
+        if account == null {
+            return false
+        }
+        account.last_backup = Time::now()
+        emit BackupCompleted(addr)
+        return true
+    }
+
+    fn validate_address(addr: Address) -> bool {
+        return Address::is_valid_atc(addr)
+    }
+
+    fn get_accounts() -> u32 {
+        return self.account_count
+    }
+
+    fn get_account_info(addr: Address) -> (String, u64, bool, u64) {
+        let a = self.accounts.get(addr)
+        if a == null {
+            return ("", 0, false, 0)
+        }
+        return (a.label, a.created_at, a.biometric_linked, a.last_backup)
+    }
+
+    fn get_tx_count(addr: Address) -> u32 {
+        let history = self.tx_history.get(addr)
+        if history == null {
+            return 0
+        }
+        return history.len()
+    }
+}
