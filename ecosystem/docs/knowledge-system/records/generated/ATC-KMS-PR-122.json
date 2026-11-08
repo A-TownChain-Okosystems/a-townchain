@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-122",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #122: feat(audit): runtime symbol registry with stable IDs for all census candidates",
+  "context": "Pull request 122 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/122",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\nMachine-checkable runtime symbol registry: every census candidate is accounted for exactly once with a stable ID or a documented exclusion.\n\n## Evidence (census run 38267832383, umbrella at 19811460ead5)\n- Candidates accounted: 35,590\n- Bound to catalog functions: 65\n- Runtime registry entries (stable RTS-* content-derived IDs): 8,209\n- Umbrella mirror references (non-SSOT, ADR-0001): 17,626\n- Mirror entries of archived components: 148\n- Documented exclusions (test/docs/tooling/CI/archive): 9,542\n\n## Two unresolved bindings clarified\n- COMP-DOCS: observed head rebound to census-verified f65992609 (docs repo moved); FN-DOCS-001/002 follow.\n- COMP-ECOSYSTEM: self-hosting repository; catalog HEAD necessarily trails the census HEAD. Marked self_referential_head; reconciliation now records SELF_REFERENTIAL_HEAD_BOUND_AT_CENSUS_RUN instead of a false mismatch.\n\n## Duplicate / SSOT findings\n- Duplicate catalog FN ids: 0\n- Duplicate source binding found and resolved: components/vm/src/vm.rs::execute_state_transition was bound by FN-CHAIN-003 and FN-VM-007; FN-CHAIN-003 is now a documented delegation to FN-VM-007.\n- Quellrepo runtime entries carry QUERLREPO_REFERENCE_NON_SSOT with the canonical path from the build manifest.\n\n## Tooling\n- tools/build_runtime_symbol_registry.py (content-derived RTS-<sha12> ids)\n- tools/validate_runtime_symbol_registry.py (fail-closed: R1 schema, R2 id rules, R3 census accounting, R4 SSOT, R5 duplicates)\n- reconcile tool extended: binding_kind taxonomy (non_public_internal_helper, data_artifact, specification_document, test_surface, exempt_no_source_binding) and delegation/self-referential handling\n- CI builds and validates the registry from the fresh census on every inventory run\n\n## Local verification (75f92c93d)\n- validate_component_function_catalog: PASS_STRUCTURAL_ONLY\n- build_runtime_symbol_registry: RESIDUAL\n- validate_runtime_symbol_registry: PASS (R1-R5)\n- reconcile: RESIDUAL, 0 component findings, 65 lexical matches, 33 documented exclusions, 0 unresolved\n- tools/tests: 32 passed\n\nStacked on #118 (build graph + manifest). No merge performed; functional verification remains NOT_PERFORMED by design."
+}
