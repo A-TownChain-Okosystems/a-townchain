@@ -1,0 +1,194 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-28 — AI Content Factory: KI-gestützte Inhaltserstellung
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct AIContentFactory {
+    generators: Map<String, ContentGenerator>,
+    generated: Map<Hash256, GeneratedContent>,
+    by_franchise: Map<Hash256, List<Hash256>>,
+    models: Map<String, AIModel>,
+    quality_threshold: Float32,
+    auto_approve: Bool,
+}
+
+struct ContentGenerator {
+    name: String,
+    type: ContentType,
+    model_id: String,
+    parameters: Map<String, Any>,
+    batch_size: UInt16,
+}
+
+enum ContentType { NPC, Quest, Dialogue, Texture, Music, SFX, Animation, Level, Story, Item }
+
+struct GeneratedContent {
+    id: Hash256,
+    franchise_id: Hash256,
+    type: ContentType,
+    prompt: String,
+    output: String,
+    quality_score: Float32,
+    approved: Bool,
+    human_reviewed: Bool,
+    iterations: UInt8,
+    created_at: UInt64,
+}
+
+struct AIModel {
+    id: String,
+    name: String,
+    type: ContentType,
+    version: String,
+    input_format: String,
+    output_format: String,
+    cost_per_generation: Float32,
+}
+
+// AI Content Factory: Generator registrieren
+pub fn register_generator(factory: AIContentFactory, name: String, ctype: ContentType, model_id: String) -> Bool {
+    factory.generators[name] = ContentGenerator {
+        name: name, type: ctype, model_id: model_id,
+        parameters: {}, batch_size: 10,
+    }
+    return true
+}
+
+// AI Content Factory: Modell registrieren
+pub fn register_model(factory: AIContentFactory, id: String, name: String, ctype: ContentType, version: String, cost: Float32) -> Bool {
+    factory.models[id] = AIModel {
+        id: id, name: name, type: ctype, version: version,
+        input_format: "text", output_format: "json", cost_per_generation: cost,
+    }
+    return true
+}
+
+// AI Content Factory: Inhalt generieren
+pub fn generate_content(factory: AIContentFactory, franchise_id: Hash256, ctype: ContentType, prompt: String) -> Hash256 {
+    let cid = Crypto::sha256(serialize(ctype, prompt, Chain::timestamp()))
+    let content = GeneratedContent {
+        id: cid,
+        franchise_id: franchise_id,
+        type: ctype,
+        prompt: prompt,
+        output: "",  // Wird von KI-Modell gefüllt
+        quality_score: 0.0,
+        approved: false,
+        human_reviewed: false,
+        iterations: 0,
+        created_at: Chain::timestamp(),
+    }
+
+    // Modell finden und "generieren" (Stub)
+    for model in factory.models.values() {
+        if model.type == ctype {
+            content.output = "[AI-generated " + ctype + " based on: " + prompt + "]"
+            content.quality_score = 0.85  // Stub
+            break
+        }
+    }
+
+    // Auto-Approve wenn Quality Score über Threshold
+    if factory.auto_approve and content.quality_score >= factory.quality_threshold {
+        content.approved = true
+    }
+
+    factory.generated[cid] = content
+    if not factory.by_franchise.contains(franchise_id) {
+        factory.by_franchise[franchise_id] = []
+    }
+    factory.by_franchise[franchise_id].append(cid)
+    return cid
+}
+
+// AI Content Factory: Batch-Generierung
+pub fn generate_batch(factory: AIContentFactory, franchise_id: Hash256, ctype: ContentType, prompts: List<String>) -> List<Hash256> {
+    let ids = []
+    for prompt in prompts {
+        ids.append(generate_content(factory, franchise_id, ctype, prompt))
+    }
+    return ids
+}
+
+// AI Content Factory: Menschliches Review
+pub fn human_review(factory: AIContentFactory, content_id: Hash256, approved: Bool, quality: Float32) -> Bool {
+    require(factory.generated.contains(content_id), "Content not found")
+    let c = factory.generated[content_id]
+    c.human_reviewed = true
+    c.approved = approved
+    c.quality_score = quality
+    return true
+}
+
+// AI Content Factory: Inhalt regenerieren (Iteration)
+pub fn regenerate(factory: AIContentFactory, content_id: Hash256, new_prompt: String) -> Bool {
+    require(factory.generated.contains(content_id), "Content not found")
+    let c = factory.generated[content_id]
+    c.prompt = new_prompt
+    c.iterations = c.iterations + 1
+    // Neu generieren (Stub)
+    c.output = "[AI-regenerated v" + c.iterations + " based on: " + new_prompt + "]"
+    c.quality_score = c.quality_score + 0.05  // Iteration verbessert Qualität
+    if c.quality_score > 1.0 { c.quality_score = 1.0 }
+    return true
+}
+
+// AI Content Factory: Alle generierten Inhalte eines Typs
+pub fn content_by_type(factory: AIContentFactory, franchise_id: Hash256, ctype: ContentType) -> List<Hash256> {
+    let ids = []
+    for cid in factory.by_franchise.get(franchise_id, []) {
+        if factory.generated[cid].type == ctype {
+            ids.append(cid)
+        }
+    }
+    return ids
+}
+
+// AI Content Factory: Statistiken
+pub fn ai_stats(factory: AIContentFactory, franchise_id: Hash256) -> AIStats {
+    let total = factory.by_franchise.get(franchise_id, []).len()
+    let approved = 0
+    let reviewed = 0
+    let avg_quality = 0.0
+    for cid in factory.by_franchise.get(franchise_id, []) {
+        let c = factory.generated[cid]
+        if c.approved { approved = approved + 1 }
+        if c.human_reviewed { reviewed = reviewed + 1 }
+        avg_quality = avg_quality + c.quality_score
+    }
+    if total > 0 { avg_quality = avg_quality / total }
+    return AIStats {
+        total_generated: total,
+        approved: approved,
+        human_reviewed: reviewed,
+        avg_quality: avg_quality,
+        auto_approve_rate: if total > 0 then (approved * 100) / total else 0,
+    }
+}
+
+// AI Content Factory: Setup für Franchise
+pub fn generate_ai_assets(factory: AIContentFactory, franchise_id: Hash256) -> Bool {
+    // Standard-Generatoren registrieren
+    register_generator(factory, "npc_gen", ContentType::NPC, "llm-npc-v1")
+    register_generator(factory, "quest_gen", ContentType::Quest, "llm-quest-v1")
+    register_generator(factory, "dialogue_gen", ContentType::Dialogue, "llm-dialogue-v1")
+    register_generator(factory, "texture_gen", ContentType::Texture, "diffusion-tex-v1")
+    register_generator(factory, "music_gen", ContentType::Music, "music-ai-v1")
+    register_generator(factory, "sfx_gen", ContentType::SFX, "sfx-ai-v1")
+
+    // Basis-Inhalte generieren
+    generate_batch(factory, franchise_id, ContentType::NPC, ["brave warrior", "wise merchant", "mysterious stranger"])
+    generate_batch(factory, franchise_id, ContentType::Quest, ["fetch quest", "defeat boss", "escort mission"])
+    generate_content(factory, franchise_id, ContentType::Story, "Main story introduction")
+    return true
+}
+
+struct AIStats {
+    total_generated: UInt16,
+    approved: UInt16,
+    human_reviewed: UInt16,
+    avg_quality: Float32,
+    auto_approve_rate: UInt8,
+}
