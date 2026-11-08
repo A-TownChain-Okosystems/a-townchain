@@ -1,0 +1,416 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═════════════════════════════════════════════════════════════════
+// ATC-22+ — Network Treiber (NIC / WiFi)
+// Sprint 3.1 | Kernel OS Layer | Chain-ID 9000
+// ATCLang v0.4 | Non-EVM | ATCLang First Policy (ATC-99)
+// ═════════════════════════════════════════════════════════════════
+//
+// Network-Treiber für KAI-OS. Unterstützt:
+//   - Ethernet NIC (wired, 1/10/40/100 Gbps)
+//   - WiFi (802.11 a/b/g/n/ac/ax)
+//   - Packet TX/RX (Ring-Buffer)
+//   - DMA für große Packete
+//   - MAC-Filter und Promiscuous-Mode
+//   - Link-State Monitoring
+//   - Jumbo-Frames (bis 9000 Bytes)
+//
+// Bindet an GCL Network Bus (AD-05) für Packet-Dispatch.
+// ═════════════════════════════════════════════════════════════════
+
+import "std/chain.atc" as Chain
+
+enum NicType {
+    ETHERNET,       // Wired Ethernet
+    WIFI,           // Wireless (802.11)
+    LOOPBACK,       // Loopback (127.0.0.1)
+    VIRTUAL,        // Virtuelle NIC (TUN/TAP)
+    BLUETOOTH,      // Bluetooth PAN
+}
+
+enum LinkState {
+    DOWN,           // Kein Link
+    UP,             // Link aktiv
+    NEGOTIATING,    // Auto-Negotiation läuft
+    ERROR,          // Link-Fehler
+}
+
+enum PacketType {
+    ETH,            // Ethernet Frame
+    ARP,            // ARP Packet
+    IPV4,           // IPv4 Packet
+    IPV6,           // IPv6 Packet
+    ICMP,           // ICMP
+    TCP,            // TCP Segment
+    UDP,            // UDP Datagram
+    CUSTOM,         // Treiber-spezifisch
+}
+
+struct NicInfo {
+    device_id: u32,
+    nic_type: NicType,
+    mac_address: String,       // "XX:XX:XX:XX:XX:XX"
+    ip_address: String,         // "x.x.x.x" (0 = nicht zugewiesen)
+    subnet_mask: String,
+    gateway: String,
+    mtu: u32,                   // Maximum Transmission Unit (1500 default, 9000 jumbo)
+    link_state: LinkState,
+    link_speed_mbps: u32,        // 0 = nicht verbunden
+    promiscuous: bool,
+    jumbo_frames: bool,
+    is_active: bool,
+    // Stats
+    packets_tx: u64,
+    packets_rx: u64,
+    bytes_tx: u64,
+    bytes_rx: u64,
+    packets_dropped: u64,
+    packets_error: u64,
+    // Hardware
+    vendor_id: u16,
+    product_id: u16,
+    mmio_base: u64,
+    irq_line: u8,
+    model: String,
+    firmware: String,
+}
+
+struct Packet {
+    packet_id: u64,
+    device_id: u32,
+    packet_type: PacketType,
+    length: u32,
+    data: String,               // Base64-kodiert in production
+    src_mac: String,
+    dst_mac: String,
+    timestamp: u64,
+    is_incoming: bool,
+}
+
+struct RxRingBuffer {
+    packets: List<Packet>,
+    capacity: u32,
+    head: u32,
+    tail: u32,
+    count: u32,
+}
+
+struct TxRingBuffer {
+    packets: List<Packet>,
+    capacity: u32,
+    head: u32,
+    tail: u32,
+    count: u32,
+}
+
+module Kernel::NetworkDriver {
+
+    contract NetworkDriverManager {
+
+        state devices: Map<u32, NicInfo>
+        state rx_buffers: Map<u32, RxRingBuffer>     // device_id → RX-Buffer
+        state tx_buffers: Map<u32, TxRingBuffer>     // device_id → TX-Buffer
+        state next_device_id: u32 = 1
+        state next_packet_id: u64 = 1
+        state total_packets_tx: u64 = 0
+        state total_packets_rx: u64 = 0
+        state total_bytes_tx: u64 = 0
+        state total_bytes_rx: u64 = 0
+        state authorized: List<Address>
+
+        event NicCreated(device_id: u32, nic_type: NicType, mac: String, model: String)
+        event LinkStateChanged(device_id: u32, old_state: LinkState, new_state: LinkState)
+        event PacketReceived(device_id: u32, packet_type: PacketType, length: u32)
+        event PacketSent(device_id: u32, packet_type: PacketType, length: u32)
+        event PacketDropped(device_id: u32, reason: String)
+        event NetworkError(device_id: u32, error: String)
+
+        // ═══════════════════════════════════════════════════════════
+        //  DEVICE LIFECYCLE
+        // ═══════════════════════════════════════════════════════════
+
+        // NIC registrieren
+        fn create_nic(
+            nic_type: NicType,
+            mac_address: String,
+            mtu: u32,
+            vendor_id: u16,
+            product_id: u16,
+            mmio_base: u64,
+            irq_line: u8,
+            model: String,
+            firmware: String,
+        ) -> u32 {
+            require(mac_address.length > 0, "invalid MAC address")
+            require(mtu >= 64 && mtu <= 9000, "invalid MTU")
+
+            let id: u32 = self.next_device_id
+            self.next_device_id += 1
+
+            let device: NicInfo = NicInfo {
+                device_id: id,
+                nic_type: nic_type,
+                mac_address: mac_address,
+                ip_address: "",
+                subnet_mask: "",
+                gateway: "",
+                mtu: mtu,
+                link_state: if nic_type == NicType::LOOPBACK then LinkState::UP else LinkState::DOWN,
+                link_speed_mbps: if nic_type == NicType::LOOPBACK then 10000 else 0,
+                promiscuous: false,
+                jumbo_frames: mtu > 1500,
+                is_active: true,
+                packets_tx: 0,
+                packets_rx: 0,
+                bytes_tx: 0,
+                bytes_rx: 0,
+                packets_dropped: 0,
+                packets_error: 0,
+                vendor_id: vendor_id,
+                product_id: product_id,
+                mmio_base: mmio_base,
+                irq_line: irq_line,
+                model: model,
+                firmware: firmware,
+            }
+
+            self.devices[id] = device
+
+            // Ring-Buffer initialisieren
+            self.rx_buffers[id] = RxRingBuffer {
+                packets: [],
+                capacity: 512,
+                head: 0,
+                tail: 0,
+                count: 0,
+            }
+            self.tx_buffers[id] = TxRingBuffer {
+                packets: [],
+                capacity: 512,
+                head: 0,
+                tail: 0,
+                count: 0,
+            }
+
+            emit NicCreated(id, nic_type, mac_address, model)
+            return id
+        }
+
+        // IP-Adresse zuweisen
+        fn assign_ip(device_id: u32, ip: String, subnet: String, gateway: String) -> bool {
+            self.devices[device_id].ip_address = ip
+            self.devices[device_id].subnet_mask = subnet
+            self.devices[device_id].gateway = gateway
+            return true
+        }
+
+        // Link-State setzen (von Hardware)
+        fn set_link_state(device_id: u32, new_state: LinkState, speed_mbps: u32) -> bool {
+            let device: NicInfo = self.devices[device_id]
+            let old_state: LinkState = device.link_state
+
+            device.link_state = new_state
+            device.link_speed_mbps = if new_state == LinkState::UP then speed_mbps else 0
+
+            emit LinkStateChanged(device_id, old_state, new_state)
+            return true
+        }
+
+        // Promiscuous-Mode
+        fn set_promiscuous(device_id: u32, enabled: bool) -> bool {
+            self.devices[device_id].promiscuous = enabled
+            return true
+        }
+
+        // MTU ändern
+        fn set_mtu(device_id: u32, mtu: u32) -> bool {
+            require(mtu >= 64 && mtu <= 9000, "invalid MTU")
+            self.devices[device_id].mtu = mtu
+            self.devices[device_id].jumbo_frames = mtu > 1500
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  PACKET TX/RX
+        // ═══════════════════════════════════════════════════════════
+
+        // Packet empfangen (von Hardware/IRQ)
+        fn receive_packet(device_id: u32, packet_type: PacketType, length: u32, data: String, src_mac: String, dst_mac: String) -> bool {
+            let device: NicInfo = self.devices[device_id]
+            require(device.is_active, "device not active")
+            require(device.link_state == LinkState::UP, "link not up")
+            require(length <= device.mtu, "packet exceeds MTU")
+
+            let packet: Packet = Packet {
+                packet_id: self.next_packet_id,
+                device_id: device_id,
+                packet_type: packet_type,
+                length: length,
+                data: data,
+                src_mac: src_mac,
+                dst_mac: dst_mac,
+                timestamp: Chain::block_timestamp(),
+                is_incoming: true,
+            }
+
+            self.next_packet_id += 1
+
+            // In RX-Buffer einreihen
+            let rx: RxRingBuffer = self.rx_buffers[device_id]
+            if rx.count >= rx.capacity {
+                // Buffer voll — Packet verwerfen
+                device.packets_dropped += 1
+                emit PacketDropped(device_id, "rx buffer full")
+                return false
+            }
+
+            rx.packets[rx.tail] = packet
+            rx.tail = (rx.tail + 1) % rx.capacity
+            rx.count += 1
+
+            device.packets_rx += 1
+            device.bytes_rx += length as u64
+            self.total_packets_rx += 1
+            self.total_bytes_rx += length as u64
+
+            emit PacketReceived(device_id, packet_type, length)
+            return true
+        }
+
+        // Packet senden
+        fn send_packet(device_id: u32, packet_type: PacketType, data: String, dst_mac: String) -> u64 {
+            let device: NicInfo = self.devices[device_id]
+            require(device.is_active, "device not active")
+            require(device.link_state == LinkState::UP, "link not up")
+
+            let length: u32 = data.length as u32
+            require(length <= device.mtu, "packet exceeds MTU")
+
+            let packet: Packet = Packet {
+                packet_id: self.next_packet_id,
+                device_id: device_id,
+                packet_type: packet_type,
+                length: length,
+                data: data,
+                src_mac: device.mac_address,
+                dst_mac: dst_mac,
+                timestamp: Chain::block_timestamp(),
+                is_incoming: false,
+            }
+
+            self.next_packet_id += 1
+
+            // In TX-Buffer einreihen
+            let tx: TxRingBuffer = self.tx_buffers[device_id]
+            if tx.count >= tx.capacity {
+                device.packets_dropped += 1
+                emit PacketDropped(device_id, "tx buffer full")
+                return 0
+            }
+
+            tx.packets[tx.tail] = packet
+            tx.tail = (tx.tail + 1) % tx.capacity
+            tx.count += 1
+
+            device.packets_tx += 1
+            device.bytes_tx += length as u64
+            self.total_packets_tx += 1
+            self.total_bytes_tx += length as u64
+
+            emit PacketSent(device_id, packet_type, length)
+            return packet.packet_id
+        }
+
+        // Nächstes RX-Packet holen
+        fn dequeue_rx(device_id: u32) -> Packet {
+            let rx: RxRingBuffer = self.rx_buffers[device_id]
+            require(rx.count > 0, "rx buffer empty")
+
+            let packet: Packet = rx.packets[rx.head]
+            rx.head = (rx.head + 1) % rx.capacity
+            rx.count -= 1
+            return packet
+        }
+
+        // Nächstes TX-Packet holen (für Hardware-Dispatch)
+        fn dequeue_tx(device_id: u32) -> Packet {
+            let tx: TxRingBuffer = self.tx_buffers[device_id]
+            require(tx.count > 0, "tx buffer empty")
+
+            let packet: Packet = tx.packets[tx.head]
+            tx.head = (tx.head + 1) % tx.capacity
+            tx.count -= 1
+            return packet
+        }
+
+        // Anzahl RX-Packets
+        fn rx_packet_count(device_id: u32) -> u32 {
+            return self.rx_buffers[device_id].count
+        }
+
+        // Anzahl TX-Packets
+        fn tx_packet_count(device_id: u32) -> u32 {
+            return self.tx_buffers[device_id].count
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  MAC FILTER
+        // ═══════════════════════════════════════════════════════════
+
+        state mac_filter: Map<u32, List<String>>     // device_id → allowed MACs
+
+        // MAC-Filter hinzufügen
+        fn add_mac_filter(device_id: u32, mac: String) -> bool {
+            if self.mac_filter[device_id] == nil {
+                self.mac_filter[device_id] = []
+            }
+            self.mac_filter[device_id].push(mac)
+            return true
+        }
+
+        // MAC-Filter entfernen
+        fn remove_mac_filter(device_id: u32, mac: String) -> bool {
+            // In production: List-Remove
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  QUERIES
+        // ═══════════════════════════════════════════════════════════
+
+        // Device-Info
+        fn get_nic_info(device_id: u32) -> (NicType, String, String, LinkState, u32) {
+            let device: NicInfo = self.devices[device_id]
+            return (device.nic_type, device.mac_address, device.ip_address, device.link_state, device.link_speed_mbps)
+        }
+
+        // Alle NICs
+        fn list_nics() -> List<u32> {
+            let result: List<u32> = []
+            for id, device in self.devices {
+                if device.is_active {
+                    result.push(id)
+                }
+            }
+            return result
+        }
+
+        // Statistik
+        fn get_stats() -> (u32, u64, u64, u64, u64, u64) {
+            return (
+                self.devices.length,
+                self.total_packets_tx,
+                self.total_packets_rx,
+                self.total_bytes_tx,
+                self.total_bytes_rx,
+                self.devices[0].packets_dropped if self.devices.length > 0 else 0,
+            )
+        }
+
+        // Fehler melden
+        fn report_error(device_id: u32, error: String) -> bool {
+            self.devices[device_id].packets_error += 1
+            emit NetworkError(device_id, error)
+            return true
+        }
+    }
+}
