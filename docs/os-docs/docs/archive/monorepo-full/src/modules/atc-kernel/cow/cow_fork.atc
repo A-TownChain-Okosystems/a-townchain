@@ -1,0 +1,87 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// K-Sprint 45 — Copy-on-Write Fork Engine (ATC-96 Kernel API)
+// Dedicated CoW engine: page sharing, KSM dedup, container CoW, TLB batching
+
+contract Kernel::CowManager::CowForkEngine {
+    // ── Page Mapping ──
+    fn map_page(pid: u32, vpage: u64, perms: PagePerms) -> Result<u64, CowError>;
+    fn unmap_page(pid: u32, vpage: u64) -> Result<(), CowError>;
+    fn map_range(pid: u32, start_vpage: u64, count: u64, perms: PagePerms) -> Result<Vec<u64>, CowError>;
+
+    // ── Fork ──
+    fn fork(parent_pid: u32, child_pid: u32) -> Result<ForkResult, CowError>;
+    fn fork_into_container(parent_pid: u32, child_pid: u32, container_id: u32) -> Result<ForkResult, CowError>;
+
+    // ── CoW Fault ──
+    fn handle_cow_fault(pid: u32, vpage: u64) -> FaultResolution;
+    fn break_cow_page(pid: u32, vpage: u64) -> Result<u64, CowError>;
+    fn break_all_cow(pid: u32) -> Result<u64, CowError>;
+
+    // ── KSM ──
+    fn ksm_enable(): void;
+    fn ksm_disable(): void;
+    fn ksm_scan() -> Result<u64, CowError>;
+    fn set_page_hash(frame: u64, hash: u64): void;
+
+    // ── Query ──
+    fn is_page_cow(pid: u32, vpage: u64) -> bool;
+    fn page_ref_count(frame: u64) -> u32;
+    fn get_page_info(pid: u32, vpage: u64) -> Option<PageInfo>;
+
+    // ── Region ──
+    fn region_progress(region_id: u32) -> Option<u8>;
+    fn active_regions() -> usize;
+    fn broken_regions() -> usize;
+
+    // ── Process Tree ──
+    fn get_parent(pid: u32) -> Option<u32>;
+    fn get_children(pid: u32) -> Vec<u32>;
+    fn process_tree_depth(pid: u32) -> u32;
+    fn process_descendants(pid: u32) -> Vec<u32>;
+
+    // ── TLB ──
+    fn tlb_flush_now() -> usize;
+    fn tlb_flush_pending() -> usize;
+
+    // ── Snapshot ──
+    fn snapshot() -> CowSnapshot;
+
+    // ── Events ──
+    event ForkInitiated(parent_pid: u32, child_pid: u32, total_pages: u64);
+    event ForkCompleted(parent_pid: u32, child_pid: u32, cow_pages: u64, memory_saved: u64);
+    event CowFault(pid: u32, vpage: u64, old_frame: u64, new_frame: u64);
+    event KsmMerged(target_frame: u64, src_frame: u64);
+    event RegionBroken(region_id: u32, pid: u32);
+}
+
+struct ForkResult {
+    child_pid: u32,
+    region_id: u32,
+    total_pages: u64,
+    cow_pages: u64,
+    shared_pages: u64,
+    copied_pages: u64,
+    memory_saved: u64,
+}
+
+struct PageInfo {
+    vpage: u64,
+    frame: u64,
+    is_cow: bool,
+    ref_count: u32,
+    sharer_count: usize,
+    dirty: bool,
+}
+
+struct CowSnapshot {
+    processes: usize,
+    total_pages: usize,
+    cow_pages: usize,
+    shared_frames: usize,
+    active_regions: usize,
+    forks: u64,
+    cow_faults: u64,
+    cow_breaks: u64,
+    ksm_merges: u64,
+    memory_saved: u64,
+}
