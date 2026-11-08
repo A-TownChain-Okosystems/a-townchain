@@ -1,0 +1,12 @@
+[package]
+name = "kai-os-syncd"
+version = "0.1.0"
+edition = "2021"
+description = "KAI-OS Sync Daemon: Multi-Node State-Sync + Disaster Recovery (Issue #113, GATE-KAI-001 Kat. 12)"
+license = "Apache-2.0"
+
+[dependencies]
+kai-os-state = { path = "../state" }
+kai-os-network = { path = "../network" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
