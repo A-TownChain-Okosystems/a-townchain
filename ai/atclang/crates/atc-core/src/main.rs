@@ -24,6 +24,7 @@ USAGE:
     atc abi     <ziel>        kanonische Vertrags-ABI (JSONL, eine Zeile je
                               Vertrag, inkl. abi_sha256)
     atc abi --hash <ziel>     nur die ABI-Hashes
+    atc abi --digest <ziel>   ein Sammel-Digest je Quelldatei
 
 EXIT-CODES:
     0  ok
@@ -40,9 +41,10 @@ fn main() -> ExitCode {
     // Aufruf: atc <modus> <datei> | atc check --strict <datei>
     let strict = args.iter().skip(1).any(|a| a == "--strict");
     let hashes_only = args.iter().skip(1).any(|a| a == "--hash");
+    let digest_only = args.iter().skip(1).any(|a| a == "--digest");
     let positional: Vec<&String> = args
         .iter()
-        .filter(|a| *a != "--strict" && *a != "--hash")
+        .filter(|a| *a != "--strict" && *a != "--hash" && *a != "--digest")
         .collect();
     if positional.len() != 2 {
         eprintln!("{USAGE}");
@@ -55,7 +57,7 @@ fn main() -> ExitCode {
         return check_project_dir(path, strict);
     }
     if mode == "abi" {
-        return emit_abi(path, hashes_only);
+        return emit_abi(path, hashes_only, digest_only);
     }
     let src = match fs::read_to_string(path) {
         Ok(s) => s,
@@ -245,7 +247,7 @@ fn check_project_dir(dir: &str, strict: bool) -> ExitCode {
 }
 
 /// Kanonische Vertrags-ABI ausgeben: JSONL, eine Zeile je Vertrag.
-fn emit_abi(target: &str, hashes_only: bool) -> ExitCode {
+fn emit_abi(target: &str, hashes_only: bool, digest_only: bool) -> ExitCode {
     let mut paths = Vec::new();
     if std::path::Path::new(target).is_dir() {
         scan_atc(std::path::Path::new(target), &mut paths);
@@ -275,7 +277,22 @@ fn emit_abi(target: &str, hashes_only: bool) -> ExitCode {
                 return ExitCode::FAILURE;
             }
         };
-        for abi in atc_core::abi::from_program(&program) {
+        let abis = atc_core::abi::from_program(&program);
+        if digest_only {
+            if abis.is_empty() {
+                eprintln!("Hinweis: keine Vertraege in {label}");
+                continue;
+            }
+            println!(
+                "{}  {}  {}",
+                atc_core::abi::set_digest(&abis),
+                json_quote(&label),
+                abis.len()
+            );
+            emitted += abis.len();
+            continue;
+        }
+        for abi in abis {
             emitted += 1;
             let hash = abi.sha256();
             if hashes_only {
