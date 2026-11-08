@@ -16,7 +16,7 @@ standard: ATC-STD-MD-001
 | Version | 1.0.0 development |
 | Production implementation | Rust canonical core — incomplete |
 | Reference implementation | None — Python reference implementation removed; Rust-only canonical implementation |
-| Tests | 471 Tests im Monorepo-Wurzel-Workspace, 2133 Tests ueber alle sieben Workspaces gruen (2026-11-08) |
+| Tests | 479 Tests im Monorepo-Wurzel-Workspace, 2141 Tests ueber alle sieben Workspaces gruen (2026-11-08) |
 | Security | S4 / audit in progress |
 | Conformance | Not verified for production |
 | Release | development / NOT PRODUCTION_READY |
@@ -24,8 +24,8 @@ standard: ATC-STD-MD-001
 
 ## Parser and semantics — state 2026-11-08
 
-Verified by `cargo test --workspace` (471 tests) and `./tools/ecosystem.sh test`
-(2133 tests, 0 failed):
+Verified by `cargo test --workspace` (479 tests) and `./tools/ecosystem.sh test`
+(2141 tests, 0 failed):
 
 - Contract bodies are parsed into real syntax trees. Declarations: `state`
   (single and block form, with defaults), `event`, `fn`/`function`, `const`,
@@ -43,6 +43,15 @@ Verified by `cargo test --workspace` (471 tests) and `./tools/ecosystem.sh test`
 - VM subset: `&&` and `||` lower with short-circuit semantics (the right operand
   is not evaluated when the left one already decides), `!` normalises to 1/0.
   Unsupported operators still fail closed in the front end (`%`, for example).
+- Semantics stage 2 (`crates/atc-core/src/types.rs`): type and signature
+  checking, deliberately conservative. It reports only when both sides carry a
+  known type and contradict each other — `return` against the declared return
+  type, `let x: T = ...` against the annotation, assignments to state fields,
+  `require`/`if`/`while` conditions that are not `bool`, and `emit` arguments
+  against the event declaration. Unknown names, cross-file calls and nominal
+  type names stay `Unknown` and never produce a finding, so the check claims no
+  type correctness it cannot prove. Counter-test: a deliberately broken contract
+  yields 4 findings and exit code 1; the 47 real sources yield none.
 - Contract registry gate A8 (SC-019): GATE PASS, 16 entries, 16 sources, 0 findings.
 
 Open: 38 `emit` calls in existing contracts without an event declaration; type
