@@ -1,0 +1,194 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "title": "ATC Network Environment Configuration (ATC-STD-NET-001…008)",
+ "description": "Validiert .atc/network/{devnet,testnet,mainnet}.yaml — EIN Code, DREI Konfigurationen (ATC-STD-NET-004).",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "network",
+  "tier",
+  "chain_id",
+  "token",
+  "genesis",
+  "reset",
+  "consensus",
+  "validators"
+ ],
+ "properties": {
+  "network": {
+   "enum": [
+    "ATC-DEVNET",
+    "ATC-TESTNET",
+    "ATC-MAINNET"
+   ]
+  },
+  "tier": {
+   "enum": [
+    "devnet",
+    "testnet",
+    "mainnet"
+   ]
+  },
+  "chain_id": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "token": {
+   "type": "object",
+   "required": [
+    "symbol",
+    "value_class"
+   ],
+   "properties": {
+    "symbol": {
+     "enum": [
+      "DEV-ATC",
+      "TEST-ATC",
+      "ATC"
+     ]
+    },
+    "value_class": {
+     "enum": [
+      "none",
+      "real"
+     ]
+    }
+   }
+  },
+  "genesis": {
+   "enum": [
+    "mutable",
+    "versioned",
+    "immutable"
+   ]
+  },
+  "reset": {
+   "enum": [
+    "allowed",
+    "controlled",
+    "forbidden"
+   ]
+  },
+  "consensus": {
+   "enum": [
+    "experimental",
+    "mainnet_compatible",
+    "frozen"
+   ]
+  },
+  "validators": {
+   "enum": [
+    "flexible",
+    "registered",
+    "protocol_defined"
+   ]
+  },
+  "feature_flags": {
+   "type": "object"
+  },
+  "peers": {
+   "type": "array"
+  },
+  "ports": {
+   "type": "object"
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "properties": {
+     "tier": {
+      "const": "devnet"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "token": {
+      "properties": {
+       "symbol": {
+        "const": "DEV-ATC"
+       },
+       "value_class": {
+        "const": "none"
+       }
+      }
+     },
+     "genesis": {
+      "const": "mutable"
+     },
+     "reset": {
+      "const": "allowed"
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "tier": {
+      "const": "testnet"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "token": {
+      "properties": {
+       "symbol": {
+        "const": "TEST-ATC"
+       },
+       "value_class": {
+        "const": "none"
+       }
+      }
+     },
+     "genesis": {
+      "const": "versioned"
+     },
+     "reset": {
+      "const": "controlled"
+     },
+     "consensus": {
+      "const": "mainnet_compatible"
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "tier": {
+      "const": "mainnet"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "chain_id": {
+      "const": 658467
+     },
+     "token": {
+      "properties": {
+       "symbol": {
+        "const": "ATC"
+       },
+       "value_class": {
+        "const": "real"
+       }
+      }
+     },
+     "genesis": {
+      "const": "immutable"
+     },
+     "reset": {
+      "const": "forbidden"
+     },
+     "consensus": {
+      "const": "frozen"
+     }
+    }
+   }
+  }
+ ]
+}
