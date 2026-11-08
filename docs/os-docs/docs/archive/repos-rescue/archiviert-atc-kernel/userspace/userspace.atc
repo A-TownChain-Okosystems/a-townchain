@@ -1,0 +1,57 @@
+// K-Sprint 30 — Userspace / Ring-3 Implementation (ATCLang Interface)
+// Rust: kernel/src/userspace.rs (840 lines, 41 tests)
+// Agent: Aurora #2 (6a275618)
+
+enum PrivilegeLevel {
+    KERNEL,
+    USER,
+}
+
+struct UserAddressSpace {
+    code_start: u64,
+    code_end: u64,
+    data_start: u64,
+    data_end: u64,
+    stack_top: u64,
+    stack_bottom: u64,
+    heap_start: u64,
+    heap_end: u64,
+}
+
+struct UserBinary {
+    name: String,
+    code: List<u8>,
+    entry: u64,
+}
+
+struct UserContext {
+    pid: u64,
+    is_user_mode: bool,
+    exited: bool,
+    exit_code: i32,
+}
+
+struct GdtSelectors {
+    kernel_code: u16,
+    kernel_data: u16,
+    user_code: u16,
+    user_data: u16,
+    tss: u16,
+}
+
+module Kernel::Userspace {
+    contract UserspaceManager {
+        fn load_binary(binary: UserBinary) -> Result<u64, String>
+        fn get_context(pid: u64) -> Option<UserContext>
+        fn enter_userspace(pid: u64) -> Result<UserContext, String>
+        fn handle_syscall(pid: u64, num: u32, args: List<u64>) -> Result<u64, String>
+        fn exit_process(pid: u64, code: i32) -> bool
+        fn reap_dead() -> u32
+        fn list_users() -> List<UserContext>
+        fn user_count() -> u32
+        fn active_count() -> u32
+        fn check_memory_access(pid: u64, addr: u64, size: u64) -> Result<(), String>
+        fn push_stack(pid: u64, value: u64) -> Result<(), String>
+        fn pop_stack(pid: u64) -> Result<u64, String>
+    }
+}
