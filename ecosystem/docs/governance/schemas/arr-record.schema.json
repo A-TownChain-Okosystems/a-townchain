@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/blob/main/docs/governance/schemas/arr-record.schema.json",
+  "title": "A-TownChain Architecture Requirement Request Record",
+  "description": "Proposed schema. Validation and CI enforcement are not implied until independently implemented and verified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["arr_id", "title", "schema_version", "record_version", "status", "owner", "priority", "scope", "requirement", "acceptance_criteria", "canonical_sources", "ssot_references", "dependencies", "security", "evidence", "residuals", "approval"],
+  "properties": {
+    "arr_id": {"type": "string", "pattern": "^ARR-[0-9]{4,}$"},
+    "title": {"type": "string", "minLength": 1},
+    "schema_version": {"const": "1.0.0"},
+    "record_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "status": {"enum": ["REGISTERED", "SPECIFIED", "REVIEWED", "IMPLEMENTED", "VERIFIED", "ACCEPTED", "RESIDUAL"]},
+    "owner": {"type": "string", "minLength": 1},
+    "priority": {"enum": ["P0", "P1", "P2", "P3", "P4"]},
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "repositories", "components"],
+      "properties": {
+        "summary": {"type": "string", "minLength": 1},
+        "repositories": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"}, "uniqueItems": true},
+        "components": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+      }
+    },
+    "requirement": {"type": "string", "minLength": 1},
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "criterion", "verification_method"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "criterion": {"type": "string", "minLength": 1},
+          "verification_method": {"type": "string", "minLength": 1},
+          "evidence_ref": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "canonical_sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["repository", "path", "authority"],
+        "properties": {
+          "repository": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
+          "path": {"type": "string", "minLength": 1},
+          "authority": {"enum": ["IMPLEMENTATION_SSOT", "SPECIFICATION_SSOT", "GOVERNANCE_SSOT", "INTEGRATION_RECORD", "UNKNOWN_PENDING_REVIEW"]},
+          "observed_commit_sha": {"type": ["string", "null"], "pattern": "^([0-9a-f]{40})?$"}
+        }
+      }
+    },
+    "ssot_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "version_or_revision", "role"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "version_or_revision": {"type": "string", "minLength": 1},
+          "role": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "dependencies": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "security": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["impact", "threats", "required_tests"],
+      "properties": {
+        "impact": {"enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL", "PENDING_ASSESSMENT"]},
+        "threats": {"type": "array", "items": {"type": "string"}},
+        "required_tests": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "source_commit_sha", "status"],
+        "properties": {
+          "kind": {"enum": ["CI_RUN", "TEST_REPORT", "SECURITY_REVIEW", "BUILD_ARTIFACT", "SOURCE_INSPECTION", "APPROVAL", "OTHER"]},
+          "source_commit_sha": {"type": ["string", "null"], "pattern": "^([0-9a-f]{40})?$"},
+          "workflow_run_url": {"type": ["string", "null"], "format": "uri"},
+          "job": {"type": ["string", "null"]},
+          "step": {"type": ["string", "null"]},
+          "exit_code": {"type": ["integer", "null"]},
+          "log_url": {"type": ["string", "null"], "format": "uri"},
+          "status": {"enum": ["PENDING", "PASS", "FAIL", "BLOCKED", "NOT_APPLICABLE", "RESIDUAL"]},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "residuals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description", "status", "owner"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "description": {"type": "string", "minLength": 1},
+          "status": {"enum": ["OPEN", "BLOCKED", "ACCEPTED_RISK", "CLOSED"]},
+          "owner": {"type": "string", "minLength": 1},
+          "target_date": {"type": ["string", "null"], "format": "date"},
+          "closure_evidence_ref": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_status", "reviewers", "decision", "timestamp"],
+      "properties": {
+        "review_status": {"enum": ["NOT_REVIEWED", "IN_REVIEW", "CHANGES_REQUESTED", "APPROVED"]},
+        "reviewers": {"type": "array", "items": {"type": "string"}},
+        "decision": {"type": ["string", "null"]},
+        "timestamp": {"type": ["string", "null"], "format": "date-time"}
+      }
+    }
+  }
+}
