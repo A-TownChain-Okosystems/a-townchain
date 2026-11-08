@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-210",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #210: [P2] Define Sybil/fraud resistance, dispute handling and compute reputation model",
+  "context": "Issue 210 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/210",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Goal\nDocument and test the threat model for adversarial or colluding compute workers before production settlement depends on distributed results.\n\n## Scope\nDefine worker admission, Sybil cost/controls, collusion assumptions, reputation inputs, challenge/dispute flow, penalties/appeals, privacy and economics.\n\n## Acceptance criteria\n- [ ] Threat model identifies adversaries, trust assumptions, attack surfaces and residual risks.\n- [ ] Reputation cannot be inflated solely by self-reported metrics or unaudited signatures.\n- [ ] Dispute/challenge flow has explicit timing, evidence, resolution and settlement behavior.\n- [ ] Privacy, retention and audit redaction rules are documented.\n- [ ] Abuse/adversarial tests and measurable exit thresholds are specified.\n- [ ] No production-readiness claim is made until independent review and evidence are complete.\n\n## Dependencies\nMulti-node worker path and result-verification model."
+}
