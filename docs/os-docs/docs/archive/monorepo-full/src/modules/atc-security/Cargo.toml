@@ -1,0 +1,12 @@
+[package]
+name = "atc_security"
+version = "0.1.0"
+edition = "2021"
+description = "Security-Tools — Audits, Fuzzing, Formal Verification"
+authors = ["Michael Wroblewski"]
+license = "ALL RIGHTS RESERVED"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
