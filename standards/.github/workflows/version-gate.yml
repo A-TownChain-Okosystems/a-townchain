@@ -1,0 +1,35 @@
+name: Standard-Version-Gate
+
+# P0 Governance-Version-Enforcement: Registry (SSOT) vs. Repo-README-Deklarationen.
+# Abweichung = Drift = FAIL (MIGRATION_REQUIRED). Registry = registry/standards.yaml.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - 'registry/**'
+      - 'tools/consistency/**'
+      - '.github/workflows/version-gate.yml'
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  version-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install pyyaml
+      - name: Standard-Version-Gate (Registry-Drift-Check)
+        run: python tools/consistency/version_gate.py --github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
