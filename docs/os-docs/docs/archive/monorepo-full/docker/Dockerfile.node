@@ -1,0 +1,24 @@
+FROM python:3.11-slim
+
+LABEL org.opencontainers.image.source="https://github.com/A-TownChain-Okosystems/a-townchain-os"
+LABEL org.opencontainers.image.description="A-TownChain OS Node"
+
+WORKDIR /app
+
+# Abhängigkeiten
+COPY requirements.txt requirements-kai.txt ./
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -r requirements-kai.txt 2>/dev/null || true
+
+# Quellcode
+COPY . .
+
+# Port-Exposition
+EXPOSE 5000 4001/udp 4002/udp 4003/udp 4004/udp 4000
+
+# Healthcheck-Endpunkt sicherstellen
+ENV PYTHONPATH=/app
+ENV ATC_ENV=docker
+
+ENTRYPOINT ["python3"]
+CMD ["start.py", "--all"]
