@@ -1,0 +1,36 @@
+# ATC Evidence SSOT — SCR-0080 (Owner-P0-01) — maschinenlesbar und EHRLICH
+# Statusleiter (verbindlich): SPECIFIED -> IMPLEMENTED -> TESTED -> VERIFIED -> AUDITED -> RELEASED
+# Regel: Kein Status-Claim ohne Evidence-Bundle (ATC-STD-REPO-AUDIT-001 / ATC-STD-MILESTONE-001).
+# CLAIMED != PASS · DOCUMENTED != IMPLEMENTED · IMPLEMENTED != VERIFIED
+schema_version: "1.0.0"
+repository: atc-interop
+generated: "2026-09-10"
+generated_by: "SCR-0080 Enforcement-Welle (Aurora, Owner-P0-Definition 10.09. 12:21)"
+bound_commit: b0d1d58ae96f8f6f2be7ebdf33c6bb989902fb8d
+maturity_class: B          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
+r_level: null
+implementation:
+  status: skeleton        # substantial|partial|skeleton|docs_only
+  summary: "Interop-Shell (16 Code-Dateien, INTEROP-001..006 SPEC-DRAFTs)"
+tests:
+  status: not_run       # pass_with_evidence|not_run|not_applicable
+  evidence: "Kein Test-Workflow (F-104)"
+security:
+  status: not_audited
+conformance:
+  status: not_verified
+release:
+  status: development
+milestone_claims:
+  rule: "M-Claims nur mit Evidence-Bundle (ATC-STD-MILESTONE-001)"
+  latest_verified: null
+canonical_role:                  # SCR-0080 P0-02: Single-Owner-per-Capability
+  capability: interoperability
+  canonical: true
+test_run:
+  workflow: ATC Test Suite
+  run_id: 35082979863
+  commit: b0d1d58ae96f8f6f2be7ebdf33c6bb989902fb8d
+  timestamp: 2026-09-16T10:04:45.293508+00:00
+  result: PASS
+  runner: github-actions
