@@ -1,0 +1,143 @@
+{
+  "schema_version": "1.0.0",
+  "repository": "A-TownChain-Okosystems/atc-engineering",
+  "observed_source_commit_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+  "status": "BLOCKED",
+  "scope": "Initial evidence-backed census of contract-like interfaces and JSON schemas declared inside the pinned atc-engineering source tree. This is not an exhaustive interface inventory and does not establish organization-wide producer/consumer coverage.",
+  "counts": {
+    "declared_contract_records": 4,
+    "source_bound_implementations": 3,
+    "schema_only_records": 1,
+    "versioned_json_schemas": 3,
+    "unmapped_producer_bindings": 1,
+    "unmapped_consumer_bindings": 4,
+    "contracts_without_versioned_schema": 1,
+    "reconciled_contracts": 0,
+    "verified_contracts": 0
+  },
+  "contracts": [
+    {
+      "contract_id": "ATCE-IFACE-001",
+      "name": "Evidence record serialization",
+      "kind": "serialization_contract",
+      "status": "PARTIAL",
+      "implementation_binding": "BOUND",
+      "producer_binding": "BOUND",
+      "consumer_binding": "UNMAPPED",
+      "schema_conformance": "NOT_VERIFIED",
+      "sources": [
+        {
+          "repository": "A-TownChain-Okosystems/atc-engineering",
+          "commit_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+          "path": "crates/atc-evidence/src/lib.rs",
+          "blob_sha": "5bea1f27a09dfda18d59bfd91550cde77a3aa599",
+          "symbols": [
+            "EVIDENCE_SCHEMA",
+            "EVIDENCE_SCHEMA_VERSION",
+            "EvidenceRecord::validate",
+            "EvidenceRecord::to_json"
+          ]
+        }
+      ],
+      "schema": {
+        "path": "schemas/evidence/ATC-EVD-001.json",
+        "blob_sha": "91e4104ca32f31250b6c1f012153c87670c85eec",
+        "schema_id": "ATC-EVD-001",
+        "version": "1.0.0"
+      },
+      "rationale": "The implementation declares the schema ID/version and serialization/validation methods, and a matching versioned JSON Schema exists. No automated serialization-to-schema conformance test or complete consumer mapping is established by this inventory."
+    },
+    {
+      "contract_id": "ATCE-IFACE-002",
+      "name": "Finding registry",
+      "kind": "json_schema_contract",
+      "status": "PARTIAL",
+      "implementation_binding": "BOUND",
+      "producer_binding": "BOUND",
+      "consumer_binding": "UNMAPPED",
+      "schema_conformance": "NOT_VERIFIED",
+      "sources": [
+        {
+          "repository": "A-TownChain-Okosystems/atc-engineering",
+          "commit_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+          "path": "crates/atc-findings/src/lib.rs",
+          "blob_sha": "c8f76f969be1ff16cecae99272fa87ea7caf3183",
+          "symbols": [
+            "Finding::new",
+            "Finding::transition",
+            "FindingState::as_str",
+            "FindingRegistry::register",
+            "FindingRegistry::get_mut",
+            "FindingRegistry::open_findings",
+            "FindingRegistry::write_json"
+          ]
+        }
+      ],
+      "schema": {
+        "path": "schemas/findings/ATC-FND-001.json",
+        "blob_sha": "552caf0bb74861d1cee7f14775eafdec4679bbaa",
+        "schema_id": "ATC-FND-001",
+        "version": "1.0.0"
+      },
+      "rationale": "The pinned implementation defines the finding lifecycle, rejects duplicate IDs, and emits a registry document with schema ATC-FND-001/version 1.0.0 through FindingRegistry::write_json. The emitted top-level field set is compatible by inspection with the versioned schema, but no executable instance-to-schema conformance test has been established. No concrete consumer of the persisted registry file is bound in this census."
+    },
+    {
+      "contract_id": "ATCE-IFACE-003",
+      "name": "AI code-agent verification evidence",
+      "kind": "json_schema_contract",
+      "status": "BLOCKED",
+      "implementation_binding": "UNMAPPED",
+      "producer_binding": "UNMAPPED",
+      "consumer_binding": "UNMAPPED",
+      "schema_conformance": "NOT_VERIFIED",
+      "sources": [],
+      "schema": {
+        "path": "schemas/ai-agent/ATC-AI-VERIFY-001.json",
+        "blob_sha": "71dcc9d554aec989fc3dba8ff09837ea6a0c3be2",
+        "schema_id": "ATC-AI-VERIFY-001",
+        "version": "1.0.0"
+      },
+      "rationale": "The schema requires commit-bound check evidence and forbids merge authorization, but a direct producer/consumer binding and a source-to-schema validation run have not been established here."
+    },
+    {
+      "contract_id": "ATCE-IFACE-004",
+      "name": "Cross-repository integration graph edge contract",
+      "kind": "integration_graph_contract",
+      "status": "BLOCKED",
+      "implementation_binding": "BOUND",
+      "producer_binding": "BOUND",
+      "consumer_binding": "UNMAPPED",
+      "schema_conformance": "NOT_APPLICABLE",
+      "sources": [
+        {
+          "repository": "A-TownChain-Okosystems/atc-engineering",
+          "commit_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+          "path": "crates/atc-integration/src/lib.rs",
+          "blob_sha": "19af7db9ae33520ff2ba48305694b7df59d19bba",
+          "symbols": [
+            "System",
+            "Edge",
+            "IntegrationGraph::add_edge",
+            "IntegrationGraph::validate",
+            "IntegrationGraph::dependency_order"
+          ]
+        },
+        {
+          "repository": "A-TownChain-Okosystems/atc-engineering",
+          "commit_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+          "path": "docs/architecture/ECOSYSTEM-INTEGRATION-001.md",
+          "blob_sha": "b3bf5b1a3deb05f7d51e0b5b24a24789c19cb9bf",
+          "symbols": []
+        }
+      ],
+      "schema": null,
+      "rationale": "The Rust graph implementation and integration document declare named cross-repository contracts, but the edge-level producer/consumer mappings are not reconciled against versioned interfaces or schemas. A non-empty contract name is not proof of a versioned interface."
+    }
+  ],
+  "limitations": [
+    "The inventory covers only four initially identified declarations in the pinned atc-engineering tree; it is not a complete census of every API, ABI, event, file format, CLI, or cross-repository boundary.",
+    "Blob SHAs bind the listed source/schema files to the stated source commit; they do not prove semantic completeness or runtime compatibility.",
+    "Unmapped producer/consumer counts describe this inventory only and must not be interpreted as organization-wide totals.",
+    "No contract is marked VERIFIED or RECONCILED; consumer mapping, schema conformance, normative registry binding, and organization-wide ownership remain open."
+  ]
+}
