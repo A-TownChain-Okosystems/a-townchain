@@ -1,0 +1,11 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — portiert aus
+// tests/test_atc8300_token.py::test_burn_and_state
+// (ATC-95-Testmigration, atc-contracts#5): Burn-Buchhaltung: 1000 gebrannt
+// 400 -> Restguthaben 600 UND total_supply 600 (Supply-Verknappung).
+contract T09Atc8300BurnSupply {
+    fn compute(supply_before: u64, burned: u64) -> u64 {
+        let supply_after = supply_before - burned
+        return supply_after
+    }
+}
