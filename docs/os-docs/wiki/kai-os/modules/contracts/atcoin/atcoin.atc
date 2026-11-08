@@ -1,0 +1,176 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-89 — ATCoin (A-Town Coin Token)
+// Sprint 2.5 | Smart Contract Layer | Chain-ID 9000
+// Migrated from: modules/contracts/atcoin/atcoin.py (138 lines)
+// Symbol: ATC | Max Supply: 21M | Decimals: 18 | Standard: ATC-8300
+// ─────────────────────────────────────────────────────────────
+
+const ATC_MAX_SUPPLY: u128 = 21000000000000000000000000  // 21M * 10^18
+const ATC_DECIMALS: u8 = 18
+
+struct TxRecord {
+    tx_id: Hash,
+    tx_type: String,
+    from_addr: Address,
+    to_addr: Address,
+    amount: u128,
+    timestamp: u64,
+}
+
+contract ATCoin {
+    state balances: Map<Address, u128>
+    state allowances: Map<Address, Map<Address, u128>>
+    state total_supply: u128
+    state tx_log: List<Hash>
+    state paused: bool
+    state owner: Address
+
+    event Transfer(from_addr: Address, to_addr: Address, amount: u128)
+    event Approval(owner: Address, spender: Address, amount: u128)
+    event Mint(to_addr: Address, amount: u128)
+    event Burn(from_addr: Address, amount: u128)
+    event Paused()
+    event Unpaused()
+
+    fn init() {
+        self.balances = {}
+        self.allowances = {}
+        self.total_supply = 0
+        self.tx_log = []
+        self.paused = false
+        self.owner = msg_sender()
+    }
+
+    fn balance_of(addr: Address) -> u128 {
+        let bal = self.balances.get(addr)
+        if bal == null {
+            return 0
+        }
+        return bal
+    }
+
+    fn transfer(receiver: Address, amount: u128) -> bool {
+        if self.paused {
+            return false
+        }
+        let sender = msg_sender()
+        if self.balance_of(sender) < amount {
+            return false
+        }
+        self.balances[sender] = self.balance_of(sender) - amount
+        let recv_bal = self.balance_of(receiver)
+        self.balances[receiver] = recv_bal + amount
+        self.log_tx("transfer", sender, receiver, amount)
+        emit Transfer(sender, receiver, amount)
+        return true
+    }
+
+    fn approve(spender: Address, amount: u128) -> bool {
+        let owner_addr = msg_sender()
+        let existing = self.allowances.get(owner_addr)
+        if existing == null {
+            self.allowances[owner_addr] = {}
+        }
+        self.allowances[owner_addr][spender] = amount
+        emit Approval(owner_addr, spender, amount)
+        return true
+    }
+
+    fn allowance(owner_addr: Address, spender: Address) -> u128 {
+        let owner_allowances = self.allowances.get(owner_addr)
+        if owner_allowances == null {
+            return 0
+        }
+        let amt = owner_allowances.get(spender)
+        if amt == null {
+            return 0
+        }
+        return amt
+    }
+
+    fn transfer_from(owner_addr: Address, receiver: Address, amount: u128) -> bool {
+        let spender = msg_sender()
+        if self.allowance(owner_addr, spender) < amount {
+            return false
+        }
+        self.allowances[owner_addr][spender] = self.allowance(owner_addr, spender) - amount
+        return self.transfer_impl(owner_addr, receiver, amount)
+    }
+
+    fn transfer_impl(sender: Address, receiver: Address, amount: u128) -> bool {
+        if self.balance_of(sender) < amount {
+            return false
+        }
+        self.balances[sender] = self.balance_of(sender) - amount
+        self.balances[receiver] = self.balance_of(receiver) + amount
+        self.log_tx("transfer", sender, receiver, amount)
+        emit Transfer(sender, receiver, amount)
+        return true
+    }
+
+    fn mint(receiver: Address, amount: u128) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        if self.total_supply + amount > ATC_MAX_SUPPLY {
+            return false
+        }
+        self.balances[receiver] = self.balance_of(receiver) + amount
+        self.total_supply += amount
+        emit Mint(receiver, amount)
+        return true
+    }
+
+    fn burn(amount: u128) -> bool {
+        if self.paused {
+            return false
+        }
+        let addr = msg_sender()
+        if self.balance_of(addr) < amount {
+            return false
+        }
+        self.balances[addr] = self.balance_of(addr) - amount
+        self.total_supply -= amount
+        self.log_tx("burn", addr, Address::zero(), amount)
+        emit Burn(addr, amount)
+        return true
+    }
+
+    fn pause() -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.paused = true
+        emit Paused()
+        return true
+    }
+
+    fn unpause() -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.paused = false
+        emit Unpaused()
+        return true
+    }
+
+    fn log_tx(tx_type: String, from_addr: Address, to_addr: Address, amount: u128) -> Hash {
+        let id_input = tx_type + Address::to_string(from_addr) + Address::to_string(to_addr) + Int::to_string(amount) + Int::to_string(Time::now())
+        let tx_id = Hash::sha256(id_input)
+        self.tx_log.push(tx_id)
+        return tx_id
+    }
+
+    fn get_total_supply() -> u128 {
+        return self.total_supply
+    }
+
+    fn get_holder_count() -> u32 {
+        return self.balances.len()
+    }
+
+    fn get_tx_count() -> u32 {
+        return self.tx_log.len()
+    }
+}
