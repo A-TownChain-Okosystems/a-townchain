@@ -1,0 +1,26 @@
+@version 1.0
+@standard ATC-001
+@standard ATC-005
+@type NFT721
+@name "ATownAvatar"
+@symbol "ATCA"
+
+contract ATownAvatar {
+    state {
+        next_id: u256 = 1;
+    }
+
+    @capability mint
+    function mintAvatar(to: Address, metadata: String) -> TokenId {
+        let id = next_id;
+        next_id = next_id + 1;
+        mint(to, id);
+        set_metadata(id, metadata);
+        return id;
+    }
+
+    @policy soulbound
+    function enforceSoulbound(token_id: TokenId) {
+        require(!is_soulbound(token_id), "ATC-005: soulbound token");
+    }
+}
