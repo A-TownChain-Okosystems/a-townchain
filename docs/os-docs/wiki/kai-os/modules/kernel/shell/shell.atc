@@ -1,0 +1,296 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-96 — KAI-OS Shell (Interactive Command Processor)
+// Sprint 2.4 | Kernel Layer | Chain-ID 9000
+// v0.3 ATCLang syntax
+// Shell with built-in commands, piped output, env vars
+// ─────────────────────────────────────────────────────────────
+
+const MAX_HISTORY: u16 = 256
+const MAX_ARGS: u8 = 16
+const MAX_PATH_LEN: u16 = 512
+
+struct ShellCommand {
+    name: String,
+    args: List<String>,
+    stdin: String,
+    background: bool,
+}
+
+struct HistoryEntry {
+    command: String,
+    timestamp: u64,
+    exit_code: i8,
+}
+
+struct Environment {
+    vars: Map<String, String>,
+    cwd: String,
+    user: Address,
+}
+
+contract KAI_OSShell {
+    state env: Environment
+    state history: List<HistoryEntry>
+    state aliases: Map<String, String>
+    state running: bool
+    state exit_code: i8
+    state owner: Address
+
+    event CommandExecuted(cmd: String, exit_code: i8)
+    event AliasSet(name: String, target: String)
+    event EnvVarSet(key: String, value: String)
+
+    fn init() {
+        let e = Environment {
+            vars: {},
+            cwd: "/",
+            user: msg_sender(),
+        }
+        self.env = e
+        self.history = []
+        self.aliases = {}
+        self.running = true
+        self.exit_code = 0
+        self.owner = msg_sender()
+    }
+
+    fn execute(input: String) -> (String, i8) {
+        if !self.running {
+            return ("shell: not running", -1)
+        }
+        let cmd = self.parse_command(input)
+        if cmd.name == "" {
+            return ("", 0)
+        }
+        // Check aliases
+        let aliased = self.aliases.get(cmd.name)
+        if aliased != null {
+            cmd.name = aliased
+        }
+        let (output, code) = self.run_builtin(cmd)
+        let entry = HistoryEntry {
+            command: input,
+            timestamp: Time::now(),
+            exit_code: code,
+        }
+        if self.history.len() >= MAX_HISTORY {
+            self.history.remove(0)
+        }
+        self.history.push(entry)
+        self.exit_code = code
+        emit CommandExecuted(input, code)
+        return (output, code)
+    }
+
+    fn run_builtin(cmd: ShellCommand) -> (String, i8) {
+        if cmd.name == "help" {
+            return self.cmd_help()
+        }
+        if cmd.name == "status" {
+            return self.cmd_status()
+        }
+        if cmd.name == "ls" {
+            return self.cmd_ls()
+        }
+        if cmd.name == "pwd" {
+            return (self.env.cwd, 0)
+        }
+        if cmd.name == "cd" {
+            return self.cmd_cd(cmd.args)
+        }
+        if cmd.name == "echo" {
+            return self.cmd_echo(cmd.args)
+        }
+        if cmd.name == "env" {
+            return self.cmd_env()
+        }
+        if cmd.name == "export" {
+            return self.cmd_export(cmd.args)
+        }
+        if cmd.name == "alias" {
+            return self.cmd_alias(cmd.args)
+        }
+        if cmd.name == "history" {
+            return self.cmd_history()
+        }
+        if cmd.name == "whoami" {
+            return (Address::to_hex(self.env.user), 0)
+        }
+        if cmd.name == "exit" {
+            self.running = false
+            return ("goodbye", 0)
+        }
+        if cmd.name == "clear" {
+            self.history = []
+            return ("", 0)
+        }
+        return ("shell: command not found: " + cmd.name, -1)
+    }
+
+    fn parse_command(input: String) -> ShellCommand {
+        let trimmed = String::trim(input)
+        if trimmed == "" {
+            return ShellCommand { name: "", args: [], stdin: "", background: false }
+        }
+        let parts = String::split(trimmed, " ")
+        if parts.len() == 0 {
+            return ShellCommand { name: "", args: [], stdin: "", background: false }
+        }
+        let name = parts[0]
+        let args: List<String> = []
+        let i: u8 = 1
+        while i < parts.len() && i < MAX_ARGS {
+            args.push(parts[i])
+            i += 1
+        }
+        let bg = false
+        if args.len() > 0 && args[args.len() - 1] == "&" {
+            bg = true
+            args.remove(args.len() - 1)
+        }
+        return ShellCommand { name: name, args: args, stdin: "", background: bg }
+    }
+
+    // ── Built-in commands ────────────────────────────
+
+    fn cmd_help() -> (String, i8) {
+        let text = "KAI-OS Shell v1.0.0 — Commands:\n"
+        text += "  help     — Show this help\n"
+        text += "  status   — System status\n"
+        text += "  ls       — List directory\n"
+        text += "  pwd      — Print working directory\n"
+        text += "  cd DIR   — Change directory\n"
+        text += "  echo TXT — Print text\n"
+        text += "  env      — Show environment\n"
+        text += "  export   — Set env var\n"
+        text += "  alias    — Set alias\n"
+        text += "  history  — Command history\n"
+        text += "  whoami   — Current user\n"
+        text += "  clear    — Clear history\n"
+        text += "  exit     — Exit shell"
+        return (text, 0)
+    }
+
+    fn cmd_status() -> (String, i8) {
+        let text = "KAI-OS v1.0.0 | Chain-ID: 9000 | ATCLang Native\n"
+        text += "User: " + Address::to_hex(self.env.user) + "\n"
+        text += "CWD: " + self.env.cwd + "\n"
+        text += "Commands: " + Int::to_string(self.history.len()) + "\n"
+        text += "Running: " + String::from_bool(self.running)
+        return (text, 0)
+    }
+
+    fn cmd_ls() -> (String, i8) {
+        // In production: read from ATCFS
+        return ("backend/  blockchain/  modules/  gateway/  monitoring/  core/", 0)
+    }
+
+    fn cmd_cd(args: List<String>) -> (String, i8) {
+        if args.len() == 0 {
+            self.env.cwd = "/"
+            return ("", 0)
+        }
+        let path = args[0]
+        if String::starts_with(path, "/") {
+            self.env.cwd = path
+        } else {
+            self.env.cwd = self.env.cwd + "/" + path
+        }
+        return ("", 0)
+    }
+
+    fn cmd_echo(args: List<String>) -> (String, i8) {
+        let result = ""
+        let i: u8 = 0
+        while i < args.len() {
+            if i > 0 {
+                result += " "
+            }
+            result += args[i]
+            i += 1
+        }
+        return (result, 0)
+    }
+
+    fn cmd_env() -> (String, i8) {
+        let result = ""
+        let keys = self.env.vars.keys()
+        let i: u16 = 0
+        while i < keys.len() {
+            let val = self.env.vars.get(keys[i])
+            if val != null {
+                result += keys[i] + "=" + val + "\n"
+            }
+            i += 1
+        }
+        result += "PWD=" + self.env.cwd + "\n"
+        result += "USER=" + Address::to_hex(self.env.user)
+        return (result, 0)
+    }
+
+    fn cmd_export(args: List<String>) -> (String, i8) {
+        if args.len() < 2 {
+            return ("usage: export KEY VALUE", -1)
+        }
+        self.env.vars[args[0]] = args[1]
+        emit EnvVarSet(args[0], args[1])
+        return ("", 0)
+    }
+
+    fn cmd_alias(args: List<String>) -> (String, i8) {
+        if args.len() < 2 {
+            let result = ""
+            let keys = self.aliases.keys()
+            let i: u16 = 0
+            while i < keys.len() {
+                let target = self.aliases.get(keys[i])
+                if target != null {
+                    result += keys[i] + " -> " + target + "\n"
+                }
+                i += 1
+            }
+            return (result, 0)
+        }
+        self.aliases[args[0]] = args[1]
+        emit AliasSet(args[0], args[1])
+        return ("", 0)
+    }
+
+    fn cmd_history() -> (String, i8) {
+        let result = ""
+        let i: u16 = 0
+        while i < self.history.len() {
+            let h = self.history[i]
+            result += Int::to_string(i + 1) + "  " + h.command + "\n"
+            i += 1
+        }
+        return (result, 0)
+    }
+
+    // ── Query functions ──────────────────────────────
+
+    fn get_history() -> List<HistoryEntry> {
+        return self.history
+    }
+
+    fn get_env_var(key: String) -> String {
+        let val = self.env.vars.get(key)
+        if val == null {
+            return ""
+        }
+        return val
+    }
+
+    fn get_cwd() -> String {
+        return self.env.cwd
+    }
+
+    fn is_running() -> bool {
+        return self.running
+    }
+
+    fn get_exit_code() -> i8 {
+        return self.exit_code
+    }
+}
