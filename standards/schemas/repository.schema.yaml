@@ -1,0 +1,20 @@
+# JSON-Schema-artige Beschreibung (YAML-Form) fuer .atc/repository.yaml
+type: object
+required: [standard, standard_version, repository, project, language, license, security, api]
+properties:
+  standard: {const: ATC-STD-201}
+  standard_version: {type: string}
+  repository:
+    type: object
+    required: [name, classification, maturity, status]
+    properties:
+      name: {type: string}
+      classification: {enum: [CORE, SPEC, SDK, APPLICATION, INFRA, AI, OS, GAME]}
+      maturity: {enum: [R0, R1, R2, R3, R4]}
+      status: {enum: [experimental, development, beta, production, deprecated, archived]}
+  project: {type: object, required: [organization, domain, component]}
+  language: {type: object, required: [primary]}
+  license: {type: object, required: [type]}
+  security: {type: object, required: [criticality], properties: {criticality: {enum: [public, standard, important, critical, protocol-critical]}}}
+  api: {type: object, properties: {stability: {enum: [experimental, alpha, beta, stable, frozen, deprecated]}}}
+  protocol: {type: object, properties: {compatibility: {enum: [required, none]}}}
