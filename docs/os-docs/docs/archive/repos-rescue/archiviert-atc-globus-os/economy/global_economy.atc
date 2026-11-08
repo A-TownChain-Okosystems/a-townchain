@@ -1,0 +1,40 @@
+// ATCLang v0.3 — Global Economy
+// Globale Wirtschaftssimulation — Handel, Preise, Ressourcen-Märkte
+// ATC-Standard: ATC-87
+
+module global_economy {
+    struct Market {
+        market_id: string,
+        resource: string,
+        supply: int,
+        demand: int,
+        price: float,
+        volatility: float,
+    }
+    
+    struct Trade {
+        trade_id: string,
+        from_civ: string,
+        to_civ: string,
+        resource: string,
+        amount: int,
+        price: float,
+        timestamp: int,
+    }
+    
+    fn update_market(resource: string) {
+        // Marktpreis basierend auf Angebot/Nachfrage
+    }
+    
+    fn execute_trade(from: string, to: string, resource: string, amount: int) {
+        // Handel ausführen
+    }
+    
+    fn economic_snapshot() {
+        // Globale Wirtschaftsstatistik
+    }
+    
+    fn inflation_rate() {
+        // Inflationsberechnung
+    }
+}
