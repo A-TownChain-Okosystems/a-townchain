@@ -1,0 +1,49 @@
+---
+scr_id: SCR-0128
+title: "GlobusOS / ShivaCore Reference Architecture and Syscall ABI family"
+status: proposed
+requested_at: "2026-09-22"
+scope:
+  - GOS-ARCH-001
+  - GOS-ABI-001
+  - GOS-HABI-001
+  - GOS-IPC-001
+  - GOS-CAP-001
+  - GOS-HND-001
+  - GOS-MEM-001
+  - GOS-RES-001
+  - GOS-ID-001
+  - GOS-POL-001
+  - GOS-AUD-001
+  - GOS-RUN-001
+  - GOS-API-001
+  - ATC-ABI-001
+reason: >
+  Formalize the architecture developed in the engineering chat as machine-checkable
+  contracts while preserving the canonical source-of-truth boundaries.
+constraints:
+  - "No direct change to main is part of this SCR."
+  - "APPROVED != IMPLEMENTED != AUDITED != PRODUCTION_READY."
+  - "atc-standards remains the normative standards SSOT."
+  - "globus-os remains the active ShivaCore kernel implementation SSOT."
+implementation_evidence:
+  architecture_doc: "globus-os/docs/REFERENCE_ARCHITECTURE_V3.md"
+  syscall_abi: "globus-os/docs/SHIVACORE_SYSCALL_ABI_V1.md"
+  host_abi: "globus-os/docs/HOST_ABI.md"
+  security_model: "globus-os/docs/UNIFIED_SECURITY_MODEL.md"
+  machine_matrix: "globus-os/docs/architecture/syscall-abi-v1.yaml"
+  reusable_contract: "atc-shivacore/docs/specs/SHIVA-SYSCALL-ABI-001.md"
+verification_required:
+  - ABI compatibility
+  - capability and handle validation
+  - IPC lifecycle and cancellation
+  - resource quotas
+  - deterministic ATC-VM Host ABI
+  - audit events
+  - fault/race/stress tests
+  - CI evidence
+approval_path:
+  - technical
+  - security
+  - architecture
+  - governance
