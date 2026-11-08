@@ -1,0 +1,138 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-01 — Node Discovery Service
+// Sprint 2.2 | Network Layer | Chain-ID 9000
+// Migrated from: modules/atcnet/discovery.py (313 lines)
+// UDP-based P2P discovery: ANNOUNCE, PEER_LIST, PING/PONG
+// ─────────────────────────────────────────────────────────────
+
+const DISCOVERY_PORT_OFFSET: u16 = 1000
+const PING_INTERVAL: u32 = 30       // seconds
+const PEER_TIMEOUT: u32 = 90        // seconds
+const MAX_PEERS: u8 = 50
+
+enum DiscoveryMsg { Announce, PeerList, Ping, Pong }
+
+struct PeerEntry {
+    node_id: Address,
+    host: String,
+    port: u16,
+    last_seen: u64,
+    version: String,
+    is_bootstrap: bool,
+}
+
+contract NodeDiscovery {
+    state node_id: Address
+    state my_port: u16
+    state is_bootstrap: bool
+    state bootstrap_nodes: List<String>
+    state peers: Map<Address, PeerEntry>
+    state peer_count: u16
+    state owner: Address
+
+    event PeerDiscovered(node_id: Address, host: String, port: u16)
+    event PeerExpired(node_id: Address)
+    event AnnounceSent(host: String, port: u16)
+    event PeerListSent(node_id: Address)
+
+    fn init(port: u16, bootstrap: bool) {
+        self.node_id = msg_sender()
+        self.my_port = port
+        self.is_bootstrap = bootstrap
+        self.bootstrap_nodes = []
+        self.peers = {}
+        self.peer_count = 0
+        self.owner = msg_sender()
+    }
+
+    fn announce(host: String, port: u16, version: String) -> bool {
+        let peer_id = Address::from_hash(Hash::sha256(host, port))
+        let entry = PeerEntry {
+            node_id: peer_id,
+            host: host,
+            port: port,
+            last_seen: Time::now(),
+            version: version,
+            is_bootstrap: false,
+        }
+        self.peers[peer_id] = entry
+        self.peer_count += 1
+        emit PeerDiscovered(peer_id, host, port)
+        emit AnnounceSent(host, port)
+        return true
+    }
+
+    fn get_peer_list() -> List<Address> {
+        return self.peers.keys()
+    }
+
+    fn ping(node_id: Address) -> bool {
+        let peer = self.peers.get(node_id)
+        if peer == null {
+            return false
+        }
+        peer.last_seen = Time::now()
+        return true
+    }
+
+    fn pong(node_id: Address) -> bool {
+        let peer = self.peers.get(node_id)
+        if peer == null {
+            return false
+        }
+        peer.last_seen = Time::now()
+        return true
+    }
+
+    fn add_bootstrap_node(host: String, port: u16) -> bool {
+        let addr = host + ":" + Int::to_string(port)
+        self.bootstrap_nodes.push(addr)
+        return true
+    }
+
+    fn cleanup_expired_peers() -> u16 {
+        let now = Time::now()
+        let cutoff = now - PEER_TIMEOUT
+        let keys = self.peers.keys()
+        let removed: u16 = 0
+        let i: u16 = 0
+        while i < keys.len() {
+            let peer = self.peers.get(keys[i])
+            if peer != null && peer.last_seen < cutoff {
+                self.peers.remove(keys[i])
+                if self.peer_count > 0 {
+                    self.peer_count -= 1
+                }
+                removed += 1
+                emit PeerExpired(keys[i])
+            }
+            i += 1
+        }
+        return removed
+    }
+
+    fn get_peer_info(node_id: Address) -> (String, u16, u64, String) {
+        let peer = self.peers.get(node_id)
+        if peer == null {
+            return ("", 0, 0, "")
+        }
+        return (peer.host, peer.port, peer.last_seen, peer.version)
+    }
+
+    fn get_discovery_port() -> u16 {
+        return self.my_port + DISCOVERY_PORT_OFFSET
+    }
+
+    fn get_peer_count() -> u16 {
+        return self.peer_count
+    }
+
+    fn is_peer_alive(node_id: Address) -> bool {
+        let peer = self.peers.get(node_id)
+        if peer == null {
+            return false
+        }
+        return (Time::now() - peer.last_seen) < PEER_TIMEOUT
+    }
+}
