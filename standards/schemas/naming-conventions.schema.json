@@ -1,0 +1,990 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ATC Naming, Identification and Namespace Convention - Rule Definition (ATC-STD-000 s7)",
+  "description": "Zentrale maschinenlesbare Regeldefinition (7.10). Validator und CI leiten alle Naming-Pruefungen NUR aus dieser Datei ab (7.11).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "identifierPatterns",
+    "repositoryPatterns",
+    "filenamePatterns",
+    "versionPatterns",
+    "extensionRules",
+    "reservedNames"
+  ],
+  "properties": {
+    "identifierPatterns": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "standardId",
+        "requirementId",
+        "findingId",
+        "changeRequestId",
+        "adrId",
+        "securityAdvisoryId",
+        "testCaseId",
+        "testSuiteId",
+        "gateId",
+        "schemaId",
+        "protocolId",
+        "specificationId",
+        "documentId",
+        "releaseId",
+        "bugStandardId",
+        "testId",
+        "syncCheckId",
+        "auditRecordId",
+        "netStandardId",
+        "aiDevStandardId",
+        "aiAgentId",
+        "aiTaskId",
+        "aiActionId",
+        "aiAssumptionId"
+      ],
+      "properties": {
+        "standardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-[0-9]{3,}$",
+          "example": "ATC-STD-000"
+        },
+        "requirementId": {
+          "type": "string",
+          "pattern": "^REQ-(STD|REPO|SEC|PROTO|NET)-[0-9]{3,}$",
+          "example": "REQ-STD-001",
+          "note": "Kanonisch REQ-STD-NNN; geschlossene Domaenen-Subklassen gemaess Abschnitt 10; Erweiterung per SCR"
+        },
+        "findingId": {
+          "type": "string",
+          "pattern": "^F-[0-9]{3,}$",
+          "example": "F-001"
+        },
+        "changeRequestId": {
+          "type": "string",
+          "pattern": "^SCR-[0-9]{3,}$",
+          "example": "SCR-001"
+        },
+        "adrId": {
+          "type": "string",
+          "pattern": "^ADR-[0-9]{3,}$",
+          "example": "ADR-001",
+          "note": "Zentrales DECISIONS_REGISTER: grandfathered AD-NNN (reservedNames.grandfathered)"
+        },
+        "securityAdvisoryId": {
+          "type": "string",
+          "pattern": "^ATC-SA-[0-9]{3,}$",
+          "example": "ATC-SA-001"
+        },
+        "testCaseId": {
+          "type": "string",
+          "pattern": "^TC-[0-9]{3,}$",
+          "example": "TC-001"
+        },
+        "testSuiteId": {
+          "type": "string",
+          "pattern": "^TS-[0-9]{3,}$",
+          "example": "TS-001"
+        },
+        "gateId": {
+          "type": "string",
+          "pattern": "^GATE-[0-9]{3,}$",
+          "example": "GATE-001"
+        },
+        "schemaId": {
+          "type": "string",
+          "pattern": "^ATC-SCHEMA-[0-9]{3,}$",
+          "example": "ATC-SCHEMA-001"
+        },
+        "protocolId": {
+          "pattern": "^ATC-PROTO-[A-Z0-9]+(-[A-Z0-9]+)*-[0-9]{3,}$",
+          "description": "ATC-Protokoll-ID (ATC-PROTO-[DOMAIN]-[NUMBER], Registry-Pflicht)"
+        },
+        "specificationId": {
+          "type": "string",
+          "pattern": "^ATC-SPEC-[0-9]{3,}$",
+          "example": "ATC-SPEC-001"
+        },
+        "documentId": {
+          "type": "string",
+          "pattern": "^ATC-DOC-[0-9]{3,}$",
+          "example": "ATC-DOC-001"
+        },
+        "releaseId": {
+          "type": "string",
+          "pattern": "^ATC-REL-(?:[0-9]+[.][0-9]+[.][0-9]+|[0-9]{8}-[0-9]{3})$",
+          "example": "ATC-REL-1.4.0",
+          "note": "Zwei gueltige Formate (SCR-0009): versionsbasiert ATC-REL-X.Y.Z oder datumsbasiert ATC-REL-YYYYMMDD-NNN"
+        },
+        "bugStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-BUG-[0-9]{3,}$",
+          "example": "ATC-STD-BUG-001"
+        },
+        "v2sStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-V2S-[0-9]{3,}$",
+          "example": "ATC-STD-V2S-000"
+        },
+        "v2sRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-V2S-[0-9]{3,}$",
+          "example": "REQ-V2S-001"
+        },
+        "testId": {
+          "type": "string",
+          "pattern": "^TEST-[0-9]{3,}$",
+          "example": "TEST-044"
+        },
+        "syncCheckId": {
+          "type": "string",
+          "pattern": "^SYNC-[0-9]{3,}$",
+          "example": "SYNC-012"
+        },
+        "auditRecordId": {
+          "type": "string",
+          "pattern": "^AUD-[0-9]{3,}$",
+          "example": "AUD-031"
+        },
+        "netStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-NET-[0-9]{3,}$",
+          "example": "ATC-STD-NET-001"
+        },
+        "aiDevStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-AI-DEV-[0-9]{3,}$",
+          "example": "ATC-STD-AI-DEV-001"
+        },
+        "aiAgentId": {
+          "type": "string",
+          "pattern": "^ATC-AI-(ARCH|DEV|TEST|SEC|DOC|AUDIT|RELEASE)-[0-9]{3,}$",
+          "example": "ATC-AI-DEV-001",
+          "note": "AI-Agenten-Identitaet (ATC-STD-AI-DEV-001 §1); GitHub-Bot-Account ist nur Ausfuehrungsidentitaet"
+        },
+        "aiTaskId": {
+          "type": "string",
+          "pattern": "^ATC-TASK-[0-9]{3,}$",
+          "example": "ATC-TASK-00427",
+          "note": "Verbindet Issue/Branch/Commits/PR/Tests/Doku/Audit (ATC-STD-AI-DEV-001 §7)"
+        },
+        "aiActionId": {
+          "type": "string",
+          "pattern": "^ACT-[0-9]{3,}$",
+          "example": "ACT-001",
+          "note": "Finding-zu-Action-Kette (ATC-STD-AI-DEV-001 §8)"
+        },
+        "aiAssumptionId": {
+          "type": "string",
+          "pattern": "^ASSUMPTION-A[0-9]{3,}$",
+          "example": "ASSUMPTION-A001",
+          "note": "AI Assumption Register (ATC-STD-AI-DEV-001 §10)"
+        },
+        "aasStandardId": {
+          "type": "string",
+          "pattern": "^ATC-AAS-[0-9]{3,}$",
+          "example": "ATC-AAS-025"
+        },
+        "a2aMessageId": {
+          "type": "string",
+          "pattern": "^A2A-[0-9]{3,}$",
+          "example": "A2A-000001"
+        },
+        "entStandardId": {
+          "type": "string",
+          "pattern": "^ATC-ENT-[0-9]{3,}$",
+          "example": "ATC-ENT-001"
+        },
+        "roleId": {
+          "type": "string",
+          "pattern": "^ROLE-[A-Z][A-Z0-9-]*$",
+          "example": "ROLE-CISO"
+        },
+        "decisionId": {
+          "type": "string",
+          "pattern": "^DEC-[0-9]{4,}$",
+          "example": "DEC-0042"
+        },
+        "riskId": {
+          "type": "string",
+          "pattern": "^RISK-[0-9]{4,}$",
+          "example": "RISK-0001"
+        },
+        "repoId": {
+          "type": "string",
+          "pattern": "^REPO-[0-9]{3,}$",
+          "example": "REPO-001"
+        },
+        "orgUnitId": {
+          "type": "string",
+          "pattern": "^UNIT-[A-Z][A-Z0-9-]*$",
+          "example": "UNIT-BLOCKCHAIN"
+        },
+        "escalationId": {
+          "type": "string",
+          "pattern": "^ESC-[0-9]{4,}$",
+          "example": "ESC-0001"
+        },
+        "zkpStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-ZKP-[0-9]{3,}$",
+          "example": "ATC-STD-ZKP-001"
+        },
+        "zkpRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-ZKP-[0-9]{3,}$",
+          "example": "REQ-ZKP-101"
+        },
+        "readmeStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-README-[0-9]{3,}$",
+          "example": "ATC-STD-README-001"
+        },
+        "readmeRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-README-[0-9]{3,}$",
+          "example": "REQ-README-001"
+        },
+        "mdStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-MD-[0-9]{3,}$",
+          "example": "ATC-STD-MD-001"
+        },
+        "mdRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-MD-[0-9]{3,}$",
+          "example": "REQ-MD-001"
+        },
+        "scStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-SC-[0-9]{3,}$",
+          "example": "ATC-STD-SC-001"
+        },
+        "scRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-SC-[0-9]{3,}$",
+          "example": "REQ-SC-001"
+        },
+        "contractId": {
+          "type": "string",
+          "pattern": "^ATC-SC-[A-Z]+-[0-9]{3,}$",
+          "example": "ATC-SC-TOKEN-001"
+        },
+        "deploymentId": {
+          "type": "string",
+          "pattern": "^ATC-DEP-[0-9]{3,}$",
+          "example": "ATC-DEP-0001"
+        },
+        "scCategoryId": {
+          "type": "string",
+          "pattern": "^SC-[A-Z]+$",
+          "example": "SC-TOKEN"
+        },
+        "scGateId": {
+          "type": "string",
+          "pattern": "^SC-G([0-9]|1[0-3])$",
+          "example": "SC-G7"
+        },
+        "descStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-DESC-[0-9]{3,}$",
+          "example": "ATC-STD-DESC-001",
+          "note": "Standard-Description-Familie: Beschreibung von Standards (Owner-Entwurf 07.09., SCR-0008)"
+        },
+        "descRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-DESC-[0-9]{3,}$",
+          "example": "REQ-DESC-001",
+          "note": "Requirements der DESC-Familie (SCR-0008)"
+        },
+        "versionStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-VERSION-[0-9]{3,}$",
+          "example": "ATC-STD-VERSION-001",
+          "note": "Versioning-Familie: Versionierung von Software, Standards, APIs, Contracts, Protokollen, Releases (Owner-Entwurf 07.09., SCR-0009)"
+        },
+        "versionRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-VERSION-[0-9]{3,}$",
+          "example": "REQ-VERSION-001",
+          "note": "Requirements der VERSION-Familie (SCR-0009)"
+        },
+        "buildId": {
+          "type": "string",
+          "pattern": "^ATC-BUILD-[0-9]{3,}$",
+          "example": "ATC-BUILD-1827",
+          "note": "Build-Identitaet je Release-Build (SCR-0009); numerisch fortlaufend"
+        },
+        "descComplianceId": {
+          "type": "string",
+          "pattern": "^COM-DESC-[0-9]{3,}$",
+          "example": "COM-DESC-001",
+          "note": "Compliance-Gates der DESC-Familie (ATC-STD-DESC-001 Abschnitt 10; SCR-0010)"
+        },
+        "versionComplianceId": {
+          "type": "string",
+          "pattern": "^COM-VERSION-[0-9]{3,}$",
+          "example": "COM-VERSION-001",
+          "note": "Compliance-Gates der VERSION-Familie (ATC-STD-VERSION-001 Abschnitt 25; SCR-0010)"
+        },
+        "errorClassId": {
+          "type": "string",
+          "pattern": "^ERR-CL-[A-Z0-9]{2,6}$",
+          "example": "ERR-CL-CONS",
+          "note": "Fehlerklassen der Bug-Familie (18 Klassen ERR-CL-CODE..GOV, ATC-STD-BUG-005 Abschnitt 4; SCR-0012)"
+        },
+        "rootCauseCategoryId": {
+          "type": "string",
+          "pattern": "^RC-[A-Z]+$",
+          "example": "RC-ARCH",
+          "note": "Root-Cause-Kategorien für Analytics (RC-CODE..RC-GOVERNANCE, ATC-STD-BUG-005; SCR-0012)"
+        },
+        "bugComplianceId": {
+          "type": "string",
+          "pattern": "^COM-BUG-[0-9]{3,}$",
+          "example": "COM-BUG-501",
+          "note": "Compliance-Gates der Bug-Familie (ATC-STD-BUG-005 Abschnitt 17; SCR-0012)"
+        },
+        "auditStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-AUDIT-[0-9]{3,}$",
+          "example": "ATC-STD-AUDIT-001",
+          "note": "Audit-Familie: Completeness & Audit (Kontrollschicht über allen Standards; Owner-Entwurf 07.09., SCR-0013)"
+        },
+        "auditRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-AUDIT-[0-9]{3,}$",
+          "example": "REQ-AUDIT-001",
+          "note": "Requirements der AUDIT-Familie (SCR-0013)"
+        },
+        "auditDomainId": {
+          "type": "string",
+          "pattern": "^AUD-C[0-9]{2}$",
+          "example": "AUD-C13",
+          "note": "Audit-Domänen AUD-C01..AUD-C20 (ATC-STD-AUDIT-001 Abschnitt 4; SCR-0013)"
+        },
+        "auditGateId": {
+          "type": "string",
+          "pattern": "^AUD-G[0-9]{2}$",
+          "example": "AUD-G07",
+          "note": "Audit-Gates AUD-G01..AUD-G08, Release-Kette (ATC-STD-AUDIT-001 Abschnitt 18; SCR-0013)"
+        },
+        "auditRunId": {
+          "type": "string",
+          "pattern": "^AUD-[0-9]{4}-[0-9]{4,}$",
+          "example": "AUD-2026-0001",
+          "note": "Audit-Lauf-IDs: AUD-YYYY-NNNN, revisionsfähige Audit-Historie (SCR-0013; konsolidiert die Varianten AUD-NNNN/ATC-AUD-YYYY-NNNN aus dem Owner-Entwurf) SG-03-Klärung (AUD-2026-0004): Format AUD-YYYY-NNNN — YYYY = Jahr, NNNN = fortlaufende 4-stellige (oder längere) Sequenz je Jahr; AUD-2026-0001 = erster Audit-Lauf 2026, kanonisch konform."
+        },
+        "aiDecisionStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-AI-DECISION-[0-9]{3,}$",
+          "example": "ATC-STD-AI-DECISION-001",
+          "note": "AI-Decision-Familie: Agent Decision-Making (Entscheidungsmodell über AAS-Betriebsstandards; Owner-Entwurf 07.09., SCR-0014)"
+        },
+        "aiDecisionRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-AIDEC-[0-9]{3,}$",
+          "example": "REQ-AIDEC-001",
+          "note": "Requirements der AI-DECISION-Familie (SCR-0014)"
+        },
+        "decisionRecordId": {
+          "type": "string",
+          "pattern": "^DEC-[0-9]{6,}$",
+          "example": "DEC-000001",
+          "note": "Mandatory Decision Records: DEC-NNNNNN fortlaufend, versionierbar, referenzierbar (ATC-STD-AI-DECISION-001 Abschnitt 16; SCR-0014; trennt Records von Regeln — Regeln sind REQ-AIDEC-IDs)"
+        },
+        "updateStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-UPDATE-[0-9]{3,}$",
+          "example": "ATC-STD-UPDATE-001",
+          "note": "Update-Familie: Change Control für Artefakt-Updates (Lifecycle, Gates, Migration; Owner-Entwurf 07.09., SCR-0015)"
+        },
+        "updateRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-UPD-[0-9]{3,}$",
+          "example": "REQ-UPD-001",
+          "note": "Requirements der UPDATE-Familie (SCR-0015)"
+        },
+        "updateRequestId": {
+          "type": "string",
+          "pattern": "^UPD-[0-9]{3,}$",
+          "example": "UPD-001",
+          "note": "Update Requests & Manifeste: UPD-NNN fortlaufend je Artefakt-Release; bei normativen Standardänderungen mit SCR-NNNN gekoppelt (REQ-UPD-019; SCR bleibt Pflicht gemäß ATC-STD-000 §30)"
+        },
+        "updateGateId": {
+          "type": "string",
+          "pattern": "^UPD-G[0-9]{2}$",
+          "example": "UPD-G09",
+          "note": "Update-Gates UPD-G01..UPD-G09, Release-Kette der Change Control (ATC-STD-UPDATE-001 Abschnitt 9; SCR-0015; abgegrenzt zu AUD-G01..G08 des Audit-Standards)"
+        },
+        "compatStandardId": {
+          "pattern": "^ATC-STD-COMPAT-[0-9]{3,}$",
+          "description": "ATC Compat Standard (Major Version Compatibility & Recovery, SCR-0016)"
+        },
+        "compatRequirementId": {
+          "pattern": "^REQ-COMPAT-[0-9]{3,}$",
+          "description": "Compat-Anforderungs-ID (REQ-COMPAT-NNN)"
+        },
+        "compatRestorationId": {
+          "pattern": "^COMP-[0-9]{3,}$",
+          "description": "Compatibility Restoration ID (COMP-NNN, REQ-COMPAT-009)"
+        },
+        "milestoneStandardId": {
+          "pattern": "^ATC-STD-MILESTONE-[0-9]{3,}$",
+          "description": "ATC Milestone Standard (ATC-STD-MILESTONE-001)"
+        },
+        "milestoneId": {
+          "pattern": "^ATC-M-[0-9]{3,}$",
+          "description": "Meilenstein-ID Basis-Serie (ATC-M-NNN, REQ-MS-003)"
+        },
+        "milestoneProgramId": {
+          "pattern": "^ATC-M-[A-Z]+-[0-9]{3,}$",
+          "description": "Programm-Meilenstein-ID (ATC-M-<PROG>-NNN, REQ-MS-003)"
+        },
+        "milestoneRequirementId": {
+          "pattern": "^REQ-MS-[0-9]{3,}$",
+          "description": "Milestone-Anforderungs-ID (REQ-MS-NNN, ATC-STD-MILESTONE-001)"
+        },
+        "frameworkStandardId": {
+          "pattern": "^ATC-STD-FRAMEWORK-[0-9]{3,}$",
+          "description": "ATC Enterprise Standards Framework (ATC-STD-FRAMEWORK-001)"
+        },
+        "frameworkRequirementId": {
+          "pattern": "^REQ-FW-[0-9]{3,}$",
+          "description": "Framework-Anforderungs-ID (REQ-FW-NNN)"
+        },
+        "frameworkFamilyId": {
+          "pattern": "^FAM-[0-9]{2,3}$",
+          "description": "Framework-Katalog-Familie (FAM-NN)"
+        },
+        "repoAuditStandardId": {
+          "pattern": "^ATC-STD-REPO-AUDIT-[0-9]{3,}$",
+          "description": "ATC Repository Audit Standard (ATC-STD-REPO-AUDIT-001)"
+        },
+        "repoAuditRequirementId": {
+          "pattern": "^REQ-RA-[0-9]{3,}$",
+          "description": "Repository-Audit-Anforderungs-ID (REQ-RA-NNN, ATC-STD-REPO-AUDIT-001)"
+        },
+        "repoAuditGapId": {
+          "pattern": "^GAP-[A-Z]+-[0-9]{3,}$",
+          "description": "Gap-Analyse-ID (GAP-<KAT>-NNN, ATC-STD-REPO-AUDIT-001 §11)"
+        },
+        "repoAuditImprovementId": {
+          "pattern": "^IMP-[0-9]{3,}$",
+          "description": "Verbesserungs-ID (IMP-NNN, ATC-STD-REPO-AUDIT-001 §21)"
+        },
+        "repoAuditCheckId": {
+          "pattern": "^CHECK-[0-9]{3,}$",
+          "description": "Repo-Audit-Check-ID (CHECK-NNN, ATC-STD-REPO-AUDIT-002 §2)"
+        },
+        "repoAuditScoreRequirementId": {
+          "pattern": "^REQ-RB-[0-9]{3,}$",
+          "description": "Repo-Audit-Score-Anforderungs-ID (REQ-RB-NNN, ATC-STD-REPO-AUDIT-002)"
+        },
+        "aosStandardId": {
+          "pattern": "^ATC-STD-AOS-[0-9]{3,}$",
+          "description": "ATC Agent Operating Standard (ATC-STD-AOS-001)"
+        },
+        "aosRequirementId": {
+          "pattern": "^REQ-AOS-[0-9]{3,}$",
+          "description": "AOS-Anforderungs-ID (REQ-AOS-NNN)"
+        },
+        "aosSessionId": {
+          "pattern": "^AOS-SESS-[0-9]{8}-[0-9]{3,}$",
+          "description": "Agent-Session-Record-ID (AOS-SESS-YYYYMMDD-NNN)"
+        },
+        "masterAuditStandardId": {
+          "pattern": "^ATC-STD-999(-[0-9]{3,})?$",
+          "description": "ATC Master-Audit-Standard (ATC-STD-999)"
+        },
+        "masterAuditRequirementId": {
+          "pattern": "^REQ-MA-[0-9]{3,}$",
+          "description": "Master-Audit-Anforderungs-ID (REQ-MA-NNN)"
+        },
+        "protocolStandardId": {
+          "pattern": "^ATC-STD-PROTOCOL-[0-9]{3,}$",
+          "description": "ATC Protocol Standards Dach-/Familienstandard (ATC-STD-PROTOCOL-001)"
+        },
+        "protocolErrorCode": {
+          "pattern": "^ATC-PROTO-[A-Z]+-[0-9]{3,}$",
+          "description": "ATC-Protokoll-Fehlercode (ATC-PROTO-<KAT>-NNN, RE-Standard §13)"
+        },
+        "protocolRequirementId": {
+          "pattern": "^REQ-PROTO-[0-9]{3,}$",
+          "description": "Protocol-Standards-Anforderungs-ID (REQ-PROTO-NNN)"
+        },
+        "protocolConformanceRequirementId": {
+          "pattern": "^REQ-CONF-[0-9]{3,}$",
+          "description": "Conformance-Test-Anforderungs-ID (REQ-CONF-NNN, ATC-STD-PROTOCOL-002)"
+        },
+        "protocolSecurityRequirementId": {
+          "pattern": "^REQ-PTS-[0-9]{3,}$",
+          "description": "Protocol-Security-Anforderungs-ID (REQ-PTS-NNN, ATC-STD-PROTOCOL-003)"
+        },
+        "taxonomyStandardId": {
+          "pattern": "^ATC-STD-TAXONOMY-[0-9]{3,}$",
+          "description": "ATC Standards Taxonomy & Family Creation Standard (ATC-STD-TAXONOMY-001)"
+        },
+        "taxonomyRequirementId": {
+          "pattern": "^REQ-TAX-[0-9]{3,}$",
+          "description": "Taxonomy-Anforderungs-ID (REQ-TAX-NNN)"
+        },
+        "familyRequestId": {
+          "pattern": "^ATC-FAM-REQ-[0-9]{3,}$",
+          "description": "Familien-Erstellungs-Request (ATC-FAM-REQ-NNN)"
+        },
+        "categoryRequestId": {
+          "pattern": "^ATC-CAT-REQ-[0-9]{3,}$",
+          "description": "Kategorie-Erstellungs-Request (ATC-CAT-REQ-NNN)"
+        },
+        "taxonomyChangeRequestId": {
+          "pattern": "^ATC-TCR-[0-9]{3,}$",
+          "description": "Taxonomy Change Request (ATC-TCR-NNN)"
+        },
+        "taxCheckId": {
+          "pattern": "^TAX-CHECK-[0-9]{3,}$",
+          "description": "Taxonomie-Pruefungs-ID (TAX-CHECK-NNN)"
+        },
+        "stddevStandardId": {
+          "pattern": "^ATC-STD-STDDEV-[0-9]{3,}$",
+          "description": "ATC Standards Development Standard (ATC-STD-STDDEV-001)"
+        },
+        "sdRequirementId": {
+          "pattern": "^REQ-SD-[0-9]{3,}$",
+          "description": "Standards-Development-Anforderungs-ID (REQ-SD-NNN)"
+        },
+        "registryStandardId": {
+          "pattern": "^ATC-STD-REGISTRY-[0-9]{3,}$",
+          "description": "ATC Registry Management Standard (ATC-STD-REGISTRY-001)"
+        },
+        "rmRequirementId": {
+          "pattern": "^REQ-RM-[0-9]{3,}$",
+          "description": "Registry-Management-Anforderungs-ID (REQ-RM-NNN)"
+        },
+        "changeStandardId": {
+          "pattern": "^ATC-STD-CHANGE-[0-9]{3,}$",
+          "description": "ATC Change Control Dachnorm (ATC-STD-CHANGE-001)"
+        },
+        "chRequirementId": {
+          "pattern": "^REQ-CH-[0-9]{3,}$",
+          "description": "Change-Control-Anforderungs-ID (REQ-CH-NNN)"
+        },
+        "improvementStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-IMPROVEMENT-[0-9]{3,}$",
+          "example": "ATC-STD-IMPROVEMENT-001",
+          "note": "Improvement-Familie: Continuous Improvement Management System (Owner-Entwurf 08.09., SCR-0056)"
+        },
+        "improvementRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-IMP-[0-9]{3,}$",
+          "example": "REQ-IMP-001",
+          "note": "Requirements der IMPROVEMENT-Familie (SCR-0056)"
+        },
+        "improvementId": {
+          "type": "string",
+          "pattern": "^ATC-IMP-[0-9]{6,}$",
+          "example": "ATC-IMP-000001",
+          "note": "Improvement Records: ATC-IMP-NNNNNN, zentrales Improvement Board registry/improvements.yaml (SCR-0056); abgegrenzt zu F-NNNN Findings (BUG-001) — ein Finding kann IMP-Record auslösen (Quelle: finding_ref)"
+        },
+        "improvementClassId": {
+          "type": "string",
+          "pattern": "^IMPROVEMENT-(FUNCTIONAL|QUALITY|SECURITY|PERFORMANCE|ARCHITECTURE|DOCUMENTATION|STANDARD|AUTOMATION|PROCESS|UX)$",
+          "example": "IMPROVEMENT-AUTOMATION",
+          "note": "Verbesserungsklassen gemäß ATC-STD-IMPROVEMENT-001 Abschnitt 4 (SCR-0056)"
+        },
+        "improvementStateId": {
+          "type": "string",
+          "pattern": "^(DISCOVERED|ANALYZING|PLANNED|IMPLEMENTING|TESTING|VERIFYING|STANDARDIZING|AUTOMATED|CLOSED|REJECTED)$",
+          "example": "VERIFYING",
+          "note": "Improvement-Board-Zustände gemäß ATC-STD-IMPROVEMENT-001 Abschnitt 16 (SCR-0056)"
+        },
+        "aiGovStandardId": {
+          "type": "string",
+          "pattern": "^ATC-AI-GOV-(?:[A-Z]+-)?[0-9]{3,}$",
+          "example": "ATC-AI-GOV-001",
+          "note": "ATC Agent Governance Framework v1.0 (Owner-Architektur-Freeze 09.09., SCR-0062): Umbrella ATC-AI-GOV-001 + Sub-Standards ATC-AI-GOV-<DOMAIN>-NNN (AGENTS/MANIFEST/CAPABILITY/POLICY/CHECK/AUDIT/FINDING/HANDOFF/INCIDENT/CHANGE); operativer SSOT .github-Hub"
+        },
+        "aiGovRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-(?:AIGOV|AGOV(?:-[A-Z]{2,4})?)-[0-9]{3,}$",
+          "example": "REQ-AIGOV-001",
+          "note": "Anforderungen der ATC-AI-GOV-Familie: Umbrella = REQ-AIGOV-NNN; Sub-Standards = REQ-AGOV-<SUFFIX>-NNN; SCR-0061/0062"
+        },
+        "agovCheckId": {
+          "type": "string",
+          "pattern": "^AGOV-CHECK-[0-9]{3,}$",
+          "example": "AGOV-CHECK-009",
+          "note": "Versionierter CHECK-Katalog der Agent-Governance (checks.yaml im .github-Hub, 20 Checks, SCR-0058); je Check MUST/SHOULD/MAY + Severity P0-P3; Detail-Reposicht: registry/repo-audit-checks.yaml CHECK-001..064"
+        },
+        "atcPolicyId": {
+          "type": "string",
+          "pattern": "^ATC-POL-[0-9]{3,}$",
+          "example": "ATC-POL-008",
+          "note": "Maschinenpruefbare Agent-Policies (policies.yaml, SCR-0057/0058): MUST/SHOULD/MAY-Modell, truthful-reporting u.a.; Grundsätze AP-001..016 menschenlesbar"
+        },
+        "atcCheckObjectId": {
+          "type": "string",
+          "pattern": "^ATC-CHECK-[0-9]{3,}$",
+          "example": "ATC-CHECK-010",
+          "note": "Maschinenlesbare Check-Objekte (ai/checks/CHECK-NNN.yaml, Schema check.schema.yaml, SCR-0062); 1:1-Alias auf Katalog-IDs AGOV-CHECK-NNN (checks.yaml, SCR-0058) — ATC-CHECK-NNN ist kanonisch, AGOV-CHECK-NNN Legacy-Katalog-ID"
+        },
+        "atcFindingId": {
+          "type": "string",
+          "pattern": "^ATC-FINDING-[0-9]{4}-[0-9]{6,}$",
+          "example": "ATC-FINDING-2026-000001",
+          "note": "Persistente Governance-Findings des ATC Governance Auditor (ATC-AI-GOV-FINDING-001, SCR-0062): YYYY=Jahr, NNNNNN=org-weite Sequenz; Schema finding-schema.yaml; verknüpft via registry_ref mit F-NNNN-Kurz-IDs der Registry (BUG-001) — ATC-FINDING ist kanonisch/persistent, F-NNNN ist Registry-Shorthand"
+        },
+        "atcAgentCheckObjectId": {
+          "type": "string",
+          "pattern": "^ATC-CHECK-AGENT-[0-9]{3,}$",
+          "example": "ATC-CHECK-AGENT-010",
+          "note": "Agent-Governance-Checks (SCR-0064, Owner-Gap-Liste GOV-008/009): ai/checks/AGENT-001..015.yaml im .github-Hub; zweite Pruefebene neben ATC-CHECK-001..064 (Repository Health, REPO-AUDIT-002) und ATC-CHECK-001..020 (Governance-Sicht)"
+        },
+        "atcExceptionId": {
+          "type": "string",
+          "pattern": "^ATC-EXC-[0-9]{3,}$",
+          "example": "ATC-EXC-001",
+          "note": "Policy-Ausnahmen (GOV-025, SCR-0064): exceptions.yaml im .github-Hub; expires PFLICHT (keine dauerhaften Ausnahmen), approved_by OWNER zwingend, abgelaufen = inaktiv (Fail Closed)"
+        },
+        "atcHandoffId": {
+          "type": "string",
+          "pattern": "^ATC-HANDOFF-[0-9]{4}-[0-9]{3,}$",
+          "example": "ATC-HANDOFF-2026-001",
+          "note": "Maschinenlesbare Agent-Handoffs (HANDOFF-001, Schema handoff.schema.yaml, SCR-0064)"
+        },
+        "maintStandardId": {
+          "type": "string",
+          "pattern": "^ATC-STD-MAINT-[0-9]{3,}$",
+          "description": "Maintenance family standard (FAM-52, SCR-0120)"
+        },
+        "maintRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-MAINT-[0-9]{3,}$",
+          "description": "Maintenance requirement class MAINT — family-wide number space (Variante A, SCR-0120 v8)"
+        },
+        "auroraSwarmStandardId": {
+          "type": "string",
+          "pattern": "^ATC-AURORA-SWARM-[0-9]{3,}$",
+          "example": "ATC-AURORA-SWARM-001"
+        },
+        "auroraSwarmRequirementId": {
+          "type": "string",
+          "pattern": "^REQ-ASW-[0-9]{3,}$",
+          "example": "REQ-ASW-001"
+        }
+      }
+    },
+    "repositoryPatterns": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical",
+        "families",
+        "grandfathered"
+      ],
+      "properties": {
+        "canonical": {
+          "type": "string",
+          "pattern": "^atc-[a-z0-9]+(-[a-z0-9]+)*$",
+          "example": "atc-standards-validator"
+        },
+        "families": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(atc|atclang|globus|aurora)-[a-z0-9-]*$"
+          },
+          "description": "Projektfamilien-Namespaces (7.5): atc-*, atclang-*, globus-*, aurora-*"
+        },
+        "grandfathered": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "atclang",
+              "a-townchain",
+              "a-townchain-os",
+              "a-townchain-os-docs",
+              "globus-os",
+              "aurora-ai",
+              "genesis-engine",
+              "genesis-chronicles"
+            ]
+          },
+          "description": "Bestands-Repos behalten ihre Namen (7.3)"
+        }
+      }
+    },
+    "filenamePatterns": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "standardDoc",
+        "schemaDoc",
+        "integrity",
+        "review",
+        "compliance",
+        "bugStandardDoc",
+        "netStandardDoc",
+        "aiDevStandardDoc"
+      ],
+      "properties": {
+        "standardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-000.md"
+        },
+        "schemaDoc": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+[.]schema[.](json|yaml)$",
+          "example": "naming-conventions.schema.json"
+        },
+        "integrity": {
+          "type": "string",
+          "pattern": "^ATC-STD-[0-9]{3,}[.]integrity[.]yaml$"
+        },
+        "review": {
+          "type": "string",
+          "pattern": "^ATC-STD-[0-9]{3,}[.]review[.]yaml$"
+        },
+        "compliance": {
+          "type": "string",
+          "pattern": "^ATC-STD-[0-9]{3,}[.]compliance[.]yaml$"
+        },
+        "bugStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-BUG-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-BUG-001.md"
+        },
+        "v2sStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-V2S-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-V2S-000.md"
+        },
+        "netStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-NET-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-NET-001.md"
+        },
+        "aiDevStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-AI-DEV-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-AI-DEV-001.md"
+        },
+        "zkpStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-ZKP-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-ZKP-001.md"
+        },
+        "aasStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-AAS-[0-9]{3,}[.]md$",
+          "example": "ATC-AAS-001.md"
+        },
+        "entStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-ENT-[0-9]{3,}[.]md$",
+          "example": "ATC-ENT-001.md"
+        },
+        "readmeStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-README-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-README-001.md"
+        },
+        "mdStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-MD-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-MD-001.md"
+        },
+        "scStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-SC-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-SC-001.md"
+        },
+        "descStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-DESC-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-DESC-001.md"
+        },
+        "versionStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-VERSION-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-VERSION-001.md"
+        },
+        "auditStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-AUDIT-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-AUDIT-001.md"
+        },
+        "aiDecisionStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-AI-DECISION-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-AI-DECISION-001.md"
+        },
+        "updateStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-UPDATE-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-UPDATE-001.md"
+        },
+        "compatStandardDoc": {
+          "pattern": "^ATC-STD-COMPAT-[0-9]{3,}[.]md$",
+          "description": "ATC Compat Standard-Dokument"
+        },
+        "milestoneStandardDoc": {
+          "pattern": "^ATC-STD-MILESTONE-[0-9]{3,}[.]md$",
+          "description": "ATC Milestone Standard-Dokument"
+        },
+        "frameworkStandardDoc": {
+          "pattern": "^ATC-STD-FRAMEWORK-[0-9]{3,}[.]md$",
+          "description": "Framework-Master-Dokument"
+        },
+        "repoAuditStandardDoc": {
+          "pattern": "^ATC-STD-REPO-AUDIT-[0-9]{3,}[.]md$",
+          "description": "Repository-Audit-Standard-Dokument"
+        },
+        "aosStandardDoc": {
+          "pattern": "^ATC-STD-AOS-[0-9]{3,}[.]md$",
+          "description": "AOS-Standard-Dokument"
+        },
+        "masterAuditStandardDoc": {
+          "pattern": "^ATC-STD-999(-[0-9]{3,})?[.]md$",
+          "description": "Master-Audit-Standard-Dokument"
+        },
+        "protocolStandardDoc": {
+          "pattern": "^ATC-STD-PROTOCOL-[0-9]{3,}[.]md$",
+          "description": "Protocol-Standards-Dokument"
+        },
+        "taxonomyStandardDoc": {
+          "pattern": "^ATC-STD-TAXONOMY-[0-9]{3,}[.]md$",
+          "description": "Taxonomy-Standard-Dokument"
+        },
+        "stddevStandardDoc": {
+          "pattern": "^ATC-STD-STDDEV-[0-9]{3,}[.]md$",
+          "description": "Standards-Development-Dokument"
+        },
+        "registryStandardDoc": {
+          "pattern": "^ATC-STD-REGISTRY-[0-9]{3,}[.]md$",
+          "description": "Registry-Management-Dokument"
+        },
+        "changeStandardDoc": {
+          "pattern": "^ATC-STD-CHANGE-[0-9]{3,}[.]md$",
+          "description": "Change-Control-Dokument"
+        },
+        "improvementStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-STD-IMPROVEMENT-[0-9]{3,}[.]md$",
+          "example": "ATC-STD-IMPROVEMENT-001.md"
+        },
+        "aiGovStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-AI-GOV-(?:[A-Z]+-)?[0-9]{3,}[.]md$",
+          "example": "ATC-AI-GOV-CHECK-001.md"
+        },
+        "auroraSwarmStandardDoc": {
+          "type": "string",
+          "pattern": "^ATC-AURORA-SWARM-[0-9]{3,}[.]md$",
+          "example": "ATC-AURORA-SWARM-001.md"
+        }
+      }
+    },
+    "versionPatterns": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semver"
+      ],
+      "properties": {
+        "semver": {
+          "type": "string",
+          "pattern": "^[0-9]+[.][0-9]+[.][0-9]+$",
+          "example": "1.0.0",
+          "note": "Version getrennt von Identitaet (7.4); Pinning via ID@version"
+        }
+      }
+    },
+    "extensionRules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed",
+        "prohibited"
+      ],
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "items": {
+            "enum": [
+              ".md",
+              ".schema.json",
+              ".schema.yaml",
+              ".yaml",
+              ".json"
+            ]
+          },
+          "description": "Definierte Extensions fuer Governance-Dokumente"
+        },
+        "prohibited": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Ungueltig: Unterstriche (atc_std_000.md), Leerzeichen (ATC Standard 000.md), Status-/Final-Marker (standard-final.md, standard-final-v2.md)"
+        }
+      }
+    },
+    "reservedNames": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "placeholders",
+        "statusMarkers",
+        "legacyRanges",
+        "grandfathered"
+      ],
+      "properties": {
+        "placeholders": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "NNN",
+              "X.Y.Z"
+            ]
+          },
+          "description": "Platzhalter, keine IDs"
+        },
+        "statusMarkers": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "DRAFT",
+              "REVIEW",
+              "CANDIDATE",
+              "APPROVED",
+              "STABLE",
+              "FINAL"
+            ]
+          },
+          "description": "Status ist niemals Bestandteil der ID (7.1)"
+        },
+        "legacyRanges": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "ATC-01..99",
+              "ATC-0001..0008",
+              "ATS-1000..1007"
+            ]
+          },
+          "description": "Legacy-Serien: Nummerierung bleibt gueltig, keine Neuallokation (7.9)"
+        },
+        "grandfathered": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^AD-[0-9]{3,}$"
+          },
+          "description": "DECISIONS_REGISTER-Form AD-NNN als Legacy-Form von ADR-NNN (7.9)"
+        }
+      }
+    }
+  }
+}
