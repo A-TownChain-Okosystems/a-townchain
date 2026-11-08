@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-208",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #208: [P1] Verify compute result attestations independently and block unsafe settlement",
+  "context": "Issue 208 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/208",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Goal\nEnsure protected actions and settlement cannot proceed on unattributed, stale or insufficiently verified compute results.\n\n## Scope\nImplement attestation validation against the normative contract, identity/revocation status, freshness, input/result binding and an explicit correctness assurance model.\n\n## Acceptance criteria\n- [ ] Valid attestation is bound to task_id, run_id, node_id, input_hash and artifact_hash.\n- [ ] Invalid signature, unknown/revoked signer, stale/replayed attestation and mismatched hashes are rejected.\n- [ ] Missing or failed required verification blocks settlement and protected downstream actions.\n- [ ] Tests distinguish signature/attribution validity from computation correctness.\n- [ ] The verifier's assurance model and residual trust assumptions are documented.\n- [ ] Exact-SHA CI/integration evidence is attached.\n\n## Dependencies\nNormative attestation/identity contracts; multi-node worker path for full integration."
+}
