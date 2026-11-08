@@ -1,0 +1,132 @@
+name: Source-to-Catalog Reconciliation Contract
+
+on:
+  pull_request:
+    paths:
+      - "schemas/source-catalog-reconciliation.schema.json"
+      - "docs/architecture/source-catalog-reconciliation.v1.json"
+      - "schemas/interface-contract-census.schema.json"
+      - "docs/architecture/interface-contract-census.v1.json"
+      - "docs/architecture/source-tree-manifest.b2ad23ee.json"
+      - ".github/workflows/source-catalog-reconciliation.yml"
+      - "scripts/verify_reconciliation_evidence.py"
+      - "tests/test_verify_reconciliation_evidence.py"
+  push:
+    branches: [main]
+    paths:
+      - "schemas/source-catalog-reconciliation.schema.json"
+      - "docs/architecture/source-catalog-reconciliation.v1.json"
+      - "schemas/interface-contract-census.schema.json"
+      - "docs/architecture/interface-contract-census.v1.json"
+      - "docs/architecture/source-tree-manifest.b2ad23ee.json"
+      - ".github/workflows/source-catalog-reconciliation.yml"
+      - "scripts/verify_reconciliation_evidence.py"
+      - "tests/test_verify_reconciliation_evidence.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-reconciliation-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema>=4.20,<5'
+      - name: Validate report schema and fail-closed status
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema = json.loads(Path("schemas/source-catalog-reconciliation.schema.json").read_text())
+          report = json.loads(Path("docs/architecture/source-catalog-reconciliation.v1.json").read_text())
+          errors = sorted(Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(report),
+                          key=lambda error: list(map(str, error.absolute_path)))
+          if errors:
+              for error in errors:
+                  print(f"{list(error.absolute_path)}: {error.message}")
+              raise SystemExit(1)
+          if report["status"] == "RECONCILED":
+              complete = all(value == "COMPLETE" for value in report["scope"].values())
+              unresolved = [f for f in report["findings"] if f["status"] != "RESOLVED"]
+              unknown_counts = [key for key, value in report["counts"].items() if value is None]
+              if not complete or unresolved or unknown_counts:
+                  raise SystemExit("RECONCILED status rejected: incomplete scope, unresolved findings, or unknown counts")
+          if report["status"] == "BLOCKED" and not any(f["status"] == "BLOCKED" for f in report["findings"]):
+              raise SystemExit("BLOCKED report requires at least one explicit BLOCKED finding")
+          print(f"Valid reconciliation contract: status={report['status']}; source={report['source_commit_sha']}; catalog={report['catalog_commit_sha']}")
+          print("Schema validity does not establish source completeness, normative correctness, or VERIFIED status.")
+          PY
+      - name: Validate source-bound interface contract census
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          
+          schema = json.loads(Path("schemas/interface-contract-census.schema.json").read_text())
+          census = json.loads(Path("docs/architecture/interface-contract-census.v1.json").read_text())
+          manifest = json.loads(Path("docs/architecture/source-tree-manifest.b2ad23ee.json").read_text())
+          errors = sorted(Draft202012Validator(schema).iter_errors(census),
+                          key=lambda error: list(map(str, error.absolute_path)))
+          if errors:
+              for error in errors:
+                  print(f"{list(error.absolute_path)}: {error.message}")
+              raise SystemExit(1)
+          
+          if census["repository"] != manifest["repository"]:
+              raise SystemExit("interface census repository does not match pinned source manifest")
+          if census["observed_source_commit_sha"] != manifest["source_commit_sha"]:
+              raise SystemExit("interface census source commit does not match pinned source manifest")
+          tracked = {item["path"]: item["blob_sha"] for item in manifest["files"]}
+          ids = [item["contract_id"] for item in census["contracts"]]
+          if len(ids) != len(set(ids)):
+              raise SystemExit("duplicate interface contract IDs")
+          for contract in census["contracts"]:
+              for source in contract["sources"]:
+                  if source["commit_sha"] != manifest["source_commit_sha"]:
+                      raise SystemExit(f"{contract['contract_id']}: source commit mismatch: {source['path']}")
+                  if tracked.get(source["path"]) != source["blob_sha"]:
+                      raise SystemExit(f"{contract['contract_id']}: source path/blob SHA mismatch: {source['path']}")
+              schema_ref = contract["schema"]
+              if schema_ref is not None and tracked.get(schema_ref["path"]) != schema_ref["blob_sha"]:
+                  raise SystemExit(f"{contract['contract_id']}: schema path/blob SHA mismatch: {schema_ref['path']}")
+          
+          expected = {
+              "declared_contract_records": len(census["contracts"]),
+              "source_bound_implementations": sum(c["implementation_binding"] == "BOUND" for c in census["contracts"]),
+              "schema_only_records": sum(c["schema"] is not None and not c["sources"] for c in census["contracts"]),
+              "versioned_json_schemas": sum(c["schema"] is not None for c in census["contracts"]),
+              "unmapped_producer_bindings": sum(c["producer_binding"] == "UNMAPPED" for c in census["contracts"]),
+              "unmapped_consumer_bindings": sum(c["consumer_binding"] == "UNMAPPED" for c in census["contracts"]),
+              "contracts_without_versioned_schema": sum(c["schema"] is None for c in census["contracts"]),
+              "reconciled_contracts": sum(c["status"] == "RECONCILED" for c in census["contracts"]),
+              "verified_contracts": sum(c["status"] == "VERIFIED" for c in census["contracts"]),
+          }
+          if census["counts"] != expected:
+              raise SystemExit(f"interface census count mismatch: expected={expected}; actual={census['counts']}")
+          if census["status"] == "RECONCILED" and (
+              expected["unmapped_producer_bindings"] or expected["unmapped_consumer_bindings"]
+              or expected["contracts_without_versioned_schema"]
+              or expected["reconciled_contracts"] != len(census["contracts"])
+          ):
+              raise SystemExit("interface census cannot claim RECONCILED while mappings remain open or any contract lacks RECONCILED status")
+          if census["status"] == "VERIFIED" and (
+              expected["unmapped_producer_bindings"] or expected["unmapped_consumer_bindings"]
+              or expected["contracts_without_versioned_schema"]
+              or expected["verified_contracts"] != len(census["contracts"])
+          ):
+              raise SystemExit("interface census cannot claim VERIFIED while mappings remain open or any contract lacks VERIFIED status")
+          if census["status"] != "BLOCKED":
+              raise SystemExit("initial interface census must remain BLOCKED until all listed mappings are reconciled")
+          print(json.dumps({"status": census["status"], "counts": expected, "source_bindings": "MATCHED_TO_PINNED_TREE"}, sort_keys=True))
+          print("Source/blob binding is verified for listed records only; inventory completeness and consumer compatibility remain unverified.")
+          PY
+
+      - name: Test fail-closed external workflow evidence verifier
+        run: python -m unittest discover -s tests -p 'test_verify_reconciliation_evidence.py' -v
