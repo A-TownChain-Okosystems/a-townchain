@@ -8,7 +8,7 @@
 
 ## Status
 
-Siehe [STATUS.md](STATUS.md) und [Haupt-Roadmap](../a-townchain-os-docs/docs/ROADMAP.md).
+Siehe [STATUS.md](STATUS.md) und [Haupt-Roadmap](../../../../docs/os-docs/docs/ROADMAP.md).
 
 ## Meilensteine
 
