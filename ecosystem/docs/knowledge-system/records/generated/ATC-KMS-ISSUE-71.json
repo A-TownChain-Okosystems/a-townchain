@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-71",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #71: Master Architecture: canonical A-TownChain layer model L0–L7 + Cross-Layer Control Plane",
+  "context": "Issue 71 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/71",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Objective\n\nAlign `ARCHITECTURE.md` with a canonical responsibility/trust-boundary layer model for A-TownChain.\n\n## Canonical layers\n\n- **L0 — System & Network**: hardware, HAL, OS, P2P, transport, node runtime, ShivaCore/GlobusOS boundaries\n- **L1 — Data & Storage**: canonical persistence, history, storage, indexing; indexer is not Source of Truth\n- **L2 — Blockchain Core & Consensus**: transactions, mempool, blocks, consensus, finality, economics, settlement\n- **L3 — Deterministic Execution / ATC-VM**: ATC-IR, ABI, bytecode, verifier, ATVM, deterministic state transition\n- **L4 — Scaling & Execution Domains**: future rollups, ZK/validity systems, specialized execution/settlement domains\n- **L5 — Protocol & Economic Domains**: Identity, assets, oracles, compute, marketplace, launchpad and other domain protocols\n- **L6 — AI & Intelligence**: Aurora AI, agents, RAG, memory, Quest/Dialogue/World intelligence\n- **L7 — Applications & User Experience**: Genesis applications, dApps, wallet UX, explorer and end-user products\n- **X — Cross-Layer Control Plane**: identity, authorization/capability, policy, governance, cryptography, audit/evidence, observability, interoperability, versioning/compatibility\n\n## Required invariants\n\n1. Aurora AI has no consensus authority and is outside the deterministic consensus/VM trust boundary.\n2. AI produces proposals/commands; authoritative state changes require the responsible deterministic runtime and authorization boundary.\n3. Genesis Engine is not Blockchain Core.\n4. GlobusOS/ShivaCore are not ATC-VM.\n5. Indexer and Explorer are not canonical state sources.\n6. AI Memory is not canonical blockchain state.\n7. Each component repository remains its own implementation SSOT; ecosystem remains the system-boundary/integration architecture SSOT.\n8. Architecture statements must remain distinct from implementation/test/CI/E2E evidence.\n\n## Current ARCHITECTURE.md\n\nThe file already contains useful Aurora, Genesis, Quest AI and Dialogue AI boundaries, but its top-level layering currently uses a different L6/L1 presentation. Consolidate rather than duplicate conflicting layer models.\n\n## Acceptance criteria\n\n- One canonical L0–L7 + X model exists in `ARCHITECTURE.md`.\n- Existing Quest/Dialogue/Aurora boundaries are mapped to the canonical layers without claiming implementation status.\n- A-TownChain deterministic trust boundary is explicitly documented:\n  `TX → Signature/Authorization → Mempool → Consensus → ATC-VM → State Transition → State → Storage → Finality`.\n- Cross-layer control-plane responsibilities are explicitly defined.\n- No contradictory legacy layer model remains.\n- Changes are reviewable and evidence-ready; no gate weakening or cosmetic-only documentation changes."
+}
