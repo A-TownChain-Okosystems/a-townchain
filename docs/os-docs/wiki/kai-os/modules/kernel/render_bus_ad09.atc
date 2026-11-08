@@ -1,0 +1,164 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-09 — RenderBus: Engine ↔ Renderer Kommunikation
+// Genesis Communication Layer (GCL) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct RenderCommand {
+    id: Hash256,
+    type: RenderCmdType,
+    priority: UInt8,
+    data: Map<String, Any>,
+    frame: UInt64,
+    timestamp: UInt64,
+}
+
+enum RenderCmdType {
+    DrawCall, ShaderBind, TextureBind, MeshBind, UniformSet,
+    LODUpdate, ViewportSet, CameraUpdate, LightUpdate,
+    FramegraphRebuild, GPUResourceCreate, GPUResourceDestroy,
+    ClearTarget, Present, Blit,
+}
+
+struct RenderBus {
+    commands: List<RenderCommand>,
+    frame_queue: Map<UInt64, List<RenderCommand>>,
+    current_frame: UInt64,
+    shader_cache: Map<String, UInt32>,  // shader name → GPU program ID
+    lod_strategy: LODStrategy,
+    framegraph_dirty: Bool,
+    stats: RenderStats,
+}
+
+enum LODStrategy {
+    DistanceBased, ScreenSizeBased, Fixed, Adaptive,
+}
+
+struct RenderStats {
+    draw_calls: UInt32,
+    triangles: UInt64,
+    vertices: UInt64,
+    shader_switches: UInt32,
+    texture_binds: UInt32,
+    frame_time_ms: Float32,
+    fps: UInt16,
+}
+
+// RenderBus: Command enqueue
+pub fn enqueue(bus: RenderBus, cmd_type: RenderCmdType, data: Map<String, Any>, priority: UInt8) -> Hash256 {
+    let cmd = RenderCommand {
+        id: Crypto::sha256(serialize(cmd_type, bus.current_frame, bus.commands.len())),
+        type: cmd_type,
+        priority: priority,
+        data: data,
+        frame: bus.current_frame,
+        timestamp: Chain::timestamp_ms(),
+    }
+    bus.commands.append(cmd)
+    return cmd.id
+}
+
+// RenderBus: Draw Call
+pub fn draw_call(bus: RenderBus, mesh_id: UInt32, material_id: UInt32, instance_count: UInt32) -> Hash256 {
+    let data = {"mesh": mesh_id, "material": material_id, "instances": instance_count}
+    bus.stats.draw_calls = bus.stats.draw_calls + 1
+    return enqueue(bus, RenderCmdType::DrawCall, data, 0)
+}
+
+// RenderBus: Shader wechseln
+pub fn bind_shader(bus: RenderBus, shader_name: String) -> Bool {
+    if not bus.shader_cache.contains(shader_name) {
+        return false  // Shader nicht kompiliert
+    }
+    let data = {"shader": shader_name, "program_id": bus.shader_cache[shader_name]}
+    enqueue(bus, RenderCmdType::ShaderBind, data, 10)
+    bus.stats.shader_switches = bus.stats.shader_switches + 1
+    return true
+}
+
+// RenderBus: LOD aktualisieren
+pub fn update_lod(bus: RenderBus, entity_id: UInt32, distance: Float32) -> Bool {
+    let lod_level = calculate_lod(bus.lod_strategy, distance)
+    let data = {"entity": entity_id, "lod": lod_level, "distance": distance}
+    enqueue(bus, RenderCmdType::LODUpdate, data, 5)
+    return true
+}
+
+// RenderBus: Framegraph als dirty markieren
+pub fn mark_framegraph_dirty(bus: RenderBus) -> Bool {
+    bus.framegraph_dirty = true
+    return true
+}
+
+// RenderBus: Frame abschließen
+pub fn end_frame(bus: RenderBus) -> Bool {
+    // Commands nach Priority sortieren
+    bus.commands = bus.commands.sort(fn a, b => a.priority > b.priority)
+    // In Frame-Queue verschieben
+    bus.frame_queue[bus.current_frame] = bus.commands
+    bus.commands = []
+    bus.current_frame = bus.current_frame + 1
+    if bus.framegraph_dirty {
+        rebuild_framegraph(bus)
+        bus.framegraph_dirty = false
+    }
+    emit FrameEnded(bus.current_frame - 1, bus.stats.draw_calls)
+    return true
+}
+
+// RenderBus: GPU-Ressource erzeugen
+pub fn create_gpu_resource(bus: RenderBus, resource_type: String, size_bytes: UInt64) -> UInt32 {
+    let data = {"type": resource_type, "size": size_bytes, "action": "create"}
+    enqueue(bus, RenderCmdType::GPUResourceCreate, data, 20)
+    return bus.stats.draw_calls  // Stub: echte GPU-ID zurückgeben
+}
+
+// RenderBus: GPU-Ressource zerstören
+pub fn destroy_gpu_resource(bus: RenderBus, resource_id: UInt32) -> Bool {
+    let data = {"resource_id": resource_id, "action": "destroy"}
+    enqueue(bus, RenderCmdType::GPUResourceDestroy, data, 20)
+    return true
+}
+
+// RenderBus: Camera Update
+pub fn update_camera(bus: RenderBus, pos: List<Float32>, target: List<Float32>, fov: Float32) -> Bool {
+    let data = {"position": pos, "target": target, "fov": fov}
+    enqueue(bus, RenderCmdType::CameraUpdate, data, 15)
+    return true
+}
+
+// RenderBus: Light Update
+pub fn update_light(bus: RenderBus, light_id: UInt32, light_type: String, intensity: Float32, color: List<Float32>) -> Bool {
+    let data = {"light_id": light_id, "type": light_type, "intensity": intensity, "color": color}
+    enqueue(bus, RenderCmdType::LightUpdate, data, 10)
+    return true
+}
+
+// RenderBus: Stats aktualisieren
+pub fn update_stats(bus: RenderBus, frame_time_ms: Float32) {
+    bus.stats.frame_time_ms = frame_time_ms
+    bus.stats.fps = if frame_time_ms > 0 then 1000 / frame_time_ms else 0
+}
+
+// Helper: LOD berechnen
+pub fn calculate_lod(strategy: LODStrategy, distance: Float32) -> UInt8 {
+    match strategy {
+        LODStrategy::DistanceBased => {
+            if distance < 10.0 { return 0 }
+            if distance < 50.0 { return 1 }
+            if distance < 200.0 { return 2 }
+            return 3
+        },
+        LODStrategy::Fixed => return 0,
+        _ => return 1,
+    }
+}
+
+// Helper: Framegraph rebuild
+pub fn rebuild_framegraph(bus: RenderBus) {
+    emit FramegraphRebuilt(bus.current_frame)
+}
+
+event FrameEnded(frame: UInt64, draw_calls: UInt32)
+event FramegraphRebuilt(frame: UInt64)
