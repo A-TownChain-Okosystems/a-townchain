@@ -1,0 +1,12 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: blockchain
+family: REPOSITORY / GIT
+family_id: '200'
+file: standards/blockchain/ATC-STD-212.md
+mandate: Owner-Auftrag 08.09. KONFLIKT-Aufloesung (SCR-0040)
+registry_version: 1
+standard_id: ATC-STD-212
+status: approved
+title: Token Supply Standard
+version: 1.0.0
