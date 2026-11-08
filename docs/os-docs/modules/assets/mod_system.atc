@@ -1,0 +1,144 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-79 — Mod System
+# Genesis Engine — Community-Mods mit Auto-Detection
+# Standard: AD-79
+
+enum ModType:
+    CHARACTER_PACK    # Neue Charaktere
+    WEAPON_PACK       # Waffen
+    MUSIC_PACK        # Musik & Sound
+    LANGUAGE_PACK     # Übersetzungen
+    MAP_PACK          # Karten / Level
+    UI_PACK           # UI Themes
+    SCRIPT_MOD        # Lua/ATCLang Scripts
+    TOTAL_CONVERSION  # Komplett-Umwandlung
+
+struct Mod:
+    mod_id: String
+    name: String
+    mod_type: ModType
+    version: String
+    author: String
+    description: String
+    enabled: Bool
+    load_order: Int32
+    dependencies: Array<String>    # Andere Mod-IDs
+    conflicts: Array<String>       # Mods die nicht kompatibel sind
+    assets: Array<String>          # Asset-Pfade
+    scripts: Array<String>         # Script-Pfade
+    config: Map<String, Variant>   # Mod-spezifische Config
+    signature: String              # Kryptografische Signatur
+    verified: Bool                 # Offiziell verifiziert
+
+func scan_mods_directory(mods_dir: String) -> Array<Mod>:
+    mods = []
+    if not directory_exists(mods_dir):
+        return mods
+    for entry in list_directory(mods_dir):
+        mod_path = mods_dir + "/" + entry
+        if is_directory(mod_path):
+            manifest = mod_path + "/manifest.json"
+            if file_exists(manifest):
+                mod = parse_mod_manifest(manifest)
+                mod.mod_id = entry
+                mods.append(mod)
+                log_info(f"Mod gefunden: {mod.name} v{mod.version} by {mod.author}")
+    # Sortiere nach Load Order
+    mods.sort(lambda a, b: a.load_order - b.load_order)
+    return mods
+
+func parse_mod_manifest(path: String) -> Mod:
+    data = read_file(path)
+    json = parse_json(data)
+    return Mod {
+        mod_id: "",
+        name: json.get("name", "Unknown"),
+        mod_type: parse_mod_type(json.get("type", "script_mod")),
+        version: json.get("version", "1.0.0"),
+        author: json.get("author", "Unknown"),
+        description: json.get("description", ""),
+        enabled: json.get("enabled", true),
+        load_order: json.get("load_order", 100),
+        dependencies: json.get("dependencies", []),
+        conflicts: json.get("conflicts", []),
+        assets: json.get("assets", []),
+        scripts: json.get("scripts", []),
+        config: json.get("config", {}),
+        signature: json.get("signature", ""),
+        verified: false
+    }
+
+func load_mod(mod: Mod, base_path: String) -> Bool:
+    if not mod.enabled:
+        log_debug(f"Mod '{mod.name}' ist deaktiviert — übersprungen")
+        return true
+    # Prüfe Dependencies
+    for dep in mod.dependencies:
+        if not is_mod_loaded(dep):
+            log_error(f"Mod '{mod.name}' benötigt '{dep}' — nicht geladen")
+            return false
+    # Prüfe Konflikte
+    for conflict in mod.conflicts:
+        if is_mod_loaded(conflict):
+            log_error(f"Mod '{mod.name}' konfligiert mit '{conflict}'")
+            return false
+    # Verifiziere Signatur
+    if mod.signature != "":
+        mod.verified = verify_signature(mod)
+        if not mod.verified:
+            log_warn(f"Mod '{mod.name}' — Signatur ungültig!")
+    # Lade Assets
+    for asset_path in mod.assets:
+        full_path = base_path + "/" + mod.mod_id + "/" + asset_path
+        load_asset(full_path)
+    # Lade Scripts
+    for script_path in mod.scripts:
+        full_path = base_path + "/" + mod.mod_id + "/" + script_path
+        load_script(full_path)
+    log_info(f"Mod geladen: {mod.name} v{mod.version}")
+    return true
+
+func enable_mod(mod: Mod) -> Bool:
+    mod.enabled = true
+    return load_mod(mod, get_mods_dir())
+
+func disable_mod(mod: Mod) -> Bool:
+    mod.enabled = false
+    # Entlade Mod-Assets
+    for asset_path in mod.assets:
+        unload_asset(asset_path)
+    log_info(f"Mod deaktiviert: {mod.name}")
+    return true
+
+# Mod Conflict Resolution — automatische Lösung bei Konflikten
+func resolve_conflicts(mods: Array<Mod>) -> Array<Mod>:
+    resolved = []
+    for mod in mods:
+        has_conflict = false
+        for other in resolved:
+            if mod.mod_id in other.conflicts or other.mod_id in mod.conflicts:
+                log_warn(f"Konflikt: {mod.name} vs {other.name} — behalte {other.name}")
+                has_conflict = true
+                break
+        if not has_conflict:
+            resolved.append(mod)
+    return resolved
+
+# Mod Export — für Creator
+func export_mod(mod: Mod, output_path: String) -> Bool:
+    manifest = {
+        "name": mod.name,
+        "type": to_string(mod.mod_type),
+        "version": mod.version,
+        "author": mod.author,
+        "description": mod.description,
+        "dependencies": mod.dependencies,
+        "assets": mod.assets,
+        "scripts": mod.scripts,
+        "config": mod.config
+    }
+    write_file(output_path + "/manifest.json", to_json(manifest))
+    # Pack zu .atcmod Archive
+    create_archive(output_path, output_path + ".atcmod")
+    log_info(f"Mod exportiert: {mod.name} → {output_path}.atcmod")
+    return true
