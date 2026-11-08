@@ -25,6 +25,7 @@ USAGE:
                               Vertrag, inkl. abi_sha256)
     atc abi --hash <ziel>     nur die ABI-Hashes
     atc abi --digest <ziel>   ein Sammel-Digest je Quelldatei
+    atc storage <ziel>        Zustands-Slots je Quelle (Layout-Hash, S1-Faehigkeit)
 
 EXIT-CODES:
     0  ok
@@ -58,6 +59,9 @@ fn main() -> ExitCode {
     }
     if mode == "abi" {
         return emit_abi(path, hashes_only, digest_only);
+    }
+    if mode == "storage" {
+        return emit_storage(path);
     }
     let src = match fs::read_to_string(path) {
         Ok(s) => s,
@@ -247,6 +251,62 @@ fn check_project_dir(dir: &str, strict: bool) -> ExitCode {
 }
 
 /// Kanonische Vertrags-ABI ausgeben: JSONL, eine Zeile je Vertrag.
+/// `atc storage <ziel>`: Zustandsslots je Quelle. Eine Zeile je Datei:
+/// `layout_hash  pfad  slots  storage_bytes  s1=yes|no`.
+fn emit_storage(target: &str) -> ExitCode {
+    let mut paths = Vec::new();
+    if std::path::Path::new(target).is_dir() {
+        scan_atc(std::path::Path::new(target), &mut paths);
+        paths.sort();
+    } else {
+        paths.push(std::path::PathBuf::from(target));
+    }
+    if paths.is_empty() {
+        eprintln!("Fehler: keine .atc-Quellen unter {target}");
+        return ExitCode::from(2);
+    }
+    let mut exit = ExitCode::SUCCESS;
+    for path in &paths {
+        let label = path.display().to_string();
+        let src = match fs::read_to_string(path) {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("Fehler: Datei nicht lesbar ({label}): {e}");
+                exit = ExitCode::from(2);
+                continue;
+            }
+        };
+        let program = match parse_program(&src) {
+            Ok(p) => p,
+            Err(e) => {
+                eprintln!("Kompilierfehler in {label}: {}", e.message);
+                exit = ExitCode::from(1);
+                continue;
+            }
+        };
+        match atc_core::storage::StorageLayout::from_program(&program) {
+            Ok(layout) => {
+                if layout.slot_count() == 0 {
+                    continue; // Quelle ohne Zustand
+                }
+                println!(
+                    "{}  {}  {}  {}  s1={}",
+                    layout.layout_hash(),
+                    json_quote(&label),
+                    layout.slot_count(),
+                    layout.storage_bytes(),
+                    if layout.is_s1_executable() { "yes" } else { "no" }
+                );
+            }
+            Err(e) => {
+                eprintln!("Storage-Layout in {label} nicht ableitbar: {e}");
+                exit = ExitCode::from(1);
+            }
+        }
+    }
+    exit
+}
+
 fn emit_abi(target: &str, hashes_only: bool, digest_only: bool) -> ExitCode {
     let mut paths = Vec::new();
     if std::path::Path::new(target).is_dir() {
