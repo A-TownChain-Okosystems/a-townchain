@@ -1,0 +1,251 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-23 — Character Factory: Erzeugt Charaktere mit Persönlichkeit und Entwicklung
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct CharacterFactory {
+    characters: Map<Hash256, Character>,
+    by_franchise: Map<Hash256, List<Hash256>>,
+    archetypes: Map<String, Archetype>,
+    appearance_templates: List<AppearanceTemplate>,
+}
+
+struct Character {
+    id: Hash256,
+    franchise_id: Hash256,
+    name: String,
+    title: String,
+    race: String,
+    class: String,
+    appearance: Appearance,
+    abilities: List<Ability>,
+    personality: Personality,
+    animations: List<String>,
+    dialogues: List<Dialogue>,
+    equipment: Equipment,
+    progression: ProgressionTree,
+    backstory: String,
+    relationships: List<Relationship>,
+    level: UInt16,
+    created_at: UInt64,
+}
+
+struct Appearance {
+    height: Float32,
+    build: String,
+    hair_color: String,
+    eye_color: String,
+    skin_tone: String,
+    distinguishing_features: List<String>,
+    clothing_style: String,
+    model_ref: String,
+}
+
+struct Ability {
+    id: Hash256,
+    name: String,
+    type: AbilityType,
+    power: UInt16,
+    cooldown_ms: UInt32,
+    description: String,
+    unlocked_at_level: UInt16,
+}
+
+enum AbilityType { Active, Passive, Ultimate, Trait, Craft }
+
+struct Personality {
+    traits: List<String>,
+    alignment: String,
+    motivation: String,
+    fear: String,
+    flaw: String,
+    speech_pattern: String,
+    catchphrase: String,
+    likes: List<String>,
+    dislikes: List<String>,
+}
+
+struct Dialogue {
+    id: Hash256,
+    context: String,
+    text: String,
+    emotion: String,
+    voice_line_ref: String,
+}
+
+struct Equipment {
+    weapon: String,
+    armor: String,
+    accessories: List<String>,
+    cosmetic: List<String>,
+}
+
+struct ProgressionTree {
+    branches: List<ProgressionBranch>,
+    total_nodes: UInt16,
+    unlocked_nodes: UInt16,
+}
+
+struct ProgressionBranch {
+    name: String,
+    nodes: List<ProgressionNode>,
+}
+
+struct ProgressionNode {
+    id: Hash256,
+    name: String,
+    description: String,
+    cost: UInt16,
+    prerequisites: List<Hash256>,
+    unlocked: Bool,
+}
+
+struct Relationship {
+    target: Hash256,
+    type: String,
+    strength: Float32,
+    history: String,
+}
+
+struct Archetype {
+    name: String,
+    base_abilities: List<String>,
+    base_traits: List<String>,
+    default_class: String,
+}
+
+struct AppearanceTemplate {
+    name: String,
+    race: String,
+    base_appearance: Appearance,
+}
+
+// Character Factory: Charakter erstellen
+pub fn create_character(factory: CharacterFactory, franchise_id: Hash256, name: String, race: String, class_name: String) -> Hash256 {
+    let cid = Crypto::sha256(serialize(name, franchise_id, Chain::timestamp()))
+    factory.characters[cid] = Character {
+        id: cid,
+        franchise_id: franchise_id,
+        name: name,
+        title: "",
+        race: race,
+        class: class_name,
+        appearance: Appearance {
+            height: 1.75, build: "average", hair_color: "brown", eye_color: "brown",
+            skin_tone: "medium", distinguishing_features: [], clothing_style: "default",
+            model_ref: "",
+        },
+        abilities: [],
+        personality: Personality {
+            traits: [], alignment: "neutral", motivation: "", fear: "", flaw: "",
+            speech_pattern: "normal", catchphrase: "", likes: [], dislikes: [],
+        },
+        animations: ["idle", "walk", "run", "attack", "die"],
+        dialogues: [],
+        equipment: Equipment { weapon: "", armor: "", accessories: [], cosmetic: [] },
+        progression: ProgressionTree { branches: [], total_nodes: 0, unlocked_nodes: 0 },
+        backstory: "",
+        relationships: [],
+        level: 1,
+        created_at: Chain::timestamp(),
+    }
+    if not factory.by_franchise.contains(franchise_id) {
+        factory.by_franchise[franchise_id] = []
+    }
+    factory.by_franchise[franchise_id].append(cid)
+    emit CharacterCreated(cid, name, race, class_name)
+    return cid
+}
+
+// Character Factory: Fähigkeit hinzufügen
+pub fn add_ability(factory: CharacterFactory, char_id: Hash256, name: String, atype: AbilityType, power: UInt16, desc: String, unlock_level: UInt16) -> Bool {
+    require(factory.characters.contains(char_id), "Character not found")
+    factory.characters[char_id].abilities.append(Ability {
+        id: Crypto::sha256(serialize(name, char_id)),
+        name: name, type: atype, power: power, cooldown_ms: 5000,
+        description: desc, unlocked_at_level: unlock_level,
+    })
+    return true
+}
+
+// Character Factory: Persönlichkeit setzen
+pub fn set_personality(factory: CharacterFactory, char_id: Hash256, traits: List<String>, alignment: String, motivation: String, fear: String, flaw: String) -> Bool {
+    require(factory.characters.contains(char_id), "Character not found")
+    let c = factory.characters[char_id]
+    c.personality.traits = traits
+    c.personality.alignment = alignment
+    c.personality.motivation = motivation
+    c.personality.fear = fear
+    c.personality.flaw = flaw
+    return true
+}
+
+// Character Factory: Dialog hinzufügen
+pub fn add_dialogue(factory: CharacterFactory, char_id: Hash256, context: String, text: String, emotion: String) -> Bool {
+    require(factory.characters.contains(char_id), "Character not found")
+    factory.characters[char_id].dialogues.append(Dialogue {
+        id: Crypto::sha256(serialize(context, text, char_id)),
+        context: context, text: text, emotion: emotion, voice_line_ref: "",
+    })
+    return true
+}
+
+// Character Factory: Progression-Branch hinzufügen
+pub fn add_progression_branch(factory: CharacterFactory, char_id: Hash256, branch_name: String, nodes: List<ProgressionNode>) -> Bool {
+    require(factory.characters.contains(char_id), "Character not found")
+    factory.characters[char_id].progression.branches.append(ProgressionBranch {
+        name: branch_name, nodes: nodes,
+    })
+    factory.characters[char_id].progression.total_nodes = factory.characters[char_id].progression.total_nodes + nodes.len()
+    return true
+}
+
+// Character Factory: Beziehung hinzufügen
+pub fn add_relationship(factory: CharacterFactory, char_id: Hash256, target_id: Hash256, rel_type: String, strength: Float32) -> Bool {
+    require(factory.characters.contains(char_id), "Character not found")
+    factory.characters[char_id].relationships.append(Relationship {
+        target: target_id, type: rel_type, strength: strength, history: "",
+    })
+    return true
+}
+
+// Character Factory: Archetype definieren
+pub fn define_archetype(factory: CharacterFactory, name: String, abilities: List<String>, traits: List<String>, default_class: String) -> Bool {
+    factory.archetypes[name] = Archetype {
+        name: name, base_abilities: abilities, base_traits: traits, default_class: default_class,
+    }
+    return true
+}
+
+// Character Factory: Aussehen setzen
+pub fn set_appearance(factory: CharacterFactory, char_id: Hash256, appearance: Appearance) -> Bool {
+    require(factory.characters.contains(char_id), "Character not found")
+    factory.characters[char_id].appearance = appearance
+    return true
+}
+
+// Character Factory: Backstory setzen
+pub fn set_backstory(factory: CharacterFactory, char_id: Hash256, backstory: String) -> Bool {
+    require(factory.characters.contains(char_id), "Character not found")
+    factory.characters[char_id].backstory = backstory
+    return true
+}
+
+// Character Factory: Batch-Generierung
+pub fn generate_characters(factory: CharacterFactory, franchise_id: Hash256, count: UInt16) -> List<Hash256> {
+    let ids = []
+    let races = ["Human", "Elf", "Dwarf", "Orc", "Undead", "Dragonborn"]
+    let classes = ["Warrior", "Mage", "Rogue", "Cleric", "Ranger", "Summoner"]
+    for i in 0..count {
+        let name = "NPC_" + i
+        let race = races[i % races.len()]
+        let cls = classes[i % classes.len()]
+        let cid = create_character(factory, franchise_id, name, race, cls)
+        ids.append(cid)
+    }
+    return ids
+}
+
+event CharacterCreated(id: Hash256, name: String, race: String, class: String)
