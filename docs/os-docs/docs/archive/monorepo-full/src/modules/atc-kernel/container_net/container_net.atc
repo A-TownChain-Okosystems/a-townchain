@@ -1,0 +1,70 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// K-Sprint 47 — Container Networking
+// Tier 3 — OS Layer | Kernel-Modul
+// ─────────────────────────────────────────────────────────────
+
+module Kernel::ContainerNet {
+
+    struct NetNamespace {
+        id: u64,
+        name: String,
+        container_pid: u32,
+        loopback_up: bool,
+    }
+
+    struct VethPair {
+        id: u64,
+        host_iface_id: u64,
+        container_iface_id: u64,
+        host_ns: u64,
+        container_ns: u64,
+        bridge_iface: Option<u64>,
+    }
+
+    struct Bridge {
+        id: u64,
+        name: String,
+        subnet: String,
+        gateway: String,
+        stp_enabled: bool,
+    }
+
+    struct FirewallRule {
+        id: u64,
+        chain: String,
+        protocol: String,
+        src_ip: Option<String>,
+        dst_ip: Option<String>,
+        dst_port: Option<u16>,
+        verdict: String,
+        priority: i32,
+    }
+
+    struct PortForward {
+        id: u64,
+        nat_type: String,
+        host_port: u16,
+        container_ip: String,
+        container_port: u16,
+        protocol: String,
+    }
+
+    contract ContainerNetManager {
+        state namespaces: Map<u64, NetNamespace>
+        state bridges: Map<u64, Bridge>
+        state veth_pairs: Map<u64, VethPair>
+        state port_forwards: Map<u64, PortForward>
+        state firewall_rules: List<FirewallRule>
+        state next_ns_id: u64
+
+        fn create_namespace(name: String, pid: u32) -> u64
+        fn destroy_namespace(ns_id: u64) -> bool
+        fn create_bridge(name: String, host_ns: u64) -> u64
+        fn create_veth_pair(host_ns: u64, container_ns: u64, bridge: Option<u64>) -> u64
+        fn add_port_forward(ns: u64, host_port: u16, container_ip: String, container_port: u16) -> u64
+        fn add_firewall_rule(rule: FirewallRule) -> bool
+        fn check_firewall(ns: u64, chain: String, proto: String, src: String, dst: String, port: u16) -> String
+        fn simulate_packet(src_ns: u64, dst_ns: u64, src: String, dst: String, proto: String, port: u16, bytes: u64) -> String
+    }
+}
