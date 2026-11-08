@@ -1,0 +1,14 @@
+# t11b — Fremder Caller (7 != Owner 42): Aktion abgewiesen,
+# Storage bleibt unberuehrt.
+Caller
+Load 1
+Eq
+JumpIfZero 10
+Load 0
+Push 500
+Add
+Store 0
+Push 1
+Halt
+Push 0
+Halt
