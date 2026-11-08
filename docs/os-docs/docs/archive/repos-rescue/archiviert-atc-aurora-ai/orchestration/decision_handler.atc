@@ -1,0 +1,30 @@
+// ATCLang v0.3 — Decision Handler
+// Verwaltung offener Agent-Decisions (AD-001 bis AD-007)
+// ATC-Standard: ATC-17
+
+module decision_handler {
+    struct Decision {
+        decision_id: string,
+        title: string,
+        state: string,
+        reasoning: string,
+        human_required: bool,
+        resolved_by: string,
+    }
+    
+    fn list_open_decisions() {
+        // Alle offenen Decisions auflisten
+    }
+    
+    fn propose_resolution(decision_id: string, resolution: string) {
+        // Auflösung vorschlagen
+    }
+    
+    fn escalate_to_human(decision_id: string) {
+        // An Michael eskalieren
+    }
+    
+    fn apply_resolution(decision_id: string) {
+        // Resolution anwenden
+    }
+}
