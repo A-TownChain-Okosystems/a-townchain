@@ -1,0 +1,750 @@
+// ============================================================================
+// Module: shell_history
+// Description: Persistent command history
+// ATC-Standard: ATC-24
+// Sprint: 3.3
+// Language: ATCLang v0.3
+// Created: 2026-08-20
+// Agent: Aurora (MasterBrain · Base44)
+// ============================================================================
+
+module shell_history {
+
+    // ------------------------------------------------------------------------
+    // Configuration
+    // ------------------------------------------------------------------------
+
+    const MAX_ENTRIES: UInt64 = 1000
+    const HISTORY_VERSION: UInt64 = 1
+    const STORAGE_KEY: String = "atc/shell/history"
+    const MAX_COMMAND_LENGTH: UInt64 = 4096
+
+    // ------------------------------------------------------------------------
+    // Primary struct
+    // ------------------------------------------------------------------------
+
+    struct History {
+        id: UInt64,
+        command: String,
+        active: Bool,
+        created_at: UInt64,
+        updated_at: UInt64,
+    }
+
+    // ------------------------------------------------------------------------
+    // Persistence struct
+    // ------------------------------------------------------------------------
+
+    struct HistoryStore {
+        version: UInt64,
+        next_id: UInt64,
+        entries: Array<History>,
+    }
+
+    // ------------------------------------------------------------------------
+    // Internal state
+    // ------------------------------------------------------------------------
+
+    var entries: Array<History> = []
+    var next_id: UInt64 = 1
+    var initialized: Bool = false
+    var dirty: Bool = false
+
+    // ------------------------------------------------------------------------
+    // Initialize
+    // ------------------------------------------------------------------------
+
+    fn init() -> Bool {
+
+        if initialized == true {
+            return true
+        }
+
+        entries = []
+        next_id = 1
+        dirty = false
+        initialized = true
+
+        if load() == false {
+            entries = []
+            next_id = 1
+            dirty = false
+            initialized = false
+
+            return false
+        }
+
+        return true
+    }
+
+    // ------------------------------------------------------------------------
+    // Status
+    // ------------------------------------------------------------------------
+
+    fn status() -> String {
+
+        if initialized == false {
+            return "shell_history offline"
+        }
+
+        if dirty == true {
+            return "shell_history ready · unsaved"
+        }
+
+        return "shell_history ready"
+    }
+
+    // ------------------------------------------------------------------------
+    // Timestamp
+    // ------------------------------------------------------------------------
+
+    fn timestamp() -> UInt64 {
+        return system.time.unix()
+    }
+
+    // ------------------------------------------------------------------------
+    // Validate command
+    // ------------------------------------------------------------------------
+
+    fn valid_command(command: String) -> Bool {
+
+        if command == "" {
+            return false
+        }
+
+        if command.length() > MAX_COMMAND_LENGTH {
+            return false
+        }
+
+        return true
+    }
+
+    // ------------------------------------------------------------------------
+    // Check ID existence
+    // ------------------------------------------------------------------------
+
+    fn id_exists(id: UInt64) -> Bool {
+
+        if id == 0 {
+            return false
+        }
+
+        for entry in entries {
+
+            if entry.id == id {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    // ------------------------------------------------------------------------
+    // Generate next immutable ID
+    // ------------------------------------------------------------------------
+
+    fn allocate_id() -> UInt64 {
+
+        let id: UInt64 = next_id
+
+        if next_id == UInt64:MAX {
+            return 0
+        }
+
+        next_id = next_id + 1
+
+        return id
+    }
+
+    // ------------------------------------------------------------------------
+    // Add command
+    // ------------------------------------------------------------------------
+
+    fn add(command: String) -> Bool {
+
+        if initialized == false {
+            return false
+        }
+
+        if valid_command(command) == false {
+            return false
+        }
+
+        let id: UInt64 = allocate_id()
+
+        if id == 0 {
+            return false
+        }
+
+        if id_exists(id) == true {
+            return false
+        }
+
+        let now: UInt64 = timestamp()
+
+        let entry = History {
+            id: id,
+            command: command,
+            active: true,
+            created_at: now,
+            updated_at: now,
+        }
+
+        entries.push(entry)
+
+        dirty = true
+
+        trim()
+
+        return true
+    }
+
+    // ------------------------------------------------------------------------
+    // Trim history
+    // ------------------------------------------------------------------------
+
+    fn trim() -> Bool {
+
+        while entries.length() > MAX_ENTRIES {
+            entries.remove_first()
+        }
+
+        return true
+    }
+
+    // ------------------------------------------------------------------------
+    // Search
+    // ------------------------------------------------------------------------
+
+    fn search(query: String) -> String {
+
+        if initialized == false {
+            return ""
+        }
+
+        if query == "" {
+            return ""
+        }
+
+        var result: String = ""
+
+        for entry in entries {
+
+            if entry.active == false {
+                continue
+            }
+
+            if entry.command.contains(query) {
+
+                result = result
+                    + entry.id.to_string()
+                    + ": "
+                    + entry.command
+                    + "\n"
+            }
+        }
+
+        return result
+    }
+
+    // ------------------------------------------------------------------------
+    // Recall
+    // ------------------------------------------------------------------------
+
+    fn recall(id: UInt64) -> String {
+
+        if initialized == false {
+            return ""
+        }
+
+        if id == 0 {
+            return ""
+        }
+
+        for entry in entries {
+
+            if entry.id == id {
+
+                if entry.active == true {
+                    return entry.command
+                }
+
+                return ""
+            }
+        }
+
+        return ""
+    }
+
+    // ------------------------------------------------------------------------
+    // Get
+    // ------------------------------------------------------------------------
+
+    fn get(id: UInt64) -> String {
+
+        if initialized == false {
+            return ""
+        }
+
+        if id == 0 {
+            return ""
+        }
+
+        for entry in entries {
+
+            if entry.id == id {
+
+                return system.codec.serialize(entry)
+            }
+        }
+
+        return ""
+    }
+
+    // ------------------------------------------------------------------------
+    // Remove
+    // ------------------------------------------------------------------------
+
+    fn remove(id: UInt64) -> Bool {
+
+        if initialized == false {
+            return false
+        }
+
+        if id == 0 {
+            return false
+        }
+
+        for i in 0..entries.length() {
+
+            if entries[i].id != id {
+                continue
+            }
+
+            if entries[i].active == false {
+                return false
+            }
+
+            entries[i].active = false
+            entries[i].updated_at = timestamp()
+
+            dirty = true
+
+            return true
+        }
+
+        return false
+    }
+
+    // ------------------------------------------------------------------------
+    // Clear
+    // ------------------------------------------------------------------------
+
+    fn clear() -> Bool {
+
+        if initialized == false {
+            return false
+        }
+
+        let now: UInt64 = timestamp()
+        var changed: Bool = false
+
+        for i in 0..entries.length() {
+
+            if entries[i].active == true {
+
+                entries[i].active = false
+                entries[i].updated_at = now
+
+                changed = true
+            }
+        }
+
+        if changed == true {
+            dirty = true
+        }
+
+        return true
+    }
+
+    // ------------------------------------------------------------------------
+    // Count active entries
+    // ------------------------------------------------------------------------
+
+    fn count() -> UInt64 {
+
+        if initialized == false {
+            return 0
+        }
+
+        var total: UInt64 = 0
+
+        for entry in entries {
+
+            if entry.active == true {
+                total = total + 1
+            }
+        }
+
+        return total
+    }
+
+    // ------------------------------------------------------------------------
+    // Count all entries
+    // ------------------------------------------------------------------------
+
+    fn total() -> UInt64 {
+
+        if initialized == false {
+            return 0
+        }
+
+        return entries.length()
+    }
+
+    // ------------------------------------------------------------------------
+    // First
+    // ------------------------------------------------------------------------
+
+    fn first() -> String {
+
+        if initialized == false {
+            return ""
+        }
+
+        for entry in entries {
+
+            if entry.active == true {
+                return entry.command
+            }
+        }
+
+        return ""
+    }
+
+    // ------------------------------------------------------------------------
+    // Last
+    // ------------------------------------------------------------------------
+
+    fn last() -> String {
+
+        if initialized == false {
+            return ""
+        }
+
+        var i: UInt64 = entries.length()
+
+        while i > 0 {
+
+            i = i - 1
+
+            if entries[i].active == true {
+                return entries[i].command
+            }
+        }
+
+        return ""
+    }
+
+    // ------------------------------------------------------------------------
+    // List
+    // ------------------------------------------------------------------------
+
+    fn list() -> String {
+
+        if initialized == false {
+            return ""
+        }
+
+        var result: String = ""
+
+        for entry in entries {
+
+            if entry.active == false {
+                continue
+            }
+
+            result = result
+                + entry.id.to_string()
+                + ": "
+                + entry.command
+                + "\n"
+        }
+
+        return result
+    }
+
+    // ------------------------------------------------------------------------
+    // Create persistence object
+    // ------------------------------------------------------------------------
+
+    fn create_store() -> HistoryStore {
+
+        return HistoryStore {
+            version: HISTORY_VERSION,
+            next_id: next_id,
+            entries: entries,
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    // Validate persistence store
+    // ------------------------------------------------------------------------
+
+    fn validate_store(store: HistoryStore) -> Bool {
+
+        if store.version != HISTORY_VERSION {
+            return false
+        }
+
+        if store.next_id == 0 {
+            return false
+        }
+
+        if store.entries.length() > MAX_ENTRIES {
+            return false
+        }
+
+        var highest_id: UInt64 = 0
+
+        for entry in store.entries {
+
+            if entry.id == 0 {
+                return false
+            }
+
+            if entry.command == "" {
+                return false
+            }
+
+            if entry.command.length() > MAX_COMMAND_LENGTH {
+                return false
+            }
+
+            if entry.created_at == 0 {
+                return false
+            }
+
+            if entry.updated_at == 0 {
+                return false
+            }
+
+            if entry.updated_at < entry.created_at {
+                return false
+            }
+
+            if entry.id > highest_id {
+                highest_id = entry.id
+            }
+
+            // No duplicate IDs.
+            for other in store.entries {
+
+                if other.id == entry.id {
+
+                    if other.command != entry.command
+                        || other.created_at != entry.created_at
+                        || other.updated_at != entry.updated_at
+                        || other.active != entry.active {
+
+                        return false
+                    }
+                }
+            }
+        }
+
+        if highest_id >= store.next_id {
+            return false
+        }
+
+        return true
+    }
+
+    // ------------------------------------------------------------------------
+    // Save
+    // ------------------------------------------------------------------------
+
+    fn save() -> Bool {
+
+        if initialized == false {
+            return false
+        }
+
+        let store: HistoryStore = create_store()
+
+        if validate_store(store) == false {
+            return false
+        }
+
+        let data: String = system.codec.serialize(store)
+
+        if data == "" {
+            return false
+        }
+
+        let result = system.storage.write(
+            STORAGE_KEY,
+            data
+        )
+
+        if result == false {
+            return false
+        }
+
+        dirty = false
+
+        return true
+    }
+
+    // ------------------------------------------------------------------------
+    // Load
+    // ------------------------------------------------------------------------
+
+    fn load() -> Bool {
+
+        if initialized == false {
+            return false
+        }
+
+        let data: String = system.storage.read(
+            STORAGE_KEY
+        )
+
+        if data == "" {
+            return true
+        }
+
+        let store: HistoryStore =
+            system.codec.deserialize<HistoryStore>(data)
+
+        if validate_store(store) == false {
+            return false
+        }
+
+        entries = store.entries
+        next_id = store.next_id
+
+        trim()
+
+        // Defensive next-ID recovery.
+        for entry in entries {
+
+            if entry.id >= next_id {
+
+                if entry.id == UInt64:MAX {
+                    return false
+                }
+
+                next_id = entry.id + 1
+            }
+        }
+
+        dirty = false
+
+        return true
+    }
+
+    // ------------------------------------------------------------------------
+    // Export
+    // ------------------------------------------------------------------------
+
+    fn export() -> String {
+
+        if initialized == false {
+            return ""
+        }
+
+        let store: HistoryStore = create_store()
+
+        if validate_store(store) == false {
+            return ""
+        }
+
+        return system.codec.serialize(store)
+    }
+
+    // ------------------------------------------------------------------------
+    // Import
+    // ------------------------------------------------------------------------
+
+    fn import(data: String) -> Bool {
+
+        if initialized == false {
+            return false
+        }
+
+        if data == "" {
+            return false
+        }
+
+        let store: HistoryStore =
+            system.codec.deserialize<HistoryStore>(data)
+
+        if validate_store(store) == false {
+            return false
+        }
+
+        // Transactional import:
+        // Existing runtime state is not modified until validation succeeds.
+        entries = store.entries
+        next_id = store.next_id
+
+        trim()
+
+        for entry in entries {
+
+            if entry.id >= next_id {
+
+                if entry.id == UInt64:MAX {
+                    return false
+                }
+
+                next_id = entry.id + 1
+            }
+        }
+
+        dirty = true
+
+        return true
+    }
+
+    // ------------------------------------------------------------------------
+    // Persist
+    // ------------------------------------------------------------------------
+
+    fn persist() -> Bool {
+
+        if initialized == false {
+            return false
+        }
+
+        if dirty == false {
+            return true
+        }
+
+        return save()
+    }
+
+    // ------------------------------------------------------------------------
+    // Shutdown
+    // ------------------------------------------------------------------------
+
+    fn shutdown() -> Bool {
+
+        if initialized == false {
+            return false
+        }
+
+        if persist() == false {
+            return false
+        }
+
+        entries = []
+        next_id = 1
+        dirty = false
+        initialized = false
+
+        return true
+    }
+
+} // module shell_history
