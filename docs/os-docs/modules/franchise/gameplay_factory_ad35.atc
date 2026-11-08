@@ -1,0 +1,126 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-35 — Gameplay Factory: Wiederverwendbare Gameplay-Bausteine
+// GFF v2.0 — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct GameplayFactory {
+    libraries: Map<String, GameplayLibrary>,
+    modules: Map<Hash256, GameplayModule>,
+    by_category: Map<GameplayCategory, List<Hash256>>,
+    templates: Map<String, GameplayTemplate>,
+}
+
+enum GameplayCategory { Combat, Inventory, Crafting, Trading, Dialogue, AI, Puzzle, Vehicle, Progression, Social, MiniGame }
+
+struct GameplayLibrary {
+    name: String,
+    category: GameplayCategory,
+    version: String,
+    modules: List<Hash256>,
+    description: String,
+}
+
+struct GameplayModule {
+    id: Hash256,
+    name: String,
+    category: GameplayCategory,
+    description: String,
+    config: Map<String, Any>,
+    dependencies: List<String>,
+    parameters: List<GameplayParameter>,
+    events: List<String>,
+    enabled: Bool,
+    version: String,
+    created_at: UInt64,
+}
+
+struct GameplayParameter {
+    name: String,
+    type: String,
+    default_value: Any,
+    min_value: Float32,
+    max_value: Float32,
+    description: String,
+}
+
+struct GameplayTemplate {
+    name: String,
+    category: GameplayCategory,
+    modules: List<String>,
+    default_config: Map<String, Any>,
+}
+
+// Gameplay Factory: Modul registrieren
+pub fn register_module(factory: GameplayFactory, name: String, category: GameplayCategory, desc: String) -> Hash256 {
+    let mid = Crypto::sha256(serialize(name, category, Chain::timestamp()))
+    factory.modules[mid] = GameplayModule {
+        id: mid, name: name, category: category, description: desc,
+        config: {}, dependencies: [], parameters: [], events: [],
+        enabled: true, version: "1.0.0", created_at: Chain::timestamp(),
+    }
+    if not factory.by_category.contains(category) { factory.by_category[category] = [] }
+    factory.by_category[category].append(mid)
+    return mid
+}
+
+// Gameplay Factory: Bibliothek erstellen
+pub fn create_library(factory: GameplayFactory, name: String, category: GameplayCategory, desc: String) -> Bool {
+    factory.libraries[name] = GameplayLibrary {
+        name: name, category: category, version: "1.0.0",
+        modules: [], description: desc,
+    }
+    return true
+}
+
+// Gameplay Factory: Modul zu Bibliothek hinzufügen
+pub fn add_to_library(factory: GameplayFactory, lib_name: String, module_id: Hash256) -> Bool {
+    require(factory.libraries.contains(lib_name), "Library not found")
+    require(factory.modules.contains(module_id), "Module not found")
+    factory.libraries[lib_name].modules.append(module_id)
+    return true
+}
+
+// Gameplay Factory: Parameter hinzufügen
+pub fn add_parameter(factory: GameplayFactory, module_id: Hash256, name: String, ptype: String, default: Any, min_val: Float32, max_val: Float32, desc: String) -> Bool {
+    require(factory.modules.contains(module_id), "Module not found")
+    factory.modules[module_id].parameters.append(GameplayParameter {
+        name: name, type: ptype, default_value: default,
+        min_value: min_val, max_value: max_val, description: desc,
+    })
+    return true
+}
+
+// Gameplay Factory: Konfiguration setzen
+pub fn configure_module(factory: GameplayFactory, module_id: Hash256, key: String, value: Any) -> Bool {
+    require(factory.modules.contains(module_id), "Module not found")
+    factory.modules[module_id].config[key] = value
+    return true
+}
+
+// Gameplay Factory: Template erstellen
+pub fn create_template(factory: GameplayFactory, name: String, category: GameplayCategory, module_names: List<String>) -> Bool {
+    factory.templates[name] = GameplayTemplate {
+        name: name, category: category, modules: module_names, default_config: {},
+    }
+    return true
+}
+
+// Gameplay Factory: Module nach Kategorie
+pub fn modules_by_category(factory: GameplayFactory, category: GameplayCategory) -> List<Hash256> {
+    return factory.by_category.get(category, [])
+}
+
+// Gameplay Factory: Standard-Bibliotheken initialisieren
+pub fn init_default_libraries(factory: GameplayFactory) -> Bool {
+    create_library(factory, "Combat System", GameplayCategory::Combat, "Melee, ranged, magic combat")
+    create_library(factory, "Inventory", GameplayCategory::Inventory, "Item management, stacking, sorting")
+    create_library(factory, "Crafting", GameplayCategory::Crafting, "Recipe-based crafting system")
+    create_library(factory, "Trading", GameplayCategory::Trading, "NPC trading, barter, shops")
+    create_library(factory, "Dialogue", GameplayCategory::Dialogue, "Branching dialogue trees")
+    create_library(factory, "AI Behavior", GameplayCategory::AI, "NPC behavior, aggro, patrol")
+    create_library(factory, "Puzzle", GameplayCategory::Puzzle, "Logic puzzles, switches, levers")
+    create_library(factory, "Vehicle", GameplayCategory::Vehicle, "Mounts, vehicles, physics")
+    return true
+}
