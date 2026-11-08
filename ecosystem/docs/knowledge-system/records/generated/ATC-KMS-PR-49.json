@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-49",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #49: fix: restore fail-fast base ECS system behavior",
+  "context": "Pull request 49 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "archived",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/49",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: False\nDraft: True\n\nSuperseded/obsolete. The fail-fast ECS behavior is already represented by the current Genesis/engine code path; this old PR is no longer required as an independent change."
+}
