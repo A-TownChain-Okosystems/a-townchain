@@ -1,0 +1,24 @@
+# ATC Standard-ID Reservations — belegte Verweis-/Reservierungsslots
+# Quelle: registry/framework.yaml (VERWEIST-Slots, FAM-Ranges). Geprueft durch allocation-gate (CI).
+reservations:
+  - id: FAM-19
+    name: "AI-Agent Standards"
+    range: ATC-STD-320..335
+    covered_by: "ATC-AAS-001..025 + ATC-STD-AI-DECISION-001"
+    source: registry/framework.yaml
+  - id: ATC-STD-305
+    title: Secrets
+    status: VERWEIST
+    references: ATC-STD-203
+    source: registry/framework.yaml
+  - id: ATC-STD-310
+    title: Dependency Security
+    status: VERWEIST
+    references: ATC-STD-204
+    source: registry/framework.yaml
+  - id: ATC-STD-313
+    title: Security Incident Response
+    status: VERWEIST
+    references: ATC-STD-UPDATE-001
+    source: registry/framework.yaml
+candidate_family_reservations: []  # Familien-Reservierung nur via SCR (z.B. 'Software Build, Integration & Release' — aktuell BLOCKED, siehe conflicts.yaml P1-A5)
