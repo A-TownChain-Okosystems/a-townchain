@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-81",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #81: arch: add ARCH-010 through ARCH-030 system contracts",
+  "context": "Pull request 81 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/81",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Summary\nAdds ARCH-010 through ARCH-030 as explicit architecture contracts to operationalize the existing ARCH-001–009 model.\n\n### Added contracts\n- Domain & Authority\n- Interface & Contract Registry\n- State Machines\n- Identity & Trust\n- Cryptographic Agility\n- Resource & Scheduling\n- Data\n- Event & Messaging\n- Workflow / Distributed Transactions\n- Observability & Evidence\n- Configuration / Parameters\n- Upgrade / Migration\n- Security Boundaries\n- Threat / Attack Surface\n- Verification / Assurance\n- Economic Security\n- Genesis Authority\n- Aurora Agents\n- Developer Platform\n- Supply Chain / Build\n- System Reconciliation / Drift\n\n### Evidence rule\nThese sections are explicitly classified as SPECIFIED only. They do not claim implementation, tests, exact-SHA CI, integration, E2E, release, deployment or operational status.\n\n### Verification\n- Branch: codex/arch-010-030-contracts-20260928\n- Commit: a44ce44440b18409cdff6f7397bbc6b72127d2a5\n- ARCHITECTURE.md blob: 93789396a54bd9b7c211b34615cbead18228469b\n- All 21 ARCH-010–030 sections verified present on the branch."
+}
