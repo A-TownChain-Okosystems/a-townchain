@@ -1,0 +1,14 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: governance
+family: GOVERNANCE / META
+family_id: '000'
+file: governance/ATC-STD-002.md
+mandate: Owner-Entwurf 11.09. (SCR-0096 Standards-Familien-ID)
+registry_version: 1
+standard_id: ATC-STD-002
+status: approved
+title: Standards Family ID & Artifact Identifier Architecture (10 Domaenen-Familien
+  000-900 dauerhaft reserviert, No-Recycling, Artefakt-Klassen REQ/TC/GATE/ADR/CTRL/SPEC/SCHEMA,
+  Traceability-Kette Familie->Standard->REQ->Impl->Test->Gate->Evidence)
+version: 1.0.0
