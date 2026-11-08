@@ -1,0 +1,126 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// A-TownChain File System Module — ATCFS (Sprint 2.4)
+// Content-addressed distributed file system
+// ════════════════════════════════════════════════════════════════
+
+const MAX_FILE_SIZE: u32 = 10485760  // 10 MB
+const CHUNK_SIZE: u32 = 65536        // 64 KB chunks
+const REPLICATION_FACTOR: u8 = 3
+
+struct FileManifest {
+    file_id:       Hash,    // Content hash
+    name:          String,
+    size:          u32,
+    chunk_count:   u32,
+    chunk_hashes:  List<Hash>,
+    owner:         Address,
+    created_at:    u64,
+    is_public:     bool
+}
+
+struct FileAccess {
+    file_id:   Hash,
+    user:      Address,
+    permission: String  // "read", "write", "admin"
+}
+
+contract ATCFSModule {
+
+    state manifests: Map<Hash, FileManifest>
+    state file_count: u128
+    state total_storage: u128
+    state access_control: Map<Hash, Map<Address, String>>
+    state owner: Address
+
+    event FileStored(file_id: Hash, name: String, size: u32, owner: Address)
+    event FileAccessGranted(file_id: Hash, user: Address, permission: String)
+    event FileDeleted(file_id: Hash)
+
+    fn init() {
+        self.file_count = 0
+        self.total_storage = 0
+        self.owner = msg_sender()
+    }
+
+    // ── File speichern ────────────────────────────────
+    fn store_file(name: String, content: String, is_public: bool) -> Hash {
+        let file_id = sha256(content + name + to_string(msg_sender()))
+        require(!exists(self.manifests, file_id), "ATCFS: File exists")
+        let size = len(content)
+        require(size <= MAX_FILE_SIZE, "ATCFS: File too large")
+
+        let chunk_count = size / CHUNK_SIZE
+        if size % CHUNK_SIZE > 0 { chunk_count += 1 }
+
+        let chunks: List<Hash> = []
+        let i: u32 = 0
+        let pos: u32 = 0
+        while i < chunk_count {
+            let chunk_data = substr(content, pos, pos + CHUNK_SIZE)
+            chunks.push(sha256(chunk_data))
+            pos += CHUNK_SIZE
+            i += 1
+        }
+
+        let manifest = FileManifest {
+            file_id:      file_id,
+            name:         name,
+            size:         size,
+            chunk_count:  chunk_count,
+            chunk_hashes: chunks,
+            owner:        msg_sender(),
+            created_at:   block_timestamp(),
+            is_public:    is_public
+        }
+        self.manifests[file_id] = manifest
+        self.file_count += 1
+        self.total_storage += size
+
+        // Owner gets admin access
+        self.access_control[file_id][msg_sender()] = "admin"
+
+        emit FileStored(file_id, name, size, msg_sender())
+        return file_id
+    }
+
+    // ── File abrufen ──────────────────────────────────
+    fn get_file(file_id: Hash) -> FileManifest {
+        require(exists(self.manifests, file_id), "ATCFS: File not found")
+        let manifest = self.manifests[file_id]
+        if !manifest.is_public {
+            let perm = self.access_control[file_id][msg_sender()]
+            require(perm == "read" || perm == "write" || perm == "admin", "ATCFS: No access")
+        }
+        return manifest
+    }
+
+    // ── Zugriff gewähren ──────────────────────────────
+    fn grant_access(file_id: Hash, user: Address, permission: String) -> bool {
+        let manifest = self.manifests[file_id]
+        require(manifest.owner == msg_sender(), "ATCFS: Not owner")
+        self.access_control[file_id][user] = permission
+        emit FileAccessGranted(file_id, user, permission)
+        return true
+    }
+
+    // ── File löschen ──────────────────────────────────
+    fn delete_file(file_id: Hash) -> bool {
+        let manifest = self.manifests[file_id]
+        require(manifest.owner == msg_sender(), "ATCFS: Not owner")
+        delete(self.manifests, file_id)
+        self.file_count -= 1
+        self.total_storage -= manifest.size
+        emit FileDeleted(file_id)
+        return true
+    }
+
+    // ── Stats ─────────────────────────────────────────
+    fn get_file_count() -> u128 {
+        return self.file_count
+    }
+
+    fn get_total_storage() -> u128 {
+        return self.total_storage
+    }
+}
