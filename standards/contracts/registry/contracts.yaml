@@ -84,8 +84,8 @@ contracts:
     audited: false
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/contracts/revenue.atc
-    source_sha256: 5b5573fffaf84789a64819bbe9079e71e5e8df745be957d82044ae07bd13605a
-    abi_sha256: 0dedd61e7122bc314c68d366febc92e880d41d0ab252273bd766610e3d606bca
+    source_sha256: d22f5242bbb0176283688e34f416a83146db831c2ef9f80ad3c0797f641b2ce7
+    abi_sha256: 5cabb2e05cc3e0cf48b3d5baaaa4a1bfe1f149b9634c79efa8eb55870fe865ec
     note: "Automatische Gewinnverteilung, ATC-8300-konform"
 
   - contract_id: ATC-SC-DEFI-002
@@ -220,8 +220,8 @@ contracts:
     audited: false
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/atc8300/atc8300.atc
-    source_sha256: 2f1fbd108b7a318f53579d5cca1c30f59eedd4df72d04dd4c6ecfce1db241da0
-    abi_sha256: 365c4b0cc39e9c357fed0e880000ef5cffdd383a816b252da192239bc195ce34
+    source_sha256: 527771e5e352e2f7717f06135d668707534fa6c73e476fbcc8ad02c7285e3edc
+    abi_sha256: 023e78c701610c6daf95e8d4e12d69272b827f909da079e912a621f09f28e01c
     note: "Token-Standard (kein ERC-20-Fork); Interface-Basis fuer ATCLang-Vertraege"
 
   - contract_id: ATC-SC-TOKEN-003
@@ -254,8 +254,8 @@ contracts:
     audited: false
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/contracts/token.atc
-    source_sha256: 35060272e2234bd628fcff88e69ba4a7d36568148f1a50fe74355231302e8c05
-    abi_sha256: 1b77f6f73b2ad2c26be7324b1c8c3957fe0bb635a3993270e4ddb0e856ce9f7d
+    source_sha256: 9516d8408e6c4df562dd4aff714b4f55233671e9b3ebb95e3de46ffbbc407898
+    abi_sha256: 65bd5eb95e6dc679e7d2134621908423de0103f0187c17f9c0dd152f98941878
     note: "Referenz-Token ohne Projektbindung"
 
   - contract_id: ATC-SC-TOKEN-005
