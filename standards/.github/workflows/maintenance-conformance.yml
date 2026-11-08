@@ -1,0 +1,100 @@
+# Maintenance Conformance — ATC-STD-MAINT-000 §20.1 (SCR-0120 v7; Readiness-Gate: SCR-0123 Welle 1)
+# Machine-readable Conformance-Gate: prueft Schemas, Registry-Projektion,
+# Conformance-SSOT (Idempotenz) und die MAINTENANCE-READY-Checkliste.
+name: Maintenance Conformance (MAINT-000 §20.1)
+on:
+  push:
+    branches: [main]
+    paths: ['standards/maintenance/**', 'schemas/maintenance/**', 'registry/maintenance-conformance.yaml', 'registry/maintenance-requirements.yaml', 'registry/maintenance/**', 'tools/maintenance/**', 'registry/standards.yaml', '.github/workflows/maintenance-conformance.yml']
+  pull_request:
+    paths: ['standards/maintenance/**', 'schemas/maintenance/**', 'registry/maintenance-conformance.yaml', 'registry/maintenance-requirements.yaml', 'registry/maintenance/**', 'tools/maintenance/**', 'registry/standards.yaml', '.github/workflows/maintenance-conformance.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with: {python-version: '3.11'}
+      - name: Abhaengigkeiten
+        run: pip install pyyaml jsonschema
+      - name: Conformance-Pruefung
+        run: |
+          python tools/maintenance/gen_maintenance_conformance.py
+          git diff --exit-code -- registry/maintenance-conformance.yaml registry/maintenance-requirements.yaml standards/maintenance/INDEX.md \
+            || (echo "F-MAINT-C01: Conformance-/Requirements-Registry-/Index-Dateien nicht idempotent (Generator laufen lassen)" && exit 1)
+          python tools/gen_views/gen_registry_records.py >/dev/null
+          git diff --exit-code -- 'registry/standards/ATC-STD-MAINT-*.yaml' \
+            || (echo "F-MAINT-C02: registry/standards/MAINT-Records nicht idempotent" && exit 1)
+          python - << 'PY'
+          import json, re, sys, glob, os
+          import yaml
+          from jsonschema import Draft202012Validator
+          fails = []
+          # 1) Schemas formal pruefen
+          for f in glob.glob("schemas/maintenance/*.schema.json"):
+              s = json.load(open(f, encoding="utf-8"))
+              try:
+                  Draft202012Validator.check_schema(s)
+                  print(f"  [C1] {os.path.basename(f)}: Draft202012 OK")
+              except Exception as e:
+                  fails.append(f"[C1] {f}: {e}")
+          # 2) Readiness-Beispiel validieren (Gate-Logik PASS/FAIL)
+          rs = json.load(open("schemas/maintenance/maintenance-readiness.schema.json", encoding="utf-8"))
+          v = Draft202012Validator(rs)
+          sample_pass = {"maintenance_readiness": {k: {"state": "complete"} for k in rs["properties"]["maintenance_readiness"]["required"]}, "result": "PASS"}
+          errs = list(v.iter_errors(sample_pass))
+          if errs: fails.append(f"[C2] Readiness-PASS-Beispiel invalide: {errs[0].message}")
+          print(f"  [C2] Readiness-Schema validiert {len(rs['properties']['maintenance_readiness']['required'])} required-Felder + critical_maintenance ({len(rs['properties']['critical_maintenance']['required'])} Felder, M2/M3)")
+          # 3) Struktur-Konsistenz: Registry <-> standards/maintenance <-> Conformance-SSOT
+          reg = yaml.safe_load(open("registry/standards.yaml", encoding="utf-8"))["standards"]
+          maint_reg = sorted(s["id"] for s in reg if s.get("category") == "maint")
+          maint_files = sorted("ATC-STD-" + os.path.basename(p)[len("ATC-STD-"):-3]
+                               for p in glob.glob("standards/maintenance/ATC-STD-MAINT-*.md"))
+          conf = yaml.safe_load(open("registry/maintenance-conformance.yaml", encoding="utf-8"))["maintenance_conformance"]
+          conf_ids = sorted(s["id"] for s in conf["standards"])
+          if not (maint_reg == maint_files == conf_ids):
+              fails.append(f"[C3] Drift Registry/Dateien/Conformance: {maint_reg} vs {maint_files} vs {conf_ids}")
+          print(f"  [C3] Struktur konsistent: {len(maint_reg)} MAINT-Standards (Registry=Dateien=Conformance-SSOT)")
+          # 4) REQ-Abgleich gegen normative Dokumente
+          for s in conf["standards"]:
+              md = open(f"standards/maintenance/{s['id']}.md", encoding="utf-8").read()
+              reqs_md = re.findall(r"\| (REQ-MAINT-\d{3}) \|", md)
+              if reqs_md != s["reqs"]:
+                  fails.append(f"[C4] {s['id']}: REQ-Drift Conformance-SSOT vs. Dokument")
+          print(f"  [C4] {sum(s['req_count'] for s in conf['standards'])} REQs abgeglichen")
+          # 5) Parent/Vererbung
+          if conf["parent_standard"] != "ATC-STD-MAINT-000":
+              fails.append("[C5] Parent-Standard fehlt")
+          bad = [s["id"] for s in conf["standards"] if s["id"] != "ATC-STD-MAINT-000" and not s["inherits_mandatory_baseline"]]
+          if bad: fails.append(f"[C5] Mandatory-Baseline nicht geerbt: {bad}")
+          print("  [C5] Parent-Standard + Mandatory-Baseline-Vererbung OK")
+          print()
+          print("Repository")
+          for item in ["MAINTENANCE.md-Pflicht (kritische Repos)", "dependency inventory", "security scanning", "SBOM", "tests", "rollback strategy", "compatibility strategy", "monitoring", "evidence", "lifecycle metadata"]:
+              print(f"   {item:<45} (Standards: normativ definiert — MAINT-000..024)")
+          print()
+          # C6: Requirements-Registry (MAINT-000 §6) konsistent mit Conformance-SSOT
+          rr = yaml.safe_load(open("registry/maintenance-requirements.yaml", encoding="utf-8"))["maintenance_requirements"]
+          rr_ids = sorted(r["id"] for r in rr["requirements"])
+          c0 = [s for s in conf["standards"] if s["id"] == "ATC-STD-MAINT-000"][0]
+          if rr_ids != sorted(set(c0["reqs"])):
+              fails.append(f"[C6] Requirements-Registry vs MAINT-000-Tabelle: {rr_ids} vs {sorted(set(c0['reqs']))}")
+          if len(rr["requirements"]) != rr["req_count"]:
+              fails.append("[C6] req_count Drift")
+          for r in rr["requirements"]:
+              if r["verification"]["type"] not in ("evidence", "gate", "ci", "audit"):
+                  fails.append(f"[C6] {r['id']}: unbekannter verification type {r['verification']['type']}")
+              if not r["verification"]["required"]:
+                  fails.append(f"[C6] {r['id']}: verification.required leer")
+          print(f"  [C6] Requirements-Registry konsistent: {len(rr_ids)} REQ-Definitionen (statement+priority+verification je REQ)")
+          print()
+          print("RESULT: STANDARDS-CONFORMANCE " + ("PASS" if not fails else "FAIL"))
+          for f in fails: print("  " + f)
+          sys.exit(1 if fails else 0)
+          PY
+      - name: Maintenance Readiness Gate (MAINT-000 Par.7.2, SCR-0123)
+        run: |
+          python tools/maintenance/validate_maintenance_readiness.py
