@@ -1,0 +1,54 @@
+schema_version: "1.0"
+status_values:
+  - NOT_READY
+  - BUILDING
+  - TESTING
+  - INTEGRATION
+  - E2E
+  - EVIDENCE_READY
+  - AUDITED
+  - PRODUCTION_READY
+  - FAILED
+
+component_status:
+  required:
+    component_id: string
+    subsystem: string
+    status: enum(status_values)
+    commit_sha: string
+    version: string
+    environment: string
+    observed_at: timestamp
+  gates:
+    source_present: boolean
+    build: boolean
+    unit_tests: boolean
+    integration_tests: boolean
+    security: boolean
+    e2e: boolean
+    evidence: boolean
+    audit: boolean
+    human_approval: boolean
+  evidence:
+    ci_run_id: string|null
+    workflow: string|null
+    artifact: string|null
+    evidence_ref: string|null
+  metrics:
+    key: string
+    value: number|string|boolean
+    unit: string|null
+
+rules:
+  production_ready_requires:
+    - source_present
+    - build
+    - unit_tests
+    - integration_tests
+    - security
+    - evidence
+    - audit
+    - human_approval
+  l1_requires:
+    - e2e
+  fail_closed: true
