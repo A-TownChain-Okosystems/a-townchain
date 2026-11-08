@@ -1,0 +1,290 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-90 — Shivamon NFT Contract
+// Sprint 2.5 | Smart Contract Layer | Chain-ID 9000
+// Migrated from: modules/shivamon/contracts/shivamon_contract.py (269 lines)
+// NFT battle creatures: elements, stats, rarity, DNA, leveling, battles
+// ─────────────────────────────────────────────────────────────
+
+enum Element { Fire, Water, Earth, Air, Shadow, Neon, Quantum }
+enum Rarity { Common, Uncommon, Rare, Epic, Legendary, Genesis }
+
+const MAX_LEVEL: u16 = 100
+const XP_PER_LEVEL: u32 = 1000
+const BATTLE_COOLDOWN: u64 = 3600  // 1 hour
+
+struct ShivamonStats {
+    hp: u16,
+    attack: u16,
+    defense: u16,
+    speed: u16,
+    special: u16,
+}
+
+struct ShivamonNFT {
+    token_id: Hash,
+    name: String,
+    element: Element,
+    rarity: Rarity,
+    owner: Address,
+    generation: u8,
+    level: u16,
+    xp: u32,
+    wins: u16,
+    losses: u16,
+    minted_at: u64,
+    dna_hash: Hash,
+    stats: ShivamonStats,
+}
+
+contract ShivamonContract {
+    state tokens: Map<Hash, ShivamonNFT>
+    state owner_tokens: Map<Address, List<Hash>>
+    state token_count: u32
+    state battle_log: List<Hash>
+    state battle_count: u64
+    state total_volume: u128
+    state owner: Address
+    state paused: bool
+
+    event Minted(token_id: Hash, owner: Address, element: Element, rarity: Rarity)
+    event Transferred(token_id: Hash, from_addr: Address, to_addr: Address)
+    event BattleResult(battle_id: Hash, winner: Hash, loser: Hash)
+    event LeveledUp(token_id: Hash, new_level: u16)
+    event Bred(child_id: Hash, parent1: Hash, parent2: Hash)
+
+    fn init() {
+        self.tokens = {}
+        self.owner_tokens = {}
+        self.token_count = 0
+        self.battle_log = []
+        self.battle_count = 0
+        self.total_volume = 0
+        self.owner = msg_sender()
+        self.paused = false
+    }
+
+    fn rarity_multiplier(rarity: Rarity) -> u16 {
+        if rarity == Rarity::Common {
+            return 100
+        }
+        if rarity == Rarity::Uncommon {
+            return 120
+        }
+        if rarity == Rarity::Rare {
+            return 150
+        }
+        if rarity == Rarity::Epic {
+            return 200
+        }
+        if rarity == Rarity::Legendary {
+            return 300
+        }
+        return 500  // Genesis
+    }
+
+    fn mint(name: String, element: Element, rarity: Rarity, generation: u8) -> Hash {
+        if self.paused {
+            return Hash::zero()
+        }
+        let minter = msg_sender()
+        let id_input = name + Int::to_string(element) + Int::to_string(rarity) + Int::to_string(Time::now())
+        let token_id = Hash::sha256(id_input)
+        let dna = Hash::sha256(token_id, name, Time::now())
+        let mult = self.rarity_multiplier(rarity)
+        let base: u16 = 50 + generation * 5
+        // Deterministic stats from DNA
+        let stats = ShivamonStats {
+            hp: base * mult / 100,
+            attack: base * mult / 100,
+            defense: base * mult / 100,
+            speed: base * mult / 100,
+            special: base * mult / 100,
+        }
+        let nft = ShivamonNFT {
+            token_id: token_id,
+            name: name,
+            element: element,
+            rarity: rarity,
+            owner: minter,
+            generation: generation,
+            level: 1,
+            xp: 0,
+            wins: 0,
+            losses: 0,
+            minted_at: Time::now(),
+            dna_hash: dna,
+            stats: stats,
+        }
+        self.tokens[token_id] = nft
+        let existing = self.owner_tokens.get(minter)
+        if existing == null {
+            self.owner_tokens[minter] = [token_id]
+        } else {
+            existing.push(token_id)
+        }
+        self.token_count += 1
+        emit Minted(token_id, minter, element, rarity)
+        return token_id
+    }
+
+    fn transfer(token_id: Hash, to_addr: Address) -> bool {
+        let nft = self.tokens.get(token_id)
+        if nft == null {
+            return false
+        }
+        if nft.owner != msg_sender() {
+            return false
+        }
+        let from_addr = nft.owner
+        nft.owner = to_addr
+        // Update owner index
+        let from_list = self.owner_tokens.get(from_addr)
+        if from_list != null {
+            self.remove_from_list(from_list, token_id)
+        }
+        let to_list = self.owner_tokens.get(to_addr)
+        if to_list == null {
+            self.owner_tokens[to_addr] = [token_id]
+        } else {
+            to_list.push(token_id)
+        }
+        emit Transferred(token_id, from_addr, to_addr)
+        return true
+    }
+
+    fn remove_from_list(list: List<Hash>, item: Hash) {
+        let i: u16 = 0
+        while i < list.len() {
+            if list[i] == item {
+                list.remove(i)
+                return
+            }
+            i += 1
+        }
+    }
+
+    fn battle(attacker_id: Hash, defender_id: Hash) -> (Hash, Hash) {
+        let attacker = self.tokens.get(attacker_id)
+        let defender = self.tokens.get(defender_id)
+        if attacker == null || defender == null {
+            return (Hash::zero(), Hash::zero())
+        }
+        // Calculate battle power
+        let atk_power = attacker.stats.attack + attacker.stats.special + attacker.level * 10
+        let def_power = defender.stats.defense + defender.stats.hp + defender.level * 10
+        let battle_id = Hash::sha256(attacker_id, defender_id, Time::now())
+        // Element advantage
+        let atk_advantage = self.element_advantage(attacker.element, defender.element)
+        let final_atk = atk_power * atk_advantage / 100
+        let winner_id = attacker_id
+        let loser_id = defender_id
+        if final_atk > def_power {
+            attacker.wins += 1
+            defender.losses += 1
+            attacker.xp += 100
+            self.check_level_up(attacker_id)
+        } else {
+            defender.wins += 1
+            attacker.losses += 1
+            defender.xp += 100
+            self.check_level_up(defender_id)
+            winner_id = defender_id
+            loser_id = attacker_id
+        }
+        self.battle_log.push(battle_id)
+        self.battle_count += 1
+        emit BattleResult(battle_id, winner_id, loser_id)
+        return (battle_id, winner_id)
+    }
+
+    fn element_advantage(atk: Element, def: Element) -> u16 {
+        // Fire > Earth > Air > Water > Fire (rock-paper-scissors)
+        // Shadow <-> Neon, Quantum is neutral
+        if atk == Element::Fire && def == Element::Earth {
+            return 150
+        }
+        if atk == Element::Earth && def == Element::Air {
+            return 150
+        }
+        if atk == Element::Air && def == Element::Water {
+            return 150
+        }
+        if atk == Element::Water && def == Element::Fire {
+            return 150
+        }
+        if atk == Element::Shadow && def == Element::Neon {
+            return 150
+        }
+        if atk == Element::Neon && def == Element::Shadow {
+            return 150
+        }
+        return 100
+    }
+
+    fn check_level_up(token_id: Hash) -> bool {
+        let nft = self.tokens.get(token_id)
+        if nft == null {
+            return false
+        }
+        if nft.level >= MAX_LEVEL {
+            return false
+        }
+        let xp_needed = XP_PER_LEVEL * nft.level
+        if nft.xp >= xp_needed {
+            nft.level += 1
+            nft.stats.hp += 5
+            nft.stats.attack += 3
+            nft.stats.defense += 3
+            nft.stats.speed += 2
+            nft.stats.special += 3
+            emit LeveledUp(token_id, nft.level)
+            return true
+        }
+        return false
+    }
+
+    fn breed(parent1_id: Hash, parent2_id: Hash) -> Hash {
+        let p1 = self.tokens.get(parent1_id)
+        let p2 = self.tokens.get(parent2_id)
+        if p1 == null || p2 == null {
+            return Hash::zero()
+        }
+        if p1.owner != msg_sender() || p2.owner != msg_sender() {
+            return Hash::zero()
+        }
+        let child_name = p1.name + "-" + p2.name
+        let child_element = p1.element
+        let child_rarity = p1.rarity
+        if p2.rarity > p1.rarity {
+            child_rarity = p2.rarity
+        }
+        let child_gen = p1.generation + 1
+        if p2.generation > p1.generation {
+            child_gen = p2.generation + 1
+        }
+        let child_id = self.mint(child_name, child_element, child_rarity, child_gen)
+        emit Bred(child_id, parent1_id, parent2_id)
+        return child_id
+    }
+
+    fn get_token(token_id: Hash) -> (Address, Element, Rarity, u16, u16, u16) {
+        let nft = self.tokens.get(token_id)
+        if nft == null {
+            return (Address::zero(), Element::Fire, Rarity::Common, 0, 0, 0)
+        }
+        return (nft.owner, nft.element, nft.rarity, nft.level, nft.wins, nft.losses)
+    }
+
+    fn get_owner_tokens(owner: Address) -> List<Hash> {
+        let tokens = self.owner_tokens.get(owner)
+        if tokens == null {
+            return []
+        }
+        return tokens
+    }
+
+    fn get_stats() -> (u32, u64, u128) {
+        return (self.token_count, self.battle_count, self.total_volume)
+    }
+}
