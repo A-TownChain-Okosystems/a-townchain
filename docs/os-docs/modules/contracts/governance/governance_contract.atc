@@ -1,0 +1,237 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-17 — Governance DAO Contract
+// Sprint 2.6 | Smart Contract Layer | Chain-ID 9000
+// Migrated from: modules/contracts/governance/governance_contract.py (298 lines)
+// Decentralized voting: create_proposal, vote, finalize, execute, timelock
+// ─────────────────────────────────────────────────────────────
+
+const QUORUM_BPS: u16 = 1000             // 10% in basis points
+const TIMELOCK_SECONDS: u64 = 172800     // 48h
+const MIN_OPTIONS: u8 = 2
+const MAX_OPTIONS: u8 = 10
+const DEFAULT_VOTING_PERIOD: u64 = 604800  // 7 days
+
+enum ProposalStatus { Active, Passed, Rejected, Executed, Expired }
+
+struct Proposal {
+    proposal_id: Hash,
+    creator: Address,
+    title: String,
+    description: String,
+    created_at: u64,
+    voting_end: u64,
+    timelock_end: u64,
+    status: ProposalStatus,
+    option_count: u8,
+    vote_counts: List<u128>,
+    voter_count: u32,
+    quorum_met: bool,
+    winning_option: u8,
+    executed_at: u64,
+}
+
+contract GovernanceContract {
+    state proposals: Map<Hash, Proposal>
+    state proposal_ids: List<Hash>
+    state total_supply: u128
+    state balances: Map<Address, u128>
+    state owner: Address
+    state paused: bool
+    state proposal_count: u32
+
+    event ProposalCreated(proposal_id: Hash, creator: Address, title: String)
+    event VoteCast(proposal_id: Hash, voter: Address, option: u8, weight: u128)
+    event ProposalPassed(proposal_id: Hash, winning_option: u8)
+    event ProposalRejected(proposal_id: Hash, reason: String)
+    event ProposalExecuted(proposal_id: Hash, executor: Address)
+
+    fn init() {
+        self.proposals = {}
+        self.proposal_ids = []
+        self.total_supply = 21000000000000000000000000
+        self.balances = {}
+        self.owner = msg_sender()
+        self.paused = false
+        self.proposal_count = 0
+    }
+
+    fn set_balance_oracle(addr: Address, balance: u128) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.balances[addr] = balance
+        return true
+    }
+
+    fn get_voting_power(voter: Address) -> u128 {
+        let bal = self.balances.get(voter)
+        if bal == null {
+            return 0
+        }
+        return bal
+    }
+
+    fn create_proposal(title: String, description: String, option_count: u8, voting_period: u64) -> Hash {
+        if self.paused {
+            return Hash::zero()
+        }
+        if title.len() == 0 {
+            return Hash::zero()
+        }
+        if option_count < MIN_OPTIONS || option_count > MAX_OPTIONS {
+            return Hash::zero()
+        }
+        let now = Time::now()
+        let period = voting_period
+        if period == 0 {
+            period = DEFAULT_VOTING_PERIOD
+        }
+        let voting_end = now + period
+        let timelock_end = voting_end + TIMELOCK_SECONDS
+        let id_input = title + Address::to_string(msg_sender()) + Int::to_string(now)
+        let proposal_id = Hash::sha256(id_input)
+        let vote_counts: List<u128> = []
+        let i: u8 = 0
+        while i < option_count {
+            vote_counts.push(0)
+            i += 1
+        }
+        let proposal = Proposal {
+            proposal_id: proposal_id,
+            creator: msg_sender(),
+            title: title,
+            description: description,
+            created_at: now,
+            voting_end: voting_end,
+            timelock_end: timelock_end,
+            status: ProposalStatus::Active,
+            option_count: option_count,
+            vote_counts: vote_counts,
+            voter_count: 0,
+            quorum_met: false,
+            winning_option: 255,
+            executed_at: 0,
+        }
+        self.proposals[proposal_id] = proposal
+        self.proposal_ids.push(proposal_id)
+        self.proposal_count += 1
+        emit ProposalCreated(proposal_id, msg_sender(), title)
+        return proposal_id
+    }
+
+    fn vote(proposal_id: Hash, option: u8) -> bool {
+        if self.paused {
+            return false
+        }
+        let proposal = self.proposals.get(proposal_id)
+        if proposal == null {
+            return false
+        }
+        if proposal.status != ProposalStatus::Active {
+            return false
+        }
+        if Time::now() >= proposal.voting_end {
+            return false
+        }
+        if option >= proposal.option_count {
+            return false
+        }
+        let weight = self.get_voting_power(msg_sender())
+        if weight == 0 {
+            return false
+        }
+        proposal.vote_counts[option] += weight
+        proposal.voter_count += 1
+        emit VoteCast(proposal_id, msg_sender(), option, weight)
+        return true
+    }
+
+    fn finalize_proposal(proposal_id: Hash) -> bool {
+        let proposal = self.proposals.get(proposal_id)
+        if proposal == null {
+            return false
+        }
+        if proposal.status != ProposalStatus::Active {
+            return false
+        }
+        if Time::now() < proposal.voting_end {
+            return false
+        }
+        // Calculate total voted
+        let total_voted: u128 = 0
+        let i: u8 = 0
+        while i < proposal.option_count {
+            total_voted += proposal.vote_counts[i]
+            i += 1
+        }
+        // Check quorum
+        let quorum_required = self.total_supply * QUORUM_BPS / 10000
+        if total_voted < quorum_required {
+            proposal.status = ProposalStatus::Rejected
+            proposal.quorum_met = false
+            emit ProposalRejected(proposal_id, "Quorum not reached")
+            return false
+        }
+        proposal.quorum_met = true
+        // Find winner
+        let max_votes: u128 = 0
+        let winner: u8 = 0
+        let j: u8 = 0
+        while j < proposal.option_count {
+            if proposal.vote_counts[j] > max_votes {
+                max_votes = proposal.vote_counts[j]
+                winner = j
+            }
+            j += 1
+        }
+        proposal.winning_option = winner
+        proposal.status = ProposalStatus::Passed
+        emit ProposalPassed(proposal_id, winner)
+        return true
+    }
+
+    fn execute_proposal(proposal_id: Hash) -> bool {
+        let proposal = self.proposals.get(proposal_id)
+        if proposal == null {
+            return false
+        }
+        if proposal.status != ProposalStatus::Passed {
+            return false
+        }
+        if Time::now() < proposal.timelock_end {
+            return false
+        }
+        proposal.status = ProposalStatus::Executed
+        proposal.executed_at = Time::now()
+        emit ProposalExecuted(proposal_id, msg_sender())
+        return true
+    }
+
+    fn get_proposal(proposal_id: Hash) -> (ProposalStatus, u32, bool, u8, u64) {
+        let p = self.proposals.get(proposal_id)
+        if p == null {
+            return (ProposalStatus::Expired, 0, false, 0, 0)
+        }
+        return (p.status, p.voter_count, p.quorum_met, p.winning_option, p.executed_at)
+    }
+
+    fn get_proposal_count() -> u32 {
+        return self.proposal_count
+    }
+
+    fn get_active_proposals() -> u32 {
+        let count: u32 = 0
+        let i: u32 = 0
+        while i < self.proposal_ids.len() {
+            let p = self.proposals.get(self.proposal_ids[i])
+            if p != null {
+                if p.status == ProposalStatus::Active {
+                    count += 1
+                }
+            }
+            i += 1
+        }
+        return count
+    }
+}
