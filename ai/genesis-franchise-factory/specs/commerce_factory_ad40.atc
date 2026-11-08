@@ -1,0 +1,26 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-40 Commerce Factory
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+struct CommerceFactory { shop: Map<Hash256, ShopItem>, dlcs: Map<Hash256, DLC>, bundles: Map<Hash256, Bundle>, subs: Map<Hash256, Sub>, vouchers: Map<Hash256, Voucher>, licenses: Map<Hash256, License>, txs: Map<Hash256, Tx>, gifts: List<Hash256> }
+enum ShopCat { Cosmetic, Consumable, Equipment, Mount, Pet, Boost, Seasonal }
+enum LicType { SingleUser, Family, MultiSeat, Edu, Commercial }
+struct ShopItem { id: Hash256, name: String, desc: String, cat: ShopCat, price: Float32, discount: Float32, available: Bool, stock: UInt32 }
+struct DLC { id: Hash256, name: String, desc: String, price: Float32, content: List<String>, downloads: UInt32 }
+struct Bundle { id: Hash256, name: String, items: List<Hash256>, total: Float32, price: Float32, discount: Float32 }
+struct Sub { id: Hash256, name: String, tier: String, monthly: Float32, yearly: Float32, benefits: List<String>, active: UInt32 }
+struct Voucher { id: Hash256, code: String, dtype: String, value: Float32, valid_until: UInt64, uses: UInt32, max_uses: UInt32 }
+struct License { id: Hash256, product: String, licensee: String, type: LicType, key: String, activated: Bool, expires: UInt64, platform: String }
+struct Tx { id: Hash256, buyer: String, item: Hash256, amount: Float32, method: String, status: String, timestamp: UInt64, refunded: Bool }
+
+pub fn create_item(f, name, desc, cat, price) -> Hash256 { let iid = Crypto::sha256(serialize(name, Chain::timestamp())); f.shop[iid] = ShopItem { id: iid, name: name, desc: desc, cat: cat, price: price, discount: 0, available: true, stock: UInt32::max() }; return iid }
+pub fn create_dlc(f, name, desc, price, content) -> Hash256 { let did = Crypto::sha256(serialize(name, Chain::timestamp())); f.dlcs[did] = DLC { id: did, name: name, desc: desc, price: price, content: content, downloads: 0 }; return did }
+pub fn create_bundle(f, name, items, price) -> Hash256 { let bid = Crypto::sha256(serialize(name, Chain::timestamp())); let total = 0.0; for iid in items { if f.shop.contains(iid) { total = total + f.shop[iid].price } }; f.bundles[bid] = Bundle { id: bid, name: name, items: items, total: total, price: price, discount: if total > 0 then ((total - price) / total) * 100 else 0 }; return bid }
+pub fn create_sub(f, name, tier, monthly, yearly, benefits) -> Hash256 { let sid = Crypto::sha256(serialize(name, Chain::timestamp())); f.subs[sid] = Sub { id: sid, name: name, tier: tier, monthly: monthly, yearly: yearly, benefits: benefits, active: 0 }; return sid }
+pub fn create_voucher(f, code, dtype, value, days, max_uses) -> Hash256 { let vid = Crypto::sha256(serialize(code, Chain::timestamp())); f.vouchers[vid] = Voucher { id: vid, code: code, dtype: dtype, value: value, valid_until: Chain::timestamp() + days * 86400, uses: 0, max_uses: max_uses }; return vid }
+pub fn create_license(f, product, licensee, type, platform, days) -> Hash256 { let lid = Crypto::sha256(serialize(product, Chain::timestamp())); f.licenses[lid] = License { id: lid, product: product, licensee: licensee, type: type, key: serialize(Crypto::sha256(serialize(lid))), activated: false, expires: Chain::timestamp() + days * 86400, platform: platform }; return lid }
+pub fn activate_license(f, lid) -> Bool { require(f.licenses.contains(lid)); f.licenses[lid].activated = true; return true }
+pub fn record_tx(f, buyer, item, amount, method) -> Hash256 { let tid = Crypto::sha256(serialize(buyer, Chain::timestamp())); f.txs[tid] = Tx { id: tid, buyer: buyer, item: item, amount: amount, method: method, status: "completed", timestamp: Chain::timestamp(), refunded: false }; return tid }
+pub fn refund_tx(f, tid) -> Bool { require(f.txs.contains(tid)); f.txs[tid].refunded = true; f.txs[tid].status = "refunded"; return true }
+pub fn send_gift(f, sender, recipient, item) -> Hash256 { let gid = Crypto::sha256(serialize(sender, Chain::timestamp())); f.gifts.append(gid); return gid }
+pub fn revenue(f) -> Float32 { let t = 0.0; for tid in f.txs.keys() { if not f.txs[tid].refunded { t = t + f.txs[tid].amount } }; return t }
