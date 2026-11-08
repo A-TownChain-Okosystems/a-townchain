@@ -41,14 +41,22 @@ cargo +nightly build -p shivacore --features x86-boot \
   --target x86_64-unknown-none -Z build-std=core,alloc
 ```
 
-**Gate offen (08.11.2026):** Mit dem aktuellen Nightly bricht dieser Bau in
-`sha2` und `curve25519-dalek` ab — im Debug-Profil mit
-`rustc-LLVM ERROR: Do not know how to split the result of this operator!`,
-im Release-Profil mit `SIGILL` im rustc. Das ist ein Codegen-Fehler der
-Toolchain für dieses Ziel, kein Fehler im Kernel-Code. Der Kernel ist damit
-baubar konzipiert, aber derzeit nicht übersetzbar; ein festgeschriebenes
-Nightly im Bare-Metal-Job ist der nächste Schritt. Alle übrigen 13 Programme
-entstehen im Standardbau.
+`./tools/ecosystem.sh build` führt diesen Schritt als achte Zeile aus und
+schreibt `target/x86_64-unknown-none/release/shivacore` (ELF64, x86-64,
+Einstieg `_start`, ~121 KB).
+
+**Aufgelöst am 08.11.2026.** Der Bau brach zuvor in `sha2` und
+`curve25519-dalek` ab (Debug: `rustc-LLVM ERROR: Do not know how to split the
+result of this operator!`, Release: `SIGILL` im rustc). Ursache war keine
+Toolchain-Grenze, sondern Ballast: beide Crates kamen ausschließlich über
+`ed25519-dalek`, das der Kernel nirgends verwendete (`cargo check` meldete es
+als ungenutzte Abhängigkeit, im Quelltext null Treffer). Nach dem Entfernen
+baut der Kernel sauber. Signaturprüfung gehört ohnehin nicht in den Kernel,
+sondern in Service-Space und Node.
+
+Zwischenstand, falls der Codegen je wieder bricht: `cargo +nightly check`
+mit demselben Ziel und `-Z build-std` prüft den Kernel in Sekunden ohne
+LLVM-Codegen und trennt damit Typfehler von Toolchain-Fehlern.
 
 Toolchains: alles baut auf stable. `kernel/globus-os` ist per
 `rust-toolchain.toml` an Nightly gebunden, weil das Build-Skript des
