@@ -1,0 +1,43 @@
+{
+  "id": "ATC-KMS-PR-213",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #213: docs(catalog): reconcile latest GlobusOS runtime contracts",
+  "context": "Pull request 213 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/213",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-92"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-96"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-92"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-96"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-92"
+    }
+  ],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n\n- Add `FN-GLOBUS-004`, a residual, source-unbound contract for normalized hardware inventory based on GlobusOS PR #92.\n- Record the proposed dependency-aware service-supervisor work from GlobusOS PR #96 as candidate evidence for `FN-GLOBUS-001`, not as a canonical mainline binding or functional verification.\n- Update the human-readable catalog count to 31 components / 105 function contracts.\n\n## Evidence boundaries\n\n- JSON parsed successfully in the update workflow; no repository validator, CI, build, unit test, hardware probe, or source census was run by this change.\n- PR #92 does not provide a verified exact source SHA/per-symbol binding in this catalog update, so `FN-GLOBUS-004` remains `UNBOUND_RESIDUAL`.\n- PR #96 head `f7e118d9c5381f094ef70bc20ba59783d2372ade` is recorded only as a proposed candidate. Production x86_64 copy-in, real syscall/interrupt entry wiring, per-process CR3/page-table isolation, complete PT_LOAD/BSS mapping, and production `globus-init` remain open.\n- No function is promoted to `VERIFIED`; the release decision remains `BLOCKED`.\n\n## Required follow-up\n\n1. Reconcile PR #92 against an exact head SHA, source path, symbol and blob SHA.\n2. Run the catalog validator and exact-head CI, and inspect source-census/reconciliation results.\n3. Keep this PR Draft until required evidence is terminal and independently reviewed."
+}
