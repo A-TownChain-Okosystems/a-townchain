@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-PR-197",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #197: fix(pr187): enforce registry accounting and isolate consensus E2E",
+  "context": "Pull request 197 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/197",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-187"
+    }
+  ],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Scope\n\nStacked on PR #187 at `e29b21da9d5e7429b24023796ec03c29e09d98a9`.\n\n- Replace the tautological registry accounting check with an independent comparison between actual registry entries per repository and the declared `RUNTIME_SYMBOL` classification count.\n- Add a regression test proving that removing a runtime entry while leaving the summary unchanged fails validation.\n- Replace fixed RPC/P2P test ports with ephemeral local ports in the persistent two-node consensus E2E test.\n- Detect child-process exit while waiting for status and use RAII cleanup so spawned nodes are killed/reaped if assertions panic.\n\n## Explicitly unresolved\n\nThe canonical registry reconciliation is **not included**: the exact census and rebuilt-registry artifacts are available, but the 70-entry discrepancy has not yet been reconciled against the checked-in canonical JSON entry by entry. Validator strictness remains enabled; no summary totals were hand-edited.\n\n## Verification status\n\nDraft / NOT VERIFIED pending CI. No merge is authorized by this PR."
+}
