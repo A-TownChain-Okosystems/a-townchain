@@ -89,8 +89,11 @@ vom Gate respektiert.
   Vertrag eine kanonische JSON-Schnittstelle (Zustand, Events, Signaturen) mit
   stabilem `abi_sha256`; Grundlage für die Registry-Bindung nach ATC-STD-SC-019.
   Die ABI beschreibt die Schnittstelle, nicht die Ausführung — kein Bytecode.
-  **Noch offen:** vollständige Import-Auflösung (`use ATC::X::Y` gegen einen
-  Modulindex) und Codegen für Verträge (G11).
+  **Import-Auflösung:** `use ATC::X::Y` muss ein deklariertes Symbol oder ein
+  kanonisches Builtin (Typen und Host-Funktionen wie `sha256`) nennen; die
+  Wurzel-Namespace ist `ATC`. Ein Modulindex im Sinne von Dateipfaden existiert
+  in ATCLang nicht — aufgelöst wird das Symbol, nicht der Namespace.
+  **Noch offen:** Codegen für Verträge (G11) und ein Modul-/Paketindex (G13).
   Siehe STATUS.md/ROADMAP.md (G3-G10 offen)
 
 Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde, alle 16 Quellen
