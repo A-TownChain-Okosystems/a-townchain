@@ -1,0 +1,44 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-26 — XAI Transparency
+// Tier 4 — AI Orchestration | Deterministisches On-Chain-Anker fuer Off-Chain-Inferenz
+// ─────────────────────────────────────────────────────────────
+
+import ATC::AI::Kernel
+
+contract XaiTransparency {
+    state model_registry: Map<String, Hash>
+    state reputation: Map<Address, u32>
+    state task_counter: u64
+
+    event TaskScheduled(agent: Address, task_id: u64)
+    event TaskResult(task_id: u64, result_hash: Hash, confidence: u32)
+
+    fn register_model(name: String, model_hash: Hash) -> bool {
+        self.model_registry[name] = model_hash
+        return true
+    }
+
+    fn schedule_task(agent: Address, payload_hash: Hash) -> u64 {
+        // LLM-Inferenz laeuft OFF-CHAIN (ATC-26 XAI) — nur Hash + Signatur werden verankert
+        let task_id: u64 = self.task_counter
+        self.task_counter += 1
+        emit TaskScheduled(agent, task_id)
+        return task_id
+    }
+
+    fn submit_result(task_id: u64, result_hash: Hash, confidence: u32, signature: Signature) -> bool {
+        require(verify_signature(msg.sender, result_hash, signature), "invalid signature")
+        emit TaskResult(task_id, result_hash, confidence)
+        return true
+    }
+
+    fn update_reputation(agent: Address, delta: u32, positive: bool) -> bool {
+        if positive {
+            self.reputation[agent] += delta
+        } else {
+            self.reputation[agent] -= delta
+        }
+        return true
+    }
+}
