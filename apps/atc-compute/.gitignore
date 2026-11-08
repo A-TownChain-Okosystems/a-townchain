@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+.env.local
+node_modules/
+dist/
+build/
+target/
+*.log
+PRIVATE_KEYS.txt
+.pytest_cache/
