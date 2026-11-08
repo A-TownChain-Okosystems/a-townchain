@@ -1,0 +1,11 @@
+[package]
+name = "atc-verification"
+description = "Fail-closed engineering verification result model"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+atc-core = { path = "../atc-core" }
+atc-graph = { path = "../atc-graph" }
