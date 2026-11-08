@@ -110,9 +110,15 @@ fn production_cli_boundary_is_rust_only() {
     assert!(exe.is_file(), "Rust production CLI fehlt: {exe:?}");
     let manifest = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
     assert!(manifest.ends_with("crates/atc-core"));
+    // Das Binärartefakt muss aus dem Cargo-Build stammen. Im Monorepo liegt das
+    // target-Verzeichnis zentral oberhalb des Crates, im Einzelrepo direkt im Crate —
+    // entscheidend ist, dass die Datei unterhalb eines `target/`-Verzeichnisses liegt.
+    let in_cargo_target = exe
+        .ancestors()
+        .any(|p| p.file_name().map(|n| n == "target").unwrap_or(false));
     assert!(
-        exe.starts_with(manifest.join("target")) || exe.starts_with(manifest.join("../..")),
-        "Production-CLI liegt außerhalb des Rust-Crate-Builds: {exe:?}"
+        in_cargo_target,
+        "Production-CLI ist kein Cargo-Build-Artefakt: {exe:?} (Crate: {manifest:?})"
     );
     assert!(
         !manifest.join("../../src/atclang/vm/atcvm.py").is_file(),
