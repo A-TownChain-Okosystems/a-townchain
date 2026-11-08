@@ -1,0 +1,91 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-73 — Asset Streaming System
+# Genesis Engine — Biom-basiertes Streaming
+# Standard: AD-73
+
+struct StreamZone:
+    zone_id: String           # z.B. "biome_forest", "city_market"
+    assets: Array<String>     # Asset-Pfade in dieser Zone
+    loaded: Bool
+    ref_count: Int32
+    last_access: Float        # Timestamp
+    memory_bytes: Int64
+
+struct StreamConfig:
+    preload_radius: Float     # Vorabladen in Einheiten
+    unload_delay: Float       # Sekunden bis Unload
+    max_zone_memory: Int64    # Max RAM pro Zone
+    async_load: Bool
+    fade_transition: Bool
+
+func create_zone(zone_id: String, assets: Array<String>) -> StreamZone:
+    return StreamZone {
+        zone_id: zone_id,
+        assets: assets,
+        loaded: false,
+        ref_count: 0,
+        last_access: 0.0,
+        memory_bytes: 0
+    }
+
+func enter_zone(zone: StreamZone, config: StreamConfig) -> Bool:
+    if not zone.loaded:
+        # Lade alle Assets für diese Zone asynchron
+        for path in zone.assets:
+            if config.async_load:
+                load_asset_async(path)
+            else:
+                load_asset_sync(path)
+        zone.loaded = true
+        log_info(f"Zone '{zone.zone_id}' loaded")
+    zone.ref_count += 1
+    zone.last_access = now()
+    return true
+
+func leave_zone(zone: StreamZone, config: StreamConfig) -> Bool:
+    zone.ref_count -= 1
+    if zone.ref_count <= 0:
+        # Warte unload_delay Sekunden bevor Freigabe
+        schedule_unload(zone, config.unload_delay)
+    return true
+
+func schedule_unload(zone: StreamZone, delay: Float) -> Bool:
+    # Timer der nach 'delay' Sekunden die Zone entlädt
+    # es sei denn ref_count ist wieder > 0
+    set_timer(delay, func:
+        if zone.ref_count <= 0:
+            for path in zone.assets:
+                unload_asset(path)
+            zone.loaded = false
+            zone.memory_bytes = 0
+            log_info(f"Zone '{zone.zone_id}' unloaded (saved memory)")
+    )
+    return true
+
+# Preloading — lade benachbarte Zonen vor
+func preload_adjacent_zones(current: StreamZone, adjacent: Array<StreamZone>, config: StreamConfig) -> Bool:
+    for zone in adjacent:
+        if not zone.loaded and distance_to(current, zone) <= config.preload_radius:
+            for path in zone.assets:
+                load_asset_async(path)
+            zone.loaded = true
+            log_debug(f"Preloaded zone '{zone.zone_id}'")
+    return true
+
+# Memory-Budget — wenn Limit überschritten, entlade am längsten ungenutzte Zone
+func enforce_memory_limit(zones: Array<StreamZone>, max_total: Int64) -> Bool:
+    total = 0
+    for z in zones:
+        if z.loaded:
+            total += z.memory_bytes
+    if total > max_total:
+        # LRU — Least Recently Used Zone entladen
+        lru = find_lru_zone(zones)
+        if lru:
+            for path in lru.assets:
+                unload_asset(path)
+            lru.loaded = false
+            total -= lru.memory_bytes
+            lru.memory_bytes = 0
+            log_info(f"Auto-unloaded LRU zone '{lru.zone_id}' to save {lru.memory_bytes} bytes")
+    return true
