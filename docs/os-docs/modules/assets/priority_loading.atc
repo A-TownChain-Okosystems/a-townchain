@@ -1,0 +1,80 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-72 — Priority Loading System
+# Genesis Engine — Gestaffeltes Laden für sofort nutzbare UI
+# Standard: AD-72
+
+enum LoadPriority:
+    CRITICAL    # UI, Fonts, Buttons — sofort laden, blockierend
+    HIGH        # Charaktere, Sounds — schnell laden, nicht-blockierend
+    MEDIUM      # Hintergründe, Decorative — lazy load
+    LOW         # Videos, Bonus — nur bei idle
+    BACKGROUND  # Cloud-Assets — im Hintergrund
+
+struct PriorityQueue:
+    critical: Array<AssetRef>
+    high: Array<AssetRef>
+    medium: Array<AssetRef>
+    low: Array<AssetRef>
+    background: Array<AssetRef>
+    total_loaded: Int32
+    total_failed: Int32
+
+func create_priority_queue() -> PriorityQueue:
+    return PriorityQueue {
+        critical: [], high: [], medium: [], low: [], background: [],
+        total_loaded: 0, total_failed: 0
+    }
+
+func enqueue(queue: PriorityQueue, ref: AssetRef) -> Bool:
+    match ref.priority:
+        "critical": queue.critical.append(ref)
+        "high": queue.high.append(ref)
+        "medium": queue.medium.append(ref)
+        "low": queue.low.append(ref)
+        _: queue.background.append(ref)
+    return true
+
+func process_queue(queue: PriorityQueue, budget_ms: Float) -> Bool:
+    # Phase 1: Critical — blockierend, bis alles geladen
+    for ref in queue.critical:
+        if not is_loaded(ref):
+            load_asset_sync(ref)
+            queue.total_loaded += 1
+    # Phase 2: High — mit Zeitbudget
+    elapsed = 0.0
+    for ref in queue.high:
+        if elapsed >= budget_ms:
+            break
+        if not is_loaded(ref):
+            start = now()
+            load_asset_async(ref)
+            elapsed += now() - start
+            queue.total_loaded += 1
+    # Phase 3: Medium — nur wenn Zeit übrig
+    remaining = budget_ms - elapsed
+    if remaining > 0:
+        for ref in queue.medium:
+            if remaining <= 0: break
+            load_asset_async(ref)
+            queue.total_loaded += 1
+    # Phase 4: Low — nur bei idle
+    if is_idle():
+        for ref in queue.low:
+            load_asset_async(ref)
+            queue.total_loaded += 1
+    # Phase 5: Background — immer im Hintergrund
+    for ref in queue.background:
+        download_background(ref)
+    return true
+
+func is_idle() -> Bool:
+    return get_cpu_usage() < 20.0 and get_gpu_usage() < 30.0
+
+# Ziel: UI in <500ms nutzbar, Rest lädt nach
+func benchmark_load_time(queue: PriorityQueue) -> Map:
+    return {
+        "critical_ms": measure_critical_load(queue),
+        "high_ms": measure_high_load(queue),
+        "ui_ready": is_ui_ready(),
+        "fps_impact": get_fps_delta()
+    }
