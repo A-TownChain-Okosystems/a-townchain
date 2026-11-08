@@ -1,0 +1,28 @@
+name: ATC Test Suite (Docs-Governance-Smoke)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  docs-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Governance-YAML/MD-Smoke (SCR-0082)
+        run: |
+          pip install pyyaml -q
+          python3 - <<'PY'
+          import glob, yaml, os
+          ny = 0
+          for f in glob.glob("**/*.yaml", recursive=True) + glob.glob("**/*.yml", recursive=True):
+              if "archive" in f or "repos-rescue" in f or "monorepo-full" in f: continue
+              yaml.safe_load(open(f, encoding="utf-8")); ny += 1
+          rs = open("REALITY_STATUS.md", encoding="utf-8").read()
+          assert len(rs.splitlines()) > 500, "REALITY_STATUS.md zu kurz (Datenverlust-Verdacht, SCR-0058-Guard-Analog)"
+          print(f"Docs-Smoke OK: {ny} YAML geparst, REALITY_STATUS {len(rs.splitlines())} Zeilen")
+          PY
