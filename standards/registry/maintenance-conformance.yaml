@@ -1,0 +1,423 @@
+maintenance_conformance:
+  standard: ATC-STD-MAINT-000 §20.1
+  version: 1.0.0
+  generated_note: GENERIERT aus standards/maintenance/ + registry/standards.yaml — nicht manuell pflegen (SCR-0120
+    v7)
+  role: ATC-STD-MAINT-000 ist der normative Governance- und Contract-Layer der gesamten Maintenance-Familie
+  parent_standard: ATC-STD-MAINT-000
+  family_range: ATC-STD-MAINT-000..024 (ab 025 frei via SCR)
+  normative_release_gate: A system MUST NOT be released to a lifecycle state requiring operational support unless
+    its required maintenance capabilities are implemented, validated, documented, and evidenced.
+  domains:
+    governance:
+      range: MAINT-000..002
+    technical:
+      range: MAINT-003..010
+    operational:
+      range: MAINT-011..018
+    evidence_control:
+      range: MAINT-019..024
+  schemas:
+    record: schemas/maintenance/maintenance-record.schema.json
+    readiness: schemas/maintenance/maintenance-readiness.schema.json
+    evidence: schemas/maintenance/maintenance-evidence.schema.json
+  requirements_registry: registry/maintenance-requirements.yaml
+  family_index: standards/maintenance/INDEX.md
+  conformance_workflow: .github/workflows/maintenance-conformance.yml
+  registry_records: registry/standards (ATC-*.yaml, kanonisch via tools/gen_views/gen_registry_records.py; registry_version
+    unabhaengig von Standard-Version, MAINT-000 §22.1)
+  standards:
+  - id: ATC-STD-MAINT-000
+    role: 'Governance (this standard: contract layer only)'
+    group: Governance & Classification
+    group_key: governance_classification
+    domain: governance
+    priority_kai_os: P0
+    parent_standard: null
+    inherits_mandatory_baseline: false
+    req_count: 15
+    reqs:
+    - REQ-MAINT-001
+    - REQ-MAINT-002
+    - REQ-MAINT-003
+    - REQ-MAINT-004
+    - REQ-MAINT-005
+    - REQ-MAINT-006
+    - REQ-MAINT-007
+    - REQ-MAINT-008
+    - REQ-MAINT-009
+    - REQ-MAINT-010
+    - REQ-MAINT-011
+    - REQ-MAINT-012
+    - REQ-MAINT-013
+    - REQ-MAINT-014
+    - REQ-MAINT-015
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-001
+    role: Classification
+    group: Governance & Classification
+    group_key: governance_classification
+    domain: governance
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 5
+    reqs:
+    - REQ-MAINT-016
+    - REQ-MAINT-017
+    - REQ-MAINT-018
+    - REQ-MAINT-019
+    - REQ-MAINT-020
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-002
+    role: Lifecycle
+    group: Governance & Classification
+    group_key: governance_classification
+    domain: governance
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 4
+    reqs:
+    - REQ-MAINT-021
+    - REQ-MAINT-022
+    - REQ-MAINT-023
+    - REQ-MAINT-024
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-003
+    role: Code Maintenance
+    group: Engineering
+    group_key: engineering
+    domain: technical
+    priority_kai_os: P1
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-025
+    - REQ-MAINT-026
+    - REQ-MAINT-027
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-004
+    role: Dependency Maintenance
+    group: Engineering
+    group_key: engineering
+    domain: technical
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 4
+    reqs:
+    - REQ-MAINT-028
+    - REQ-MAINT-029
+    - REQ-MAINT-030
+    - REQ-MAINT-031
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-005
+    role: Security Maintenance
+    group: Security
+    group_key: security
+    domain: technical
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 4
+    reqs:
+    - REQ-MAINT-032
+    - REQ-MAINT-033
+    - REQ-MAINT-034
+    - REQ-MAINT-035
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-006
+    role: Infrastructure Maintenance
+    group: Engineering
+    group_key: engineering
+    domain: technical
+    priority_kai_os: P1
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-036
+    - REQ-MAINT-037
+    - REQ-MAINT-038
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-007
+    role: OS Maintenance
+    group: Platform
+    group_key: platform
+    domain: technical
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-039
+    - REQ-MAINT-040
+    - REQ-MAINT-041
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-008
+    role: Blockchain Maintenance
+    group: Platform
+    group_key: platform
+    domain: technical
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-042
+    - REQ-MAINT-043
+    - REQ-MAINT-044
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-009
+    role: VM & Runtime Maintenance
+    group: Platform
+    group_key: platform
+    domain: technical
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 4
+    reqs:
+    - REQ-MAINT-045
+    - REQ-MAINT-046
+    - REQ-MAINT-047
+    - REQ-MAINT-048
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-010
+    role: AI Maintenance
+    group: Platform
+    group_key: platform
+    domain: technical
+    priority_kai_os: P1
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-049
+    - REQ-MAINT-050
+    - REQ-MAINT-051
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-011
+    role: Repository Maintenance
+    group: Governance Assets
+    group_key: governance_assets
+    domain: operational
+    priority_kai_os: P1
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 2
+    reqs:
+    - REQ-MAINT-052
+    - REQ-MAINT-053
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-012
+    role: Standards Maintenance
+    group: Governance Assets
+    group_key: governance_assets
+    domain: operational
+    priority_kai_os: P1
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-054
+    - REQ-MAINT-055
+    - REQ-MAINT-056
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-013
+    role: Documentation Maintenance
+    group: Governance Assets
+    group_key: governance_assets
+    domain: operational
+    priority_kai_os: P2
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-057
+    - REQ-MAINT-058
+    - REQ-MAINT-059
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-014
+    role: Performance Maintenance
+    group: Engineering
+    group_key: engineering
+    domain: operational
+    priority_kai_os: P1
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 2
+    reqs:
+    - REQ-MAINT-060
+    - REQ-MAINT-061
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-015
+    role: Reliability Maintenance
+    group: Assurance
+    group_key: assurance
+    domain: operational
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-062
+    - REQ-MAINT-063
+    - REQ-MAINT-064
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-016
+    role: Compatibility Maintenance
+    group: Lifecycle
+    group_key: lifecycle
+    domain: operational
+    priority_kai_os: P1
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 2
+    reqs:
+    - REQ-MAINT-065
+    - REQ-MAINT-066
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-017
+    role: Upgrade & Migration
+    group: Lifecycle
+    group_key: lifecycle
+    domain: operational
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 2
+    reqs:
+    - REQ-MAINT-067
+    - REQ-MAINT-068
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-018
+    role: Rollback & Recovery
+    group: Security
+    group_key: security
+    domain: operational
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-069
+    - REQ-MAINT-070
+    - REQ-MAINT-071
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-019
+    role: Maintenance Evidence
+    group: Assurance
+    group_key: assurance
+    domain: evidence_control
+    priority_kai_os: P0
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 4
+    reqs:
+    - REQ-MAINT-072
+    - REQ-MAINT-073
+    - REQ-MAINT-074
+    - REQ-MAINT-075
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-020
+    role: Maintenance Automation
+    group: Assurance
+    group_key: assurance
+    domain: evidence_control
+    priority_kai_os: P1
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 4
+    reqs:
+    - REQ-MAINT-076
+    - REQ-MAINT-077
+    - REQ-MAINT-078
+    - REQ-MAINT-079
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-021
+    role: Emergency Maintenance
+    group: Security
+    group_key: security
+    domain: evidence_control
+    priority_kai_os: P1
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 5
+    reqs:
+    - REQ-MAINT-080
+    - REQ-MAINT-081
+    - REQ-MAINT-082
+    - REQ-MAINT-083
+    - REQ-MAINT-084
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-022
+    role: End-of-Life / Retirement
+    group: Lifecycle
+    group_key: lifecycle
+    domain: evidence_control
+    priority_kai_os: P2
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-085
+    - REQ-MAINT-086
+    - REQ-MAINT-087
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-023
+    role: Vendor & Supply-Chain Maintenance
+    group: Supply & Ecosystem
+    group_key: supply_ecosystem
+    domain: evidence_control
+    priority_kai_os: P2
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 4
+    reqs:
+    - REQ-MAINT-088
+    - REQ-MAINT-089
+    - REQ-MAINT-090
+    - REQ-MAINT-091
+    version: 1.0.0
+    status: approved
+  - id: ATC-STD-MAINT-024
+    role: Cross-Ecosystem Maintenance
+    group: Supply & Ecosystem
+    group_key: supply_ecosystem
+    domain: evidence_control
+    priority_kai_os: P2
+    parent_standard: ATC-STD-MAINT-000
+    inherits_mandatory_baseline: true
+    req_count: 3
+    reqs:
+    - REQ-MAINT-092
+    - REQ-MAINT-093
+    - REQ-MAINT-094
+    version: 1.0.0
+    status: approved
