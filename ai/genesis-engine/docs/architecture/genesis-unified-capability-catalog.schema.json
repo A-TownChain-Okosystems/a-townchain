@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/A-TownChain-Okosystems/genesis-engine/blob/main/docs/architecture/genesis-unified-capability-catalog.schema.json",
+  "title": "Genesis Engine Unified Function and Capability Catalog",
+  "type": "object",
+  "required": [
+    "catalog_id",
+    "schema_version",
+    "title",
+    "created_on",
+    "repository",
+    "purpose",
+    "authority",
+    "boundary",
+    "source_catalogs",
+    "lifecycle_statuses",
+    "item_count",
+    "source_counts",
+    "kind_counts",
+    "domain_counts",
+    "reconciliation_rules",
+    "items"
+  ],
+  "properties": {
+    "catalog_id": {
+      "const": "GENESIS-ENGINE-UNIFIED-CAPABILITY-CATALOG"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority": {
+      "type": "string",
+      "minLength": 1
+    },
+    "boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_catalogs": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "catalog_id",
+          "path",
+          "entries",
+          "kind"
+        ],
+        "properties": {
+          "catalog_id": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "entries": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "kind": {
+            "enum": [
+              "function_contract",
+              "capability_requirement"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "lifecycle_statuses": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "NOT_ASSESSED",
+          "SPECIFIED",
+          "MAPPED",
+          "IMPLEMENTED",
+          "VERIFIED",
+          "BLOCKED",
+          "EXCLUDED",
+          "EXTERNAL_DEPENDENCY"
+        ]
+      }
+    },
+    "item_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "kind_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "domain_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "reconciliation_rules": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "source_catalog",
+          "source_id",
+          "kind",
+          "domain",
+          "title",
+          "description",
+          "priority",
+          "status",
+          "source_binding",
+          "acceptance_evidence",
+          "dependencies",
+          "source_record"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^GEN-(FUNC|UEP|UNITY)-.+"
+          },
+          "source_catalog": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "function_contract",
+              "capability_requirement"
+            ]
+          },
+          "domain": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "priority": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "P0",
+              "P1",
+              "P2",
+              null
+            ]
+          },
+          "status": {
+            "enum": [
+              "NOT_ASSESSED",
+              "SPECIFIED",
+              "MAPPED",
+              "IMPLEMENTED",
+              "VERIFIED",
+              "BLOCKED",
+              "EXCLUDED",
+              "EXTERNAL_DEPENDENCY"
+            ]
+          },
+          "source_binding": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "acceptance_evidence": {
+            "type": "array"
+          },
+          "dependencies": {
+            "type": "array"
+          },
+          "source_record": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
