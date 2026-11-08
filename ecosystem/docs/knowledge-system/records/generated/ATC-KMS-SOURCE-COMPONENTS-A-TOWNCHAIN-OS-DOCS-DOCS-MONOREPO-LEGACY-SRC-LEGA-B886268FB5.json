@@ -1,0 +1,21 @@
+{
+  "id": "ATC-KMS-SOURCE-COMPONENTS-A-TOWNCHAIN-OS-DOCS-DOCS-MONOREPO-LEGACY-SRC-LEGA-B886268FB5",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "evidence",
+  "title": "Indexed source: components/a-townchain-os-docs/docs/monorepo-legacy/src-legacy/kernel/ARCHITECTURE.md",
+  "context": "Repository architecture, release, security, migration, or build source.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "file",
+    "ref": "components/a-townchain-os-docs/docs/monorepo-legacy/src-legacy/kernel/ARCHITECTURE.md",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "source"
+  ],
+  "links": [],
+  "content": "Source file present at components/a-townchain-os-docs/docs/monorepo-legacy/src-legacy/kernel/ARCHITECTURE.md."
+}
