@@ -70,8 +70,10 @@ vom Gate respektiert.
   Deklarationen und unbekannte `self`-Zugriffe lehnen ab; `emit` ohne
   Event-Deklaration oder mit falscher Argumentanzahl wird als Warnung gemeldet
   (`atc check --strict` behandelt Warnungen als Fehler).
-  **Noch offen:** Typprüfung, Namensauflösung über Vertrags-/Dateigrenzen,
-  Codegen für Verträge und `&&`/`||` im VM-Subset (Lowering lehnt fail-closed ab).
+  **VM-Subset:** `&&`/`||` werden mit Kurzschluss ausgewertet, `!` normalisiert
+  auf 1/0; nicht unterstützte Operatoren (z. B. `%`) lehnen im Frontend ab.
+  **Noch offen:** Typprüfung, Namensauflösung über Vertrags-/Dateigrenzen und
+  Codegen für Verträge.
   Siehe STATUS.md/ROADMAP.md (G3-G10 offen)
 
 Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde, alle 16 Quellen
