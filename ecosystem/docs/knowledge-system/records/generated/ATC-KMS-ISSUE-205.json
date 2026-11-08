@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-205",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #205: [P0] Persist Aurora agent identity, revocation and task lifecycle across restart",
+  "context": "Issue 205 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/205",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Goal\nClose the gap between registry/task primitives and a durable, recoverable runtime lifecycle.\n\n## Scope\nUse the normative identity/job contracts from the standards issue. Wire registry persistence into the caller/runtime; implement or verify durable task/run state, revocation, duplicate rejection and terminal state transitions.\n\n## Acceptance criteria\n- [ ] Agent registration is authenticated and IDs are unique; duplicate registration is rejected.\n- [ ] Revocation/expiry is enforced at action time and survives restart.\n- [ ] Registry and task/run state survive a supported process restart.\n- [ ] Submission, queued, leased, running, retrying, cancelled, failed and completed transitions have explicit valid transitions.\n- [ ] Tests cover corrupt/missing persistence, restart, duplicate IDs, revoked identity, timeout and retry.\n- [ ] CI evidence references the exact tested commit SHA.\n\n## Dependencies\nNormative identity and compute-job contracts.\n\n## Out of scope\nThis issue alone does not prove multi-node decentralization or production readiness."
+}
