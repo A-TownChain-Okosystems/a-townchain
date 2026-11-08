@@ -1,0 +1,36 @@
+name: Registry Consistency
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  registry-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Python dependencies (CI-002/CI-003, Issue #1)
+        run: pip install pyyaml
+      - name: Validate registry-generated views
+        run: python3 tools/consistency/registry_view_gate.py
+
+      - name: Reject stale governance snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE 'ATC-STD-000[^[:alnum:]]+v1\.2\.0[^[:alnum:]]+|v1\.2\.0[^[:alnum:]]+(APPROVED|STABLE|CANDIDATE)' \
+            README.md STATUS.md AGENT_MANIFEST.md tools/gen_views 2>/dev/null; then
+            echo 'FAIL: stale ATC-STD-000 v1.2.0 governance snapshot detected.'
+            exit 1
+          fi
+          if grep -RInE '[0-9]+ (standards|repositories|repos)\b' README.md STATUS.md AGENT_MANIFEST.md tools/gen_views 2>/dev/null \
+             | grep -vE 'generated|GENERATED|historical|History|registry'; then
+            echo 'FAIL: unqualified hard-coded registry/repository count detected in generated/governance views.'
+            exit 1
+          fi
