@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-187",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #187: fix(registry): distinguish specification-only bindings from executable sources",
+  "context": "Pull request 187 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/187",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n\nCorrects the cross-chain catalog binding model that caused the runtime-symbol registry rebuild to block on three specification-only contracts.\n\n### Changes\n- Clears placeholder `source_path` and `symbol_or_entrypoint` values for `FN-XCHAIN-001` through `FN-XCHAIN-003`; issue references remain in the specification note/evidence.\n- Makes `catalog_bindings()` exclude records explicitly marked `binding_kind: specification_only` or `SPECIFICATION_ONLY_NO_IMPLEMENTATION_BINDING` from executable duplicate-binding detection.\n- Adds a regression test proving multiple specification-only placeholder records do not count as duplicate executable bindings. The existing test continues to require real duplicate executable bindings to block the registry.\n\n### Evidence / limitations\n- Root-cause artifact: workflow run `38812071575`, artifact `12008439472`.\n- Base: `c83bf4e581f121f374f5d6619ceab20f97f9d1a1`.\n- Proposed head: `e29b21da9d5e7429b24023796ec03c29e09d98a9`.\n- No implementation or functional verification is claimed for the cross-chain contracts.\n- Keep this PR draft until CI results and the exact run/job/step/exit evidence are reviewed. Do not merge based on the catalog correction alone."
+}
