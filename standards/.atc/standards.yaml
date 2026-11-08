@@ -1,0 +1,47 @@
+# ATC Standards Profile-Bindung (ATC-STD-LIB-001 sec.8, SCR-0101) — verbindlicher Compliance-Vertrag.
+# SSOT-Kaskade: atc-standards/registry/repositories.yaml + atc-standards/profiles/ > diese Datei. Manuelle Abweichung = Drift.
+criticality: C1
+domain: governance
+domain_extension: 'pending (fachliche Standards je Domain via SCR — ehrlich: Kernprofil
+  v1.0)'
+layer: L7
+profile: atc-standards
+profile_source: atc-standards/profiles/atc-standards.yaml
+registry_id: ATC-REPO-GOV-001
+required_standards:
+- ATC-STD-000
+- ATC-STD-003
+- ATC-STD-012
+- ATC-STD-016
+- ATC-STD-017
+- ATC-STD-018
+- ATC-STD-019
+- ATC-STD-201
+- ATC-STD-202
+- ATC-STD-V2S-001
+- ATC-STD-V2S-002
+- ATC-STD-V2S-003
+- ATC-STD-V2S-004
+- ATC-STD-V2S-005
+- ATC-STD-V2S-006
+- ATC-STD-V2S-007
+- ATC-STD-V2S-008
+- ATC-STD-V2S-009
+- ATC-STD-V2S-010
+- ATC-STD-V2S-011
+- ATC-STD-V2S-012
+- ATC-STD-V2S-013
+- ATC-STD-V2S-014
+- ATC-STD-V2S-015
+- ATC-STD-V2S-016
+- ATC-STD-V2S-017
+- ATC-STD-V2S-018
+- ATC-STD-V2S-019
+- ATC-STD-V2S-020
+- ATC-STD-V2S-021
+- ATC-STD-V2S-022
+- ATC-STD-V2S-023
+- ATC-STD-V2S-024
+- ATC-STD-V2S-025
+- ATC-STD-V2S-026
+version: 1.0.0
