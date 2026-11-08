@@ -1,0 +1,14 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: ai-gov
+family: LEGACY-SERIES
+family_id: LEGACY
+file: standards/ai-gov/ATC-AI-GOV-MANIFEST-001.md
+mandate: Owner-Entwurf 09.09.; SSOT AGENT_MANIFEST.md v1.2.0 + agent.yaml/capabilities.yaml;
+  7 REQ-AGOV-MAN; SCR-0061
+registry_version: 1
+standard_id: ATC-AI-GOV-MANIFEST-001
+status: approved
+title: ATC Agent Governance — Agent Identity & Scope (Manifest, Registry, Capabilities,
+  Status-Modell)
+version: 1.0.0
