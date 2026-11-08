@@ -1,6 +1,6 @@
 # shivamon — L12: Shivamon NFT Gaming — Battle Engine, Breeding, Marketplace
 
-Part of [A-TownChain OS Monorepo](../../../../README.md)
+Part of [A-TownChain OS Monorepo](../../../../../../../README.md)
 
 ## Inhalt
 
