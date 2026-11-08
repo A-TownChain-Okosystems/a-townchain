@@ -1,0 +1,14 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: enterprise
+family: GOVERNANCE / META
+family_id: '000'
+file: standards/enterprise/ATC-STD-035.md
+mandate: Owner-Entwurf 11.09. (SCR-0095 Automated Assurance; Owner-Referenz 033 —
+  §37 -> 035)
+registry_version: 1
+standard_id: ATC-STD-035
+status: approved
+title: Zero-Day Response Standard (9-Schritt-Kette Confirm..Recover, 8 Containment-Maßnahmen,
+  erhöhte Monitoring-Pflicht bis Patch)
+version: 1.0.0
