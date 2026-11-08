@@ -1,0 +1,79 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-83 — Proof of History (PoH) Konsens in ATCLang
+// Migriert von: blockchain/consensus/poh.py → ATCLang
+// Sprint 2.1 — Issue #74
+
+import "std/crypto.atc" as Crypto
+
+struct PoHEntry {
+    hash: Hash256,
+    num_hashes: UInt64,
+    timestamp: UInt64,
+}
+
+struct PoHState {
+    entries: List<PoHEntry>,
+    current_hash: Hash256,
+    num_hashes: UInt64,
+    hashes_per_tick: UInt64,
+}
+
+// ATC-83: PoH-Seed initialisieren
+pub fn init_poh(seed: Hash256) -> PoHState {
+    return PoHState {
+        entries: [],
+        current_hash: seed,
+        num_hashes: 0,
+        hashes_per_tick: 10000,
+    }
+}
+
+// ATC-83: PoH-Tick (Hash-Sequenz generieren)
+pub fn poh_tick(state: PoHState) -> PoHState {
+    let h = state.current_hash
+    let n = 0
+    while n < state.hashes_per_tick {
+        h = Crypto::sha256(h)
+        n = n + 1
+    }
+    state.current_hash = h
+    state.num_hashes = state.num_hashes + state.hashes_per_tick
+
+    state.entries.append(PoHEntry {
+        hash: h,
+        num_hashes: state.num_hashes,
+        timestamp: Chain::timestamp(),
+    })
+
+    emit PoHTick(state.num_hashes, h)
+    return state
+}
+
+// ATC-83: PoH verifizieren
+pub fn verify_poh(entries: List<PoHEntry>, seed: Hash256) -> Bool {
+    let expected = seed
+    for entry in entries {
+        let h = expected
+        let n = 0
+        while n < entry.num_hashes {
+            h = Crypto::sha256(h)
+            n = n + 1
+        }
+        if h != entry.hash {
+            return false
+        }
+        expected = entry.hash
+    }
+    return true
+}
+
+// ATC-83: PoH mit Record kombinieren
+pub fn record_event(state: PoHState, event_data: Bytes) -> Hash256 {
+    let combined = state.current_hash + event_data
+    let h = Crypto::sha256(combined)
+    state.current_hash = h
+    state.num_hashes = state.num_hashes + 1
+    return h
+}
+
+event PoHTick(count: UInt64, hash: Hash256)
