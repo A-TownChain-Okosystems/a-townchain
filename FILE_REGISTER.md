@@ -1001,7 +1001,7 @@
 | Datei | Zweck |
 |---|---|
 | `components/node/src/mempool.rs` | Mempool + TxLedger: Signatur, DID-Bindung, Nonce, Replay (SEC-P0-001/008) |
-| `components/node/src/did.rs` | DID-Registry mit Schlüsselrotation und IdentityPolicy (SEC-P0-004) |
+| `components/node/src/did.rs` | DID-Registry mit Rotation, Persistenz (JSON, validiert) und IdentityPolicy (SEC-P0-004) |
 | `components/node/src/validator.rs` | ECDSA-Proposals mit Domain-Separation und öffentlicher Verifikation (SEC-P0-003) |
 | `components/node/src/chain.rs` | 256-Bit-Blockhashes, produce_tx_block/import_tx_block (SEC-P0-007) |
 | `components/node/src/bootstrap.rs` | Genesis boot_hash256 als Kettenanker |
