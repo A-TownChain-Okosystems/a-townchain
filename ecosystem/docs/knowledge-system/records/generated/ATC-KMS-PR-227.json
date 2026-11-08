@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-227",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #227: test(wallet): pin shared ATC TX V2 vector",
+  "context": "Pull request 227 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/227",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n- Pin the shared `ATC-TX-V2-U128-001` signing preimage, SHA-256 digest, and deterministic compact secp256k1 signature in the Rust wallet transaction tests.\n- Assert `amount` is encoded as u128 BE (16 bytes) and `gas_price` as u64 BE (8 bytes), matching the current Rust `Transaction` contract and the atc-sdk TypeScript vector.\n\n## Verification boundary\n- The test is committed on this branch; CI must run on the exact PR head before this change is considered verified.\n- The legacy `atc-wallet` dependency is archived; this PR does not claim an operational CI run in that repository."
+}
