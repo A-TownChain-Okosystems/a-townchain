@@ -1,0 +1,20 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: repo-audit
+family: REPO
+family_id: PREFIX
+file: standards/repo-audit/ATC-STD-REPO-AUDIT-001.md
+mandate: Owner-Entwurf 07.09. 23:54 — 25 REQ-RA, 16 Prüfbereiche, 26-Zeilen-Prüfmatrix,
+  ATC-REPOSITORY-AUDIT-RULE + 21-Schritte-Pipeline, SOLL/IST (13 Quellen, 8 Status),
+  GAP-<KAT>-NNN, 11 kritische Code-Prüfungen, Build 4-Status, Health A-E, P0-P4 (P0
+  blockiert Release), F-NNN auf globalen findings.yaml-Namespace gemappt, AUD-Records
+  via AUDIT-001, COMPAT-001-Kopplung §20, RCA via BUG-005, REPO-AUDIT-002 (Health-Score/CHECK-NNN)
+  + 003 (Auditor-Agent) GEPLANT; SCR-0020; §9-Freigabe 07.09. 23:58, APPROVED, normativ,
+  §30-eingefroren
+registry_version: 1
+standard_id: ATC-STD-REPO-AUDIT-001
+status: approved
+title: 'ATC Repository Audit Standard — Verbindlicher, reproduzierbarer Repository
+  Health Check: 16 Prüfbereiche, Prüfmatrix, SOLL/IST, Gap Analysis, Findings, Health
+  Score A-E'
+version: 1.0.0
