@@ -1,0 +1,18 @@
+{
+  "name": "atc-franchise",
+  "version": "0.1.0",
+  "description": "ATC Franchise Factory",
+  "license": "All Rights Reserved",
+  "author": "Michael Wroblewski / ShivaCore / A-TownChain-Okosystems",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vitest": "^1.6.0"
+  }
+}
