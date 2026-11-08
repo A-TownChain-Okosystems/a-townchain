@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "profiles": {
+    "atclang": ["lexer_parser_fuzzing", "ast_invariants", "invalid_syntax_diagnostics", "deterministic_diagnostics", "regression_tests"],
+    "a-townchain": ["consensus_invariants", "deterministic_state_transitions", "invalid_transaction_tests", "serialization_roundtrip", "replay_determinism"],
+    "atc-vm": ["malformed_bytecode", "opcode_and_gas_limits", "stack_storage_boundaries", "deterministic_execution", "resource_exhaustion_tests"],
+    "atc-algorithm": ["cryptographic_reference_vectors", "consensus_boundary_tests", "determinism", "differential_tests_when_applicable"],
+    "shivacore-kernel": ["no_std_build", "capability_isolation", "ipc_memory_invariants", "object_lifetime_tests", "architecture_and_boot_evidence"],
+    "globus-os": ["kernel_userspace_separation", "service_boundary_tests", "integration_tests", "boot_platform_tests"],
+    "aurora-ai": ["model_tool_abi_contracts", "capability_and_policy_enforcement", "adversarial_input_tests", "tool_boundary_tests", "no_authoritative_chain_or_tcb_role"],
+    "atc-standards": ["schema_validation", "registry_consistency", "deterministic_generators", "drift_detection", "governance_gates"],
+    "toolchain-genesis-engine": ["reproducible_builds", "artifact_hashes", "input_validation", "integration_tests", "recovery_tests"]
+  }
+}
