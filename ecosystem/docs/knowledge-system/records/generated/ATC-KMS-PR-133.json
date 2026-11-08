@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-133",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #133: docs(catalog): add missing platform and function contracts",
+  "context": "Pull request 133 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/133",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Summary\n\nAdds a distinct catalog component and residual function contracts for missing cross-platform deployment and ecosystem capabilities.\n\n### Additions\n- `COMP-PLATFORM-DISTRIBUTION` and `FN-PLAT-DIST-001..007`\n- GlobusOS native desktop/host-edition/capability functions\n- Node lifecycle, RPC error semantics, and blocked finality query\n- SDK cross-language transaction vectors and provider compatibility\n- Aurora policy/capability tool invocation and approval-gated wallet actions\n- Canonical transaction validation, explicit consensus/finality decision tracking, and blocked VM bytecode decode contract\n\n### Boundaries\n- Catalog/control-plane only; no duplicate implementations or SSOT ownership transfer.\n- New records are `RESIDUAL` or `BLOCKED`, with `UNBOUND_RESIDUAL` source bindings where source mapping is not yet proven.\n- Unknown consensus/finality and ATCB-vs-ATC1 remain blocked.\n- Bidirectional source reconciliation, exact-SHA test evidence, and normative contracts remain required. This PR makes no completeness or production-readiness claim.\n- Keep Draft; no auto-merge and no gate weakening.\n\nRelated: [catalog reconciliation #115](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/115), [catalog implementation program #132](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/132), [cross-chain proposal #127](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/127), [crypto-service proposal #129](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/129), [Globus/Aurora proposal #130](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/130).\n\nNo implementation or verification status is inferred from these catalog records.\n\n### Ecosystem architecture baseline\n\nAdded [ATC-ECOSYSTEM-REFERENCE-ARCHITECTURE-001.md](docs/architecture/ATC-ECOSYSTEM-REFERENCE-ARCHITECTURE-001.md), covering canonical SSOT ownership, deployment profiles, security/cryptographic boundaries, chain/VM and cross-chain constraints, API contracts, Aurora controls, developer workflows, and exact-SHA acceptance gates. This is architecture/control-plane metadata only; unresolved decisions remain open and release remains BLOCKED."
+}
