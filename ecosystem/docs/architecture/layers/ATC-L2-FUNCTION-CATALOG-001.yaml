@@ -1,0 +1,2939 @@
+# ATC-L2-FUNCTION-CATALOG-001 — L2 ShivaCore Kernel & TCB Function Contracts
+# SSOT: a-townchain-ecosystem (control/mapping/evidence layer)
+# Kernel SSOT: globus-os/modules/atc-shivacore/kernel/
+# Layer: L2 (ATC-LAYER-L2-SHIVACORE-KERNEL)
+# Source: GitHub Issue #137 (owner Sollarchitektur, 2026-10-15)
+# Version: 0.1.0
+#
+# Proposed stable catalog IDs defining function contracts, NOT existing
+# implementations. Security model: least privilege, no ambient authority,
+# isolation by default, explicit IPC, fail-closed. VERIFIED requires exact
+# commit and successful verification evidence; green CI alone insufficient.
+
+schema_id: ATC-L2-FUNCTION-CATALOG-001
+schema_version: 0.1.0
+generated: '2026-10-15'
+status: DRAFT
+layer_id: L2
+architecture_id: ATC-LAYER-L2-SHIVACORE-KERNEL
+issue_reference: https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/137
+registry_reference: docs/architecture/layers/ATC-LAYER-REGISTRY-001.yaml
+kernel_ssot: globus-os/modules/atc-shivacore/kernel/
+security_model:
+- least privilege
+- no ambient authority
+- isolation by default
+- explicit IPC
+- fail-closed
+functions:
+- function_id: ATC-L2-KERN-001
+  name: Kontrollierten Kernel-Einstieg aus L1 bereitstellen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.1
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/kernel_init.rs
+    symbol: KernelState, BootPhase, InitStatus
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/kernel_init.rs::test_kernel_boot
+    workflow_runs:
+    - &id001
+      run_type: local_cargo_test_workspace
+      commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+      result: 1298 passed, 0 failed
+      exit_code: 0
+      date: '2026-10-15'
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Controlled kernel entry state machine from L1. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - L1 handoff state, syscall requests, subsystem init requests
+    outputs:
+    - kernel state transitions, dispatch results, init status
+    errors:
+    - init_invalid
+    - syscall_invalid
+    - dispatch_error
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-KERN-002
+  name: Kernel-Initialisierungszustand verwalten
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.1
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/kernel_init.rs
+    symbol: InitStatus, BootPhase, KernelState
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/kernel_init.rs::test_boot_phases_all_ready
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Kernel initialization state management. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - L1 handoff state, syscall requests, subsystem init requests
+    outputs:
+    - kernel state transitions, dispatch results, init status
+    errors:
+    - init_invalid
+    - syscall_invalid
+    - dispatch_error
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-KERN-003
+  name: System-Call-Einstieg und Dispatch definieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.1
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/syscall.rs
+    symbol: SyscallDispatcher, SyscallRequest, DispatchError
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/syscall.rs::rejects_unknown_syscall
+    - modules/atc-shivacore/kernel/src/syscall.rs::rejects_major_abi_mismatch
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Syscall entry and dispatch incl. unknown/ABI-mismatch rejection. Proven by inline
+    tests at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - L1 handoff state, syscall requests, subsystem init requests
+    outputs:
+    - kernel state transitions, dispatch results, init status
+    errors:
+    - init_invalid
+    - syscall_invalid
+    - dispatch_error
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-KERN-004
+  name: Kernelinterne Invarianten durchsetzen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.1
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/vmm.rs
+    symbol: VirtAddr/UserAccess invariants
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/vmm.rs::kernel_high_half_cannot_be_user
+    - modules/atc-shivacore/kernel/src/vmm.rs::wx_is_rejected
+    - modules/atc-shivacore/kernel/src/vmm.rs::user_bounds_are_half_open
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Kernel-internal invariants enforced and tested (address-space invariants). Proven
+    by inline tests at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - L1 handoff state, syscall requests, subsystem init requests
+    outputs:
+    - kernel state transitions, dispatch results, init status
+    errors:
+    - init_invalid
+    - syscall_invalid
+    - dispatch_error
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-KERN-005
+  name: Kernelinterne Ressourcen und Subsysteme initialisieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.1
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/kernel_init.rs
+    symbol: validate_integration, kernel_version
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/kernel_init.rs::test_validate_integration
+    - modules/atc-shivacore/kernel/src/kernel_init.rs::test_smoke_test
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Subsystem/resource initialization validated. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - L1 handoff state, syscall requests, subsystem init requests
+    outputs:
+    - kernel state transitions, dispatch results, init status
+    errors:
+    - init_invalid
+    - syscall_invalid
+    - dispatch_error
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-KERN-006
+  name: Privilegierte Operationen auf definierte Schnittstellen begrenzen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.1
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/syscall.rs
+    symbol: SyscallDispatcher (capability-checked dispatch)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/syscall.rs::ipc_requires_matching_capability_and_right
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Privileged operations limited to defined, capability-checked syscall interface. Proven
+    by inline tests at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - L1 handoff state, syscall requests, subsystem init requests
+    outputs:
+    - kernel state transitions, dispatch results, init status
+    errors:
+    - init_invalid
+    - syscall_invalid
+    - dispatch_error
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-CAP-001
+  name: Capability-Objekte und ihre Rechte repräsentieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.2
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/capability.rs
+    symbol: Capability, Rights, CapId, ResourceType
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/capability.rs::test_create_and_check
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Capability objects and rights representation. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - capability operations (create, check, delegate, revoke)
+    outputs:
+    - capability verdicts, delegated capabilities
+    errors:
+    - capability_invalid
+    - delegate_requires_right
+    - rights_expansion_rejected
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-CAP-002
+  name: Capability-Besitz und Zugriffsrechte prüfen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.2
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/capability.rs
+    symbol: CapabilityTable (create_and_check)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/capability.rs::test_create_and_check
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Capability ownership and access checks. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - capability operations (create, check, delegate, revoke)
+    outputs:
+    - capability verdicts, delegated capabilities
+    errors:
+    - capability_invalid
+    - delegate_requires_right
+    - rights_expansion_rejected
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-CAP-003
+  name: Capability-Referenzen sicher übertragen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.2
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/capability.rs
+    symbol: CapabilityTable::delegate
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/capability.rs::test_delegate_attenuation
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Secure capability reference transfer with attenuation. Proven by inline tests at
+    binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - capability operations (create, check, delegate, revoke)
+    outputs:
+    - capability verdicts, delegated capabilities
+    errors:
+    - capability_invalid
+    - delegate_requires_right
+    - rights_expansion_rejected
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-CAP-004
+  name: Capability-Delegation begrenzen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.2
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/capability.rs
+    symbol: delegate rights model
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/capability.rs::test_delegate_rejects_rights_expansion
+    - modules/atc-shivacore/kernel/src/capability.rs::test_delegate_requires_delegate_right
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Delegation bounded (no rights expansion, delegate-right required). Proven by inline
+    tests at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - capability operations (create, check, delegate, revoke)
+    outputs:
+    - capability verdicts, delegated capabilities
+    errors:
+    - capability_invalid
+    - delegate_requires_right
+    - rights_expansion_rejected
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-CAP-005
+  name: Widerruf oder Sperrung nach definiertem Modell ermöglichen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.2
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/process.rs
+    symbol: ProcessManager::kill revokes capabilities
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/process.rs::test_kill_revokes_all_capabilities
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Revocation on process kill per defined model. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - capability operations (create, check, delegate, revoke)
+    outputs:
+    - capability verdicts, delegated capabilities
+    errors:
+    - capability_invalid
+    - delegate_requires_right
+    - rights_expansion_rejected
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-CAP-006
+  name: Ungültige und nicht autorisierte Capability-Zugriffe ablehnen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.2
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/ipc.rs
+    symbol: Channel send/recv capability checks
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/ipc.rs::test_send_without_write_cap_rejected
+    - modules/atc-shivacore/kernel/src/ipc.rs::test_recv_without_read_cap_rejected
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Invalid/unauthorized capability access rejected. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - capability operations (create, check, delegate, revoke)
+    outputs:
+    - capability verdicts, delegated capabilities
+    errors:
+    - capability_invalid
+    - delegate_requires_right
+    - rights_expansion_rejected
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-CAP-007
+  name: Rechteausweitung über Objekt- und Prozessgrenzen verhindern
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.2
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/capability.rs
+    symbol: delegate attenuation
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/capability.rs::test_delegate_rejects_rights_expansion
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Rights escalation prevented across objects/processes. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - capability operations (create, check, delegate, revoke)
+    outputs:
+    - capability verdicts, delegated capabilities
+    errors:
+    - capability_invalid
+    - delegate_requires_right
+    - rights_expansion_rejected
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-MEM-001
+  name: Physische Speicherframes verwalten
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.3
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/memory.rs
+    symbol: BootInfoFrameAllocator
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/memory.rs::page_alignment_contract_is_4k
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Physical frame management with 4K alignment contract. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - address/fault inputs, allocation and mapping requests
+    outputs:
+    - frames, mappings, fault dispositions
+    errors:
+    - mapping_invalid
+    - frame_exhausted
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-MEM-002
+  name: Virtuelle Adressräume erzeugen und verwalten
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.3
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/vmm.rs
+    symbol: VirtAddr, UserAccess
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/vmm.rs::user_bounds_are_half_open
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Virtual address space creation/management invariants. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - address/fault inputs, allocation and mapping requests
+    outputs:
+    - frames, mappings, fault dispositions
+    errors:
+    - mapping_invalid
+    - frame_exhausted
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-MEM-003
+  name: Speicherbereiche und Seitentabellen abbilden
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.3
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/vmm.rs
+    symbol: PageTableLevel, BootstrapMapping
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/vmm.rs::user_mapping_inside_exact_interval_is_allowed
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Page table mapping with validated intervals. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - address/fault inputs, allocation and mapping requests
+    outputs:
+    - frames, mappings, fault dispositions
+    errors:
+    - mapping_invalid
+    - frame_exhausted
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-MEM-004
+  name: Zugriffsrechte für Speicherbereiche erzwingen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.3
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/vmm.rs
+    symbol: MappingFlags, W^X enforcement
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/vmm.rs::wx_is_rejected
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Memory access rights enforced (W^X rejected). Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - address/fault inputs, allocation and mapping requests
+    outputs:
+    - frames, mappings, fault dispositions
+    errors:
+    - mapping_invalid
+    - frame_exhausted
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-MEM-005
+  name: Speicherisolation zwischen Ausführungskontexten gewährleisten
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.3
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/vmm.rs
+    symbol: kernel/user half separation
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/vmm.rs::kernel_high_half_cannot_be_user
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Memory isolation between execution contexts. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - address/fault inputs, allocation and mapping requests
+    outputs:
+    - frames, mappings, fault dispositions
+    errors:
+    - mapping_invalid
+    - frame_exhausted
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-MEM-006
+  name: Page Faults erkennen und kontrolliert behandeln
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.3
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/page_fault.rs
+    symbol: PageFaultType, PageFaultInfo
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/page_fault.rs::test_fault_not_present_user
+    - modules/atc-shivacore/kernel/src/page_fault.rs::test_fault_protection_cow
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Page fault detection and controlled handling. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - address/fault inputs, allocation and mapping requests
+    outputs:
+    - frames, mappings, fault dispositions
+    errors:
+    - mapping_invalid
+    - frame_exhausted
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-MEM-007
+  name: Speicherfreigabe und Lebenszyklen sicher verwalten
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.3
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/memory_manager.rs
+    symbol: KernelMemoryManager deallocate
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/memory_manager.rs::test_deallocate_kernel_heap
+    - modules/atc-shivacore/kernel/src/memory_manager.rs::test_deallocate_userspace
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Memory release and lifecycle management. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - address/fault inputs, allocation and mapping requests
+    outputs:
+    - frames, mappings, fault dispositions
+    errors:
+    - mapping_invalid
+    - frame_exhausted
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-MEM-008
+  name: Speicherabbildungen und ungültige Zustandsübergänge validieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.3
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/vmm.rs
+    symbol: validate_mapping_target
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/vmm.rs::exact_upper_boundary_is_valid_only_when_end_equals_top
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Mapping/invalid-transition validation. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - address/fault inputs, allocation and mapping requests
+    outputs:
+    - frames, mappings, fault dispositions
+    errors:
+    - mapping_invalid
+    - frame_exhausted
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-SCHED-001
+  name: Kernel-Threads und Ausführungskontexte repräsentieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.4
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/threads.rs
+    symbol: Thread, Tid, ThreadState
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/threads.rs::test_tid_basic
+    - modules/atc-shivacore/kernel/src/threads.rs::test_thread_state_transitions
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Kernel threads and execution contexts. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - task/thread/signal inputs, scheduling requests
+    outputs:
+    - schedules, thread states, signal dispositions
+    errors:
+    - task_invalid
+    - state_transition_invalid
+    - sched_policy_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-SCHED-002
+  name: Ausführungsfähige Threads verwalten
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.4
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/threads.rs
+    symbol: Thread lifecycle / scheduler entries
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/threads.rs::test_thread_state_transitions
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Runnable thread management via state machine. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - task/thread/signal inputs, scheduling requests
+    outputs:
+    - schedules, thread states, signal dispositions
+    errors:
+    - task_invalid
+    - state_transition_invalid
+    - sched_policy_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-SCHED-003
+  name: Scheduling-Entscheidungen nach definierter Policy treffen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.4
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/scheduler.rs
+    symbol: DaHeftScheduler
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/scheduler.rs::test_basic_scheduling
+    - modules/atc-shivacore/kernel/src/scheduler.rs::test_deadline_awareness
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Policy-driven scheduling decisions (deadline-aware). Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - task/thread/signal inputs, scheduling requests
+    outputs:
+    - schedules, thread states, signal dispositions
+    errors:
+    - task_invalid
+    - state_transition_invalid
+    - sched_policy_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-SCHED-004
+  name: CPU-Kontextwechsel durchführen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.4
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/threads.rs
+    symbol: SavedRegs, TlsBlock
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Context state structures exist (SavedRegs, UserContext); explicit context-switch test
+    not confirmed. SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - task/thread/signal inputs, scheduling requests
+    outputs:
+    - schedules, thread states, signal dispositions
+    errors:
+    - task_invalid
+    - state_transition_invalid
+    - sched_policy_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-SCHED-005
+  name: Thread-Zustände und Lebenszyklen kontrollieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.4
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/threads.rs
+    symbol: ThreadState, ExitCode
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/threads.rs::test_thread_exit
+    - modules/atc-shivacore/kernel/src/threads.rs::test_thread_exit_killed
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Thread state/lifecycle control incl. kill path. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - task/thread/signal inputs, scheduling requests
+    outputs:
+    - schedules, thread states, signal dispositions
+    errors:
+    - task_invalid
+    - state_transition_invalid
+    - sched_policy_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-SCHED-006
+  name: Synchronisationsprimitive bereitstellen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.4
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No synchronization primitive (mutex/spinlock/rwlock) found in kernel src.'
+  contract:
+    inputs:
+    - task/thread/signal inputs, scheduling requests
+    outputs:
+    - schedules, thread states, signal dispositions
+    errors:
+    - task_invalid
+    - state_transition_invalid
+    - sched_policy_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-SCHED-007
+  name: Mehrkernbetrieb und CPU-Affinität unterstützen, sofern implementiert
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.4
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/smp.rs
+    symbol: CpuAffinity, RunQueue, PerCpuData
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/smp.rs::test_cpu_state_is_active
+    - modules/atc-shivacore/kernel/src/smp.rs::test_cpu_id_bsp
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Multicore operation and CPU affinity. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - task/thread/signal inputs, scheduling requests
+    outputs:
+    - schedules, thread states, signal dispositions
+    errors:
+    - task_invalid
+    - state_transition_invalid
+    - sched_policy_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IPC-001
+  name: IPC-Endpunkte mit kontrollierten Rechten bereitstellen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.5
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/ipc.rs
+    symbol: Channel, ChannelId, IpcSubsystem
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/ipc.rs::test_create_channel_and_send_recv
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: IPC endpoints with controlled rights. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - channel/message operations with capability references
+    outputs:
+    - delivery results, grants, signal notifications
+    errors:
+    - message_invalid
+    - oversized_payload
+    - sender_unauthorized
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IPC-002
+  name: Nachrichten sicher senden und empfangen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.5
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/ipc.rs
+    symbol: Channel send/recv
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/ipc.rs::test_send_without_write_cap_rejected
+    - modules/atc-shivacore/kernel/src/ipc.rs::test_recv_without_read_cap_rejected
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Secure message send/receive with capability checks. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - channel/message operations with capability references
+    outputs:
+    - delivery results, grants, signal notifications
+    errors:
+    - message_invalid
+    - oversized_payload
+    - sender_unauthorized
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IPC-003
+  name: Blockierende und nicht blockierende IPC-Operationen definieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.5
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/ipc.rs
+    symbol: Channel (channel-full semantics)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Channel-full behavior tested; explicit blocking/non-blocking mode separation not confirmed.
+    SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - channel/message operations with capability references
+    outputs:
+    - delivery results, grants, signal notifications
+    errors:
+    - message_invalid
+    - oversized_payload
+    - sender_unauthorized
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IPC-004
+  name: Capability-Übertragung über IPC kontrollieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.5
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/ipc.rs
+    symbol: grant_access (cross-process)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/ipc.rs::test_grant_access_and_cross_process_comm
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Capability transfer over IPC controlled. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - channel/message operations with capability references
+    outputs:
+    - delivery results, grants, signal notifications
+    errors:
+    - message_invalid
+    - oversized_payload
+    - sender_unauthorized
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IPC-005
+  name: Benachrichtigungen und Ereignissignale bereitstellen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.5
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/signals.rs
+    symbol: FullSignal, SignalDisposition
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/signals.rs::test_full_signal_is_fatal
+    - modules/atc-shivacore/kernel/src/signals.rs::test_full_signal_is_unblockable
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Notification and event signals. Proven by inline tests at binding SHA 3bf0001 (workspace
+    suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - channel/message operations with capability references
+    outputs:
+    - delivery results, grants, signal notifications
+    errors:
+    - message_invalid
+    - oversized_payload
+    - sender_unauthorized
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IPC-006
+  name: Shared-Memory-Zugriff kontrolliert vermitteln
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.5
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: Message-passing IPC implemented; shared-memory grant/mediation not found in kernel.'
+  contract:
+    inputs:
+    - channel/message operations with capability references
+    outputs:
+    - delivery results, grants, signal notifications
+    errors:
+    - message_invalid
+    - oversized_payload
+    - sender_unauthorized
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IPC-007
+  name: Ungültige Nachrichten, Größenüberschreitungen und unzulässige Absender behandeln
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.5
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/syscall.rs
+    symbol: payload bounds
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/syscall.rs::rejects_oversized_payload
+    - modules/atc-shivacore/kernel/src/ipc.rs::test_channel_full
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Invalid messages, size overflow, unauthorized senders handled. Proven by inline tests
+    at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - channel/message operations with capability references
+    outputs:
+    - delivery results, grants, signal notifications
+    errors:
+    - message_invalid
+    - oversized_payload
+    - sender_unauthorized
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IRQ-001
+  name: Interrupt-Controller initialisieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.6
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/interrupts.rs
+    symbol: init_idt, init_pics
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: IDT/PIC initialization exists; no test region in interrupts.rs. SSOT bound to globus-os
+    main 3bf0001.'
+  contract:
+    inputs:
+    - interrupt/timer registration and events
+    outputs:
+    - handler dispatch, time events
+    errors:
+    - irq_config_unauthorized
+    - timer_source_invalid
+    - irq_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IRQ-002
+  name: Interrupt-Quellen registrieren und verwalten
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.6
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/interrupts.rs
+    symbol: IDT entry setup
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Interrupt source registration exists; untested module. SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - interrupt/timer registration and events
+    outputs:
+    - handler dispatch, time events
+    errors:
+    - irq_config_unauthorized
+    - timer_source_invalid
+    - irq_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IRQ-003
+  name: Interrupts kontrolliert an zuständige Handler übergeben
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.6
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/interrupts.rs
+    symbol: timer_interrupt_entry_addr, UserTrapFrame
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Controlled handler dispatch structures exist; untested module. SSOT bound to globus-os
+    main 3bf0001.'
+  contract:
+    inputs:
+    - interrupt/timer registration and events
+    outputs:
+    - handler dispatch, time events
+    errors:
+    - irq_config_unauthorized
+    - timer_source_invalid
+    - irq_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IRQ-004
+  name: Timer-Interrupts und Zeitereignisse verarbeiten
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.6
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/timer.rs
+    symbol: TimerManager, MonotonicClock, TimerSource
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/timer.rs::test_simulated_source_advance
+    - modules/atc-shivacore/kernel/src/timer.rs::test_clock_uptime_from_zero
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Timer events and time processing. Proven by inline tests at binding SHA 3bf0001 (workspace
+    suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - interrupt/timer registration and events
+    outputs:
+    - handler dispatch, time events
+    errors:
+    - irq_config_unauthorized
+    - timer_source_invalid
+    - irq_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IRQ-005
+  name: Nicht autorisierte oder ungültige Interrupt-Konfigurationen ablehnen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.6
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No authorization check on interrupt configuration found.'
+  contract:
+    inputs:
+    - interrupt/timer registration and events
+    outputs:
+    - handler dispatch, time events
+    errors:
+    - irq_config_unauthorized
+    - timer_source_invalid
+    - irq_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-IRQ-006
+  name: Exception- und Fault-Routing definieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.6
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/interrupts.rs
+    symbol: UserTrapFrame; page_fault fault types
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Exception/fault routing structures exist; explicit routing table not confirmed. SSOT bound
+    to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - interrupt/timer registration and events
+    outputs:
+    - handler dispatch, time events
+    errors:
+    - irq_config_unauthorized
+    - timer_source_invalid
+    - irq_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ARCH-001
+  name: Architekturabhängige Kerneloperationen kapseln
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.7
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/hal/cpu.rs
+    symbol: CpuInfo, CpuFeatures
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/hal/cpu.rs::detects_current_cpu_without_panicking
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Architecture-dependent kernel operations encapsulated in HAL. Proven by inline tests
+    at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - architecture operation requests (context, page tables, SMP)
+    outputs:
+    - arch state transitions, per-cpu data
+    errors:
+    - arch_unsupported
+    - context_invalid
+    - smp_unavailable
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ARCH-002
+  name: CPU-Zustand beim Kontextwechsel sichern und wiederherstellen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.7
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/threads.rs
+    symbol: SavedRegs
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: CPU state save/restore structures exist; context-switch routine test not confirmed. SSOT
+    bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - architecture operation requests (context, page tables, SMP)
+    outputs:
+    - arch state transitions, per-cpu data
+    errors:
+    - arch_unsupported
+    - context_invalid
+    - smp_unavailable
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ARCH-003
+  name: Privilegstufen und Schutzmechanismen konfigurieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.7
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/gdt.rs
+    symbol: GDT selectors (userspace GdtSelectors)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Privilege level configuration exists (GDT, PrivilegeLevel); gdt.rs has no test region.
+    SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - architecture operation requests (context, page tables, SMP)
+    outputs:
+    - arch state transitions, per-cpu data
+    errors:
+    - arch_unsupported
+    - context_invalid
+    - smp_unavailable
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ARCH-004
+  name: Architekturabhängige Seitentabellenoperationen bereitstellen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.7
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/vmm.rs
+    symbol: PageTableLevel; page_fault PageTableEntry
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/vmm.rs::physical_baseline_is_48_bit
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Architecture page table operations. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - architecture operation requests (context, page tables, SMP)
+    outputs:
+    - arch state transitions, per-cpu data
+    errors:
+    - arch_unsupported
+    - context_invalid
+    - smp_unavailable
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ARCH-005
+  name: SMP- und CPU-Lokalisierungsmechanismen bereitstellen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.7
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/smp.rs
+    symbol: PerCpuData, CpuId, IpiMessage
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/smp.rs::test_cpu_id_bsp
+    - modules/atc-shivacore/kernel/src/smp.rs::test_cpu_id_ap
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: SMP and CPU-localization mechanisms. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - architecture operation requests (context, page tables, SMP)
+    outputs:
+    - arch state transitions, per-cpu data
+    errors:
+    - arch_unsupported
+    - context_invalid
+    - smp_unavailable
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ARCH-006
+  name: Nicht unterstützte CPU-Funktionen sicher behandeln
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.7
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/hal/cpu.rs
+    symbol: features_from_leaves fail-closed decode
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/hal/cpu.rs::absent_feature_leaves_decode_as_unsupported
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Unsupported CPU features handled safely (fail-closed). Proven by inline tests at
+    binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - architecture operation requests (context, page tables, SMP)
+    outputs:
+    - arch state transitions, per-cpu data
+    errors:
+    - arch_unsupported
+    - context_invalid
+    - smp_unavailable
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-DEV-001
+  name: Gerätezugriff über explizite Berechtigungen vermitteln
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.8
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/capability.rs
+    symbol: ResourceType (resource rights)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Capability resource-rights model exists; explicit device-access mediation path not confirmed.
+    SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - device access/mapping requests with capabilities
+    outputs:
+    - device grants, mapping verdicts
+    errors:
+    - device_unauthorized
+    - mmio_invalid
+    - dma_unsupported
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-DEV-002
+  name: MMIO-Bereiche validieren und kontrolliert zuordnen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.8
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/vmm.rs
+    symbol: validate_mapping_target (mapping validation)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Mapping target validation exists; kernel-level device MMIO assignment not found (MmioRegion
+    lives in atc-drivers crate, outside kernel TCB). SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - device access/mapping requests with capabilities
+    outputs:
+    - device grants, mapping verdicts
+    errors:
+    - device_unauthorized
+    - mmio_invalid
+    - dma_unsupported
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-DEV-003
+  name: DMA-Puffer und ihre Lebenszyklen kontrollieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.8
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No DMA buffer lifecycle management (consistent with L0/L1 DMA findings).'
+  contract:
+    inputs:
+    - device access/mapping requests with capabilities
+    outputs:
+    - device grants, mapping verdicts
+    errors:
+    - device_unauthorized
+    - mmio_invalid
+    - dma_unsupported
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-DEV-004
+  name: IOMMU-gestützte Geräteisolation unterstützen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.8
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No IOMMU support (consistent with L0 IO-002 / L1 DEV-005).'
+  contract:
+    inputs:
+    - device access/mapping requests with capabilities
+    outputs:
+    - device grants, mapping verdicts
+    errors:
+    - device_unauthorized
+    - mmio_invalid
+    - dma_unsupported
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-DEV-005
+  name: Geräteberechtigungen auf autorisierte Treiber begrenzen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.8
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/module_security.rs
+    symbol: LoadPolicy (module load authorization)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Module load policy restricts loadable modules; device-driver authorization contract not
+    confirmed. SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - device access/mapping requests with capabilities
+    outputs:
+    - device grants, mapping verdicts
+    errors:
+    - device_unauthorized
+    - mmio_invalid
+    - dma_unsupported
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-DEV-006
+  name: Gerätezugriff und Ressourcenfreigabe sicher koordinieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.8
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No device-access/resource-release coordination contract found in kernel.'
+  contract:
+    inputs:
+    - device access/mapping requests with capabilities
+    outputs:
+    - device grants, mapping verdicts
+    errors:
+    - device_unauthorized
+    - mmio_invalid
+    - dma_unsupported
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-TCB-001
+  name: Sicherheitskritische Kernelkomponenten explizit identifizieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.9
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No explicit TCB component identification (kernel SSOT directory defined by Issue #137,
+    but no implemented TCB registry).'
+  contract:
+    inputs:
+    - boundary/privilege/identity operations
+    outputs:
+    - enforcement verdicts, boundary checks
+    errors:
+    - privilege_transition_rejected
+    - boundary_violation
+    - tcb_undefined
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-TCB-002
+  name: Vertrauensgrenzen zwischen Kernel und User Space erzwingen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.9
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/vmm.rs
+    symbol: kernel/user half enforcement
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/vmm.rs::kernel_high_half_cannot_be_user
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Kernel/user trust boundary enforced. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - boundary/privilege/identity operations
+    outputs:
+    - enforcement verdicts, boundary checks
+    errors:
+    - privilege_transition_rejected
+    - boundary_violation
+    - tcb_undefined
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-TCB-003
+  name: Privilegierte Schnittstellen auf das notwendige Minimum begrenzen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.9
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/syscall.rs
+    symbol: SyscallDispatcher closed surface
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/syscall.rs::rejects_unknown_syscall
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Privileged interface limited to defined dispatch (closed surface). Proven by inline
+    tests at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - boundary/privilege/identity operations
+    outputs:
+    - enforcement verdicts, boundary checks
+    errors:
+    - privilege_transition_rejected
+    - boundary_violation
+    - tcb_undefined
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-TCB-004
+  name: Sicherheitsinvarianten zentral dokumentieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.9
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No centralized security-invariant documentation implemented (documentation contract,
+    not code).'
+  contract:
+    inputs:
+    - boundary/privilege/identity operations
+    outputs:
+    - enforcement verdicts, boundary checks
+    errors:
+    - privilege_transition_rejected
+    - boundary_violation
+    - tcb_undefined
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-TCB-005
+  name: Unzulässige Privilegienübergänge verhindern
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.9
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/userspace.rs
+    symbol: PrivilegeLevel, GdtSelectors
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Privilege levels and selectors exist; explicit privilege-transition rejection test not
+    confirmed. SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - boundary/privilege/identity operations
+    outputs:
+    - enforcement verdicts, boundary checks
+    errors:
+    - privilege_transition_rejected
+    - boundary_violation
+    - tcb_undefined
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-TCB-006
+  name: Kernel-Sicherheitsannahmen und verbleibende Risiken dokumentieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.9
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No security-assumption/risk documentation implemented in kernel.'
+  contract:
+    inputs:
+    - boundary/privilege/identity operations
+    outputs:
+    - enforcement verdicts, boundary checks
+    errors:
+    - privilege_transition_rejected
+    - boundary_violation
+    - tcb_undefined
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-FAULT-001
+  name: CPU-Exceptions erkennen und klassifizieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.10
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/page_fault.rs
+    symbol: PageFaultType classification
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/page_fault.rs::test_fault_reserved_bit
+    - modules/atc-shivacore/kernel/src/page_fault.rs::test_fault_privilege_violation
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: CPU exception/fault classification. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - fault/exception inputs, process termination requests
+    outputs:
+    - fault classification, isolation results
+    errors:
+    - fault_unclassified
+    - kernel_state_unrecoverable
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-FAULT-002
+  name: Page Faults an den zuständigen Mechanismus übergeben
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.10
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/page_fault.rs
+    symbol: VMA, BackingStore, FrameAllocator
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/page_fault.rs::test_fault_protection_cow
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Page faults routed to VMA/backing mechanism. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - fault/exception inputs, process termination requests
+    outputs:
+    - fault classification, isolation results
+    errors:
+    - fault_unclassified
+    - kernel_state_unrecoverable
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-FAULT-003
+  name: Fehlerhafte User-Space-Prozesse isoliert beenden
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.10
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/process.rs
+    symbol: ProcessManager::kill (isolated termination)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/process.rs::test_kill_revokes_all_capabilities
+    - modules/atc-shivacore/kernel/src/threads.rs::test_thread_exit_killed
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Faulty user processes terminated isolated with capability revocation. Proven by inline
+    tests at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - fault/exception inputs, process termination requests
+    outputs:
+    - fault classification, isolation results
+    errors:
+    - fault_unclassified
+    - kernel_state_unrecoverable
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-FAULT-004
+  name: Nicht behebbaren Kernelzustand erkennen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.10
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/kernel_init.rs
+    symbol: BootError, InitStatus
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Boot error states exist; unrecoverable-kernel-state detection not confirmed. SSOT bound
+    to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - fault/exception inputs, process termination requests
+    outputs:
+    - fault classification, isolation results
+    errors:
+    - fault_unclassified
+    - kernel_state_unrecoverable
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-FAULT-005
+  name: Kernel-Panic- und Recovery-Verhalten definieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.10
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No kernel panic/recovery behavior definition found (no panic handler contract).'
+  contract:
+    inputs:
+    - fault/exception inputs, process termination requests
+    outputs:
+    - fault classification, isolation results
+    errors:
+    - fault_unclassified
+    - kernel_state_unrecoverable
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-FAULT-006
+  name: Sicherheitsrelevante Fehler manipulationsbewusst protokollieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.10
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/tracing.rs
+    symbol: TraceEvent, TraceCategory, RingBuffer
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/tracing.rs::test_ring_buffer_basic
+    - modules/atc-shivacore/kernel/src/tracing.rs::test_ring_buffer_overflow
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Security-relevant events captured in trace ring buffer. Proven by inline tests at
+    binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - fault/exception inputs, process termination requests
+    outputs:
+    - fault classification, isolation results
+    errors:
+    - fault_unclassified
+    - kernel_state_unrecoverable
+    - fault_unhandled
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ID-001
+  name: Kernelinterne Dienstidentitäten eindeutig zuordnen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.11
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/process.rs
+    symbol: ProcessControlBlock, ProcessManager
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Process identity exists (PCB); explicit kernel-internal service identity registry not
+    confirmed. SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - identity/key/authorization requests
+    outputs:
+    - authorization verdicts, key handles
+    errors:
+    - identity_invalid
+    - key_unavailable
+    - authorization_denied
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ID-002
+  name: Zugriffe auf sicherheitskritische Dienste autorisieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.11
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/syscall.rs
+    symbol: capability-checked service access
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/syscall.rs::ipc_requires_matching_capability_and_right
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Access to critical services authorized via capability+right. Proven by inline tests
+    at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - identity/key/authorization requests
+    outputs:
+    - authorization verdicts, key handles
+    errors:
+    - identity_invalid
+    - key_unavailable
+    - authorization_denied
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ID-003
+  name: Vertrauenswürdige Schlüsselprovider über definierte Schnittstellen anbinden
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.11
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/module_security.rs
+    symbol: TrustAnchor model
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Trust anchor model in kernel; key provider HAL (IdentityKeyHal) lives in service space,
+    outside kernel. SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - identity/key/authorization requests
+    outputs:
+    - authorization verdicts, key handles
+    errors:
+    - identity_invalid
+    - key_unavailable
+    - authorization_denied
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ID-004
+  name: Identitäts- und Schlüsselmaterial vor unberechtigtem Zugriff schützen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.11
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/module_security.rs
+    symbol: ModuleSignature::content_hash
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Content hash model exists; key material protection routine not confirmed. SSOT bound to
+    globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - identity/key/authorization requests
+    outputs:
+    - authorization verdicts, key handles
+    errors:
+    - identity_invalid
+    - key_unavailable
+    - authorization_denied
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-ID-005
+  name: Delegierte Identitäten und Dienstberechtigungen begrenzen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.11
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/capability.rs
+    symbol: delegate attenuation
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/capability.rs::test_delegate_attenuation
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Delegated identities/rights limited by attenuation. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - identity/key/authorization requests
+    outputs:
+    - authorization verdicts, key handles
+    errors:
+    - identity_invalid
+    - key_unavailable
+    - authorization_denied
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-AUD-001
+  name: Definierte sicherheitsrelevante Ereignisse erfassen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.12
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/security.rs
+    symbol: AuditEntry, AuditLog, AuditResult
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/security.rs::test_multisig_sign_and_execute
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Security-relevant events captured (audit log model). Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - trace/audit event inputs
+    outputs:
+    - audit entries, trace records, invariant verdicts
+    errors:
+    - event_invalid
+    - trace_overflow
+    - invariant_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-AUD-002
+  name: Kernelinterne Diagnose- und Tracepoints bereitstellen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.12
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/tracing.rs
+    symbol: TraceFilter, Histogram, FunctionTracer
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/tracing.rs::test_ring_buffer_filter_by_category
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Kernel diagnostics and tracepoints. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - trace/audit event inputs
+    outputs:
+    - audit entries, trace records, invariant verdicts
+    errors:
+    - event_invalid
+    - trace_overflow
+    - invariant_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-AUD-003
+  name: Prüfbare Invarianten und Assertion-Punkte definieren
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.12
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/vmm.rs
+    symbol: invariant tests
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/vmm.rs::user_bounds_are_half_open
+    - modules/atc-shivacore/kernel/src/kernel_init.rs::test_validate_integration
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Verifiable invariants and assertion points. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+  contract:
+    inputs:
+    - trace/audit event inputs
+    outputs:
+    - audit entries, trace records, invariant verdicts
+    errors:
+    - event_invalid
+    - trace_overflow
+    - invariant_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-AUD-004
+  name: Testzugänge von produktiven privilegierten Schnittstellen trennen
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.12
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #137; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No test/production interface separation evidence found.'
+  contract:
+    inputs:
+    - trace/audit event inputs
+    outputs:
+    - audit entries, trace records, invariant verdicts
+    errors:
+    - event_invalid
+    - trace_overflow
+    - invariant_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+- function_id: ATC-L2-AUD-005
+  name: Kerneltests und Fehlerbehandlung nachvollziehbar auswerten
+  version: 0.1.0
+  layer_id: L2
+  sub_layer_id: L2.12
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/kernel_init.rs
+    symbol: test_smoke_test, boot_log
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: null
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Smoke test and boot log exist; systematic kernel-test evaluation workflow not confirmed.
+    SSOT bound to globus-os main 3bf0001.'
+  contract:
+    inputs:
+    - trace/audit event inputs
+    outputs:
+    - audit entries, trace records, invariant verdicts
+    errors:
+    - event_invalid
+    - trace_overflow
+    - invariant_violation
+    preconditions:
+    - kernel execution context with required capability
+    postconditions:
+    - fail-closed on invalid input
+    - no ambient authority granted
+mapping_note: 'Inventory at globus-os main 3bf0001 (kernel SSOT modules/atc-shivacore/kernel/): 47 IMPLEMENTED (inline
+  test refs + workspace suite 1298/1298 exit 0), 17 MAPPED (source exists, test evidence unconfirmed), 11 UNRESOLVED
+  with documented reasons. No contract VERIFIED: CI evidence at binding SHA pending. Issue #137 status: catalog
+  integration DONE, Intel/AMD/QEMU verification PENDING.'
