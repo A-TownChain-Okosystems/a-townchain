@@ -1,0 +1,102 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ╔══════════════════════════════════════════════════════╗
+// ║  ShivaOS IPC Bus (ATC-96, Sprint 2.4)               ║
+// ║  Inter-Process Communication — Message Passing       ║
+// ║  ATCLang v0.4 | Non-EVM | Kein Shared Memory          ║
+// ╚══════════════════════════════════════════════════════╝
+
+struct IPCMessage {
+    sender: string,
+    receiver: string,
+    msg_type: string,
+    payload: string,
+    msg_id: string,
+    reply_to: string,
+}
+
+contract IPCBus {
+    state channels: Map<string, string>
+    state messages: Map<string, IPCMessage>
+    state msg_count: u64 = 0
+    state max_queue: u64 = 256
+
+    fn init() {
+        // Default channels
+        self.channels["kernel"] = "active"
+        self.channels["consensus"] = "active"
+        self.channels["ai"] = "active"
+    }
+
+    fn create_channel(name: string) -> bool {
+        if self.channels[name] != "" {
+            return false
+        }
+        self.channels[name] = "active"
+        return true
+    }
+
+    fn close_channel(name: string) {
+        self.channels[name] = "closed"
+    }
+
+    fn send(msg: IPCMessage) -> string {
+        require(self.channels[msg.receiver] == "active", "Channel not active")
+        require(self.msg_count < self.max_queue, "Queue full")
+        
+        let id = ATC::Crypto::sha256(msg.sender + msg.receiver + self.msg_count.to_string())
+        msg.msg_id = id
+        self.messages[id] = msg
+        self.msg_count = self.msg_count + 1
+        
+        emit IPCSent {
+            sender: msg.sender,
+            receiver: msg.receiver,
+            msg_id: id,
+        }
+        
+        return id
+    }
+
+    fn recv(receiver: string) -> IPCMessage {
+        // Find first message for this receiver
+        let result = IPCMessage {
+            sender: "",
+            receiver: "",
+            msg_type: "",
+            payload: "",
+            msg_id: "",
+            reply_to: "",
+        }
+        
+        // Simple iteration (in production, use a proper queue)
+        let found = false
+        // Messages are processed by ID lookup
+        return result
+    }
+
+    fn reply(original_id: string, msg: IPCMessage) -> string {
+        require(self.messages[original_id].msg_id != "", "Original message not found")
+        msg.reply_to = original_id
+        return self.send(msg)
+    }
+
+    fn get_message_count() -> u64 {
+        return self.msg_count
+    }
+
+    fn is_channel_active(name: string) -> bool {
+        return self.channels[name] == "active"
+    }
+
+    fn broadcast(sender: string, msg_type: string, payload: string) -> u64 {
+        let sent = 0
+        // In production, iterate all active channels
+        return sent
+    }
+}
+
+event IPCSent {
+    sender: string,
+    receiver: string,
+    msg_id: string,
+}
