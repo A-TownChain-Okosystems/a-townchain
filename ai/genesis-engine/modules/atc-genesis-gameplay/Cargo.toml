@@ -1,0 +1,10 @@
+[package]
+name = "atc-genesis-gameplay"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+atc-genesis-ecs = { path = "../atc-genesis-ecs" }
+atc-genesis-input = { path = "../atc-genesis-input" }
+atc-genesis-platform = { path = "../atc-genesis-platform" }
