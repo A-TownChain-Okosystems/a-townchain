@@ -1,0 +1,12 @@
+// ATCLang v0.3 — atc-bootloader :: Kernel Handshake
+// version check, capability negotiation
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module kernel_handshake {
+    // Public API — TBD
+    
+    fn init() {
+        // Initialization — TBD
+    }
+}
