@@ -1,0 +1,18 @@
+[workspace]
+resolver = "2"
+members = [
+  "system/core","system/ipc","system/security","system/process","system/memory","system/vfs","system/net",
+  "system/devices","system/services","system/graphics","system/audio","system/media","system/package","system/update",
+  "system/runtime","system/virtualization","system/identity","system/wallet-service","system/settings","system/aurora-core","system/diagnostics",
+  "system/shivacore-api","modules/atc-shivacore/kernel","sdk","modules/atc-bootloader","modules/atc-drivers","modules/atc-globus-shell",
+  "modules/atc-linux-edition","modules/atc-shivacore/boot","modules/atc-shivacore/service_space","modules/atc-windows-edition",
+]
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/A-TownChain-Okosystems/globus-os"
+[workspace.lints.rust]
+unsafe_code = "warn"
+[workspace.lints.clippy]
+all = "warn"
