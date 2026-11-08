@@ -7,4 +7,4 @@ authors = ["Michael Wroblewski"]
 license = "Apache-2.0"
 
 [dependencies]
-atc-node = { git = "https://github.com/A-TownChain-Okosystems/atc-node", rev = "9b773e464f9d99e829003d087de157328c2cee8e" }
+atc-node = { path = "../../../node" }  # SSOT: lokales Monorepo-Crate statt Git-Revision
