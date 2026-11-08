@@ -1,0 +1,197 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-08 — Testnet Health-Checks + Monitoring in ATCLang
+// Sprint 2.2 — Issue #75
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+import "std/io.atc" as IO
+
+struct HealthConfig {
+    check_interval_s: UInt32,
+    alert_threshold_block_time: UInt32,
+    alert_threshold_peer_count: UInt16,
+    alert_threshold_mempool: UInt32,
+    alert_threshold_cpu: UInt8,
+    alert_threshold_mem: UInt8,
+    history_size: UInt16,
+}
+
+struct NodeHealth {
+    node_id: Hash256,
+    block_height: UInt64,
+    block_time_avg: UInt32,
+    peer_count: UInt16,
+    mempool_size: UInt32,
+    cpu_usage: UInt8,
+    mem_usage: UInt8,
+    disk_usage: UInt8,
+    uptime_s: UInt64,
+    is_healthy: Bool,
+    last_check: UInt64,
+    issues: List<String>,
+}
+
+struct HealthHistory {
+    entries: List<NodeHealth>,
+    max_size: UInt16,
+}
+
+// ATC-08: Health-Check durchführen
+pub fn check_health(node_id: Hash256, block_height: UInt64, peer_count: UInt16, mempool_size: UInt32, cpu: UInt8, mem: UInt8, disk: UInt8, uptime: UInt64, config: HealthConfig) -> NodeHealth {
+    let issues = []
+    let is_healthy = true
+
+    // Block-Time Check (wird von außen übergeben)
+    if peer_count < config.alert_threshold_peer_count {
+        issues.append("Low peer count")
+        is_healthy = false
+    }
+
+    if mempool_size > config.alert_threshold_mempool {
+        issues.append("Mempool overflow")
+        is_healthy = false
+    }
+
+    if cpu > config.alert_threshold_cpu {
+        issues.append("High CPU usage")
+        is_healthy = false
+    }
+
+    if mem > config.alert_threshold_mem {
+        issues.append("High memory usage")
+        is_healthy = false
+    }
+
+    if disk > 90 {
+        issues.append("Disk nearly full")
+        is_healthy = false
+    }
+
+    return NodeHealth {
+        node_id: node_id,
+        block_height: block_height,
+        block_time_avg: 0,
+        peer_count: peer_count,
+        mempool_size: mempool_size,
+        cpu_usage: cpu,
+        mem_usage: mem,
+        disk_usage: disk,
+        uptime_s: uptime,
+        is_healthy: is_healthy,
+        last_check: Chain::timestamp(),
+        issues: issues,
+    }
+}
+
+// ATC-08: Health-History aktualisieren
+pub fn record_health(history: HealthHistory, health: NodeHealth) -> HealthHistory {
+    history.entries.append(health)
+    if history.entries.len() > history.max_size {
+        history.entries.pop(0)
+    }
+    return history
+}
+
+// ATC-08: Alert generieren
+pub fn generate_alert(health: NodeHealth) -> Alert {
+    let severity = "info"
+    if not health.is_healthy {
+        if health.issues.len() >= 3 {
+            severity = "critical"
+        } else if health.issues.len() >= 2 {
+            severity = "warning"
+        } else {
+            severity = "minor"
+        }
+    }
+
+    return Alert {
+        node_id: health.node_id,
+        severity: severity,
+        timestamp: Chain::timestamp(),
+        issues: health.issues,
+        message: format_alert(health),
+    }
+}
+
+// ATC-08: Alert formatieren
+pub fn format_alert(health: NodeHealth) -> String {
+    if health.is_healthy {
+        return "Node healthy"
+    }
+    let msg = "Node " + health.node_id.to_hex()[0:8] + " issues: "
+    for issue in health.issues {
+        msg = msg + issue + ", "
+    }
+    return msg
+}
+
+// ATC-08: Monitoring-Dashboard Daten
+pub fn dashboard_data(nodes: List<NodeHealth>) -> DashboardData {
+    let total = nodes.len()
+    let healthy = nodes.filter(fn n => n.is_healthy).len()
+    let unhealthy = total - healthy
+    let avg_peers = 0
+    let avg_height = 0
+    let total_mempool = 0
+
+    for node in nodes {
+        avg_peers = avg_peers + node.peer_count
+        avg_height = avg_height + node.block_height
+        total_mempool = total_mempool + node.mempool_size
+    }
+
+    if total > 0 {
+        avg_peers = avg_peers / total
+        avg_height = avg_height / total
+    }
+
+    return DashboardData {
+        total_nodes: total,
+        healthy_nodes: healthy,
+        unhealthy_nodes: unhealthy,
+        avg_peer_count: avg_peers,
+        avg_block_height: avg_height,
+        total_mempool_txs: total_mempool,
+        uptime_percentage: if total > 0 then (healthy * 100) / total else 0,
+    }
+}
+
+// ATC-08: Health-Report generieren
+pub fn generate_report(nodes: List<NodeHealth>, config: HealthConfig) -> String {
+    let data = dashboard_data(nodes)
+    let report = "=== ATC Testnet Health Report ===\n"
+    report = report + "Nodes: " + data.total_nodes + " (healthy: " + data.healthy_nodes + ", unhealthy: " + data.unhealthy_nodes + ")\n"
+    report = report + "Avg Peers: " + data.avg_peer_count + "\n"
+    report = report + "Avg Height: " + data.avg_block_height + "\n"
+    report = report + "Mempool TXs: " + data.total_mempool_txs + "\n"
+    report = report + "Uptime: " + data.uptime_percentage + "%\n"
+
+    for node in nodes {
+        if not node.is_healthy {
+            report = report + "⚠️  Node " + node.node_id.to_hex()[0:8] + ": " + node.issues.join(", ") + "\n"
+        }
+    }
+
+    return report
+}
+
+struct Alert {
+    node_id: Hash256,
+    severity: String,
+    timestamp: UInt64,
+    issues: List<String>,
+    message: String,
+}
+
+struct DashboardData {
+    total_nodes: UInt16,
+    healthy_nodes: UInt16,
+    unhealthy_nodes: UInt16,
+    avg_peer_count: UInt16,
+    avg_block_height: UInt64,
+    total_mempool_txs: UInt32,
+    uptime_percentage: UInt8,
+}
+
+event HealthAlert(node: Hash256, severity: String, message: String)
