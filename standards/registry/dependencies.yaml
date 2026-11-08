@@ -1,0 +1,1140 @@
+standards:
+  ATC-AAS-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-001
+  ATC-AAS-002:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-002
+  ATC-AAS-003:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-002
+  ATC-AAS-004:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-002
+  ATC-AAS-005:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-AI-DEV-003
+  ATC-AAS-006:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-001
+  ATC-AAS-007:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-004
+  ATC-AAS-008:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-AI-DEV-007
+  ATC-AAS-009:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-006
+    - ATC-STD-AI-DEV-007
+    - ATC-STD-204
+  ATC-AAS-010:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-005
+    - ATC-STD-AI-DEV-008
+  ATC-AAS-011:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-008
+  ATC-AAS-012:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-AI-DEV-005
+  ATC-AAS-013:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-005
+    - ATC-STD-AI-DEV-006
+    - ATC-STD-AI-DEV-011
+  ATC-AAS-014:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-203
+    - ATC-STD-AI-DEV-002
+  ATC-AAS-015:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-007
+  ATC-AAS-016:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-007
+  ATC-AAS-017:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-011
+  ATC-AAS-018:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-009
+    - ATC-STD-BUG-002
+  ATC-AAS-019:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-004
+    - ATC-STD-AI-DEV-012
+  ATC-AAS-020:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-005
+    - ATC-STD-AI-DEV-011
+  ATC-AAS-021:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-009
+    - ATC-STD-AI-DEV-010
+  ATC-AAS-022:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-001
+  ATC-AAS-023:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-012
+  ATC-AAS-024:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-012
+  ATC-AAS-025:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-AI-DEV-003
+  ATC-ENT-001:
+    depends:
+    - ATC-STD-000
+  ATC-ENT-002:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-001
+    - ATC-AAS-001
+  ATC-ENT-003:
+    depends:
+    - ATC-STD-000
+    - ATC-ENT-001
+  ATC-ENT-004:
+    depends:
+    - ATC-STD-000
+    - ATC-ENT-002
+    - ATC-STD-AI-DEV-002
+    - ATC-AAS-003
+  ATC-ENT-005:
+    depends:
+    - ATC-STD-000
+    - ATC-ENT-001
+  ATC-ENT-006:
+    depends:
+    - ATC-ENT-002
+    - ATC-ENT-003
+  ATC-ENT-007:
+    depends:
+    - ATC-STD-AI-DEV-011
+    - ATC-ENT-002
+  ATC-ENT-008:
+    depends:
+    - ATC-ENT-002
+    - ATC-STD-202
+  ATC-ENT-009:
+    depends:
+    - ATC-STD-201
+    - ATC-STD-202
+    - ATC-AAS-025
+  ATC-ENT-010:
+    depends:
+    - ATC-STD-000
+    - ATC-ENT-003
+    - ATC-STD-204
+    - ATC-AAS-009
+  ATC-ENT-011:
+    depends:
+    - ATC-ENT-002
+    - ATC-STD-BUG-002
+  ATC-ENT-012:
+    depends:
+    - ATC-STD-AI-DEV-010
+    - ATC-STD-BUG-004
+  ATC-ENT-013:
+    depends:
+    - ATC-AAS-021
+    - ATC-STD-AI-DEV-009
+    - ATC-ENT-011
+  ATC-ENT-014:
+    depends:
+    - ATC-STD-AI-DEV-009
+    - ATC-AAS-018
+    - ATC-STD-BUG-001
+  ATC-ENT-015:
+    depends:
+    - ATC-STD-AI-DEV-008
+    - ATC-AAS-011
+    - ATC-STD-AI-DEV-010
+    - ATC-ENT-012
+  ATC-STD-000:
+    depends: []
+  ATC-STD-100:
+    depends:
+    - ATC-STD-201
+  ATC-STD-201:
+    depends:
+    - ATC-STD-000
+  ATC-STD-202:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-100
+    - ATC-STD-201
+  ATC-STD-203:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-201
+    - ATC-STD-202
+  ATC-STD-204:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-201
+    - ATC-STD-202
+    - ATC-STD-203
+  ATC-STD-300:
+    depends:
+    - ATC-STD-000
+  ATC-STD-AI-DEV-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-203
+    - ATC-STD-204
+    - ATC-STD-BUG-001
+  ATC-STD-AI-DEV-002:
+    depends:
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-000
+  ATC-STD-AI-DEV-003:
+    depends:
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-204
+  ATC-STD-AI-DEV-004:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-BUG-001
+  ATC-STD-AI-DEV-005:
+    depends:
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-BUG-001
+    - ATC-STD-BUG-002
+  ATC-STD-AI-DEV-006:
+    depends:
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-AI-DEV-005
+  ATC-STD-AI-DEV-007:
+    depends:
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-AI-DEV-004
+    - ATC-STD-203
+  ATC-STD-AI-DEV-008:
+    depends:
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-AI-DEV-004
+    - ATC-STD-BUG-002
+  ATC-STD-AI-DEV-009:
+    depends:
+    - ATC-STD-203
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-AI-DEV-004
+  ATC-STD-AI-DEV-010:
+    depends:
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-BUG-004
+  ATC-STD-AI-DEV-011:
+    depends:
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-AI-DEV-004
+  ATC-STD-AI-DEV-012:
+    depends:
+    - ATC-STD-AI-DEV-001
+    - ATC-STD-AI-DEV-004
+    - ATC-STD-AI-DEV-009
+  ATC-STD-BUG-001:
+    depends:
+    - ATC-STD-201
+    - ATC-STD-202
+    - ATC-STD-203
+  ATC-STD-BUG-002:
+    depends:
+    - ATC-STD-BUG-001
+  ATC-STD-BUG-003:
+    depends:
+    - ATC-STD-BUG-001
+    - ATC-STD-BUG-002
+  ATC-STD-BUG-004:
+    depends:
+    - ATC-STD-BUG-001
+    - ATC-STD-BUG-003
+  ATC-STD-NET-001:
+    depends:
+    - ATC-STD-203
+    - ATC-STD-BUG-001
+  ATC-STD-NET-002:
+    depends:
+    - ATC-STD-203
+    - ATC-STD-BUG-001
+    - ATC-STD-NET-001
+  ATC-STD-NET-003:
+    depends:
+    - ATC-STD-203
+    - ATC-STD-BUG-001
+    - ATC-STD-NET-001
+  ATC-STD-NET-004:
+    depends:
+    - ATC-STD-203
+    - ATC-STD-BUG-001
+    - ATC-STD-NET-001
+  ATC-STD-NET-005:
+    depends:
+    - ATC-STD-203
+    - ATC-STD-BUG-001
+    - ATC-STD-NET-001
+  ATC-STD-NET-006:
+    depends:
+    - ATC-STD-203
+    - ATC-STD-BUG-001
+    - ATC-STD-NET-001
+  ATC-STD-NET-007:
+    depends:
+    - ATC-STD-203
+    - ATC-STD-BUG-001
+    - ATC-STD-NET-001
+  ATC-STD-NET-008:
+    depends:
+    - ATC-STD-203
+    - ATC-STD-BUG-001
+    - ATC-STD-NET-001
+  ATC-STD-ZKP-001:
+    depends:
+    - ATC-STD-100
+    - ATC-STD-BUG-001
+  ATC-STD-ZKP-002:
+    depends:
+    - ATC-STD-ZKP-001
+  ATC-STD-ZKP-003:
+    depends:
+    - ATC-STD-ZKP-001
+  ATC-STD-ZKP-004:
+    depends:
+    - ATC-STD-ZKP-001
+  ATC-STD-ZKP-005:
+    depends:
+    - ATC-STD-ZKP-001
+  ATC-STD-ZKP-006:
+    depends:
+    - ATC-STD-ZKP-001
+    - ATC-STD-ZKP-003
+  ATC-STD-ZKP-007:
+    depends:
+    - ATC-STD-ZKP-001
+  ATC-STD-ZKP-008:
+    depends:
+    - ATC-STD-ZKP-001
+  ATC-STD-ZKP-009:
+    depends:
+    - ATC-STD-ZKP-001
+  ATC-STD-ZKP-010:
+    depends:
+    - ATC-STD-BUG-001
+    - ATC-STD-ZKP-001
+  ATC-STD-README-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-201
+    - ATC-STD-202
+    - ATC-ENT-009
+  ATC-STD-MD-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-201
+    - ATC-STD-202
+    - ATC-STD-README-001
+  ATC-STD-SC-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-201
+    - ATC-STD-202
+    - ATC-STD-203
+    - ATC-STD-204
+  ATC-STD-SC-002:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-003:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-004:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-005:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-006:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-007:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-008:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-009:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-010:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-011:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-012:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-013:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-014:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-015:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-016:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-017:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-018:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-019:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-SC-020:
+    depends:
+    - ATC-STD-SC-001
+  ATC-STD-DESC-001:
+    depends:
+    - ATC-STD-000
+  ATC-STD-VERSION-001:
+    depends:
+    - ATC-STD-000
+  ATC-STD-BUG-005:
+    depends:
+    - ATC-STD-BUG-001
+    - ATC-STD-BUG-003
+  ATC-STD-AUDIT-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-BUG-001
+    - ATC-STD-BUG-003
+    - ATC-STD-VERSION-001
+  ATC-STD-AI-DECISION-001:
+    depends:
+    - ATC-STD-000
+    - ATC-AAS-001
+    - ATC-STD-AI-DEV-006
+    - ATC-STD-AUDIT-001
+  ATC-STD-UPDATE-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-VERSION-001
+    - ATC-STD-AUDIT-001
+    - ATC-STD-BUG-005
+  ATC-STD-MILESTONE-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-VERSION-001
+    - ATC-STD-UPDATE-001
+    - ATC-STD-COMPAT-001
+    - ATC-STD-AUDIT-001
+  ATC-STD-FRAMEWORK-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-VERSION-001
+    - ATC-STD-UPDATE-001
+    - ATC-STD-COMPAT-001
+    - ATC-STD-AUDIT-001
+    - ATC-STD-MILESTONE-001
+  ATC-STD-REPO-AUDIT-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AUDIT-001
+    - ATC-STD-BUG-005
+    - ATC-STD-COMPAT-001
+    - ATC-STD-MILESTONE-001
+    - ATC-STD-FRAMEWORK-001
+  ATC-STD-REPO-AUDIT-002:
+    depends:
+    - ATC-STD-REPO-AUDIT-001
+    - ATC-STD-AUDIT-001
+    - ATC-STD-BUG-005
+    - ATC-STD-COMPAT-001
+    - ATC-STD-FRAMEWORK-001
+  ATC-STD-AOS-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-FRAMEWORK-001
+    - ATC-STD-AI-DECISION-001
+    - ATC-STD-AUDIT-001
+  ATC-STD-999:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-AUDIT-001
+    - ATC-STD-FRAMEWORK-001
+    - ATC-STD-REPO-AUDIT-001
+    - ATC-STD-REPO-AUDIT-002
+    - ATC-STD-COMPAT-001
+    - ATC-STD-MILESTONE-001
+  ATC-STD-PROTOCOL-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-VERSION-001
+    - ATC-STD-COMPAT-001
+    - ATC-STD-UPDATE-001
+    - ATC-STD-AUDIT-001
+    - ATC-STD-FRAMEWORK-001
+  ATC-STD-TAXONOMY-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-FRAMEWORK-001
+    - ATC-STD-AUDIT-001
+    - ATC-STD-DESC-001
+    - ATC-STD-VERSION-001
+  ATC-STD-STDDEV-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-DESC-001
+    - ATC-STD-TAXONOMY-001
+    - ATC-STD-REGISTRY-001
+    - ATC-STD-AUDIT-001
+  ATC-STD-REGISTRY-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-STDDEV-001
+    - ATC-STD-TAXONOMY-001
+    - ATC-STD-AUDIT-001
+  ATC-STD-CHANGE-001:
+    depends:
+    - ATC-STD-000
+    - ATC-STD-VERSION-001
+    - ATC-STD-UPDATE-001
+    - ATC-STD-COMPAT-001
+    - ATC-STD-AUDIT-001
+  ATC-STD-REPO-AUDIT-003:
+  - ATC-STD-000
+  - ATC-STD-REPO-AUDIT-001
+  - ATC-STD-REPO-AUDIT-002
+  - ATC-STD-AUDIT-001
+  - ATC-STD-MILESTONE-001
+  - ATC-STD-FRAMEWORK-001
+  ATC-STD-PROTOCOL-002:
+  - ATC-STD-000
+  - ATC-STD-PROTOCOL-001
+  - ATC-STD-AUDIT-001
+  - ATC-STD-MILESTONE-001
+  - ATC-STD-FRAMEWORK-001
+  ATC-STD-PROTOCOL-003:
+  - ATC-STD-000
+  - ATC-STD-PROTOCOL-001
+  - ATC-STD-REPO-AUDIT-001
+  - ATC-STD-203
+  - ATC-STD-AUDIT-001
+  - ATC-STD-FRAMEWORK-001
+  ATC-STD-001:
+  - ATC-STD-000
+  ATC-STD-006:
+  - ATC-STD-000
+  ATC-STD-008:
+  - ATC-STD-000
+  ATC-STD-012:
+  - ATC-STD-000
+  ATC-STD-013:
+  - ATC-STD-000
+  ATC-STD-015:
+  - ATC-STD-000
+  ATC-STD-025:
+  - ATC-STD-000
+  ATC-STD-027:
+  - ATC-STD-000
+  ATC-STD-040:
+  - ATC-STD-000
+  ATC-STD-042:
+  - ATC-STD-000
+  ATC-STD-045:
+  - ATC-STD-000
+  ATC-STD-048:
+  - ATC-STD-000
+  ATC-STD-050:
+  - ATC-STD-000
+  ATC-STD-051:
+  - ATC-STD-000
+  ATC-STD-052:
+  - ATC-STD-000
+  ATC-STD-062:
+  - ATC-STD-000
+  ATC-STD-063:
+  - ATC-STD-000
+  ATC-STD-064:
+  - ATC-STD-000
+  ATC-STD-066:
+  - ATC-STD-000
+  ATC-STD-067:
+  - ATC-STD-000
+  ATC-STD-069:
+  - ATC-STD-000
+  ATC-STD-070:
+  - ATC-STD-000
+  ATC-STD-072:
+  - ATC-STD-000
+  ATC-STD-081:
+  - ATC-STD-000
+  ATC-STD-082:
+  - ATC-STD-000
+  ATC-STD-085:
+  - ATC-STD-000
+  ATC-STD-087:
+  - ATC-STD-000
+  ATC-STD-088:
+  - ATC-STD-000
+  ATC-STD-089:
+  - ATC-STD-000
+  ATC-STD-090:
+  - ATC-STD-000
+  ATC-STD-091:
+  - ATC-STD-000
+  ATC-STD-093:
+  - ATC-STD-000
+  ATC-STD-094:
+  - ATC-STD-000
+  ATC-STD-095:
+  - ATC-STD-000
+  ATC-STD-101:
+  - ATC-STD-000
+  ATC-STD-103:
+  - ATC-STD-000
+  ATC-STD-104:
+  - ATC-STD-000
+  ATC-STD-105:
+  - ATC-STD-000
+  ATC-STD-107:
+  - ATC-STD-000
+  ATC-STD-129:
+  - ATC-STD-000
+  ATC-STD-130:
+  - ATC-STD-000
+  ATC-STD-140:
+  - ATC-STD-000
+  ATC-STD-141:
+  - ATC-STD-000
+  ATC-STD-142:
+  - ATC-STD-000
+  ATC-STD-143:
+  - ATC-STD-000
+  ATC-STD-144:
+  - ATC-STD-000
+  ATC-STD-146:
+  - ATC-STD-000
+  ATC-STD-147:
+  - ATC-STD-000
+  ATC-STD-148:
+  - ATC-STD-000
+  ATC-STD-149:
+  - ATC-STD-000
+  ATC-STD-160:
+  - ATC-STD-000
+  ATC-STD-161:
+  - ATC-STD-000
+  ATC-STD-163:
+  - ATC-STD-000
+  ATC-STD-164:
+  - ATC-STD-000
+  ATC-STD-169:
+  - ATC-STD-000
+  ATC-STD-170:
+  - ATC-STD-000
+  ATC-STD-171:
+  - ATC-STD-000
+  ATC-STD-172:
+  - ATC-STD-000
+  ATC-STD-174:
+  - ATC-STD-000
+  ATC-STD-180:
+  - ATC-STD-000
+  ATC-STD-181:
+  - ATC-STD-000
+  ATC-STD-182:
+  - ATC-STD-000
+  ATC-STD-183:
+  - ATC-STD-000
+  ATC-STD-184:
+  - ATC-STD-000
+  ATC-STD-185:
+  - ATC-STD-000
+  ATC-STD-186:
+  - ATC-STD-000
+  ATC-STD-187:
+  - ATC-STD-000
+  ATC-STD-188:
+  - ATC-STD-000
+  ATC-STD-189:
+  - ATC-STD-000
+  ATC-STD-190:
+  - ATC-STD-000
+  ATC-STD-191:
+  - ATC-STD-000
+  ATC-STD-192:
+  - ATC-STD-000
+  ATC-STD-193:
+  - ATC-STD-000
+  ATC-STD-194:
+  - ATC-STD-000
+  ATC-STD-195:
+  - ATC-STD-000
+  ATC-STD-196:
+  - ATC-STD-000
+  ATC-STD-197:
+  - ATC-STD-000
+  ATC-STD-200:
+  - ATC-STD-000
+  ATC-STD-205:
+  - ATC-STD-000
+  ATC-STD-206:
+  - ATC-STD-000
+  ATC-STD-207:
+  - ATC-STD-000
+  ATC-STD-208:
+  - ATC-STD-000
+  ATC-STD-209:
+  - ATC-STD-000
+  ATC-STD-210:
+  - ATC-STD-000
+  ATC-STD-240:
+  - ATC-STD-000
+  ATC-STD-241:
+  - ATC-STD-000
+  ATC-STD-242:
+  - ATC-STD-000
+  ATC-STD-243:
+  - ATC-STD-000
+  ATC-STD-244:
+  - ATC-STD-000
+  ATC-STD-245:
+  - ATC-STD-000
+  ATC-STD-246:
+  - ATC-STD-000
+  ATC-STD-247:
+  - ATC-STD-000
+  ATC-STD-248:
+  - ATC-STD-000
+  ATC-STD-249:
+  - ATC-STD-000
+  ATC-STD-270:
+  - ATC-STD-000
+  ATC-STD-271:
+  - ATC-STD-000
+  ATC-STD-272:
+  - ATC-STD-000
+  ATC-STD-273:
+  - ATC-STD-000
+  ATC-STD-274:
+  - ATC-STD-000
+  ATC-STD-275:
+  - ATC-STD-000
+  ATC-STD-276:
+  - ATC-STD-000
+  ATC-STD-280:
+  - ATC-STD-000
+  ATC-STD-282:
+  - ATC-STD-000
+  ATC-STD-283:
+  - ATC-STD-000
+  ATC-STD-284:
+  - ATC-STD-000
+  ATC-STD-285:
+  - ATC-STD-000
+  ATC-STD-286:
+  - ATC-STD-000
+  ATC-STD-301:
+  - ATC-STD-000
+  ATC-STD-302:
+  - ATC-STD-000
+  ATC-STD-303:
+  - ATC-STD-000
+  ATC-STD-304:
+  - ATC-STD-000
+  ATC-STD-306:
+  - ATC-STD-000
+  ATC-STD-307:
+  - ATC-STD-000
+  ATC-STD-308:
+  - ATC-STD-000
+  ATC-STD-309:
+  - ATC-STD-000
+  ATC-STD-311:
+  - ATC-STD-000
+  ATC-STD-312:
+  - ATC-STD-000
+  ATC-STD-340:
+  - ATC-STD-000
+  ATC-STD-341:
+  - ATC-STD-000
+  ATC-STD-342:
+  - ATC-STD-000
+  ATC-STD-343:
+  - ATC-STD-000
+  ATC-STD-344:
+  - ATC-STD-000
+  ATC-STD-345:
+  - ATC-STD-000
+  ATC-STD-346:
+  - ATC-STD-000
+  ATC-STD-347:
+  - ATC-STD-000
+  ATC-STD-348:
+  - ATC-STD-000
+  ATC-STD-349:
+  - ATC-STD-000
+  ATC-STD-350:
+  - ATC-STD-000
+  ATC-STD-360:
+  - ATC-STD-000
+  ATC-STD-361:
+  - ATC-STD-000
+  ATC-STD-362:
+  - ATC-STD-000
+  ATC-STD-363:
+  - ATC-STD-000
+  ATC-STD-364:
+  - ATC-STD-000
+  ATC-STD-365:
+  - ATC-STD-000
+  ATC-STD-366:
+  - ATC-STD-000
+  ATC-STD-367:
+  - ATC-STD-000
+  ATC-STD-368:
+  - ATC-STD-000
+  ATC-STD-380:
+  - ATC-STD-000
+  ATC-STD-381:
+  - ATC-STD-000
+  ATC-STD-382:
+  - ATC-STD-000
+  ATC-STD-383:
+  - ATC-STD-000
+  ATC-STD-384:
+  - ATC-STD-000
+  ATC-STD-385:
+  - ATC-STD-000
+  ATC-STD-386:
+  - ATC-STD-000
+  ATC-STD-387:
+  - ATC-STD-000
+  ATC-STD-388:
+  - ATC-STD-000
+  ATC-STD-389:
+  - ATC-STD-000
+  ATC-STD-400:
+  - ATC-STD-000
+  ATC-STD-401:
+  - ATC-STD-000
+  ATC-STD-402:
+  - ATC-STD-000
+  ATC-STD-403:
+  - ATC-STD-000
+  ATC-STD-404:
+  - ATC-STD-000
+  ATC-STD-405:
+  - ATC-STD-000
+  ATC-STD-406:
+  - ATC-STD-000
+  ATC-STD-407:
+  - ATC-STD-000
+  ATC-STD-408:
+  - ATC-STD-000
+  ATC-STD-409:
+  - ATC-STD-000
+  ATC-STD-420:
+  - ATC-STD-000
+  ATC-STD-421:
+  - ATC-STD-000
+  ATC-STD-422:
+  - ATC-STD-000
+  ATC-STD-423:
+  - ATC-STD-000
+  ATC-STD-424:
+  - ATC-STD-000
+  ATC-STD-425:
+  - ATC-STD-000
+  ATC-STD-426:
+  - ATC-STD-000
+  ATC-STD-427:
+  - ATC-STD-000
+  ATC-STD-428:
+  - ATC-STD-000
+  ATC-STD-429:
+  - ATC-STD-000
+  ATC-STD-430:
+  - ATC-STD-000
+  ATC-STD-431:
+  - ATC-STD-000
+  ATC-STD-432:
+  - ATC-STD-000
+  ATC-STD-433:
+  - ATC-STD-000
+  ATC-STD-434:
+  - ATC-STD-000
+  ATC-STD-440:
+  - ATC-STD-000
+  ATC-STD-441:
+  - ATC-STD-000
+  ATC-STD-442:
+  - ATC-STD-000
+  ATC-STD-443:
+  - ATC-STD-000
+  ATC-STD-444:
+  - ATC-STD-000
+  ATC-STD-445:
+  - ATC-STD-000
+  ATC-STD-447:
+  - ATC-STD-000
+  ATC-STD-448:
+  - ATC-STD-000
+  ATC-STD-449:
+  - ATC-STD-000
+  ATC-STD-450:
+  - ATC-STD-000
+  ATC-STD-460:
+  - ATC-STD-000
+  ATC-STD-461:
+  - ATC-STD-000
+  ATC-STD-462:
+  - ATC-STD-000
+  ATC-STD-463:
+  - ATC-STD-000
+  ATC-STD-466:
+  - ATC-STD-000
+  ATC-STD-467:
+  - ATC-STD-000
+  ATC-STD-468:
+  - ATC-STD-000
+  ATC-STD-469:
+  - ATC-STD-000
+  ATC-STD-480:
+  - ATC-STD-000
+  ATC-STD-481:
+  - ATC-STD-000
+  ATC-STD-482:
+  - ATC-STD-000
+  ATC-STD-483:
+  - ATC-STD-000
+  ATC-STD-484:
+  - ATC-STD-000
+  ATC-STD-485:
+  - ATC-STD-000
+  ATC-STD-486:
+  - ATC-STD-000
+  ATC-STD-488:
+  - ATC-STD-000
+  ATC-STD-500:
+  - ATC-STD-000
+  ATC-STD-501:
+  - ATC-STD-000
+  ATC-STD-502:
+  - ATC-STD-000
+  ATC-STD-504:
+  - ATC-STD-000
+  ATC-STD-505:
+  - ATC-STD-000
+  ATC-STD-507:
+  - ATC-STD-000
+  ATC-STD-508:
+  - ATC-STD-000
+  ATC-STD-509:
+  - ATC-STD-000
+  ATC-STD-540:
+  - ATC-STD-000
+  ATC-STD-541:
+  - ATC-STD-000
+  ATC-STD-542:
+  - ATC-STD-000
+  ATC-STD-543:
+  - ATC-STD-000
+  ATC-STD-544:
+  - ATC-STD-000
+  ATC-STD-545:
+  - ATC-STD-000
+  ATC-STD-546:
+  - ATC-STD-000
+  ATC-STD-560:
+  - ATC-STD-000
+  ATC-STD-561:
+  - ATC-STD-000
+  ATC-STD-562:
+  - ATC-STD-000
+  ATC-STD-566:
+  - ATC-STD-000
+  ATC-STD-580:
+  - ATC-STD-000
+  ATC-STD-581:
+  - ATC-STD-000
+  ATC-STD-582:
+  - ATC-STD-000
+  ATC-STD-583:
+  - ATC-STD-000
+  ATC-STD-584:
+  - ATC-STD-000
+  ATC-STD-585:
+  - ATC-STD-000
+  ATC-STD-586:
+  - ATC-STD-000
+  ATC-STD-587:
+  - ATC-STD-000
+  ATC-STD-600:
+  - ATC-STD-000
+  ATC-STD-601:
+  - ATC-STD-000
+  ATC-STD-602:
+  - ATC-STD-000
+  ATC-STD-603:
+  - ATC-STD-000
+  ATC-STD-604:
+  - ATC-STD-000
+  ATC-STD-605:
+  - ATC-STD-000
+  ATC-STD-606:
+  - ATC-STD-000
+  ATC-STD-607:
+  - ATC-STD-000
+  ATC-STD-620:
+  - ATC-STD-000
+  ATC-STD-623:
+  - ATC-STD-000
+  ATC-STD-624:
+  - ATC-STD-000
+  ATC-STD-625:
+  - ATC-STD-000
+  ATC-STD-626:
+  - ATC-STD-000
+  ATC-STD-627:
+  - ATC-STD-000
+  ATC-STD-640:
+  - ATC-STD-000
+  ATC-STD-641:
+  - ATC-STD-000
+  ATC-STD-643:
+  - ATC-STD-000
+  ATC-STD-646:
+  - ATC-STD-000
+  ATC-STD-660:
+  - ATC-STD-000
+  ATC-STD-662:
+  - ATC-STD-000
+  ATC-STD-664:
+  - ATC-STD-000
+  ATC-STD-665:
+  - ATC-STD-000
+  ATC-STD-666:
+  - ATC-STD-000
+  ATC-STD-667:
+  - ATC-STD-000
+  ATC-STD-680:
+  - ATC-STD-000
+  ATC-STD-681:
+  - ATC-STD-000
+  ATC-STD-682:
+  - ATC-STD-000
+  ATC-STD-683:
+  - ATC-STD-000
+  ATC-STD-684:
+  - ATC-STD-000
+  ATC-STD-685:
+  - ATC-STD-000
+  ATC-STD-686:
+  - ATC-STD-000
+  ATC-STD-700:
+  - ATC-STD-000
+  ATC-STD-701:
+  - ATC-STD-000
+  ATC-STD-702:
+  - ATC-STD-000
+  ATC-STD-703:
+  - ATC-STD-000
+  ATC-STD-704:
+  - ATC-STD-000
+  ATC-STD-705:
+  - ATC-STD-000
+  ATC-STD-706:
+  - ATC-STD-000
+  ATC-STD-IMPROVEMENT-001: {depends: [ATC-STD-000, ATC-STD-BUG-005, ATC-STD-AUDIT-001, ATC-STD-UPDATE-001, ATC-STD-REPO-DISCOVERY-001]}
+  ATC-AI-GOV-AGENTS-001: {depends: [ATC-STD-000, ATC-AAS-001, ATC-STD-AOS-001]}
+  ATC-AI-GOV-MANIFEST-001: {depends: [ATC-STD-000, ATC-AI-GOV-AGENTS-001]}
+  ATC-AI-GOV-POLICY-001: {depends: [ATC-STD-000, ATC-AI-GOV-AGENTS-001]}
+  ATC-AI-GOV-CHECK-001: {depends: [ATC-STD-000, ATC-AI-GOV-POLICY-001, ATC-AI-GOV-AUDIT-001]}
+  ATC-AI-GOV-AUDIT-001: {depends: [ATC-STD-000, ATC-STD-AUDIT-001, ATC-AI-GOV-CHECK-001]}
+  ATC-AI-GOV-HANDOFF-001: {depends: [ATC-STD-000, ATC-AI-GOV-MANIFEST-001]}
+  ATC-AI-GOV-INCIDENT-001: {depends: [ATC-STD-000, ATC-STD-BUG-001, ATC-STD-BUG-005]}
+  ATC-AI-GOV-CHANGE-001: {depends: [ATC-STD-000, ATC-STD-VERSION-001, ATC-STD-UPDATE-001]}
+  ATC-AI-GOV-001: {depends: [ATC-STD-000]}
+  ATC-AI-GOV-CAPABILITY-001: {depends: [ATC-STD-000, ATC-AI-GOV-MANIFEST-001]}
+  ATC-AI-GOV-FINDING-001: {depends: [ATC-STD-000, ATC-STD-BUG-001, ATC-AI-GOV-CHECK-001]}
+  ATC-AI-GOV-ACCESS-001: {depends: [ATC-STD-000, ATC-AI-GOV-CAPABILITY-001]}
+  ATC-STD-NET-009: {depends: [ATC-STD-NET-004, ATC-STD-VERSION-001, ATC-STD-COMPAT-001]}
+
+
+# ============================================================================
+# REPOSITORY-LEVEL DEPENDENCY EDGES (ATC-STD-204 §1, F-001) - 2026-10-12
+# SSOT fuer `uses:`-Kanten zwischen Repositories. Jede Kante ist ueber ein
+# registriertes Interface (registry/interfaces.yaml) gekapselt; Kanten ohne
+# Interface-Eintrag existieren nicht (fail-closed).
+# Herkunft: abgeleitet aus den provider->consumers-Listen der IFC-0001..0007
+# (Seed-Stand 07.09.2026). Archivierte Repos (atc-storage, atc-wallet,
+# atc-indexer, atc-interop, atc-oracle, atc-mining, atc-explorer) sind nicht
+# Teil des aktiven Graphen; ihre historischen Kanten sind nur in
+# interfaces.yaml dokumentiert.
+# Freie Repos ohne Abhaengigkeiten: [] (explizit, nicht implizit).
+# ============================================================================
+repositories:
+  atclang: {uses: [], ifc_provides: [IFC-0001]}
+  atc-shivacore: {uses: [atclang], ifc_provides: [IFC-0002], ifc_uses: [IFC-0001]}
+  a-townchain: {uses: [atclang, atc-shivacore], ifc_provides: [IFC-0003], ifc_uses: [IFC-0001, IFC-0002]}
+  atc-contracts: {uses: [atclang, a-townchain], ifc_provides: [IFC-0005], ifc_uses: [IFC-0001, IFC-0003]}
+  atc-sdk: {uses: [atclang, a-townchain], ifc_provides: [IFC-0004], ifc_uses: [IFC-0001, IFC-0003]}
+  atc-node: {uses: [atc-shivacore, a-townchain], ifc_uses: [IFC-0002, IFC-0003]}
+  atc-compute: {uses: [atc-shivacore], ifc_uses: [IFC-0002]}
+  aurora-ai: {uses: [atc-shivacore], ifc_provides: [IFC-0007], ifc_uses: [IFC-0002]}
+  globus-os: {uses: [atc-shivacore], ifc_uses: [IFC-0002]}
+  atc-marketplace: {uses: [atc-sdk, atc-contracts], ifc_uses: [IFC-0004, IFC-0005]}
+  atc-launchpad: {uses: [atc-sdk], ifc_uses: [IFC-0004]}
+  genesis-engine: {uses: [atc-sdk], ifc_provides: [IFC-0006], ifc_uses: [IFC-0004]}
+  genesis-chronicles: {uses: [genesis-engine, atc-contracts], ifc_uses: [IFC-0006, IFC-0005]}
+  a-townchain-os: {uses: [atclang, atc-shivacore, a-townchain, aurora-ai], ifc_uses: [IFC-0001, IFC-0002, IFC-0003, IFC-0007], integration_layer: L7-Build-API}
+  atc-vm: {uses: [], note: 'FREEZE per SCR-0127 - kanonischer Build-Standort a-townchain/components/vm; Quellrepo nur Referenz/Verification'}
+  atc-algorithm: {uses: [], note: 'FREEZE per SCR-0127 - kanonisch a-townchain/components/algorithm'}
+  atc-zkp: {uses: []}
+  atc-ide: {uses: []}
+  atc-toolchain: {uses: []}
+  atc-engineering: {uses: []}
+  atc-standards: {uses: []}
+  .github: {uses: []}
+  a-townchain-ecosystem: {uses: [], note: 'Integrations-/Audit-Layer, konsumiert Registry-Exports per SHA-gebundenem Snapshot'}
+  a-townchain-os-docs: {uses: []}
+  genesis-franchise-factory: {uses: []}
+  demo-repository: {uses: [], note: 'privat, Fixture - kein Produktionspfad'}
