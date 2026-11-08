@@ -1,0 +1,80 @@
+name: Enterprise CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: enterprise-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  quality:
+    name: Rust quality gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Format gate
+        run: cargo fmt --all -- --check
+
+      - name: Check gate
+        run: cargo check --workspace --all-targets
+
+      - name: Test gate
+        run: cargo test --workspace --all-targets
+
+      - name: Clippy gate
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Documentation gate
+        run: cargo doc --workspace --no-deps
+
+  security:
+    name: Dependency security gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Generate dependency lockfile
+        run: cargo generate-lockfile
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      - name: RustSec audit
+        run: cargo audit
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v5
