@@ -1,0 +1,13 @@
+# Schema fuer Standard Change Requests (ATC-STD-000 §14)
+type: object
+required: [id, affected_standard, proposed_change, motivation, decision]
+properties:
+  id: {type: string, pattern: "^SCR-[0-9]{4}$"}
+  affected_standard: {type: string, pattern: "^ATC-STD-[0-9]{3,}$"}
+  proposed_change: {type: string}
+  motivation: {type: string}
+  compatibility_impact: {type: string}
+  security_impact: {type: string}
+  migration_impact: {type: string}
+  decision: {enum: [ACCEPTED, REJECTED, PENDING]}
+  date: {type: string, format: date}
