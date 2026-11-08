@@ -80,8 +80,13 @@ vom Gate respektiert.
   Prüfung behauptet damit keine Typkorrektheit, die sie nicht beweisen kann.
   Lauf über alle 47 Quellen: 0 Befunde. Gegenprobe mit absichtlich falschen
   Typen: 4 Befunde, Exit 1.
-  **Noch offen:** Namensauflösung/Typprüfung über Vertrags- und Dateigrenzen
-  (Importe) und Codegen für Verträge.
+  **Semantik Stufe 3 (Dateigrenzen):** `atc check <verzeichnis>` indexiert alle
+  `.atc` und prüft projektweit: mehrfach deklarierte Vertragsnamen (Mirror-
+  Kopien), nicht auflösbare Basen und Typnamen, die weder Builtin noch
+  deklariert noch importiert sind (kanonisch: `Address`, `Hash`, `Bytes`,
+  `Signature`, `PublicKey`, `Timestamp`, `Amount`, `TokenId`).
+  **Noch offen:** vollständige Import-Auflösung (`use ATC::X::Y` gegen einen
+  Modulindex) und Codegen für Verträge.
   Siehe STATUS.md/ROADMAP.md (G3-G10 offen)
 
 Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde, alle 16 Quellen
