@@ -1,0 +1,30 @@
+/* Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved. */
+/* frontend/assets/css/variables.css */
+/* A-TownChain OS — Design System */
+
+:root {
+  /* Colors */
+  --bg:          #05080f;
+  --sidebar-bg:  rgba(5,8,20,0.92);
+  --panel-bg:    rgba(8,12,30,0.88);
+  --purple:      #a259ff;
+  --cyan:        #00d1ff;
+  --pink:        #ff2d78;
+  --green:       #00ffb3;
+  --orange:      #ff8c00;
+  --text:        #e0f0ff;
+  --dim:         #4a6080;
+  --border:      rgba(162,89,255,0.3);
+
+  /* Typography */
+  --font-ui:     'Rajdhani', sans-serif;
+  --font-hud:    'Orbitron', sans-serif;
+  --font-code:   'Courier New', monospace;
+
+  /* Spacing */
+  --sidebar-w:   160px;
+  --rightbar-w:  200px;
+  --titlebar-h:  36px;
+  --dock-h:      90px;
+  --statusbar-h: 24px;
+}
