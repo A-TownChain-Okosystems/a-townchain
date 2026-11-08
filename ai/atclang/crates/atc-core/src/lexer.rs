@@ -73,8 +73,58 @@ pub struct LexError {
     pub ch: char,
 }
 
+/// Zeile und Spalte eines Tokens, 1-basiert.
+///
+/// Der Parser braucht die Spalte fuer die eingerueckten Rumpfformen
+/// (`struct X:` / `enum X:`): ohne Spalte ist nicht entscheidbar, wo ein
+/// eingerueckter Block endet.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct Pos {
+    pub line: u32,
+    pub col: u32,
+}
+
+/// Zeile/Spalte je Zeichenposition des Quelltextes.
+fn line_col_table(src: &str) -> Vec<Pos> {
+    let mut table = Vec::with_capacity(src.len());
+    let mut line = 1u32;
+    let mut col = 1u32;
+    for ch in src.chars() {
+        table.push(Pos { line, col });
+        if ch == '\n' {
+            line += 1;
+            col = 1;
+        } else {
+            col += 1;
+        }
+    }
+    table
+}
+
+/// Merkt sich das Token und die Zeichenposition, an der es beginnt.
+fn push(tokens: &mut Vec<Token>, marks: &mut Vec<usize>, pos: usize, token: Token) {
+    tokens.push(token);
+    marks.push(pos);
+}
+
 pub fn tokenize(src: &str) -> Result<Vec<Token>, LexError> {
+    Ok(scan(src)?.0)
+}
+
+/// Wie [`tokenize`], zusaetzlich die Position jedes Tokens.
+pub fn tokenize_pos(src: &str) -> Result<(Vec<Token>, Vec<Pos>), LexError> {
+    let (tokens, marks) = scan(src)?;
+    let table = line_col_table(src);
+    let positions = marks
+        .iter()
+        .map(|&i| table.get(i).copied().unwrap_or_default())
+        .collect();
+    Ok((tokens, positions))
+}
+
+fn scan(src: &str) -> Result<(Vec<Token>, Vec<usize>), LexError> {
     let mut tokens = Vec::new();
+    let mut marks: Vec<usize> = Vec::new();
     let mut chars = src.chars().enumerate().peekable();
     while let Some((pos, ch)) = chars.next() {
         match ch {
@@ -82,45 +132,45 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, LexError> {
             '=' => {
                 if chars.peek().is_some_and(|&(_, c)| c == '=') {
                     chars.next();
-                    tokens.push(Token::Eq);
+                    push(&mut tokens, &mut marks, pos, Token::Eq);
                 } else {
-                    tokens.push(Token::Assign);
+                    push(&mut tokens, &mut marks, pos, Token::Assign);
                 }
             }
             '!' => {
                 if chars.peek().is_some_and(|&(_, c)| c == '=') {
                     chars.next();
-                    tokens.push(Token::NotEq);
+                    push(&mut tokens, &mut marks, pos, Token::NotEq);
                 } else {
-                    tokens.push(Token::Bang);
+                    push(&mut tokens, &mut marks, pos, Token::Bang);
                 }
             }
             '<' => {
                 if chars.peek().is_some_and(|&(_, c)| c == '=') {
                     chars.next();
-                    tokens.push(Token::LtEq);
+                    push(&mut tokens, &mut marks, pos, Token::LtEq);
                 } else {
-                    tokens.push(Token::Lt);
+                    push(&mut tokens, &mut marks, pos, Token::Lt);
                 }
             }
             '>' => {
                 if chars.peek().is_some_and(|&(_, c)| c == '=') {
                     chars.next();
-                    tokens.push(Token::GtEq);
+                    push(&mut tokens, &mut marks, pos, Token::GtEq);
                 } else {
-                    tokens.push(Token::Gt);
+                    push(&mut tokens, &mut marks, pos, Token::Gt);
                 }
             }
-            '+' => tokens.push(Token::Plus),
+            '+' => push(&mut tokens, &mut marks, pos, Token::Plus),
             '-' => {
                 if chars.peek().is_some_and(|&(_, c)| c == '>') {
                     chars.next();
-                    tokens.push(Token::Arrow);
+                    push(&mut tokens, &mut marks, pos, Token::Arrow);
                 } else {
-                    tokens.push(Token::Minus);
+                    push(&mut tokens, &mut marks, pos, Token::Minus);
                 }
             }
-            '*' => tokens.push(Token::Star),
+            '*' => push(&mut tokens, &mut marks, pos, Token::Star),
             '/' => {
                 if chars.peek().is_some_and(|&(_, c)| c == '/') {
                     // Line comments are lexical trivia. Consume the complete
@@ -132,7 +182,7 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, LexError> {
                         }
                     }
                 } else {
-                    tokens.push(Token::Slash);
+                    push(&mut tokens, &mut marks, pos, Token::Slash);
                 }
             }
             // SPEC 2.6: '#' bis Zeilenende ist ein Kommentar. Der Rust-Lexer
@@ -144,21 +194,21 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, LexError> {
                     }
                 }
             }
-            '%' => tokens.push(Token::Percent),
-            '|' => tokens.push(Token::Pipe),
-            '&' => tokens.push(Token::Ampersand),
-            ':' => tokens.push(Token::Colon),
-            '@' => tokens.push(Token::At),
-            '.' => tokens.push(Token::Dot),
-            '?' => tokens.push(Token::Question),
-            '(' => tokens.push(Token::LParen),
-            ')' => tokens.push(Token::RParen),
-            '[' => tokens.push(Token::LBracket),
-            ']' => tokens.push(Token::RBracket),
-            '{' => tokens.push(Token::LBrace),
-            '}' => tokens.push(Token::RBrace),
-            ',' => tokens.push(Token::Comma),
-            ';' => tokens.push(Token::Semi),
+            '%' => push(&mut tokens, &mut marks, pos, Token::Percent),
+            '|' => push(&mut tokens, &mut marks, pos, Token::Pipe),
+            '&' => push(&mut tokens, &mut marks, pos, Token::Ampersand),
+            ':' => push(&mut tokens, &mut marks, pos, Token::Colon),
+            '@' => push(&mut tokens, &mut marks, pos, Token::At),
+            '.' => push(&mut tokens, &mut marks, pos, Token::Dot),
+            '?' => push(&mut tokens, &mut marks, pos, Token::Question),
+            '(' => push(&mut tokens, &mut marks, pos, Token::LParen),
+            ')' => push(&mut tokens, &mut marks, pos, Token::RParen),
+            '[' => push(&mut tokens, &mut marks, pos, Token::LBracket),
+            ']' => push(&mut tokens, &mut marks, pos, Token::RBracket),
+            '{' => push(&mut tokens, &mut marks, pos, Token::LBrace),
+            '}' => push(&mut tokens, &mut marks, pos, Token::RBrace),
+            ',' => push(&mut tokens, &mut marks, pos, Token::Comma),
+            ';' => push(&mut tokens, &mut marks, pos, Token::Semi),
             '"' => {
                 let mut value = String::new();
                 loop {
@@ -182,7 +232,7 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, LexError> {
                         }
                     }
                 }
-                tokens.push(Token::String(value));
+                push(&mut tokens, &mut marks, pos, Token::String(value));
             }
             '0'..='9' => {
                 let mut n: u128 = (ch as u128) - ('0' as u128);
@@ -213,7 +263,7 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, LexError> {
                         break;
                     }
                 }
-                tokens.push(Token::Int(n));
+                push(&mut tokens, &mut marks, pos, Token::Int(n));
             }
             _ if ch.is_alphabetic() || ch == '_' => {
                 let mut ident = String::new();
@@ -227,34 +277,37 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, LexError> {
                     }
                 }
                 match ident.as_str() {
-                    "let" => tokens.push(Token::Let),
-                    "const" => tokens.push(Token::Const),
-                    "return" => tokens.push(Token::Return),
-                    "fn" => tokens.push(Token::Fn),
-                    "if" => tokens.push(Token::If),
-                    "else" => tokens.push(Token::Else),
-                    "while" => tokens.push(Token::While),
-                    "contract" => tokens.push(Token::Contract),
-                    "state" => tokens.push(Token::State),
-                    "function" => tokens.push(Token::Function),
-                    "capability" => tokens.push(Token::Capability),
-                    "policy" => tokens.push(Token::Policy),
-                    "require" => tokens.push(Token::Require),
-                    "use" => tokens.push(Token::Use),
-                    "module" => tokens.push(Token::Module),
-                    "import" => tokens.push(Token::Import),
-                    "as" => tokens.push(Token::As),
-                    "pub" => tokens.push(Token::Pub),
-                    "struct" => tokens.push(Token::Struct),
-                    "enum" => tokens.push(Token::Enum),
-                    _ => tokens.push(Token::Ident(ident)),
+                    "let" => push(&mut tokens, &mut marks, pos, Token::Let),
+                    "const" => push(&mut tokens, &mut marks, pos, Token::Const),
+                    "return" => push(&mut tokens, &mut marks, pos, Token::Return),
+                    "fn" => push(&mut tokens, &mut marks, pos, Token::Fn),
+                    // `func` ist im Korpus die zweite Schreibweise fuer `fn`
+                    // (32 Dateien). Dieselbe Deklaration, kein eigener Knoten.
+                    "func" => push(&mut tokens, &mut marks, pos, Token::Fn),
+                    "if" => push(&mut tokens, &mut marks, pos, Token::If),
+                    "else" => push(&mut tokens, &mut marks, pos, Token::Else),
+                    "while" => push(&mut tokens, &mut marks, pos, Token::While),
+                    "contract" => push(&mut tokens, &mut marks, pos, Token::Contract),
+                    "state" => push(&mut tokens, &mut marks, pos, Token::State),
+                    "function" => push(&mut tokens, &mut marks, pos, Token::Function),
+                    "capability" => push(&mut tokens, &mut marks, pos, Token::Capability),
+                    "policy" => push(&mut tokens, &mut marks, pos, Token::Policy),
+                    "require" => push(&mut tokens, &mut marks, pos, Token::Require),
+                    "use" => push(&mut tokens, &mut marks, pos, Token::Use),
+                    "module" => push(&mut tokens, &mut marks, pos, Token::Module),
+                    "import" => push(&mut tokens, &mut marks, pos, Token::Import),
+                    "as" => push(&mut tokens, &mut marks, pos, Token::As),
+                    "pub" => push(&mut tokens, &mut marks, pos, Token::Pub),
+                    "struct" => push(&mut tokens, &mut marks, pos, Token::Struct),
+                    "enum" => push(&mut tokens, &mut marks, pos, Token::Enum),
+                    _ => push(&mut tokens, &mut marks, pos, Token::Ident(ident)),
                 }
             }
             _ => return Err(LexError { pos, ch }),
         }
     }
-    tokens.push(Token::Eof);
-    Ok(tokens)
+    push(&mut tokens, &mut marks, src.chars().count(), Token::Eof);
+    Ok((tokens, marks))
 }
 
 #[cfg(test)]
