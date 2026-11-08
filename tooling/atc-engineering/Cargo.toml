@@ -1,0 +1,27 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/atc-core",
+    "crates/atc-standards",
+    "crates/atc-maintenance",
+    "crates/atc-config",
+    "crates/atc-integration",
+    "crates/atc-audit-cli",
+    "crates/atc-gates",
+    "crates/atc-requirements",
+    "crates/atc-atclang",
+    "crates/atc-evidence",
+    "crates/atc-findings",
+    "crates/atc-graph",
+    "crates/atc-verification",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+authors = ["A-TownChain-Okosystems"]
+
+[profile.release]
+lto = true
+codegen-units = 1
