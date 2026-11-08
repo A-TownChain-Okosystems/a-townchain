@@ -1,0 +1,57 @@
+# ATC-GOV-001 Kap. 3/4 — Authorities & Decision Rights Matrix (L1)
+# SSOT: maschinenlesbar; Änderung nur via Governance-Prozess (Kap. 18)
+constitution_ref: ATC-GOV-001
+version: "1.1.1"
+god_mode: forbidden
+
+# Identity SSOT: current person-level authority is declared here.
+# Historical records must not be rewritten; they are interpreted against this section.
+identity_authority:
+  current:
+    owner:
+      name: "Michael Wroblewski"
+      status: CURRENT
+      source: "Current owner authority; authoritative governance identity"
+    reviewer:
+      name: "Alexander Wroblewski"
+      status: CURRENT
+      source: "Current review authority; authoritative governance review role"
+    approver:
+      name: "Michael Wroblewski"
+      status: CURRENT
+      source: "Current owner authority; approval remains with owner unless a specific decision-right matrix delegates it"
+  historical: []
+  conflict_rule: "Current normative documents reference this SSOT. Historical approval/security/copyright/audit records retain their original identities and are not rewritten. A reviewer is not implicitly an owner or approver."
+
+authorities:
+  standards_authority:     { capabilities: [standards-approval, standards-review-chain, registry-allokation], forbidden: [treasury, release, repo-deletion] }
+  architecture_authority:  { capabilities: [architecture-approval, adr-review, layer-model], forbidden: [treasury, security-gate-override] }
+  security_authority:      { capabilities: [security-policies, security-gates, emergency-freeze, security-audit], forbidden: [treasury, standards-approval, arbitrary-repo-deletion] }
+  release_authority:       { capabilities: [release-approval, gate-6-signoff], forbidden: [standards-approval, treasury] }
+  treasury_authority:     { capabilities: [treasury-proposal, multisig-execute], forbidden: [standards-approval, security-gate-override] }
+  protocol_authority:     { capabilities: [consensus-changes, smart-contract-approval, timelock-admin], forbidden: [treasury, release] }
+  infrastructure_authority: { capabilities: [github-rulesets, ci-config, deploy-infra], forbidden: [treasury, protocol-changes] }
+  ai_governance_authority: { capabilities: [agent-approval, agent-policy, kill-switch], forbidden: [treasury, standards-approval] }
+
+decision_rights_matrix:
+  # Entscheidung: Propose / Review / Approve / Execute / Audit (+ Block/Info)
+  standard:          { propose: Author, review: Reviewer, approve: Owner, execute: Maintainer, audit: Audit, block: [Security Authority], info: [Governance] }
+  architecture:      { propose: Architect, review: Reviewer, approve: Owner, execute: Engineering, audit: Audit }
+  security_fix:      { propose: Security, review: [Reviewer, Security Council], approve: Owner / Emergency Authority (Critical), execute: Maintainer, audit: Audit }
+  mainnet_release:   { propose: Release Team, review: [Reviewer, Security, QA], approve: Release Authority, execute: Release Team, audit: Audit }
+  smart_contract:    { propose: Developer, review: [Reviewer, Security], approve: Protocol Authority, execute: Deployment Team, audit: Audit }
+  github_ruleset:    { propose: Admin, review: Reviewer, approve: Governance Authority, execute: GitHub Admin, audit: Audit }
+  treasury_transfer: { propose: Treasury, review: [Reviewer, Security], approve: Treasury Authority (Multisig), execute: Multisig, audit: Audit, timelock: required }
+  ai_agent_policy:   { propose: Agent Owner, review: [Reviewer, Security], approve: AI Governance, execute: Platform, audit: Audit }
+
+approval_quorums:
+  normal_change:      "2 unabhaengige Approvals"
+  high_risk:          "3-of-5 Governance"
+  critical_infra:     "3-of-5 Security/Architecture"
+  protocol_consensus: "4-of-7 Governance + Timelock"
+  emergency:          "2-of-N Emergency Authority + mandatory post-incident audit"
+
+transition_provisions:
+  reality: "Ein-Personen-Org, Agenten teilen GitHub-Identitaet (Stand 11.09.2026)"
+  rule: "Quoren gelten mit kompensierenden Kontrollen bis zweiter Reviewer-Account existiert (ATC-EXC-001-Muster: dokumentiert, befristet, Post-Merge-Audit)"
+  deadline: "2026-09-30 — ATC-EXC-001-Ablauf; ohne zweiten Account Fail-Closed"
