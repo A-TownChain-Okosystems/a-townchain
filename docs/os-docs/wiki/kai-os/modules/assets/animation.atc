@@ -1,0 +1,142 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-75 — Animation System
+# Genesis Engine — Multi-Format Animation Support
+# Standard: AD-75
+
+enum AnimationType:
+    SPRITE_SHEET     # 2D Frame-basiert
+    FRAME_SEQUENCE   # Einzelne Frames
+    SPINE            # Skelettanimation
+    RIVE             # Vektoranimation
+    LOTTIE           # After Effects / Bodymovin
+    VIDEO            # Video-Animationen
+    PROCEDURAL       # Code-generiert
+    SKELETAL_3D      # 3D Skelettanimation
+
+struct Animation:
+    name: String
+    anim_type: AnimationType
+    frames: Int32
+    fps: Float
+    loop: Bool
+    duration: Float          # Sekunden
+    width: Int32
+    height: Int32
+    data: ByteArray          # Format-spezifische Daten
+    state: String            # "idle" | "playing" | "paused" | "stopped"
+    current_frame: Int32
+    elapsed: Float
+
+struct SpriteSheet:
+    texture: String
+    frame_width: Int32
+    frame_height: Int32
+    columns: Int32
+    rows: Int32
+    frame_count: Int32
+    frame_indices: Array<Int32>   # Reihenfolge der Frames
+
+struct SpineData:
+    skeleton_json: String
+    atlas: String
+    skin: String
+    animations: Array<String>     # "walk", "run", "attack", "idle"
+
+struct RiveData:
+    file: String
+    artboard: String
+    state_machine: String
+    inputs: Array<String>         # Parameter
+
+func load_sprite_sheet(path: String, fw: Int32, fh: Int32) -> SpriteSheet:
+    texture = load_texture(path)
+    cols = texture.width / fw
+    rows = texture.height / fh
+    count = cols * rows
+    indices = []
+    for i in range(count):
+        indices.append(i)
+    return SpriteSheet {
+        texture: path, frame_width: fw, frame_height: fh,
+        columns: cols, rows: rows, frame_count: count,
+        frame_indices: indices
+    }
+
+func play_animation(anim: Animation) -> Bool:
+    anim.state = "playing"
+    anim.elapsed = 0.0
+    anim.current_frame = 0
+    return true
+
+func update_animation(anim: Animation, delta: Float) -> Bool:
+    if anim.state != "playing":
+        return false
+    anim.elapsed += delta
+    if anim.anim_type == SPRITE_SHEET:
+        frame_time = 1.0 / anim.fps
+        anim.current_frame = int(anim.elapsed / frame_time) % anim.frames
+        if not anim.loop and anim.elapsed >= anim.duration:
+            anim.state = "stopped"
+    elif anim.anim_type == SPINE:
+        update_spine(anim, delta)
+    elif anim.anim_type == RIVE:
+        update_rive(anim, delta)
+    elif anim.anim_type == LOTTIE:
+        update_lottie(anim, delta)
+    elif anim.anim_type == VIDEO:
+        advance_video_frame(anim, delta)
+    elif anim.anim_type == PROCEDURAL:
+        update_procedural(anim, delta)
+    return true
+
+func stop_animation(anim: Animation) -> Bool:
+    anim.state = "stopped"
+    anim.current_frame = 0
+    anim.elapsed = 0.0
+    return true
+
+func pause_animation(anim: Animation) -> Bool:
+    anim.state = "paused"
+    return true
+
+func resume_animation(anim: Animation) -> Bool:
+    anim.state = "playing"
+    return true
+
+# Sprite Sheet Frame extrahieren
+func get_sprite_frame(sheet: SpriteSheet, frame: Int32) -> Rect:
+    col = frame % sheet.columns
+    row = frame / sheet.columns
+    return Rect {
+        x: col * sheet.frame_width,
+        y: row * sheet.frame_height,
+        w: sheet.frame_width,
+        h: sheet.frame_height
+    }
+
+# Animation Blending — Übergang zwischen zwei Animationen
+func blend_animations(from: Animation, to: Animation, blend_time: Float) -> Bool:
+    # Cross-fade zwischen zwei Skelettanimationen
+    # Wichtig für flüssige Übergänge (walk → run → idle)
+    set_blend_weight(from, 1.0)
+    set_blend_weight(to, 0.0)
+    animate_blend(from, to, blend_time)
+    return true
+
+# Animation Events — Trigger bei bestimmten Frames
+struct AnimationEvent:
+    frame: Int32
+    event_name: String         # "footstep", "attack_hit", "cast_spell"
+    payload: Map
+
+func register_event(anim: Animation, frame: Int32, event: String) -> Bool:
+    anim.events.append(AnimationEvent {frame: frame, event_name: event, payload: {}})
+    return true
+
+func check_events(anim: Animation) -> Array<String>:
+    triggered = []
+    for event in anim.events:
+        if event.frame == anim.current_frame:
+            triggered.append(event.event_name)
+            emit_event("animation." + event.event_name, event.payload)
+    return triggered
