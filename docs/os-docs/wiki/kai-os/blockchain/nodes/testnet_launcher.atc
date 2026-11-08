@@ -1,0 +1,132 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-01 — Testnet Launcher
+// Sprint 2.2 | Infrastructure Layer | Chain-ID 9000
+// Migrated from: blockchain/nodes/testnet_launcher.py (188 lines)
+// Local multi-node testnet for development
+// ─────────────────────────────────────────────────────────────
+
+const DEFAULT_NODES: u8 = 3
+const BASE_PORT: u16 = 9000
+const BASE_RPC_PORT: u16 = 9100
+const GENESIS_CHAIN_ID: u32 = 9000
+
+enum NodeStatus { Stopped, Starting, Running, Error }
+
+struct TestnetNode {
+    node_id: u8,
+    p2p_port: u16,
+    rpc_port: u16,
+    data_dir: String,
+    status: NodeStatus,
+    started_at: u64,
+}
+
+contract TestnetLauncher {
+    state nodes: List<TestnetNode>
+    state node_count: u8
+    state base_dir: String
+    state running: bool
+    state genesis_config: Hash
+    state owner: Address
+
+    event NodeStarted(node_id: u8, p2p_port: u16, rpc_port: u16)
+    event NodeStopped(node_id: u8)
+    event TestnetReady(node_count: u8)
+    event TestnetStopped()
+
+    fn init() {
+        self.nodes = []
+        self.node_count = 0
+        self.base_dir = "/tmp/atc-testnet"
+        self.running = false
+        self.genesis_config = Hash::zero()
+        self.owner = msg_sender()
+    }
+
+    fn setup(num_nodes: u8) -> bool {
+        let i: u8 = 0
+        while i < num_nodes {
+            let node = TestnetNode {
+                node_id: i,
+                p2p_port: BASE_PORT + i,
+                rpc_port: BASE_RPC_PORT + i,
+                data_dir: self.base_dir + "/node-" + Int::to_string(i),
+                status: NodeStatus::Stopped,
+                started_at: 0,
+            }
+            self.nodes.push(node)
+            self.node_count += 1
+            i += 1
+        }
+        self.build_genesis()
+        return true
+    }
+
+    fn build_genesis() -> Hash {
+        let genesis_input = "ATC-Testnet" + Int::to_string(self.node_count) + Int::to_string(Time::now())
+        let genesis_hash = Hash::sha256(genesis_input)
+        self.genesis_config = genesis_hash
+        return genesis_hash
+    }
+
+    fn start() -> bool {
+        let i: u8 = 0
+        while i < self.node_count {
+            self.nodes[i].status = NodeStatus::Running
+            self.nodes[i].started_at = Time::now()
+            emit NodeStarted(i, self.nodes[i].p2p_port, self.nodes[i].rpc_port)
+            i += 1
+        }
+        self.running = true
+        emit TestnetReady(self.node_count)
+        return true
+    }
+
+    fn stop() -> bool {
+        let i: u8 = 0
+        while i < self.node_count {
+            self.nodes[i].status = NodeStatus::Stopped
+            emit NodeStopped(i)
+            i += 1
+        }
+        self.running = false
+        emit TestnetStopped()
+        return true
+    }
+
+    fn get_node_status(node_id: u8) -> (NodeStatus, u16, u16, u64) {
+        if node_id >= self.node_count {
+            return (NodeStatus::Error, 0, 0, 0)
+        }
+        let node = self.nodes[node_id]
+        return (node.status, node.p2p_port, node.rpc_port, node.started_at)
+    }
+
+    fn get_all_nodes() -> u8 {
+        return self.node_count
+    }
+
+    fn is_running() -> bool {
+        return self.running
+    }
+
+    fn get_genesis_config() -> Hash {
+        return self.genesis_config
+    }
+
+    fn restart_node(node_id: u8) -> bool {
+        if node_id >= self.node_count {
+            return false
+        }
+        self.nodes[node_id].status = NodeStatus::Stopped
+        self.nodes[node_id].status = NodeStatus::Running
+        self.nodes[node_id].started_at = Time::now()
+        emit NodeStarted(node_id, self.nodes[node_id].p2p_port, self.nodes[node_id].rpc_port)
+        return true
+    }
+
+    fn get_status() -> (bool, u8, Hash) {
+        return (self.running, self.node_count, self.genesis_config)
+    }
+}
