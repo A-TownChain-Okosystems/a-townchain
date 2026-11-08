@@ -1,0 +1,23 @@
+// K-Sprint 20 — Contract Execution Engine (ATCLang Interface)
+// Rust: kernel/src/contract.rs (38 lines, 12 tests)
+// Agent: Aurora #2 (6a275618)
+
+import "std/chain.atc" as Chain
+
+struct TxProcessingResult {
+    success: bool,
+    gas_used: u64,
+    contract_address: Option<String>,
+    return_value: Option<u64>,
+    error: Option<String>,
+}
+
+module Kernel::Contract {
+    contract ContractExecutor {
+        fn process_deploy(tx: Transaction) -> Result<String, String>
+        fn process_call(tx: Transaction) -> Result<ExecResult, String>
+        fn process_tx(tx: Transaction) -> Result<TxProcessingResult, String>
+        fn build_deploy_payload(bytecode: List<u8>) -> List<u8>
+        fn build_call_payload(addr: String, call_data: List<u8>) -> List<u8>
+    }
+}
