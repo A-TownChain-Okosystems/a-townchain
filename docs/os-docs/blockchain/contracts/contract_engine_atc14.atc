@@ -1,0 +1,309 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-14 / ATC-8300 — Smart Contract Engine in ATCLang
+// Sprint 2.3 — Issue #76
+// Implementiert: Contract Deployment, Execution, Gas, Token Standard
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+// ── Contract Storage ─────────────────────────────────
+struct ContractStorage {
+    code: Bytes,
+    state: Map<String, Any>,
+    balance: UInt256,
+    nonce: UInt64,
+}
+
+// ── Contract Registry ────────────────────────────────
+struct ContractRegistry {
+    contracts: Map<Address, ContractStorage>,
+    by_standard: Map<String, List<Address>>,  // ATC-8300 → [addr, ...]
+    deployed_count: UInt64,
+}
+
+// ── Gas Tracker ──────────────────────────────────────
+struct GasTracker {
+    limit: UInt256,
+    used: UInt256,
+    refund: UInt256,
+    base_fee: UInt256,
+    priority_fee: UInt256,
+}
+
+// ── Execution Context ────────────────────────────────
+struct ExecContext {
+    contract_addr: Address,
+    caller: Address,
+    origin: Address,
+    gas: GasTracker,
+    value: UInt256,
+    data: Bytes,
+    block_number: UInt64,
+    block_timestamp: UInt64,
+    chain_id: UInt32,
+    reentrancy_depth: UInt8,
+    max_depth: UInt8,
+}
+
+// ATC-14: Contract deployen
+pub fn deploy_contract(
+    registry: ContractRegistry,
+    deployer: Address,
+    code: Bytes,
+    standard: String,
+    init_value: UInt256,
+) -> Address {
+    // Contract-Adresse deterministisch ableiten
+    let addr_bytes = Crypto::sha256(serialize(deployer, registry.deployed_count, Chain::block_number()))
+    let contract_addr = Address::from_bytes(addr_bytes[0:20])
+
+    // Storage initialisieren
+    registry.contracts[contract_addr] = ContractStorage {
+        code: code,
+        state: {},
+        balance: init_value,
+        nonce: 0,
+    }
+
+    // Standard registrieren
+    if not registry.by_standard.contains(standard) {
+        registry.by_standard[standard] = []
+    }
+    registry.by_standard[standard].append(contract_addr)
+    registry.deployed_count = registry.deployed_count + 1
+
+    emit ContractDeployed(contract_addr, deployer, standard, code.len())
+    return contract_addr
+}
+
+// ATC-14: Contract aufrufen
+pub fn call_contract(
+    registry: ContractRegistry,
+    ctx: ExecContext,
+    target: Address,
+    fn_name: String,
+    args: List<Any>,
+) -> CallResult {
+    require(registry.contracts.contains(target), "Contract not found")
+    require(ctx.reentrancy_depth < ctx.max_depth, "Max reentrancy depth")
+
+    let storage = registry.contracts[target]
+    let gas_before = ctx.gas.used
+
+    // Gas für Call abbuchen (21.000 Basis + 3 pro Argument)
+    let call_cost = 21000 + args.len() * 3
+    if ctx.gas.used + call_cost > ctx.gas.limit {
+        return CallResult { success: false, return_value: nil, gas_used: call_cost, error: "Out of gas" }
+    }
+    ctx.gas.used = ctx.gas.used + call_cost
+
+    // Contract-Code ausführen
+    // (In echter VM: Bytecode interpretieren; hier: Stub für Integration)
+    ctx.reentrancy_depth = ctx.reentrancy_depth + 1
+
+    let result = CallResult {
+        success: true,
+        return_value: nil,
+        gas_used: ctx.gas.used - gas_before,
+        error: "",
+    }
+
+    ctx.reentrancy_depth = ctx.reentrancy_depth - 1
+    return result
+}
+
+// ATC-14: State lesen (View-Call, kein Gas)
+pub fn static_call(
+    registry: ContractRegistry,
+    target: Address,
+    key: String,
+) -> Any {
+    require(registry.contracts.contains(target), "Contract not found")
+    return registry.contracts[target].state.get(key, nil)
+}
+
+// ATC-14: State schreiben
+pub fn set_state(
+    registry: ContractRegistry,
+    ctx: ExecContext,
+    key: String,
+    value: Any,
+) -> Bool {
+    require(registry.contracts.contains(ctx.contract_addr), "Contract not found")
+
+    // Gas: 20.000 für neuen Key, 5.000 für Update
+    let storage = registry.contracts[ctx.contract_addr]
+    let cost = if storage.state.contains(key) then 5000 else 20000
+    ctx.gas.used = ctx.gas.used + cost
+
+    storage.state[key] = value
+    emit StateChanged(ctx.contract_addr, key, value)
+    return true
+}
+
+// ATC-14: Self-destruct
+pub fn destroy_contract(
+    registry: ContractRegistry,
+    ctx: ExecContext,
+    beneficiary: Address,
+) -> Bool {
+    require(ctx.caller == get_owner(registry, ctx.contract_addr), "Not owner")
+    let storage = registry.contracts[ctx.contract_addr]
+    registry.contracts.delete(ctx.contract_addr)
+    emit ContractDestroyed(ctx.contract_addr, beneficiary, storage.balance)
+    return true
+}
+
+// ATC-14: Owner abfragen
+pub fn get_owner(registry: ContractRegistry, addr: Address) -> Address {
+    return registry.contracts[addr].state.get("owner", Address::zero())
+}
+
+// ═══════════════════════════════════════════════════════
+// ATC-8300: Fungible Token Standard
+// ═══════════════════════════════════════════════════════
+
+struct TokenState {
+    name: String,
+    symbol: String,
+    decimals: UInt8,
+    total_supply: UInt256,
+    balances: Map<Address, UInt256>,
+    allowances: Map<Address, Map<Address, UInt256>>,
+}
+
+// ATC-8300: Token erstellen
+pub fn create_token(name: String, symbol: String, decimals: UInt8, initial_supply: UInt256) -> TokenState {
+    let token = TokenState {
+        name: name,
+        symbol: symbol,
+        decimals: decimals,
+        total_supply: initial_supply,
+        balances: {},
+        allowances: {},
+    }
+    token.balances[Chain::caller()] = initial_supply
+    emit Transfer(Address::zero(), Chain::caller(), initial_supply)
+    return token
+}
+
+// ATC-8300: Transfer
+pub fn token_transfer(
+    token: TokenState,
+    from: Address,
+    to: Address,
+    amount: UInt256,
+    ctx: ExecContext,
+) -> Bool {
+    require(amount > 0, "Amount must be positive")
+    require(token.balances[from] >= amount, "Insufficient balance")
+
+    ctx.gas.used = ctx.gas.used + 37000  // SSTORE + SLOAD
+
+    token.balances[from] = token.balances[from] - amount
+    if not token.balances.contains(to) {
+        token.balances[to] = 0
+    }
+    token.balances[to] = token.balances[to] + amount
+
+    emit Transfer(from, to, amount)
+    return true
+}
+
+// ATC-8300: Approve (Allowance)
+pub fn token_approve(
+    token: TokenState,
+    owner: Address,
+    spender: Address,
+    amount: UInt256,
+) -> Bool {
+    if not token.allowances.contains(owner) {
+        token.allowances[owner] = {}
+    }
+    token.allowances[owner][spender] = amount
+    emit Approval(owner, spender, amount)
+    return true
+}
+
+// ATC-8300: TransferFrom (mit Allowance)
+pub fn token_transfer_from(
+    token: TokenState,
+    spender: Address,
+    from: Address,
+    to: Address,
+    amount: UInt256,
+    ctx: ExecContext,
+) -> Bool {
+    require(amount > 0, "Amount must be positive")
+    require(token.balances[from] >= amount, "Insufficient balance")
+    require(token.allowances[from][spender] >= amount, "Insufficient allowance")
+
+    ctx.gas.used = ctx.gas.used + 50000  // Multiple SSTORE/SLOAD
+
+    token.balances[from] = token.balances[from] - amount
+    if not token.balances.contains(to) {
+        token.balances[to] = 0
+    }
+    token.balances[to] = token.balances[to] + amount
+    token.allowances[from][spender] = token.allowances[from][spender] - amount
+
+    emit Transfer(from, to, amount)
+    return true
+}
+
+// ATC-8300: Mint
+pub fn token_mint(token: TokenState, to: Address, amount: UInt256, ctx: ExecContext) -> Bool {
+    require(ctx.caller == get_token_owner(token), "Not owner")
+    require(amount > 0, "Amount must be positive")
+
+    if not token.balances.contains(to) {
+        token.balances[to] = 0
+    }
+    token.balances[to] = token.balances[to] + amount
+    token.total_supply = token.total_supply + amount
+
+    emit Transfer(Address::zero(), to, amount)
+    return true
+}
+
+// ATC-8300: Burn
+pub fn token_burn(token: TokenState, from: Address, amount: UInt256, ctx: ExecContext) -> Bool {
+    require(amount > 0, "Amount must be positive")
+    require(token.balances[from] >= amount, "Insufficient balance")
+
+    token.balances[from] = token.balances[from] - amount
+    token.total_supply = token.total_supply - amount
+
+    emit Transfer(from, Address::zero(), amount)
+    return true
+}
+
+// ATC-8300: BalanceOf
+pub fn token_balance_of(token: TokenState, addr: Address) -> UInt256 {
+    return token.balances.get(addr, 0)
+}
+
+// ATC-8300: Allowance
+pub fn token_allowance(token: TokenState, owner: Address, spender: Address) -> UInt256 {
+    if not token.allowances.contains(owner) {
+        return 0
+    }
+    return token.allowances[owner].get(spender, 0)
+}
+
+pub fn get_token_owner(token: TokenState) -> Address {
+    return token.balances.keys()[0]  // Simplified
+}
+
+struct CallResult {
+    success: Bool,
+    return_value: Any,
+    gas_used: UInt256,
+    error: String,
+}
+
+event ContractDeployed(addr: Address, deployer: Address, standard: String, code_size: UInt32)
+event ContractDestroyed(addr: Address, beneficiary: Address, balance: UInt256)
+event StateChanged(contract: Address, key: String, value: Any)
+event Transfer(from: Address, to: Address, amount: UInt256)
+event Approval(owner: Address, spender: Address, amount: UInt256)
