@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-PR-85",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #85: docs(architecture): canonical deterministic L1 layer model",
+  "context": "Pull request 85 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/85",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-ISSUE-71"
+    }
+  ],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Summary\n\nImplements the canonical A-TownChain deterministic L1 architecture in `ARCHITECTURE.md`.\n\n### Implemented\n\n- Canonical **L0–L7 + X** responsibility model:\n  - L0 Hardware / Secure Platform\n  - L1 Node & Runtime Foundation\n  - L2 Blockchain Core\n  - L3 ATC-VM\n  - L4 Protocol Services\n  - L5 Economic & Security Services\n  - L6 Smart-Contract / Application Environment\n  - L7 External Applications\n  - X Cross-Layer Control Plane\n- Explicit L2/L3 trust-boundary separation.\n- P2P/networking defined as L4 Protocol Services rather than generic infrastructure.\n- Explicit distinction between integrity, authenticity, validity, consensus, state transition, finality and immutability.\n- Canonical transaction-to-finality path.\n- Determinism contract across encoding, validation, ordering, execution, state transition and commitment.\n- Global Authority Matrix semantics.\n- ARCH-002 canonical layer contract updated to remove the previous contradictory layer model.\n- Existing Aurora/Genesis/ShivaCore/Indexer/Explorer authority boundaries retained and aligned.\n\n### Existing-First result\n\nExisting architecture issue #71 and `ARCHITECTURE.md` were inspected first. The implementation consolidates the existing architecture rather than introducing a parallel architecture document.\n\n### Evidence boundary\n\nThis PR changes architecture contracts/documentation only. It does not claim implementation, CI or E2E verification for the described architecture."
+}
