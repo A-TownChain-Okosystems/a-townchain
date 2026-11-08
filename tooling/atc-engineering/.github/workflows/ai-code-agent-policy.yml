@@ -1,0 +1,25 @@
+name: ai-code-agent-policy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-policy:
+    name: Validate fail-closed AI code-agent policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@v4
+      - name: Validate policy, component profiles, and evidence schema
+        run: python3 scripts/validate_ai_code_agent_policy.py
+      - name: Test deterministic CI triage and fail-closed invariants
+        run: python3 -m unittest discover -s tests -p 'test_ai_agent_ci_triage.py' -v
+      - name: Compile triage code
+        run: python3 -m py_compile scripts/ai_agent_ci_triage.py tests/test_ai_agent_ci_triage.py
