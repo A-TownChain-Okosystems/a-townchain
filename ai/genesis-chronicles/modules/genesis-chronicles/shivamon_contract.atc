@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // ─────────────────────────────────────────────────────────────
-// ATC-90 — GenesisChronicles NFT Contract
+// ATC-90 — Genesis Chronicles NFT Contract
 // Sprint 2.5 | Smart Contract Layer | Chain-ID 658467
 // Migrated from: modules/genesis_chronicles/contracts/genesis_chronicles_contract.py (269 lines)
 // NFT battle creatures: elements, stats, rarity, DNA, leveling, battles
