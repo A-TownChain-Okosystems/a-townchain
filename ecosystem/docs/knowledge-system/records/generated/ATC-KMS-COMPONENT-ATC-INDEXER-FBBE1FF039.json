@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-COMPONENT-ATC-INDEXER-FBBE1FF039",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "module",
+  "title": "Component: atc-indexer",
+  "context": "Component subtree indexed from A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "file",
+    "ref": "components/atc-indexer",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "atc-indexer",
+    "component",
+    "generated"
+  ],
+  "links": [
+    {
+      "relation": "part-of",
+      "target": "ATC-KMS-REPOSITORY-STRUCTURE"
+    }
+  ],
+  "content": "Files: 61\n\nManifests: components/atc-indexer/Cargo.toml, components/atc-indexer/modules/atc-analytics/package.json"
+}
