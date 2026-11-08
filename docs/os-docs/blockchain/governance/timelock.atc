@@ -1,0 +1,150 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-17 — Governance Timelock Controller
+// Sprint 2.6 | Governance Layer | Chain-ID 9000
+// Delayed execution for governance decisions (anti-rug protection)
+// ─────────────────────────────────────────────────────────────
+
+const MIN_DELAY: u64 = 3600          // 1 hour minimum
+const MAX_DELAY: u64 = 2592000       // 30 days maximum
+const GRACE_PERIOD: u64 = 604800     // 7 days to execute after delay
+
+enum TxState { Pending, Ready, Done, Cancelled, Expired }
+
+struct TimelockTx {
+    tx_id: Hash,
+    target: Address,
+    value: u128,
+    data: String,
+    eta: u64,                        // earliest execution time
+    submitted_at: u64,
+    state: TxState,
+    executed_at: u64,
+}
+
+contract TimelockController {
+    state queue: Map<Hash, TimelockTx>
+    state tx_ids: List<Hash>
+    state delay: u64
+    state admin: Address
+    state proposer: Address
+    state executor: Address
+
+    event TxQueued(tx_id: Hash, target: Address, eta: u64)
+    event TxReady(tx_id: Hash)
+    event TxExecuted(tx_id: Hash, executor: Address)
+    event TxCancelled(tx_id: Hash)
+    event DelayUpdated(old: u64, new: u64)
+
+    fn init() {
+        self.queue = {}
+        self.tx_ids = []
+        self.delay = 172800  // 48h default
+        self.admin = msg_sender()
+        self.proposer = msg_sender()
+        self.executor = msg_sender()
+    }
+
+    fn queue_tx(target: Address, value: u128, data: String) -> Hash {
+        if msg_sender() != self.proposer && msg_sender() != self.admin {
+            return Hash::zero()
+        }
+        let now = Time::now()
+        let eta = now + self.delay
+        let tx_id = Hash::sha256(target, value, data, eta)
+        if self.queue.contains(tx_id) {
+            return Hash::zero()
+        }
+        let tx = TimelockTx {
+            tx_id: tx_id,
+            target: target,
+            value: value,
+            data: data,
+            eta: eta,
+            submitted_at: now,
+            state: TxState::Pending,
+            executed_at: 0,
+        }
+        self.queue[tx_id] = tx
+        self.tx_ids.push(tx_id)
+        emit TxQueued(tx_id, target, eta)
+        return tx_id
+    }
+
+    fn execute_tx(tx_id: Hash) -> bool {
+        let tx = self.queue.get(tx_id)
+        if tx == null || tx.state != TxState::Pending {
+            return false
+        }
+        let now = Time::now()
+        if now < tx.eta {
+            return false
+        }
+        if now > tx.eta + GRACE_PERIOD {
+            tx.state = TxState::Expired
+            return false
+        }
+        tx.state = TxState::Done
+        tx.executed_at = now
+        emit TxExecuted(tx_id, msg_sender())
+        return true
+    }
+
+    fn cancel_tx(tx_id: Hash) -> bool {
+        let tx = self.queue.get(tx_id)
+        if tx == null || tx.state != TxState::Pending {
+            return false
+        }
+        if msg_sender() != self.admin && msg_sender() != self.proposer {
+            return false
+        }
+        tx.state = TxState::Cancelled
+        emit TxCancelled(tx_id)
+        return true
+    }
+
+    fn update_delay(new_delay: u64) -> bool {
+        if msg_sender() != self.admin {
+            return false
+        }
+        if new_delay < MIN_DELAY || new_delay > MAX_DELAY {
+            return false
+        }
+        let old = self.delay
+        self.delay = new_delay
+        emit DelayUpdated(old, new_delay)
+        return true
+    }
+
+    fn set_proposer(addr: Address) -> bool {
+        if msg_sender() != self.admin {
+            return false
+        }
+        self.proposer = addr
+        return true
+    }
+
+    fn set_executor(addr: Address) -> bool {
+        if msg_sender() != self.admin {
+            return false
+        }
+        self.executor = addr
+        return true
+    }
+
+    fn get_tx(tx_id: Hash) -> (Address, u128, u64, TxState) {
+        let tx = self.queue.get(tx_id)
+        if tx == null {
+            return (Address::zero(), 0, 0, TxState::Cancelled)
+        }
+        return (tx.target, tx.value, tx.eta, tx.state)
+    }
+
+    fn get_pending_count() -> u32 {
+        return self.tx_ids.len()
+    }
+
+    fn get_delay() -> u64 {
+        return self.delay
+    }
+}
