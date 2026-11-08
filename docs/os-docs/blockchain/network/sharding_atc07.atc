@@ -1,0 +1,215 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-07 — Network-Level Sharding & State Partitioning in ATCLang
+// Sprint 2.2 — Issue #84
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct ShardConfig {
+    shard_count: UInt16,
+    shard_id: UInt16,
+    cross_shard_enabled: Bool,
+    state_partition: String,  // "address" | "hash" | "round-robin"
+    max_tx_per_shard: UInt32,
+    merge_interval: UInt64,
+}
+
+struct Shard {
+    id: UInt16,
+    state_root: Hash256,
+    tx_count: UInt32,
+    peers: List<Hash256>,
+    height: UInt64,
+    pending_cross_shard: List<CrossShardTx>,
+}
+
+struct CrossShardTx {
+    tx_hash: Hash256,
+    from_shard: UInt16,
+    to_shard: UInt16,
+    from_addr: Address,
+    to_addr: Address,
+    amount: UInt256,
+    state: CrossShardState,
+    proof: List<Hash256>,  // Merkle proof
+}
+
+enum CrossShardState {
+    Pending,
+    Locked,
+    Verified,
+    Completed,
+    Failed,
+}
+
+struct ShardingState {
+    config: ShardConfig,
+    shards: Map<UInt16, Shard>,
+    cross_shard_queue: List<CrossShardTx>,
+    total_tx: UInt64,
+}
+
+// ATC-07: Shard-Zuordnung für Adresse
+pub fn get_shard_for_address(addr: Address, shard_count: UInt16) -> UInt16 {
+    let h = Crypto::sha256(addr.to_bytes())
+    let num = UInt16::from_bytes(h[0:2])
+    return num % shard_count
+}
+
+// ATC-07: Shard initialisieren
+pub fn init_shards(config: ShardConfig) -> ShardingState {
+    let shards = {}
+    for i in 0..config.shard_count {
+        shards[i] = Shard {
+            id: i,
+            state_root: Hash256::zero(),
+            tx_count: 0,
+            peers: [],
+            height: 0,
+            pending_cross_shard: [],
+        }
+    }
+    return ShardingState {
+        config: config,
+        shards: shards,
+        cross_shard_queue: [],
+        total_tx: 0,
+    }
+}
+
+// ATC-07: Transaction an Shard zuordnen
+pub fn route_tx(state: ShardingState, tx_hash: Hash256, from: Address, to: Address, amount: UInt256) -> RouteResult {
+    let from_shard = get_shard_for_address(from, state.config.shard_count)
+    let to_shard = get_shard_for_address(to, state.config.shard_count)
+
+    if from_shard == to_shard {
+        // Intra-Shard TX
+        state.shards[from_shard].tx_count = state.shards[from_shard].tx_count + 1
+        state.total_tx = state.total_tx + 1
+        return RouteResult {
+            type: "intra",
+            shard: from_shard,
+            cross_shard: nil,
+        }
+    }
+
+    // Cross-Shard TX
+    require(state.config.cross_shard_enabled, "Cross-shard disabled")
+
+    let cs_tx = CrossShardTx {
+        tx_hash: tx_hash,
+        from_shard: from_shard,
+        to_shard: to_shard,
+        from_addr: from,
+        to_addr: to,
+        amount: amount,
+        state: CrossShardState::Pending,
+        proof: [],
+    }
+
+    state.shards[from_shard].pending_cross_shard.append(cs_tx)
+    state.cross_shard_queue.append(cs_tx)
+
+    return RouteResult {
+        type: "cross",
+        shard: from_shard,
+        cross_shard: cs_tx,
+    }
+}
+
+// ATC-07: Cross-Shard Lock (2-Phase Commit)
+pub fn lock_cross_shard(state: ShardingState, cs_tx: CrossShardTx) -> Bool {
+    require(cs_tx.state == CrossShardState::Pending, "TX not pending")
+
+    let from_shard = state.shards[cs_tx.from_shard]
+    // Lock funds on source shard
+    cs_tx.state = CrossShardState::Locked
+    emit CrossShardLocked(cs_tx.tx_hash, cs_tx.from_shard, cs_tx.to_shard)
+
+    return true
+}
+
+// ATC-07: Cross-Shard Verify (Merkle Proof)
+pub fn verify_cross_shard(state: ShardingState, cs_tx: CrossShardTx) -> Bool {
+    require(cs_tx.state == CrossShardState::Locked, "TX not locked")
+
+    // Merkle Proof verifizieren
+    let from_shard = state.shards[cs_tx.from_shard]
+    let root = from_shard.state_root
+
+    if verify_merkle_proof(cs_tx.tx_hash, cs_tx.proof, root) {
+        cs_tx.state = CrossShardState::Verified
+        emit CrossShardVerified(cs_tx.tx_hash, cs_tx.to_shard)
+        return true
+    }
+
+    cs_tx.state = CrossShardState::Failed
+    emit CrossShardFailed(cs_tx.tx_hash, "Merkle proof invalid")
+    return false
+}
+
+// ATC-07: Cross-Shard Complete
+pub fn complete_cross_shard(state: ShardingState, cs_tx: CrossShardTx) -> Bool {
+    require(cs_tx.state == CrossShardState::Verified, "TX not verified")
+
+    let to_shard = state.shards[cs_tx.to_shard]
+    to_shard.tx_count = to_shard.tx_count + 1
+
+    cs_tx.state = CrossShardState::Completed
+    emit CrossShardCompleted(cs_tx.tx_hash, cs_tx.from_shard, cs_tx.to_shard, cs_tx.amount)
+
+    return true
+}
+
+// ATC-07: Shard State Root aktualisieren
+pub fn update_shard_root(state: ShardingState, shard_id: UInt16, new_root: Hash256) -> Bool {
+    require(state.shards.contains(shard_id), "Shard not found")
+    state.shards[shard_id].state_root = new_root
+    emit ShardRootUpdated(shard_id, new_root)
+    return true
+}
+
+// ATC-07: Shard-Statistiken
+pub fn shard_stats(state: ShardingState) -> List<ShardStat> {
+    let stats = []
+    for id in state.shards.keys() {
+        let s = state.shards[id]
+        stats.append(ShardStat {
+            shard_id: id,
+            tx_count: s.tx_count,
+            peer_count: s.peers.len(),
+            height: s.height,
+            pending_cross: s.pending_cross_shard.len(),
+        })
+    }
+    return stats
+}
+
+// ATC-07: Merkle Proof verifizieren
+pub fn verify_merkle_proof(leaf: Hash256, proof: List<Hash256>, root: Hash256) -> Bool {
+    let h = leaf
+    for sibling in proof {
+        h = Crypto::sha256(h + sibling)
+    }
+    return h == root
+}
+
+struct RouteResult {
+    type: String,
+    shard: UInt16,
+    cross_shard: CrossShardTx,
+}
+
+struct ShardStat {
+    shard_id: UInt16,
+    tx_count: UInt32,
+    peer_count: UInt16,
+    height: UInt64,
+    pending_cross: UInt32,
+}
+
+event CrossShardLocked(tx: Hash256, from: UInt16, to: UInt16)
+event CrossShardVerified(tx: Hash256, to: UInt16)
+event CrossShardCompleted(tx: Hash256, from: UInt16, to: UInt16, amount: UInt256)
+event CrossShardFailed(tx: Hash256, reason: String)
+event ShardRootUpdated(shard: UInt16, root: Hash256)
