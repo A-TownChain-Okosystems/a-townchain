@@ -1,0 +1,323 @@
+# ATC Standard-ID Allocation Status — FAMILY-300 (Erst-Audit 12.09.2026)
+# SSOT-Kaskade: registry/standards.yaml (Bestand) + registry/framework.yaml (Reservierungen/Verweise)
+#   > registry/families/FAMILY-300.yaml (normative Familiendefinition) > diese Datei (abgeleiteter Zustand).
+# KERNREGEL: FREE != ALLOCATABLE. Numerische Nichtbeobachtung ist KEINE Allokationsberechtigung
+#   (vorgeschlagene normative Verankerung: ATC-STD-000 §X Standard-ID Allocation, SCR-0116 DRAFT).
+# Diese Datei wird durch tools/allocation-validator/atc_allocation_validator.py gegen die SSOTs geprueft (CI-Gate).
+allocation:
+  family: 300
+  audited: "2026-09-12"
+  audit_source: registry/standards.yaml + registry/framework.yaml
+  states: [ALLOCATED, RESERVED, FREE]
+  counts:
+    allocated: 42
+    reserved: 19
+    free_numerically_unobserved: 39
+  rule_free_is_not_allocatable: true
+  allocation_gates_required: [ALLOC-01, ALLOC-02, ALLOC-03, ALLOC-04, ALLOC-05, ALLOC-06, ALLOC-07, ALLOC-08, ALLOC-09, ALLOC-10]
+
+allocated:
+  300:
+    title: "Development & Project Management Standard"
+    category: development
+    status_in_registry: approved
+    classification: ALLOCATED
+  301:
+    title: "Secure Development Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  302:
+    title: "Authentication Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  303:
+    title: "Authorisation Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  304:
+    title: "Key Management Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  306:
+    title: "Encryption Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  307:
+    title: "Network Security Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  308:
+    title: "Endpoint Security Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  309:
+    title: "Supply Chain Security Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  311:
+    title: "Vulnerability Management Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  312:
+    title: "Penetration Testing Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  314:
+    title: "Cybersecurity Framework Standard"
+    category: security
+    status_in_registry: approved
+    classification: ALLOCATED
+  340:
+    title: "Mining Architecture Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  341:
+    title: "Miner Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  342:
+    title: "Mining Manager Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  343:
+    title: "CPU Mining Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  344:
+    title: "GPU Mining Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  345:
+    title: "Mobile Mining Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  346:
+    title: "Mining Algorithms Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  347:
+    title: "Miner Plugins Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  348:
+    title: "Mining Rewards Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  349:
+    title: "Mining Security Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  350:
+    title: "Miner Monitoring Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  360:
+    title: "Wallet Architecture Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  361:
+    title: "Address Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  362:
+    title: "Key Management Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  363:
+    title: "Transaction Signing Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  364:
+    title: "Wallet Recovery Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  365:
+    title: "Hardware Wallet Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  366:
+    title: "Wallet Security Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  367:
+    title: "Wallet UI Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  368:
+    title: "Burning Wallet Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  380:
+    title: "DeFi Architecture Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  381:
+    title: "DEX Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  382:
+    title: "Liquidity Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  383:
+    title: "Liquidity Pools Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  384:
+    title: "Staking Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  385:
+    title: "Lending Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  386:
+    title: "Yield Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  387:
+    title: "Oracle Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  388:
+    title: "DeFi Risk Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+  389:
+    title: "DeFi Security Standard"
+    category: blockchain
+    status_in_registry: approved
+    classification: ALLOCATED
+
+reserved:  # belegte Verweis-/Reservierungsslots; NICHT allocatable
+  305:
+    title: Secrets
+    source: registry/framework.yaml status VERWEIST
+    references: ATC-STD-203
+    classification: RESERVED_REFERENCED
+  310:
+    title: Dependency Security
+    source: registry/framework.yaml status VERWEIST
+    references: ATC-STD-204
+    classification: RESERVED_REFERENCED
+  313:
+    title: Security Incident Response
+    source: registry/framework.yaml status VERWEIST
+    references: ATC-STD-UPDATE-001
+    classification: RESERVED_REFERENCED
+  320:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  321:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  322:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  323:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  324:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  325:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  326:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  327:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  328:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  329:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  330:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  331:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  332:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  333:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  334:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+  335:
+    source: FAM-19 AI-Agent Standards (range ATC-STD-320..335)
+    covered_by: ATC-AAS-001..025 + ATC-STD-AI-DECISION-001
+    classification: RESERVED
+
+free_numerically_unobserved:  # FREE != ALLOCATABLE — Allocation Audit (ALLOC-01..10) erforderlich
+  ids: [315-319, 336-339, 351-359, 369-379, 390-399]
+  note: "Numerisch nicht beobachtet heisst nicht verfuegbar. Jede Vergabe erfordert den vollen Allocation Audit + SCR (vorgeschlagene Regel: FREE -> ALLOCATABLE -> RESERVED -> ALLOCATED; kein direkter FREE -> ALLOCATED Uebergang)."
+
+family_domain_mismatch_grandfathered:
+  ranges:
+    - "301-314 (Security, FAM-18-Ursprung, SCR-0030/0031/0034; 314 via SCR-0040)"
+    - "340-350 (Mining, FAM-21-Ursprung)"
+    - "360-368 (Wallet)"
+    - "380-389 (DeFi)"
+  classification: GRANDFATHERED
+  reason: "Historische Katalog-Slot-Vergabe vor FAMILY-300-Reservierung (SCR-0096). IDs bleiben gebunden (ID-Immutabilitaet ATC-STD-002); keine Neuvergabe, keine Umnummerierung ohne SCR."
