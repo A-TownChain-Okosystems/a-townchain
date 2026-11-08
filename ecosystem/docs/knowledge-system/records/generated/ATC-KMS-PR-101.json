@@ -1,0 +1,31 @@
+{
+  "id": "ATC-KMS-PR-101",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #101: ci: bind determinism gate to exact execution SHA",
+  "context": "Pull request 101 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/101",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-100"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-100"
+    }
+  ],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Scope\n\nBind the Determinism Gate to the exact source SHA it is intended to verify.\n\n### Fix\n\n- `pull_request` uses `github.event.pull_request.head.sha`.\n- `push: main` uses `github.sha`.\n- Every Determinism Gate checkout explicitly uses `DETERMINISM_SHA`.\n- Every checkout-based job fails closed unless `git rev-parse HEAD == DETERMINISM_SHA`.\n- The log emits `Execution SHA bound: <sha>` after the assertion succeeds.\n\n### Evidence intent\n\nThis PR fixes the structural Exact-SHA binding defect discovered while reviewing PR #100. It does not modify PR #100 and does not change the determinism test implementation.\n\nBase: `6018637ebe3d3dab5955024929b8d650e6b08364`\nHead: `548220addbbb485ea06a7ddd08aa0b359a4b8c83`\nScope: 1 commit / 1 file.\n\nA green workflow result is not treated as VERIFIED until the job logs demonstrate the exact SHA binding."
+}
