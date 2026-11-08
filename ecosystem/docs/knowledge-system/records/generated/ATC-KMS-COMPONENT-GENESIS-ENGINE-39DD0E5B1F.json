@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-COMPONENT-GENESIS-ENGINE-39DD0E5B1F",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "module",
+  "title": "Component: genesis-engine",
+  "context": "Component subtree indexed from A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "file",
+    "ref": "components/genesis-engine",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "component",
+    "generated",
+    "genesis-engine"
+  ],
+  "links": [
+    {
+      "relation": "part-of",
+      "target": "ATC-KMS-REPOSITORY-STRUCTURE"
+    }
+  ],
+  "content": "Files: 194\n\nManifests: components/genesis-engine/Cargo.toml, components/genesis-engine/franchise_factory/pyproject.toml, components/genesis-engine/modules/atc-genesis-ai/Cargo.toml, components/genesis-engine/modules/atc-genesis-animation/Cargo.toml, components/genesis-engine/modules/atc-genesis-assets/Cargo.toml, components/genesis-engine/modules/atc-genesis-audio/Cargo.toml, components/genesis-engine/modules/atc-genesis-build/Cargo.toml, components/genesis-engine/modules/atc-genesis-cli/Cargo.toml, components/genesis-engine/modules/atc-genesis-ecs/Cargo.toml, components/genesis-engine/modules/atc-genesis-editor/Cargo.toml, components/genesis-engine/modules/atc-genesis-gameplay/Cargo.toml, components/genesis-engine/modules/atc-genesis-input/Cargo.toml, components/genesis-engine/modules/atc-genesis-network/Cargo.toml, components/genesis-engine/modules/atc-genesis-physics/Cargo.toml, components/genesis-engine/modules/atc-genesis-platform/Cargo.toml, components/genesis-engine/modules/atc-genesis-renderer/Cargo.toml, components/genesis-engine/modules/atc-genesis-runtime/Cargo.toml, components/genesis-engine/modules/atc-genesis-sdk/Cargo.toml, components/genesis-engine/modules/atc-genesis-tools/Cargo.toml, components/genesis-engine/modules/atc-genesis-ui/Cargo.toml, components/genesis-engine/modules/atc-genesis-world/Cargo.toml"
+}
