@@ -1,0 +1,10 @@
+name: ATC CI
+on: [push, pull_request]
+jobs:
+  atc-repo-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {{fetch-depth: 0}}
+      - name: ATC Repository Audit
+        run: python3 tools/atc-repo-audit/atc_repo_audit.py . --level R2
