@@ -3,6 +3,7 @@
 
 pub mod bootstrap;
 pub mod chain;
+pub mod consensus;
 pub mod config;
 pub mod did;
 pub mod discovery;
