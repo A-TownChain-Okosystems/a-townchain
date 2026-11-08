@@ -1,0 +1,21 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: atc-contracts
+  classification: SPEC
+  maturity: R3
+  status: development
+project:
+  organization: A-TownChain-Okosystems
+  domain: contracts
+  component: contracts
+language:
+  primary: atclang
+license:
+  type: apache-2.0
+security:
+  criticality: high
+api:
+  stability: experimental
+protocol:
+  compatibility: required
