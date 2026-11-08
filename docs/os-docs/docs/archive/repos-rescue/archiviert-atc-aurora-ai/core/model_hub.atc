@@ -1,0 +1,36 @@
+// ATCLang v0.3 — Model Hub
+// LLM-Modell-Registrierung, Versionierung, Routing
+// ATC-Standard: ATC-97
+
+module model_hub {
+    struct ModelEntry {
+        model_id: string,
+        name: string,
+        provider: string,
+        version: string,
+        context_window: int,
+        cost_per_token: float,
+        capabilities: List[string],
+        active: bool,
+    }
+    
+    fn register_model(model: ModelEntry) {
+        // Neues Modell registrieren
+    }
+    
+    fn get_model(model_id: string) {
+        // Modell-Details abrufen
+    }
+    
+    fn list_models() {
+        // Alle verfügbaren Modelle
+    }
+    
+    fn route_request(task_type: string) {
+        // Bestes Modell für Task-Typ auswählen
+    }
+    
+    fn compare_models(model_a: string, model_b: string) {
+        // Modell-Vergleich
+    }
+}
