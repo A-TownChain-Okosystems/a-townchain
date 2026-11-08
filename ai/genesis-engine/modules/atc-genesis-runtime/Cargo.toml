@@ -1,0 +1,17 @@
+[package]
+name = "atc-genesis-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+atc-genesis-ecs = { path = "../atc-genesis-ecs" }
+atc-genesis-physics = { path = "../atc-genesis-physics" }
+atc-genesis-platform = { path = "../atc-genesis-platform" }
+atc-genesis-renderer = { path = "../atc-genesis-renderer" }
+atc-genesis-world = { path = "../atc-genesis-world" }
+atc-genesis-gameplay = { path = "../atc-genesis-gameplay" }
+atc-genesis-input = { path = "../atc-genesis-input" }
+atc-genesis-audio = { path = "../atc-genesis-audio" }
+atc-genesis-network = { path = "../atc-genesis-network" }
+atc-genesis-animation = { path = "../atc-genesis-animation" }
