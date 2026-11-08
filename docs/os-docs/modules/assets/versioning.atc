@@ -1,0 +1,127 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-81 — Asset Versioning System
+# Genesis Engine — Versionierte Assets mit Delta-Patches
+# Standard: AD-81
+
+struct AssetVersion:
+    path: String
+    version: String           # Semantic Versioning: "4.2.1"
+    major: Int32
+    minor: Int32
+    patch: Int32
+    hash: String
+    size_bytes: Int64
+    created: Float
+    changelog: String
+    deprecated: Bool
+
+struct DeltaPatch:
+    asset_path: String
+    from_version: String
+    to_version: String
+    delta_data: ByteArray       # Binary Diff
+    delta_size: Int64
+    patch_hash: String
+
+func create_version(path: String, old_data: ByteArray, new_data: ByteArray, changelog: String) -> AssetVersion:
+    old_ver = get_current_version(path)
+    new_ver = bump_version(old_ver)
+    version = AssetVersion {
+        path: path,
+        version: new_ver,
+        major: parse_major(new_ver),
+        minor: parse_minor(new_ver),
+        patch: parse_patch(new_ver),
+        hash: sha256_hex(new_data),
+        size_bytes: len(new_data),
+        created: now(),
+        changelog: changelog,
+        deprecated: false
+    }
+    # Erstelle Delta-Patch
+    if old_data and old_ver:
+        delta = create_delta_patch(path, old_ver, new_ver, old_data, new_data)
+        store_delta(delta)
+        log_info(f"Asset versioned: {path} {old_ver} → {new_ver} (delta: {delta.delta_size} bytes)")
+    else:
+        log_info(f"New asset: {path} v{new_ver}")
+    store_version(version)
+    return version
+
+func bump_version(current: String) -> String:
+    parts = current.split(".")
+    major = int(parts[0])
+    minor = int(parts[1])
+    patch = int(parts[2])
+    patch += 1
+    if patch >= 10:
+        patch = 0
+        minor += 1
+    if minor >= 10:
+        minor = 0
+        major += 1
+    return f"{major}.{minor}.{patch}"
+
+func create_delta_patch(path: String, from_v: String, to_v: String, old: ByteArray, new: ByteArray) -> DeltaPatch:
+    # Binary Diff (z.B. bsdiff Algorithmus)
+    delta = bsdiff(old, new)
+    return DeltaPatch {
+        asset_path: path,
+        from_version: from_v,
+        to_version: to_v,
+        delta_data: delta,
+        delta_size: len(delta),
+        patch_hash: sha256_hex(delta)
+    }
+
+func apply_delta(old_data: ByteArray, delta: DeltaPatch) -> ByteArray:
+    return bspatch(old_data, delta.delta_data)
+
+func get_latest_version(path: String) -> AssetVersion:
+    versions = get_all_versions(path)
+    if len(versions) == 0:
+        return AssetVersion{}
+    # Sortiere nach Version
+    versions.sort(lambda a, b: compare_versions(a.version, b.version))
+    return versions[-1]
+
+func check_for_updates(path: String, current_version: String) -> Array<DeltaPatch>:
+    patches = []
+    all_versions = get_all_versions(path)
+    for v in all_versions:
+        if compare_versions(v.version, current_version) > 0:
+            delta = get_delta(current_version, v.version)
+            if delta:
+                patches.append(delta)
+    return patches
+
+func auto_update(path: String) -> Bool:
+    current = get_current_version(path)
+    latest = get_latest_version(path)
+    if compare_versions(latest.version, current) > 0:
+        # Hole alle Patches von current → latest
+        patches = check_for_updates(path, current)
+        data = read_binary(path)
+        for patch in patches:
+            data = apply_delta(data, patch)
+        # Verifiziere
+        if sha256_hex(data) == latest.hash:
+            write_binary(path, data)
+            update_current_version(path, latest.version)
+            log_info(f"Asset updated: {path} {current} → {latest.version}")
+            return true
+        else:
+            log_error(f"Update verification failed: {path}")
+    return false
+
+func rollback_version(path: String, target_version: String) -> Bool:
+    # Gehe zurück zu einer älteren Version
+    version = find_version(path, target_version)
+    if not version:
+        log_error(f"Version {target_version} not found for {path}")
+        return false
+    data = get_version_data(path, target_version)
+    write_binary(path, data)
+    update_current_version(path, target_version)
+    log_info(f"Rollback: {path} → v{target_version}")
+    return true
