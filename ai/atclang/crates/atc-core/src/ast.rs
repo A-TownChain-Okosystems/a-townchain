@@ -25,6 +25,27 @@ pub enum Expr {
         target: Box<Expr>,
         args: Vec<Expr>,
     },
+    /// Feldzugriff: `self.balance` oder `a.b`.
+    Field {
+        base: Box<Expr>,
+        name: String,
+    },
+    /// Indexzugriff: `m["k"]` oder `xs[0]`.
+    Index {
+        base: Box<Expr>,
+        index: Box<Expr>,
+    },
+    /// Array-Literal: `[]`, `[1, 2]`.
+    Array(Vec<Expr>),
+    /// Tupel: `(a, b)`.
+    Tuple(Vec<Expr>),
+    /// Map-Literal: `{}`, `{"a": 1}`.
+    MapLiteral(Vec<(Expr, Expr)>),
+    /// Struct-Literal: `Proposal { id: 1, status: Active }`.
+    StructLiteral {
+        name: String,
+        fields: Vec<(String, Expr)>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -78,11 +99,42 @@ pub enum Stmt {
         name: String,
         variants: Vec<String>,
     },
-    /// Contract body retained as a balanced token stream until semantic lowering exists.
+    /// Contract mit geparstem Koerper (Items: state/event/fn/const/struct/enum/use).
     Contract {
         name: String,
         bases: Vec<String>,
-        body_tokens: Vec<String>,
+        body: Vec<Stmt>,
+    },
+    /// Persistenter Zustand im Contract: `state owner: Address [= default]`.
+    State {
+        name: String,
+        ty: TypeHint,
+        default: Option<Expr>,
+    },
+    /// Blockform `state { a: T = v; ... }`.
+    StateBlock {
+        fields: Vec<(String, TypeHint, Option<Expr>)>,
+    },
+    /// Event-Deklaration: `event ProposalCreated(proposal_id: Hash, ...)`.
+    Event {
+        name: String,
+        fields: Vec<(String, TypeHint)>,
+    },
+    /// `emit Event(args)`.
+    Emit {
+        event: String,
+        args: Vec<Expr>,
+    },
+    /// `require(cond[, "meldung"])`.
+    Require {
+        cond: Expr,
+        message: Option<Expr>,
+    },
+    /// Zuweisung; op = None bedeutet `=`, sonst `+=`, `-=`, `*=` (Operator ohne '=').
+    Assign {
+        target: Expr,
+        op: Option<String>,
+        value: Expr,
     },
     Return {
         value: Option<Expr>,
@@ -147,6 +199,70 @@ fn expr_json(e: &Expr, out: &mut String) {
             out.push_str("{\"kind\":\"Identifier\",\"name\":\"");
             out.push_str(&esc(name));
             out.push_str("\"}");
+        }
+        Expr::Field { base, name } => {
+            out.push_str("{\"kind\":\"FieldAccess\",\"base\":");
+            expr_json(base, out);
+            out.push_str(",\"name\":\"");
+            out.push_str(&esc(name));
+            out.push_str("\"}");
+        }
+        Expr::Index { base, index } => {
+            out.push_str("{\"index\":");
+            expr_json(index, out);
+            out.push_str(",\"kind\":\"IndexAccess\",\"base\":");
+            expr_json(base, out);
+            out.push('}');
+        }
+        Expr::Array(items) => {
+            out.push_str("{\"kind\":\"ArrayLiteral\",\"elements\":[");
+            for (i, item) in items.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                expr_json(item, out);
+            }
+            out.push_str("]}");
+        }
+        Expr::StructLiteral { name, fields } => {
+            out.push_str("{\"fields\":[");
+            for (i, (field, value)) in fields.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                out.push_str("{\"kind\":\"FieldAssignment\",\"name\":\"");
+                out.push_str(&esc(field));
+                out.push_str("\",\"value\":");
+                expr_json(value, out);
+                out.push('}');
+            }
+            out.push_str("],\"kind\":\"StructLiteral\",\"name\":\"");
+            out.push_str(&esc(name));
+            out.push_str("\"}");
+        }
+        Expr::MapLiteral(entries) => {
+            out.push_str("{\"entries\":[");
+            for (i, (key, value)) in entries.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                out.push_str("{\"key\":");
+                expr_json(key, out);
+                out.push_str(",\"value\":");
+                expr_json(value, out);
+                out.push('}');
+            }
+            out.push_str("],\"kind\":\"MapLiteral\"}");
+        }
+        Expr::Tuple(items) => {
+            out.push_str("{\"kind\":\"TupleLiteral\",\"elements\":[");
+            for (i, item) in items.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                expr_json(item, out);
+            }
+            out.push_str("]}");
         }
         Expr::Unary { op, operand } => {
             out.push_str("{\"kind\":\"UnaryOp\",\"op\":\"");
@@ -302,11 +418,7 @@ fn stmt_json(s: &Stmt, out: &mut String) {
             }
             out.push_str("]}");
         }
-        Stmt::Contract {
-            name,
-            bases,
-            body_tokens,
-        } => {
+        Stmt::Contract { name, bases, body } => {
             out.push_str("{\"bases\":[");
             for (i, base) in bases.iter().enumerate() {
                 if i > 0 {
@@ -316,18 +428,94 @@ fn stmt_json(s: &Stmt, out: &mut String) {
                 out.push_str(&esc(base));
                 out.push('"');
             }
-            out.push_str("],\"body_tokens\":[");
-            for (i, token) in body_tokens.iter().enumerate() {
+            out.push_str("],\"body\":[");
+            for (i, item) in body.iter().enumerate() {
                 if i > 0 {
                     out.push(',');
                 }
-                out.push('"');
-                out.push_str(&esc(token));
-                out.push('"');
+                stmt_json(item, out);
             }
             out.push_str("],\"kind\":\"ContractDeclaration\",\"name\":\"");
             out.push_str(&esc(name));
             out.push_str("\"}");
+        }
+        Stmt::State { name, ty, default } => {
+            out.push_str("{\"default\":");
+            match default {
+                None => out.push_str("null"),
+                Some(v) => expr_json(v, out),
+            }
+            out.push_str(",\"kind\":\"StateDeclaration\",\"name\":\"");
+            out.push_str(&esc(name));
+            out.push_str("\",\"type_hint\":");
+            type_json(ty, out);
+            out.push('}');
+        }
+        Stmt::StateBlock { fields } => {
+            out.push_str("{\"fields\":[");
+            for (i, (name, ty, default)) in fields.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                out.push_str("{\"default\":");
+                match default {
+                    None => out.push_str("null"),
+                    Some(v) => expr_json(v, out),
+                }
+                out.push_str(",\"kind\":\"StateDeclaration\",\"name\":\"");
+                out.push_str(&esc(name));
+                out.push_str("\",\"type_hint\":");
+                type_json(ty, out);
+                out.push('}');
+            }
+            out.push_str("],\"kind\":\"StateBlockDeclaration\"}");
+        }
+        Stmt::Event { name, fields } => {
+            out.push_str("{\"fields\":[");
+            for (i, (field, ty)) in fields.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                out.push_str("{\"kind\":\"Parameter\",\"name\":\"");
+                out.push_str(&esc(field));
+                out.push_str("\",\"type_hint\":");
+                type_json(ty, out);
+                out.push('}');
+            }
+            out.push_str("],\"kind\":\"EventDeclaration\",\"name\":\"");
+            out.push_str(&esc(name));
+            out.push_str("\"}");
+        }
+        Stmt::Emit { event, args } => {
+            out.push_str("{\"args\":[");
+            for (i, arg) in args.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                expr_json(arg, out);
+            }
+            out.push_str("],\"kind\":\"EmitStatement\",\"event\":\"");
+            out.push_str(&esc(event));
+            out.push_str("\"}");
+        }
+        Stmt::Require { cond, message } => {
+            out.push_str("{\"condition\":");
+            expr_json(cond, out);
+            out.push_str(",\"kind\":\"RequireStatement\",\"message\":");
+            match message {
+                None => out.push_str("null"),
+                Some(m) => expr_json(m, out),
+            }
+            out.push('}');
+        }
+        Stmt::Assign { target, op, value } => {
+            out.push_str("{\"kind\":\"AssignmentStatement\",\"operator\":\"");
+            out.push_str(op.as_deref().unwrap_or("="));
+            out.push_str("\",\"target\":");
+            expr_json(target, out);
+            out.push_str(",\"value\":");
+            expr_json(value, out);
+            out.push('}');
         }
         Stmt::Return { value } => {
             out.push_str("{\"kind\":\"ReturnStatement\",\"value\":");
