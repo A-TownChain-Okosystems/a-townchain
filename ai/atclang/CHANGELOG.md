@@ -5,6 +5,36 @@ Alle wesentlichen Änderungen an diesem Projekt werden in dieser Datei dokumenti
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-11-08
+
+### Changed (Parser — Vertrags-Ruempfe als AST)
+
+- Vertrags-Ruempfe werden nicht mehr als Token-Liste eingelesen, sondern als
+  Syntaxbaeume geparst: `state` (einzeln/Block mit Defaults), `event`,
+  `fn`/`function`, `const`, `struct`, `enum`, `use`, Dekoratoren, `emit`,
+  `require`, Zuweisungen mit `+=`/`-=`/`*=`, Pfad-/Feld-/Index-/Methodenausdruecke,
+  Array-, Map-, Tupel- und Struct-Literale, `&&`/`||`/`!`, Tupeltypen.
+- Sprachschluesselwoerter sind als Namen zulaessig; Syntaxfehler wie
+  `let = ;` lehnen ab statt in den Native-Fallback zu rutschen.
+- Alle 47 ATCLang-Quellen des Monorepos parsen (Regression:
+  `crates/atc-core/tests/contract_sources.rs`).
+
+### Added (Semantik Stufe 1)
+
+- `atc_core::semantics`: Fehler bei doppelter `state`/`fn`/`event`-Deklaration und
+  bei `self.<name>`, das weder Zustandsfeld noch Funktion ist; Warnungen bei
+  `emit` ohne Event-Deklaration und bei abweichender Argumentanzahl.
+- `atc check --strict`: behandelt Warnungen als Fehler.
+- Befund dokumentiert: 38 `emit`-Aufrufe in Bestandsvertraegen ohne
+  Event-Deklaration (offener Punkt, keine stille Reparatur).
+
+### Verification
+
+- `cargo test --workspace`: 469 Tests gruen.
+- `./tools/ecosystem.sh build`: alle sieben Workspaces plus Bare-Metal-Kernel.
+- `./tools/ecosystem.sh test`: 2131 Tests, 0 fehlgeschlagen.
+- Contract-Registry-Gate A8: GATE PASS (16/16).
+
 ## [Unreleased] - 2026-09-11
 
 ### Added (SCR-0098 — fehlende Kernmodule)
