@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-184",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #184: docs(catalog): master architecture registry for X1–X36 and L1–L10",
+  "context": "Pull request 184 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/184",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n\nAdds a consolidated master architecture catalog baseline for the X1–X36 cross-cutting layers and L1–L10 system architecture layers.\n\n### Included\n- L1–L10 system-layer registry with responsibility boundaries and canonical ownership rules.\n- X1–X36 cross-cutting registry and overlap/boundary notes.\n- Reusable sublayer decomposition baseline.\n- Component and function-contract metadata model.\n- Canonical SSOT ownership rules and explicit unknown mappings.\n- Separate architecture, mapping, implementation, verification and reconciliation statuses.\n- Evidence record, G0–G9 acceptance gates, domain-specific acceptance profiles.\n- Evidence-backed reconciliation queue and measurable catalog completeness definition.\n\n### Governance\n- Preserves Catalog First / Standalone First / Evidence before Acceptance.\n- Does not introduce production implementations or claim function-level source census is complete.\n- Marks catalog-wide reconciliation, source mappings, validators, and CI evidence as NOT VERIFIED / BLOCKED until demonstrated.\n- Keeps `demo-repository` excluded from the live drift gate.\n- Normative requirements remain subject to approved `atc-standards` change control.\n\n### Verification state\nDocumentation change only. This PR does not assert that all sublayers, components or function contracts have been reconciled or verified. Follow-up work must reconcile existing catalog entries and Issues #112, #136–#145, #146–#181, #182 and #183 without duplicating their work."
+}
