@@ -1,0 +1,33 @@
+// ATCLang v0.3 — Agent Registry
+// Registrierung und Verwaltung aller AI-Agenten-Typen
+// ATC-Standard: ATC-97
+
+module agent_registry {
+    struct AgentType {
+        type_id: string,
+        name: string,
+        capabilities: List[string],
+        model: string,
+        max_concurrent: int,
+        description: string,
+    }
+    
+    // 12 Agenten-Rollen (Rule 11)
+    fn register_agent_type(name: string, capabilities: List[string]) {
+        // Neuen Agenten-Typ registrieren
+    }
+    
+    fn get_agent_type(type_id: string) {
+        // Agenten-Typ abrufen
+    }
+    
+    fn list_agent_types() {
+        // Alle registrierten Typen auflisten
+    }
+    
+    fn get_12_roles() {
+        // KnowledgeAgent, ArchitectAgent, StandardsAgent, RoadmapAgent,
+        // ProductAgent, CodingAgent, QAAgent, SecurityAgent,
+        // DocumentationAgent, RepositoryAgent, GovernanceAgent, ResearchAgent
+    }
+}
