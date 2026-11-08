@@ -1,0 +1,173 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-29 — Merchandise Factory: Physische und digitale Produkte
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct MerchandiseFactory {
+    products: Map<Hash256, Product>,
+    by_franchise: Map<Hash256, List<Hash256>>,
+    suppliers: Map<Hash256, Supplier>,
+    revenue: Map<Hash256, RevenueEntry>,
+    nft_contracts: Map<Hash256, NFTContract>,
+}
+
+struct Product {
+    id: Hash256,
+    franchise_id: Hash256,
+    name: String,
+    category: ProductCategory,
+    description: String,
+    price: Float32,
+    currency: String,
+    physical: Bool,
+    digital: Bool,
+    stock: UInt32,
+    supplier_id: Hash256,
+    image_url: String,
+    license_required: Bool,
+    status: String,
+    created_at: UInt64,
+}
+
+enum ProductCategory { TradingCard, Figure, Clothing, Book, Soundtrack, Artbook, Poster, DigitalArt, NFT, Bundle, Accessory, Collectible }
+
+struct Supplier {
+    id: Hash256,
+    name: String,
+    contact: String,
+    product_types: List<ProductCategory>,
+    lead_time_days: UInt16,
+    quality_rating: Float32,
+    active: Bool,
+}
+
+struct RevenueEntry {
+    id: Hash256,
+    product_id: Hash256,
+    units_sold: UInt32,
+    revenue: Float32,
+    date: UInt64,
+    channel: String,
+}
+
+struct NFTContract {
+    id: Hash256,
+    name: String,
+    blockchain: String,
+    total_supply: UInt32,
+    minted: UInt32,
+    royalty_pct: Float32,
+    metadata_uri: String,
+}
+
+// Merchandise Factory: Produkt erstellen
+pub fn create_product(factory: MerchandiseFactory, franchise_id: Hash256, name: String, category: ProductCategory, price: Float32, physical: Bool, digital: Bool) -> Hash256 {
+    let pid = Crypto::sha256(serialize(name, franchise_id, Chain::timestamp()))
+    factory.products[pid] = Product {
+        id: pid,
+        franchise_id: franchise_id,
+        name: name,
+        category: category,
+        description: "",
+        price: price,
+        currency: "USD",
+        physical: physical,
+        digital: digital,
+        stock: if physical then 0 else UInt32::max(),
+        supplier_id: Hash256::zero(),
+        image_url: "",
+        license_required: true,
+        status: "draft",
+        created_at: Chain::timestamp(),
+    }
+    if not factory.by_franchise.contains(franchise_id) {
+        factory.by_franchise[franchise_id] = []
+    }
+    factory.by_franchise[franchise_id].append(pid)
+    return pid
+}
+
+// Merchandise Factory: Supplier registrieren
+pub fn register_supplier(factory: MerchandiseFactory, name: String, contact: String, types: List<ProductCategory>, lead_time: UInt16) -> Hash256 {
+    let sid = Crypto::sha256(serialize(name, Chain::timestamp()))
+    factory.suppliers[sid] = Supplier {
+        id: sid, name: name, contact: contact, product_types: types,
+        lead_time_days: lead_time, quality_rating: 0.0, active: true,
+    }
+    return sid
+}
+
+// Merchandise Factory: Produkt aktivieren
+pub fn publish_product(factory: MerchandiseFactory, product_id: Hash256) -> Bool {
+    require(factory.products.contains(product_id), "Product not found")
+    factory.products[product_id].status = "published"
+    return true
+}
+
+// Merchandise Factory: Verkauf erfassen
+pub fn record_sale(factory: MerchandiseFactory, product_id: Hash256, units: UInt32, channel: String) -> Bool {
+    require(factory.products.contains(product_id), "Product not found")
+    let p = factory.products[product_id]
+    let rev = RevenueEntry {
+        id: Crypto::sha256(serialize(product_id, units, Chain::timestamp())),
+        product_id: product_id,
+        units_sold: units,
+        revenue: p.price * units,
+        date: Chain::timestamp(),
+        channel: channel,
+    }
+    factory.revenue[rev.id] = rev
+    if p.physical {
+        p.stock = p.stock - units
+    }
+    return true
+}
+
+// Merchandise Factory: NFT-Vertrag erstellen
+pub fn create_nft_contract(factory: MerchandiseFactory, name: String, blockchain: String, supply: UInt32, royalty: Float32) -> Hash256 {
+    let nid = Crypto::sha256(serialize(name, blockchain, Chain::timestamp()))
+    factory.nft_contracts[nid] = NFTContract {
+        id: nid, name: name, blockchain: blockchain,
+        total_supply: supply, minted: 0, royalty_pct: royalty,
+        metadata_uri: "",
+    }
+    return nid
+}
+
+// Merchandise Factory: NFT minten
+pub fn mint_nft(factory: MerchandiseFactory, contract_id: Hash256, count: UInt32) -> Bool {
+    require(factory.nft_contracts.contains(contract_id), "NFT contract not found")
+    let c = factory.nft_contracts[contract_id]
+    require(c.minted + count <= c.total_supply, "Exceeds total supply")
+    c.minted = c.minted + count
+    return true
+}
+
+// Merchandise Factory: Umsatz pro Franchise
+pub fn franchise_revenue(factory: MerchandiseFactory, franchise_id: Hash256) -> Float32 {
+    let total = 0.0
+    for pid in factory.by_franchise.get(franchise_id, []) {
+        for rev in factory.revenue.values() {
+            if rev.product_id == pid {
+                total = total + rev.revenue
+            }
+        }
+    }
+    return total
+}
+
+// Merchandise Factory: Setup für Franchise
+pub fn create_merchandise(factory: MerchandiseFactory, franchise_id: Hash256) -> Bool {
+    let sid = register_supplier(factory, "Standard Manufacturer", "contact@manufacturer.com", [ProductCategory::Figure, ProductCategory::Clothing, ProductCategory::Poster], 30)
+
+    create_product(factory, franchise_id, "Collector's Edition Figure", ProductCategory::Figure, 49.99, true, false)
+    create_product(factory, franchise_id, "Official T-Shirt", ProductCategory::Clothing, 24.99, true, false)
+    create_product(factory, franchise_id, "Soundtrack Digital", ProductCategory::Soundtrack, 9.99, false, true)
+    create_product(factory, franchise_id, "Artbook Digital", ProductCategory::Artbook, 14.99, false, true)
+    create_product(factory, franchise_id, "Starter Trading Card Pack", ProductCategory::TradingCard, 4.99, true, false)
+
+    create_nft_contract(factory, "Genesis Collectibles", "ATC-Chain", 10000, 5.0)
+    return true
+}
