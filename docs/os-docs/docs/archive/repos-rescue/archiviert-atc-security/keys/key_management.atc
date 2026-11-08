@@ -1,0 +1,15 @@
+// ATCLang v0.3 — Key Management
+// Generation, rotation, HSM integration
+// ATC-Standard: ATC-24
+
+module key_management {
+    struct KeyRing {
+        ring_id: string,
+        active_keys: int,
+        hsm_status: string
+    }
+    
+    fn rotate_key() {
+        // Rotates active operational keypair and updates HSM configuration
+    }
+}
