@@ -1,0 +1,47 @@
+# ATC Security Registry — ATC-STD-FRAMEWORK-001 §2 (SSOT, SCR-0029)
+# Security-Controls und -Findings-Verweise; Detail-SSOT: registry/findings.yaml.
+# Protokoll-Bedrohungen: registry/protocol-security.yaml (ATC-STD-PROTOCOL-003).
+security:
+  version: 1.0.0
+  generated: '2026-09-08'
+  controls:
+    - id: SEC-C-001
+      name: "Secret-Scanning (Historie + HEAD)"
+      scope: "Alle 26 Org-Repos"
+      status: ACTIVE
+      evidence: "AUD-2026-0002: 0 Secrets gefunden"
+    - id: SEC-C-002
+      name: "Dependabot Dependency-Alerts"
+      scope: "16 Manifest-Repos"
+      status: ACTIVE
+      evidence: "AUD-2026-0002 F-025: Rollout im Audit-Lauf (07.09.2026)"
+    - id: SEC-C-003
+      name: "Governance-CI (Naming/Registry-Gates)"
+      scope: "atc-standards + Kern-Repos"
+      status: ACTIVE
+      evidence: "Beide Workflows gruen auf main (fa872de, 12cc581); Rollout atc-vm/atc-algorithm/atc-zkp offen (Issue #94, Owner-Aktion)"
+    - id: SEC-C-004
+      name: "CodeQL Static Analysis"
+      scope: "Org-Repos"
+      status: PLANNED
+      evidence: "Issue #95 (Org-Audit AUD-2026-0002) — Rollout offen"
+    - id: SEC-C-005
+      name: "Chain-ID-Konsistenz 658467"
+      scope: "Alle Wire-Formate und Repos"
+      status: ACTIVE
+      evidence: "AUD-2026-0002: konsistent; p2p_secure lehnt abweichende Chain-IDs ab (ATC-PROTO-P2P-003)"
+    - id: SEC-C-006
+      name: "Protocol Threat-Models je Familie"
+      scope: "26 Protokollfamilien"
+      status: PARTIAL
+      evidence: "P2P-001 verfuegt ueber Threat-Modell (SCR-0027); Standardisierung via ATC-STD-PROTOCOL-003 (DRAFT)"
+    - id: SEC-C-007
+      name: "Crypto-Abstraction-Layer (Algorithmuswechsel ohne Protokoll-Bruch)"
+      scope: "Alle Protokoll-Implementierungen"
+      status: PARTIAL
+      evidence: "p2p_secure.rs SignatureProvider-Trait implementiert; produktiver Ed25519-Backend vor Mainnet noetig (REQ-PTS-006)"
+  open_security_findings:
+    - "F-010/GH013: Agent-Token ohne workflow-Scope (Owner-Grenze, bekannt und akzeptiert)"
+    - "Issue #94: governance-ci fuer atc-vm/atc-algorithm/atc-zkp (Owner-Aktion)"
+    - "Issue #95: CodeQL-Rollout (Owner-Aktion)"
+  note: "Detail-Findings (F-NNN) fuert registry/findings.yaml; diese Registry verweist und aggregiert Controls."
