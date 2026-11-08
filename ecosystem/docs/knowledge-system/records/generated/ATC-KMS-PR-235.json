@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-235",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #235: Draft: seven-system architecture review and source inventory",
+  "context": "Pull request 235 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/235",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Scope: A + B + C — architecture, documentation, source inventory\n\nThis Draft PR records the seven-system architecture review, proposes explicit platform and blockchain execution paths, preserves canonical SSOT ownership, and adds both a catalog-derived function inventory and a live source-tree reconciliation snapshot.\n\n### Files\n- `docs/architecture/ATC-7-SYSTEM-ARCHITECTURE-REVIEW-001.md`\n- `docs/audits/ATC-7-SYSTEM-SOURCE-INVENTORY-2026-10-26.md`\n- `docs/audits/ATC-7-SYSTEM-LIVE-CENSUS-2026-10-26.md`\n\n### Live census evidence (2026-10-26)\nPinned `main` commits:\n- `atclang`: `d4753fa298aa52e0130af0ae5eb046cde7bbad64`\n- `a-townchain`: `55b062b01acb35a970aa41c1934e3f3228857939`\n- `globus-os`: `e6ab916e1af766b0a15c6b997f7dfa9eb2cbe1b7`\n- `aurora-ai`: `17e4e718ca66858457ed9861681a35d7ed6296e6`\n- `genesis-engine`: `3c2be8c11c00bf5b6a1a4de87760004e9c5d35ef`\n\nThe recursive trees were not truncated. Current source-tree inventory:\n- ATCLang: 139 files (16 Rust, 3 Python, 1 Cargo.toml)\n- a-townchain (VM + chain domains, one repo counted once): 1,155 files (101 Rust, 54 Python, 27 TypeScript, 24 Cargo.toml)\n- globus-os (ShivaCore + GlobusOS domains, one repo counted once): 481 files (219 Rust, 3 TypeScript, 32 Cargo.toml)\n- aurora-ai: 474 files (31 Rust, 5 Python, 200 TypeScript, 5 Cargo.toml)\n- genesis-engine: 210 files (34 Rust, 15 Python, 20 Cargo.toml)\n\nAll 54 existing catalog bindings were compared by path/blob against these current source trees: **42 blob matches, 10 blob drifts, 2 unmapped/missing source paths**. A blob match proves only path/blob identity, not symbol semantics, functionality or test coverage. The drift rows and current blob SHAs are recorded in the live census document.\n\n### Status / acceptance\n- Architecture direction: review proposal only; standards-owner approval remains open.\n- Catalog coverage: 54 existing contracts, not a claim that all public functions have been enumerated.\n- Full AST/public-symbol/module/feature/test census: still incomplete.\n- Tests, Actions Run → Job → Step evidence, artifact SHA-256, cross-repository E2E and security review: not established by the tree snapshot.\n- Merge/release: **BLOCKED** until changed bindings are re-inspected, unbound contracts are resolved, and exact-SHA test/security evidence is attached.\n\nThis PR remains intentionally Draft. Do not merge it as a substitute for the remaining verification work."
+}
