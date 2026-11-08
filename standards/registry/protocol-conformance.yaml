@@ -1,0 +1,29 @@
+# ATC Protocol Conformance Registry — ATC-STD-PROTOCOL-002 §4 (SSOT, SCR-0029)
+# Stufen: CONF-BRONZE (Unit-Basis, active-Gate) / SILBER (+Interop) / GOLD (Cross-Repo).
+conformance:
+  version: 1.0.0
+  generated: '2026-09-08'
+  plans:
+    - family: ATC-PROTO-P2P-001
+      plan: CONF-P2P-001
+      plan_version: "1.0.0-draft"
+      spec_version: "1.0.0 (APPROVED, SCR-0027)"
+      level: BRONZE_BASIS
+      last_run: "2026-09-08"
+      tool: "cargo test (atc-shivacore kernel, p2p_secure:: 29/29)"
+      categories:
+        envelope_roundtrip: PASS
+        canonical_serialization: PASS
+        handshake_flows: PASS
+        replay_protection: PASS
+        rate_limiting: PASS
+        error_codes: PASS
+        compatibility_matrix: PARTIAL   # v0.9-Kompatibilitaetsmodus getestet; Matrix [0.9,1.0]x[1.0] unvollstaendig
+        interoperability: MISSING       # SILBER: unabhaengige Zweit-Implementierung ausstehend
+        malformed_input: PARTIAL       # Truncation getestet; Fuzzing-Korpus ausstehend
+        security_basis: PARTIAL        # Signatur-Bindung getestet; echter Ed25519-Backend ausstehend
+      exceptions:
+        - "ATC-STD-PROTOCOL-002 freigegeben (08.09. 01:41): CONF-BRONZE noch nicht erreicht — Kategorie 10 (security_basis) PARTIAL, da echter Ed25519-Backend aussteht (REQ-PTS-006)"
+        - "Interop-/Fuzzing-Kategorien fuer SILBER nachzuziehen (SCR-0028 Checkliste)"
+      next: "Ed25519-Backend (Crypto-HAL-Sprint) fuer BRONZE-Kategorie 10; Fuzzing-Korpus (M8); unabhaengige Zweit-Implementierung (GOLD)"
+  note: "Familien ohne CONF-Plan (CONSENSUS, BLOCK, TX, ...) erhalten ihn mit ihrer jeweiligen Spezifikation (P2P-Muster)."
