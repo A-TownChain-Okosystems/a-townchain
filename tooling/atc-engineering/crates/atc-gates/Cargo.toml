@@ -1,0 +1,8 @@
+[package]
+name = "atc-gates"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+atc-core = { path = "../atc-core" }
