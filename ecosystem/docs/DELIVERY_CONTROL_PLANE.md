@@ -2,7 +2,7 @@
 
 **Status:** initialer maschinenlesbarer Entwurf; nicht als vollständige Verifikation aller Repositories zu verstehen.  
 **SSOT:** [control-plane/DELIVERY_REGISTRY.json](../control-plane/DELIVERY_REGISTRY.json)  
-**Architektur:** [ARCHITECTURE.md](../ARCHITECTURE.md) · [Control Matrix](../control-plane/CONTROL_MATRIX.md) · [Control Plane](../control-plane/README.md)
+**Architektur:** [ARCHITECTURE.md](../../ARCHITECTURE.md) · [Control Matrix](../control-plane/CONTROL_MATRIX.md) · [Control Plane](../control-plane/README.md)
 
 ## Wiki-/Dokumentationsindex
 
@@ -10,7 +10,7 @@ Das GitHub-Wiki ist für dieses Repository derzeit deaktiviert. Bis es explizit 
 
 | Bereich | Kanonische Quelle |
 |---|---|
-| Architektur, Schichten, Systemgrenzen | [ARCHITECTURE.md](../ARCHITECTURE.md) |
+| Architektur, Schichten, Systemgrenzen | [ARCHITECTURE.md](../../ARCHITECTURE.md) |
 | Zuständigkeiten / Konfliktauflösung | [CONTROL_MATRIX.md](../control-plane/CONTROL_MATRIX.md) |
 | Statusmodell und Evidence-Regeln | [STATUS_SCHEMA.yaml](../control-plane/STATUS_SCHEMA.yaml) |
 | Roadmap, Meilensteine, Checkpoints und Lieferstatus | [DELIVERY_REGISTRY.json](../control-plane/DELIVERY_REGISTRY.json) |
