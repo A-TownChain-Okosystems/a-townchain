@@ -1,0 +1,237 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═══════════════════════════════════════════════════════════
+// AD-51 — Global Data Lake (MetaFactory v3.0)
+// Zentrale Datendrehscheibe: Telemetrie, Assets, Spielstände,
+// Logs, Build-Historien, KI-Modelle, Analysen, Nutzungsstatistiken
+// ═══════════════════════════════════════════════════════════
+module MetaFactory.GlobalDataLake[AD-51] {
+
+    import GCL.Core[AD-00]
+    import GCL.EventBus[AD-01]
+    import GCL.TelemetryBus[AD-14]
+
+    struct DataLake {
+        id: String
+        project_id: String
+        zones: Map<DataZone, DataZoneConfig>
+        storage: StorageConfig
+        retention: RetentionPolicy
+        ingestion: IngestionPipeline
+        query_engine: QueryEngineConfig
+        access_control: AccessControlConfig
+        replication: ReplicationConfig
+        metrics: DataLakeMetrics
+    }
+
+    struct DataZone {
+        type: ZoneType            // Raw, Processed, Curated, Archive, Sandbox
+        name: String
+        schemas: Map<String, DataSchema>
+        size_bytes: U64
+        file_count: U64
+        last_updated: Timestamp
+    }
+
+    struct DataSchema {
+        name: String
+        fields: List<SchemaField>
+        version: U32
+        owner: String
+        quality_score: Float
+    }
+
+    struct SchemaField {
+        name: String
+        type: FieldType           // Int, Float, String, Bool, Timestamp, JSON, Binary, Vector
+        nullable: Bool
+        indexed: Bool
+        description: String
+    }
+
+    struct IngestionPipeline {
+        sources: List<DataSource>
+        batch_interval: Duration
+        stream_enabled: Bool
+        transforms: List<Transform>
+        validators: List<Validator>
+        dead_letter_queue: List<FailedRecord>
+    }
+
+    struct DataSource {
+        id: String
+        type: SourceType          // Telemetry, Assets, SaveGames, Logs, Builds, AIModels, Analytics
+        endpoint: String
+        format: DataFormat        // JSON, Parquet, Avro, CSV, Binary
+        auth: AuthMethod
+        enabled: Bool
+        rate_limit: Float         // Records per second
+    }
+
+    struct RetentionPolicy {
+        raw_retention: Duration
+        processed_retention: Duration
+        curated_retention: Duration
+        archive_after: Duration
+        delete_after: Option<Duration>
+        compression: CompressionType
+    }
+
+    struct QueryResult {
+        query_id: String
+        schema: List<String>
+        rows: List<Map<String, PropertyValue>>
+        row_count: U32
+        execution_time_ms: U32
+        bytes_scanned: U64
+        cached: Bool
+    }
+
+    interface IGlobalDataLake {
+        fn init_lake(project_id: String, config: DataLakeConfig) -> Result<DataLake>
+        fn ingest(zone: ZoneType, source_id: String, data: List<Map<String, PropertyValue>>) -> Result<IngestionResult>
+        fn query(sql: String, zone: ZoneType) -> Result<QueryResult>
+        fn register_schema(zone: ZoneType, schema: DataSchema) -> Result<()>
+        fn export_data(zone: ZoneType, filter: ExportFilter, format: DataFormat) -> Result<String>
+        fn archive(zone: ZoneType, older_than: Timestamp) -> Result<U64>
+        fn get_metrics() -> DataLakeMetrics
+        fn set_retention(policy: RetentionPolicy) -> Result<()>
+        fn add_source(source: DataSource) -> Result<()>
+        fn validate_data(zone: ZoneType, schema_name: String) -> ValidationResult
+    }
+
+    class GlobalDataLake implements IGlobalDataLake {
+
+        gcl: GCLCore
+        lakes: Map<String, DataLake>
+
+        fn init(gcl: GCLCore) {
+            self.gcl = gcl
+            self.lakes = Map::new()
+        }
+
+        fn init_lake(project_id: String, config: DataLakeConfig) -> Result<DataLake> {
+            let lake = DataLake {
+                id: generate_id("DLK"),
+                project_id,
+                zones: self.create_default_zones(config),
+                storage: config.storage,
+                retention: config.retention,
+                ingestion: IngestionPipeline {
+                    sources: List::new(),
+                    batch_interval: Duration::seconds(60),
+                    stream_enabled: true,
+                    transforms: List::new(),
+                    validators: List::new(),
+                    dead_letter_queue: List::new()
+                },
+                query_engine: config.query_engine,
+                access_control: config.access_control,
+                replication: config.replication,
+                metrics: DataLakeMetrics::new()
+            }
+            self.lakes.insert(lake.id, lake)
+            self.gcl.emit("datalake.created", {lake_id: lake.id, project_id})
+            Ok(lake)
+        }
+
+        fn ingest(zone_type: ZoneType, source_id: String, data: List<Map<String, PropertyValue>>) -> Result<IngestionResult> {
+            let lake = self.find_lake_by_source(source_id)
+            let zone = lake.zones.get(zone_type)
+            let schema = zone.schemas.values().next()  // Simplified
+
+            let mut valid = 0u32
+            let mut invalid = 0u32
+
+            for record in data {
+                if self.validate_record(record, schema) {
+                    // Store in zone
+                    valid += 1
+                    zone.file_count += 1
+                    zone.size_bytes += estimate_size(record)
+                } else {
+                    invalid += 1
+                    lake.ingestion.dead_letter_queue.push(FailedRecord {
+                        source: source_id,
+                        data: record,
+                        error: "Schema validation failed",
+                        timestamp: now()
+                    })
+                }
+            }
+
+            zone.last_updated = now()
+            lake.metrics.records_ingested += valid + invalid
+            lake.metrics.records_valid += valid
+            lake.metrics.records_invalid += invalid
+
+            self.gcl.emit("datalake.ingested", {zone: zone_type, source: source_id, valid, invalid})
+            Ok(IngestionResult { valid, invalid, zone: zone_type })
+        }
+
+        fn query(sql: String, zone_type: ZoneType) -> Result<QueryResult> {
+            let lake = self.lakes.values().next()  // Simplified
+            let zone = lake.zones.get(zone_type)
+
+            // Execute query (simplified — real impl would use Spark/Presto/Trino)
+            let start = now()
+            let rows = self.execute_query(sql, zone)
+            let elapsed = now() - start
+
+            Ok(QueryResult {
+                query_id: generate_id("QRY"),
+                schema: rows[0].keys().collect() if !rows.is_empty() else List::new(),
+                rows,
+                row_count: rows.len() as U32,
+                execution_time_ms: elapsed.as_millis() as U32,
+                bytes_scanned: zone.size_bytes,
+                cached: false
+            })
+        }
+
+        fn archive(zone_type: ZoneType, older_than: Timestamp) -> Result<U64> {
+            let lake = self.lakes.values().next()
+            let zone = lake.zones.get(zone_type)
+            let archived_bytes = zone.size_bytes / 4  // Estimate ~25% older data
+
+            // Move to archive zone
+            let archive_zone = lake.zones.get(ZoneType::Archive)
+            archive_zone.size_bytes += archived_bytes
+            archive_zone.file_count += zone.file_count / 4
+            zone.size_bytes -= archived_bytes
+            zone.file_count -= zone.file_count / 4
+
+            self.gcl.emit("datalake.archived", {zone: zone_type, bytes: archived_bytes})
+            Ok(archived_bytes)
+        }
+
+        fn validate_data(zone_type: ZoneType, schema_name: String) -> ValidationResult {
+            let lake = self.lakes.values().next()
+            let zone = lake.zones.get(zone_type)
+            let schema = zone.schemas.get(schema_name)
+
+            // Simulate validation
+            let total = zone.file_count
+            let valid = total * 95 / 100  // 95% pass rate
+            let invalid = total - valid
+
+            ValidationResult {
+                schema_name,
+                total_records: total,
+                valid_records: valid,
+                invalid_records: invalid,
+                quality_score: valid as Float / total as Float,
+                issues: if invalid > 0 { ["null_violations", "type_mismatches"] } else { [] }
+            }
+        }
+
+        fn create_default_zones(config: DataLakeConfig) -> Map<DataZone, DataZoneConfig> {
+            Map::from([
+                (ZoneType::Raw, DataZoneConfig { name: "Raw", schemas: Map::new(), size_bytes: 0, file_count: 0 }),
+                (ZoneType::Processed, DataZoneConfig { name: "Processed", schemas: Map::new(), size_bytes: 0, file_count: 0 }),
+                (ZoneType::Curated, DataZoneConfig { name: "Curated", schemas: Map::new(), size_bytes: 0, file_count: 0 }),
+                (ZoneType::Archive, DataZoneConfig { name: "Archive", schemas: Map::new(), size_bytes: 0, file_count: 0 }),
+                (ZoneType::Sandbox, DataZoneConfig { name: "Sandbox", schemas: Map::new(), size_bytes: 0, file_count: 0 })
+            ])
+        }
+    }
+}
