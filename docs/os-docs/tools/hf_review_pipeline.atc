@@ -1,0 +1,157 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-45 — HuggingFace Review Pipeline
+// Sprint 3.2 | AI Layer | Chain-ID 9000
+// Migrated from: tools/hf_review_pipeline.py (145 lines)
+// Automated PR code review using HuggingFace models
+// ─────────────────────────────────────────────────────────────
+
+enum ReviewStatus { Pending, Approved, ChangesRequested, Rejected }
+enum ReviewSeverity { Info, Warning, Error, Critical }
+
+struct CodeReview {
+    review_id: Hash,
+    pr_number: u32,
+    file_path: String,
+    line_start: u16,
+    line_end: u16,
+    severity: ReviewSeverity,
+    message: String,
+    suggestion: String,
+    status: ReviewStatus,
+    created_at: u64,
+}
+
+struct PRReviewSummary {
+    pr_number: u32,
+    total_files: u16,
+    issues_found: u16,
+    critical_count: u16,
+    warning_count: u16,
+    approved: bool,
+    reviewed_at: u64,
+}
+
+contract HFReviewPipeline {
+    state reviews: Map<Hash, CodeReview>
+    state pr_summaries: Map<u32, PRReviewSummary>
+    state review_count: u32
+    state approved_count: u32
+    state rejected_count: u32
+    state model_name: String
+    state owner: Address
+
+    event ReviewStarted(pr_number: u32, model: String)
+    event ReviewCompleted(pr_number: u32, issues: u16, approved: bool)
+    event CommentPosted(pr_number: u32, file: String, severity: ReviewSeverity)
+
+    fn init() {
+        self.reviews = {}
+        self.pr_summaries = {}
+        self.review_count = 0
+        self.approved_count = 0
+        self.rejected_count = 0
+        self.model_name = "microsoft/codebert-base"
+        self.owner = msg_sender()
+    }
+
+    fn review_code(code: String, filename: String) -> Hash {
+        let review_id = Hash::sha256(code, filename, Time::now())
+        // In production: call HuggingFace inference API
+        let severity = ReviewSeverity::Info
+        let message = "Code review completed"
+        if code.contains("TODO") || code.contains("FIXME") {
+            severity = ReviewSeverity::Warning
+            message = "Unresolved TODO/FIXME found"
+        }
+        if code.contains("eval(") || code.contains("exec(") {
+            severity = ReviewSeverity::Critical
+            message = "Dangerous eval/exec usage detected"
+        }
+        let review = CodeReview {
+            review_id: review_id,
+            pr_number: 0,
+            file_path: filename,
+            line_start: 0,
+            line_end: 0,
+            severity: severity,
+            message: message,
+            suggestion: "",
+            status: ReviewStatus::Pending,
+            created_at: Time::now(),
+        }
+        self.reviews[review_id] = review
+        self.review_count += 1
+        return review_id
+    }
+
+    fn run_pr_review(pr_number: u32, files: List<String>) -> Hash {
+        let review_id = Hash::sha256(pr_number, Time::now())
+        emit ReviewStarted(pr_number, self.model_name)
+
+        let total_issues: u16 = 0
+        let critical: u16 = 0
+        let warnings: u16 = 0
+
+        let i: u16 = 0
+        while i < files.len() {
+            // In production: fetch file content from GitHub API
+            // Then run review_code on each file
+            total_issues += 1
+            i += 1
+        }
+
+        let approved = critical == 0
+        let summary = PRReviewSummary {
+            pr_number: pr_number,
+            total_files: files.len(),
+            issues_found: total_issues,
+            critical_count: critical,
+            warning_count: warnings,
+            approved: approved,
+            reviewed_at: Time::now(),
+        }
+        self.pr_summaries[pr_number] = summary
+        if approved {
+            self.approved_count += 1
+        } else {
+            self.rejected_count += 1
+        }
+        emit ReviewCompleted(pr_number, total_issues, approved)
+        return review_id
+    }
+
+    fn post_pr_comment(pr_number: u32, body: String, file_path: String, severity: ReviewSeverity) -> bool {
+        // In production: GitHub Issues/PR Comments API
+        emit CommentPosted(pr_number, file_path, severity)
+        return true
+    }
+
+    fn get_pr_summary(pr_number: u32) -> (u16, u16, u16, u16, bool, u64) {
+        let s = self.pr_summaries.get(pr_number)
+        if s == null {
+            return (0, 0, 0, 0, false, 0)
+        }
+        return (s.total_files, s.issues_found, s.critical_count, s.warning_count, s.approved, s.reviewed_at)
+    }
+
+    fn get_review(review_id: Hash) -> (String, ReviewSeverity, String, ReviewStatus) {
+        let r = self.reviews.get(review_id)
+        if r == null {
+            return ("", ReviewSeverity::Info, "", ReviewStatus::Rejected)
+        }
+        return (r.file_path, r.severity, r.message, r.status)
+    }
+
+    fn set_model(model: String) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.model_name = model
+        return true
+    }
+
+    fn get_stats() -> (u32, u32, u32, String) {
+        return (self.review_count, self.approved_count, self.rejected_count, self.model_name)
+    }
+}
