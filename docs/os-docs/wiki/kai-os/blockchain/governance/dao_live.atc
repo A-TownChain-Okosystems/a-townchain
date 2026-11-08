@@ -1,0 +1,235 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-17 — DAO Governance Live (FFT + ATC Voting)
+// Sprint 2.6 | Non-EVM | SHA-256 | Chain-ID 9000
+// Migrated from: blockchain/governance/dao_live.py
+// Lifecycle: Proposal → 7d Voting → Quorum → 48h Timelock → Execute
+// ─────────────────────────────────────────────────────────────
+
+const VOTING_PERIOD: u64 = 604800       // 7 days in seconds
+const TIMELOCK_DELAY: u64 = 172800      // 48h in seconds
+const QUORUM_FFT_BPS: u32 = 1000        // 10% in basis points
+const QUORUM_ATC_BPS: u32 = 500         // 5% in basis points
+const MIN_PROPOSAL_STAKE: u128 = 1000000000000000000000  // 1000 ATC (18 decimals)
+const MAX_ACTIVE_PROPOSALS: u8 = 10
+const FFT_VOTE_WEIGHT: u8 = 1           // 1 FFT = 1 vote
+const ATC_VOTE_DIVISOR: u128 = 10000000000000000000  // 10 ATC = 1 vote
+
+enum ProposalStatus { Active, Passed, Rejected, Queued, Executed, Expired }
+enum VoteChoice { Yes, No, Abstain }
+
+struct DAOProposal {
+    proposal_id: Hash,
+    proposer: Address,
+    title: String,
+    description: String,
+    status: ProposalStatus,
+    created_at: u64,
+    voting_ends: u64,
+    execute_after: u64,
+    votes_for: u128,
+    votes_against: u128,
+    votes_abstain: u128,
+    total_votes: u128,
+}
+
+struct VoteRecord {
+    voter: Address,
+    choice: VoteChoice,
+    power: u128,
+    ts: u64,
+}
+
+contract DAOGovernance {
+    state proposals: Map<Hash, DAOProposal>
+    state votes: Map<Hash, Map<Address, VoteRecord>>
+    state total_fft: u128
+    state total_staked: u128
+    state fft_balances: Map<Address, u128>
+    state staked_atc: Map<Address, u128>
+    state active_count: u8
+    state executed_set: List<Hash>
+
+    event ProposalCreated(proposal_id: Hash, proposer: Address, title: String)
+    event VoteCast(proposal_id: Hash, voter: Address, choice: VoteChoice, power: u128)
+    event ProposalPassed(proposal_id: Hash, votes_for: u128, votes_against: u128)
+    event ProposalRejected(proposal_id: Hash, votes_for: u128, votes_against: u128)
+    event ProposalQueued(proposal_id: Hash, execute_after: u64)
+    event ProposalExecuted(proposal_id: Hash)
+
+    fn init() {
+        self.total_fft = 100000000000000000000000000  // 100M FFT
+        self.total_staked = 0
+        self.active_count = 0
+    }
+
+    // ── Calculate voting power ──────────────────────
+    fn calc_voting_power(voter: Address) -> u128 {
+        let fft_votes = self.fft_balances.get(voter)
+        if fft_votes == null {
+            fft_votes = 0
+        }
+        let atc_staked = self.staked_atc.get(voter)
+        if atc_staked == null {
+            atc_staked = 0
+        }
+        let atc_votes = atc_staked / ATC_VOTE_DIVISOR
+        return fft_votes + atc_votes
+    }
+
+    // ── Create proposal ─────────────────────────────
+    fn create_proposal(proposer: Address, title: String, description: String, atc_stake: u128) -> Hash {
+        if atc_stake < MIN_PROPOSAL_STAKE {
+            return Hash::zero()
+        }
+        if self.active_count >= MAX_ACTIVE_PROPOSALS {
+            return Hash::zero()
+        }
+        let id_input = title + Address::to_hex(proposer) + Int::to_string(Time::now())
+        let pid = Hash::sha256(id_input)
+        let now = Time::now()
+        let proposal = DAOProposal {
+            proposal_id: pid,
+            proposer: proposer,
+            title: title,
+            description: description,
+            status: ProposalStatus::Active,
+            created_at: now,
+            voting_ends: now + VOTING_PERIOD,
+            execute_after: 0,
+            votes_for: 0,
+            votes_against: 0,
+            votes_abstain: 0,
+            total_votes: 0,
+        }
+        self.proposals[pid] = proposal
+        self.active_count += 1
+        emit ProposalCreated(pid, proposer, title)
+        return pid
+    }
+
+    // ── Cast vote ───────────────────────────────────
+    fn cast_vote(proposal_id: Hash, voter: Address, choice: VoteChoice) -> bool {
+        let proposal = self.proposals.get(proposal_id)
+        if proposal == null {
+            return false
+        }
+        if proposal.status != ProposalStatus::Active {
+            return false
+        }
+        if Time::now() >= proposal.voting_ends {
+            return false
+        }
+        // Check if already voted
+        let proposal_votes = self.votes.get(proposal_id)
+        if proposal_votes != null {
+            if proposal_votes.contains(voter) {
+                return false
+            }
+        }
+        let power = self.calc_voting_power(voter)
+        if power == 0 {
+            return false
+        }
+        let record = VoteRecord {
+            voter: voter,
+            choice: choice,
+            power: power,
+            ts: Time::now(),
+        }
+        if proposal_votes == null {
+            proposal_votes = {}
+        }
+        proposal_votes[voter] = record
+        self.votes[proposal_id] = proposal_votes
+        if choice == VoteChoice::Yes {
+            proposal.votes_for += power
+        } else if choice == VoteChoice::No {
+            proposal.votes_against += power
+        } else {
+            proposal.votes_abstain += power
+        }
+        proposal.total_votes += power
+        emit VoteCast(proposal_id, voter, choice, power)
+        return true
+    }
+
+    // ── Finalize proposal (check quorum + result) ───
+    fn finalize_proposal(proposal_id: Hash) -> bool {
+        let proposal = self.proposals.get(proposal_id)
+        if proposal == null {
+            return false
+        }
+        if proposal.status != ProposalStatus::Active {
+            return false
+        }
+        if Time::now() < proposal.voting_ends {
+            return false
+        }
+        self.active_count -= 1
+        // Quorum check: 10% FFT or 5% ATC
+        let quorum_fft = self.total_fft * QUORUM_FFT_BPS / 10000
+        let quorum_atc = self.total_staked * QUORUM_ATC_BPS / 10000
+        if proposal.total_votes < quorum_fft && proposal.total_votes < quorum_atc {
+            proposal.status = ProposalStatus::Rejected
+            emit ProposalRejected(proposal_id, proposal.votes_for, proposal.votes_against)
+            return false
+        }
+        if proposal.votes_for > proposal.votes_against {
+            proposal.status = ProposalStatus::Passed
+            proposal.execute_after = Time::now() + TIMELOCK_DELAY
+            emit ProposalPassed(proposal_id, proposal.votes_for, proposal.votes_against)
+        } else {
+            proposal.status = ProposalStatus::Rejected
+            emit ProposalRejected(proposal_id, proposal.votes_for, proposal.votes_against)
+        }
+        return true
+    }
+
+    // ── Execute proposal (after timelock) ───────────
+    fn execute_proposal(proposal_id: Hash) -> bool {
+        let proposal = self.proposals.get(proposal_id)
+        if proposal == null {
+            return false
+        }
+        if proposal.status != ProposalStatus::Passed {
+            return false
+        }
+        if Time::now() < proposal.execute_after {
+            return false
+        }
+        proposal.status = ProposalStatus::Executed
+        self.executed_set.push(proposal_id)
+        emit ProposalExecuted(proposal_id)
+        return true
+    }
+
+    // ── Set FFT balance (for testing/governance) ────
+    fn set_fft_balance(addr: Address, amount: u128) {
+        self.fft_balances[addr] = amount
+    }
+
+    // ── Stake ATC for voting ────────────────────────
+    fn stake_atc(addr: Address, amount: u128) {
+        let current = self.staked_atc.get(addr)
+        if current == null {
+            current = 0
+        }
+        self.staked_atc[addr] = current + amount
+        self.total_staked += amount
+    }
+
+    // ── Get proposal result ─────────────────────────
+    fn get_result(proposal_id: Hash) -> (u128, u128, u128, u128) {
+        let p = self.proposals.get(proposal_id)
+        if p == null {
+            return (0, 0, 0, 0)
+        }
+        return (p.votes_for, p.votes_against, p.votes_abstain, p.total_votes)
+    }
+
+    // ── Stats ───────────────────────────────────────
+    fn stats() -> (u32, u8, u128, u128) {
+        return (self.proposals.len(), self.active_count, self.total_fft, self.total_staked)
+    }
+}
