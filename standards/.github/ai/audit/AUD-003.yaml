@@ -1,0 +1,11 @@
+id: AUD-003
+agent_id: ATC-AI-ARCH-001
+task_id: ATC-TASK-0044
+repository: atc-standards
+action: "Neuer Layer ATC-ENT (15 Enterprise Standards) inkl. Schema-Erweiterung (roleId/decisionId/riskId/repoId/orgUnitId/escalationId) und Templates"
+files_changed: "24 Dateien (standards/enterprise, Registry, Schema)"
+result: COMPLETED
+tests: {validator: "ALL COMPLIANT (nach Nachrustung F-015)"}
+commit: d620de9
+timestamp: "2026-09-07T20:11:00+02:00"
+human_approval: "Owner-Entwurf 07.09.2026 (Builder-Chat)"
