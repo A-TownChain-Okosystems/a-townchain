@@ -60,13 +60,23 @@ vom Gate respektiert.
 - **A7** Kategorie im Enum nach SC-001
 - **A8** jede registrierte Quelle besteht `atc check`; `--skip-compile` setzt das Gate
   aus, ein fehlendes Binary ist ein Fehler und kein Pass.
-  **Reichweite von A8:** der ATCLang-Frontend parst Top-Level-Deklarationen, die
-  Vertrags-Rümpfe werden jedoch als Token-Liste eingelesen und nicht analysiert.
-  A8 belegt damit Syntax der Deklaration, nicht die Logik im Vertrag — es gibt
-  weder Typprüfung noch Namensauflösung. Siehe STATUS.md/ROADMAP.md (G3-G10 offen)
+  **Reichweite von A8 (Stand 08.11.2026):** der Parser liest Vertrags-Rümpfe als
+  echte Syntaxbäume — `state` (einzeln und als Block, mit Defaults), `event`,
+  `fn`/`function`, `const`, `struct`, `enum`, `use` sowie Anweisungen (`emit`,
+  `require`, Zuweisungen inkl. `+=`/`-=`/`*=`) und vollständige Ausdrücke
+  (Pfade, Feldzugriff, Index, Methodenaufruf, Array, Map, Tupel, Struct-Literal,
+  `&&`/`||`/`!`, Tupeltypen). Alle 47 Vertragsquellen des Monorepos parsen.
+  Zusätzlich läuft eine semantische Stufe 1: doppelte `state`/`fn`/`event`-
+  Deklarationen und unbekannte `self`-Zugriffe lehnen ab; `emit` ohne
+  Event-Deklaration oder mit falscher Argumentanzahl wird als Warnung gemeldet
+  (`atc check --strict` behandelt Warnungen als Fehler).
+  **Noch offen:** Typprüfung, Namensauflösung über Vertrags-/Dateigrenzen,
+  Codegen für Verträge und `&&`/`||` im VM-Subset (Lowering lehnt fail-closed ab).
+  Siehe STATUS.md/ROADMAP.md (G3-G10 offen)
 
 Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde, alle 16 Quellen
-kompilieren.
+kompilieren. Semantik Stufe 1: 0 Fehler, 38 Warnungen (38 `emit`-Aufrufe ohne
+Event-Deklaration in Bestandsverträgen; offener Punkt, siehe STATUS.md).
 `--write-hashes` zieht Hashes nach einer bewussten Quelländerung nach.
 
 Gegenprobe: mit absichtlich verfälschtem Hash, fehlendem Pfad und einer
