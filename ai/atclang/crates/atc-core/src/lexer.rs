@@ -30,6 +30,9 @@ pub enum Token {
     Import,
     /// `as` — Alias eines Dateiimports.
     As,
+    /// `pub` — Sichtbarkeitsmarker aus dem Korpus. ATCLang kennt keine
+    /// Sichtbarkeitsebenen; der Parser nimmt das Wort an und verwirft es.
+    Pub,
     Struct,
     Enum,
     Pipe,
@@ -241,6 +244,7 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, LexError> {
                     "module" => tokens.push(Token::Module),
                     "import" => tokens.push(Token::Import),
                     "as" => tokens.push(Token::As),
+                    "pub" => tokens.push(Token::Pub),
                     "struct" => tokens.push(Token::Struct),
                     "enum" => tokens.push(Token::Enum),
                     _ => tokens.push(Token::Ident(ident)),
@@ -422,5 +426,12 @@ mod tests {
         assert!(ts.contains(&Token::Module));
         assert!(ts.contains(&Token::Import));
         assert!(ts.contains(&Token::As));
+    }
+
+    #[test]
+    fn pub_ist_ein_schluesselwort() {
+        let ts = tokenize("pub fn f() -> int { return 1; }").unwrap();
+        assert_eq!(ts.first(), Some(&Token::Pub));
+        assert!(ts.contains(&Token::Fn));
     }
 }
