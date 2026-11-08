@@ -1,0 +1,139 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — Backend Wallet Service
+// Sprint 3.0 | Backend Layer | Chain-ID 9000
+// Migrated from: backend/wallet/wallet.py (117 lines)
+// Multi-standard wallet with BIP39 key generation, ATC addresses
+// ─────────────────────────────────────────────────────────────
+
+const FAUCET_AMOUNT: u128 = 100000000000000000000  // 100 ATC
+const MAX_ACCOUNTS: u8 = 100
+
+struct WalletAccount {
+    addr: Address,
+    public_key: Hash,
+    label: String,
+    created_at: u64,
+}
+
+contract ATCWalletService {
+    state accounts: Map<Address, WalletAccount>
+    state nfts: Map<Address, List<Hash>>
+    state account_count: u32
+    state total_supply: u128
+    state owner: Address
+
+    event WalletCreated(addr: Address, label: String)
+    event WalletRestored(addr: Address)
+    event BalanceUpdated(addr: Address, new_balance: u128)
+    event NFTReceived(addr: Address, token_id: Hash)
+
+    fn init() {
+        self.accounts = {}
+        self.nfts = {}
+        self.account_count = 0
+        self.total_supply = 21000000000000000000000000  // 21M ATC
+        self.owner = msg_sender()
+    }
+
+    fn create_wallet(label: String, passphrase: String) -> (Address, Hash, List<String>) {
+        let entropy = Hash::random()
+        let priv_key = Hash::hmac_sha256("atc_wallet", entropy)
+        let pub_key = Hash::sha256(priv_key)
+        let addr = Address::from_hash(Hash::sha256(pub_key))
+        let mnemonic = ATCKeyGenerator::generate_mnemonic(entropy)
+        let account = WalletAccount {
+            addr: addr,
+            public_key: pub_key,
+            label: label,
+            created_at: Time::now(),
+        }
+        self.accounts[addr] = account
+        self.account_count += 1
+        // Faucet: 100 ATC
+        ATCoin::mint(addr, FAUCET_AMOUNT)
+        emit WalletCreated(addr, label)
+        return (addr, pub_key, mnemonic)
+    }
+
+    fn restore_wallet(mnemonic: List<String>, passphrase: String) -> Address {
+        let seed = ATCKeyGenerator::mnemonic_to_seed(mnemonic)
+        let priv_key = Hash::hmac_sha256("atc_wallet", seed)
+        let pub_key = Hash::sha256(priv_key)
+        let addr = Address::from_hash(Hash::sha256(pub_key))
+        let account = WalletAccount {
+            addr: addr,
+            public_key: pub_key,
+            label: "Restored Wallet",
+            created_at: Time::now(),
+        }
+        self.accounts[addr] = account
+        self.account_count += 1
+        emit WalletRestored(addr)
+        return addr
+    }
+
+    fn get_balance(addr: Address) -> u128 {
+        return ATCoin::balance_of(addr)
+    }
+
+    fn send(from_addr: Address, to_addr: Address, amount: u128) -> bool {
+        let success = ATCoin::transfer(from_addr, to_addr, amount)
+        if success {
+            emit BalanceUpdated(from_addr, ATCoin::balance_of(from_addr))
+            emit BalanceUpdated(to_addr, ATCoin::balance_of(to_addr))
+        }
+        return success
+    }
+
+    fn get_wallet_info(addr: Address) -> (Hash, String, u64) {
+        let account = self.accounts.get(addr)
+        if account == null {
+            return (Hash::zero(), "", 0)
+        }
+        return (account.public_key, account.label, account.created_at)
+    }
+
+    fn list_wallets() -> u32 {
+        return self.account_count
+    }
+
+    fn get_nfts(addr: Address) -> List<Hash> {
+        let nfts = self.nfts.get(addr)
+        if nfts == null {
+            return []
+        }
+        return nfts
+    }
+
+    fn receive_nft(addr: Address, token_id: Hash) -> bool {
+        let nfts = self.nfts.get(addr)
+        if nfts == null {
+            self.nfts[addr] = [token_id]
+        } else {
+            nfts.push(token_id)
+        }
+        emit NFTReceived(addr, token_id)
+        return true
+    }
+
+    fn validate_address(addr: Address) -> bool {
+        return Address::is_valid_atc(addr)
+    }
+
+    fn export_wallet(addr: Address) -> (Address, Hash, String) {
+        let account = self.accounts.get(addr)
+        if account == null {
+            return (Address::zero(), Hash::zero(), "")
+        }
+        return (account.addr, account.public_key, account.label)
+    }
+
+    fn get_total_supply() -> u128 {
+        return self.total_supply
+    }
+
+    fn get_stats() -> (u32, u128) {
+        return (self.account_count, self.total_supply)
+    }
+}
