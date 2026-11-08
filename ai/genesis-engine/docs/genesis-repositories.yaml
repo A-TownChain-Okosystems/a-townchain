@@ -1,0 +1,22 @@
+version: 1
+organization: A-TownChain-Okosystems
+engine: genesis-engine
+promotion_policy: contract-first
+repositories:
+  genesis-engine: {status: existing, priority: P0, role: core-runtime}
+  genesis-renderer: {status: bootstrap-in-monorepo, priority: P0, role: rendering}
+  genesis-physics: {status: bootstrap-in-monorepo, priority: P0, role: physics}
+  genesis-audio: {status: bootstrap-in-monorepo, priority: P0, role: audio}
+  genesis-animation: {status: bootstrap-in-monorepo, priority: P0, role: animation}
+  genesis-assets: {status: bootstrap-in-monorepo, priority: P0, role: asset-pipeline}
+  genesis-world: {status: existing-module, priority: P0, role: worlds-scenes-terrain}
+  genesis-ui: {status: bootstrap-in-monorepo, priority: P0, role: runtime-ui}
+  genesis-tools: {status: planned, priority: P1, role: developer-tools}
+  genesis-cli: {status: planned, priority: P1, role: project-cli}
+  genesis-build: {status: planned, priority: P1, role: build-cook-package}
+  genesis-sdk: {status: planned, priority: P1, role: game-sdk}
+  genesis-ai: {status: planned, priority: P1, role: gameplay-ai}
+  genesis-network: {status: planned, priority: P1, role: multiplayer}
+  genesis-templates: {status: planned, priority: P1, role: project-templates}
+  genesis-samples: {status: planned, priority: P1, role: reference-games}
+  genesis-docs: {status: planned, priority: P1, role: documentation}
