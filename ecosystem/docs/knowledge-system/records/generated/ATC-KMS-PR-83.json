@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-83",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #83: ARCH: add canonical OS, L1 and Aurora function matrix",
+  "context": "Pull request 83 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "archived",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/83",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: False\nDraft: True\n\nSuperseded by the later canonical architecture/evidence contracts in PRs #85/#86 and current system matrices; this intermediate function-matrix PR is no longer required as a separate change."
+}
