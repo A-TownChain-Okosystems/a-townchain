@@ -17,8 +17,10 @@ const USAGE: &str = "ATCLang Compiler-CLI
 USAGE:
     atc compile <datei.atc>   kompiliert: kanonische AST-JSON auf stdout
     atc run     <datei.atc>   kompiliert, verifiziert und fuehrt aus
-    atc check   <datei.atc>   validiert (Exit-Code 0 = ok)
-    atc check --strict <datei.atc>  behandelt Warnungen als Fehler
+    atc check   <datei.atc>   validiert eine Datei (Exit-Code 0 = ok)
+    atc check   <verzeichnis> validiert alle .atc eines Verzeichnisses
+                              projektweit (Basen, Typnamen, Duplikate)
+    atc check --strict <ziel> behandelt Warnungen als Fehler
 
 EXIT-CODES:
     0  ok
@@ -41,6 +43,10 @@ fn main() -> ExitCode {
     }
     let mode = positional[0].as_str();
     let path = positional[1].as_str();
+    // Verzeichnisse werden projektweit geprueft, bevor eine Datei gelesen wird.
+    if mode == "check" && std::path::Path::new(path).is_dir() {
+        return check_project_dir(path, strict);
+    }
     let src = match fs::read_to_string(path) {
         Ok(s) => s,
         Err(e) => {
@@ -111,14 +117,7 @@ fn main() -> ExitCode {
         }
         "check" => {
             // Semantische Stufe: erst nach erfolgreichem Parse.
-            let mut report = atc_core::semantics::check_program(&program);
-            // Stufe 2: Typ- und Signaturpruefung (konservativ, siehe types.rs).
-            let types = atc_core::types::check_program(&program);
-            report.errors.extend(types.errors);
-            report.warnings.extend(types.warnings);
-            report
-                .warnings
-                .extend(atc_core::types::check_call_arities(&program));
+            let report = file_report(&program);
             for w in &report.warnings {
                 eprintln!("  warnung: {w}");
             }
@@ -147,4 +146,90 @@ fn main() -> ExitCode {
             ExitCode::from(2)
         }
     }
+}
+
+/// Alle .atc-Dateien unterhalb eines Verzeichnisses, sortiert.
+fn scan_atc(dir: &std::path::Path, out: &mut Vec<std::path::PathBuf>) {
+    let entries = match fs::read_dir(dir) {
+        Ok(e) => e,
+        Err(_) => return,
+    };
+    for entry in entries.flatten() {
+        let p = entry.path();
+        if p.is_dir() {
+            scan_atc(&p, out);
+        } else if p.extension().and_then(|e| e.to_str()) == Some("atc") {
+            out.push(p);
+        }
+    }
+}
+
+/// Stufe 1 + 2 fuer eine einzelne Datei.
+fn file_report(program: &atc_core::ast::Program) -> atc_core::semantics::Report {
+    let mut report = atc_core::semantics::check_program(program);
+    let types = atc_core::types::check_program(program);
+    report.errors.extend(types.errors);
+    report.warnings.extend(types.warnings);
+    report
+        .warnings
+        .extend(atc_core::types::check_call_arities(program));
+    report
+}
+
+/// Projektweite Pruefung ueber alle .atc eines Verzeichnisses.
+fn check_project_dir(dir: &str, strict: bool) -> ExitCode {
+    let mut paths = Vec::new();
+    scan_atc(std::path::Path::new(dir), &mut paths);
+    paths.sort();
+    if paths.is_empty() {
+        eprintln!("Fehler: keine .atc-Quellen unter {dir}");
+        return ExitCode::from(2);
+    }
+
+    let mut errors: Vec<String> = Vec::new();
+    let mut warnings: Vec<String> = Vec::new();
+    let mut parsed: Vec<(String, atc_core::ast::Program)> = Vec::new();
+
+    for p in &paths {
+        let label = p.to_string_lossy().to_string();
+        match fs::read_to_string(p) {
+            Ok(src) => match parse_program(&src) {
+                Ok(program) => {
+                    let report = file_report(&program);
+                    errors.extend(report.errors.iter().map(|e| format!("{label}: {e}")));
+                    warnings.extend(report.warnings.iter().map(|w| format!("{label}: {w}")));
+                    parsed.push((label, program));
+                }
+                Err(e) => errors.push(format!("{label}: Parse-Fehler: {}", e.message)),
+            },
+            Err(e) => errors.push(format!("{label}: nicht lesbar ({e})")),
+        }
+    }
+
+    let project = atc_core::project::build(&parsed);
+    let project_report = project.check();
+    errors.extend(project_report.errors);
+    warnings.extend(project_report.warnings);
+
+    for w in &warnings {
+        eprintln!("  warnung: {w}");
+    }
+    for e in &errors {
+        eprintln!("  - {e}");
+    }
+    eprintln!(
+        "Projekt {dir}: {} Dateien, {} Vertraege, {} Fehler, {} Warnungen",
+        parsed.len(),
+        project.contracts.len(),
+        errors.len(),
+        warnings.len()
+    );
+    if !errors.is_empty() {
+        return ExitCode::FAILURE;
+    }
+    if strict && !warnings.is_empty() {
+        eprintln!("FEHLER (--strict): {} offene Warnung(en)", warnings.len());
+        return ExitCode::FAILURE;
+    }
+    ExitCode::SUCCESS
 }
