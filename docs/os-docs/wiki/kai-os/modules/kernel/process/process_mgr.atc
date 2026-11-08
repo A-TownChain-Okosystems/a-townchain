@@ -1,0 +1,161 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ╔══════════════════════════════════════════════════════╗
+// ║  KAI-OS Process Manager (ATC-96, Sprint 2.4)        ║
+// ║  Prozess-Lifecycle, Scheduling, Resource Limits      ║
+// ║  ATCLang v0.4 | Non-EVM | SHA-256                    ║
+// ╚══════════════════════════════════════════════════════╝
+
+enum ProcessState {
+    CREATED,
+    RUNNING,
+    SLEEPING,
+    STOPPED,
+    ZOMBIE,
+}
+
+enum ProcessType {
+    AGENT,
+    SERVICE,
+    CONTRACT,
+    SYSTEM,
+    VALIDATOR,
+}
+
+struct Process {
+    pid: string,
+    name: string,
+    ptype: ProcessType,
+    state: ProcessState,
+    parent_pid: string,
+    created_at: u64,
+    cpu_time: u64,
+    memory: u64,
+    priority: u8,
+}
+
+contract ProcessManager {
+    state processes: Map<string, Process>
+    state process_count: u64 = 0
+    state next_pid: u64 = 1
+    state max_processes: u64 = 1024
+    state current_pid: string = ""
+
+    fn init() {
+        // Spawn kernel process (PID 1)
+        let kernel = Process {
+            pid: "1",
+            name: "kernel",
+            ptype: ProcessType.SYSTEM,
+            state: ProcessState.RUNNING,
+            parent_pid: "0",
+            created_at: ATC::Crypto::timestamp(),
+            cpu_time: 0,
+            memory: 0,
+            priority: 0,
+        }
+        self.processes["1"] = kernel
+        self.process_count = 1
+        self.next_pid = 2
+        self.current_pid = "1"
+    }
+
+    fn spawn(name: string, ptype: ProcessType, parent: string) -> string {
+        require(self.process_count < self.max_processes, "Max processes reached")
+        
+        let pid = self.next_pid.to_string()
+        self.next_pid = self.next_pid + 1
+        
+        let proc = Process {
+            pid: pid,
+            name: name,
+            ptype: ptype,
+            state: ProcessState.CREATED,
+            parent_pid: parent,
+            created_at: ATC::Crypto::timestamp(),
+            cpu_time: 0,
+            memory: 0,
+            priority: 5,
+        }
+        
+        self.processes[pid] = proc
+        self.process_count = self.process_count + 1
+        
+        emit ProcessSpawned {
+            pid: pid,
+            name: name,
+            ptype: ptype,
+        }
+        
+        return pid
+    }
+
+    fn start(pid: string) {
+        require(self.processes[pid].pid != "", "Process not found")
+        self.processes[pid].state = ProcessState.RUNNING
+    }
+
+    fn stop(pid: string) {
+        require(self.processes[pid].pid != "", "Process not found")
+        self.processes[pid].state = ProcessState.STOPPED
+    }
+
+    fn sleep(pid: string) {
+        require(self.processes[pid].pid != "", "Process not found")
+        self.processes[pid].state = ProcessState.SLEEPING
+    }
+
+    fn kill(pid: string) {
+        require(self.processes[pid].pid != "", "Process not found")
+        self.processes[pid].state = ProcessState.ZOMBIE
+        self.process_count = self.process_count - 1
+        
+        emit ProcessKilled {
+            pid: pid,
+        }
+    }
+
+    fn get_process(pid: string) -> Process {
+        return self.processes[pid]
+    }
+
+    fn list_processes() -> string {
+        let result = ""
+        let i = 1
+        while i < self.next_pid {
+            if self.processes[i.to_string()].pid != "" {
+                let p = self.processes[i.to_string()]
+                if p.state != ProcessState.ZOMBIE {
+                    result = result + p.pid + ":" + p.name + ":" + p.state.to_string() + ","
+                }
+            }
+            i = i + 1
+        }
+        return result
+    }
+
+    fn set_priority(pid: string, priority: u8) {
+        require(self.processes[pid].pid != "", "Process not found")
+        self.processes[pid].priority = priority
+    }
+
+    fn get_process_count() -> u64 {
+        return self.process_count
+    }
+
+    fn is_running(pid: string) -> bool {
+        if self.processes[pid].pid == "" {
+            return false
+        }
+        return self.processes[pid].state == ProcessState.RUNNING
+    }
+}
+
+event ProcessSpawned {
+    pid: string,
+    name: string,
+    ptype: ProcessType,
+}
+
+event ProcessKilled {
+    pid: string,
+}
