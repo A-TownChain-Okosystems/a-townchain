@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-78",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #78: fix: remove wall-clock from blockchain determinism tests",
+  "context": "Pull request 78 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/78",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\nThe previous RELEASE-001 determinism run reported 24 SystemTime::now findings in a-townchain storage/blockchain tests. Source inspection shows all 24 are test-only temporary-path generation. This patch replaces wall-clock-derived names with an atomic test counter, preserving unique paths without weakening the determinism gate. No consensus/runtime clock access is changed."
+}
