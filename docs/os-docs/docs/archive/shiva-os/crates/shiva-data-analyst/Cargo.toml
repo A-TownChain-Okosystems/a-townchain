@@ -1,0 +1,20 @@
+[package]
+name = "shiva-data-analyst"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+shiva-agent = { git = "https://github.com/shiva-os/agent-framework", branch = "main" }
+shiva-tensor = { git = "https://github.com/shiva-os/tensor-logic", branch = "main" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+wasm-bindgen = "0.2"
+ndarray = "0.15"
+
+[profile.release]
+lto = true
+opt-level = "z"
+strip = true
