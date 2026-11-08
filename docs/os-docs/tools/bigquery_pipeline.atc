@@ -1,0 +1,135 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — BigQuery Analytics Pipeline
+// Sprint 3.0 | Analytics Layer | Chain-ID 9000
+// Migrated from: tools/bigquery_pipeline.py (89 lines)
+// Blockchain analytics, GitHub metrics, daily sync to BigQuery
+// ─────────────────────────────────────────────────────────────
+
+const GCP_PROJECT: String = "atcchain-analytics"
+const BQ_DATASET: String = "kaios_metrics"
+const SYNC_INTERVAL: u64 = 86400  // 24h
+
+enum MetricTable { GithubMetrics, BlockchainStats, NetworkPeers, ContractCalls, ValidatorUptime }
+
+struct GithubMetric {
+    repo: String,
+    commits: u32,
+    open_issues: u32,
+    closed_issues: u32,
+    clones: u32,
+    unique_cloners: u32,
+    timestamp: u64,
+}
+
+struct BlockchainMetric {
+    block_height: u64,
+    total_txs: u64,
+    active_validators: u16,
+    total_stake: u128,
+    tps: u32,
+    timestamp: u64,
+}
+
+contract BigQueryPipeline {
+    state github_data: Map<String, GithubMetric>
+    state blockchain_data: List<BlockchainMetric>
+    state last_sync: u64
+    state sync_count: u32
+    state rows_inserted: u64
+    state project_id: String
+    state dataset_id: String
+    state owner: Address
+
+    event SyncCompleted(table: MetricTable, rows: u64)
+    event GithubMetricsInserted(repo: String, commits: u32)
+    event BlockchainMetricsInserted(height: u64, tps: u32)
+
+    fn init() {
+        self.github_data = {}
+        self.blockchain_data = []
+        self.last_sync = 0
+        self.sync_count = 0
+        self.rows_inserted = 0
+        self.project_id = GCP_PROJECT
+        self.dataset_id = BQ_DATASET
+        self.owner = msg_sender()
+    }
+
+    fn setup_dataset() -> bool {
+        // In production: google-cloud-bigquery client
+        // CREATE SCHEMA IF NOT EXISTS kaios_metrics
+        return true
+    }
+
+    fn insert_github_metrics(repo: String, commits: u32, open_issues: u32, closed_issues: u32, clones: u32, unique_cloners: u32) -> bool {
+        let metric = GithubMetric {
+            repo: repo,
+            commits: commits,
+            open_issues: open_issues,
+            closed_issues: closed_issues,
+            clones: clones,
+            unique_cloners: unique_cloners,
+            timestamp: Time::now(),
+        }
+        self.github_data[repo] = metric
+        self.rows_inserted += 1
+        emit GithubMetricsInserted(repo, commits)
+        return true
+    }
+
+    fn insert_blockchain_metrics(height: u64, total_txs: u64, validators: u16, stake: u128, tps: u32) -> bool {
+        let metric = BlockchainMetric {
+            block_height: height,
+            total_txs: total_txs,
+            active_validators: validators,
+            total_stake: stake,
+            tps: tps,
+            timestamp: Time::now(),
+        }
+        self.blockchain_data.push(metric)
+        self.rows_inserted += 1
+        emit BlockchainMetricsInserted(height, tps)
+        return true
+    }
+
+    fn daily_sync() -> bool {
+        self.sync_count += 1
+        self.last_sync = Time::now()
+        // Sync GitHub metrics
+        let repos = self.github_data.keys()
+        let i: u16 = 0
+        while i < repos.len() {
+            // In production: stream to BigQuery
+            i += 1
+        }
+        // Sync blockchain metrics
+        let j: u16 = 0
+        while j < self.blockchain_data.len() {
+            // In production: stream to BigQuery
+            j += 1
+        }
+        emit SyncCompleted(MetricTable::GithubMetrics, self.rows_inserted)
+        return true
+    }
+
+    fn get_github_metrics(repo: String) -> (u32, u32, u32, u32, u32, u64) {
+        let m = self.github_data.get(repo)
+        if m == null {
+            return (0, 0, 0, 0, 0, 0)
+        }
+        return (m.commits, m.open_issues, m.closed_issues, m.clones, m.unique_cloners, m.timestamp)
+    }
+
+    fn get_latest_blockchain_metric() -> (u64, u64, u16, u128, u32, u64) {
+        if self.blockchain_data.len() == 0 {
+            return (0, 0, 0, 0, 0, 0)
+        }
+        let m = self.blockchain_data[self.blockchain_data.len() - 1]
+        return (m.block_height, m.total_txs, m.active_validators, m.total_stake, m.tps, m.timestamp)
+    }
+
+    fn status() -> (u32, u64, u64, u16, u16) {
+        return (self.sync_count, self.rows_inserted, self.last_sync, self.github_data.len(), self.blockchain_data.len())
+    }
+}
