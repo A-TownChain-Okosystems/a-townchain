@@ -1,0 +1,67 @@
+# ATC Error Knowledge Record (ATC-STD-ERR-013, REQ-ER-130/131)
+error_id: ATC-ERR-0001
+title: "GovernanceContract implementierte abstrakte BaseContract.name() nicht"
+severity: P1
+category:
+  - software
+first_detected: "2026-09-08"
+detected_by: "atc-contracts Contract-Test-Suite (P1-001, Issue #99) — erste Testphase"
+affected_repositories:
+  - atc-contracts
+affected_components:
+  - governance/governance_contract.py (ATC-9900)
+  - smart_contract_registry.py (Faehigkeit list_all/call waere gecrasht)
+root_cause:
+  type: "fehlende Interface-Implementierung"
+  description: >
+    GovernanceContract erbt von BaseContract (ABC mit @abstractmethod name()),
+    implementierte name() aber nie. Python erlaubt die Klassendefinition; die
+    Instanziierung schlaegt mit TypeError fehl. Der Fehler wurde von keiner
+    Pruefung erkannt, weil atc-contracts vor P1-001 keine Test-Suite hatte
+    (Tests: 0 — ATC-ERR-PATTERN-005 als Ursprungsmuster).
+error_pattern:
+  description: "Subklasse implementiert deklarierte abstrakte Methode der Basisklasse nicht"
+  pattern_ref: ATC-ERR-PATTERN-009
+propagation_scan:
+  performed: true
+  dimensions: ["Klassen mit @abstractmethod-Vererbung, alle .py-Dateien"]
+  repositories_checked: 4
+  repositories_detail:
+    atc-contracts: "DIRECT — Fundstelle; 0 Treffer nach Fix (GovernanceContract behoben, ATC8300Token/GenesisToken sauber, BaseContract korrekt abstrakt)"
+    atclang: "NOT AFFECTED — statischer AST-Scan ueber ~22k LOC Python: 0 Verstoesse"
+    atc-shivacore: "NOT AFFECTED — Rust: Compiler erzwingt Trait-Implementierungen (E0407), Muster sprachseitig unmoeglich"
+    a-townchain-os-docs: "NOT AFFECTED — reine Dokumentation, keine Klassenhierarchien; Doku-Check (ERR-006): keine GovernanceContract-Referenzen veraltet"
+  occurrences_found: 1
+fix:
+  implemented: true
+  commit: "feat(test): Contract-Test-Suite (P1-001) — 59 Tests + GovernanceContract-Bugfix"
+  date: "2026-09-08"
+regression_test:
+  required: true
+  implemented: true
+  evidence: "tests/test_governance_contract.py (Instanziierung im Fixture) — vor Fix rot (TypeError im Setup), nach Fix gruen"
+preventive_control:
+  required: true
+  implemented: true
+  evidence: "tests/test_abstract_implementation_completeness.py — musterweiter AST-Gate: jede Klasse mit @abstractmethod-Vererbung wird geprueft, ein Verstoesser faerbt den Build rot (61/61 GRUEN)"
+documentation_updated: true
+documentation_evidence: "CHANGELOG atc-contracts; PATTERNS.yaml (PATTERN-009); dieses Dossier"
+post_fix_scan:
+  performed: true
+  date: "2026-09-08"
+  result: "0 verbleibende Instanzen des Musters in gescannten Repos; UNKNOWN: 0"
+lifecycle:
+  detected: "2026-09-08 (Test-Suite-Aufbau)"
+  classified: "P1, Kategorie software, PATTERN-005 (Ursprung: Tests: 0)"
+  reproduced: "TypeError bei Instanziierung — reproduzierbar"
+  root_cause_identified: "fehlende name()-Implementierung; entstanden mangels Test-Gate"
+  propagation_scan: "ERR-004: Repo-weit; ERR-005: 4 Repos (siehe oben)"
+  impact_analysis: "Registry list_all/call (DEPENDENT), Doku (NOT AFFECTED)"
+  fix_planned: "name() ergaenzen + Bugfix-Commit"
+  fix_implemented: "08.09., Commit feat(test) P1-001"
+  regression_tested: "vor Fix rot / nach Fix gruen bewiesen"
+  prevention_implemented: "musterweiter AST-Gate-Test in CI-Suite"
+  documentation_updated: "CHANGELOG + Pattern-Library + Dossier"
+  cross_repository_rescan: "0 Treffer"
+  verified: "61/61 Tests GRUEN, Governance-CI gruen"
+status: CLOSED
