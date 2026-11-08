@@ -99,8 +99,10 @@ vom Gate respektiert.
   Siehe STATUS.md/ROADMAP.md (G3-G10 offen)
 
 Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde, alle 16 Quellen
-kompilieren. Semantik Stufe 1: 0 Fehler, 38 Warnungen (38 `emit`-Aufrufe ohne
-Event-Deklaration in Bestandsverträgen; offener Punkt, siehe STATUS.md).
+kompilieren. Semantik Stufe 1: 0 Fehler, 18 Warnungen (17 mehrfach deklarierte
+Vertragsnamen aus den Mirror-Kopien und 1 unbekannter Typname `bytes32` im
+Spiegel `modules/atc-standards-refs`; die 38 `emit`-Aufrufe ohne
+Event-Deklaration sind am 08.11.2026 durch Deklarationen geschlossen).
 `--write-hashes` zieht Hashes nach einer bewussten Quelländerung nach.
 
 Gegenprobe: mit absichtlich verfälschtem Hash, fehlendem Pfad und einer
