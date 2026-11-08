@@ -1,0 +1,178 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-45 — Federated Learning Coordinator (On-Chain)
+// Sprint 3.2 | Tier 6 — Distributed Intelligence | Chain-ID 9000
+// Migrated from: core/ai/federated_learning.py
+// Wiki: Kap. 41
+// ─────────────────────────────────────────────────────────────
+
+const MIN_PARTICIPANTS: u8 = 3
+const REWARD_PER_ROUND: u128 = 10  // ATC per participant
+
+struct FLModel {
+    id: String,
+    name: String,
+    version: String,
+    creator: Address,
+    cid: Hash,           // IPFS CID of model weights
+    accuracy: u32,       // accuracy * 10000 (e.g. 9532 = 95.32%)
+    created: u64,
+}
+
+struct FLRound {
+    round_id: u32,
+    model_id: String,
+    participants: List<Address>,
+    updates: Map<Address, Hash>,   // node → weight CID
+    aggregated: Hash,              // aggregated model CID
+    started: u64,
+    completed: u64,
+}
+
+contract FederatedLearningCoordinator {
+    state models: Map<String, FLModel>
+    state rounds: List<FLRound>
+    state balances: Map<Address, u128>
+    state round_ctr: u32
+
+    event ModelRegistered(model_id: String, cid: Hash, creator: Address)
+    event RoundStarted(round_id: u32, model_id: String)
+    event UpdateSubmitted(round_id: u32, node: Address, weight_cid: Hash)
+    event RoundAggregated(round_id: u32, agg_cid: Hash, participants: u8)
+    event RewardPaid(node: Address, amount: u128)
+
+    fn init() {
+        self.round_ctr = 0
+    }
+
+    // ── Register a new model ────────────────────────
+    fn register_model(id: String, name: String, version: String, creator: Address) -> Hash {
+        let cid_input = name + version + Int::to_string(Time::now())
+        let cid = Hash::sha256(cid_input)
+        let model = FLModel {
+            id: id,
+            name: name,
+            version: version,
+            creator: creator,
+            cid: cid,
+            accuracy: 0,
+            created: Time::now(),
+        }
+        self.models[id] = model
+        emit ModelRegistered(id, cid, creator)
+        return cid
+    }
+
+    // ── Start a new training round ──────────────────
+    fn start_round(model_id: String) -> u32 {
+        if !self.models.contains(model_id) {
+            return 0
+        }
+        self.round_ctr += 1
+        let rnd = FLRound {
+            round_id: self.round_ctr,
+            model_id: model_id,
+            participants: [],
+            updates: {},
+            aggregated: Hash::zero(),
+            started: Time::now(),
+            completed: 0,
+        }
+        self.rounds.push(rnd)
+        emit RoundStarted(self.round_ctr, model_id)
+        return self.round_ctr
+    }
+
+    // ── Submit a weight update ──────────────────────
+    fn submit_update(round_id: u32, node: Address, weight_cid: Hash) -> bool {
+        let rnd = self.find_round(round_id)
+        if rnd == null {
+            return false
+        }
+        if !rnd.participants.contains(node) {
+            rnd.participants.push(node)
+        }
+        rnd.updates[node] = weight_cid
+        emit UpdateSubmitted(round_id, node, weight_cid)
+        return true
+    }
+
+    // ── Aggregate updates (FedAvg simulation) ───────
+    fn aggregate(round_id: u32) -> Hash {
+        let rnd = self.find_round(round_id)
+        if rnd == null {
+            return Hash::zero()
+        }
+        if rnd.participants.len() < MIN_PARTICIPANTS {
+            return Hash::zero()
+        }
+        // FedAvg: combine all weight CIDs into aggregated CID
+        let combined = String::new()
+        let cids = rnd.updates.values()
+        for i in 0..cids.len() {
+            combined += Hash::to_hex(cids[i])
+        }
+        let agg_cid = Hash::sha256(combined)
+        rnd.aggregated = agg_cid
+        rnd.completed = Time::now()
+        // Pay rewards to participants
+        for i in 0..rnd.participants.len() {
+            let p = rnd.participants[i]
+            let bal = self.balances.get(p)
+            if bal == null {
+                bal = 0
+            }
+            self.balances[p] = bal + REWARD_PER_ROUND
+            emit RewardPaid(p, REWARD_PER_ROUND)
+        }
+        emit RoundAggregated(round_id, agg_cid, rnd.participants.len())
+        return agg_cid
+    }
+
+    // ── Update model accuracy ───────────────────────
+    fn update_accuracy(model_id: String, accuracy: u32) -> bool {
+        let model = self.models.get(model_id)
+        if model == null {
+            return false
+        }
+        model.accuracy = accuracy
+        return true
+    }
+
+    // ── Get balance for a node ──────────────────────
+    fn get_balance(node: Address) -> u128 {
+        let bal = self.balances.get(node)
+        if bal == null {
+            return 0
+        }
+        return bal
+    }
+
+    // ── Stats ───────────────────────────────────────
+    fn stats() -> (u32, u32, u32, u128) {
+        let model_count = self.models.len()
+        let round_count = self.rounds.len()
+        let completed: u32 = 0
+        for i in 0..self.rounds.len() {
+            if self.rounds[i].completed > 0 {
+                completed += 1
+            }
+        }
+        let total_rewards: u128 = 0
+        let nodes = self.balances.keys()
+        for i in 0..nodes.len() {
+            total_rewards += self.balances.get(nodes[i])
+        }
+        return (model_count, round_count, completed, total_rewards)
+    }
+
+    // ── Helper: find round by ID ────────────────────
+    fn find_round(round_id: u32) -> FLRound {
+        for i in 0..self.rounds.len() {
+            if self.rounds[i].round_id == round_id {
+                return self.rounds[i]
+            }
+        }
+        return null
+    }
+}
