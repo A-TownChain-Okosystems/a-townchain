@@ -1,0 +1,232 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — Consolidated REST API Routes
+// Sprint 3.0 | Backend Layer | Chain-ID 9000
+// Migrated from: 8 individual Flask blueprint files (~540 lines total)
+// Consolidated endpoints: nodes, wallet, blockchain, governance,
+// marketplace, game, explorer, atcpkg, AI
+// ─────────────────────────────────────────────────────────────
+
+// ── Wallet Routes ──────────────────────────────────────────────
+
+fn api_wallet_health() -> String {
+    return '{"service":"wallet","status":"online"}'
+}
+
+fn api_wallet_create(label: String, passphrase: String) -> (Address, Hash, List<String>) {
+    return MobileWalletManager::create_wallet(label, passphrase)
+}
+
+fn api_wallet_restore(mnemonic: List<String>, passphrase: String) -> Address {
+    return MobileWalletManager::restore_wallet(mnemonic, passphrase)
+}
+
+fn api_wallet_balance(addr: Address) -> u128 {
+    return ATCoin::balance_of(addr)
+}
+
+fn api_wallet_send(from_addr: Address, to_addr: Address, amount: u128) -> bool {
+    return MobileWalletManager::send(from_addr, to_addr, amount)
+}
+
+// ── Blockchain Routes ──────────────────────────────────────────
+
+fn api_blockchain_health() -> String {
+    return '{"service":"blockchain","status":"online"}'
+}
+
+fn api_blockchain_info() -> (u64, u32, u32, Hash) {
+    return HybridConsensus::get_chain_info()
+}
+
+fn api_blockchain_blocks(count: u8) -> List<Hash> {
+    return HybridConsensus::get_recent_blocks(count)
+}
+
+fn api_blockchain_get_tx(tx_id: Hash) -> (Address, Address, u128, u64, bool) {
+    return DatabaseRepository::find_tx(tx_id)
+}
+
+fn api_blockchain_mine(miner: Address, txs: List<Hash>) -> (u64, Hash, u128) {
+    let block_height = HybridConsensus::create_block_height(txs, miner)
+    let block_hash = HybridConsensus::create_block_hash(txs, miner)
+    let reward = ATCoin::mint(miner, block_hash)
+    return (block_height, block_hash, reward)
+}
+
+// ── Governance Routes ──────────────────────────────────────────
+
+fn api_governance_health() -> String {
+    return '{"service":"governance","status":"online"}'
+}
+
+fn api_governance_proposals(status: String) -> List<Hash> {
+    return GovernanceContract::get_proposals(status)
+}
+
+fn api_governance_create_proposal(creator: Address, title: String, description: String, duration_days: u16) -> Hash {
+    return GovernanceContract::create_proposal(creator, title, description, duration_days)
+}
+
+fn api_governance_vote(voter: Address, proposal_id: Hash, option_idx: u8, voting_power: u128) -> bool {
+    return GovernanceContract::vote(voter, proposal_id, option_idx, voting_power)
+}
+
+fn api_governance_execute(proposal_id: Hash) -> bool {
+    return GovernanceContract::execute(proposal_id)
+}
+
+// ── Game/Shivamon Routes ───────────────────────────────────────
+
+fn api_game_health() -> String {
+    return '{"service":"game","status":"online"}'
+}
+
+fn api_game_stats() -> (u32, u64, u128) {
+    return ShivamonContract::get_stats()
+}
+
+fn api_game_mint(name: String, element: Element, rarity: Rarity, generation: u8) -> Hash {
+    return ShivamonContract::mint(name, element, rarity, generation)
+}
+
+fn api_game_get_token(token_id: Hash) -> (Address, Element, Rarity, u16, u16, u16) {
+    return ShivamonContract::get_token(token_id)
+}
+
+fn api_game_owner_tokens(owner: Address) -> List<Hash> {
+    return ShivamonContract::get_owner_tokens(owner)
+}
+
+fn api_game_transfer(token_id: Hash, to_addr: Address) -> bool {
+    return ShivamonContract::transfer(token_id, to_addr)
+}
+
+fn api_game_battle(attacker_id: Hash, defender_id: Hash) -> (Hash, Hash) {
+    return ShivamonContract::battle(attacker_id, defender_id)
+}
+
+fn api_game_breed(parent1: Hash, parent2: Hash) -> Hash {
+    return ShivamonContract::breed(parent1, parent2)
+}
+
+// ── Marketplace Routes ─────────────────────────────────────────
+
+fn api_marketplace_health() -> String {
+    return '{"service":"marketplace","status":"online"}'
+}
+
+fn api_marketplace_listings() -> u32 {
+    return MarketplaceContract::get_active_listings()
+}
+
+fn api_marketplace_list(token_id: Hash, price: u128) -> Hash {
+    return MarketplaceContract::list_for_sale(token_id, price)
+}
+
+fn api_marketplace_buy(listing_id: Hash) -> bool {
+    return MarketplaceContract::buy(listing_id)
+}
+
+fn api_marketplace_cancel(listing_id: Hash) -> bool {
+    return MarketplaceContract::cancel_listing(listing_id)
+}
+
+fn api_marketplace_offer(token_id: Hash, offer_price: u128) -> Hash {
+    return MarketplaceContract::make_offer(token_id, offer_price)
+}
+
+fn api_marketplace_accept_offer(offer_id: Hash) -> bool {
+    return MarketplaceContract::accept_offer(offer_id)
+}
+
+// ── Explorer Routes ────────────────────────────────────────────
+
+fn api_explorer_blocks(page: u8, per_page: u8) -> List<u64> {
+    return DatabaseRepository::get_blocks_page(page, per_page)
+}
+
+fn api_explorer_block(height: u64) -> (Hash, Hash, u64, u32) {
+    return DatabaseRepository::find_block(height)
+}
+
+fn api_explorer_tx(tx_id: Hash) -> (Address, Address, u128, u64, String) {
+    return DatabaseRepository::find_tx(tx_id)
+}
+
+fn api_explorer_address(addr: Address) -> (u128, u32) {
+    let balance = ATCoin::balance_of(addr)
+    let nft_count = ShivamonContract::get_owner_tokens(addr).len()
+    return (balance, nft_count)
+}
+
+fn api_explorer_search(query: String) -> String {
+    // Search by block height, tx hash, or address
+    if query.starts_with("ATC") {
+        return "address"
+    }
+    if query.len() == 64 {
+        return "hash"
+    }
+    return "block"
+}
+
+// ── Nodes Routes ───────────────────────────────────────────────
+
+fn api_nodes_health() -> String {
+    return '{"service":"nodes","status":"online"}'
+}
+
+fn api_nodes_list() -> u16 {
+    return P2PNode::get_peer_count()
+}
+
+fn api_nodes_stats() -> (u16, u16, u64, u64) {
+    return P2PNode::get_stats()
+}
+
+fn api_nodes_register(host: String, port: u16, version: String) -> bool {
+    let peer_id = Address::from_hash(Hash::sha256(host, port))
+    return P2PNode::connect_peer(peer_id, host, port, version)
+}
+
+fn api_nodes_get(node_id: Address) -> (String, u16, u64, bool) {
+    return P2PNode::get_peer_info(node_id)
+}
+
+// ── ATCPKG Routes ──────────────────────────────────────────────
+
+fn api_atcpkg_health() -> String {
+    return '{"service":"atcpkg","status":"online"}'
+}
+
+fn api_atcpkg_list() -> List<String> {
+    return ATCPkgManager::list_packages()
+}
+
+fn api_atcpkg_install(name: String, version: String) -> bool {
+    return ATCPkgManager::install(name, version)
+}
+
+fn api_atcpkg_publish(name: String, version: String, metadata: String) -> Hash {
+    return ATCPkgManager::publish(name, version, metadata)
+}
+
+// ── AI Routes ──────────────────────────────────────────────────
+
+fn api_ai_health() -> String {
+    return '{"service":"ai","status":"online"}'
+}
+
+fn api_ai_chat(prompt: String, context: String) -> String {
+    // AI Orchestrator — delegates to AIKernel
+    return AIKernel::process(prompt, context)
+}
+
+fn api_ai_models() -> List<String> {
+    return AIKernel::list_models()
+}
+
+fn api_ai_analyze(tx_hash: Hash) -> String {
+    return AIKernel::analyze_transaction(tx_hash)
+}
