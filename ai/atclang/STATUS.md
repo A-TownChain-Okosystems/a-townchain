@@ -60,8 +60,13 @@ Verified by `cargo test --workspace` (498 tests) and `./tools/ecosystem.sh test`
   `Bytes`, `Signature`, `PublicKey`, `Timestamp`, `Amount`, `TokenId`) count as
   builtin; unknown names are reported once per file and name.
   Current result over `apps/atc-contracts`: 47 files, 29 contracts, 0 errors,
-  56 warnings (38 open `emit` declarations, 17 mirror duplicates, 1 unknown type
-  `bytes32` in the standards-refs mirror).
+  18 warnings (17 mirror duplicates, 1 unknown type `bytes32` in the
+  standards-refs mirror). The 38 `emit` calls that previously lacked an event
+  declaration now have one: `TokenInitialized`, `Transfer`, `Approval`, `Mint`,
+  `Burn`, `ATCoinInitialized` in `atc8300/atc8300.atc` and `contracts/token.atc`,
+  `RevenueShareInitialized`, `RevenueRecorded`, `PayoutSent` in
+  `contracts/revenue.atc`, and `RegistryInitialized`, `LicenseIssued`,
+  `LicenseTransferred`, `LicenseSuspended` in the standards-refs registry.
 - Contract ABI (`crates/atc-core/src/abi.rs`, roadmap G7 groundwork): `atc abi
   <datei|verzeichnis>` emits one canonical JSON line per contract with
   `abi_sha256` — state fields, events and function signatures, stable key order,
@@ -93,9 +98,13 @@ Verified by `cargo test --workspace` (498 tests) and `./tools/ecosystem.sh test`
   `ATC::Crypto::sha256`) resolve, so the contract sources stay at 56 warnings.
 - Contract registry gate A8 (SC-019): GATE PASS, 16 entries, 16 sources, 0 findings.
 
-Open: 38 `emit` calls in existing contracts without an event declaration; type
-checking and name resolution across file boundaries; code generation for
-contracts. Roadmap G3-G10 remains open and the release status is unchanged.
+Open: mirror copies still declare the same contract names (17 warnings by
+design, excluded from the registry); one unknown type name `bytes32` in the
+standards-refs mirror; code generation for contracts. The four
+standards-contracts ATC-13/15/16/20 are the generic token template with renamed
+identifiers, and their specs state "nicht implementiert", so no
+category-specific invariant can be tested yet; the ATCoin supply cap differs
+between the canonical source (360M) and its mirror (21M). Roadmap G3-G10 remains open and the release status is unchanged.
 
 ## Current verified facts
 
