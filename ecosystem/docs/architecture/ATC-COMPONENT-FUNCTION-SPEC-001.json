@@ -1,0 +1,2456 @@
+{
+  "schema_id": "ATC-COMPONENT-FUNCTION-SPEC-001",
+  "schema_version": "1.2.0",
+  "snapshot_date": "2026-10-11",
+  "catalog_status": "INITIAL_BASELINE",
+  "purpose": "Machine-readable component, function, specification, dependency and verification inventory",
+  "governance": {
+    "single_source_of_truth": true,
+    "standalone_first_ecosystem_second": true,
+    "implementation_requires_source_evidence": true,
+    "verification_requires_exact_commit_sha": true,
+    "merge_authorized_by_catalog": false,
+    "allowed_statuses": [
+      "PROPOSED",
+      "SPECIFIED",
+      "IMPLEMENTED",
+      "VERIFIED",
+      "RESIDUAL",
+      "BLOCKED",
+      "AUDIT_REQUIRED",
+      "DEPRECATED"
+    ]
+  },
+  "systems": [
+    {
+      "id": "ATCLANG",
+      "name": "ATCLang",
+      "canonical_location": "A-TownChain-Okosystems/atclang",
+      "layer": "L0",
+      "mission": "Native language frontend, syntax, AST and compilation boundary for the A-TownChain execution ecosystem",
+      "functions": [
+        {
+          "id": "ATCLANG-FUNC-001",
+          "name": "Lexical analysis",
+          "specification": "Tokenize source and report invalid tokens with source locations",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Valid source produces deterministic tokens",
+            "Invalid input produces explicit diagnostics",
+            "Source locations are preserved"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Tokenize source and report invalid tokens with source locations",
+              "acceptance": [
+                "Valid source produces deterministic tokens",
+                "Invalid input produces explicit diagnostics",
+                "Source locations are preserved"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/atclang",
+              "branch": "main",
+              "commit_sha": "21c595dc389b0c62e1531a8c5fbbcd2c68794efb",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCLANG-FUNC-002",
+          "name": "Parsing and AST construction",
+          "specification": "Parse the versioned grammar and construct the AST",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Valid and invalid grammar cases are tested",
+            "Malformed input fails deterministically",
+            "AST contract is documented"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Parse the versioned grammar and construct the AST",
+              "acceptance": [
+                "Valid and invalid grammar cases are tested",
+                "Malformed input fails deterministically",
+                "AST contract is documented"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/atclang",
+              "branch": "main",
+              "commit_sha": "21c595dc389b0c62e1531a8c5fbbcd2c68794efb",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCLANG-FUNC-003",
+          "name": "Directive and declaration processing",
+          "specification": "Process supported native directives and declarations without duplicating VM execution",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Supported directives are documented",
+            "Unsupported directives fail explicitly",
+            "No competing production VM is introduced"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Process supported native directives and declarations without duplicating VM execution",
+              "acceptance": [
+                "Supported directives are documented",
+                "Unsupported directives fail explicitly",
+                "No competing production VM is introduced"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/atclang",
+              "branch": "main",
+              "commit_sha": "21c595dc389b0c62e1531a8c5fbbcd2c68794efb",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCLANG-FUNC-004",
+          "name": "Diagnostics",
+          "specification": "Emit stable, actionable frontend diagnostics",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Error categories are stable",
+            "Source spans are included where available"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Emit stable, actionable frontend diagnostics",
+              "acceptance": [
+                "Error categories are stable",
+                "Source spans are included where available"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/atclang",
+              "branch": "main",
+              "commit_sha": "21c595dc389b0c62e1531a8c5fbbcd2c68794efb",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCLANG-FUNC-005",
+          "name": "Canonical bytecode target",
+          "specification": "Define and validate the frontend boundary to canonical ATCB bytecode",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Output conforms to the normative bytecode format",
+            "Version and instruction count are validated",
+            "Output reproducibility is tested"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Define and validate the frontend boundary to canonical ATCB bytecode",
+              "acceptance": [
+                "Output conforms to the normative bytecode format",
+                "Version and instruction count are validated",
+                "Output reproducibility is tested"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/atclang",
+              "branch": "main",
+              "commit_sha": "21c595dc389b0c62e1531a8c5fbbcd2c68794efb",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        }
+      ],
+      "specifications": {
+        "source_format": "AUDIT_REQUIRED",
+        "grammar_versioning": "REQUIRED",
+        "ast_contract": "REQUIRED",
+        "diagnostic_contract": "REQUIRED",
+        "output_bytecode": "ATCB (verify against normative specification)",
+        "compiler_determinism": "REQUIRED"
+      },
+      "dependencies": [
+        "ATCVM",
+        "ATCSTANDARDS"
+      ],
+      "prohibited_responsibilities": [
+        "Owning a second production VM",
+        "Executing blockchain consensus",
+        "Bypassing canonical bytecode validation"
+      ],
+      "verification": {
+        "required_tests": [
+          "lexer_tests",
+          "parser_tests",
+          "ast_tests",
+          "negative_input_tests",
+          "bytecode_conformance_tests",
+          "reproducible_output_tests"
+        ],
+        "evidence_status": "NOT_COLLECTED",
+        "verified_commit_sha": null
+      },
+      "soll_ist": {
+        "soll": {
+          "canonical_location": "A-TownChain-Okosystems/atclang",
+          "layer": "L0",
+          "mission": "Native language frontend, syntax, AST and compilation boundary for the A-TownChain execution ecosystem",
+          "dependencies": [
+            "ATCVM",
+            "ATCSTANDARDS"
+          ],
+          "prohibited_responsibilities": [
+            "Owning a second production VM",
+            "Executing blockchain consensus",
+            "Bypassing canonical bytecode validation"
+          ]
+        },
+        "ist": {
+          "assessment": "PRESENT_UNVERIFIED",
+          "repository_full_name": "A-TownChain-Okosystems/atclang",
+          "default_branch": "main",
+          "commit_sha": "21c595dc389b0c62e1531a8c5fbbcd2c68794efb",
+          "source_paths": [
+            "crates/atc-core/src/lexer.rs",
+            "crates/atc-core/src/parser.rs",
+            "crates/atc-core/src/ast.rs",
+            "crates/atc-core/src/native.rs",
+            "crates/atc-core/src/bytecode.rs"
+          ],
+          "test_refs": [
+            "crates/atc-core/tests/cli.rs",
+            "crates/atc-core/tests/differential.rs"
+          ],
+          "ci_evidence": [],
+          "spec_refs": [
+            "specs/language/SPEC.md",
+            "specs/bytecode/ATCB-1.md"
+          ],
+          "branch": "main"
+        },
+        "delta": {
+          "status": "NOT_ASSESSED",
+          "gaps": [
+            "Function-by-function behavior, normative specification coverage and exact-SHA CI evidence remain to be assessed"
+          ]
+        }
+      },
+      "repository": "A-TownChain-Okosystems/atclang",
+      "canonical_path": "/"
+    },
+    {
+      "id": "ATCVM",
+      "name": "ATC-VM",
+      "canonical_location": "A-TownChain-Okosystems/a-townchain/components/vm",
+      "support_repository": "A-TownChain-Okosystems/atc-vm",
+      "layer": "L3",
+      "mission": "Canonical deterministic virtual machine implementation for ATC bytecode",
+      "functions": [
+        {
+          "id": "ATCVM-FUNC-001",
+          "name": "Bytecode decoding and validation",
+          "specification": "Validate header, version, instruction count and instruction encoding before execution",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Malformed and truncated bytecode is rejected",
+            "Unsupported versions are rejected",
+            "Canonical binary format is used"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Validate header, version, instruction count and instruction encoding before execution",
+              "acceptance": [
+                "Malformed and truncated bytecode is rejected",
+                "Unsupported versions are rejected",
+                "Canonical binary format is used"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCVM-FUNC-002",
+          "name": "Deterministic execution",
+          "specification": "Execute supported instructions with deterministic state transitions",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Equivalent input state and bytecode produce equivalent results",
+            "Undefined opcodes fail closed",
+            "Host-dependent nondeterminism is excluded"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Execute supported instructions with deterministic state transitions",
+              "acceptance": [
+                "Equivalent input state and bytecode produce equivalent results",
+                "Undefined opcodes fail closed",
+                "Host-dependent nondeterminism is excluded"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCVM-FUNC-003",
+          "name": "Operand stack bounds",
+          "specification": "Enforce maximum operand stack depth",
+          "status": "SPECIFIED",
+          "acceptance": [
+            "Overflow and underflow are rejected",
+            "Boundary values are tested"
+          ],
+          "limits": {
+            "MAX_STACK_ITEMS": 4096
+          },
+          "soll_ist": {
+            "soll": {
+              "behavior": "Enforce maximum operand stack depth",
+              "acceptance": [
+                "Overflow and underflow are rejected",
+                "Boundary values are tested"
+              ],
+              "catalog_status": "SPECIFIED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCVM-FUNC-004",
+          "name": "Program instruction bounds",
+          "specification": "Enforce maximum instruction count",
+          "status": "SPECIFIED",
+          "acceptance": [
+            "Programs above the limit are rejected",
+            "Boundary values are tested"
+          ],
+          "limits": {
+            "MAX_PROGRAM_OPS": 65536
+          },
+          "soll_ist": {
+            "soll": {
+              "behavior": "Enforce maximum instruction count",
+              "acceptance": [
+                "Programs above the limit are rejected",
+                "Boundary values are tested"
+              ],
+              "catalog_status": "SPECIFIED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCVM-FUNC-005",
+          "name": "Storage bounds",
+          "specification": "Enforce storage slot limits and deterministic storage semantics",
+          "status": "SPECIFIED",
+          "acceptance": [
+            "Limits cannot be bypassed",
+            "Invalid storage operations fail explicitly"
+          ],
+          "limits": {
+            "MAX_STORAGE_SLOTS": 65536
+          },
+          "soll_ist": {
+            "soll": {
+              "behavior": "Enforce storage slot limits and deterministic storage semantics",
+              "acceptance": [
+                "Limits cannot be bypassed",
+                "Invalid storage operations fail explicitly"
+              ],
+              "catalog_status": "SPECIFIED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCVM-FUNC-006",
+          "name": "Gas or execution-cost accounting",
+          "specification": "Define and enforce deterministic execution costs",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Every executable opcode has defined cost semantics",
+            "Insufficient budget terminates deterministically",
+            "Cost boundaries are tested"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Define and enforce deterministic execution costs",
+              "acceptance": [
+                "Every executable opcode has defined cost semantics",
+                "Insufficient budget terminates deterministically",
+                "Cost boundaries are tested"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCVM-FUNC-007",
+          "name": "Execution results and errors",
+          "specification": "Return deterministic results or structured execution failures",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Errors have stable categories",
+            "Failed execution is never reported as success",
+            "State commit and rollback semantics are specified"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Return deterministic results or structured execution failures",
+              "acceptance": [
+                "Errors have stable categories",
+                "Failed execution is never reported as success",
+                "State commit and rollback semantics are specified"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        }
+      ],
+      "specifications": {
+        "canonical_format": {
+          "magic": "ATCB",
+          "version_field": "u16 big-endian",
+          "instruction_count": "u32 big-endian",
+          "json_serialization": false
+        },
+        "limits": {
+          "MAX_PROGRAM_OPS": 65536,
+          "MAX_STACK_ITEMS": 4096,
+          "MAX_STORAGE_SLOTS": 65536
+        },
+        "canonical_implementation": "a-townchain/components/vm",
+        "format_conflicts": [
+          "Resolve ATCB versus ATC1 references against normative specification"
+        ]
+      },
+      "dependencies": [
+        "ATCSTANDARDS",
+        "ATCALGORITHM"
+      ],
+      "prohibited_responsibilities": [
+        "Owning blockchain consensus",
+        "Expanding ShivaCore TCB by default",
+        "Maintaining a competing canonical VM in another repository"
+      ],
+      "verification": {
+        "required_tests": [
+          "bytecode_conformance",
+          "malformed_bytecode",
+          "opcode_coverage",
+          "stack_boundary_tests",
+          "storage_boundary_tests",
+          "execution_budget_tests",
+          "determinism_tests",
+          "state_transition_tests"
+        ],
+        "evidence_status": "NOT_COLLECTED",
+        "verified_commit_sha": null
+      },
+      "soll_ist": {
+        "soll": {
+          "canonical_location": "A-TownChain-Okosystems/a-townchain/components/vm",
+          "layer": "L3",
+          "mission": "Canonical deterministic virtual machine implementation for ATC bytecode",
+          "dependencies": [
+            "ATCSTANDARDS",
+            "ATCALGORITHM"
+          ],
+          "prohibited_responsibilities": [
+            "Owning blockchain consensus",
+            "Expanding ShivaCore TCB by default",
+            "Maintaining a competing canonical VM in another repository"
+          ]
+        },
+        "ist": {
+          "assessment": "PRESENT_UNVERIFIED",
+          "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+          "default_branch": "main",
+          "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+          "source_paths": [
+            "components/vm/src/vm.rs",
+            "components/vm/src/ops.rs",
+            "components/vm/src/assembler.rs"
+          ],
+          "test_refs": [
+            "components/vm/tests/exec_chain_e2e.rs"
+          ],
+          "ci_evidence": [],
+          "spec_refs": [
+            "A-TownChain-Okosystems/atclang:specs/bytecode/ATCB-1.md"
+          ],
+          "branch": "main"
+        },
+        "delta": {
+          "status": "NOT_ASSESSED",
+          "gaps": [
+            "Function-by-function behavior, normative specification coverage and exact-SHA CI evidence remain to be assessed"
+          ]
+        }
+      },
+      "repository": "A-TownChain-Okosystems/a-townchain",
+      "canonical_path": "components/vm"
+    },
+    {
+      "id": "ATCALGORITHM",
+      "name": "ATC-Algorithm",
+      "canonical_location": "A-TownChain-Okosystems/a-townchain/components/algorithm",
+      "support_repository": "A-TownChain-Okosystems/atc-algorithm",
+      "layer": "L3",
+      "mission": "Canonical consensus and algorithm implementation for A-TownChain",
+      "functions": [
+        {
+          "id": "ATCALG-FUNC-001",
+          "name": "Consensus rule evaluation",
+          "specification": "Evaluate candidate blocks and state transitions against normative consensus rules",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Rules are versioned and normative",
+            "Invalid blocks are rejected",
+            "Evaluation is deterministic"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Evaluate candidate blocks and state transitions against normative consensus rules",
+              "acceptance": [
+                "Rules are versioned and normative",
+                "Invalid blocks are rejected",
+                "Evaluation is deterministic"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCALG-FUNC-002",
+          "name": "Block and protocol validation",
+          "specification": "Validate algorithm-owned structural and protocol requirements",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Malformed inputs are rejected",
+            "Validation is deterministic",
+            "Responsibilities are not duplicated across layers"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Validate algorithm-owned structural and protocol requirements",
+              "acceptance": [
+                "Malformed inputs are rejected",
+                "Validation is deterministic",
+                "Responsibilities are not duplicated across layers"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCALG-FUNC-003",
+          "name": "Fork choice and chain selection",
+          "specification": "Apply the normative chain-selection and tie-breaking rules",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Tie-breaking is specified",
+            "Reorganizations and adversarial cases are tested"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Apply the normative chain-selection and tie-breaking rules",
+              "acceptance": [
+                "Tie-breaking is specified",
+                "Reorganizations and adversarial cases are tested"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCALG-FUNC-004",
+          "name": "Consensus parameter validation",
+          "specification": "Validate parameters against active protocol version",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Invalid parameters are rejected",
+            "Upgrades are versioned",
+            "Runtime configuration cannot silently change consensus"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Validate parameters against active protocol version",
+              "acceptance": [
+                "Invalid parameters are rejected",
+                "Upgrades are versioned",
+                "Runtime configuration cannot silently change consensus"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATCALG-FUNC-005",
+          "name": "Consensus test vectors",
+          "specification": "Maintain versioned positive, negative and boundary vectors",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Independent implementations reproduce results",
+            "Protocol changes update affected vectors"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Maintain versioned positive, negative and boundary vectors",
+              "acceptance": [
+                "Independent implementations reproduce results",
+                "Protocol changes update affected vectors"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        }
+      ],
+      "specifications": {
+        "canonical_implementation": "a-townchain/components/algorithm",
+        "standalone_repository_role": "specifications/governance/support only; verify actual repository state",
+        "consensus_family": "AUDIT_REQUIRED",
+        "proof_of_history": "AUDIT_REQUIRED",
+        "proof_of_work": "AUDIT_REQUIRED",
+        "proof_of_stake": "AUDIT_REQUIRED",
+        "proof_of_involvement": "AUDIT_REQUIRED",
+        "finality_rule": "AUDIT_REQUIRED",
+        "fork_choice_rule": "AUDIT_REQUIRED"
+      },
+      "dependencies": [
+        "ATOWNCHAIN",
+        "ATCSTANDARDS"
+      ],
+      "prohibited_responsibilities": [
+        "Inventing undocumented consensus rules",
+        "Changing monetary/finality parameters outside protocol governance",
+        "Treating proposed consensus as finalized"
+      ],
+      "verification": {
+        "required_tests": [
+          "consensus_vectors",
+          "invalid_block_tests",
+          "fork_choice_tests",
+          "reorganization_tests",
+          "parameter_boundary_tests",
+          "determinism_tests"
+        ],
+        "evidence_status": "NOT_COLLECTED",
+        "verified_commit_sha": null
+      },
+      "soll_ist": {
+        "soll": {
+          "canonical_location": "A-TownChain-Okosystems/a-townchain/components/algorithm",
+          "layer": "L3",
+          "mission": "Canonical consensus and algorithm implementation for A-TownChain",
+          "dependencies": [
+            "ATOWNCHAIN",
+            "ATCSTANDARDS"
+          ],
+          "prohibited_responsibilities": [
+            "Inventing undocumented consensus rules",
+            "Changing monetary/finality parameters outside protocol governance",
+            "Treating proposed consensus as finalized"
+          ]
+        },
+        "ist": {
+          "assessment": "PRESENT_UNVERIFIED",
+          "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+          "default_branch": "main",
+          "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+          "source_paths": [
+            "components/algorithm/src/lib.rs",
+            "components/algorithm/src/poh.rs",
+            "components/algorithm/src/selection.rs"
+          ],
+          "test_refs": [],
+          "ci_evidence": [],
+          "spec_refs": [
+            "components/algorithm/specs/ATC-CONSENSUS-301-POH.md",
+            "components/algorithm/specs/ATC-CONSENSUS-305-FORK-CHOICE.md"
+          ],
+          "branch": "main"
+        },
+        "delta": {
+          "status": "NOT_ASSESSED",
+          "gaps": [
+            "Function-by-function behavior, normative specification coverage and exact-SHA CI evidence remain to be assessed"
+          ]
+        }
+      },
+      "repository": "A-TownChain-Okosystems/a-townchain",
+      "canonical_path": "components/algorithm"
+    },
+    {
+      "id": "SHIVACORE",
+      "name": "ShivaCore Kernel",
+      "canonical_location": "A-TownChain-Okosystems/globus-os/modules/atc-shivacore/kernel",
+      "layer": "L1",
+      "mission": "Rust no_std capability-based microkernel and minimal trusted computing base",
+      "functions": [
+        {
+          "id": "SHIVA-FUNC-001",
+          "name": "Capability enforcement",
+          "specification": "Require explicit authority for kernel-managed objects and resources",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Unauthorized access is denied",
+            "No ambient authority is introduced",
+            "Capability lifecycle and revocation are specified"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Require explicit authority for kernel-managed objects and resources",
+              "acceptance": [
+                "Unauthorized access is denied",
+                "No ambient authority is introduced",
+                "Capability lifecycle and revocation are specified"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "SHIVA-FUNC-002",
+          "name": "Process and address-space isolation",
+          "specification": "Isolate execution contexts and enforce memory permissions",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Cross-process isolation is tested",
+            "Invalid mappings are rejected",
+            "Teardown is safe"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Isolate execution contexts and enforce memory permissions",
+              "acceptance": [
+                "Cross-process isolation is tested",
+                "Invalid mappings are rejected",
+                "Teardown is safe"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "SHIVA-FUNC-003",
+          "name": "Virtual memory management",
+          "specification": "Manage page tables, mutation rollback, unmapping and mapping lifetime",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Partial mutation rolls back safely",
+            "Unmap and table reclamation preserve invariants",
+            "Mapping lifetime is tested"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Manage page tables, mutation rollback, unmapping and mapping lifetime",
+              "acceptance": [
+                "Partial mutation rolls back safely",
+                "Unmap and table reclamation preserve invariants",
+                "Mapping lifetime is tested"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "SHIVA-FUNC-004",
+          "name": "IPC and event delivery",
+          "specification": "Provide controlled IPC and defined event semantics",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Sender and receiver permissions are enforced",
+            "Queue/resource limits are explicit",
+            "Failure and cancellation are tested"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Provide controlled IPC and defined event semantics",
+              "acceptance": [
+                "Sender and receiver permissions are enforced",
+                "Queue/resource limits are explicit",
+                "Failure and cancellation are tested"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "SHIVA-FUNC-005",
+          "name": "Scheduling and process lifecycle",
+          "specification": "Manage process state transitions and scheduling",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Invalid transitions are rejected",
+            "Scheduler invariants are tested",
+            "Resource cleanup is deterministic"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Manage process state transitions and scheduling",
+              "acceptance": [
+                "Invalid transitions are rejected",
+                "Scheduler invariants are tested",
+                "Resource cleanup is deterministic"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "SHIVA-FUNC-006",
+          "name": "Interrupt, timer and HAL",
+          "specification": "Provide minimal controlled architecture-specific hardware interfaces",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Interrupt state is managed safely",
+            "Timer behavior is tested",
+            "Supported targets are documented"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Provide minimal controlled architecture-specific hardware interfaces",
+              "acceptance": [
+                "Interrupt state is managed safely",
+                "Timer behavior is tested",
+                "Supported targets are documented"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "SHIVA-FUNC-007",
+          "name": "Boot and platform trust",
+          "specification": "Define verifiable boot chain and platform trust-provider interfaces",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Boot artifacts and assumptions are documented",
+            "Secure Boot evidence exists for declared targets",
+            "Required trust failures fail closed"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Define verifiable boot chain and platform trust-provider interfaces",
+              "acceptance": [
+                "Boot artifacts and assumptions are documented",
+                "Secure Boot evidence exists for declared targets",
+                "Required trust failures fail closed"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        }
+      ],
+      "specifications": {
+        "language": "Rust",
+        "no_std": true,
+        "kernel_model": "Capability-based microkernel",
+        "trusted_computing_base": "Minimal",
+        "canonical_path": "modules/atc-shivacore/kernel",
+        "architecture_targets": "AUDIT_REQUIRED",
+        "boot_verification": "AUDIT_REQUIRED"
+      },
+      "service_boundary": {
+        "networking": "USERSPACE_SERVICE",
+        "blockchain": "USERSPACE_SERVICE",
+        "atc_vm": "USERSPACE_SERVICE",
+        "contract_execution": "USERSPACE_SERVICE",
+        "aurora_ai": "USERSPACE_SERVICE"
+      },
+      "dependencies": [
+        "HARDWARE_ABSTRACTION",
+        "BOOT_CHAIN",
+        "ATCSTANDARDS"
+      ],
+      "prohibited_responsibilities": [
+        "Owning blockchain consensus",
+        "Executing smart contracts inside TCB",
+        "Hosting Aurora AI decision logic in kernel",
+        "Embedding ordinary network stacks in kernel core"
+      ],
+      "verification": {
+        "required_tests": [
+          "no_std_build",
+          "capability_negative_tests",
+          "isolation_tests",
+          "vmm_mutation_rollback_tests",
+          "mapping_lifetime_tests",
+          "ipc_tests",
+          "boot_tests",
+          "secure_boot_evidence"
+        ],
+        "evidence_status": "NOT_COLLECTED",
+        "verified_commit_sha": null
+      },
+      "soll_ist": {
+        "soll": {
+          "canonical_location": "A-TownChain-Okosystems/globus-os/modules/atc-shivacore/kernel",
+          "layer": "L1",
+          "mission": "Rust no_std capability-based microkernel and minimal trusted computing base",
+          "dependencies": [
+            "HARDWARE_ABSTRACTION",
+            "BOOT_CHAIN",
+            "ATCSTANDARDS"
+          ],
+          "prohibited_responsibilities": [
+            "Owning blockchain consensus",
+            "Executing smart contracts inside TCB",
+            "Hosting Aurora AI decision logic in kernel",
+            "Embedding ordinary network stacks in kernel core"
+          ]
+        },
+        "ist": {
+          "assessment": "PRESENT_UNVERIFIED",
+          "repository_full_name": "A-TownChain-Okosystems/globus-os",
+          "default_branch": "main",
+          "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+          "source_paths": [
+            "modules/atc-shivacore/kernel/src/capability.rs",
+            "modules/atc-shivacore/kernel/src/ipc.rs",
+            "modules/atc-shivacore/kernel/src/process.rs",
+            "modules/atc-shivacore/kernel/src/vmm.rs"
+          ],
+          "test_refs": [
+            "tests/TESTPLAN.md"
+          ],
+          "ci_evidence": [],
+          "spec_refs": [
+            "docs/SYSTEM_ARCHITECTURE.md",
+            "modules/atc-shivacore/kernel/Cargo.toml"
+          ],
+          "branch": "main"
+        },
+        "delta": {
+          "status": "NOT_ASSESSED",
+          "gaps": [
+            "Function-by-function behavior, normative specification coverage and exact-SHA CI evidence remain to be assessed"
+          ]
+        }
+      },
+      "repository": "A-TownChain-Okosystems/globus-os",
+      "canonical_path": "modules/atc-shivacore/kernel"
+    },
+    {
+      "id": "ATOWNCHAIN",
+      "name": "A-TownChain",
+      "canonical_location": "A-TownChain-Okosystems/a-townchain",
+      "layer": "L3",
+      "mission": "Canonical blockchain core integrating transactions, blocks, ledger state, consensus and execution",
+      "functions": [
+        {
+          "id": "ATC-CHAIN-FUNC-001",
+          "name": "Transaction encoding and validation",
+          "specification": "Validate canonical transaction encoding, signatures, signing domains and field constraints",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Encoding is byte-exact",
+            "Invalid signatures are rejected",
+            "Legacy domains are not silently accepted"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Validate canonical transaction encoding, signatures, signing domains and field constraints",
+              "acceptance": [
+                "Encoding is byte-exact",
+                "Invalid signatures are rejected",
+                "Legacy domains are not silently accepted"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATC-CHAIN-FUNC-002",
+          "name": "Block validation and state transition",
+          "specification": "Validate blocks and apply protocol-defined state transitions atomically",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Invalid blocks cannot commit state",
+            "State transitions are deterministic",
+            "Failure and rollback are tested"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Validate blocks and apply protocol-defined state transitions atomically",
+              "acceptance": [
+                "Invalid blocks cannot commit state",
+                "State transitions are deterministic",
+                "Failure and rollback are tested"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATC-CHAIN-FUNC-003",
+          "name": "Ledger and account state",
+          "specification": "Maintain canonical balances, nonces and protocol state using exact arithmetic",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Overflow is rejected",
+            "State encoding is canonical",
+            "Ledger invariants are tested"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Maintain canonical balances, nonces and protocol state using exact arithmetic",
+              "acceptance": [
+                "Overflow is rejected",
+                "State encoding is canonical",
+                "Ledger invariants are tested"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATC-CHAIN-FUNC-004",
+          "name": "Block production integration",
+          "specification": "Integrate consensus, transaction validation and execution",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Production and validation use the same rules",
+            "Invalid execution results are rejected",
+            "Failure cases are tested"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Integrate consensus, transaction validation and execution",
+              "acceptance": [
+                "Production and validation use the same rules",
+                "Invalid execution results are rejected",
+                "Failure cases are tested"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATC-CHAIN-FUNC-005",
+          "name": "Canonical VM integration",
+          "specification": "Invoke the canonical VM through a versioned execution interface",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "No competing VM is used",
+            "Compatibility is explicit",
+            "Limits and failures propagate"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Invoke the canonical VM through a versioned execution interface",
+              "acceptance": [
+                "No competing VM is used",
+                "Compatibility is explicit",
+                "Limits and failures propagate"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "ATC-CHAIN-FUNC-006",
+          "name": "Protocol parameters and upgrades",
+          "specification": "Enforce versioned monetary, timing and protocol parameters",
+          "status": "SPECIFIED",
+          "acceptance": [
+            "Parameters match normative specification",
+            "Exact byte encodings are tested",
+            "Upgrades are versioned"
+          ],
+          "parameters": {
+            "chain_id": 658467,
+            "max_supply_atc": 360000000,
+            "decimals": 18,
+            "block_time_seconds": 360,
+            "halving_interval_blocks": 360000,
+            "amount_encoding": "u128, 16-byte big-endian",
+            "counter_encoding": "u64, 8-byte big-endian"
+          },
+          "soll_ist": {
+            "soll": {
+              "behavior": "Enforce versioned monetary, timing and protocol parameters",
+              "acceptance": [
+                "Parameters match normative specification",
+                "Exact byte encodings are tested",
+                "Upgrades are versioned"
+              ],
+              "catalog_status": "SPECIFIED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+              "branch": "main",
+              "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        }
+      ],
+      "specifications": {
+        "canonical_vm_path": "components/vm",
+        "canonical_algorithm_path": "components/algorithm",
+        "transaction_signature_scheme": "secp256k1 ECDSA",
+        "signature_nonce_generation": "RFC6979 with SHA-256",
+        "signature_normalization": "low-S",
+        "public_key_encoding": "33-byte compressed SEC1",
+        "signature_encoding": "64-byte compact r||s",
+        "transaction_domain": "ATC-TX-DOMAIN-V2",
+        "consensus_finality": "AUDIT_REQUIRED",
+        "sharding_status": "AUDIT_REQUIRED"
+      },
+      "dependencies": [
+        "ATCVM",
+        "ATCALGORITHM",
+        "ATCSTANDARDS",
+        "ATCTOOLCHAIN"
+      ],
+      "prohibited_responsibilities": [
+        "Maintaining competing VM implementation",
+        "Using floating point for consensus-critical amounts",
+        "Changing consensus parameters without versioned governance"
+      ],
+      "verification": {
+        "required_tests": [
+          "transaction_vectors",
+          "signature_negative_tests",
+          "canonical_encoding_tests",
+          "ledger_invariant_tests",
+          "state_transition_tests",
+          "block_validation_tests",
+          "vm_integration_tests",
+          "protocol_upgrade_tests"
+        ],
+        "evidence_status": "NOT_COLLECTED",
+        "verified_commit_sha": null
+      },
+      "soll_ist": {
+        "soll": {
+          "canonical_location": "A-TownChain-Okosystems/a-townchain",
+          "layer": "L3",
+          "mission": "Canonical blockchain core integrating transactions, blocks, ledger state, consensus and execution",
+          "dependencies": [
+            "ATCVM",
+            "ATCALGORITHM",
+            "ATCSTANDARDS",
+            "ATCTOOLCHAIN"
+          ],
+          "prohibited_responsibilities": [
+            "Maintaining competing VM implementation",
+            "Using floating point for consensus-critical amounts",
+            "Changing consensus parameters without versioned governance"
+          ]
+        },
+        "ist": {
+          "assessment": "PRESENT_UNVERIFIED",
+          "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+          "default_branch": "main",
+          "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+          "source_paths": [
+            "components/node",
+            "components/vm",
+            "components/algorithm",
+            "components/wallet"
+          ],
+          "test_refs": [
+            "components/vm/tests/exec_chain_e2e.rs"
+          ],
+          "ci_evidence": [],
+          "spec_refs": [
+            "components/algorithm/specs/ATC-CONSENSUS-301-POH.md"
+          ],
+          "branch": "main"
+        },
+        "delta": {
+          "status": "NOT_ASSESSED",
+          "gaps": [
+            "Function-by-function behavior, normative specification coverage and exact-SHA CI evidence remain to be assessed"
+          ]
+        }
+      },
+      "repository": "A-TownChain-Okosystems/a-townchain",
+      "canonical_path": "/"
+    },
+    {
+      "id": "GLOBUSOS",
+      "name": "GlobusOS",
+      "canonical_location": "A-TownChain-Okosystems/globus-os",
+      "layer": "L4",
+      "mission": "Operating-system integration and service platform built around ShivaCore",
+      "functions": [
+        {
+          "id": "GLOBUS-FUNC-001",
+          "name": "Boot and kernel handoff",
+          "specification": "Initialize platform and transfer control to canonical ShivaCore kernel",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Boot failures are explicit",
+            "Handoff parameters are validated",
+            "Boot artifacts are reproducibly identified"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Initialize platform and transfer control to canonical ShivaCore kernel",
+              "acceptance": [
+                "Boot failures are explicit",
+                "Handoff parameters are validated",
+                "Boot artifacts are reproducibly identified"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "GLOBUS-FUNC-002",
+          "name": "Service lifecycle management",
+          "specification": "Start, supervise, isolate and stop user-space services under explicit authority",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Service identities and permissions are explicit",
+            "Failures do not grant authority",
+            "Lifecycle transitions are tested"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Start, supervise, isolate and stop user-space services under explicit authority",
+              "acceptance": [
+                "Service identities and permissions are explicit",
+                "Failures do not grant authority",
+                "Lifecycle transitions are tested"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "GLOBUS-FUNC-003",
+          "name": "Networking service integration",
+          "specification": "Provide networking in service space rather than expanding kernel TCB",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Networking stays outside kernel core",
+            "IPC and capability boundaries are enforced",
+            "Network failure cannot bypass isolation"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Provide networking in service space rather than expanding kernel TCB",
+              "acceptance": [
+                "Networking stays outside kernel core",
+                "IPC and capability boundaries are enforced",
+                "Network failure cannot bypass isolation"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "GLOBUS-FUNC-004",
+          "name": "ATC service integration",
+          "specification": "Integrate node, VM, wallet and blockchain services through explicit interfaces",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Blockchain is not a kernel responsibility",
+            "Interfaces are versioned",
+            "Canonical implementations are reused"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Integrate node, VM, wallet and blockchain services through explicit interfaces",
+              "acceptance": [
+                "Blockchain is not a kernel responsibility",
+                "Interfaces are versioned",
+                "Canonical implementations are reused"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "GLOBUS-FUNC-005",
+          "name": "Aurora AI service integration",
+          "specification": "Host AI runtime and policy-mediated tools outside ShivaCore TCB",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "AI has no implicit kernel authority",
+            "Actions pass policy and capability checks",
+            "Tool execution crosses explicit boundaries"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Host AI runtime and policy-mediated tools outside ShivaCore TCB",
+              "acceptance": [
+                "AI has no implicit kernel authority",
+                "Actions pass policy and capability checks",
+                "Tool execution crosses explicit boundaries"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "GLOBUS-FUNC-006",
+          "name": "Hardware abstraction",
+          "specification": "Define interfaces for supported CPU, memory, timer, interrupt and device capabilities",
+          "status": "AUDIT_REQUIRED",
+          "acceptance": [
+            "Supported platforms are enumerated",
+            "Hardware failures are explicit",
+            "HAL interfaces are tested"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Define interfaces for supported CPU, memory, timer, interrupt and device capabilities",
+              "acceptance": [
+                "Supported platforms are enumerated",
+                "Hardware failures are explicit",
+                "HAL interfaces are tested"
+              ],
+              "catalog_status": "AUDIT_REQUIRED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/globus-os",
+              "branch": "main",
+              "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        }
+      ],
+      "specifications": {
+        "kernel_owner": "SHIVACORE",
+        "service_architecture": "USERSPACE_FIRST",
+        "networking_placement": "SERVICE_SPACE",
+        "blockchain_placement": "SERVICE_SPACE",
+        "ai_placement": "SERVICE_SPACE",
+        "supported_boot_targets": "AUDIT_REQUIRED",
+        "driver_model": "AUDIT_REQUIRED"
+      },
+      "dependencies": [
+        "SHIVACORE",
+        "ATCSTANDARDS",
+        "ATCTOOLCHAIN",
+        "AURORAAI"
+      ],
+      "prohibited_responsibilities": [
+        "Duplicating canonical ShivaCore kernel",
+        "Moving ordinary networking/blockchain services into TCB",
+        "Giving AI ambient system authority"
+      ],
+      "verification": {
+        "required_tests": [
+          "boot_integration",
+          "service_lifecycle_tests",
+          "capability_boundary_tests",
+          "network_service_tests",
+          "blockchain_service_tests",
+          "ai_policy_boundary_tests",
+          "target_build_matrix"
+        ],
+        "evidence_status": "NOT_COLLECTED",
+        "verified_commit_sha": null
+      },
+      "soll_ist": {
+        "soll": {
+          "canonical_location": "A-TownChain-Okosystems/globus-os",
+          "layer": "L4",
+          "mission": "Operating-system integration and service platform built around ShivaCore",
+          "dependencies": [
+            "SHIVACORE",
+            "ATCSTANDARDS",
+            "ATCTOOLCHAIN",
+            "AURORAAI"
+          ],
+          "prohibited_responsibilities": [
+            "Duplicating canonical ShivaCore kernel",
+            "Moving ordinary networking/blockchain services into TCB",
+            "Giving AI ambient system authority"
+          ]
+        },
+        "ist": {
+          "assessment": "PRESENT_UNVERIFIED",
+          "repository_full_name": "A-TownChain-Okosystems/globus-os",
+          "default_branch": "main",
+          "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+          "source_paths": [
+            "modules/atc-bootloader/src",
+            "modules/atc-shivacore/kernel/src",
+            "system/net",
+            "system/services",
+            "modules/atc-shivacore/service_space"
+          ],
+          "test_refs": [
+            "tests/TESTPLAN.md"
+          ],
+          "ci_evidence": [],
+          "spec_refs": [
+            "docs/SYSTEM_ARCHITECTURE.md",
+            "docs/architecture/GLOBUSOS_PLATFORM_ARCHITECTURE.md"
+          ],
+          "branch": "main"
+        },
+        "delta": {
+          "status": "NOT_ASSESSED",
+          "gaps": [
+            "Function-by-function behavior, normative specification coverage and exact-SHA CI evidence remain to be assessed"
+          ]
+        }
+      },
+      "repository": "A-TownChain-Okosystems/globus-os",
+      "canonical_path": "/"
+    },
+    {
+      "id": "GENESISENGINE",
+      "name": "Genesis Engine",
+      "canonical_location": "AUDIT_REQUIRED",
+      "layer": "L7",
+      "mission": "Governed genesis configuration, deterministic artifact generation and initial-chain validation",
+      "functions": [
+        {
+          "id": "GENESIS-FUNC-001",
+          "name": "Genesis specification ingestion",
+          "specification": "Load and validate versioned genesis manifest against normative schema",
+          "status": "PROPOSED",
+          "acceptance": [
+            "Required fields are enforced",
+            "Schema version is explicit",
+            "Unknown-field policy is defined"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Load and validate versioned genesis manifest against normative schema",
+              "acceptance": [
+                "Required fields are enforced",
+                "Schema version is explicit",
+                "Unknown-field policy is defined"
+              ],
+              "catalog_status": "PROPOSED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/genesis-engine",
+              "branch": "main",
+              "commit_sha": "c16b2898c67159a7a7d3b30309a503a11a268d67",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "GENESIS-FUNC-002",
+          "name": "Genesis artifact generation",
+          "specification": "Generate canonical genesis artifacts from validated configuration",
+          "status": "PROPOSED",
+          "acceptance": [
+            "Identical inputs produce identical bytes",
+            "Artifact format is versioned",
+            "Artifacts have cryptographic digests"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Generate canonical genesis artifacts from validated configuration",
+              "acceptance": [
+                "Identical inputs produce identical bytes",
+                "Artifact format is versioned",
+                "Artifacts have cryptographic digests"
+              ],
+              "catalog_status": "PROPOSED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/genesis-engine",
+              "branch": "main",
+              "commit_sha": "c16b2898c67159a7a7d3b30309a503a11a268d67",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "GENESIS-FUNC-003",
+          "name": "Initial allocation validation",
+          "specification": "Validate initial balances, allocations and supply invariants",
+          "status": "PROPOSED",
+          "acceptance": [
+            "Allocation cannot exceed protocol supply",
+            "Integer arithmetic is exact",
+            "Duplicate recipients follow normative rules"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Validate initial balances, allocations and supply invariants",
+              "acceptance": [
+                "Allocation cannot exceed protocol supply",
+                "Integer arithmetic is exact",
+                "Duplicate recipients follow normative rules"
+              ],
+              "catalog_status": "PROPOSED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/genesis-engine",
+              "branch": "main",
+              "commit_sha": "c16b2898c67159a7a7d3b30309a503a11a268d67",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "GENESIS-FUNC-004",
+          "name": "Genesis hash and reproducibility",
+          "specification": "Compute and independently verify genesis identifiers and hashes",
+          "status": "PROPOSED",
+          "acceptance": [
+            "Serialization and hash inputs are normative",
+            "Independent runs yield identical hashes",
+            "Golden vectors are versioned"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Compute and independently verify genesis identifiers and hashes",
+              "acceptance": [
+                "Serialization and hash inputs are normative",
+                "Independent runs yield identical hashes",
+                "Golden vectors are versioned"
+              ],
+              "catalog_status": "PROPOSED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/genesis-engine",
+              "branch": "main",
+              "commit_sha": "c16b2898c67159a7a7d3b30309a503a11a268d67",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "GENESIS-FUNC-005",
+          "name": "Node acceptance validation",
+          "specification": "Verify artifacts using canonical A-TownChain validation logic",
+          "status": "PROPOSED",
+          "acceptance": [
+            "Canonical node accepts valid artifacts",
+            "Mutated artifacts are rejected",
+            "No divergent parallel rules exist"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Verify artifacts using canonical A-TownChain validation logic",
+              "acceptance": [
+                "Canonical node accepts valid artifacts",
+                "Mutated artifacts are rejected",
+                "No divergent parallel rules exist"
+              ],
+              "catalog_status": "PROPOSED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/genesis-engine",
+              "branch": "main",
+              "commit_sha": "c16b2898c67159a7a7d3b30309a503a11a268d67",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        },
+        {
+          "id": "GENESIS-FUNC-006",
+          "name": "Release provenance",
+          "specification": "Record source SHA, configuration digest, tool versions and output evidence",
+          "status": "PROPOSED",
+          "acceptance": [
+            "Artifacts trace to exact source/config",
+            "Logs and test evidence are retained",
+            "Unverified outputs are not marked VERIFIED"
+          ],
+          "soll_ist": {
+            "soll": {
+              "behavior": "Record source SHA, configuration digest, tool versions and output evidence",
+              "acceptance": [
+                "Artifacts trace to exact source/config",
+                "Logs and test evidence are retained",
+                "Unverified outputs are not marked VERIFIED"
+              ],
+              "catalog_status": "PROPOSED"
+            },
+            "ist": {
+              "assessment": "NOT_ASSESSED",
+              "repository_full_name": "A-TownChain-Okosystems/genesis-engine",
+              "branch": "main",
+              "commit_sha": "c16b2898c67159a7a7d3b30309a503a11a268d67",
+              "source_paths": [],
+              "test_refs": [],
+              "ci_evidence": []
+            },
+            "delta": {
+              "status": "NOT_ASSESSED",
+              "gaps": [
+                "Function-level implementation and test evidence not yet mapped"
+              ]
+            }
+          }
+        }
+      ],
+      "specifications": {
+        "repository_owner": "AUDIT_REQUIRED",
+        "genesis_schema": "REQUIRED",
+        "serialization_format": "REQUIRED",
+        "hash_algorithm": "REQUIRED",
+        "allocation_rules": "INHERIT_FROM_NORMATIVE_PROTOCOL",
+        "reproducible_build_contract": "REQUIRED",
+        "production_status": "NOT_CONFIRMED"
+      },
+      "dependencies": [
+        "ATOWNCHAIN",
+        "ATCALGORITHM",
+        "ATCSTANDARDS",
+        "ATCTOOLCHAIN"
+      ],
+      "prohibited_responsibilities": [
+        "Inventing monetary parameters",
+        "Changing consensus rules independently",
+        "Generating undocumented or non-reproducible artifacts"
+      ],
+      "verification": {
+        "required_tests": [
+          "schema_validation",
+          "allocation_invariant_tests",
+          "canonical_serialization_tests",
+          "genesis_hash_vectors",
+          "reproducibility_tests",
+          "node_acceptance_tests",
+          "provenance_tests"
+        ],
+        "evidence_status": "NOT_COLLECTED",
+        "verified_commit_sha": null
+      },
+      "soll_ist": {
+        "soll": {
+          "canonical_location": "AUDIT_REQUIRED",
+          "layer": "L7",
+          "mission": "Governed genesis configuration, deterministic artifact generation and initial-chain validation",
+          "dependencies": [
+            "ATOWNCHAIN",
+            "ATCALGORITHM",
+            "ATCSTANDARDS",
+            "ATCTOOLCHAIN"
+          ],
+          "prohibited_responsibilities": [
+            "Inventing monetary parameters",
+            "Changing consensus rules independently",
+            "Generating undocumented or non-reproducible artifacts"
+          ]
+        },
+        "ist": {
+          "assessment": "PRESENT_UNVERIFIED",
+          "repository_full_name": "A-TownChain-Okosystems/genesis-engine",
+          "default_branch": "main",
+          "commit_sha": "c16b2898c67159a7a7d3b30309a503a11a268d67",
+          "source_paths": [
+            "modules/atc-genesis-build/src/lib.rs",
+            "modules/atc-genesis-cli/src/main.rs",
+            "modules/atc-genesis-runtime/src/lib.rs"
+          ],
+          "test_refs": [
+            "modules/atc-genesis-runtime/tests/lifecycle.rs",
+            "modules/atc-genesis-engine/engine/tests/test_ecs.py"
+          ],
+          "ci_evidence": [],
+          "spec_refs": [
+            "docs/specs/GEN-DET-001-DETERMINISM.md"
+          ],
+          "branch": "main"
+        },
+        "delta": {
+          "status": "NOT_ASSESSED",
+          "gaps": [
+            "Function-by-function behavior, normative specification coverage and exact-SHA CI evidence remain to be assessed"
+          ]
+        }
+      },
+      "repository": "A-TownChain-Okosystems/genesis-engine",
+      "canonical_path": "/"
+    }
+  ],
+  "cross_system_requirements": [
+    {
+      "id": "ATC-CROSS-001",
+      "name": "Canonical ownership",
+      "requirement": "Each production implementation has exactly one canonical repository",
+      "acceptance": "No active competing implementation exists for the same canonical component"
+    },
+    {
+      "id": "ATC-CROSS-002",
+      "name": "Versioned interfaces",
+      "requirement": "Cross-component interfaces and binary formats are versioned and testable",
+      "acceptance": "Compatibility and rejection behavior are covered by tests"
+    },
+    {
+      "id": "ATC-CROSS-003",
+      "name": "Exact-SHA evidence",
+      "requirement": "Verification refers to exact tested commit SHA",
+      "acceptance": "Evidence records workflow run, job, step, exit code and relevant log or artifact"
+    },
+    {
+      "id": "ATC-CROSS-004",
+      "name": "Fail-closed validation",
+      "requirement": "Malformed input, missing authority and unsupported versions fail explicitly",
+      "acceptance": "Negative tests demonstrate rejection behavior"
+    },
+    {
+      "id": "ATC-CROSS-005",
+      "name": "Status integrity",
+      "requirement": "Implementation and verification are not inferred from file presence or PR merge state",
+      "acceptance": "VERIFIED requires defined technical gates and exact-SHA evidence"
+    },
+    {
+      "id": "ATC-CROSS-006",
+      "name": "Dependency integrity",
+      "requirement": "Dependencies are explicit and conflicts are tracked",
+      "acceptance": "Integration tests cover declared cross-component contracts"
+    }
+  ],
+  "audit_requirements": [
+    "Confirm repository names, canonical paths, default branches and current SHAs",
+    "Compare catalog entries with current default-branch source",
+    "Collect public APIs, modules, types, commands, formats and tests",
+    "Link each specification to normative document and version",
+    "Link each implemented function to source paths and tests",
+    "Record exact SHA and CI Run-to-Job-to-Step evidence",
+    "Resolve duplicate ownership, specification conflicts and missing dependencies",
+    "Do not promote AUDIT_REQUIRED or PROPOSED to VERIFIED without evidence",
+    "For each system and function, record Soll separately from Ist; keep unassessed Ist explicit",
+    "Record source paths, test references and exact commit SHA for every Ist claim",
+    "Set delta to MATCH only when acceptance criteria are demonstrated by source and tests",
+    "Set VERIFIED only with exact-SHA Run-to-Job-to-Step evidence and passing exit status",
+    "Record gaps, conflicts and blockers instead of silently upgrading status",
+    "Store repository inventory snapshots with default branch, exact commit SHA and canonical source/test/spec paths",
+    "Distinguish path presence from behavior-level implementation and exact-SHA verification",
+    "Run the machine-readable catalog validator in CI on every pull request touching the catalog or validator",
+    "Bind each function to source and test references before evaluating its Soll/Ist delta",
+    "Bind CI run, job, step, exit code and log/artifact URL to the same tested commit SHA before VERIFIED"
+  ],
+  "state_model": {
+    "description": "Machine-readable Soll/Ist comparison. Soll is the target defined by this catalog; Ist is only populated from inspected source and reproducible evidence. Unknown is never treated as absent or passing.",
+    "states": [
+      "NOT_ASSESSED",
+      "MISSING",
+      "PARTIAL",
+      "PRESENT_UNVERIFIED",
+      "IMPLEMENTED",
+      "VERIFIED",
+      "RESIDUAL",
+      "BLOCKED"
+    ],
+    "delta_states": [
+      "NOT_ASSESSED",
+      "MATCH",
+      "PARTIAL",
+      "GAP",
+      "CONFLICT",
+      "BLOCKED"
+    ],
+    "evidence_required_for_verified": [
+      "repository_full_name",
+      "branch",
+      "commit_sha",
+      "source_paths",
+      "test_refs",
+      "workflow_run_id",
+      "job_name",
+      "step_name",
+      "exit_code",
+      "log_or_artifact_url"
+    ],
+    "rule": "Do not infer IST from the existing catalog status, file presence, PR state, or unverified claims."
+  },
+  "repository_inventory": {
+    "inventory_method": "GitHub REST default-branch commit metadata plus recursive git tree inventory",
+    "inventory_scope": "Six repositories support seven catalog systems; ATC-VM and ATC-Algorithm are canonical subpaths in a-townchain",
+    "snapshots": [
+      {
+        "repository_full_name": "A-TownChain-Okosystems/atclang",
+        "default_branch": "main",
+        "commit_sha": "21c595dc389b0c62e1531a8c5fbbcd2c68794efb",
+        "tree_blob_count": 138,
+        "canonical_paths": [
+          "crates/atc-core/src/lexer.rs",
+          "crates/atc-core/src/parser.rs",
+          "crates/atc-core/src/ast.rs",
+          "crates/atc-core/src/native.rs",
+          "crates/atc-core/src/bytecode.rs",
+          "crates/atc-core/tests/cli.rs",
+          "crates/atc-core/tests/differential.rs",
+          "specs/language/SPEC.md",
+          "specs/bytecode/ATCB-1.md"
+        ],
+        "inventory_status": "PRESENT_UNVERIFIED",
+        "ci_evidence_status": "NOT_COLLECTED"
+      },
+      {
+        "repository_full_name": "A-TownChain-Okosystems/a-townchain",
+        "default_branch": "main",
+        "commit_sha": "0419b444dec4749cec7b146950d1304f5a406c25",
+        "tree_blob_count": 1151,
+        "canonical_paths": [
+          "components/vm/src/vm.rs",
+          "components/vm/src/ops.rs",
+          "components/vm/src/assembler.rs",
+          "components/vm/tests/exec_chain_e2e.rs",
+          "components/algorithm/src/lib.rs",
+          "components/algorithm/src/poh.rs",
+          "components/algorithm/src/selection.rs",
+          "components/algorithm/specs/ATC-CONSENSUS-301-POH.md",
+          "components/algorithm/specs/ATC-CONSENSUS-305-FORK-CHOICE.md"
+        ],
+        "inventory_status": "PRESENT_UNVERIFIED",
+        "ci_evidence_status": "NOT_COLLECTED"
+      },
+      {
+        "repository_full_name": "A-TownChain-Okosystems/globus-os",
+        "default_branch": "main",
+        "commit_sha": "fef3af85ff9ecab90c25bc179e2a3284fa17f633",
+        "tree_blob_count": 460,
+        "canonical_paths": [
+          "modules/atc-shivacore/kernel/src/capability.rs",
+          "modules/atc-shivacore/kernel/src/ipc.rs",
+          "modules/atc-shivacore/kernel/src/process.rs",
+          "modules/atc-shivacore/kernel/src/vmm.rs",
+          "modules/atc-shivacore/kernel/Cargo.toml",
+          "tests/TESTPLAN.md"
+        ],
+        "inventory_status": "PRESENT_UNVERIFIED",
+        "ci_evidence_status": "NOT_COLLECTED"
+      },
+      {
+        "repository_full_name": "A-TownChain-Okosystems/genesis-engine",
+        "default_branch": "main",
+        "commit_sha": "c16b2898c67159a7a7d3b30309a503a11a268d67",
+        "tree_blob_count": 194,
+        "canonical_paths": [
+          "modules/atc-genesis-build/src/lib.rs",
+          "modules/atc-genesis-cli/src/main.rs",
+          "modules/atc-genesis-runtime/src/lib.rs",
+          "modules/atc-genesis-runtime/tests/lifecycle.rs",
+          "docs/specs/GEN-DET-001-DETERMINISM.md",
+          "tools/determinism_check.py"
+        ],
+        "inventory_status": "PRESENT_UNVERIFIED",
+        "ci_evidence_status": "NOT_COLLECTED"
+      },
+      {
+        "repository_full_name": "A-TownChain-Okosystems/atc-standards",
+        "default_branch": "main",
+        "commit_sha": "01368510be5d9325a8f051c881650161ee11f9fd",
+        "tree_blob_count": 2155,
+        "canonical_paths": [
+          "atc/ATC-92-ATCLANG_LANGUAGE_SPEC.md",
+          "docs/SPEC-ATC-PROTOCOL-FAMILY-001.md",
+          "registry/standards/ATC-STD-000.yaml"
+        ],
+        "inventory_status": "PRESENT_UNVERIFIED",
+        "ci_evidence_status": "NOT_COLLECTED"
+      },
+      {
+        "repository_full_name": "A-TownChain-Okosystems/atc-toolchain",
+        "default_branch": "main",
+        "commit_sha": "82fe4a238603476d7c6c19d5c3044c88b71c5f2d",
+        "tree_blob_count": 10,
+        "canonical_paths": [
+          "README.md",
+          "tests/test_governance_smoke.py",
+          ".github/workflows/toolchain.yml"
+        ],
+        "inventory_status": "PRESENT_UNVERIFIED",
+        "ci_evidence_status": "NOT_COLLECTED"
+      }
+    ],
+    "limitations": [
+      "Tree presence establishes repository/path existence only; it does not prove correctness, completeness, build success, or runtime behavior.",
+      "No function is promoted to IMPLEMENTED or VERIFIED by this inventory.",
+      "Per-repository CI run/job/step/exit/log evidence has not yet been bound to these exact source SHAs."
+    ]
+  },
+  "dependency_registry": {
+    "ATCVM": {
+      "kind": "catalog_system",
+      "system_id": "ATCVM"
+    },
+    "ATCALGORITHM": {
+      "kind": "catalog_system",
+      "system_id": "ATCALGORITHM"
+    },
+    "ATOWNCHAIN": {
+      "kind": "catalog_system",
+      "system_id": "ATOWNCHAIN"
+    },
+    "SHIVACORE": {
+      "kind": "catalog_system",
+      "system_id": "SHIVACORE"
+    },
+    "ATCSTANDARDS": {
+      "kind": "external_repository",
+      "repository_full_name": "A-TownChain-Okosystems/atc-standards",
+      "default_branch": "main"
+    },
+    "ATCTOOLCHAIN": {
+      "kind": "external_repository",
+      "repository_full_name": "A-TownChain-Okosystems/atc-toolchain",
+      "default_branch": "main"
+    },
+    "AURORAAI": {
+      "kind": "external_repository",
+      "repository_full_name": "A-TownChain-Okosystems/aurora-ai",
+      "default_branch": "main",
+      "status": "AUDIT_REQUIRED"
+    },
+    "HARDWARE_ABSTRACTION": {
+      "kind": "external_contract",
+      "status": "AUDIT_REQUIRED"
+    },
+    "BOOT_CHAIN": {
+      "kind": "external_contract",
+      "status": "AUDIT_REQUIRED"
+    }
+  }
+}
