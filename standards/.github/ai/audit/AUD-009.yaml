@@ -1,0 +1,11 @@
+id: AUD-009
+agent_id: ATC-AI-ARCH-001
+task_id: ATC-TASK-0049
+repository: atc-standards
+action: "ATC-STD-MD-001 v1.0.0 CANDIDATE integriert (Owner-Entwurf Michael): ATC Markdown & Documentation Standard — REQ-MD-001..016 (Pflichtdateien, Hierarchie, UPPER_SNAKE_CASE, Metadaten-Header, Dokument-Status/SemVer, Tabellen, Codeblöcke, Links, Cross-Refs, CHANGELOG-/STATUS-Format, AI-Agenten-Schnittstelle, Drift-Gate, Dokumenttypen); Normenhierarchie README-001 (lex specialis) festgeschrieben; MD-Compliance-Validator tools/atc-md-validator/check_md.py (Gates MD-01..10) implementiert; Selbstkompliance: CONTRIBUTING/GOVERNANCE/CODE_OF_CONDUCT erstellt, Fences deklariert, CHANGELOG versioniert — atc-standards CONFORM; Registry 83 Standards (82 APPROVED + 1 CANDIDATE)"
+files_changed: "standards/md/ATC-STD-MD-001.md, tools/atc-md-validator/, CONTRIBUTING.md, GOVERNANCE.md, CODE_OF_CONDUCT.md, registry/*, schemas/naming-conventions.schema.json, .github/ai/agent.yaml, AGENT_MANIFEST.md, STATUS.md, ROADMAP.md, CHANGELOG.md, README.md, ARCHITECTURE.md"
+result: COMPLETED
+tests: {validate_all: "(folgt)", md_gate: "CONFORM"}
+commit: "(dieser Commit)"
+timestamp: "2026-09-07T20:52:00+02:00"
+human_approval: "Owner-Entwurf (ATC Markdown Repository Standard) 07.09.2026 — §9-Freigabe des Standards ausstehend (Todo #117)"
