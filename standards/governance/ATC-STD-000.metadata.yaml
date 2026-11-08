@@ -1,0 +1,16 @@
+# GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Phase 1) - NICHT MANUELL BEARBEITEN
+authority: A-TownChain Ecosystems
+category: governance
+conformance:
+  required: true
+dependencies: []
+id: ATC-STD-000
+implementation:
+  status: specification_only
+normative: true
+owner: ShivaCoreDev
+source_file: governance/ATC-STD-000.md
+status: approved
+title: 'Standards Governance & Specification Standard (Verfassung; v1.3.0: Domaenen-Familien-Verweis
+  §7.7)'
+version: 1.3.0
