@@ -21,6 +21,9 @@ USAGE:
     atc check   <verzeichnis> validiert alle .atc eines Verzeichnisses
                               projektweit (Basen, Typnamen, Duplikate)
     atc check --strict <ziel> behandelt Warnungen als Fehler
+    atc abi     <ziel>        kanonische Vertrags-ABI (JSONL, eine Zeile je
+                              Vertrag, inkl. abi_sha256)
+    atc abi --hash <ziel>     nur die ABI-Hashes
 
 EXIT-CODES:
     0  ok
@@ -36,7 +39,11 @@ fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
     // Aufruf: atc <modus> <datei> | atc check --strict <datei>
     let strict = args.iter().skip(1).any(|a| a == "--strict");
-    let positional: Vec<&String> = args.iter().filter(|a| *a != "--strict").collect();
+    let hashes_only = args.iter().skip(1).any(|a| a == "--hash");
+    let positional: Vec<&String> = args
+        .iter()
+        .filter(|a| *a != "--strict" && *a != "--hash")
+        .collect();
     if positional.len() != 2 {
         eprintln!("{USAGE}");
         return ExitCode::from(2);
@@ -46,6 +53,9 @@ fn main() -> ExitCode {
     // Verzeichnisse werden projektweit geprueft, bevor eine Datei gelesen wird.
     if mode == "check" && std::path::Path::new(path).is_dir() {
         return check_project_dir(path, strict);
+    }
+    if mode == "abi" {
+        return emit_abi(path, hashes_only);
     }
     let src = match fs::read_to_string(path) {
         Ok(s) => s,
@@ -232,4 +242,74 @@ fn check_project_dir(dir: &str, strict: bool) -> ExitCode {
         return ExitCode::FAILURE;
     }
     ExitCode::SUCCESS
+}
+
+/// Kanonische Vertrags-ABI ausgeben: JSONL, eine Zeile je Vertrag.
+fn emit_abi(target: &str, hashes_only: bool) -> ExitCode {
+    let mut paths = Vec::new();
+    if std::path::Path::new(target).is_dir() {
+        scan_atc(std::path::Path::new(target), &mut paths);
+        paths.sort();
+    } else {
+        paths.push(std::path::PathBuf::from(target));
+    }
+    if paths.is_empty() {
+        eprintln!("Fehler: keine .atc-Quellen unter {target}");
+        return ExitCode::from(2);
+    }
+
+    let mut emitted = 0usize;
+    for p in &paths {
+        let label = p.to_string_lossy().to_string();
+        let src = match fs::read_to_string(p) {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("Fehler: nicht lesbar ({label}): {e}");
+                return ExitCode::from(2);
+            }
+        };
+        let program = match parse_program(&src) {
+            Ok(prog) => prog,
+            Err(e) => {
+                eprintln!("Kompilierfehler in {label}: {}", e.message);
+                return ExitCode::FAILURE;
+            }
+        };
+        for abi in atc_core::abi::from_program(&program) {
+            emitted += 1;
+            let hash = abi.sha256();
+            if hashes_only {
+                println!("{hash}  {label}  {}", abi.contract);
+            } else {
+                println!(
+                    "{{\"path\":{},\"abi_sha256\":\"{}\",\"abi\":{}}}",
+                    json_quote(&label),
+                    hash,
+                    abi.to_json()
+                );
+            }
+        }
+    }
+    if emitted == 0 {
+        // Quellen ohne Vertrag sind legitim (Bibliothek, archivierter Stub).
+        eprintln!("Hinweis: keine Vertraege in {target} gefunden");
+    }
+    ExitCode::SUCCESS
+}
+
+/// Minimales JSON-String-Escaping fuer Pfadangaben der CLI-Ausgabe.
+fn json_quote(value: &str) -> String {
+    let mut out = String::with_capacity(value.len() + 2);
+    out.push('"');
+    for ch in value.chars() {
+        match ch {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\t' => out.push_str("\\t"),
+            c => out.push(c),
+        }
+    }
+    out.push('"');
+    out
 }
