@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-PR-223",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #223: Competitive monitoring baseline and snapshots (2026-10-19–2026-10-22) — conventional history",
+  "context": "Pull request 223 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/223",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-214"
+    }
+  ],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Purpose\n\nReplacement draft for [PR #214](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/214), created to address the V-16 Conventional Commits gate without rewriting or force-pushing the original PR branch.\n\n## Change and history handling\n\n- Preserves the existing registry, report, resolver, tests, and validation workflow tree from original head `3d09b21baab8cc0508027b1d465e71698bcbf3a8`.\n- Uses one Conventional Commit on the original PR's merge-base `c675d7d9e22f14bb10965383224201d16bfa1cc0`: `chore(competitive-monitoring): add reproducible registry validation and snapshots`.\n- The original PR branch and its history are untouched.\n- Compared against `main`, the replacement branch changes only the same 13 intended competitive-monitoring files; no generated KMS-record drift is included.\n- Governance V-16 was rerun on the exact replacement head via push event; see the verified result below.\n\n## Existing registry evidence (historical, not yet revalidated on this head)\n\nOn original PR head `3d09b21baab8cc0508027b1d465e71698bcbf3a8`, dedicated Registry Validation run [#39825879674](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39825879674) passed: 12 unit/negative tests, deterministic resolution matched byte-for-byte, and the registry validator passed. Artifact ZIP SHA-256: `88bef2cb020f1612d8b43c0a16d533de7c8f86a4540055eb3a65c51cf79ddd3d`.\n\nThe full Governance run [#39825879791](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39825879791) failed on that original head at V-16 (10% Conventional Commits vs required 80%). That result is not represented as a pass for this replacement branch; the new exact-head run is required.\n\n## Remaining acceptance items\n\n- Confirm V-16 and all required checks on the exact replacement head.\n- Re-review inherited vendor claims at source level.\n- Demonstrate actual daily scheduled operation separately; a workflow definition or pull-request run does not prove scheduled production operation.\n\nKeep this PR Draft and unmerged until the exact-head governance and all other acceptance requirements are verified.\n\n## Exact-head push verification — 2026-10-22\n\nHead: `31d856f7660161da1ea02155f715b23160f58109`.\n\n- Repository Governance push run [#39827510330](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39827510330): **PASS** on ref `chore/competitor-radar-2026-10-22-conventional-history` and exact head `31d856f7660161da1ea02155f715b23160f58109`.\n- Audit log: `V-16 (CI/CD): Conventional Commits: 100% der letzten 16`; score `97/100`, `MUST-FAILs: 0`, `GATE: PASS`.\n- Dedicated Registry Validation push run [#39827510398](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39827510398): **PASS** on the same exact head.\n- Evidence artifact ID `12447216775`; ZIP SHA-256 `a779269e566d8be1f372908c2309fe78f77498423909c0c0e1b674d7c8b1dcc0`.\n\nThe pull-request-triggered suite was still queued/in progress at the last check-run snapshot; its completion must be confirmed separately. These push results establish the V-16 and registry push gates, not final PR acceptance. Keep this PR Draft and unmerged while the remaining checks and claim-level/daily-scheduler evidence are reviewed."
+}
