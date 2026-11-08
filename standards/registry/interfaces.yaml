@@ -1,0 +1,33 @@
+# ATC Interface Registry (ATC-STD-204 §3, F-002) — 07.09.2026
+# Kanonisch fuer alle provider->consumer-Kanten aus registry/dependencies.yaml.
+# Kein Eintrag = kein offizielles Interface (Release-Gate ATC-STD-203).
+# status `seed` = Kante aus Dependency-Registry uebernommen, verbindliche
+# Interface-Test-Suite (ATC-STD-204 §6) noch zu hinterlegen.
+interfaces:
+  # Provider atclang — Kanten: atc-shivacore, a-townchain, atc-contracts, atc-sdk, a-townchain-os
+  - {id: IFC-0001, title: "ATCLang Bytecode & Compiler-API",                  provider: atclang,          consumers: [atc-shivacore, a-townchain, atc-contracts, atc-sdk, a-townchain-os],          api_version: "1.0", compatibility: evolving, security_level: S4, owner: ShivaCoreDev, test: tests/interfaces/ifc-0001/, status: seed}
+  # Provider atc-shivacore — Kanten: aurora-ai, a-townchain, globus-os, atc-node, atc-storage, atc-compute, a-townchain-os
+  - {id: IFC-0002, title: "ShivaCore Kernel-API",                             provider: atc-shivacore,   consumers: [aurora-ai, a-townchain, globus-os, atc-node, atc-storage, atc-compute, a-townchain-os], api_version: "1.0", compatibility: evolving, security_level: S4, owner: ShivaCoreDev, test: tests/interfaces/ifc-0002/, status: seed}
+  # Provider a-townchain — Kanten: atc-contracts, atc-sdk, atc-wallet, atc-indexer, atc-interop, atc-oracle, atc-mining, atc-node, a-townchain-os
+  - {id: IFC-0003, title: "A-TownChain L1 Chain-Protokoll (PoW+PoS+PoH)",    provider: a-townchain,     consumers: [atc-contracts, atc-sdk, atc-wallet, atc-indexer, atc-interop, atc-oracle, atc-mining, atc-node, a-townchain-os], api_version: "1.0", compatibility: evolving, security_level: S4, owner: ShivaCoreDev, test: tests/interfaces/ifc-0003/, status: seed}
+  # Provider atc-sdk — Kanten: atc-wallet, atc-explorer, atc-marketplace, atc-launchpad, genesis-engine
+  - {id: IFC-0004, title: "SDK Client-API",                                   provider: atc-sdk,         consumers: [atc-wallet, atc-explorer, atc-marketplace, atc-launchpad, genesis-engine], api_version: "0.9", compatibility: evolving, security_level: S2, owner: ShivaCoreDev, test: tests/interfaces/ifc-0004/, status: seed}
+  # Provider atc-contracts — Kanten: atc-interop, atc-marketplace, genesis-chronicles
+  - {id: IFC-0005, title: "Smart-Contract-Schnittstelle (ATC-001/8300/9900)", provider: atc-contracts,  consumers: [atc-interop, atc-marketplace, genesis-chronicles],                          api_version: "1.0", compatibility: evolving, security_level: S3, owner: ShivaCoreDev, test: tests/interfaces/ifc-0005/, status: seed}
+  # Provider genesis-engine — Kanten: genesis-chronicles
+  - {id: IFC-0006, title: "Genesis-Engine Game-API",                          provider: genesis-engine,  consumers: [genesis-chronicles],                                                          api_version: "0.1", compatibility: experimental, security_level: S1, owner: ShivaCoreDev, test: tests/interfaces/ifc-0006/, status: seed}
+  # Provider aurora-ai — Kanten: a-townchain-os
+  - {id: IFC-0007, title: "Aurora-AI Model-/Inference-API",                   provider: aurora-ai,       consumers: [a-townchain-os],                                                               api_version: "0.9", compatibility: experimental, security_level: S2, owner: ShivaCoreDev, test: tests/interfaces/ifc-0007/, status: seed}
+  # Provider globus-os — Kanten: a-townchain-os
+  - {id: IFC-0008, title: "Globus-OS Runtime-/Driver-API",                    provider: globus-os,       consumers: [a-townchain-os],                                                               api_version: "0.9", compatibility: experimental, security_level: S4, owner: ShivaCoreDev, test: tests/interfaces/ifc-0008/, status: seed}
+  # Provider atc-vm — NOCH KEINE Kanten in dependencies.yaml (R1 experimental).
+  # Zielkette ATCLang -> ATVM -> Contracts -> atc-node (Bewertung §9) ist
+  # geplant, aber bis zur Deklaration der Kanten gilt: consumers leer.
+  - {id: IFC-0009, title: "ATVM Execution-API (Gas, Memory, Sandbox)",        provider: atc-vm,          consumers: [],                                                                              api_version: "0.9", compatibility: evolving, security_level: S4, owner: ShivaCoreDev, test: tests/interfaces/ifc-0009/, status: seed}
+  # Provider a-townchain-os — Build-/Integrations-Schicht, keine produktiven Consumer
+  - {id: IFC-0010, title: "a-townchain-os Build-Stack (Workspace, CI/CD, Docker)", provider: a-townchain-os, consumers: [],                                                                                 api_version: "1.0", compatibility: stable, security_level: S3, owner: ShivaCoreDev, test: tests/interfaces/ifc-0010/, status: seed}
+
+# Offene Punkte (F-007 Readiness):
+# - atc-vm hat noch keine deklarierten Kanten (Zielkette ATCLang->ATVM->Contracts->atc-node);
+#   Nachtrag per SCR sobald die VM-Kanten real existieren (ATC-STD-204 §2.4).
+# - Interface-Test-Suiten (test-Pfade) je Kante noch zu hinterlegen (IFC status seed -> active).
