@@ -1,0 +1,25 @@
+# Schema fuer den Metadaten-Header jedes Standards (ATC-STD-000 §8)
+type: object
+required: [standard]
+properties:
+  standard:
+    type: object
+    required: [id, title, version, status, category, authority, owner, created, updated, normative]
+    properties:
+      id: {type: string, pattern: "^ATC-[A-Z0-9-]+$", description: "Registry-ID; Praefix-Familien (ATC-STD-ZKP-001) und nicht-STD-Familien (ATC-AAS-001) gemaess Registry-SSOT erfasst"
+      title: {type: string}
+      version: {type: string, pattern: "^\\d+\\.\\d+\\.\\d+$"}
+      status: {enum: [idea, proposed, draft, review, candidate, approved, stable, deprecated, retired]}
+      category: {type: string, description: "Kanonische Kategorie gemaess registry/categories.yaml (SSOT)"}
+      authority: {type: string}
+      owner: {type: string}
+      created: {type: string, format: date}
+      updated: {type: string, format: date}
+      normative: {type: boolean}
+      supersedes: {type: array, items: {type: string}}
+      superseded_by: {type: [string, "null"]}
+      applies_to: {type: string}
+      effective_date: {type: string, format: date}
+      review_date: {type: string, format: date}
+      license: {type: string}
+      meta_source: {type: string}
