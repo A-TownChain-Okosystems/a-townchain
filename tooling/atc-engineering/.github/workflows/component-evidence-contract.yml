@@ -1,0 +1,29 @@
+name: Component Evidence Contract
+
+on:
+  pull_request:
+    paths:
+      - "scripts/validate_component_evidence.py"
+      - "tests/test_component_evidence_validation.py"
+      - ".github/workflows/component-evidence-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact pull request head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run evidence-contract positive and negative tests
+        run: python -m unittest discover -s tests -p 'test_component_evidence_validation.py' -v
