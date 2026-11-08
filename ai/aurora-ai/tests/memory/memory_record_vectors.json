@@ -1,0 +1,19 @@
+{
+  "schema_version":"1.0.0",
+  "hash_algorithm":"SHA-256",
+  "serialization":"RFC-8785-JCS",
+  "positive":[{
+    "id":"valid-user-memory-001",
+    "record_without_integrity_hash":{
+      "access_policy":"explicit-consent","capability_requirement":"memory.read.shared","confidence":1.0,"content":"Hello Aurora","created_at":"2026-09-27T00:00:00Z","memory_id":"mem-001","owner":"user:example","provenance":{"source":"user","source_id":"device-a"},"retention_policy":"owner-controlled","scope":"PERSONAL","source_node":"node-a","type":"USER_MEMORY","updated_at":"2026-09-27T00:00:00Z","version":1
+    },
+    "canonical_serialization":"{\"access_policy\":\"explicit-consent\",\"capability_requirement\":\"memory.read.shared\",\"confidence\":1.0,\"content\":\"Hello Aurora\",\"created_at\":\"2026-09-27T00:00:00Z\",\"memory_id\":\"mem-001\",\"owner\":\"user:example\",\"provenance\":{\"source\":\"user\",\"source_id\":\"device-a\"},\"retention_policy\":\"owner-controlled\",\"scope\":\"PERSONAL\",\"source_node\":\"node-a\",\"type\":\"USER_MEMORY\",\"updated_at\":\"2026-09-27T00:00:00Z\",\"version\":1}",
+    "sha256":"9cfed5fd345c03d1044df8e18c35aacb2de819473005e55c9360f52688a92d16"
+  }],
+  "negative":[
+    {"id":"missing-owner-001","reason":"required field owner is missing"},
+    {"id":"confidence-out-of-range-001","reason":"confidence must be between 0 and 1"},
+    {"id":"invalid-integrity-hash-001","reason":"integrity_hash must be lowercase SHA-256 hexadecimal"},
+    {"id":"unsupported-memory-type-001","reason":"memory type is outside the canonical enum"}
+  ]
+}
