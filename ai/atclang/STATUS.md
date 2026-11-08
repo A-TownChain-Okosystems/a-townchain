@@ -16,7 +16,7 @@ standard: ATC-STD-MD-001
 | Version | 1.0.0 development |
 | Production implementation | Rust canonical core — incomplete |
 | Reference implementation | None — Python reference implementation removed; Rust-only canonical implementation |
-| Tests | 486 Tests im Monorepo-Wurzel-Workspace, 2148 Tests ueber alle sieben Workspaces gruen (2026-11-08) |
+| Tests | 493 Tests im Monorepo-Wurzel-Workspace, 2155 Tests ueber alle sieben Workspaces gruen (2026-11-08) |
 | Security | S4 / audit in progress |
 | Conformance | Not verified for production |
 | Release | development / NOT PRODUCTION_READY |
@@ -24,8 +24,8 @@ standard: ATC-STD-MD-001
 
 ## Parser and semantics — state 2026-11-08
 
-Verified by `cargo test --workspace` (486 tests) and `./tools/ecosystem.sh test`
-(2148 tests, 0 failed):
+Verified by `cargo test --workspace` (493 tests) and `./tools/ecosystem.sh test`
+(2155 tests, 0 failed):
 
 - Contract bodies are parsed into real syntax trees. Declarations: `state`
   (single and block form, with defaults), `event`, `fn`/`function`, `const`,
@@ -62,6 +62,15 @@ Verified by `cargo test --workspace` (486 tests) and `./tools/ecosystem.sh test`
   Current result over `apps/atc-contracts`: 47 files, 29 contracts, 0 errors,
   56 warnings (38 open `emit` declarations, 17 mirror duplicates, 1 unknown type
   `bytes32` in the standards-refs mirror).
+- Contract ABI (`crates/atc-core/src/abi.rs`, roadmap G7 groundwork): `atc abi
+  <datei|verzeichnis>` emits one canonical JSON line per contract with
+  `abi_sha256` — state fields, events and function signatures, stable key order,
+  symbols sorted, so declaration order and re-runs cannot change the hash.
+  `atc abi --hash` prints only the hashes. The ABI describes the interface, not
+  the execution: it is not bytecode and contract codegen (G11) stays open.
+  Regression binds the ABI to the contract registry: every non-archived entry
+  must yield at least one contract with functions and a stable 64-hex hash, an
+  archived entry must yield none.
 - Contract registry gate A8 (SC-019): GATE PASS, 16 entries, 16 sources, 0 findings.
 
 Open: 38 `emit` calls in existing contracts without an event declaration; type
