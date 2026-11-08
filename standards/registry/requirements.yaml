@@ -1,0 +1,54 @@
+# ATC Requirements Registry — ATC-STD-FRAMEWORK-001 §2 (SSOT, SCR-0029)
+# Traceability-Kette: REQ -> STD -> ARCH -> REPO -> CODE -> TEST -> RELEASE -> AUDIT
+# Status: SPECIFIED (in Standard definiert) / IMPLEMENTED (umgesetzt) / VERIFIED (nachgewiesen)
+requirements:
+  - id: REQ-FW-011
+    title: "11 Register vollständig aufgebaut; jede Register-Änderung via SCR"
+    source: ATC-STD-FRAMEWORK-001
+    status: VERIFIED
+    verification: "SCR-0029: alle 11 Register EXISTIERT (5 neue angelegt); Validierung via CI"
+  - id: REQ-FW-009
+    title: "ATC-STD-AOS-001 Agent Operating Standard (14-Fragen-Mandat)"
+    source: ATC-STD-FRAMEWORK-001
+    status: VERIFIED
+    verification: "AOS-001 APPROVED 08.09.2026 (SCR-0025); 14 REQ-AOS definiert"
+  - id: REQ-PROTO-021
+    title: "Protokoll-Status-Ehrlichkeit: active nur mit verifizierter Implementierung"
+    source: ATC-STD-PROTOCOL-001
+    status: IMPLEMENTED
+    verification: "P2P-001: draft trotz implementiertem v1.0.0 bis Testnet-Verifikation (SCR-0028); CONF-Gate (REQ-CONF-005) verschärft Anforderung"
+  - id: REQ-CONF-005
+    title: "active nur mit CONF-BRONZE (Conformance-Stufe)"
+    source: ATC-STD-PROTOCOL-002
+    status: SPECIFIED
+    verification: "Standard DRAFT, §9-Freigabe ausstehend; Validator S-26 GEPLANT"
+  - id: REQ-PTS-004
+    title: "Kein active ohne Threat-Registry-Eintrag und ohne M1/M2/M3-MISSINGS"
+    source: ATC-STD-PROTOCOL-003
+    status: SPECIFIED
+    verification: "Standard DRAFT, §9-Freigabe ausstehend; registry/protocol-security.yaml angelegt"
+  - id: REQ-RA3-009
+    title: "Auditor-Agent Stop-Pflicht bei Health E / P0 / Secrets / Chain-ID-Verletzungen"
+    source: ATC-STD-REPO-AUDIT-003
+    status: SPECIFIED
+    verification: "Standard DRAFT, §9-Freigabe ausstehend"
+  - id: REQ-RA-003
+    title: "ATC-REPOSITORY-AUDIT-RULE: kein 'vollständig geprüft' ohne 7 Kernbereiche"
+    source: ATC-STD-REPO-AUDIT-001
+    status: IMPLEMENTED
+    verification: "64-Check-Katalog (REPO-AUDIT-002) + Pipeline; S-22 aktiv"
+  - id: REQ-MS-018
+    title: "Milestone-Registry-SSOT-Pflicht (registry/milestones.yaml, Validator S-20)"
+    source: ATC-STD-MILESTONE-001
+    status: VERIFIED
+    verification: "ATC-M-001/002 ACCEPTED mit Evidence; S-20 in CI grün"
+  - id: REQ-UPD-G04
+    title: "MAJOR-Updates nur mit COMPAT-001-Gate"
+    source: ATC-STD-UPDATE-001
+    status: VERIFIED
+    verification: "Change-Control-Kette SCR->VERSION->UPDATE->COMPAT->AUDIT normativ in Kraft"
+  - id: REQ-BUG-005-RCA
+    title: "Root-Cause-Analyse 4-Ebenen für P0/P1-Findings"
+    source: ATC-STD-BUG-005
+    status: IMPLEMENTED
+    verification: "findings.yaml RCA-Felder aktiv; AUD-2026-0002 angewendet"
