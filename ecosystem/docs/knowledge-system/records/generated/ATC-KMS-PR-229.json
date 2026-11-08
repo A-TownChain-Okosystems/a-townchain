@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-229",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #229: Competitive monitoring report and registry v0.2.5 — 2026-10-25",
+  "context": "Pull request 229 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/229",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Purpose\n\nDaily targeted official-source review for 2026-10-25, compared with expanded registry v0.2.4 from 2026-10-24.\n\n## Changes\n\n- Add versioned delta overlay v0.2.5, expanded registry snapshot v0.2.5, and the dated 2026-10-25 report.\n- Add eight product-level baselines: Anthropic Claude Haiku 5.5 and Sonnet 5.5 pricing; OpenAI Agent Builder and Evals lifecycle; ServiceNow AI Workflow Factory; Microsoft Copilot Home/Code/Autopilot; Samsung Wallet USDC transfers with Solana/Sui partners; and Apple macOS Golden Gate 27.\n- Refresh four existing snapshots: Ethereum Hoodi postponement confirmation; MetaMask Agent Wallet source correction (Early Access confirmed, GA still UNVERIFIED); Bubble pricing confirmation; Linux kernel archive confirmation.\n- Keep release/publication date, availability date/window and own check date separate. Pricing includes currency, interval, scope, effective date where published, and regional limitations; missing terms remain null/UNVERIFIED.\n- Update the validation workflow to resolve v0.2.5 from v0.2.4 and validate the expanded v0.2.5 registry at the exact checked-out SHA.\n\n## Scope and evidence limits\n\nThis is a targeted official-source review, not a full market census. The 26 registry entries include 25 product lines with official-source evidence and one Microsoft Agent 365 verification-queue entry that remains UNVERIFIED. ADD means first captured baseline, not a market launch today. The Anthropic Sonnet cache-read reduction was announced effective 2026-10-07, but remains BASELINE because no reliable prior Sonnet product snapshot existed in v0.2.4.\n\nThe existing scheduled GitHub workflow validates registry structure, deterministic overlay resolution and tests; it does not crawl vendor sources. No claim is made that source collection is already automated.\n\n## Acceptance\n\n- Draft only; do not merge until the latest exact-head validation run passes and the source claims are reviewed.\n- A green validator proves registry/schema checks only, not vendor claims or operational monitoring.\n- External runtime dependency remains false as the native implementation target."
+}
