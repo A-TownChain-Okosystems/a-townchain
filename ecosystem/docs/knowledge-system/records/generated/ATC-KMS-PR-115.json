@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-115",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #115: audit: add exact-SHA source symbol discovery for catalog completion",
+  "context": "Pull request 115 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/115",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Ziel\n\nDen maschinenlesbaren Komponenten-/Funktionskatalog vervollständigen und die tatsächlichen Quellbäume exakt dagegen abgleichen. Implementierungscode wird erst nach erfolgreicher Katalog- und Reconciliation-Prüfung bearbeitet.\n\n## Aktueller Katalogstand\n\n- **33 Komponenten · 210 Funktions-/Fähigkeitsverträge · 19 Schnittstellenverträge.**\n- **169** Funktionsverträge sind an exakten Repository-HEAD, Quellpfad, Symbolart und Datei-Blob gebunden. Das ist Source-Mapping, keine Funktionsverifikation.\n- **12** Verträge haben noch keine identifizierte Quellfunktion, die den vollständigen Vertrag erfüllt.\n- **26** Einträge sind explizit als Nicht-Funktion, Testoberfläche oder archivierte/private Referenz klassifiziert.\n- **0 Funktionen funktional verifiziert; Release `BLOCKED`.**\n\n## Neu erkannte harte Blocker\n\n- `IF-003`: Konsensauswahl, Finalität, Quorum und Fork-Choice bleiben ohne verbindliche versionierte Entscheidung `BLOCKED`.\n- `IF-015`: `genesis-engine` enthält ECS/World-Engine-Oberflächen; die Rolle als L1-Genesis-Owner ist nicht belegt.\n- `FN-NODE-022` / `IF-017`: `atc-node` enthält legacy `ATC-TX-DOMAIN`-Signing mit String-Feldkodierung, im Konflikt mit TX-V2. Der Pfad ist `BLOCKED`.\n- `COMP-STORAGE-CORE` / `IF-018`: `ContentAddress::compute` ist FNV-1a-basiert, nicht BLAKE3/cryptographisch; `mvp_root_hash` ist nicht kryptographisch und der Store ist nur im Speicher. Nicht als kanonischer Produktions-State-Store verwendbar.\n- `COMP-SDK-TS` / `IF-019`: `canonicalTransactionId` validiert nicht dieselben Vorbedingungen wie `canonicalSigningPreimage`; Cross-Language-Vektoren und Invalid-Input-Semantik sind offen.\n- `IF-002`: Bytecode-Magic ATCB vs. ATC1 bleibt ungelöst.\n\n## Source-Reconciliation / Scanner\n\n- Exakte Schlüssel: `(Repository, HEAD SHA, Quellpfad, symbol_kind, Symbolname)`.\n- Inline-Rust-`cfg(test)`-Funktionen werden separat als Testoberflächen erfasst.\n- TypeScript-Klassenmethoden und interne TypeScript-Funktionen werden als eigene Kandidaten erfasst.\n- Der strikte Workflow führt den Catalog Validator aus und startet Reconciliation mit `--require-complete`; nicht zugeordnete Runtime-Symbole oder SHA-Mismatches blockieren den Abschluss.\n\n## Letzter abgeschlossener Lauf (historischer HEAD)\n\n[Source Symbol Inventory Run #38321023681](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/38321023681) auf HEAD `265abc00f20d3a2eabc1996ad48f7b8941f1acee`: Catalog Validator `PASS_STRUCTURAL_ONLY`, Scanner-/Census-Tests bestanden, aber striktes Reconciliation-Gate `BLOCKED` mit 7.871 ungebundenen Runtime-Kandidaten. Diese Zahl gehört zum damaligen Scanner-/Katalog-HEAD und ist nicht als aktueller Stand auszugeben.\n\nDer aktuelle HEAD `90e3c5e1f7e7d19a360c542a8368e2c7b90d32e7` enthält Katalog-/Scanner-Erweiterungen sowie Korrekturen an den vom Validator erkannten Pflichtfeldern. Die neue Exact-HEAD-Prüfung läuft in [Run #38322378129](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/38322378129); bis zum terminalen Ergebnis wird kein aktueller CI-Erfolg behauptet.\n\n## Governance\n\n- PR bleibt OPEN und DRAFT; kein Merge, kein Auto-Merge, kein Release.\n- Nur Katalog-, Audit-, Validator-, Scanner- und Teständerungen; keine Blockchain-/VM-/Kernel-Implementierung geändert.\n- Keine CI-Gates abgeschwächt.\n\n## Nächste Schritte\n\n1. Aktuelle Source Symbol Inventory Artefakte für den neuesten HEAD auswerten.\n2. Die verbleibenden 12 vollständigen Quelloberflächen einzeln auflösen oder mit begründeter Exklusion dokumentieren.\n3. Ungebundene Runtime-Kandidaten repo-/pfadweise zuordnen; keine Type-/Value-/Testtreffer als Runtime-Funktion ausgeben.\n4. Catalog Validator und strikten Reconciliation-Gate an einem exakten SHA erfolgreich nachweisen.\n5. Erst danach separate Implementierungs-PRs beginnen."
+}
