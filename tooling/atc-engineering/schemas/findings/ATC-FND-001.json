@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ATC-FND-001",
+  "title": "ATC Engineering Finding Registry",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["schema", "version", "findings", "immutable"],
+  "properties": {
+    "schema": {"const": "ATC-FND-001"},
+    "version": {"const": "1.0.0"},
+    "immutable": {"const": true},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id", "repository", "path", "code", "category", "severity",
+          "state", "description", "root_cause", "implementation_plan", "iteration"
+        ],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "repository": {"type": "string", "minLength": 1},
+          "path": {"type": ["string", "null"]},
+          "code": {"type": "string", "minLength": 1},
+          "category": {"type": "string"},
+          "severity": {"enum": ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+          "state": {"enum": ["DETECTED", "CLASSIFIED", "PLANNED", "FIXED", "VERIFIED", "CLOSED", "BLOCKED"]},
+          "description": {"type": "string"},
+          "root_cause": {"type": "string"},
+          "implementation_plan": {"type": "string"},
+          "iteration": {"type": "integer", "minimum": 1}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
