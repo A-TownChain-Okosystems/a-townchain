@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-109",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #109: governance: add machine-readable PR registry and merge order",
+  "context": "Pull request 109 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/109",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Purpose\nAdds an organization-wide machine-readable PR queue and merge-order policy.\n\n## Included\n- `docs/governance/ATC-PR-REGISTRY-001.json`: 148 unique PRs from four date-partitioned open-PR searches, ranked by initial risk/dependency triage.\n- `docs/governance/ATC-PR-REGISTRY-001-POLICY.md`: priority tiers, dependency/duplicate handling, exact-SHA evidence requirements, and merge gates.\n\n## Safety\n- No PRs were merged or closed.\n- No tags/releases were created.\n- No required checks or branch protections were weakened.\n- Exact head SHAs, live checks and review approvals are deliberately not inferred from search metadata.\n- Registry completeness remains provisional until reconciled with live GitHub inventory.\n- Explicitly known dependencies and likely overlapping PR groups are marked for review.\n\nThe registry ranks work; it does not authorize merges."
+}
