@@ -1,0 +1,50 @@
+{
+  "node": {
+    "name": "a-townchain-node",
+    "network": "testnet",
+    "role": "full",
+    "log_level": "info"
+  },
+
+  "network": {
+    "bootstrap_nodes": ["127.0.0.1:5005"],
+    "max_peers": 50,
+    "ping_interval_sec": 30,
+    "peer_timeout_sec": 90,
+    "handshake_timeout_sec": 10,
+    "discovery_port_offset": 1000
+  },
+
+  "rpc": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 9933,
+    "cors_origins": ["http://localhost:3000"]
+  },
+
+  "websocket": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 9944,
+    "max_connections": 100
+  },
+
+  "storage": {
+    "path": "/data/kai",
+    "cache_size_mb": 512,
+    "ipfs_api": "http://localhost:5001"
+  },
+
+  "ai": {
+    "inference_mode": "local",
+    "model": "llama3-8b-q4",
+    "max_memory_gb": 8,
+    "gpu_enabled": false
+  },
+
+  "blockchain": {
+    "keystore_path": "/data/keys",
+    "validator_enabled": false,
+    "stake_amount": 0
+  }
+}
