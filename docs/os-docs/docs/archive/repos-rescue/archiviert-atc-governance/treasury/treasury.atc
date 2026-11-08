@@ -1,0 +1,16 @@
+// ATCLang v0.3 — Treasury
+// Fund management, expense workflow, guardian
+// ATC-Standard: ATC-17
+
+module treasury {
+    struct TreasuryAllocation {
+        recipient: string,
+        amount: int,
+        asset: string,
+        approved: int
+    }
+    
+    fn release_funds() {
+        // Disburses DAO treasury assets upon successful proposal execution
+    }
+}
