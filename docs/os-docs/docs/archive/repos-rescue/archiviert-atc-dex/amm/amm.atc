@@ -1,0 +1,17 @@
+// ATCLang v0.3 — Automated Market Maker
+// Constant product, liquidity pools, swap
+// ATC-Standard: ATC-88
+
+module amm {
+    struct PoolPair {
+        token_a: string,
+        token_b: string,
+        reserve_a: int,
+        reserve_b: int,
+        total_lp: int
+    }
+    
+    fn calculate_swap_output() {
+        // Calculates output amount for swap based on constant product formula (x * y = k)
+    }
+}
