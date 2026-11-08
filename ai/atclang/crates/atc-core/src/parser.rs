@@ -58,8 +58,53 @@ pub fn parse_program(src: &str) -> Result<Program, ParseError> {
     let (toks, cols) = tokenize_pos(src).map_err(|e| ParseError {
         message: format!("Lex-Fehler bei Position {}: {:?}", e.pos, e.ch),
     })?;
-    let mut p = Parser { toks, pos: 0, cols };
+    let mut p = Parser {
+        toks,
+        pos: 0,
+        cols,
+        errors: Vec::new(),
+        collect: false,
+    };
     p.program()
+}
+
+/// Wie [`parse_program`], aber sammelt **alle** Fehler einer Datei.
+///
+/// Nach einem Fehler springt der Parser bis zur naechsten Deklaration und
+/// macht weiter. Das Programm ist damit nur ein Teilstand und darf nicht
+/// kompiliert werden; die Fehlerliste sagt dagegen, welche Formen in dieser
+/// Datei wirklich fehlen. Einzelne Fehlerdaten sind ungenauer als bei
+/// [`parse_program`], weil der Kontext nach dem Sprung verloren geht.
+pub fn parse_program_collecting(src: &str) -> (Option<Program>, Vec<ParseError>) {
+    let tokens = tokenize_pos(src);
+    let (toks, cols) = match tokens {
+        Ok(pair) => pair,
+        Err(e) => {
+            return (
+                None,
+                vec![ParseError {
+                    message: format!("Lex-Fehler bei Position {}: {:?}", e.pos, e.ch),
+                }],
+            )
+        }
+    };
+    let mut p = Parser {
+        toks,
+        pos: 0,
+        cols,
+        errors: Vec::new(),
+        collect: true,
+    };
+    let program = p.program();
+    let errors = std::mem::take(&mut p.errors);
+    match program {
+        Ok(program) => (Some(program), errors),
+        Err(e) => {
+            let mut errors = errors;
+            errors.push(e);
+            (None, errors)
+        }
+    }
 }
 
 struct Parser {
@@ -68,9 +113,59 @@ struct Parser {
     /// Zeile/Spalte je Token. Leer, wenn ohne Positionen geparst wird; dann
     /// stehen die eingerueckten Rumpfformen nicht zur Verfuegung.
     cols: Vec<Pos>,
+    /// Gesammelte Fehler im Sammelmodus (siehe [`parse_program_collecting`]).
+    errors: Vec<ParseError>,
+    /// Im Sammelmodus wird nach einem Fehler bis zur naechsten Deklaration
+    /// weitergesprungen, statt abzubrechen. Im Normalbetrieb `false`, dann
+    /// verhaelt sich der Parser exakt wie zuvor.
+    collect: bool,
 }
 
 impl Parser {
+    /// Fehler verbuchen und weitergehen, oder im Normalbetrieb durchreichen.
+    ///
+    /// Im Sammelmodus wird der Fehler abgelegt und bis zur naechsten
+    /// Deklaration gesprungen; sonst verlaesst der Fehler den Parser.
+    fn failed(&mut self, error: ParseError) -> Result<(), ParseError> {
+        if !self.collect {
+            // Normalbetrieb: der Fehler verlaesst den Parser wie bisher.
+            return Err(error);
+        }
+        self.errors.push(error);
+        self.recover();
+        Ok(())
+    }
+
+    /// Bis zur naechsten Deklaration springen (mindestens ein Token weit).
+    ///
+    /// Anker sind die Token, die eine Deklaration beginnen koennen. Eine
+    /// schliessende Klammer beendet den Sprung, damit ein Fehler im Rumpf
+    /// nicht in den naechsten Block laeuft.
+    fn recover(&mut self) {
+        if self.cur() != Token::Eof {
+            self.pos += 1;
+        }
+        while self.cur() != Token::Eof {
+            match self.cur() {
+                Token::RBrace => return,
+                Token::Let
+                | Token::Const
+                | Token::Fn
+                | Token::Use
+                | Token::Import
+                | Token::Struct
+                | Token::Enum
+                | Token::Contract
+                | Token::State
+                | Token::Module
+                | Token::Pub
+                | Token::At => return,
+                Token::Ident(name) if name == "event" || name == "type" => return,
+                _ => self.pos += 1,
+            }
+        }
+    }
+
     /// Spalte des aktuellen Tokens, falls Positionen bekannt sind.
     fn col(&self) -> Option<u32> {
         self.cols.get(self.pos).map(|p| p.col)
@@ -106,10 +201,16 @@ impl Parser {
             // `module NAME { ... }` gruppiert Deklarationen; der Block selbst
             // fuehrt nichts aus, die Deklarationen darin gelten programmweit.
             if self.cur() == Token::Module {
-                statements.extend(self.module_block()?);
+                match self.module_block() {
+                    Ok(items) => statements.extend(items),
+                    Err(e) => self.failed(e)?,
+                }
                 continue;
             }
-            statements.push(self.declaration()?);
+            match self.declaration() {
+                Ok(stmt) => statements.push(stmt),
+                Err(e) => self.failed(e)?,
+            }
         }
         Ok(Program { statements })
     }
@@ -737,7 +838,10 @@ impl Parser {
                     message: "Nicht geschlossener contract-Block".into(),
                 });
             }
-            body.extend(self.contract_item()?);
+            match self.contract_item() {
+                Ok(items) => body.extend(items),
+                Err(e) => self.failed(e)?,
+            }
         }
         self.pos += 1; // schliessende '}'
         Ok(Stmt::Contract { name, bases, body })
@@ -1942,6 +2046,8 @@ mod tests {
             toks,
             pos: 0,
             cols: Vec::new(),
+            errors: Vec::new(),
+            collect: false,
         };
         assert!(p.program().is_err());
     }
@@ -1952,5 +2058,30 @@ mod tests {
             .unwrap()
             .to_json();
         assert!(j.contains("\"kind\":\"FunctionDef\""), "{j}");
+    }
+
+    #[test]
+    fn sammelmodus_meldet_mehrere_blocker() {
+        // Zwei kaputte Deklarationen, dazwischen eine gesunde.
+        let src = "struct A:\n    a u64\nfn ok() -> int { return 1; }\nenum B:\n    X =\n";
+        let (program, errors) = parse_program_collecting(src);
+        assert!(errors.len() >= 2, "nur {} Fehler: {errors:?}", errors.len());
+        // Der Sammelmodus liefert einen Teilstand, keine Ausnahme.
+        assert!(program.is_some());
+    }
+
+    #[test]
+    fn normalbetrieb_bricht_beim_ersten_fehler_ab() {
+        let src = "struct A:\n    a u64\nfn ok() -> int { return 1; }";
+        let (_, errors) = parse_program_collecting(src);
+        assert!(!errors.is_empty());
+        assert!(parse_program(src).is_err());
+    }
+
+    #[test]
+    fn sammelmodus_auf_gesunder_quelle_ist_leer() {
+        let (program, errors) = parse_program_collecting("fn f() -> int { return 1; }");
+        assert!(errors.is_empty(), "{errors:?}");
+        assert_eq!(program.unwrap().statements.len(), 1);
     }
 }
