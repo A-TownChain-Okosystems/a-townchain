@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-219",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #219: [DRAFT] Add exact-SHA per-file function and purpose census",
+  "context": "Pull request 219 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/219",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n\nAdds a machine-readable, exact-SHA per-file purpose inventory to the existing organization source-census workflow. This extends the existing census/catalog governance; it does not create a competing capability registry.\n\n## Included\n\n- `tools/build_org_file_function_catalog.py`: emits `ATC-ORG-FILE-FUNCTION-CATALOG-001` JSON for every tracked file in each available clean repository checkout, not only recognized source extensions.\n- Each file entry records repository/source SHA, path, Git blob SHA, SHA-256, size, role, purpose, purpose basis/confidence, candidate public symbols where available, and explicit `DISCOVERY_ONLY` / `NOT_PERFORMED` status.\n- Documented purpose is preferred; fallback purpose is explicitly marked low-confidence heuristic.\n- Workflow clone set includes public archived repositories as historical references; private repositories without access are explicit exclusions.\n- Unit tests cover provenance, per-file coverage, purpose confidence, and fail-closed missing checkouts.\n- JSON output is uploaded as a workflow artifact alongside the existing census and reconciliation evidence.\n\n## Governance and limitations\n\n- No existing catalog entries are overwritten; no canonical ownership is inferred from mirrored umbrella-repository copies.\n- Lexical symbols and inferred file purposes are not functional verification.\n- Missing/dirty/SHA-mismatched repositories block the per-file catalog.\n- No merge requested; this PR remains Draft until exact-head CI and artifact coverage are reviewed."
+}
