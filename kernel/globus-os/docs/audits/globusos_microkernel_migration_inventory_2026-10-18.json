@@ -1,0 +1,583 @@
+{
+  "schema_version": "1.0",
+  "audit_date": "2026-10-18",
+  "repository": "A-TownChain-Okosystems/globus-os",
+  "baseline_commit": "3bf000143ec9bfad79d0bacc36b99b8111178b95",
+  "kernel_source_of_truth": "modules/atc-shivacore/kernel/",
+  "branch": "audit/microkernel-migration-inventory-2026-10-18",
+  "overall_status": "PARTIAL_SEPARATION_CONFIRMED",
+  "release_status": "BLOCKED",
+  "verification_scope": "Source/document inspection only; no build, tests, boot, QEMU or hardware run performed for this audit.",
+  "statuses": {
+    "IMPLEMENTED": "Source or contract exists; not a completeness claim.",
+    "PARTIAL": "Some code or boundaries exist, but runtime isolation/integration evidence is incomplete.",
+    "BLOCKED": "Safe migration depends on unresolved boundary work or evidence.",
+    "RESIDUAL": "A concrete unresolved risk is present.",
+    "NOT_VERIFIED": "No current exact-SHA evidence collected for the claim."
+  },
+  "findings": [
+    {
+      "component": "Capability enforcement",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/capability.rs",
+        "system/security/"
+      ],
+      "current_execution_mode": "Kernel capability table plus userspace security crate; runtime isolation not verified",
+      "target_execution_mode": "Kernel enforces capability rules; policy administration in userspace",
+      "dependencies": [
+        "process identity",
+        "IPC",
+        "capability handles"
+      ],
+      "security_boundary": "Kernel must enforce deny-by-default, attenuation, ownership and revocation",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Cross-process isolation and revocation lifecycle not proven"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established by source inspection"
+    },
+    {
+      "component": "IPC",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/ipc.rs",
+        "system/ipc/",
+        "system/shivacore-api/"
+      ],
+      "current_execution_mode": "Kernel IPC primitives and userspace API contracts",
+      "target_execution_mode": "Minimal kernel message/endpoint mechanism plus userspace service protocol",
+      "dependencies": [
+        "process",
+        "capabilities",
+        "memory mappings"
+      ],
+      "security_boundary": "Per-endpoint capability checks, bounded messages and queues, backpressure, cancellation",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "End-to-end IPC across separate address spaces not demonstrated"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "Syscall ABI",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/syscall.rs",
+        "system/shivacore-api/src/lib.rs"
+      ],
+      "current_execution_mode": "Versioned ABI types and kernel dispatcher source",
+      "target_execution_mode": "Stable ABI with validated entry/arguments and real kernel dispatch",
+      "dependencies": [
+        "IPC",
+        "capability handles",
+        "user-memory validation"
+      ],
+      "security_boundary": "Unknown syscall, invalid ABI, oversized payload and unauthorized capability fail closed",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Dispatcher source alone does not prove real syscall-entry integration or complete IPC semantics"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "Process and scheduler",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/process.rs",
+        "modules/atc-shivacore/kernel/src/scheduler.rs",
+        "system/process/"
+      ],
+      "current_execution_mode": "Kernel process/scheduler code plus userspace lifecycle abstractions",
+      "target_execution_mode": "Minimal kernel scheduling/lifecycle primitives plus userspace supervisor",
+      "dependencies": [
+        "memory isolation",
+        "interrupts",
+        "IPC"
+      ],
+      "security_boundary": "No cross-process address-space access; bounded resources; safe teardown",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Actual context-switch and crash-recovery evidence missing"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "Memory and address spaces",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/memory_manager.rs",
+        "modules/atc-shivacore/kernel/src/vmm.rs",
+        "modules/atc-shivacore/kernel/src/userspace.rs",
+        "system/memory/"
+      ],
+      "current_execution_mode": "Kernel memory and userspace address-space structures",
+      "target_execution_mode": "Kernel owns page-table protections; userspace service handles policy/accounting",
+      "dependencies": [
+        "process lifecycle",
+        "HAL",
+        "fault handling"
+      ],
+      "security_boundary": "User/kernel permissions, mapping lifetime, rollback and no unauthorized physical mappings",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Separate process isolation not proven"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "User binary loader and I/O",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/elf_loader.rs",
+        "modules/atc-shivacore/kernel/src/user_io.rs",
+        "modules/atc-shivacore/kernel/src/userspace.rs"
+      ],
+      "current_execution_mode": "Loader and user-mode mechanisms exist in kernel source",
+      "target_execution_mode": "Loader policy in userspace; minimal privileged transition and checked user-memory access in kernel",
+      "dependencies": [
+        "memory mappings",
+        "syscall ABI",
+        "capabilities"
+      ],
+      "security_boundary": "Validated binary segments, checked copy-in/out, malformed pointers fail closed",
+      "implementation_status": "BLOCKED",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Actual ring-3 launch and pointer-fault tests missing"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "ATCFS and content IDs",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/atcfs.rs",
+        "modules/atc-shivacore/kernel/src/kernel_init.rs"
+      ],
+      "current_execution_mode": "Exported and instantiated by kernel initialization",
+      "target_execution_mode": "Userspace storage/filesystem service",
+      "dependencies": [
+        "block device service",
+        "VFS IPC",
+        "verified cryptographic hash"
+      ],
+      "security_boundary": "Content IDs must use real cryptographic digest; file access capability checked",
+      "implementation_status": "RESIDUAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Source explicitly describes hash as simplified/non-production; content IDs are not cryptographic integrity evidence"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "No separate process proof"
+    },
+    {
+      "component": "VFS and namespaces",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/vfs.rs",
+        "modules/atc-shivacore/kernel/src/kernel_init.rs",
+        "system/vfs/"
+      ],
+      "current_execution_mode": "Kernel module exported and Vfs instantiated during boot; parallel userspace crate exists",
+      "target_execution_mode": "Userspace VFS/mount/namespace service; kernel retains only safe primitives",
+      "dependencies": [
+        "IPC",
+        "capabilities",
+        "storage service",
+        "memory safety"
+      ],
+      "security_boundary": "Path traversal, handle ownership, rights and crash behavior fail closed",
+      "implementation_status": "BLOCKED",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Kernel boot depends on ATCFS/VFS; removing without call-site and integration plan risks regression"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "No separate process proof"
+    },
+    {
+      "component": "Block storage",
+      "current_paths": [
+        "system/devices/",
+        "system/vfs/",
+        "modules/atc-shivacore/kernel/src/block.rs"
+      ],
+      "current_execution_mode": "Userspace abstractions exist; legacy/unexported kernel source listed in architecture register",
+      "target_execution_mode": "Userspace block-device and filesystem services",
+      "dependencies": [
+        "driver IPC",
+        "IOMMU where available",
+        "VFS"
+      ],
+      "security_boundary": "Bounded I/O, device capability, DMA safety, recovery after I/O failures",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Hardware-backed driver execution and end-to-end I/O unproven"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "PCI/USB/NVMe/network drivers",
+      "current_paths": [
+        "system/devices/",
+        "modules/atc-drivers/"
+      ],
+      "current_execution_mode": "Driver/device contracts and modules exist",
+      "target_execution_mode": "Isolated userspace drivers with kernel-assigned bounded resources",
+      "dependencies": [
+        "HAL",
+        "interrupt delivery",
+        "IOMMU/DMA",
+        "IPC"
+      ],
+      "security_boundary": "Explicit revocable MMIO, DMA and IRQ assignment; no ambient hardware authority",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "No proof of isolated driver processes or real IOMMU/IRQ revocation"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "Network stack",
+      "current_paths": [
+        "modules/atc-shivacore/service_space/src/atcnet.rs",
+        "modules/atc-shivacore/service_space/src/net.rs",
+        "modules/atc-shivacore/service_space/src/tcpip.rs",
+        "modules/atc-shivacore/service_space/src/p2p.rs",
+        "modules/atc-shivacore/service_space/src/p2p_secure.rs",
+        "modules/atc-shivacore/service_space/src/sockets.rs",
+        "system/net/"
+      ],
+      "current_execution_mode": "Domain modules exist in Service Space plus network policy crate",
+      "target_execution_mode": "Userspace protocol services and isolated NIC driver",
+      "dependencies": [
+        "driver IPC",
+        "IPC",
+        "security policy",
+        "resource quotas"
+      ],
+      "security_boundary": "Protocol parsing isolated; bounded queues/rate limits; fail closed on service failure",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Service Space still depends directly on kernel crate"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Code placement only; separate process not proven"
+    },
+    {
+      "component": "Blockchain, consensus, VM, P2P",
+      "current_paths": [
+        "modules/atc-shivacore/service_space/src/blockchain.rs",
+        "modules/atc-shivacore/service_space/src/consensus.rs",
+        "modules/atc-shivacore/service_space/src/genesis.rs",
+        "modules/atc-shivacore/service_space/src/genesis_bridge.rs",
+        "modules/atc-shivacore/service_space/src/gossip_bridge.rs",
+        "modules/atc-shivacore/service_space/src/mempool.rs",
+        "modules/atc-shivacore/service_space/src/vm.rs",
+        "modules/atc-shivacore/service_space/src/contract.rs"
+      ],
+      "current_execution_mode": "Service-Space modules exist",
+      "target_execution_mode": "Userspace blockchain/P2P/ATC-VM services",
+      "dependencies": [
+        "IPC",
+        "network service",
+        "crypto",
+        "quotas"
+      ],
+      "security_boundary": "No chain execution authority in kernel; per-service capability scope",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Service Space kernel-crate dependency prevents a narrow boundary"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Code placement only; separate process not proven"
+    },
+    {
+      "component": "Aurora AI and agent runtime",
+      "current_paths": [
+        "modules/atc-shivacore/service_space/src/ai.rs",
+        "system/aurora-core/",
+        "system/runtime/"
+      ],
+      "current_execution_mode": "Userspace/service-space code and contracts exist",
+      "target_execution_mode": "Sandboxed userspace runtime with explicit tool IPC",
+      "dependencies": [
+        "service manager",
+        "capabilities",
+        "IPC",
+        "resource quotas"
+      ],
+      "security_boundary": "No direct kernel access; scoped, revocable tool permissions and audit",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Agent isolation and CPU/memory/network/IPC quota enforcement not proven"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Code placement only; separate process not proven"
+    },
+    {
+      "component": "DID, identity, remote capabilities",
+      "current_paths": [
+        "modules/atc-shivacore/service_space/src/did.rs",
+        "modules/atc-shivacore/service_space/src/remote_caps.rs",
+        "system/identity/"
+      ],
+      "current_execution_mode": "Service modules and identity contract exist",
+      "target_execution_mode": "Userspace identity/policy services; kernel validates local capabilities",
+      "dependencies": [
+        "crypto",
+        "IPC",
+        "capability enforcement"
+      ],
+      "security_boundary": "Replay resistance, authenticated delegation, confused-deputy resistance",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Kernel/service trust boundary and replay behavior need integration tests"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "Security policy, audit, multisig",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/security.rs",
+        "modules/atc-shivacore/kernel/src/module_security.rs",
+        "modules/atc-shivacore/service_space/src/security_audit.rs",
+        "system/security/",
+        "system/diagnostics/"
+      ],
+      "current_execution_mode": "Broad security module in kernel plus userspace crates",
+      "target_execution_mode": "Minimal enforcement/integrity checks in kernel; policy/audit/reporting in userspace",
+      "dependencies": [
+        "capabilities",
+        "identity",
+        "IPC",
+        "trusted boot"
+      ],
+      "security_boundary": "Critical access enforcement cannot rely only on a normal userspace policy service",
+      "implementation_status": "RESIDUAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Responsibilities are mixed; complete call-site ownership inventory required"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "Service manager / init",
+      "current_paths": [
+        "system/services/",
+        "modules/atc-shivacore/service_space/src/service_init.rs",
+        "modules/atc-shivacore/kernel/src/kernel_init.rs"
+      ],
+      "current_execution_mode": "Userspace lifecycle model exists; kernel boot path initializes broad subsystems",
+      "target_execution_mode": "Userspace supervisor; kernel boots only minimum trusted primitives",
+      "dependencies": [
+        "IPC",
+        "process lifecycle",
+        "memory isolation",
+        "security"
+      ],
+      "security_boundary": "Service cannot grant itself authority; startup dependencies and restarts are bounded",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Kernel boot and service boot ownership need explicit split"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "Package/update/recovery",
+      "current_paths": [
+        "system/package/",
+        "system/update/"
+      ],
+      "current_execution_mode": "Userspace package/update models exist",
+      "target_execution_mode": "Userspace installer/updater with kernel-enforced write boundaries",
+      "dependencies": [
+        "crypto verification",
+        "trusted keys",
+        "storage transactions",
+        "audit"
+      ],
+      "security_boundary": "Activated bytes must exactly match verified bytes; invalid signatures and rollback failures block activation",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "TOCTOU and end-to-end activation proof not assessed in this audit"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "Graphics/GPU/audio/input",
+      "current_paths": [
+        "system/graphics/",
+        "system/audio/",
+        "system/devices/"
+      ],
+      "current_execution_mode": "Userspace service contracts exist",
+      "target_execution_mode": "Userspace compositor and media/input servers plus isolated drivers",
+      "dependencies": [
+        "device capabilities",
+        "IPC",
+        "service manager"
+      ],
+      "security_boundary": "Explicit consent/authority for screen, camera, microphone and input; per-device isolation",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Hardware backend and process-level isolation not proven"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "Timer/interrupt/HAL/boot",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/timer.rs",
+        "modules/atc-shivacore/kernel/src/interrupts.rs",
+        "modules/atc-shivacore/kernel/src/hal.rs",
+        "modules/atc-shivacore/boot/",
+        "modules/atc-bootloader/"
+      ],
+      "current_execution_mode": "Privileged kernel/HAL/boot code",
+      "target_execution_mode": "Minimal privileged mechanism; device-specific handling delegated where safe",
+      "dependencies": [
+        "hardware",
+        "scheduler",
+        "device capabilities",
+        "IOMMU"
+      ],
+      "security_boundary": "Only authorized IRQ routes and safe boot chain; kernel owns exception handling",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "QEMU/hardware evidence and IRQ delegation proof missing"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "Logging, metrics, diagnostics",
+      "current_paths": [
+        "system/diagnostics/",
+        "modules/atc-shivacore/kernel/src/diagnostics.rs",
+        "modules/atc-shivacore/kernel/src/tracing.rs"
+      ],
+      "current_execution_mode": "Kernel telemetry primitives and userspace diagnostics crate",
+      "target_execution_mode": "Userspace collection and policy; bounded kernel event output",
+      "dependencies": [
+        "IPC",
+        "monotonic clock",
+        "storage"
+      ],
+      "security_boundary": "Bounded queues, no secrets in logs, tamper-evident security events",
+      "implementation_status": "PARTIAL",
+      "test_status": "NOT_VERIFIED_ON_AUDIT_SHA",
+      "residual_risks": [
+        "Queue exhaustion, privacy and audit-failure policy not verified"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    },
+    {
+      "component": "TCB inventory",
+      "current_paths": [
+        "modules/atc-shivacore/kernel/src/lib.rs",
+        "modules/atc-shivacore/kernel/src/kernel_init.rs",
+        "modules/atc-shivacore/kernel/Cargo.toml"
+      ],
+      "current_execution_mode": "no_std kernel crate with active module exports and boot wiring",
+      "target_execution_mode": "Minimal scheduler, memory protection, IPC, capability enforcement, interrupt/HAL and boot core",
+      "dependencies": [
+        "all kernel exports and transitive crates"
+      ],
+      "security_boundary": "Every privileged call path and unsafe block must be justified and reviewed",
+      "implementation_status": "NOT_VERIFIED",
+      "test_status": "NOT_RUN_FOR_THIS_AUDIT",
+      "residual_risks": [
+        "No complete call-site graph, transitive dependency report, unsafe inventory or process-boundary proof"
+      ],
+      "pull_request": null,
+      "userspace_execution_evidence": "Not established"
+    }
+  ],
+  "confirmed_structural_findings": [
+    {
+      "path": "modules/atc-shivacore/kernel/src/lib.rs",
+      "finding": "Active public exports include atcfs, vfs, security, ipc, process, scheduler, memory_manager, userspace and syscall; allocator and lkm are cfg(test) in the inspected source."
+    },
+    {
+      "path": "modules/atc-shivacore/kernel/src/kernel_init.rs",
+      "finding": "Boot path imports and initializes AtcFileSystem and Vfs; it also initializes process, scheduler, IPC and broad SecurityManager."
+    },
+    {
+      "path": "modules/atc-shivacore/kernel/src/atcfs.rs",
+      "finding": "The content-ID helper is explicitly documented as a simplified deterministic hash, with a comment that production requires a real SHA3-256 implementation."
+    },
+    {
+      "path": "modules/atc-shivacore/service_space/Cargo.toml",
+      "finding": "Direct dependency on shivacore kernel crate remains."
+    },
+    {
+      "path": "modules/atc-shivacore/service_space/src/lib.rs",
+      "finding": "Service Space exports AI, network, blockchain, consensus, VM, identity, remote-capability and audit modules."
+    },
+    {
+      "path": "system/shivacore-api/src/lib.rs",
+      "finding": "Versioned ABI and wire-safe syscall/capability types exist; existence does not prove end-to-end runtime isolation."
+    },
+    {
+      "path": "modules/atc-shivacore/service_space/src/{atcnet,remote_caps,p2p_secure,knowledge_graph}.rs",
+      "finding": "Direct kernel-crate imports remain: atcnet imports shivacore::ats1000::NetworkStack; remote_caps imports shivacore::capability::Rights; p2p_secure imports shivacore::security::TokenBucket; knowledge_graph imports CapId, CapabilityTable, Pid, ResourceType and Rights. service_init mentions KernelState::boot in comments but no active call was identified in that file. Several hash-dependent service modules already use libshivacore::simple_hash; that function is explicitly non-cryptographic."
+    }
+  ],
+  "next_pull_requests": [
+    {
+      "priority": "P0.1",
+      "title": "Decouple Service Space from ShivaCore kernel internals",
+      "status": "PLANNED",
+      "acceptance": [
+        "No direct dependency on shivacore kernel crate",
+        "No userspace call to KernelState::boot",
+        "Stable versioned ABI/service ports only",
+        "Compile and integration tests on exact SHA"
+      ]
+    },
+    {
+      "priority": "P0.2",
+      "title": "Prove IPC, capability and address-space isolation",
+      "status": "PLANNED",
+      "acceptance": [
+        "Separate processes/address spaces demonstrated",
+        "Unauthorized IPC and memory access denied",
+        "Queue, payload, timeout, crash and revocation tests"
+      ]
+    },
+    {
+      "priority": "P0.3",
+      "title": "Correct ATCFS content integrity and migrate VFS safely",
+      "status": "PLANNED",
+      "acceptance": [
+        "Real cryptographic digest with known-answer tests",
+        "VFS/ATCFS replacement integrated into boot/service manager",
+        "No lost authorization checks",
+        "Positive, negative, corruption and recovery tests"
+      ]
+    }
+  ]
+}
