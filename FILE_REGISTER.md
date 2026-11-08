@@ -1,8 +1,11 @@
 # 📋 File Register — a-townchain
 
-> **Zweck:** Vollständige maschinell generierte Liste aller Dateien (SCR-0082, Matrix-Dim-12).
-> **Auto-generiert:** 2026-09-17 (Monorepo-Import: 13 Blockchain-Komponenten via git subtree) | via Git-Tree
+> **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
+> **Erzeugt:** 2026-11-08 18:14 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `598f88d01` (letzter Commit 2026-11-08)
+> **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
+
+Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_INDEX.md). Diese Übersicht bleibt dadurch lesbar.
 
 ---
 
@@ -10,993 +13,106 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 992 |
-| .md | 362 |
-| .atc | 142 |
-| .yaml | 110 |
-| .yml | 87 |
-| .rs | 83 |
-| .py | 57 |
-| (keine) | 42 |
-| .toml | 26 |
-| .gitignore | 24 |
-| .ts | 20 |
-| .json | 18 |
-| .gitkeep | 11 |
-| .txt | 6 |
-| .tsx | 2 |
+| **Total Dateien** | 12327 |
+| **Bereiche** | 15 |
+| **Verzeichnisse** | 2185 |
+
+### Nach Dateityp
+
+| Endung | Dateien |
+|--------|---------|
+| `.md` | 4245 |
+| `.atc` | 1642 |
+| `.yaml` | 1486 |
+| `.json` | 1411 |
+| `.rs` | 845 |
+| `.py` | 796 |
+| `.tsx` | 535 |
+| `(keine)` | 405 |
+| `.yml` | 303 |
+| `.ts` | 241 |
+| `.toml` | 148 |
+| `.js` | 69 |
+| `.txt` | 53 |
+| `.cjs` | 33 |
+| `.sh` | 24 |
+| `.lock` | 20 |
+| `.ops` | 16 |
+| `.html` | 12 |
+| `.example` | 11 |
+| `.css` | 7 |
+| `.md"` | 6 |
+| `.sql` | 3 |
+| `.template` | 3 |
+| `.conf` | 2 |
+| `.backend` | 1 |
+| `.bootstrap` | 1 |
+| `.core` | 1 |
+| `.frontend` | 1 |
+| `.gateway` | 1 |
+| `.node` | 1 |
+| `.ini` | 1 |
+| `.sol` | 1 |
+| `.jsonl` | 1 |
+| `.iss` | 1 |
+| `.ps1` | 1 |
+
+## Bereiche
+
+| Bereich | Dateien | Inhalt |
+|---------|---------|--------|
+| `docs` | 5061 | Dokumentation und Archive |
+| `standards` | 2160 | Normative Standards und Werkzeuge |
+| `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
+| `ai` | 971 | KI-, Sprach- und Engine-Schicht |
+| `components` | 871 | Chain-Komponenten (kanonischer Code) |
+| `apps` | 851 | Produkt-Anwendungen |
+| `kernel` | 720 | Kernel- und OS-Ebenen |
+| `modules` | 208 | Module ohne eigene Produktschicht |
+| `tooling` | 164 | Werkzeuge und Engineering-Gates |
+| `(root)` | 20 | Wurzeldateien |
+| `.github` | 16 | CI- und Repository-Konfiguration |
+| `"docs` | 6 | — |
+| `.atc` | 6 | Repository-Evidenz |
+| `specs` | 5 | Spezifikationen |
+| `tools` | 5 | Einstiegspunkte |
+
+## Verzeichnisse mit den meisten Dateien
+
+| Verzeichnis | Dateien |
+|-------------|---------|
+| `ecosystem/docs/knowledge-system/records/generated` | 1167 |
+| `standards/registry/standards` | 531 |
+| `standards/standards/blockchain` | 152 |
+| `docs/os-docs/aistudio/src/components` | 148 |
+| `ai/aurora-ai/modules/atc-aistudio/src/components` | 147 |
+| `docs/os-docs/docs/archive/monorepo-full/src/modules/atc-aistudio/src/components` | 128 |
+| `standards/standards/development` | 112 |
+| `docs/os-docs/docs/standards` | 109 |
+| `standards/change-requests` | 109 |
+| `standards/standards/enterprise` | 108 |
+| `docs/os-docs/wiki/kai-os/docs/standards` | 107 |
+| `standards/atc` | 104 |
+| `ai/aurora-ai/modules/atc-aistudio` | 85 |
+| `docs/os-docs/docs/archive/monorepo-full/src/modules/atc-aistudio` | 85 |
+| `docs/os-docs/docs/issues` | 82 |
+| `docs/os-docs/wiki/kai-os/docs/issues` | 82 |
+| `standards/standards/applications` | 66 |
+| `docs/os-docs/docs/archive/monorepo-full/src/modules/atc-shivacore/kernel/src` | 60 |
+| `standards/standards/v2s` | 54 |
+| `standards/standards/maintenance` | 51 |
+| `standards/standards/aas` | 50 |
+| `standards/standards/security` | 50 |
+| `standards/standards/repository` | 48 |
+| `docs/os-docs/aistudio` | 44 |
+| `kernel/globus-os/modules/atc-shivacore/kernel/src` | 42 |
+
+… insgesamt 2185 Verzeichnisse.
 
 ---
 
-## Dateiliste
+## Anhang: Änderungsnachtrag 2026-11-08 (P0-Härtung)
 
-- `.atc/compliance.yaml`
-- `.atc/evidence/evidence.yaml`
-- `.atc/lifecycle.yaml`
-- `.atc/ownership.yaml`
-- `.atc/repository.yaml`
-- `.atc/standards.yaml`
-- `.github/CODEOWNERS`
-- `.github/ai/agent.yaml`
-- `.github/ai/capabilities.yaml`
-- `.github/ai/policies.yaml`
-- `.github/dependabot.yml`
-- `.github/workflows/code-quality.yml`
-- `.github/workflows/codeql.yml`
-- `.github/workflows/dependency-review.yml`
-- `.github/workflows/determinism-gate.yml`
-- `.github/workflows/governance-ci.yml`
-- `.github/workflows/test-suite.yml`
-- `.gitignore`
-- `AGENTS.md`
-- `AGENT_MANIFEST.md`
-- `ARCHITECTURE.md`
-- `CHANGELOG.md`
-- `CODEOWNERS`
-- `CONTRIBUTING.md`
-- `FILE_REGISTER.md`
-- `LICENSE`
-- `MIGRATION_MANIFEST.yaml`
-- `README.md`
-- `ROADMAP.md`
-- `SECURITY.md`
-- `STATUS.md`
-- `components/algorithm/.atc/compliance.yaml`
-- `components/algorithm/.atc/evidence/evidence.yaml`
-- `components/algorithm/.atc/lifecycle.yaml`
-- `components/algorithm/.atc/ownership.yaml`
-- `components/algorithm/.atc/repository.yaml`
-- `components/algorithm/.atc/standards.yaml`
-- `components/algorithm/.github/ai/agent.yaml`
-- `components/algorithm/.github/ai/capabilities.yaml`
-- `components/algorithm/.github/ai/policies.yaml`
-- `components/algorithm/.github/dependabot.yml`
-- `components/algorithm/.github/workflows/cargo-audit.yml`
-- `components/algorithm/.github/workflows/codeql.yml`
-- `components/algorithm/.github/workflows/dependency-review.yml`
-- `components/algorithm/.github/workflows/determinism-gate.yml`
-- `components/algorithm/.github/workflows/governance-ci.yml`
-- `components/algorithm/.github/workflows/test-suite.yml`
-- `components/algorithm/AGENTS.md`
-- `components/algorithm/AGENT_MANIFEST.md`
-- `components/algorithm/ARCHITECTURE.md`
-- `components/algorithm/CHANGELOG.md`
-- `components/algorithm/CODEOWNERS`
-- `components/algorithm/CODE_OF_CONDUCT.md`
-- `components/algorithm/CONTRIBUTING.md`
-- `components/algorithm/Cargo.toml`
-- `components/algorithm/FILE_REGISTER.md`
-- `components/algorithm/GOVERNANCE.md`
-- `components/algorithm/LICENSE`
-- `components/algorithm/README.md`
-- `components/algorithm/ROADMAP.md`
-- `components/algorithm/SECURITY.md`
-- `components/algorithm/STATUS.md`
-- `components/algorithm/docs/ENGINEERING_AUDIT.md`
-- `components/algorithm/docs/REPOSITORY_STANDARD.md`
-- `components/algorithm/docs/SPEC-ATC-HASH-001.md`
-- `components/algorithm/specs/ATC-CONSENSUS-301-POH.md`
-- `components/algorithm/specs/ATC-CONSENSUS-303-POW.md`
-- `components/algorithm/specs/ATC-CONSENSUS-304-HYBRID.md`
-- `components/algorithm/specs/ATC-CONSENSUS-305-FORK-CHOICE.md`
-- `components/algorithm/specs/ATC-CONSENSUS-306-FINALITY.md`
-- `components/algorithm/specs/ATC-CONSENSUS-307-VALIDATOR.md`
-- `components/algorithm/specs/ATC-CONSENSUS-DET-DETERMINISM.md`
-- `components/algorithm/specs/ATC-CONSENSUS-ENC-ENCODING.md`
-- `components/algorithm/specs/ATC-SENSUS-302-POS.md`
-- `components/algorithm/src/.gitkeep`
-- `components/algorithm/src/hash.rs`
-- `components/algorithm/src/lib.rs`
-- `components/algorithm/src/poh.rs`
-- `components/algorithm/src/selection.rs`
-- `components/algorithm/tests/.gitkeep`
-- `components/algorithm/tools/determinism_check.py`
-- `components/explorer/.atc/compliance.yaml`
-- `components/explorer/.atc/evidence/evidence.yaml`
-- `components/explorer/.atc/lifecycle.yaml`
-- `components/explorer/.atc/ownership.yaml`
-- `components/explorer/.atc/repository.yaml`
-- `components/explorer/.atc/standards.yaml`
-- `components/explorer/.github/dependabot.yml`
-- `components/explorer/.github/workflows/codeql.yml`
-- `components/explorer/.github/workflows/dependency-review.yml`
-- `components/explorer/.github/workflows/governance-ci.yml`
-- `components/explorer/.github/workflows/test-suite.yml`
-- `components/explorer/.gitignore`
-- `components/explorer/AGENTS.md`
-- `components/explorer/AGENT_MANIFEST.md`
-- `components/explorer/ARCHITECTURE.md`
-- `components/explorer/CHANGELOG.md`
-- `components/explorer/CODEOWNERS`
-- `components/explorer/COMPONENT_PLAN.md`
-- `components/explorer/CONTRIBUTING.md`
-- `components/explorer/FILE_REGISTER.md`
-- `components/explorer/LICENSE`
-- `components/explorer/README.md`
-- `components/explorer/ROADMAP.md`
-- `components/explorer/SECURITY.md`
-- `components/explorer/STATUS.md`
-- `components/explorer/address_view.atc`
-- `components/explorer/block_view.atc`
-- `components/explorer/docs/ENGINEERING_AUDIT.md`
-- `components/explorer/docs/REPOSITORY_STANDARD.md`
-- `components/explorer/docs/specs/SPEC-OVERVIEW.md`
-- `components/explorer/mempool_view.atc`
-- `components/explorer/modules/atc-explorer/.gitignore`
-- `components/explorer/modules/atc-explorer/ARCHITECTURE.md`
-- `components/explorer/modules/atc-explorer/CHANGELOG.md`
-- `components/explorer/modules/atc-explorer/COMPONENT_PLAN.md`
-- `components/explorer/modules/atc-explorer/FILE_REGISTER.md`
-- `components/explorer/modules/atc-explorer/LICENSE`
-- `components/explorer/modules/atc-explorer/README.md`
-- `components/explorer/modules/atc-explorer/ROADMAP.md`
-- `components/explorer/modules/atc-explorer/STATUS.md`
-- `components/explorer/modules/atc-explorer/address_view.atc`
-- `components/explorer/modules/atc-explorer/block_view.atc`
-- `components/explorer/modules/atc-explorer/mempool_view.atc`
-- `components/explorer/modules/atc-explorer/package.json`
-- `components/explorer/modules/atc-explorer/search.atc`
-- `components/explorer/modules/atc-explorer/src/addresses.ts`
-- `components/explorer/modules/atc-explorer/src/api.ts`
-- `components/explorer/modules/atc-explorer/src/blocks.ts`
-- `components/explorer/modules/atc-explorer/src/index.ts`
-- `components/explorer/modules/atc-explorer/src/search.ts`
-- `components/explorer/modules/atc-explorer/src/transactions.ts`
-- `components/explorer/modules/atc-explorer/stats_dashboard.atc`
-- `components/explorer/modules/atc-explorer/tsconfig.json`
-- `components/explorer/modules/atc-explorer/tx_view.atc`
-- `components/explorer/modules/atc-explorer/vite.config.ts`
-- `components/explorer/package-lock.json`
-- `components/explorer/package.json`
-- `components/explorer/search.atc`
-- `components/explorer/src/addresses.ts`
-- `components/explorer/src/api.ts`
-- `components/explorer/src/blocks.ts`
-- `components/explorer/src/index.ts`
-- `components/explorer/src/lib/chainIdentity.ts`
-- `components/explorer/src/search.ts`
-- `components/explorer/src/transactions.ts`
-- `components/explorer/stats_dashboard.atc`
-- `components/explorer/tests/TESTPLAN.md`
-- `components/explorer/tsconfig.json`
-- `components/explorer/tx_view.atc`
-- `components/explorer/vite.config.ts`
-- `components/indexer/.atc/compliance.yaml`
-- `components/indexer/.atc/evidence/evidence.yaml`
-- `components/indexer/.atc/lifecycle.yaml`
-- `components/indexer/.atc/ownership.yaml`
-- `components/indexer/.atc/repository.yaml`
-- `components/indexer/.atc/standards.yaml`
-- `components/indexer/.github/ai/agent.yaml`
-- `components/indexer/.github/ai/capabilities.yaml`
-- `components/indexer/.github/ai/policies.yaml`
-- `components/indexer/.github/dependabot.yml`
-- `components/indexer/.github/workflows/codeql.yml`
-- `components/indexer/.github/workflows/dependency-review.yml`
-- `components/indexer/.github/workflows/governance-ci.yml`
-- `components/indexer/.github/workflows/test-suite.yml`
-- `components/indexer/.gitignore`
-- `components/indexer/AGENTS.md`
-- `components/indexer/AGENT_MANIFEST.md`
-- `components/indexer/ARCHITECTURE.md`
-- `components/indexer/CHANGELOG.md`
-- `components/indexer/CODEOWNERS`
-- `components/indexer/CODE_OF_CONDUCT.md`
-- `components/indexer/CONTRIBUTING.md`
-- `components/indexer/FILE_REGISTER.md`
-- `components/indexer/GOVERNANCE.md`
-- `components/indexer/LICENSE`
-- `components/indexer/README.md`
-- `components/indexer/ROADMAP.md`
-- `components/indexer/SECURITY.md`
-- `components/indexer/STATUS.md`
-- `components/indexer/docs/ENGINEERING_AUDIT.md`
-- `components/indexer/docs/README.md`
-- `components/indexer/docs/REPOSITORY_STANDARD.md`
-- `components/indexer/docs/specs/ATC-INDEX-001.md`
-- `components/indexer/docs/specs/ATC-INDEX-002.md`
-- `components/indexer/docs/specs/ATC-INDEX-003.md`
-- `components/indexer/docs/specs/ATC-INDEX-004.md`
-- `components/indexer/docs/specs/ATC-INDEX-005.md`
-- `components/indexer/docs/specs/SPEC-OVERVIEW.md`
-- `components/indexer/modules/atc-analytics/.gitignore`
-- `components/indexer/modules/atc-analytics/ARCHITECTURE.md`
-- `components/indexer/modules/atc-analytics/CHANGELOG.md`
-- `components/indexer/modules/atc-analytics/COMPONENT_PLAN.md`
-- `components/indexer/modules/atc-analytics/FILE_REGISTER.md`
-- `components/indexer/modules/atc-analytics/LICENSE`
-- `components/indexer/modules/atc-analytics/README.md`
-- `components/indexer/modules/atc-analytics/ROADMAP.md`
-- `components/indexer/modules/atc-analytics/STATUS.md`
-- `components/indexer/modules/atc-analytics/benchmarks/benchmark_center.atc`
-- `components/indexer/modules/atc-analytics/chain/chain_analytics.atc`
-- `components/indexer/modules/atc-analytics/github/github_analytics.atc`
-- `components/indexer/modules/atc-analytics/metrics/metrics_engine.atc`
-- `components/indexer/modules/atc-analytics/package-lock.json`
-- `components/indexer/modules/atc-analytics/package.json`
-- `components/indexer/modules/atc-analytics/pipelines/bigquery_pipeline.atc`
-- `components/indexer/modules/atc-analytics/reports/report_generator.atc`
-- `components/indexer/modules/atc-analytics/src/index.ts`
-- `components/indexer/modules/atc-analytics/tsconfig.json`
-- `components/indexer/modules/atc-analytics/vite.config.ts`
-- `components/indexer/tests/TESTPLAN.md`
-- `components/interop/.atc/compliance.yaml`
-- `components/interop/.atc/evidence/evidence.yaml`
-- `components/interop/.atc/lifecycle.yaml`
-- `components/interop/.atc/ownership.yaml`
-- `components/interop/.atc/repository.yaml`
-- `components/interop/.atc/standards.yaml`
-- `components/interop/.github/ai/agent.yaml`
-- `components/interop/.github/ai/capabilities.yaml`
-- `components/interop/.github/ai/policies.yaml`
-- `components/interop/.github/dependabot.yml`
-- `components/interop/.github/workflows/cargo-audit.yml`
-- `components/interop/.github/workflows/codeql.yml`
-- `components/interop/.github/workflows/dependency-review.yml`
-- `components/interop/.github/workflows/determinism-gate.yml`
-- `components/interop/.github/workflows/governance-ci.yml`
-- `components/interop/.github/workflows/test-suite.yml`
-- `components/interop/.gitignore`
-- `components/interop/AGENTS.md`
-- `components/interop/AGENT_MANIFEST.md`
-- `components/interop/ARCHITECTURE.md`
-- `components/interop/CHANGELOG.md`
-- `components/interop/CODEOWNERS`
-- `components/interop/CODE_OF_CONDUCT.md`
-- `components/interop/CONTRIBUTING.md`
-- `components/interop/FILE_REGISTER.md`
-- `components/interop/GOVERNANCE.md`
-- `components/interop/LICENSE`
-- `components/interop/README.md`
-- `components/interop/ROADMAP.md`
-- `components/interop/SECURITY.md`
-- `components/interop/STATUS.md`
-- `components/interop/docs/ENGINEERING_AUDIT.md`
-- `components/interop/docs/README.md`
-- `components/interop/docs/REPOSITORY_STANDARD.md`
-- `components/interop/docs/specs/ATC-INTEROP-001.md`
-- `components/interop/docs/specs/ATC-INTEROP-002.md`
-- `components/interop/docs/specs/ATC-INTEROP-003.md`
-- `components/interop/docs/specs/ATC-INTEROP-004.md`
-- `components/interop/docs/specs/ATC-INTEROP-005.md`
-- `components/interop/docs/specs/ATC-INTEROP-006.md`
-- `components/interop/docs/specs/SPEC-OVERVIEW.md`
-- `components/interop/modules/atc-bridge/.gitignore`
-- `components/interop/modules/atc-bridge/ARCHITECTURE.md`
-- `components/interop/modules/atc-bridge/CHANGELOG.md`
-- `components/interop/modules/atc-bridge/COMPONENT_PLAN.md`
-- `components/interop/modules/atc-bridge/Cargo.toml`
-- `components/interop/modules/atc-bridge/FILE_REGISTER.md`
-- `components/interop/modules/atc-bridge/LICENSE`
-- `components/interop/modules/atc-bridge/README.md`
-- `components/interop/modules/atc-bridge/ROADMAP.md`
-- `components/interop/modules/atc-bridge/STATUS.md`
-- `components/interop/modules/atc-bridge/contracts/bridge_contract.atc`
-- `components/interop/modules/atc-bridge/contracts/wrapped_token.atc`
-- `components/interop/modules/atc-bridge/proofs/merkle_verifier.atc`
-- `components/interop/modules/atc-bridge/proofs/state_proof.atc`
-- `components/interop/modules/atc-bridge/relayer/message_bus.atc`
-- `components/interop/modules/atc-bridge/relayer/relayer_manager.atc`
-- `components/interop/modules/atc-bridge/src/config.rs`
-- `components/interop/modules/atc-bridge/src/error.rs`
-- `components/interop/modules/atc-bridge/src/fee.rs`
-- `components/interop/modules/atc-bridge/src/lib.rs`
-- `components/interop/modules/atc-bridge/src/lockbox.rs`
-- `components/interop/modules/atc-bridge/src/relay.rs`
-- `components/interop/modules/atc-bridge/src/validator.rs`
-- `components/interop/modules/atc-bridge/tokens/fee_manager.atc`
-- `components/interop/modules/atc-bridge/tokens/token_registry.atc`
-- `components/interop/modules/atc-bridge/validators/validator_set.atc`
-- `components/interop/tests/TESTPLAN.md`
-- `components/interop/tools/determinism_check.py`
-- `components/mining/.atc/compliance.yaml`
-- `components/mining/.atc/evidence/evidence.yaml`
-- `components/mining/.atc/lifecycle.yaml`
-- `components/mining/.atc/ownership.yaml`
-- `components/mining/.atc/repository.yaml`
-- `components/mining/.atc/standards.yaml`
-- `components/mining/.github/ai/agent.yaml`
-- `components/mining/.github/ai/capabilities.yaml`
-- `components/mining/.github/ai/policies.yaml`
-- `components/mining/.github/dependabot.yml`
-- `components/mining/.github/workflows/code-quality.yml`
-- `components/mining/.github/workflows/codeql.yml`
-- `components/mining/.github/workflows/dependency-review.yml`
-- `components/mining/.github/workflows/determinism-gate.yml`
-- `components/mining/.github/workflows/governance-ci.yml`
-- `components/mining/.github/workflows/test-suite.yml`
-- `components/mining/.gitignore`
-- `components/mining/AGENTS.md`
-- `components/mining/AGENT_MANIFEST.md`
-- `components/mining/ARCHITECTURE.md`
-- `components/mining/CHANGELOG.md`
-- `components/mining/CODEOWNERS`
-- `components/mining/CODE_OF_CONDUCT.md`
-- `components/mining/CONTRIBUTING.md`
-- `components/mining/Cargo.toml`
-- `components/mining/FILE_REGISTER.md`
-- `components/mining/GOVERNANCE.md`
-- `components/mining/LICENSE`
-- `components/mining/README.md`
-- `components/mining/ROADMAP.md`
-- `components/mining/SECURITY.md`
-- `components/mining/STATUS.md`
-- `components/mining/docs/ENGINEERING_AUDIT.md`
-- `components/mining/docs/REPOSITORY_STANDARD.md`
-- `components/mining/docs/specs/ATC-MIN-001.md`
-- `components/mining/docs/specs/ATC-MIN-002.md`
-- `components/mining/docs/specs/ATC-MIN-003.md`
-- `components/mining/docs/specs/ATC-MIN-004.md`
-- `components/mining/docs/specs/ATC-MIN-005.md`
-- `components/mining/docs/specs/ATC-MIN-006.md`
-- `components/mining/docs/specs/SPEC-OVERVIEW.md`
-- `components/mining/ruff.toml`
-- `components/mining/src/executor.rs`
-- `components/mining/src/lib.rs`
-- `components/mining/src/miner.rs`
-- `components/mining/src/reward.rs`
-- `components/mining/tests/TESTPLAN.md`
-- `components/mining/tools/determinism_check.py`
-- `components/node/.atc/compliance.yaml`
-- `components/node/.atc/evidence/evidence.yaml`
-- `components/node/.atc/lifecycle.yaml`
-- `components/node/.atc/ownership.yaml`
-- `components/node/.atc/repository.yaml`
-- `components/node/.atc/standards.yaml`
-- `components/node/.github/dependabot.yml`
-- `components/node/.github/workflows/atc-std-600-conformance.yml`
-- `components/node/.github/workflows/cargo-audit.yml`
-- `components/node/.github/workflows/codeql.yml`
-- `components/node/.github/workflows/dependency-review.yml`
-- `components/node/.github/workflows/determinism-gate.yml`
-- `components/node/.github/workflows/governance-ci.yml`
-- `components/node/.github/workflows/test-suite.yml`
-- `components/node/.gitignore`
-- `components/node/AGENTS.md`
-- `components/node/AGENT_MANIFEST.md`
-- `components/node/ARCHITECTURE.md`
-- `components/node/CHANGELOG.md`
-- `components/node/CODEOWNERS`
-- `components/node/CONTRIBUTING.md`
-- `components/node/Cargo.toml`
-- `components/node/FILE_REGISTER.md`
-- `components/node/LICENSE`
-- `components/node/README.md`
-- `components/node/ROADMAP.md`
-- `components/node/SECURITY.md`
-- `components/node/STATUS.md`
-- `components/node/config/devnet/genesis.json`
-- `components/node/docs/ENGINEERING_AUDIT.md`
-- `components/node/docs/REPOSITORY_STANDARD.md`
-- `components/node/docs/specs/SPEC-OVERVIEW.md`
-- `components/node/src/bootstrap.rs`
-- `components/node/src/chain.rs`
-- `components/node/src/config.rs`
-- `components/node/src/gossip.rs`
-- `components/node/src/identity.rs`
-- `components/node/src/lib.rs`
-- `components/node/src/main.rs`
-- `components/node/src/peers.rs`
-- `components/node/src/rpc.rs`
-- `components/node/tests/TESTPLAN.md`
-- `components/node/tests/two_node_devnet.rs`
-- `components/node/tools/determinism_check.py`
-- `components/oracle/.atc/compliance.yaml`
-- `components/oracle/.atc/evidence/evidence.yaml`
-- `components/oracle/.atc/lifecycle.yaml`
-- `components/oracle/.atc/ownership.yaml`
-- `components/oracle/.atc/repository.yaml`
-- `components/oracle/.atc/standards.yaml`
-- `components/oracle/.github/ai/agent.yaml`
-- `components/oracle/.github/ai/capabilities.yaml`
-- `components/oracle/.github/ai/policies.yaml`
-- `components/oracle/.github/dependabot.yml`
-- `components/oracle/.github/workflows/cargo-audit.yml`
-- `components/oracle/.github/workflows/codeql.yml`
-- `components/oracle/.github/workflows/dependency-review.yml`
-- `components/oracle/.github/workflows/governance-ci.yml`
-- `components/oracle/.github/workflows/test-suite.yml`
-- `components/oracle/.gitignore`
-- `components/oracle/AGENTS.md`
-- `components/oracle/AGENT_MANIFEST.md`
-- `components/oracle/ARCHITECTURE.md`
-- `components/oracle/CHANGELOG.md`
-- `components/oracle/CODEOWNERS`
-- `components/oracle/CODE_OF_CONDUCT.md`
-- `components/oracle/CONTRIBUTING.md`
-- `components/oracle/Cargo.toml`
-- `components/oracle/FILE_REGISTER.md`
-- `components/oracle/GOVERNANCE.md`
-- `components/oracle/LICENSE`
-- `components/oracle/README.md`
-- `components/oracle/ROADMAP.md`
-- `components/oracle/SECURITY.md`
-- `components/oracle/STATUS.md`
-- `components/oracle/docs/ENGINEERING_AUDIT.md`
-- `components/oracle/docs/README.md`
-- `components/oracle/docs/REPOSITORY_STANDARD.md`
-- `components/oracle/docs/specs/ATC-ORACLE-001.md`
-- `components/oracle/docs/specs/ATC-ORACLE-002.md`
-- `components/oracle/docs/specs/ATC-ORACLE-003.md`
-- `components/oracle/docs/specs/ATC-ORACLE-004.md`
-- `components/oracle/docs/specs/ATC-ORACLE-005.md`
-- `components/oracle/docs/specs/ATC-ORACLE-006.md`
-- `components/oracle/docs/specs/SPEC-OVERVIEW.md`
-- `components/oracle/src/feed.rs`
-- `components/oracle/src/lib.rs`
-- `components/oracle/tests/TESTPLAN.md`
-- `components/sdk/.atc/compliance.yaml`
-- `components/sdk/.atc/evidence/evidence.yaml`
-- `components/sdk/.atc/lifecycle.yaml`
-- `components/sdk/.atc/ownership.yaml`
-- `components/sdk/.atc/repository.yaml`
-- `components/sdk/.atc/standards.yaml`
-- `components/sdk/.github/dependabot.yml`
-- `components/sdk/.github/workflows/cargo-audit.yml`
-- `components/sdk/.github/workflows/codeql.yml`
-- `components/sdk/.github/workflows/dependency-review.yml`
-- `components/sdk/.github/workflows/governance-ci.yml`
-- `components/sdk/.github/workflows/test-suite.yml`
-- `components/sdk/.gitignore`
-- `components/sdk/.pr-ready`
-- `components/sdk/AGENTS.md`
-- `components/sdk/AGENT_MANIFEST.md`
-- `components/sdk/ARCHITECTURE.md`
-- `components/sdk/CHANGELOG.md`
-- `components/sdk/CODEOWNERS`
-- `components/sdk/COMPONENT_PLAN.md`
-- `components/sdk/CONTRIBUTING.md`
-- `components/sdk/FILE_REGISTER.md`
-- `components/sdk/LICENSE`
-- `components/sdk/README.md`
-- `components/sdk/ROADMAP.md`
-- `components/sdk/SECURITY.md`
-- `components/sdk/STATUS.md`
-- `components/sdk/api_client.atc`
-- `components/sdk/client.atc`
-- `components/sdk/contract_bindings.atc`
-- `components/sdk/docs/AUDIT-2026-09-16.md`
-- `components/sdk/docs/ENGINEERING_AUDIT.md`
-- `components/sdk/docs/REPOSITORY_STANDARD.md`
-- `components/sdk/docs/specs/SPEC-OVERVIEW.md`
-- `components/sdk/event_subscriber.atc`
-- `components/sdk/modules/atc-atcpkg/.gitignore`
-- `components/sdk/modules/atc-atcpkg/ARCHITECTURE.md`
-- `components/sdk/modules/atc-atcpkg/CHANGELOG.md`
-- `components/sdk/modules/atc-atcpkg/COMPONENT_PLAN.md`
-- `components/sdk/modules/atc-atcpkg/FILE_REGISTER.md`
-- `components/sdk/modules/atc-atcpkg/LICENSE`
-- `components/sdk/modules/atc-atcpkg/README.md`
-- `components/sdk/modules/atc-atcpkg/ROADMAP.md`
-- `components/sdk/modules/atc-atcpkg/STATUS.md`
-- `components/sdk/modules/atc-atcpkg/docs/ATC-24-AGENT_SCHEDULING.md`
-- `components/sdk/modules/atc-atcpkg/docs/ATC-96-KERNEL_INTERFACE_PROTOCOL.md`
-- `components/sdk/modules/atc-atcpkg/docs/ISSUE_27__ATCPKG__PLUGIN__MODUL-SYST.md`
-- `components/sdk/modules/atc-atcpkg/docs/ISSUE_30__WIKI_KAP._43__ATCPKG_REGIST.md`
-- `components/sdk/modules/atc-atcpkg/installer.atc`
-- `components/sdk/modules/atc-atcpkg/manager.atc`
-- `components/sdk/modules/atc-atcpkg/manifest.atc`
-- `components/sdk/modules/atc-atcpkg/registry.atc`
-- `components/sdk/modules/atc-atcpkg/resolver.atc`
-- `components/sdk/modules/atc-atcpkg/validator.atc`
-- `components/sdk/modules/atc-cli/.gitignore`
-- `components/sdk/modules/atc-cli/ARCHITECTURE.md`
-- `components/sdk/modules/atc-cli/CHANGELOG.md`
-- `components/sdk/modules/atc-cli/COMPONENT_PLAN.md`
-- `components/sdk/modules/atc-cli/Cargo.toml`
-- `components/sdk/modules/atc-cli/FILE_REGISTER.md`
-- `components/sdk/modules/atc-cli/LICENSE`
-- `components/sdk/modules/atc-cli/README.md`
-- `components/sdk/modules/atc-cli/ROADMAP.md`
-- `components/sdk/modules/atc-cli/STATUS.md`
-- `components/sdk/modules/atc-cli/atc_issues_summary.atc`
-- `components/sdk/modules/atc-cli/bigquery_pipeline.atc`
-- `components/sdk/modules/atc-cli/ecdsa_impl.atc`
-- `components/sdk/modules/atc-cli/hf_review_pipeline.atc`
-- `components/sdk/modules/atc-cli/kai_cli.atc`
-- `components/sdk/modules/atc-cli/repl/repl.py`
-- `components/sdk/modules/atc-cli/requirements.txt`
-- `components/sdk/modules/atc-cli/setup.py`
-- `components/sdk/modules/atc-cli/src/client.rs`
-- `components/sdk/modules/atc-cli/src/commands.rs`
-- `components/sdk/modules/atc-cli/src/format.rs`
-- `components/sdk/modules/atc-cli/src/lib.rs`
-- `components/sdk/modules/atc-cli/src/main.rs`
-- `components/sdk/modules/atc-cli/src/rpc_client.rs`
-- `components/sdk/modules/atc-cli/tests/devnet_integration.rs`
-- `components/sdk/modules/atc-sdk/.gitignore`
-- `components/sdk/modules/atc-sdk/ARCHITECTURE.md`
-- `components/sdk/modules/atc-sdk/CHANGELOG.md`
-- `components/sdk/modules/atc-sdk/COMPONENT_PLAN.md`
-- `components/sdk/modules/atc-sdk/FILE_REGISTER.md`
-- `components/sdk/modules/atc-sdk/LICENSE`
-- `components/sdk/modules/atc-sdk/README.md`
-- `components/sdk/modules/atc-sdk/ROADMAP.md`
-- `components/sdk/modules/atc-sdk/STATUS.md`
-- `components/sdk/modules/atc-sdk/api_client.atc`
-- `components/sdk/modules/atc-sdk/client.atc`
-- `components/sdk/modules/atc-sdk/contract_bindings.atc`
-- `components/sdk/modules/atc-sdk/event_subscriber.atc`
-- `components/sdk/modules/atc-sdk/package-lock.json`
-- `components/sdk/modules/atc-sdk/package.json`
-- `components/sdk/modules/atc-sdk/types.atc`
-- `components/sdk/modules/atc-sdk/utils.atc`
-- `components/sdk/package-lock.json`
-- `components/sdk/package.json`
-- `components/sdk/tests/TESTPLAN.md`
-- `components/sdk/types.atc`
-- `components/sdk/typescript/chain-identity.ts`
-- `components/sdk/typescript/package.json`
-- `components/sdk/utils.atc`
-- `components/storage/.atc/compliance.yaml`
-- `components/storage/.atc/evidence/evidence.yaml`
-- `components/storage/.atc/lifecycle.yaml`
-- `components/storage/.atc/ownership.yaml`
-- `components/storage/.atc/repository.yaml`
-- `components/storage/.atc/standards.yaml`
-- `components/storage/.github/ai/agent.yaml`
-- `components/storage/.github/ai/capabilities.yaml`
-- `components/storage/.github/ai/policies.yaml`
-- `components/storage/.github/dependabot.yml`
-- `components/storage/.github/workflows/code-quality.yml`
-- `components/storage/.github/workflows/codeql.yml`
-- `components/storage/.github/workflows/dependency-review.yml`
-- `components/storage/.github/workflows/determinism-gate.yml`
-- `components/storage/.github/workflows/governance-ci.yml`
-- `components/storage/.github/workflows/test-suite.yml`
-- `components/storage/.gitignore`
-- `components/storage/AGENTS.md`
-- `components/storage/AGENT_MANIFEST.md`
-- `components/storage/ARCHITECTURE.md`
-- `components/storage/CHANGELOG.md`
-- `components/storage/CODEOWNERS`
-- `components/storage/CODE_OF_CONDUCT.md`
-- `components/storage/CONTRIBUTING.md`
-- `components/storage/Cargo.toml`
-- `components/storage/FILE_REGISTER.md`
-- `components/storage/GOVERNANCE.md`
-- `components/storage/LICENSE`
-- `components/storage/README.md`
-- `components/storage/ROADMAP.md`
-- `components/storage/SECURITY.md`
-- `components/storage/STATUS.md`
-- `components/storage/docs/ENGINEERING_AUDIT.md`
-- `components/storage/docs/REPOSITORY_STANDARD.md`
-- `components/storage/docs/specs/ATC-STOR-001-OBJECT-MODEL.md`
-- `components/storage/docs/specs/ATC-STOR-002-CONTENT-ADDRESSING.md`
-- `components/storage/docs/specs/ATC-STOR-003-NODE-PROTOCOL.md`
-- `components/storage/docs/specs/ATC-STOR-004-CHUNK-TRANSFER.md`
-- `components/storage/docs/specs/ATC-STOR-005-REPLICATION.md`
-- `components/storage/docs/specs/ATC-STOR-006-ENCRYPTION.md`
-- `components/storage/docs/specs/ATC-STOR-007-CONTENTCAP.md`
-- `components/storage/docs/specs/ATC-STOR-008-MERKLE.md`
-- `components/storage/docs/specs/ATC-STOR-009-ERASURE.md`
-- `components/storage/docs/specs/ATC-STOR-010-DISCOVERY.md`
-- `components/storage/ruff.toml`
-- `components/storage/src/lib.rs`
-- `components/storage/src/store.rs`
-- `components/storage/tests/TESTPLAN.md`
-- `components/storage/tools/determinism_check.py`
-- `components/vm/.atc/compliance.yaml`
-- `components/vm/.atc/evidence/evidence.yaml`
-- `components/vm/.atc/evidence/receipt_e2e_adder.json`
-- `components/vm/.atc/lifecycle.yaml`
-- `components/vm/.atc/ownership.yaml`
-- `components/vm/.atc/repository.yaml`
-- `components/vm/.atc/standards.yaml`
-- `components/vm/.github/CODEOWNERS`
-- `components/vm/.github/ai/agent.yaml`
-- `components/vm/.github/ai/capabilities.yaml`
-- `components/vm/.github/ai/policies.yaml`
-- `components/vm/.github/dependabot.yml`
-- `components/vm/.github/workflows/cargo-audit.yml`
-- `components/vm/.github/workflows/codeql.yml`
-- `components/vm/.github/workflows/contract-exec-gate.yml`
-- `components/vm/.github/workflows/dependency-review.yml`
-- `components/vm/.github/workflows/governance-ci.yml`
-- `components/vm/.github/workflows/test-suite.yml`
-- `components/vm/.gitignore`
-- `components/vm/AGENTS.md`
-- `components/vm/AGENT_MANIFEST.md`
-- `components/vm/ARCHITECTURE.md`
-- `components/vm/CHANGELOG.md`
-- `components/vm/CODEOWNERS`
-- `components/vm/CODE_OF_CONDUCT.md`
-- `components/vm/CONTRIBUTING.md`
-- `components/vm/Cargo.lock`
-- `components/vm/Cargo.toml`
-- `components/vm/FILE_REGISTER.md`
-- `components/vm/GOVERNANCE.md`
-- `components/vm/LICENSE`
-- `components/vm/README.md`
-- `components/vm/ROADMAP.md`
-- `components/vm/SECURITY.md`
-- `components/vm/STATUS.md`
-- `components/vm/docs/ENGINEERING_AUDIT.md`
-- `components/vm/docs/REPOSITORY_STANDARD.md`
-- `components/vm/docs/audits/REPOSITORY-AUDIT-2026-09-16.md`
-- `components/vm/docs/specs/SPEC-OVERVIEW.md`
-- `components/vm/examples/exec_receipt.rs`
-- `components/vm/src/.gitkeep`
-- `components/vm/src/assembler.rs`
-- `components/vm/src/context.rs`
-- `components/vm/src/lib.rs`
-- `components/vm/src/main.rs`
-- `components/vm/src/ops.rs`
-- `components/vm/src/vm.rs`
-- `components/vm/tests/.gitkeep`
-- `components/vm/tests/exec_chain_e2e.rs`
-- `components/wallet/.atc/compliance.yaml`
-- `components/wallet/.atc/evidence/evidence.yaml`
-- `components/wallet/.atc/lifecycle.yaml`
-- `components/wallet/.atc/ownership.yaml`
-- `components/wallet/.atc/repository.yaml`
-- `components/wallet/.atc/standards.yaml`
-- `components/wallet/.github/ai/agent.yaml`
-- `components/wallet/.github/ai/capabilities.yaml`
-- `components/wallet/.github/ai/policies.yaml`
-- `components/wallet/.github/dependabot.yml`
-- `components/wallet/.github/workflows/code-quality.yml`
-- `components/wallet/.github/workflows/codeql.yml`
-- `components/wallet/.github/workflows/dependency-review.yml`
-- `components/wallet/.github/workflows/determinism-gate.yml`
-- `components/wallet/.github/workflows/governance-ci.yml`
-- `components/wallet/.github/workflows/test-suite.yml`
-- `components/wallet/.gitignore`
-- `components/wallet/AGENTS.md`
-- `components/wallet/AGENT_MANIFEST.md`
-- `components/wallet/ARCHITECTURE.md`
-- `components/wallet/CHANGELOG.md`
-- `components/wallet/CODEOWNERS`
-- `components/wallet/COMPONENT_PLAN.md`
-- `components/wallet/CONTRIBUTING.md`
-- `components/wallet/Cargo.toml`
-- `components/wallet/FILE_REGISTER.md`
-- `components/wallet/LICENSE`
-- `components/wallet/README.md`
-- `components/wallet/ROADMAP.md`
-- `components/wallet/SECURITY.md`
-- `components/wallet/STATUS.md`
-- `components/wallet/balance.atc`
-- `components/wallet/docs/ENGINEERING_AUDIT.md`
-- `components/wallet/docs/REPOSITORY_STANDARD.md`
-- `components/wallet/docs/specs/WAL-ADDR-001-ADDRESS.md`
-- `components/wallet/docs/specs/WAL-KEY-001-KEYGEN.md`
-- `components/wallet/docs/specs/WAL-KEY-002-BIP44.md`
-- `components/wallet/docs/specs/WAL-REPLAY-001-REPLAY.md`
-- `components/wallet/docs/specs/WAL-SEC-001-KEYSTORE.md`
-- `components/wallet/docs/specs/WAL-SEC-002-HYGIENE.md`
-- `components/wallet/docs/specs/WAL-SEC-003-BACKUP.md`
-- `components/wallet/docs/specs/WAL-SEC-004-RECOVERY.md`
-- `components/wallet/docs/specs/WAL-SEC-005-THREAT-MODEL.md`
-- `components/wallet/docs/specs/WAL-SEC-006-FUZZING.md`
-- `components/wallet/docs/specs/WAL-SIGN-001-SIGNING.md`
-- `components/wallet/docs/specs/WAL-TB-001-TRUST-BOUNDARY.md`
-- `components/wallet/docs/specs/WAL-TX-001-CANONICAL-TX.md`
-- `components/wallet/docs/specs/WAL-VERIFY-001-VERIFICATION.md`
-- `components/wallet/faucet.atc`
-- `components/wallet/history.atc`
-- `components/wallet/keymanager.atc`
-- `components/wallet/nft_viewer.atc`
-- `components/wallet/requirements.txt`
-- `components/wallet/ruff.toml`
-- `components/wallet/setup.py`
-- `components/wallet/src/__init__.py`
-- `components/wallet/src/balance.rs`
-- `components/wallet/src/crypto.py`
-- `components/wallet/src/gui.rs`
-- `components/wallet/src/history.rs`
-- `components/wallet/src/keys.rs`
-- `components/wallet/src/lib.rs`
-- `components/wallet/src/main.rs`
-- `components/wallet/src/tx.rs`
-- `components/wallet/src/wallet.py`
-- `components/wallet/tests/TESTPLAN.md`
-- `components/wallet/tools/determinism_check.py`
-- `components/wallet/tx_signer.atc`
-- `components/wallet/wallet/ecdsa.py`
-- `components/zkp/.atc/compliance.yaml`
-- `components/zkp/.atc/evidence/evidence.yaml`
-- `components/zkp/.atc/lifecycle.yaml`
-- `components/zkp/.atc/ownership.yaml`
-- `components/zkp/.atc/repository.yaml`
-- `components/zkp/.atc/standards.yaml`
-- `components/zkp/.github/CODEOWNERS`
-- `components/zkp/.github/ai/agent.yaml`
-- `components/zkp/.github/ai/capabilities.yaml`
-- `components/zkp/.github/ai/policies.yaml`
-- `components/zkp/.github/dependabot.yml`
-- `components/zkp/.github/workflows/cargo-audit.yml`
-- `components/zkp/.github/workflows/codeql.yml`
-- `components/zkp/.github/workflows/dependency-review.yml`
-- `components/zkp/.github/workflows/determinism-gate.yml`
-- `components/zkp/.github/workflows/governance-ci.yml`
-- `components/zkp/.github/workflows/test-suite.yml`
-- `components/zkp/AGENTS.md`
-- `components/zkp/AGENT_MANIFEST.md`
-- `components/zkp/ARCHITECTURE.md`
-- `components/zkp/CHANGELOG.md`
-- `components/zkp/CODEOWNERS`
-- `components/zkp/CODE_OF_CONDUCT.md`
-- `components/zkp/CONTRIBUTING.md`
-- `components/zkp/Cargo.toml`
-- `components/zkp/FILE_REGISTER.md`
-- `components/zkp/GOVERNANCE.md`
-- `components/zkp/LICENSE`
-- `components/zkp/README.md`
-- `components/zkp/ROADMAP.md`
-- `components/zkp/SECURITY.md`
-- `components/zkp/STATUS.md`
-- `components/zkp/crates/zkp-circuits/Cargo.toml`
-- `components/zkp/crates/zkp-circuits/src/lib.rs`
-- `components/zkp/crates/zkp-circuits/tests/.gitkeep`
-- `components/zkp/crates/zkp-core/Cargo.toml`
-- `components/zkp/crates/zkp-core/src/lib.rs`
-- `components/zkp/crates/zkp-core/tests/.gitkeep`
-- `components/zkp/crates/zkp-crypto/Cargo.toml`
-- `components/zkp/crates/zkp-crypto/src/lib.rs`
-- `components/zkp/crates/zkp-crypto/tests/.gitkeep`
-- `components/zkp/crates/zkp-prover/Cargo.toml`
-- `components/zkp/crates/zkp-prover/src/lib.rs`
-- `components/zkp/crates/zkp-prover/tests/.gitkeep`
-- `components/zkp/crates/zkp-sdk/Cargo.toml`
-- `components/zkp/crates/zkp-sdk/src/lib.rs`
-- `components/zkp/crates/zkp-sdk/tests/.gitkeep`
-- `components/zkp/crates/zkp-verifier/Cargo.toml`
-- `components/zkp/crates/zkp-verifier/src/lib.rs`
-- `components/zkp/crates/zkp-verifier/tests/.gitkeep`
-- `components/zkp/crates/zkp-vm/Cargo.toml`
-- `components/zkp/crates/zkp-vm/src/lib.rs`
-- `components/zkp/crates/zkp-vm/tests/.gitkeep`
-- `components/zkp/docs/ENGINEERING_AUDIT.md`
-- `components/zkp/docs/README.md`
-- `components/zkp/docs/REPOSITORY_STANDARD.md`
-- `components/zkp/docs/ZKP_ARCHITECTURE.md`
-- `components/zkp/docs/specs/SPEC-OVERVIEW.md`
-- `components/zkp/tools/determinism_check.py`
-- `determinism_allowlist.yaml`
-- `docs/ENGINEERING_AUDIT.md`
-- `docs/MONOREPO_MIGRATION.md`
-- `docs/REPOSITORY_STANDARD.md`
-- `docs/audits/REPOSITORY-AUDIT-2026-09-16.md`
-- `modules/atc-blockchain/.gitignore`
-- `modules/atc-blockchain/ARCHITECTURE.md`
-- `modules/atc-blockchain/CHANGELOG.md`
-- `modules/atc-blockchain/COMPONENT_PLAN.md`
-- `modules/atc-blockchain/FILE_REGISTER.md`
-- `modules/atc-blockchain/LICENSE`
-- `modules/atc-blockchain/README.md`
-- `modules/atc-blockchain/ROADMAP.md`
-- `modules/atc-blockchain/STATUS.md`
-- `modules/atc-blockchain/__init__.py`
-- `modules/atc-blockchain/alerts/blockchain_alerts.yml`
-- `modules/atc-blockchain/atcoin/__init__.py`
-- `modules/atc-blockchain/consensus/MIGRATION_INDEX.md`
-- `modules/atc-blockchain/consensus/__init__.py`
-- `modules/atc-blockchain/consensus/consensus.atc`
-- `modules/atc-blockchain/consensus/fork_atc85.atc`
-- `modules/atc-blockchain/consensus/fork_resolution.atc`
-- `modules/atc-blockchain/consensus/gas_fee.atc`
-- `modules/atc-blockchain/consensus/gas_fee_atc86.atc`
-- `modules/atc-blockchain/consensus/hybrid_atc84.atc`
-- `modules/atc-blockchain/consensus/hybrid_consensus.atc`
-- `modules/atc-blockchain/consensus/poh.atc`
-- `modules/atc-blockchain/consensus/poh.py`
-- `modules/atc-blockchain/consensus/poh_atc83.atc`
-- `modules/atc-blockchain/consensus/poh_integration.atc`
-- `modules/atc-blockchain/consensus/poh_integration.py`
-- `modules/atc-blockchain/consensus/pos.atc`
-- `modules/atc-blockchain/consensus/pos_atc82.atc`
-- `modules/atc-blockchain/consensus/pow.atc`
-- `modules/atc-blockchain/consensus/pow_atc81.atc`
-- `modules/atc-blockchain/consensus/shiva_consensus.py`
-- `modules/atc-blockchain/contracts/__init__.py`
-- `modules/atc-blockchain/contracts/atc001/__init__.py`
-- `modules/atc-blockchain/contracts/atc8300/__init__.py`
-- `modules/atc-blockchain/contracts/base/__init__.py`
-- `modules/atc-blockchain/contracts/contract_engine_atc14.atc`
-- `modules/atc-blockchain/contracts/governance/governance_contract.atc`
-- `modules/atc-blockchain/contracts/shivamon/__init__.py`
-- `modules/atc-blockchain/dex/__init__.py`
-- `modules/atc-blockchain/dex/amm.atc`
-- `modules/atc-blockchain/governance/__init__.py`
-- `modules/atc-blockchain/governance/dao.atc`
-- `modules/atc-blockchain/governance/dao_live.atc`
-- `modules/atc-blockchain/governance/governance.atc`
-- `modules/atc-blockchain/governance/snapshot.atc`
-- `modules/atc-blockchain/governance/timelock.atc`
-- `modules/atc-blockchain/governance/treasury.atc`
-- `modules/atc-blockchain/kernel/Cargo.toml`
-- `modules/atc-blockchain/kernel/src/blockchain.rs`
-- `modules/atc-blockchain/mainnet/__init__.py`
-- `modules/atc-blockchain/mainnet/launch_manager.atc`
-- `modules/atc-blockchain/mainnet/mainnet_config.atc`
-- `modules/atc-blockchain/network/atc-04_dag_consensus_propagation.atc`
-- `modules/atc-blockchain/network/latency_opt_atc06.atc`
-- `modules/atc-blockchain/nodes/__init__.py`
-- `modules/atc-blockchain/nodes/block_propagation.atc`
-- `modules/atc-blockchain/nodes/bootstrap.atc`
-- `modules/atc-blockchain/nodes/bootstrap.py`
-- `modules/atc-blockchain/nodes/discovery.py`
-- `modules/atc-blockchain/nodes/initial_sync.atc`
-- `modules/atc-blockchain/nodes/node.atc`
-- `modules/atc-blockchain/nodes/testnet_launcher.atc`
-- `modules/atc-blockchain/package-lock.json`
-- `modules/atc-blockchain/package.json`
-- `modules/atc-blockchain/propagation/block_gossip.atc`
-- `modules/atc-blockchain/requirements.txt`
-- `modules/atc-blockchain/setup.py`
-- `modules/atc-blockchain/src/backend/blockchain/engine.ts`
-- `modules/atc-blockchain/src/components/BlockchainEcosystemView.tsx`
-- `modules/atc-blockchain/src/components/BlockchainLedgerView.tsx`
-- `modules/atc-blockchain/tsconfig.json`
-- `modules/atc-blockchain/wallet/__init__.py`
-- `modules/atc-blockchain/wallet/did.atc`
-- `modules/atc-blockchain/wallet/did.py`
-- `modules/atc-blockchain/wallet/multisig.atc`
-- `modules/atc-blockchain/wallet/multisig.py`
-- `modules/atc-blockchain/wallet/wordlist.atc`
-- `modules/atc-blockchain/workspace/src/backend/blockchain/engine.ts`
-- `modules/atc-blockchain/zkp/__init__.py`
-- `modules/atc-blockchain/zkp/groth16.atc`
-- `modules/atc-blockchain/zkp/groth16.py`
-- `modules/atc-dns/.gitignore`
-- `modules/atc-dns/ARCHITECTURE.md`
-- `modules/atc-dns/CHANGELOG.md`
-- `modules/atc-dns/COMPONENT_PLAN.md`
-- `modules/atc-dns/Cargo.toml`
-- `modules/atc-dns/FILE_REGISTER.md`
-- `modules/atc-dns/LICENSE`
-- `modules/atc-dns/README.md`
-- `modules/atc-dns/ROADMAP.md`
-- `modules/atc-dns/STATUS.md`
-- `modules/atc-dns/cache.atc`
-- `modules/atc-dns/dnssec.atc`
-- `modules/atc-dns/records.atc`
-- `modules/atc-dns/resolver.atc`
-- `modules/atc-dns/src/cache.rs`
-- `modules/atc-dns/src/lib.rs`
-- `modules/atc-dns/src/registry.rs`
-- `modules/atc-dns/src/resolver.rs`
-- `modules/atc-dns/src/zones.rs`
-- `modules/atc-dns/zones.atc`
-- `modules/atc-governance/.gitignore`
-- `modules/atc-governance/ARCHITECTURE.md`
-- `modules/atc-governance/CHANGELOG.md`
-- `modules/atc-governance/COMPONENT_PLAN.md`
-- `modules/atc-governance/Cargo.toml`
-- `modules/atc-governance/FILE_REGISTER.md`
-- `modules/atc-governance/LICENSE`
-- `modules/atc-governance/README.md`
-- `modules/atc-governance/ROADMAP.md`
-- `modules/atc-governance/STATUS.md`
-- `modules/atc-governance/delegation/delegation.atc`
-- `modules/atc-governance/multisig/multisig.atc`
-- `modules/atc-governance/proposal/proposal_manager.atc`
-- `modules/atc-governance/src/delegation.rs`
-- `modules/atc-governance/src/lib.rs`
-- `modules/atc-governance/src/proposal.rs`
-- `modules/atc-governance/src/timelock.rs`
-- `modules/atc-governance/src/treasury.rs`
-- `modules/atc-governance/src/voting.rs`
-- `modules/atc-governance/timelock/timelock.atc`
-- `modules/atc-governance/treasury/treasury.atc`
-- `modules/atc-governance/voting/voting_engine.atc`
-- `modules/atc-testnet/.gitignore`
-- `modules/atc-testnet/ARCHITECTURE.md`
-- `modules/atc-testnet/CHANGELOG.md`
-- `modules/atc-testnet/COMPONENT_PLAN.md`
-- `modules/atc-testnet/FILE_REGISTER.md`
-- `modules/atc-testnet/LICENSE`
-- `modules/atc-testnet/README.md`
-- `modules/atc-testnet/ROADMAP.md`
-- `modules/atc-testnet/STATUS.md`
-- `modules/atc-testnet/config/genesis_config.atc`
-- `modules/atc-testnet/config/mainnet_config.atc`
-- `modules/atc-testnet/devnet/snapshot_manager.atc`
-- `modules/atc-testnet/launcher/devnet_launcher.atc`
-- `modules/atc-testnet/launcher/testnet_launcher.atc`
-- `modules/atc-testnet/nodes/node_bootstrap.atc`
-- `modules/atc-testnet/nodes/validator_setup.atc`
-- `modules/atc-testnet/requirements.txt`
-- `modules/atc-testnet/scripts/deploy_testnet.atc`
-- `modules/atc-testnet/setup.py`
-- `modules/atc-testnet/src/__init__.py`
-- `modules/atc-testnet/src/config/__init__.py`
-- `modules/atc-testnet/src/explorer/__init__.py`
-- `modules/atc-testnet/src/faucet/__init__.py`
-- `modules/atc-testnet/src/validator/__init__.py`
-- `modules/atc-zkp/.gitignore`
-- `modules/atc-zkp/ARCHITECTURE.md`
-- `modules/atc-zkp/CHANGELOG.md`
-- `modules/atc-zkp/COMPONENT_PLAN.md`
-- `modules/atc-zkp/Cargo.toml`
-- `modules/atc-zkp/FILE_REGISTER.md`
-- `modules/atc-zkp/LICENSE`
-- `modules/atc-zkp/README.md`
-- `modules/atc-zkp/ROADMAP.md`
-- `modules/atc-zkp/STATUS.md`
-- `modules/atc-zkp/circuits/groth16.atc`
-- `modules/atc-zkp/circuits/range_circuit.atc`
-- `modules/atc-zkp/circuits/transfer_circuit.atc`
-- `modules/atc-zkp/gadgets/hash_gadget.atc`
-- `modules/atc-zkp/gadgets/merkle_tree.atc`
-- `modules/atc-zkp/provers/fft_prover.atc`
-- `modules/atc-zkp/provers/prover_manager.atc`
-- `modules/atc-zkp/setup/trusted_setup.atc`
-- `modules/atc-zkp/setup/verification_key_gen.atc`
-- `modules/atc-zkp/src/circuits.rs`
-- `modules/atc-zkp/src/lib.rs`
-- `modules/atc-zkp/src/merkle.rs`
-- `modules/atc-zkp/src/snarks.rs`
-- `modules/atc-zkp/src/starks.rs`
-- `modules/atc-zkp/src/verifier.rs`
-- `modules/atc-zkp/verifiers/verifier_manager.atc`
-- `modules/atc-zkp/verifiers/verifier_registry.atc`
-- `modules/atcnet/.gitignore`
-- `modules/atcnet/ARCHITECTURE.md`
-- `modules/atcnet/CHANGELOG.md`
-- `modules/atcnet/COMPONENT_PLAN.md`
-- `modules/atcnet/FILE_REGISTER.md`
-- `modules/atcnet/LICENSE`
-- `modules/atcnet/PROTOCOL.md`
-- `modules/atcnet/README.md`
-- `modules/atcnet/ROADMAP.md`
-- `modules/atcnet/SECURITY.md`
-- `modules/atcnet/STATUS.md`
-- `modules/atcnet/atcnet.atc`
-- `modules/atcnet/atcnet.py`
-- `modules/atcnet/bootstrap_client.atc`
-- `modules/atcnet/bootstrap_client.py`
-- `modules/atcnet/discovery.atc`
-- `modules/atcnet/discovery.py`
-- `modules/atcnet/gossip.atc`
-- `modules/atcnet/nat_traversal.atc`
-- `modules/atcnet/network/atc-02_liquid_state_migration_failover.atc`
-- `modules/atcnet/network/atc-05_quantumresistant_signatures.atc`
-- `modules/atcnet/network/atc-10_global_time_sync_oracles.atc`
-- `modules/atcnet/network/core_node_atc01.atc`
-- `modules/atcnet/network/sharding_atc07.atc`
-- `modules/atcnet/node.py`
-- `modules/atcnet/p2p_node.atc`
-- `modules/atcnet/p2p_propagation.atc`
-- `modules/atcnet/p2p_propagation.py`
-- `modules/atcnet/requirements.txt`
-- `modules/atcnet/service_discovery.atc`
-- `modules/atcnet/setup.py`
-- `modules/atcnet/tests/test_atcnet.py`
-- `ruff.toml`
-- `specs/ATC-CRYPTO-001-CRYPTOGRAPHY.md`
-- `specs/ATC-EVIDENCE-001-MILESTONE-EVIDENCE.md`
-- `specs/ATC-NETWORK-ID-001-NETWORK-IDENTITY.md`
-- `specs/ATC-STATE-001-STATE-TRANSITION.md`
-- `specs/ATC-VM-CONF-001-VM-CONFORMANCE.md`
-- `tools/consensus_boundary_check.py`
-- `tools/determinism_check.py`
-
----
-
-## Nachtrag 2026-11-08 (P0-Härtung)
 
 | Datei | Zweck |
 |---|---|
