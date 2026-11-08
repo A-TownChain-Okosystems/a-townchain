@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-119",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #119: fix(deps): resolve P0 JavaScript security advisories",
+  "context": "Pull request 119 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/119",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Scope\nSHA-bound dependency-manager remediation from `5a66f276a10ff02ac470d561d4ea260012229cec`.\n\n## Changes\n- Regenerated the embedded Explorer lockfile with npm.\n- Regenerated the Analytics lockfile with npm.\n- `handlebars` 4.7.9 -> 4.7.10.\n- `proxy-addr` 2.0.7 -> 2.0.8.\n- `brace-expansion` resolved to 5.0.12 and 2.1.7 branches.\n\n## Evidence\n- Explorer `npm ci --ignore-scripts`: PASS\n- Analytics `npm ci --ignore-scripts`: PASS\n- Both test commands: PASS, no tests found, exit 0\n- Both TypeScript builds: PASS\n- npm audit: Explorer 20 moderate residual findings; Analytics 19 moderate residual findings, including unaddressed `sprintf-js`.\n- npm emitted a Node engine warning for `graphql@17.0.2` under Node 20.20.2.\n\nNo merge or alert closure performed."
+}
