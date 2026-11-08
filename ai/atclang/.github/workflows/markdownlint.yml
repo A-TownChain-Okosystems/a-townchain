@@ -1,0 +1,35 @@
+name: Markdown Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  markdownlint:
+    name: markdownlint-cli2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+
+      - name: Checkout organization Markdown policy
+        uses: actions/checkout@v4
+        with:
+          repository: A-TownChain-Okosystems/.github
+          ref: 1c198f3c6a73105f7e68f69e59c21f502362dbe1
+          path: .org-github-policy
+          persist-credentials: false
+
+      - name: Lint repository Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v24
+        with:
+          config: .org-github-policy/policies/markdownlint/.markdownlint-cli2.jsonc
+          globs: |
+            **/*.md
+            !.git/**
+            !.org-github-policy/**/*.md
