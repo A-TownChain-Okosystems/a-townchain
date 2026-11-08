@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-112",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #112: P0: Vollständigen Quellcodeabgleich für Komponenten- und Funktionskatalog durchführen",
+  "context": "Issue 112 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/112",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Ziel\nDen Katalog `ATC-COMPONENT-FUNCTION-CATALOG-001` gegen die tatsächlichen Quellbäume aller aktiven Repositories abgleichen und die Vollständigkeit von Komponenten, Funktionen, Schnittstellen und Nachweisen belastbar feststellen.\n\n## Ausgangslage\n- Referenz-PR: #111\n- geprüfter Katalog-Head: `f0593d81d7265e6873dfeb56d0b828fea76699bb`\n- Baseline: 30 katalogisierte Komponenten, 63 Funktionsverträge, 7 Schnittstellen, 7 Produktions-Gates\n- Repository-Abdeckung: 33 sichtbar, davon 26 aktiv und 7 archiviert\n- Katalogstatus: `BASELINE_RESIDUAL`; Release-Entscheidung: `BLOCKED`\n- Die neun zuletzt erfassten CI-Läufe waren `queued`; daraus darf kein erfolgreicher Check abgeleitet werden.\n\n## Arbeitspakete\n1. Census und exakte HEAD-SHAs aller 33 Repositories erfassen; archivierte Repositories als Referenzbestand behandeln.\n2. Für jedes aktive Repository den tatsächlichen Quellbaum untersuchen: Module, öffentliche/externe Funktionen, Services, Systemaufrufe, Workflows, Konfigurationen, Tests und API-/ABI-Definitionen.\n3. Jedes Inventar mit dem Katalog vergleichen; fehlende, doppelte, veraltete und unbelegte Einträge mit Repository, Pfad und SHA protokollieren.\n4. Kanonische Eigentümerschaft und SSOT-Grenzen prüfen, insbesondere `a-townchain-os` vs. `a-townchain-ecosystem`, `atc-node`, `atc-contracts`, `atc-zkp` und `atc-sdk`.\n5. Für jede reale Funktion einen überprüfbaren Vertrag dokumentieren: stabile ID, Zweck, Inputs/Outputs, Vorbedingungen, Fehlerverhalten, Ressourcen-/Sicherheitsgrenzen, Versionierung, Abhängigkeiten, Testklassen und messbare Akzeptanzkriterien.\n6. Jede tatsächliche komponentenübergreifende Verbindung mit versioniertem API-/ABI-Vertrag und Kompatibilitätstests belegen.\n7. Protokoll-/Sicherheitskonflikte ausdrücklich schließen oder als `BLOCKED` belassen, einschließlich VM-Magic `ATCB` vs. `ATC1`.\n8. CI bis zu terminalen Ergebnissen verfolgen und für jeden `VERIFIED`-Befund exakten SHA, Run, Job, Step, Exit-Code und Log-/Artefaktbeleg speichern.\n9. Validatoren um Soll-Ist-Vollständigkeitschecks erweitern; Strukturvalidierung allein darf nicht als Funktionsvollständigkeit gelten.\n\n## Abnahmekriterien\n- Jeder aktive Repository-Head ist erfasst und für den Audit reproduzierbar.\n- Jeder geprüfte Quellpfad/Funktionsbestand ist mit Commit-SHA verknüpft.\n- Jede öffentliche Funktion/Service-/Syscall-Schnittstelle ist entweder katalogisiert oder mit begründeter Ausschlussregel dokumentiert.\n- Alle Katalogeinträge sind im Quellcode oder in einem normativen Vertrag nachvollziehbar; nicht belegte Einträge bleiben `RESIDUAL`.\n- Kanonischer Owner und Abhängigkeiten sind konfliktfrei oder als offener Residual dokumentiert.\n- Schnittstellenkonformität wird durch konkrete Tests/Nachweise belegt.\n- CI-/Sicherheits-Gates haben terminale Ergebnisse; pending/skipped zählt nicht als Erfolg.\n- Keine Funktion/Komponente wird ohne exakte Evidence als `VERIFIED` oder `PRODUCTION_READY` markiert.\n\n## Sicherheits- und Änderungsregeln\n- Keine automatische Merge-Freigabe.\n- Keine CI-Gates abschwächen.\n- Keine Repositories archivieren, löschen oder reaktivieren ohne separate bestätigte Entscheidung.\n- Keine Funktionen oder Testergebnisse aus Repository-Namen oder Dokumentation ableiten, ohne Quellbeleg.\n- Architekturänderungen nur additiv und unter Wahrung der kanonischen Implementierungs-SSOTs."
+}
