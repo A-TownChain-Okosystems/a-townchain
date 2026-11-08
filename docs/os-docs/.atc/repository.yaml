@@ -1,0 +1,21 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: a-townchain-os-docs
+  classification: SPEC
+  maturity: R3
+  status: production
+project:
+  organization: A-TownChain-Okosystems
+  domain: documentation
+  component: documentation
+language:
+  primary: markdown
+license:
+  type: apache-2.0
+security:
+  criticality: high
+api:
+  stability: stable
+protocol:
+  compatibility: required
