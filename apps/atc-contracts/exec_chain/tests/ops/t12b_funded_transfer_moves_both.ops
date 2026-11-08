@@ -1,0 +1,18 @@
+# t12b — gedeckter Transfer 50 von Balance 100:
+# Sender 100-50=50 (Slot 2), Empfaenger 0+50=50 (Slot 3), Flag 1.
+Load 2
+Push 50
+Lt
+JumpIfNotZero 14
+Load 2
+Push 50
+Sub
+Store 2
+Load 3
+Push 50
+Add
+Store 3
+Push 1
+Halt
+Push 0
+Halt
