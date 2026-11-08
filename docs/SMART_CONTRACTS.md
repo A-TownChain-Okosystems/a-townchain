@@ -114,9 +114,13 @@ fehlendem Compiler-Binary.
   Das ist eine Strukturprüfung: ein Typfehler (`return "text"` in einer `-> int`-Funktion),
   ein Aufruf einer nicht existierenden Funktion und selbst `let = ;` innerhalb eines
   Vertrags werden von `atc check` akzeptiert. Die Vertragslogik ist damit ungeprüft.
-- Neun Contract-Tests liegen als `.atc` unter `apps/atc-contracts/exec_chain/tests/`
-  und laufen über den VM-Gate im Smoke-Test (`t10b_mint_positive_accept.ops`:
-  12 Ops, PASS).
+- Zwanzig Contract-Tests laufen über `exec_chain/tests/run_tests.sh`: zwölf
+  Vektortests (`.atc` + `vectors/tNN.json`, assembliert nach `.ops` und im ATVM
+  ausgeführt) für ATCoin (t01–t03), Governance-Quorum (t04, t05), Bridge
+  (t06, t07), ATC-8300 (t08, t09) und Revenue Share (t14–t16), dazu acht
+  Bytecode-Tests mit Storage-Evidenz (t10–t13). Stand 08.11.2026: 20/20 PASS.
+  Gegenprobe belegt: ein falscher Erwartungswert lässt den Lauf auf 19/20
+  fallen, die Tests greifen also.
 
 ## 5. Was die Gates noch nicht abdecken
 
@@ -125,16 +129,29 @@ fehlendem Compiler-Binary.
   Netzwerk-Gates nicht berührt, und `verified`/`audited` sind überall `false`.
 - **Kein Audit.** Für keinen Contract existiert ein Audit-Referenznachweis
   (`audit_ref`), obwohl SC-005 eine Audit-Pipeline verlangt.
-- **Invarianten-Tests sind dünn.** Neun VM-Tests für 16 Contracts, überwiegend für
-  ATC-8300. Governance, Bridge und Revenue haben keinen eigenen Testfall; A8 prüft
-  bisher nur Kompilierbarkeit, nicht Verhalten.
+- **Invarianten-Tests sind dünn (Stand 08.11.2026).** Zwanzig Tests für 16
+  Contracts, davon Governance-Quorum (t04, t05, t13a, t13b), Bridge (t06, t07),
+  ATC-8300 (t08, t09, t10a/b, t12a/b), ATCoin (t01–t03, t11a/b) und Revenue
+  Share (t14–t16). Ohne eigenen Testfall bleiben DEFI-002 (Fractional Ownership),
+  BRIDGE-002 (Wrapped Synthetic Assets), MINING-001, GAMEFI-001, REGISTRY-001 und
+  die Governance-DAO jenseits der Quorumsschwelle; A8 prüft weiterhin nur
+  Kompilierbarkeit, nicht Verhalten.
+- **Der EXEC-GATE-Assembler verwirft `require` stillschweigend.** Belegt am
+  08.11.2026: ein Testvertrag mit `require(x == 0)` bei `x = 7` ergibt 8 Ops
+  ohne Prüfinstruktion und läuft auf PASS. Ursache ist der eingefrorene
+  Opcode-Satz (ATC-BC-001) ohne Assert-/Revert-Op. Folge: Vektortests dürfen
+  keine Invariante tragen, die nur in einem `require` steht — die Zusicherung
+  muss als Rechnung im Rückgabewert liegen (so halten es t14–t16). Ein
+  Assert-Opcode ist eine ATCB-v2-Entscheidung.
 - **CI-Anbindung fehlt.** Das Gate läuft lokal; die Integration als CI-Schritt ist
   durch fehlenden workflow-Scope des Agent-Tokens blockiert (bekannte
   Owner-Aktion, F-009/F-010).
 
 ## 6. Nächste Schritte
 
-1. Invarianten-Tests für Governance, Bridge und Revenue (SC-004).
+1. Invarianten-Tests für die noch offenen Verträge — DEFI-002, BRIDGE-002,
+   MINING-001, GAMEFI-001 und REGISTRY-001 (SC-004). Governance, Bridge und
+   Revenue sind mit t04–t07 und t14–t16 abgedeckt.
 2. Audit-Pipeline aufsetzen und `audit_ref` bei den drei Kern-Contracts füllen
    (SC-005), dann `audited: true` setzen.
 3. Deploy-Record-Format beim ersten Devnet-Deploy befüllen (SC-006).
