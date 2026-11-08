@@ -1,0 +1,159 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-01 — P2P Node
+// Sprint 2.2 | Network Layer | Chain-ID 9000
+// Migrated from: modules/atcnet/p2p_node.py (165 lines)
+// Manages peer connections and message routing
+// ─────────────────────────────────────────────────────────────
+
+const DEFAULT_PORT: u16 = 9000
+const PEER_TIMEOUT: u64 = 60
+const MAX_PEERS: u8 = 50
+
+struct Peer {
+    peer_id: Address,
+    host: String,
+    port: u16,
+    connected_at: u64,
+    last_seen: u64,
+    latency_ms: u16,
+    version: String,
+    active: bool,
+}
+
+contract P2PNode {
+    state node_id: Address
+    state host: String
+    state port: u16
+    state peers: Map<Address, Peer>
+    state msg_handlers: Map<String, u32>
+    state running: bool
+    state messages_received: u64
+    state messages_sent: u64
+    state owner: Address
+
+    event PeerConnected(peer_id: Address, host: String, port: u16)
+    event PeerDisconnected(peer_id: Address)
+    event MessageReceived(msg_type: String, from_peer: Address)
+    event MessageSent(msg_type: String, to_peer: Address)
+
+    fn init() {
+        self.node_id = msg_sender()
+        self.host = "0.0.0.0"
+        self.port = DEFAULT_PORT
+        self.peers = {}
+        self.msg_handlers = {}
+        self.running = false
+        self.messages_received = 0
+        self.messages_sent = 0
+        self.owner = msg_sender()
+    }
+
+    fn start() -> bool {
+        self.running = true
+        return true
+    }
+
+    fn stop() -> bool {
+        self.running = false
+        return true
+    }
+
+    fn connect_peer(peer_id: Address, host: String, port: u16, version: String) -> bool {
+        if self.peers.len() >= MAX_PEERS {
+            return false
+        }
+        let peer = Peer {
+            peer_id: peer_id,
+            host: host,
+            port: port,
+            connected_at: Time::now(),
+            last_seen: Time::now(),
+            latency_ms: 0,
+            version: version,
+            active: true,
+        }
+        self.peers[peer_id] = peer
+        emit PeerConnected(peer_id, host, port)
+        return true
+    }
+
+    fn disconnect_peer(peer_id: Address) -> bool {
+        let peer = self.peers.get(peer_id)
+        if peer == null {
+            return false
+        }
+        peer.active = false
+        emit PeerDisconnected(peer_id)
+        return true
+    }
+
+    fn send_message(peer_id: Address, msg_type: String, payload: Bytes) -> bool {
+        let peer = self.peers.get(peer_id)
+        if peer == null || !peer.active {
+            return false
+        }
+        self.messages_sent += 1
+        emit MessageSent(msg_type, peer_id)
+        return true
+    }
+
+    fn receive_message(msg_type: String, from_peer: Address) -> bool {
+        let peer = self.peers.get(from_peer)
+        if peer == null {
+            return false
+        }
+        peer.last_seen = Time::now()
+        self.messages_received += 1
+        emit MessageReceived(msg_type, from_peer)
+        return true
+    }
+
+    fn broadcast_message(msg_type: String, payload: Bytes) -> u8 {
+        let addrs = self.peers.keys()
+        let sent: u8 = 0
+        let i: u16 = 0
+        while i < addrs.len() {
+            let peer = self.peers.get(addrs[i])
+            if peer != null && peer.active {
+                self.send_message(addrs[i], msg_type, payload)
+                sent += 1
+            }
+            i += 1
+        }
+        return sent
+    }
+
+    fn is_peer_alive(peer_id: Address) -> bool {
+        let peer = self.peers.get(peer_id)
+        if peer == null {
+            return false
+        }
+        if !peer.active {
+            return false
+        }
+        return (Time::now() - peer.last_seen) < PEER_TIMEOUT
+    }
+
+    fn get_peer_count() -> u16 {
+        return self.peers.len()
+    }
+
+    fn get_active_peers() -> u16 {
+        let count: u16 = 0
+        let addrs = self.peers.keys()
+        let i: u16 = 0
+        while i < addrs.len() {
+            let peer = self.peers.get(addrs[i])
+            if peer != null && peer.active {
+                count += 1
+            }
+            i += 1
+        }
+        return count
+    }
+
+    fn get_stats() -> (u16, u16, u64, u64) {
+        return (self.peers.len(), self.get_active_peers(), self.messages_received, self.messages_sent)
+    }
+}
