@@ -112,6 +112,43 @@ impl Chain {
         Ok(())
     }
 
+    /// Payload fuer eine Tx-Menge bilden, ohne die Kette oder den Ledger zu
+    /// veraendern (Konsens-Phase vor der Finalitaet).
+    pub fn tx_payload(
+        &self,
+        txs: &[crate::mempool::TxEnvelope],
+        ledger: &mut crate::mempool::TxLedger,
+    ) -> Result<String, String> {
+        if txs.is_empty() {
+            return Ok(String::new());
+        }
+        let ids = ledger
+            .check_block(txs)
+            .map_err(|e| format!("Tx-Pruefung fehlgeschlagen: {:?}", e))?;
+        Ok(encode_tx_ids(&ids))
+    }
+
+    /// Hash, den der naechste Block mit dieser Payload traegt (ohne Anhaengen).
+    pub fn preview_hash(&self, payload: &str) -> [u8; 32] {
+        Block::compute_hash(self.height() + 1, self.best_hash(), payload)
+    }
+
+    /// Haengt eine bereits gepruefte Payload an und committet die Txs im Ledger.
+    pub fn commit_payload(
+        &mut self,
+        payload: &str,
+        txs: &[crate::mempool::TxEnvelope],
+        ledger: &mut crate::mempool::TxLedger,
+    ) -> Result<[u8; 32], String> {
+        let hash = self.produce(payload)?;
+        if !txs.is_empty() {
+            ledger
+                .commit_block(txs)
+                .map_err(|e| format!("Ledger-Commit fehlgeschlagen: {:?}", e))?;
+        }
+        Ok(hash)
+    }
+
     /// Produziert einen Block aus geprueften Transaktionen (SEC-P0-001).
     ///
     /// Reihenfolge: Ledger-Pruefung (Signatur, DID-Bindung, Nonce, Replay) ->
