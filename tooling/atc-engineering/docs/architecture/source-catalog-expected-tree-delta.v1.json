@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "repository": "A-TownChain-Okosystems/atc-engineering",
+  "source_commit_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+  "catalog_commit_sha": "5c27a52e476d6ca10ab3650e7d0370a20e741e70",
+  "status": "REVIEWED_EXPECTED_CHANGE_SET",
+  "merge_approval": "NOT_GRANTED",
+  "evidence": [
+    "https://github.com/A-TownChain-Okosystems/atc-engineering/compare/b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4...5c27a52e476d6ca10ab3650e7d0370a20e741e70"
+  ],
+  "expected_deltas": [
+    {
+      "path": ".github/workflows/org-function-catalog.yml",
+      "change_type": "modified",
+      "source_blob_sha": "b16497c6137f94dbc4c620f3ba51c8578f8cced0",
+      "catalog_blob_sha": "94e9855cb682598256627dc5de485d37befd63d3",
+      "rationale": "The catalog snapshot adds validation of the component-candidate evidence manifest. The exact old and new blob bindings are pinned to the two compared Git trees.",
+      "evidence": [
+        "https://github.com/A-TownChain-Okosystems/atc-engineering/compare/b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4...5c27a52e476d6ca10ab3650e7d0370a20e741e70"
+      ]
+    },
+    {
+      "path": "docs/architecture/atc-engineering-component-evidence.v1.json",
+      "change_type": "added",
+      "source_blob_sha": null,
+      "catalog_blob_sha": "f972a64f37d1837b5746e138c7821c96ebf20e39",
+      "rationale": "The catalog snapshot adds a component-candidate evidence manifest. Its candidates remain proposal/review evidence and do not establish canonical implementation ownership or VERIFIED status.",
+      "evidence": [
+        "https://github.com/A-TownChain-Okosystems/atc-engineering/compare/b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4...5c27a52e476d6ca10ab3650e7d0370a20e741e70"
+      ]
+    },
+    {
+      "path": "schemas/atc-engineering-component-evidence.schema.json",
+      "change_type": "added",
+      "source_blob_sha": null,
+      "catalog_blob_sha": "823823a33974f3c01676c1e2112ddc6b7e6754f7",
+      "rationale": "The catalog snapshot adds the schema for the component-candidate evidence manifest; the schema addition is paired with the added manifest.",
+      "evidence": [
+        "https://github.com/A-TownChain-Okosystems/atc-engineering/compare/b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4...5c27a52e476d6ca10ab3650e7d0370a20e741e70"
+      ]
+    }
+  ],
+  "limitations": [
+    "This contract accounts only for the exact file deltas between the two pinned commits; it is not a merge approval.",
+    "Each expected delta is still checked against the source and catalog inventory blob bindings and the independently regenerated Git-tree manifests.",
+    "No semantic promotion of component candidates to CONFIRMED or VERIFIED is implied."
+  ]
+}
