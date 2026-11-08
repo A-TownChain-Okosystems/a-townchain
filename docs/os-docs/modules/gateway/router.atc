@@ -1,0 +1,96 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — Gateway Router
+// Sprint 3.0 | Gateway Layer | Chain-ID 9000
+// Migrated from: modules/gateway/router.py (91 lines)
+// Request forwarding with circuit breaker, health monitoring
+// ─────────────────────────────────────────────────────────────
+
+const CIRCUIT_THRESHOLD: u8 = 5
+const CIRCUIT_RESET_TIMEOUT: u32 = 30
+const REQUEST_TIMEOUT: u32 = 30
+
+enum ServicePath { Status, Blockchain, Wallet, Game, Nodes, AI, Governance, Marketplace, Orchestrator }
+
+contract GatewayRouter {
+    state backend_url: String
+    state total_requests: u64
+    state total_errors: u64
+    state circuit_open: bool
+    state circuit_errors: u8
+    state circuit_reset_time: u64
+    state service_endpoints: Map<ServicePath, String>
+
+    event RequestForwarded(path: String, method: String)
+    event CircuitBreakerOpened()
+    event CircuitBreakerClosed()
+    event BackendError(error: String)
+
+    fn init(backend: String) {
+        self.backend_url = backend
+        self.total_requests = 0
+        self.total_errors = 0
+        self.circuit_open = false
+        self.circuit_errors = 0
+        self.circuit_reset_time = 0
+        self.service_endpoints = {
+            ServicePath::Status: "/api/status",
+            ServicePath::Blockchain: "/api/blockchain",
+            ServicePath::Wallet: "/api/wallet",
+            ServicePath::Game: "/api/game",
+            ServicePath::Nodes: "/api/nodes",
+            ServicePath::AI: "/api/ai",
+            ServicePath::Governance: "/api/governance",
+            ServicePath::Marketplace: "/api/marketplace",
+            ServicePath::Orchestrator: "/api/orchestrator",
+        }
+    }
+
+    fn check_circuit() -> bool {
+        if self.circuit_open {
+            if Time::now() > self.circuit_reset_time {
+                self.circuit_open = false
+                self.circuit_errors = 0
+                emit CircuitBreakerClosed()
+            } else {
+                return false
+            }
+        }
+        return true
+    }
+
+    fn forward(path: String, method: String, body: Bytes) -> (u16, Bytes) {
+        self.total_requests += 1
+        if !self.check_circuit() {
+            return (503, "Service temporarily unavailable".as_bytes())
+        }
+        let target = self.backend_url + "/api/" + path
+        let result = HTTP::request(method, target, body, REQUEST_TIMEOUT)
+        if result.status >= 500 {
+            self.total_errors += 1
+            self.circuit_errors += 1
+            if self.circuit_errors >= CIRCUIT_THRESHOLD {
+                self.circuit_open = true
+                self.circuit_reset_time = Time::now() + CIRCUIT_RESET_TIMEOUT
+                emit CircuitBreakerOpened()
+            }
+            emit BackendError("Backend returned " + Int::to_string(result.status))
+            return (503, "Backend error".as_bytes())
+        }
+        self.circuit_errors = 0
+        emit RequestForwarded(path, method)
+        return (result.status, result.body)
+    }
+
+    fn check_backend() -> (bool, String) {
+        let result = HTTP::get(self.backend_url + "/api/status", 3)
+        if result.status == 200 {
+            return (true, "ok")
+        }
+        return (false, "degraded")
+    }
+
+    fn stats() -> (u64, u64, bool) {
+        return (self.total_requests, self.total_errors, self.circuit_open)
+    }
+}
