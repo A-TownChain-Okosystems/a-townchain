@@ -1,0 +1,11 @@
+4810-            </h3>
+4811-          </div>
+4812-
+4813-          <nav className="flex flex-col gap-4">
+4814-            {Object.entries<any>(
+4815:              wikiContent.reduce(
+4816-                (acc, section) => {
+4817-                  const cat = (section as any).category || "Allgemein";
+4818-                  const subcat = (section as any).subcategory;
+4819-                  if (!acc[cat]) acc[cat] = { _items: [] };
+4820-                  if (subcat) {
