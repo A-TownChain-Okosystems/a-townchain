@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-08 19:39 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `4e94c0e71` (letzter Commit 2026-11-08)
+> **Erzeugt:** 2026-11-08 19:41 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `c6c876323` (letzter Commit 2026-11-08)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
