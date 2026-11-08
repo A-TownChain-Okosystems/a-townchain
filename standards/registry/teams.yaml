@@ -1,0 +1,8 @@
+# ATC Teams (AD-031). Aktuell Solo-Owner + Agent; Teams entstehen mit Contributors.
+teams:
+  core-team:      {members: [ShivaCoreDev], repos: [atc-shivacore, atclang, a-townchain]}
+  os-team:        {members: [ShivaCoreDev], repos: [globus-os, a-townchain-os]}
+  ai-team:        {members: [ShivaCoreDev], repos: [aurora-ai]}
+  services-team:  {members: [ShivaCoreDev], repos: [atc-contracts, atc-wallet, atc-sdk, atc-explorer, atc-indexer, atc-interop, atc-node, atc-storage, atc-compute, atc-oracle, atc-mining, atc-marketplace, atc-launchpad]}
+  game-team:      {members: [ShivaCoreDev], repos: [genesis-engine, genesis-chronicles]}
+  governance-team: {members: [ShivaCoreDev, aurora-superagent], repos: [atc-standards, a-townchain-os-docs]}
