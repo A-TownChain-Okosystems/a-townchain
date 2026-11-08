@@ -1,0 +1,2 @@
+[build]
+rustflags = ["--cfg", "curve25519_dalek_backend=\"serial\""]
