@@ -1,0 +1,16 @@
+// ATCLang v0.3 — Proposal Lifecycle
+// Submit, discuss, vote, execute
+// ATC-Standard: ATC-17
+
+module proposal_manager {
+    struct Proposal {
+        proposal_id: int,
+        proposer: string,
+        title: string,
+        status: string
+    }
+    
+    fn submit_proposal() {
+        // Creates and registers new governance proposal for community voting
+    }
+}
