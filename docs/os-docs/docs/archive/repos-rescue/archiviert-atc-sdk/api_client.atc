@@ -1,0 +1,12 @@
+// ATCLang v0.3 — atc-sdk :: API Client
+// REST/WebSocket, auth, pagination
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module api_client {
+    // Public API — TBD
+    
+    fn init() {
+        // Initialization — TBD
+    }
+}
