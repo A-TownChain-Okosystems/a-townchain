@@ -84,21 +84,3 @@ contract ATC8300Token {
         return true
     }
 }
-
-// ATC-Coin — nativer Token
-contract ATCoin : ATC8300Token {
-    state CHAIN_ID:  u64  = 658467
-    state MAX_SUPPLY: u128 = 360_000_000_000_000_000_000_000_000  // 360M ATC; canonical L1 cap
-
-    event ATCoinInitialized(owner: Address, max_supply: u128)
-
-    fn init_atcoin(owner_addr: Address) {
-        self.init("A-TownCoin", "ATC", owner_addr)
-        emit ATCoinInitialized(owner_addr, self.MAX_SUPPLY)
-    }
-
-    fn mint(to: Address, amount: u128) -> bool {
-        require(safe_add(self.total_supply_, amount) <= self.MAX_SUPPLY, "Max Supply erreicht")
-        return super.mint(to, amount)
-    }
-}
