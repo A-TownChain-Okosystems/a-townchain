@@ -1,0 +1,148 @@
+document_id: ATC-DOC-AI-009
+title: Aurora AI Function Catalog and Gap Register
+version: 0.1.0
+status: draft
+owner: A-TownChain-Okosystems
+standard: ATC-STD-MD-001
+source_branch: fix/aurora-core-p0-input-safety
+verification:
+  status: NOT_VERIFIED
+  rule: "CI evidence must be tied to the exact commit SHA, run, job, step, exit code, and log."
+  release_gate: NO_GO
+status_vocabulary:
+  - SPECIFIED
+  - IMPLEMENTED
+  - TESTED
+  - CI_VERIFIED
+  - INTEGRATED
+  - E2E_VERIFIED
+  - GAP
+  - UNMAPPED_RESIDUAL
+functions:
+  - id: AUR-CORE-001
+    priority: P0
+    module: modules/atc-aurora-core
+    source: modules/atc-aurora-core/src/aurora_core.rs
+    source_blob_sha_before_branch: edf81f530e1a759f3b8e2af3d5f7993b59c319b4
+    symbols: [AuroraCore::new, AuroraCore::start, AuroraCore::stop, AuroraCore::is_active, AuroraCore::process_request]
+    status: IMPLEMENTED
+    evidence: "Regression tests added in PR #34; CI pending."
+  - id: AUR-CORE-002
+    priority: P0
+    module: modules/atc-aurora-core
+    source: modules/atc-aurora-core/src/model_hub.rs
+    source_blob_sha_before_branch: a4e38b68dcba4bd9c71c527ad089e0b2bd922e28
+    symbols: [ModelHub::register, ModelHub::set_default, ModelHub::get_default, ModelHub::inference, ModelHub::list_models, ModelHub::model_count]
+    status: IMPLEMENTED
+    residuals: ["Inference currently returns a placeholder response; real provider ABI is not established."]
+  - id: AUR-CORE-003
+    priority: P1
+    module: modules/atc-aurora-core
+    source: modules/atc-aurora-core/src/llm_router.rs
+    source_blob_sha: c0615d7f4106af3ef2188e69da849bcc29ce54e4
+    symbols: [LlmRouter::new, LlmRouter::add_rule, LlmRouter::route]
+    status: IMPLEMENTED
+    residuals: ["Keyword routing only; provider capability/version negotiation not verified."]
+  - id: AUR-CORE-004
+    priority: P0
+    module: modules/atc-aurora-core
+    source: modules/atc-aurora-core/src/agent_registry.rs
+    source_blob_sha: ad2d7826e66ef3c20924ae10e16b6bb5abd1c32a
+    symbols: [AgentRegistry::new, AgentRegistry::register, AgentRegistry::unregister, AgentRegistry::get_agent, AgentRegistry::list_active, AgentRegistry::set_active]
+    status: IMPLEMENTED
+    residuals: ["Capability labels are stored but are not authorization enforcement."]
+  - id: AUR-CORE-005
+    priority: P0
+    module: modules/atc-aurora-core
+    source: modules/atc-aurora-core/src/config_manager.rs
+    source_blob_sha: b1adf540f1b4dc60259e3e65759b2f9bd23796a0
+    symbols: [ConfigManager::new, ConfigManager::set, ConfigManager::get, ConfigManager::get_or_default, ConfigManager::remove, ConfigManager::keys]
+    status: IMPLEMENTED
+    residuals: ["String-only configuration; typed schema validation and secret handling not verified."]
+  - id: AUR-AGENT-001
+    priority: P1
+    module: modules/atc-aurora-agents
+    source: modules/atc-aurora-agents/src/lib.rs
+    source_blob_sha: 6bb82069e246b9ba474a72c0a3780c0806122151
+    symbols: [agents, agent_base, agent_pool]
+    status: IMPLEMENTED
+    residuals: ["Agent orchestration, isolation, budgets, and cancellation need deeper source/test audit."]
+  - id: AUR-MEM-001
+    priority: P1
+    module: modules/atc-aurora-memory
+    source: modules/atc-aurora-memory/src/lib.rs
+    source_blob_sha: 43165c771dd83e2bfd6294ffb8554fd272ccc77d
+    symbols: [knowledge_base, vector_store, memory_index, learning_pipeline, context_window]
+    status: IMPLEMENTED
+    residuals: ["ACLs, retention/deletion, provenance, and poisoning protection not yet verified."]
+  - id: AUR-RUNTIME-001
+    priority: P0
+    module: modules/atc-aurora-runtime
+    source: modules/atc-aurora-runtime/README.md
+    source_blob_sha: 20e47459be937269e33022d768f1a1b0ed63c6bd
+    status: UNMAPPED_RESIDUAL
+    residuals: ["README found; Cargo manifest and source entrypoint were not found at initially probed paths."]
+  - id: AUR-PY-001
+    priority: P1
+    module: modules/atc-aurora-ai
+    source: modules/atc-aurora-ai/README.md
+    source_blob_sha: 07f0456835f8a4ca419c81ba09159e6e623788bd
+    status: UNMAPPED_RESIDUAL
+    residuals: ["Python service README and requirements found; package/test entrypoints need full inventory."]
+gaps:
+  - id: AUR-GAP-001
+    priority: P0
+    requirement: "Policy engine with deny-by-default and deterministic decision records"
+    status: GAP
+    release_blocking: true
+  - id: AUR-GAP-002
+    priority: P0
+    requirement: "Capability enforcement before every tool/service invocation; scope, expiry, revocation, replay protection"
+    status: GAP
+    release_blocking: true
+  - id: AUR-GAP-003
+    priority: P0
+    requirement: "Explicit approval gate for privileged actions; rejection/timeout never implies approval"
+    status: GAP
+    release_blocking: true
+  - id: AUR-GAP-004
+    priority: P0
+    requirement: "Tool contracts and service boundary with schema validation, timeouts, cancellation, side-effect and resource limits"
+    status: GAP
+    release_blocking: true
+  - id: AUR-GAP-005
+    priority: P0
+    requirement: "Typed configuration schema, validation, and safe secret handling"
+    status: GAP
+    release_blocking: true
+  - id: AUR-GAP-006
+    priority: P0
+    requirement: "Audit provenance across intent, policy, approval, tool invocation, result and version"
+    status: GAP
+    release_blocking: true
+  - id: AUR-GAP-007
+    priority: P0
+    requirement: "Real model-provider ABI and inference, or explicit mock-only designation"
+    status: GAP
+    release_blocking: true
+  - id: AUR-GAP-008
+    priority: P0
+    requirement: "Reject inactive agents before processing"
+    status: IMPLEMENTED
+    evidence: "Regression test added in PR #34; CI pending."
+  - id: AUR-GAP-009
+    priority: P0
+    requirement: "UTF-8-safe prompt preview without byte-boundary panic"
+    status: IMPLEMENTED
+    evidence: "Regression test added in PR #34; CI pending."
+  - id: AUR-GAP-010
+    priority: P0
+    requirement: "Exact-SHA CI evidence"
+    status: GAP
+    release_blocking: true
+architecture_invariants:
+  - "Aurora is user-space AI, not ShivaCore TCB, kernel authority, blockchain consensus, or canonical ATC-VM."
+  - "Intent/Proposal -> Policy -> Capability Check -> Approval when required -> Tool/Service Boundary -> authoritative runtime."
+  - "Fail closed if policy, capability, required approval, or trusted evidence is missing."
+  - "Model output and retrieved content are untrusted data and cannot grant authority."
+scope_note: "Conservative snapshot of inspected files, not a complete recursive repository census."
