@@ -1,0 +1,18 @@
+# ATC Standards Profile — verbindlicher Compliance-Vertrag (ATC-STD-LIB-001 sec.8, SCR-0101)
+# SSOT-Kaskade: registry/repositories.yaml + registry/standards.yaml > dieses Profil > .atc/standards.yaml im Repo
+criticality: C3
+domain: developer_tools
+domain_extension: 'Org-Adoption aus privatem Lumino-IDE-Prototyp (13.09.2026): Developer-Tools
+  (ATC-VM-Simulator, Doc-Compliance, Genesis-Configurator, GlobusOS-Panels) — EXPERIMENTAL:
+  partial, nicht auditiert; fachliche Standards via SCR nachzureichen'
+layer: L6
+maturity_class: C
+profile: atc-ide
+registry_id: ATC-REPO-IDE-001
+repo: atc-ide
+required_standards:
+- ATC-STD-000
+- ATC-STD-201
+- ATC-STD-202
+security_class: S2
+version: 1.0.0
