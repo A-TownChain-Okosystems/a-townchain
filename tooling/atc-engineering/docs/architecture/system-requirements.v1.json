@@ -1,0 +1,1451 @@
+{
+  "catalog_id": "ATC-SYSTEM-REQUIREMENTS",
+  "schema_version": "1.0.0",
+  "document_status": "REQUIREMENTS_BASELINE",
+  "generated_for_commit": "84588c54fbf5e48f2c08e8d7eab84b3dcdce4968",
+  "rule": "Requirements are not evidence of implementation. Status may advance only with source, tests, and exact-SHA evidence.",
+  "systems": [
+    {
+      "system_id": "SHIVACORE-KERNEL",
+      "name": "ShivaCore Kernel",
+      "canonical_repository": "globus-os",
+      "canonical_path": "modules/atc-shivacore/kernel/",
+      "purpose": "Capability-based no_std microkernel and trusted computing base.",
+      "requirement_ids": [
+        "SHIVACORE-KERNEL-BOOT-HAL",
+        "SHIVACORE-KERNEL-MEMORY-VMM",
+        "SHIVACORE-KERNEL-CAPABILITIES",
+        "SHIVACORE-KERNEL-IPC-BUS",
+        "SHIVACORE-KERNEL-SCHEDULER-LIFECYCLE",
+        "SHIVACORE-KERNEL-SYSCALL-ABI",
+        "SHIVACORE-KERNEL-FAULT-DIAGNOSTICS",
+        "SHIVACORE-KERNEL-SECURE-BOOT-IDENTITY"
+      ]
+    },
+    {
+      "system_id": "ATC-BLOCKCHAIN",
+      "name": "A-TownChain Blockchain",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "/",
+      "purpose": "Canonical ledger, transaction, block, state transition and node protocol.",
+      "requirement_ids": [
+        "ATC-BLOCKCHAIN-CHAIN-PARAMETERS",
+        "ATC-BLOCKCHAIN-TRANSACTIONS-CRYPTO",
+        "ATC-BLOCKCHAIN-MEMPOOL-ADMISSION",
+        "ATC-BLOCKCHAIN-BLOCK-STATE-TRANSITION",
+        "ATC-BLOCKCHAIN-CONSENSUS-INTEGRATION",
+        "ATC-BLOCKCHAIN-STORAGE-RECOVERY",
+        "ATC-BLOCKCHAIN-P2P-SYNC",
+        "ATC-BLOCKCHAIN-RPC-OPERATIONS"
+      ]
+    },
+    {
+      "system_id": "ATC-VM",
+      "name": "ATC-VM",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/vm/",
+      "purpose": "Canonical deterministic execution VM; atc-vm repository is specification/support unless governance changes SSOT.",
+      "requirement_ids": [
+        "ATC-VM-BYTECODE-FORMAT",
+        "ATC-VM-DECODER-VERIFIER",
+        "ATC-VM-EXECUTION-ENGINE",
+        "ATC-VM-RESOURCES-GAS",
+        "ATC-VM-HOST-ABI",
+        "ATC-VM-STATE-ATOMICITY",
+        "ATC-VM-CONFORMANCE"
+      ]
+    },
+    {
+      "system_id": "ATC-TOOLCHAIN",
+      "name": "ATC-Toolchain",
+      "canonical_repository": "atc-toolchain",
+      "canonical_path": "/",
+      "purpose": "Build orchestration, compiler pipeline, quality gates, artifact provenance and release packaging.",
+      "requirement_ids": [
+        "ATC-TOOLCHAIN-TOOLCHAIN-MANIFEST",
+        "ATC-TOOLCHAIN-BUILD-GRAPH",
+        "ATC-TOOLCHAIN-COMPILER-PIPELINE",
+        "ATC-TOOLCHAIN-QUALITY-GATES",
+        "ATC-TOOLCHAIN-VECTORS-REPRODUCIBILITY",
+        "ATC-TOOLCHAIN-SUPPLY-CHAIN",
+        "ATC-TOOLCHAIN-EVIDENCE-LIFECYCLE",
+        "ATC-TOOLCHAIN-RELEASE-PACKAGING"
+      ]
+    },
+    {
+      "system_id": "ATC-STANDARDS",
+      "name": "ATC-Standards",
+      "canonical_repository": "atc-standards",
+      "canonical_path": "/",
+      "purpose": "Normative specifications, registries, compatibility and conformance governance.",
+      "requirement_ids": [
+        "ATC-STANDARDS-REGISTRY",
+        "ATC-STANDARDS-NORMATIVE-LANGUAGE",
+        "ATC-STANDARDS-ENCODING-CRYPTO",
+        "ATC-STANDARDS-PROTOCOL-ABI",
+        "ATC-STANDARDS-CONFORMANCE-VECTORS",
+        "ATC-STANDARDS-CHANGE-GOVERNANCE",
+        "ATC-STANDARDS-TRACEABILITY"
+      ]
+    },
+    {
+      "system_id": "ATC-ALGORITHM",
+      "name": "ATC-Algorithm",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/algorithm/",
+      "purpose": "Canonical production consensus/algorithm implementation; atc-algorithm provides specs/governance/support.",
+      "requirement_ids": [
+        "ATC-ALGORITHM-ALGORITHM-REGISTRY",
+        "ATC-ALGORITHM-DETERMINISTIC-CONTRACT",
+        "ATC-ALGORITHM-ELIGIBILITY-LEADER",
+        "ATC-ALGORITHM-FORK-FINALITY",
+        "ATC-ALGORITHM-ECONOMICS",
+        "ATC-ALGORITHM-SIMULATION-SECURITY"
+      ]
+    },
+    {
+      "system_id": "ATC-LANG",
+      "name": "ATC-Lang / ATCLang",
+      "canonical_repository": "atclang",
+      "canonical_path": "/",
+      "purpose": "Language specification and frontend; no separate VM/runtime authority.",
+      "requirement_ids": [
+        "ATC-LANG-GRAMMAR-LEXER",
+        "ATC-LANG-PARSER-AST",
+        "ATC-LANG-SEMANTIC-ANALYSIS",
+        "ATC-LANG-LOWERING-BYTECODE",
+        "ATC-LANG-STDLIB",
+        "ATC-LANG-DEVELOPER-TOOLS"
+      ]
+    },
+    {
+      "system_id": "GLOBUS-OS",
+      "name": "GlobusOS",
+      "canonical_repository": "globus-os",
+      "canonical_path": "/",
+      "purpose": "Operating-system integration and services around the canonical ShivaCore kernel.",
+      "requirement_ids": [
+        "GLOBUS-OS-BOOT-LIFECYCLE",
+        "GLOBUS-OS-KERNEL-INTEGRATION",
+        "GLOBUS-OS-DRIVERS-HAL",
+        "GLOBUS-OS-SERVICE-MANAGER",
+        "GLOBUS-OS-FILESYSTEM-NETWORK",
+        "GLOBUS-OS-EVENT-IPC",
+        "GLOBUS-OS-IDENTITY-UPDATE",
+        "GLOBUS-OS-AURORA-ISOLATION"
+      ]
+    },
+    {
+      "system_id": "AURORA-AI",
+      "name": "Aurora-AI",
+      "canonical_repository": "aurora-ai",
+      "canonical_path": "/",
+      "purpose": "AI models, training/inference and agent orchestration behind explicit policy and capability boundaries.",
+      "requirement_ids": [
+        "AURORA-AI-MODEL-DATA-REGISTRY",
+        "AURORA-AI-TRAINING-EVALUATION",
+        "AURORA-AI-INFERENCE-RUNTIME",
+        "AURORA-AI-AGENT-ORCHESTRATION",
+        "AURORA-AI-POLICY-CAPABILITY",
+        "AURORA-AI-TOOL-SANDBOX",
+        "AURORA-AI-EVALUATION-SECURITY",
+        "AURORA-AI-DEPLOYMENT-ROLLBACK"
+      ]
+    },
+    {
+      "system_id": "GENESIS-ENGINE",
+      "name": "Genesis Engine",
+      "canonical_repository": "genesis-engine",
+      "canonical_path": "/",
+      "purpose": "Game-building/editor software and game runtime; project integration remains behind explicit interfaces.",
+      "requirement_ids": [
+        "GENESIS-ENGINE-PROJECT-EDITOR",
+        "GENESIS-ENGINE-SCENE-WORLD",
+        "GENESIS-ENGINE-ASSET-PIPELINE",
+        "GENESIS-ENGINE-RENDERING",
+        "GENESIS-ENGINE-INTERACTION-MEDIA",
+        "GENESIS-ENGINE-SCRIPTING-PLUGINS",
+        "GENESIS-ENGINE-BUILD-DEBUG",
+        "GENESIS-ENGINE-INTEGRATION-BOUNDARY"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "SHIVACORE-KERNEL-BOOT-HAL",
+      "system_id": "SHIVACORE-KERNEL",
+      "system_name": "ShivaCore Kernel",
+      "component_id": "boot-hal",
+      "component_name": "Boot and HAL",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "modules/atc-shivacore/kernel/",
+      "requirement": "Boot phases, CPU discovery, architecture abstraction, interrupt/timer setup.",
+      "acceptance_criteria": "Boot image, target, boot log and hardware/emulator evidence are pinned to exact SHA.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "SHIVACORE-KERNEL-MEMORY-VMM",
+      "system_id": "SHIVACORE-KERNEL",
+      "system_name": "ShivaCore Kernel",
+      "component_id": "memory-vmm",
+      "component_name": "Memory and VMM",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "modules/atc-shivacore/kernel/",
+      "requirement": "Frame allocation, address spaces, page tables, mapping permissions, rollback, reclamation.",
+      "acceptance_criteria": "Failed mapping mutations preserve invariants; mapping/object lifetimes have tests.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "SHIVACORE-KERNEL-CAPABILITIES",
+      "system_id": "SHIVACORE-KERNEL",
+      "system_name": "ShivaCore Kernel",
+      "component_id": "capabilities",
+      "component_name": "Capability security",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "modules/atc-shivacore/kernel/",
+      "requirement": "Object identity, rights, derivation/restriction, transfer, validation and revocation model.",
+      "acceptance_criteria": "Every privileged operation checks authority; no ambient authority.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "SHIVACORE-KERNEL-IPC-BUS",
+      "system_id": "SHIVACORE-KERNEL",
+      "system_name": "ShivaCore Kernel",
+      "component_id": "ipc-bus",
+      "component_name": "IPCBus",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "modules/atc-shivacore/kernel/",
+      "requirement": "Capability-gated endpoints, bounded queues, message validation, cancellation and errors.",
+      "acceptance_criteria": "Unauthorized and malformed messages fail closed; resource limits are tested.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "SHIVACORE-KERNEL-SCHEDULER-LIFECYCLE",
+      "system_id": "SHIVACORE-KERNEL",
+      "system_name": "ShivaCore Kernel",
+      "component_id": "scheduler-lifecycle",
+      "component_name": "Scheduler and lifecycle",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "modules/atc-shivacore/kernel/",
+      "requirement": "Thread/process states, context switch, scheduling policy, blocking, wakeup and teardown.",
+      "acceptance_criteria": "State transitions and cleanup are tested; no dangling mappings/resources.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "SHIVACORE-KERNEL-SYSCALL-ABI",
+      "system_id": "SHIVACORE-KERNEL",
+      "system_name": "ShivaCore Kernel",
+      "component_id": "syscall-abi",
+      "component_name": "Syscall and ABI",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "modules/atc-shivacore/kernel/",
+      "requirement": "Versioned ABI types, validation, error codes and userspace boundary.",
+      "acceptance_criteria": "Invalid pointers/arguments rejected; compatibility is documented.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "SHIVACORE-KERNEL-FAULT-DIAGNOSTICS",
+      "system_id": "SHIVACORE-KERNEL",
+      "system_name": "ShivaCore Kernel",
+      "component_id": "fault-diagnostics",
+      "component_name": "Faults and diagnostics",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "modules/atc-shivacore/kernel/",
+      "requirement": "Interrupts, exceptions, panic/fail-stop, structured trace and redaction.",
+      "acceptance_criteria": "Failure evidence is reproducible and secrets never enter logs.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "SHIVACORE-KERNEL-SECURE-BOOT-IDENTITY",
+      "system_id": "SHIVACORE-KERNEL",
+      "system_name": "ShivaCore Kernel",
+      "component_id": "secure-boot-identity",
+      "component_name": "Secure boot and identity",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "modules/atc-shivacore/kernel/",
+      "requirement": "Boot-chain validation and TPM/TEE provider interfaces where supported.",
+      "acceptance_criteria": "Trust assumptions and target-specific secure-boot evidence are explicit.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-BLOCKCHAIN-CHAIN-PARAMETERS",
+      "system_id": "ATC-BLOCKCHAIN",
+      "system_name": "A-TownChain Blockchain",
+      "component_id": "chain-parameters",
+      "component_name": "Chain parameters",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "/",
+      "requirement": "Chain ID, supply, decimals, integer widths, byte order and versioned economic parameters.",
+      "acceptance_criteria": "All parameters resolve to a normative source and golden vectors.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-BLOCKCHAIN-TRANSACTIONS-CRYPTO",
+      "system_id": "ATC-BLOCKCHAIN",
+      "system_name": "A-TownChain Blockchain",
+      "component_id": "transactions-crypto",
+      "component_name": "Transactions and cryptography",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "/",
+      "requirement": "Serialization, domain separation, signature validation, replay protection, nonce and fees.",
+      "acceptance_criteria": "Canonical encoding and invalid/replay rejection pass vectors.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-BLOCKCHAIN-MEMPOOL-ADMISSION",
+      "system_id": "ATC-BLOCKCHAIN",
+      "system_name": "A-TownChain Blockchain",
+      "component_id": "mempool-admission",
+      "component_name": "Mempool and admission",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "/",
+      "requirement": "Validation, deduplication, expiry, resource limits and replacement policy if supported.",
+      "acceptance_criteria": "Admission is deterministic where required and DoS bounded.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-BLOCKCHAIN-BLOCK-STATE-TRANSITION",
+      "system_id": "ATC-BLOCKCHAIN",
+      "system_name": "A-TownChain Blockchain",
+      "component_id": "block-state-transition",
+      "component_name": "Blocks and state transition",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "/",
+      "requirement": "Header/body validation, parent linkage, deterministic execution, atomic commit/rollback and state roots.",
+      "acceptance_criteria": "Same valid inputs yield same state root; overflow and rollback tested.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-BLOCKCHAIN-CONSENSUS-INTEGRATION",
+      "system_id": "ATC-BLOCKCHAIN",
+      "system_name": "A-TownChain Blockchain",
+      "component_id": "consensus-integration",
+      "component_name": "Consensus integration",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "/",
+      "requirement": "Protocol version, fork choice, validator/miner integration, reorg and finality handling.",
+      "acceptance_criteria": "Safety/liveness assumptions are explicit; proposals not falsely called finalized.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-BLOCKCHAIN-STORAGE-RECOVERY",
+      "system_id": "ATC-BLOCKCHAIN",
+      "system_name": "A-TownChain Blockchain",
+      "component_id": "storage-recovery",
+      "component_name": "Persistence and recovery",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "/",
+      "requirement": "Block/state storage, indexes, migrations, crash recovery, corruption checks and pruning.",
+      "acceptance_criteria": "Recovery and migration fixtures pass; backup/restore runbook exists.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-BLOCKCHAIN-P2P-SYNC",
+      "system_id": "ATC-BLOCKCHAIN",
+      "system_name": "A-TownChain Blockchain",
+      "component_id": "p2p-sync",
+      "component_name": "P2P and synchronization",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "/",
+      "requirement": "Peer identity, handshake, negotiation, message validation, sync and rate limiting.",
+      "acceptance_criteria": "Malformed peer traffic is bounded and rejected safely.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-BLOCKCHAIN-RPC-OPERATIONS",
+      "system_id": "ATC-BLOCKCHAIN",
+      "system_name": "A-TownChain Blockchain",
+      "component_id": "rpc-operations",
+      "component_name": "RPC and operations",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "/",
+      "requirement": "Versioned API, authorization, subscriptions, health, metrics, backup and upgrades.",
+      "acceptance_criteria": "RPC permissions and operational recovery are tested.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-VM-BYTECODE-FORMAT",
+      "system_id": "ATC-VM",
+      "system_name": "ATC-VM",
+      "component_id": "bytecode-format",
+      "component_name": "Bytecode format",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/vm/",
+      "requirement": "ATCB magic, versioning, instruction count, operand encoding and compatibility rules.",
+      "acceptance_criteria": "Format matches normative standards; malformed/truncated inputs reject.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-VM-DECODER-VERIFIER",
+      "system_id": "ATC-VM",
+      "system_name": "ATC-VM",
+      "component_id": "decoder-verifier",
+      "component_name": "Decoder and verifier",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/vm/",
+      "requirement": "Bounds, opcode and operand validation, structural/control-flow checks where applicable.",
+      "acceptance_criteria": "Fuzz corpus covers malformed inputs; no unchecked reads.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-VM-EXECUTION-ENGINE",
+      "system_id": "ATC-VM",
+      "system_name": "ATC-VM",
+      "component_id": "execution-engine",
+      "component_name": "Execution engine",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/vm/",
+      "requirement": "Deterministic opcode semantics, traps, calls/returns and stable errors.",
+      "acceptance_criteria": "Same bytecode and state produce identical results across supported targets.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-VM-RESOURCES-GAS",
+      "system_id": "ATC-VM",
+      "system_name": "ATC-VM",
+      "component_id": "resources-gas",
+      "component_name": "Resources and gas",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/vm/",
+      "requirement": "Stack, memory, storage, call-depth and gas/fuel accounting.",
+      "acceptance_criteria": "All limits enforced; overflow-safe metering and out-of-gas handling tested.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-VM-HOST-ABI",
+      "system_id": "ATC-VM",
+      "system_name": "ATC-VM",
+      "component_id": "host-abi",
+      "component_name": "Host ABI",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/vm/",
+      "requirement": "Versioned allowlisted host calls, capability checks and external-effect boundary.",
+      "acceptance_criteria": "No undeclared host access; privileged calls require explicit authority.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-VM-STATE-ATOMICITY",
+      "system_id": "ATC-VM",
+      "system_name": "ATC-VM",
+      "component_id": "state-atomicity",
+      "component_name": "State atomicity",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/vm/",
+      "requirement": "Storage operations, events, nested calls and commit/rollback semantics.",
+      "acceptance_criteria": "Trap or failure cannot partially commit state.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-VM-CONFORMANCE",
+      "system_id": "ATC-VM",
+      "system_name": "ATC-VM",
+      "component_id": "conformance",
+      "component_name": "Conformance suite",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/vm/",
+      "requirement": "Golden vectors, differential tests, fuzz/property tests and reproducible fixtures.",
+      "acceptance_criteria": "Vector versions and exact source SHA are recorded.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-TOOLCHAIN-TOOLCHAIN-MANIFEST",
+      "system_id": "ATC-TOOLCHAIN",
+      "system_name": "ATC-Toolchain",
+      "component_id": "toolchain-manifest",
+      "component_name": "Pinned toolchain",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-toolchain",
+      "canonical_path": "/",
+      "requirement": "Versioned compiler/linker/formatter/linter/test toolchain manifest.",
+      "acceptance_criteria": "Clean builds pin tool versions and dependencies.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-TOOLCHAIN-BUILD-GRAPH",
+      "system_id": "ATC-TOOLCHAIN",
+      "system_name": "ATC-Toolchain",
+      "component_id": "build-graph",
+      "component_name": "Build graph",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-toolchain",
+      "canonical_path": "/",
+      "requirement": "Dependency resolution, lockfiles, target profiles and controlled network access.",
+      "acceptance_criteria": "Build graph is reproducible and dependency drift is detected.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-TOOLCHAIN-COMPILER-PIPELINE",
+      "system_id": "ATC-TOOLCHAIN",
+      "system_name": "ATC-Toolchain",
+      "component_id": "compiler-pipeline",
+      "component_name": "Compiler pipeline",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-toolchain",
+      "canonical_path": "/",
+      "requirement": "ATC-Lang frontend integration, diagnostics, bytecode target compatibility and native builds where applicable.",
+      "acceptance_criteria": "Frontend output conforms to target VM/ABI versions.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-TOOLCHAIN-QUALITY-GATES",
+      "system_id": "ATC-TOOLCHAIN",
+      "system_name": "ATC-Toolchain",
+      "component_id": "quality-gates",
+      "component_name": "Quality gates",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-toolchain",
+      "canonical_path": "/",
+      "requirement": "Formatting, lint, static analysis, unit/integration/system tests and fuzz/property tests.",
+      "acceptance_criteria": "No gate is disabled or weakened to obtain green status.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-TOOLCHAIN-VECTORS-REPRODUCIBILITY",
+      "system_id": "ATC-TOOLCHAIN",
+      "system_name": "ATC-Toolchain",
+      "component_id": "vectors-reproducibility",
+      "component_name": "Vectors and reproducibility",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-toolchain",
+      "canonical_path": "/",
+      "requirement": "Golden vector generation, deterministic artifact hashes and clean-room rebuilds.",
+      "acceptance_criteria": "Artifacts reproduce or variance is explained and tracked.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-TOOLCHAIN-SUPPLY-CHAIN",
+      "system_id": "ATC-TOOLCHAIN",
+      "system_name": "ATC-Toolchain",
+      "component_id": "supply-chain",
+      "component_name": "Supply-chain evidence",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-toolchain",
+      "canonical_path": "/",
+      "requirement": "SBOM, dependency/license/security scans, provenance attestations and signing.",
+      "acceptance_criteria": "Release artifacts bind to source SHA and toolchain versions.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-TOOLCHAIN-EVIDENCE-LIFECYCLE",
+      "system_id": "ATC-TOOLCHAIN",
+      "system_name": "ATC-Toolchain",
+      "component_id": "evidence-lifecycle",
+      "component_name": "CI evidence lifecycle",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-toolchain",
+      "canonical_path": "/",
+      "requirement": "Run/job/step/exit/log/artifact registry, failure classification and rerun state machine.",
+      "acceptance_criteria": "Evidence is exact-SHA scoped; failed runs remain visible.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-TOOLCHAIN-RELEASE-PACKAGING",
+      "system_id": "ATC-TOOLCHAIN",
+      "system_name": "ATC-Toolchain",
+      "component_id": "release-packaging",
+      "component_name": "Release and rollback",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-toolchain",
+      "canonical_path": "/",
+      "requirement": "Version compatibility, package manifests, release signing and rollback artifacts.",
+      "acceptance_criteria": "Release can be traced, validated and rolled back.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-STANDARDS-REGISTRY",
+      "system_id": "ATC-STANDARDS",
+      "system_name": "ATC-Standards",
+      "component_id": "registry",
+      "component_name": "Standards registry",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-standards",
+      "canonical_path": "/",
+      "requirement": "Stable IDs, owner, version, status, scope, dependencies and supersession links.",
+      "acceptance_criteria": "Every standard has owner/status and no silent competing normative source.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-STANDARDS-NORMATIVE-LANGUAGE",
+      "system_id": "ATC-STANDARDS",
+      "system_name": "ATC-Standards",
+      "component_id": "normative-language",
+      "component_name": "Normative language",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-standards",
+      "canonical_path": "/",
+      "requirement": "MUST/SHOULD/MAY usage, requirement IDs, normative/informative separation and failure semantics.",
+      "acceptance_criteria": "Requirements are testable and ambiguity/conflict is recorded.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-STANDARDS-ENCODING-CRYPTO",
+      "system_id": "ATC-STANDARDS",
+      "system_name": "ATC-Standards",
+      "component_id": "encoding-crypto",
+      "component_name": "Encoding and cryptography",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-standards",
+      "canonical_path": "/",
+      "requirement": "Canonical serialization, endianness, integer widths, algorithms and domain separation.",
+      "acceptance_criteria": "Wire formats and crypto suites have conformance vectors.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-STANDARDS-PROTOCOL-ABI",
+      "system_id": "ATC-STANDARDS",
+      "system_name": "ATC-Standards",
+      "component_id": "protocol-abi",
+      "component_name": "Protocol and ABI specs",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-standards",
+      "canonical_path": "/",
+      "requirement": "Transactions, blocks, consensus, VM bytecode/opcodes, host ABI, P2P and RPC.",
+      "acceptance_criteria": "Version negotiation and compatibility rules are explicit.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-STANDARDS-CONFORMANCE-VECTORS",
+      "system_id": "ATC-STANDARDS",
+      "system_name": "ATC-Standards",
+      "component_id": "conformance-vectors",
+      "component_name": "Conformance vectors",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-standards",
+      "canonical_path": "/",
+      "requirement": "Fixtures, schemas, reference inputs/outputs and negative cases.",
+      "acceptance_criteria": "Every normative MUST maps to a test/vector or documented rationale.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-STANDARDS-CHANGE-GOVERNANCE",
+      "system_id": "ATC-STANDARDS",
+      "system_name": "ATC-Standards",
+      "component_id": "change-governance",
+      "component_name": "Change governance",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-standards",
+      "canonical_path": "/",
+      "requirement": "Proposals, reviews, approvals, decision records and deprecation/migration.",
+      "acceptance_criteria": "Breaking changes are versioned and approval provenance recorded.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-STANDARDS-TRACEABILITY",
+      "system_id": "ATC-STANDARDS",
+      "system_name": "ATC-Standards",
+      "component_id": "traceability",
+      "component_name": "Traceability",
+      "status": "REQUIRED",
+      "canonical_repository": "atc-standards",
+      "canonical_path": "/",
+      "requirement": "Requirement-to-code-to-test-to-release-to-SHA links and security assumptions.",
+      "acceptance_criteria": "Conflicts are surfaced as RESIDUAL rather than silently resolved.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-ALGORITHM-ALGORITHM-REGISTRY",
+      "system_id": "ATC-ALGORITHM",
+      "system_name": "ATC-Algorithm",
+      "component_id": "algorithm-registry",
+      "component_name": "Algorithm status registry",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/algorithm/",
+      "requirement": "Candidate inventory for PoH/PoW/PoS/PoI or alternatives, with decision state and owner.",
+      "acceptance_criteria": "Proposal, implemented and finalized states are distinct.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-ALGORITHM-DETERMINISTIC-CONTRACT",
+      "system_id": "ATC-ALGORITHM",
+      "system_name": "ATC-Algorithm",
+      "component_id": "deterministic-contract",
+      "component_name": "Deterministic algorithm contract",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/algorithm/",
+      "requirement": "Canonical inputs/outputs, hash domains, seeds/randomness and environment assumptions.",
+      "acceptance_criteria": "No unapproved nondeterminism; all inputs are documented.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-ALGORITHM-ELIGIBILITY-LEADER",
+      "system_id": "ATC-ALGORITHM",
+      "system_name": "ATC-Algorithm",
+      "component_id": "eligibility-leader",
+      "component_name": "Eligibility and leader selection",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/algorithm/",
+      "requirement": "Validator/miner eligibility, weight/stake/identity and leader selection when normative.",
+      "acceptance_criteria": "Rules are explicit, testable and resistant to trivial manipulation.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-ALGORITHM-FORK-FINALITY",
+      "system_id": "ATC-ALGORITHM",
+      "system_name": "ATC-Algorithm",
+      "component_id": "fork-finality",
+      "component_name": "Fork choice and finality",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/algorithm/",
+      "requirement": "Equivocation, reorg bounds, finality semantics, safety/liveness and recovery.",
+      "acceptance_criteria": "Claims are supported by protocol spec and adversarial tests.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-ALGORITHM-ECONOMICS",
+      "system_id": "ATC-ALGORITHM",
+      "system_name": "ATC-Algorithm",
+      "component_id": "economics",
+      "component_name": "Rewards and penalties",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/algorithm/",
+      "requirement": "Rewards, penalties/slashing only if approved by normative spec.",
+      "acceptance_criteria": "Economic invariants and boundary conditions have tests.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-ALGORITHM-SIMULATION-SECURITY",
+      "system_id": "ATC-ALGORITHM",
+      "system_name": "ATC-Algorithm",
+      "component_id": "simulation-security",
+      "component_name": "Simulation and security",
+      "status": "REQUIRED",
+      "canonical_repository": "a-townchain",
+      "canonical_path": "components/algorithm/",
+      "requirement": "Network partitions, adversarial participation, grinding, censorship and resource exhaustion.",
+      "acceptance_criteria": "Threat model and simulation results are versioned and reproducible.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-LANG-GRAMMAR-LEXER",
+      "system_id": "ATC-LANG",
+      "system_name": "ATC-Lang / ATCLang",
+      "component_id": "grammar-lexer",
+      "component_name": "Grammar and lexer",
+      "status": "REQUIRED",
+      "canonical_repository": "atclang",
+      "canonical_path": "/",
+      "requirement": "Tokens, directives, comments, literals and versioned grammar.",
+      "acceptance_criteria": "Valid and invalid grammar fixtures are exhaustive for supported syntax.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-LANG-PARSER-AST",
+      "system_id": "ATC-LANG",
+      "system_name": "ATC-Lang / ATCLang",
+      "component_id": "parser-ast",
+      "component_name": "Parser and AST",
+      "status": "REQUIRED",
+      "canonical_repository": "atclang",
+      "canonical_path": "/",
+      "requirement": "Stable AST nodes, source spans and parse error recovery.",
+      "acceptance_criteria": "Malformed source produces deterministic diagnostics, not crashes.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-LANG-SEMANTIC-ANALYSIS",
+      "system_id": "ATC-LANG",
+      "system_name": "ATC-Lang / ATCLang",
+      "component_id": "semantic-analysis",
+      "component_name": "Name/type/semantic analysis",
+      "status": "REQUIRED",
+      "canonical_repository": "atclang",
+      "canonical_path": "/",
+      "requirement": "Scopes, name resolution, type checks, effects and capability annotations if specified.",
+      "acceptance_criteria": "Invalid programs fail before code generation with source-located diagnostics.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-LANG-LOWERING-BYTECODE",
+      "system_id": "ATC-LANG",
+      "system_name": "ATC-Lang / ATCLang",
+      "component_id": "lowering-bytecode",
+      "component_name": "Lowering and code generation",
+      "status": "REQUIRED",
+      "canonical_repository": "atclang",
+      "canonical_path": "/",
+      "requirement": "AST lowering and ATC-VM bytecode generation with version compatibility.",
+      "acceptance_criteria": "Generated bytecode passes canonical verifier and vectors.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-LANG-STDLIB",
+      "system_id": "ATC-LANG",
+      "system_name": "ATC-Lang / ATCLang",
+      "component_id": "stdlib",
+      "component_name": "Standard library",
+      "status": "REQUIRED",
+      "canonical_repository": "atclang",
+      "canonical_path": "/",
+      "requirement": "Versioned language library, deterministic APIs and error semantics.",
+      "acceptance_criteria": "Library APIs have docs and conformance tests.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "ATC-LANG-DEVELOPER-TOOLS",
+      "system_id": "ATC-LANG",
+      "system_name": "ATC-Lang / ATCLang",
+      "component_id": "developer-tools",
+      "component_name": "Developer tools",
+      "status": "REQUIRED",
+      "canonical_repository": "atclang",
+      "canonical_path": "/",
+      "requirement": "Formatter, linter, editor integration, diagnostics and build/test integration.",
+      "acceptance_criteria": "Tools agree on grammar/version and have fixture tests.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GLOBUS-OS-BOOT-LIFECYCLE",
+      "system_id": "GLOBUS-OS",
+      "system_name": "GlobusOS",
+      "component_id": "boot-lifecycle",
+      "component_name": "Boot and lifecycle",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "/",
+      "requirement": "Boot chain, loader, kernel handoff, service startup/shutdown and recovery.",
+      "acceptance_criteria": "Boot stages and supported targets are evidenced by exact SHA.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GLOBUS-OS-KERNEL-INTEGRATION",
+      "system_id": "GLOBUS-OS",
+      "system_name": "GlobusOS",
+      "component_id": "kernel-integration",
+      "component_name": "Kernel integration",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "/",
+      "requirement": "Canonical ShivaCore kernel interface and HAL integration.",
+      "acceptance_criteria": "No duplicate kernel implementation; ABI ownership is explicit.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GLOBUS-OS-DRIVERS-HAL",
+      "system_id": "GLOBUS-OS",
+      "system_name": "GlobusOS",
+      "component_id": "drivers-hal",
+      "component_name": "Drivers and hardware abstraction",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "/",
+      "requirement": "Device discovery, drivers, interrupts, DMA/IOMMU policy where applicable.",
+      "acceptance_criteria": "Driver authority and memory/device isolation are documented.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GLOBUS-OS-SERVICE-MANAGER",
+      "system_id": "GLOBUS-OS",
+      "system_name": "GlobusOS",
+      "component_id": "service-manager",
+      "component_name": "Service manager",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "/",
+      "requirement": "Service lifecycle, dependency ordering, health checks and restart policy.",
+      "acceptance_criteria": "Failed services recover without granting ambient privileges.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GLOBUS-OS-FILESYSTEM-NETWORK",
+      "system_id": "GLOBUS-OS",
+      "system_name": "GlobusOS",
+      "component_id": "filesystem-network",
+      "component_name": "Filesystem and networking",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "/",
+      "requirement": "Storage APIs and networking in service space, not TCB by default.",
+      "acceptance_criteria": "Untrusted input and service capabilities are bounded.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GLOBUS-OS-EVENT-IPC",
+      "system_id": "GLOBUS-OS",
+      "system_name": "GlobusOS",
+      "component_id": "event-ipc",
+      "component_name": "EventBus and IPCBus integration",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "/",
+      "requirement": "Service event routing, IPC integration and backpressure.",
+      "acceptance_criteria": "Subscribers are authorized; queues and payloads are bounded.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GLOBUS-OS-IDENTITY-UPDATE",
+      "system_id": "GLOBUS-OS",
+      "system_name": "GlobusOS",
+      "component_id": "identity-update",
+      "component_name": "Identity and updates",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "/",
+      "requirement": "Identity providers, signed updates, rollback and recovery.",
+      "acceptance_criteria": "Update integrity, downgrade policy and recovery tests exist.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GLOBUS-OS-AURORA-ISOLATION",
+      "system_id": "GLOBUS-OS",
+      "system_name": "GlobusOS",
+      "component_id": "aurora-isolation",
+      "component_name": "Aurora and app isolation",
+      "status": "REQUIRED",
+      "canonical_repository": "globus-os",
+      "canonical_path": "/",
+      "requirement": "Sandboxed AI/app services and policy-controlled capabilities.",
+      "acceptance_criteria": "Aurora and applications cannot bypass kernel/service boundaries.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "AURORA-AI-MODEL-DATA-REGISTRY",
+      "system_id": "AURORA-AI",
+      "system_name": "Aurora-AI",
+      "component_id": "model-data-registry",
+      "component_name": "Model/data registry",
+      "status": "REQUIRED",
+      "canonical_repository": "aurora-ai",
+      "canonical_path": "/",
+      "requirement": "Model versions, dataset provenance, licenses, splits, lineage and retention.",
+      "acceptance_criteria": "Every model/data artifact has provenance and allowed-use metadata.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "AURORA-AI-TRAINING-EVALUATION",
+      "system_id": "AURORA-AI",
+      "system_name": "Aurora-AI",
+      "component_id": "training-evaluation",
+      "component_name": "Training and fine-tuning",
+      "status": "REQUIRED",
+      "canonical_repository": "aurora-ai",
+      "canonical_path": "/",
+      "requirement": "Reproducible training configs, checkpointing, evaluation and benchmark tracking.",
+      "acceptance_criteria": "Quality, safety and regression thresholds are recorded per model version.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "AURORA-AI-INFERENCE-RUNTIME",
+      "system_id": "AURORA-AI",
+      "system_name": "Aurora-AI",
+      "component_id": "inference-runtime",
+      "component_name": "Inference runtime",
+      "status": "REQUIRED",
+      "canonical_repository": "aurora-ai",
+      "canonical_path": "/",
+      "requirement": "Model loading, tokenization/pre/postprocessing, resource limits and deterministic settings where required.",
+      "acceptance_criteria": "Inference is isolated, bounded and monitored.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "AURORA-AI-AGENT-ORCHESTRATION",
+      "system_id": "AURORA-AI",
+      "system_name": "Aurora-AI",
+      "component_id": "agent-orchestration",
+      "component_name": "Agent/swarm orchestration",
+      "status": "REQUIRED",
+      "canonical_repository": "aurora-ai",
+      "canonical_path": "/",
+      "requirement": "Intent/proposal lifecycle, planning, delegation, shared state and conflict handling.",
+      "acceptance_criteria": "Agents cannot elevate authority by delegation or prompt content.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "AURORA-AI-POLICY-CAPABILITY",
+      "system_id": "AURORA-AI",
+      "system_name": "Aurora-AI",
+      "component_id": "policy-capability",
+      "component_name": "Policy and capability enforcement",
+      "status": "REQUIRED",
+      "canonical_repository": "aurora-ai",
+      "canonical_path": "/",
+      "requirement": "Policy evaluation, capability checks, human approval where required and audit trail.",
+      "acceptance_criteria": "Every tool action is authorized before execution.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "AURORA-AI-TOOL-SANDBOX",
+      "system_id": "AURORA-AI",
+      "system_name": "Aurora-AI",
+      "component_id": "tool-sandbox",
+      "component_name": "Tool and service boundary",
+      "status": "REQUIRED",
+      "canonical_repository": "aurora-ai",
+      "canonical_path": "/",
+      "requirement": "Input validation, least-privilege tool adapters, sandboxing and output validation.",
+      "acceptance_criteria": "Prompt injection/untrusted output cannot bypass policy.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "AURORA-AI-EVALUATION-SECURITY",
+      "system_id": "AURORA-AI",
+      "system_name": "Aurora-AI",
+      "component_id": "evaluation-security",
+      "component_name": "Security and evals",
+      "status": "REQUIRED",
+      "canonical_repository": "aurora-ai",
+      "canonical_path": "/",
+      "requirement": "Abuse tests, prompt-injection tests, data leakage checks and tool-use evaluation.",
+      "acceptance_criteria": "Release gate includes reproducible evals and known residuals.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "AURORA-AI-DEPLOYMENT-ROLLBACK",
+      "system_id": "AURORA-AI",
+      "system_name": "Aurora-AI",
+      "component_id": "deployment-rollback",
+      "component_name": "Deployment and drift",
+      "status": "REQUIRED",
+      "canonical_repository": "aurora-ai",
+      "canonical_path": "/",
+      "requirement": "Version rollout, monitoring, drift detection, incident response and rollback.",
+      "acceptance_criteria": "Model changes are traceable and can be rolled back.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GENESIS-ENGINE-PROJECT-EDITOR",
+      "system_id": "GENESIS-ENGINE",
+      "system_name": "Genesis Engine",
+      "component_id": "project-editor",
+      "component_name": "Project/editor lifecycle",
+      "status": "REQUIRED",
+      "canonical_repository": "genesis-engine",
+      "canonical_path": "/",
+      "requirement": "Create/open/save projects, templates, settings, workspace and recovery.",
+      "acceptance_criteria": "Project format is versioned and corrupt projects fail safely.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GENESIS-ENGINE-SCENE-WORLD",
+      "system_id": "GENESIS-ENGINE",
+      "system_name": "Genesis Engine",
+      "component_id": "scene-world",
+      "component_name": "Scene/world model",
+      "status": "REQUIRED",
+      "canonical_repository": "genesis-engine",
+      "canonical_path": "/",
+      "requirement": "Scenes, entities, components, hierarchy, transforms and serialization.",
+      "acceptance_criteria": "Round-trip fixtures preserve identity and references.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GENESIS-ENGINE-ASSET-PIPELINE",
+      "system_id": "GENESIS-ENGINE",
+      "system_name": "Genesis Engine",
+      "component_id": "asset-pipeline",
+      "component_name": "Asset pipeline",
+      "status": "REQUIRED",
+      "canonical_repository": "genesis-engine",
+      "canonical_path": "/",
+      "requirement": "Importers, metadata, cache, dependency tracking, hot reload and validation.",
+      "acceptance_criteria": "Assets are content-addressed or otherwise reproducibly tracked.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GENESIS-ENGINE-RENDERING",
+      "system_id": "GENESIS-ENGINE",
+      "system_name": "Genesis Engine",
+      "component_id": "rendering",
+      "component_name": "Rendering",
+      "status": "REQUIRED",
+      "canonical_repository": "genesis-engine",
+      "canonical_path": "/",
+      "requirement": "Render graph, materials, shaders, lighting, cameras and device capability fallback.",
+      "acceptance_criteria": "Target rendering paths have validation fixtures and diagnostics.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GENESIS-ENGINE-INTERACTION-MEDIA",
+      "system_id": "GENESIS-ENGINE",
+      "system_name": "Genesis Engine",
+      "component_id": "interaction-media",
+      "component_name": "Input/UI/animation/audio/physics",
+      "status": "REQUIRED",
+      "canonical_repository": "genesis-engine",
+      "canonical_path": "/",
+      "requirement": "Input mapping, UI, animation, audio routing and physics integration.",
+      "acceptance_criteria": "Subsystem interfaces and frame/resource budgets are documented.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GENESIS-ENGINE-SCRIPTING-PLUGINS",
+      "system_id": "GENESIS-ENGINE",
+      "system_name": "Genesis Engine",
+      "component_id": "scripting-plugins",
+      "component_name": "Scripting and plugins",
+      "status": "REQUIRED",
+      "canonical_repository": "genesis-engine",
+      "canonical_path": "/",
+      "requirement": "Script API, plugin lifecycle, versioning, sandbox and error reporting.",
+      "acceptance_criteria": "Plugins receive explicit permissions and cannot escape sandbox.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GENESIS-ENGINE-BUILD-DEBUG",
+      "system_id": "GENESIS-ENGINE",
+      "system_name": "Genesis Engine",
+      "component_id": "build-debug",
+      "component_name": "Build, export and debugging",
+      "status": "REQUIRED",
+      "canonical_repository": "genesis-engine",
+      "canonical_path": "/",
+      "requirement": "Packaging, target export, asset bundling, debugger, profiler and crash reports.",
+      "acceptance_criteria": "Build artifacts map to project/tool versions and reproducible inputs.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    },
+    {
+      "requirement_id": "GENESIS-ENGINE-INTEGRATION-BOUNDARY",
+      "system_id": "GENESIS-ENGINE",
+      "system_name": "Genesis Engine",
+      "component_id": "integration-boundary",
+      "component_name": "Optional AI/chain integration",
+      "status": "REQUIRED",
+      "canonical_repository": "genesis-engine",
+      "canonical_path": "/",
+      "requirement": "Policy-mediated AI assistance or blockchain integration only when enabled.",
+      "acceptance_criteria": "Integrations cannot bypass security, signing or deterministic-runtime constraints.",
+      "implementation_evidence": null,
+      "verification_evidence": null,
+      "residuals": [
+        "Source-to-symbol mapping, tests, and exact-SHA evidence must be established by audit."
+      ]
+    }
+  ],
+  "status_definitions": {
+    "REQUIRED": "Architecture requirement; implementation not established.",
+    "DETECTED": "A source declaration or artifact was found; semantics are not yet validated.",
+    "IMPLEMENTED": "Code exists and is connected to the intended runtime path.",
+    "VERIFIED": "Required tests/gates passed on the exact source SHA with run/job/step/log/artifact evidence.",
+    "RESIDUAL": "Known gap, failure, conflict, or missing evidence remains.",
+    "NOT_APPLICABLE": "Reviewed exclusion with explicit rationale."
+  },
+  "cross_system_rules": [
+    "ShivaCore is the capability microkernel/TCB; networking, AI and contract execution belong outside the TCB unless an approved architecture decision says otherwise.",
+    "A-TownChain owns canonical ledger and state transition.",
+    "Production ATC-VM is a-townchain/components/vm; atc-vm is specification/support unless registry governance changes ownership.",
+    "Production ATC-Algorithm is a-townchain/components/algorithm; atc-algorithm is specification/support unless registry governance changes ownership.",
+    "ATC-Lang compiles to the canonical VM target; it does not define a second VM.",
+    "Aurora follows intent/proposal -> policy -> capability check -> approval where required -> tool -> service boundary -> authoritative runtime.",
+    "Genesis Engine optional integrations with AI or chain must use explicit service APIs and cannot bypass security boundaries.",
+    "When code, standards, or repository registry disagree, record a RESIDUAL and resolve through governance; do not silently choose."
+  ]
+}
