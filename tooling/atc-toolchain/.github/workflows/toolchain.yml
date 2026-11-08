@@ -1,0 +1,24 @@
+name: ATC Toolchain Validation
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions: read-all
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m compileall -q .
+      - name: Tests when present
+        run: |
+          if find . -maxdepth 5 -type d -name tests | grep -q .; then
+            python -m pip install --upgrade pip pytest
+            python -m pytest -q
+          else
+            echo "No test suite yet; syntax validation is the current implementation gate."
+          fi
