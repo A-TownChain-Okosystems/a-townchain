@@ -1,0 +1,257 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// K-Sprint 42 — Advanced Signal Handling (ATCLang Interface)
+// Rust-Implementierung: shivacore/kernel/src/signals.rs (2249 Zeilen, 82 Tests)
+// Letzte Aktualisierung: 2026-08-04 — Vollständige ATCLang-Schnittstelle
+// Agent: Aurora #2 (6a275618)
+// Zweck: ATCLang-Contract für Advanced Signal Handling mit POSIX RT Signals
+// Abhängigkeiten: std/chain.atc, kernel_api.atc
+
+import "std/chain.atc" as Chain
+
+// ════════════════════════════════════════════════════════════════
+//  SIGNAL TYPES (1-63)
+// ════════════════════════════════════════════════════════════════
+
+enum SignalAction {
+    TERMINATE,
+    TERMINATE_CORE,
+    STOP,
+    CONTINUE,
+    IGNORE,
+}
+
+enum SignalCode {
+    USER,
+    KERNEL,
+    TIMER,
+    QUEUE,
+    MESGQ,
+    IO,
+    TSYNC,
+    DETTHREAD,
+    CHILD,
+    FAULT,
+    TRAP,
+    REGV,
+    UNK,
+}
+
+enum SignalTargetType {
+    PROCESS,
+    PROCESS_GROUP,
+    CONTAINER,
+    BROADCAST,
+}
+
+enum SignalSendResult {
+    DELIVERED,
+    QUEUED,
+    BLOCKED,
+    COALESCED,
+    NO_TARGET,
+    PERMISSION_DENIED,
+}
+
+enum SignalResolution {
+    TERMINATE(i32),
+    STOP,
+    CONTINUE,
+    IGNORE,
+    CALL_HANDLER(addr: u64, use_altstack: bool),
+}
+
+enum SignalDisposition {
+    DEFAULT,
+    IGNORE,
+    CATCH(handler_addr: u64, flags: SignalHandlerFlags, mask: u64),
+}
+
+enum TimerType {
+    REAL,
+    VIRTUAL,
+    PROF,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  HANDLER FLAGS (SA_RESTART, SA_ONSTACK, etc.)
+// ════════════════════════════════════════════════════════════════
+
+struct SignalHandlerFlags {
+    restart_syscall: bool,    // SA_RESTART — restart interrupted syscalls
+    oneshot: bool,            // SA_RESETHAND — reset to default after delivery
+    nocldstop: bool,          // SA_NOCLDSTOP — no SIGCHLD on stop
+    nocldwait: bool,          // SA_NOCLDWAIT — no zombie children
+    onstack: bool,            // SA_ONSTACK — use alternate stack
+    siginfo: bool,            // SA_SIGINFO — use siginfo_t handler
+}
+
+// ════════════════════════════════════════════════════════════════
+//  SIGNAL DATA STRUCTURES
+// ════════════════════════════════════════════════════════════════
+
+struct SignalInfo {
+    signo: u8,
+    code: SignalCode,
+    sender_pid: Option<u32>,
+    sender_uid: Option<u32>,
+    value: u64,
+    status: i32,
+    addr: u64,
+    timestamp: u64,
+}
+
+struct SignalMask {
+    bits: u64,
+}
+
+struct AltStack {
+    base_addr: u64,
+    size: u64,
+    onstack: bool,
+    disabled: bool,
+}
+
+struct AltStackFlags {
+    onstack: bool,
+    disable: bool,
+}
+
+struct TimeVal {
+    seconds: u64,
+    microseconds: u64,
+}
+
+struct IntervalTimer {
+    timer_type: TimerType,
+    initial: TimeVal,
+    interval: TimeVal,
+    remaining: TimeVal,
+    overrun: u32,
+    active: bool,
+}
+
+struct PendingEntry {
+    signal: u8,
+    info: SignalInfo,
+}
+
+struct SignalAuditEntry {
+    timestamp: u64,
+    sender_pid: Option<u32>,
+    target_pid: u32,
+    signal: u8,
+    code: SignalCode,
+    target_type: SignalTargetType,
+    result: SignalSendResult,
+}
+
+struct SignalStats {
+    registered_processes: u32,
+    process_groups: u32,
+    containers: u32,
+    total_sent: u64,
+    total_delivered: u64,
+    total_coalesced: u64,
+    total_dropped: u64,
+    audit_entries: u32,
+}
+
+struct ProcessSignalState {
+    pid: u32,
+    dispositions: Map<u8, SignalDisposition>,
+    blocked_mask: u64,
+    pending_standard: u64,
+    pending_rt: List<PendingEntry>,
+    altstack: AltStack,
+    timers: List<IntervalTimer>,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  ADVANCED SIGNAL MANAGER CONTRACT
+// ════════════════════════════════════════════════════════════════
+
+module Kernel::SignalManager {
+
+    contract AdvancedSignalManager {
+
+        state processes: Map<u32, ProcessSignalState>
+        state process_groups: Map<u32, List<u32>>
+        state container_pids: Map<u32, List<u32>>
+        state total_sent: u64 = 0
+        state total_delivered: u64 = 0
+        state total_coalesced: u64 = 0
+        state total_dropped: u64 = 0
+        state audit_log: List<SignalAuditEntry>
+
+        // ── Events ──────────────────────────────────────────
+        event SignalSent(target_pid: u32, signo: u8, sender_pid: Option<u32>, result: SignalSendResult)
+        event SignalDelivered(pid: u32, signo: u8, resolution: SignalResolution)
+        event SignalCoalesced(pid: u32, signo: u8)
+        event SignalBlocked(pid: u32, signo: u8)
+        event HandlerEntered(pid: u32, signo: u8, handler_addr: u64)
+        event HandlerReturned(pid: u32, signo: u8)
+        event TimerFired(pid: u32, timer_type: TimerType, signo: u8)
+        event ProcessGroupSignal(pgid: u32, signo: u8, hit_count: u32)
+        event ContainerSignal(container_id: u32, signo: u8, hit_count: u32)
+        event AuditEntry(entry: SignalAuditEntry)
+
+        // ── Process Registration ─────────────────────────────
+        fn register(pid: u32) -> bool
+        fn unregister(pid: u32) -> bool
+        fn is_registered(pid: u32) -> bool
+
+        // ── Process Group Management ─────────────────────────
+        fn create_process_group(pgid: u32, leader_pid: u32) -> bool
+        fn add_to_group(pgid: u32, pid: u32) -> bool
+        fn remove_from_group(pgid: u32, pid: u32) -> bool
+        fn get_group_members(pgid: u32) -> List<u32>
+        fn group_count() -> u32
+
+        // ── Container Signal Forwarding ──────────────────────
+        fn register_container_pid(container_id: u32, pid: u32) -> bool
+        fn unregister_container_pid(container_id: u32, pid: u32) -> bool
+        fn get_container_pids(container_id: u32) -> List<u32>
+
+        // ── Signal Sending ────────────────────────────────────
+        fn send_to_process(pid: u32, signo: u8, info: SignalInfo) -> SignalSendResult
+        fn send_to_group(pgid: u32, signo: u8, sender: Option<u32>) -> List<(u32, SignalSendResult)>
+        fn send_to_container(container_id: u32, signo: u8, sender: Option<u32>) -> List<(u32, SignalSendResult)>
+        fn broadcast(signo: u8, sender: Option<u32>) -> List<(u32, SignalSendResult)>
+
+        // ── Signal Delivery ──────────────────────────────────
+        fn deliver(pid: u32) -> Option<(u8, SignalInfo, SignalResolution)>
+        fn return_from_handler(pid: u32) -> bool
+
+        // ── Pending Queue Management ─────────────────────────
+        fn has_pending(pid: u32) -> bool
+        fn pending_count(pid: u32) -> u32
+        fn pending_signals(pid: u32) -> List<u8>
+        fn clear_pending(pid: u32, signo: u8) -> bool
+
+        // ── Handler Management ──────────────────────────────
+        fn set_handler(pid: u32, signo: u8, disp: SignalDisposition) -> bool
+        fn get_handler(pid: u32, signo: u8) -> Option<SignalDisposition>
+
+        // ── Mask Management ───────────────────────────────────
+        fn block(pid: u32, signo: u8) -> bool
+        fn unblock(pid: u32, signo: u8) -> bool
+        fn set_mask(pid: u32, mask: u64) -> bool
+        fn get_mask(pid: u32) -> u64
+        fn is_blocked(pid: u32, signo: u8) -> bool
+
+        // ── AltStack ─────────────────────────────────────────
+        fn set_altstack(pid: u32, base: u64, size: u64) -> bool
+        fn get_altstack(pid: u32) -> AltStack
+
+        // ── Interval Timers ───────────────────────────────────
+        fn set_timer(pid: u32, timer_type: TimerType, initial: TimeVal, interval: TimeVal) -> bool
+        fn cancel_timer(pid: u32, timer_type: TimerType) -> bool
+        fn tick_timers(pid: u32, real_us: u64, virt_us: u64, prof_us: u64) -> List<u8>
+        fn get_timer(pid: u32, timer_type: TimerType) -> IntervalTimer
+
+        // ── Audit & Stats ────────────────────────────────────
+        fn audit_log() -> List<SignalAuditEntry>
+        fn audit_count() -> u32
+        fn stats() -> SignalStats
+    }
+}
