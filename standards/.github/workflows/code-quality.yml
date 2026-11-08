@@ -1,0 +1,53 @@
+# ATC Code Quality Gate — ATC-STD-081 (Coding) / ATC-STD-PROTOCOL-001
+# Generator/registry integrity is maintained here; Ruff is provided by the central reusable gate.
+name: ATC Code Quality (STD-081/PROTOCOL-001)
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with: {python-version: '3.11'}
+      - name: Python-Syntax P0 (alle Python-Quellen)
+        run: python -m compileall -q .
+      - name: Projekt-Abhaengigkeiten installieren
+        run: pip install -r requirements.txt
+      - name: Generator-Regressionstests (ATC-STD-PROTOCOL-001)
+        run: python -m unittest discover -s tests -p 'test_protocol_registry_generator.py'
+      - name: Generator-Determinismus und Registry-Konsistenz (ATC-STD-PROTOCOL-001)
+        run: |
+          python tools/protocol/gen_protocol_registry.py
+          status_after_run1=$(git status --short)
+          if [ -n "$status_after_run1" ] && [ "$status_after_run1" != " M registry/protocol-registry.yaml" ]; then
+            echo "GENERATOR_UNEXPECTED_SIDE_EFFECTS:"
+            printf '%s\n' "$status_after_run1"
+            exit 1
+          fi
+          sha1=$(sha256sum registry/protocol-registry.yaml | cut -d' ' -f1)
+          git checkout -- registry/protocol-registry.yaml
+          python tools/protocol/gen_protocol_registry.py
+          sha2=$(sha256sum registry/protocol-registry.yaml | cut -d' ' -f1)
+          if [ "$sha1" != "$sha2" ]; then
+            echo "GENERATOR_NON_DETERMINISTIC: $sha1 != $sha2"
+            exit 1
+          fi
+          git diff --exit-code -- registry/protocol-registry.yaml
+
+  ruff-format-baseline:
+    name: Ruff format baseline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with: {python-version: '3.11'}
+      - name: Ruff installieren (gepinnt)
+        run: python -m pip install --disable-pip-version-check --no-input ruff==0.16.7
+      - name: Format-Pruefung (ATC-STD-082)
+        run: ruff format --check .
