@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-102",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #102: ci: add org-wide standards revalidation",
+  "context": "Pull request 102 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/102",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Purpose\nRevalidate existing repository code against the current ATC standards SSOT instead of assuming that older green CI remains compliant with newer standards.\n\n## Exact-SHA model\n- Standards SSOT is read from the repository registry and standards registry at the workflow execution SHA.\n- Each target repository is cloned read-only and its exact checked-out HEAD SHA is recorded.\n- The workflow asserts its own execution SHA before running.\n- No target repository is modified.\n- No merge, release, deploy, or branch-protection mutation is performed.\n\n## Checks\nThe first implementation deterministically checks:\n- repository exact SHA evidence\n- presence of .atc/standards.yaml\n- required standards from the central profile\n- unknown standard IDs\n- declared-version vs central-registry version drift\n- core governance files\n\nManual/HYBRID REPO-AUDIT checks are explicitly reported as NOT_EVALUATED_BY_THIS_GATE and are never converted into PASS.\n\n## Scope\nThis is a revalidation/evidence gate, not a remediation gate. Findings must be fixed through the normal SCR/UPD/change-control process.\n\nScheduled weekly and manually dispatchable."
+}
