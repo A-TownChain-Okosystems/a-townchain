@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/A-TownChain-Okosystems/atc-engineering/blob/main/schemas/interface-contract-census.schema.json",
+  "title": "ATC Engineering Interface Contract Census",
+  "description": "Initial source-bound interface/schema inventory. Schema validity does not imply complete interface mapping or compatibility.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "repository",
+    "observed_source_commit_sha",
+    "status",
+    "scope",
+    "counts",
+    "contracts",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_source_commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "status": {
+      "enum": [
+        "DETECTED",
+        "PARTIAL",
+        "BLOCKED",
+        "RECONCILED",
+        "VERIFIED"
+      ]
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "counts": {
+      "type": "object",
+      "required": [
+        "declared_contract_records",
+        "source_bound_implementations",
+        "schema_only_records",
+        "versioned_json_schemas",
+        "unmapped_producer_bindings",
+        "unmapped_consumer_bindings",
+        "contracts_without_versioned_schema",
+        "reconciled_contracts",
+        "verified_contracts"
+      ],
+      "properties": {
+        "declared_contract_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_bound_implementations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "schema_only_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "versioned_json_schemas": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmapped_producer_bindings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmapped_consumer_bindings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contracts_without_versioned_schema": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reconciled_contracts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verified_contracts": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "contracts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "contract_id",
+          "name",
+          "kind",
+          "status",
+          "implementation_binding",
+          "producer_binding",
+          "consumer_binding",
+          "schema_conformance",
+          "sources",
+          "schema",
+          "rationale"
+        ],
+        "properties": {
+          "contract_id": {
+            "type": "string",
+            "pattern": "^ATCE-IFACE-[0-9]{3}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "serialization_contract",
+              "json_schema_contract",
+              "integration_graph_contract",
+              "api_contract",
+              "abi_contract",
+              "event_contract",
+              "cli_contract",
+              "other"
+            ]
+          },
+          "status": {
+            "enum": [
+              "DETECTED",
+              "PARTIAL",
+              "BLOCKED",
+              "RECONCILED",
+              "VERIFIED"
+            ]
+          },
+          "implementation_binding": {
+            "enum": [
+              "BOUND",
+              "UNMAPPED"
+            ]
+          },
+          "producer_binding": {
+            "enum": [
+              "BOUND",
+              "UNMAPPED"
+            ]
+          },
+          "consumer_binding": {
+            "enum": [
+              "BOUND",
+              "PARTIAL",
+              "UNMAPPED"
+            ]
+          },
+          "schema_conformance": {
+            "enum": [
+              "VERIFIED",
+              "NOT_VERIFIED",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "repository",
+                "commit_sha",
+                "path",
+                "blob_sha",
+                "symbols"
+              ],
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "commit_sha": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "blob_sha": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "symbols": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "schema": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "path",
+              "blob_sha",
+              "schema_id",
+              "version"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "blob_sha": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "schema_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}
