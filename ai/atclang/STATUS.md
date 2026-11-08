@@ -16,7 +16,7 @@ standard: ATC-STD-MD-001
 | Version | 1.0.0 development |
 | Production implementation | Rust canonical core — incomplete |
 | Reference implementation | None — Python reference implementation removed; Rust-only canonical implementation |
-| Tests | 469 Tests im Monorepo-Wurzel-Workspace, 2131 Tests ueber alle sieben Workspaces gruen (2026-11-08) |
+| Tests | 471 Tests im Monorepo-Wurzel-Workspace, 2133 Tests ueber alle sieben Workspaces gruen (2026-11-08) |
 | Security | S4 / audit in progress |
 | Conformance | Not verified for production |
 | Release | development / NOT PRODUCTION_READY |
@@ -24,8 +24,8 @@ standard: ATC-STD-MD-001
 
 ## Parser and semantics — state 2026-11-08
 
-Verified by `cargo test --workspace` (469 tests) and `./tools/ecosystem.sh test`
-(2131 tests, 0 failed):
+Verified by `cargo test --workspace` (471 tests) and `./tools/ecosystem.sh test`
+(2133 tests, 0 failed):
 
 - Contract bodies are parsed into real syntax trees. Declarations: `state`
   (single and block form, with defaults), `event`, `fn`/`function`, `const`,
@@ -40,12 +40,14 @@ Verified by `cargo test --workspace` (469 tests) and `./tools/ecosystem.sh test`
   unknown `self` access are rejected (exit 1); `emit` without an event declaration
   or with a mismatching argument count is reported as a warning. `atc check
   --strict` turns warnings into errors.
+- VM subset: `&&` and `||` lower with short-circuit semantics (the right operand
+  is not evaluated when the left one already decides), `!` normalises to 1/0.
+  Unsupported operators still fail closed in the front end (`%`, for example).
 - Contract registry gate A8 (SC-019): GATE PASS, 16 entries, 16 sources, 0 findings.
 
 Open: 38 `emit` calls in existing contracts without an event declaration; type
 checking and name resolution across file boundaries; code generation for
-contracts; `&&`/`||` in the VM subset (lowering stays fail-closed). Roadmap
-G3-G10 remains open and the release status is unchanged.
+contracts. Roadmap G3-G10 remains open and the release status is unchanged.
 
 ## Current verified facts
 
