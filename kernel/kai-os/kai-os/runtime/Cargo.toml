@@ -1,0 +1,10 @@
+[package]
+name = "kai-os-runtime"
+version = "0.1.0"
+edition = "2021"
+description = "KAI-OS Runtime: Resource Manager + Sandbox + Scheduler (S04-S06, AD-008)"
+license = "Apache-2.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+sha2 = "0.10"
