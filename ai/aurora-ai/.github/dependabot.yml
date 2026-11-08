@@ -1,0 +1,28 @@
+# Dependabot-Konfiguration — AUD-2026-0002 F-025 (ATC-STD-203 Security)
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: "modules/atc-aurora-agents"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: cargo
+    directory: "modules/atc-aurora-core"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: cargo
+    directory: "modules/atc-aurora-memory"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: "modules/atc-aistudio"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: pip
+    directory: "modules/atc-aurora-ai"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
