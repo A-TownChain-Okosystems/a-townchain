@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-COMMIT-CD3E553FE15A",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "Commit: Merge pull request #199 from A-TownChain-Okosystems/docs/ecosystem-repository-structure-001",
+  "context": "Git commit cd3e553fe15a593ca02ceaf13d97718d45b86f78 on A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "commit",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/commit/cd3e553fe15a593ca02ceaf13d97718d45b86f78",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "commit",
+    "generated",
+    "git"
+  ],
+  "links": [],
+  "content": "Merge pull request #199 from A-TownChain-Okosystems/docs/ecosystem-repository-structure-001\n\ndocs(architecture): define ecosystem repository structure"
+}
