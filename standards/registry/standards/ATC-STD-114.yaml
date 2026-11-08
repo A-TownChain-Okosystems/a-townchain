@@ -1,0 +1,12 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: repository
+family: ARCHITECTURE
+family_id: '100'
+file: standards/repository/ATC-STD-114.md
+mandate: Owner-Auftrag 08.09. KONFLIKT-Aufloesung (SCR-0040)
+registry_version: 1
+standard_id: ATC-STD-114
+status: approved
+title: Git Standard
+version: 1.0.0
