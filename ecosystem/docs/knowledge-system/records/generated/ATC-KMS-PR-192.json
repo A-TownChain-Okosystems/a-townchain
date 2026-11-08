@@ -1,0 +1,31 @@
+{
+  "id": "ATC-KMS-PR-192",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #192: docs(catalog): add versioned category-family-class taxonomy",
+  "context": "Pull request 192 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/192",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-ISSUE-190"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-192"
+    }
+  ],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Scope\n\nFirst implementation increment for [Issue #190](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/190).\n\n- Adds `docs/architecture/ATC-CATALOG-TAXONOMY-001.json` with stable category, family and class IDs, parent relationships, classification states and source-evidence rules.\n- Links the taxonomy register from the canonical component/function catalog documentation.\n- Adds `tools/validate_catalog_taxonomy.py`, a standard-library, fail-closed structural validator for taxonomy IDs, family/category references, classification states, optional taxonomy bindings, and exact SHA/source-file SHA-256 evidence for any record explicitly marked `MAPPED`.\n- Adds `tools/tests/test_validate_catalog_taxonomy.py` with regression cases for the baseline, duplicate IDs, dangling references and missing evidence.\n- Adds `docs/architecture/ATC-IMPLEMENTATION-SLOT-QUEUE-001.md` with ordered implementation slots, dependencies, canonical owners, exit criteria, evidence requirements and handoff template.\n\n## Active slot\n\n**SLOT-00 — exact-head CI and regression evidence for PR #192.** The queue orders catalog taxonomy binding and source reconciliation before downstream cross-chain, wallet/identity, security, desktop/control-panel, browser and platform-install work. These later items are planning priorities, not claims of implementation.\n\n## Explicitly not claimed\n\n- Existing catalog entries have not yet been bulk-classified or source-reconciled.\n- Regression tests are authored but have not yet been confirmed passing in GitHub Actions at the current exact head.\n- No function is marked VERIFIED based on taxonomy documentation or structural validation alone.\n- Release remains `BLOCKED` pending catalog binding reconciliation and exact-SHA evidence.\n\n## Acceptance criteria\n\n1. Run validator and regression suite in CI at the exact PR head and preserve Run/Job/Step/exit-code evidence.\n2. Add category/family/class references to existing catalog entries without duplicating or replacing stable IDs; unknown mappings remain `UNRESOLVED`.\n3. Reconcile the complete source census and capture exact Run/Job/Step/exit-code/log-or-artifact evidence.\n4. Keep this PR Draft until tests, integration checks and review have terminal evidence."
+}
