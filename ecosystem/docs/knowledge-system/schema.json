@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/docs/knowledge-system/schema.json",
+  "title": "ATC Central Knowledge Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id","timestamp","category","title","context","priority","status","version","source","tags","content"],
+  "properties": {
+    "id": {"type":"string","pattern":"^ATC-KMS-[A-Z0-9-]+$"},
+    "timestamp": {"type":"string","format":"date-time"},
+    "category": {"type":"string","enum":["project","module","feature","code","idea","roadmap","decision","change","version","discussion","summary","architecture","evidence"]},
+    "title": {"type":"string","minLength":1},
+    "context": {"type":"string"},
+    "priority": {"type":"string","enum":["P0","P1","P2","P3","P4"]},
+    "status": {"type":"string","enum":["proposed","planned","active","blocked","completed","deprecated","archived","superseded"]},
+    "version": {"type":"string","pattern":"^v[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "source": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["type","ref"],
+      "properties":{
+        "type":{"type":"string","enum":["chat","github","commit","pr","issue","file","external","derived"]},
+        "ref":{"type":"string"},
+        "author":{"type":"string"},
+        "commit":{"type":"string"}
+      }
+    },
+    "tags":{"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "links":{
+      "type":"array",
+      "items":{
+        "type":"object",
+        "required":["relation","target"],
+        "properties":{"relation":{"type":"string"},"target":{"type":"string"}}
+      }
+    },
+    "history":{
+      "type":"array",
+      "items":{
+        "type":"object",
+        "required":["version","timestamp","change"],
+        "properties":{
+          "version":{"type":"string"},
+          "timestamp":{"type":"string","format":"date-time"},
+          "change":{"type":"string"},
+          "source":{"type":"string"}
+        }
+      }
+    },
+    "content":{"type":"string","minLength":1}
+  }
+}
