@@ -1,0 +1,15 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: ai-gov
+family: LEGACY-SERIES
+family_id: LEGACY
+file: standards/ai-gov/ATC-AI-GOV-FINDING-001.md
+mandate: Owner-Entwurf 09.09. (Kontrollprinzip 3); 5 REQ-AGOV-FIN; SSOT ai/audit/finding-schema.yaml;
+  Abgrenzung zu F-NNNN (BUG-001) via registry_ref; SCR-0062
+registry_version: 1
+standard_id: ATC-AI-GOV-FINDING-001
+status: approved
+title: ATC Agent Governance — Persistent Findings (ATC-FINDING-YYYY-NNNNNN, Lifecycle
+  bis VERIFIED, Verifikations-Wahrheit, deterministische Repository-Status-Aggregation,
+  Registry-Kopplung registry_ref)
+version: 1.0.0
