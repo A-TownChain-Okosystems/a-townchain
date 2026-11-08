@@ -1,0 +1,60 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-87 — ECDSA secp256k1 Signer
+// Sprint 2.5 | Smart Contract Layer | Chain-ID 9000
+// Migrated from: modules/contracts/wallet/ecdsa.py (71 lines)
+// ECDSA secp256k1 signature verification for TX authorization
+// ─────────────────────────────────────────────────────────────
+
+struct TxDATA {
+    from_addr: Address,
+    to_addr: Address,
+    amount: u128,
+    fee: u128,
+    nonce: u64,
+    timestamp: u64,
+}
+
+contract ECDSASigner {
+
+    fn generate_keypair() -> (Hash, Hash) {
+        let priv_key = Hash::random()
+        let pub_key = Hash::ecdsa_derive_public(priv_key)
+        return (priv_key, pub_key)
+    }
+
+    fn sign(tx_data: TxDATA, priv_key: Hash) -> Hash {
+        let message = Hash::sha256(
+            Address::to_string(tx_data.from_addr) +
+            Address::to_string(tx_data.to_addr) +
+            Int::to_string(tx_data.amount) +
+            Int::to_string(tx_data.fee) +
+            Int::to_string(tx_data.nonce) +
+            Int::to_string(tx_data.timestamp)
+        )
+        return Hash::ecdsa_sign(message, priv_key)
+    }
+
+    fn verify(tx_data: TxDATA, signature: Hash, pub_key: Hash) -> bool {
+        let message = Hash::sha256(
+            Address::to_string(tx_data.from_addr) +
+            Address::to_string(tx_data.to_addr) +
+            Int::to_string(tx_data.amount) +
+            Int::to_string(tx_data.fee) +
+            Int::to_string(tx_data.nonce) +
+            Int::to_string(tx_data.timestamp)
+        )
+        return Hash::ecdsa_verify(message, signature, pub_key)
+    }
+
+    fn build_tx(from_addr: Address, to_addr: Address, amount: u128, fee: u128, nonce: u64) -> TxDATA {
+        return TxDATA {
+            from_addr: from_addr,
+            to_addr: to_addr,
+            amount: amount,
+            fee: fee,
+            nonce: nonce,
+            timestamp: Time::now(),
+        }
+    }
+}
