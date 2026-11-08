@@ -1,0 +1,15 @@
+// ATCLang v0.3 — Multi-Signature Wallet
+// Threshold, owners, revoke
+// ATC-Standard: ATC-17
+
+module multisig {
+    struct MultisigWallet {
+        threshold: int,
+        owners_count: int,
+        nonce: int
+    }
+    
+    fn confirm_transaction() {
+        // Adds owner confirmation signature to pending multisig transaction
+    }
+}
