@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a-townchain-okosystems/standards/schemas/maintenance/maintenance-evidence.schema.json",
+  "title": "ATC Maintenance Evidence Envelope (ATC-STD-MAINT-019, MAINT-000 §12)",
+  "description": "Evidence-Envelope fuer konsolidierte Maintenance-Nachweise (z.B. Cross-Ecosystem, MAINT-024: eine Change-Nummer, konsolidierte Evidence). Zielarchitektur: Evidence -> VERIFIED STATE.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["envelope_id", "change_number", "components", "records", "verified_state"],
+  "properties": {
+    "envelope_id": {"type": "string", "pattern": "^MAINTENV-[0-9]{4}-[0-9]{4}$"},
+    "change_number": {"type": "string", "description": "EINE Change-Nummer ueber alle betroffenen Repos (MAINT-024 §2)"},
+    "components": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "records": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^MAINT-[0-9]{4}-[0-9]{4}$", "description": "Referenzen auf Maintenance-Records (maintenance-record.schema.json)"}},
+    "verified_state": {"type": "string", "enum": ["PENDING", "VERIFIED"], "description": "VERIFIED nur wenn alle referenzierten Records CLOSED sind"},
+    "audit_refs": {"type": "array", "items": {"type": "string"}}
+  }
+}
