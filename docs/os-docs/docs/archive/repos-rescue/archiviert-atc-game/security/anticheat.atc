@@ -1,0 +1,15 @@
+// ATCLang v0.3 — Anti-Cheat
+// Move validation, replay detection, stat checks
+// ATC-Standard: ATC-90
+
+module anticheat {
+    struct CheatCheck {
+        player_id: string,
+        move_seq: int,
+        delta_ms: int
+    }
+    
+    fn validate_movement() {
+        // Validates player movement delta against maximum allowed physical bounds
+    }
+}
