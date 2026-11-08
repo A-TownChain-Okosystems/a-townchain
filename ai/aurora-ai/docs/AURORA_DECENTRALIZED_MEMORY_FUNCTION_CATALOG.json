@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0.0",
+  "catalog_id": "ATC-CATALOG-AURORA-DECENTRALIZED-MEMORY-001",
+  "status": "SPECIFIED",
+  "baseline_commit": "87ed7bc87014708f3efad4c573871fe23f252b00",
+  "functions": [
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-001",
+      "name": "Register an authorized memory node",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-002",
+      "name": "Authenticate a memory node",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-003",
+      "name": "Create canonical memory record",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-004",
+      "name": "Classify memory type",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-005",
+      "name": "Evaluate memory access policy",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-006",
+      "name": "Query authorized federated memory",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-007",
+      "name": "Persist local memory",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-008",
+      "name": "Synchronize memory between authorized nodes",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-009",
+      "name": "Preserve provenance and integrity metadata",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-010",
+      "name": "Resolve memory versions/conflicts deterministically",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-011",
+      "name": "Revoke memory federation access",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-012",
+      "name": "Apply retention/deletion policy",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-013",
+      "name": "Assemble authorized Aurora context",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-014",
+      "name": "Create optional ATC integrity/provenance proof",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-015",
+      "name": "Audit privileged memory operations",
+      "status": "SPECIFIED"
+    },
+    {
+      "function_id": "ATC-FUNC-AURORA-MEM-016",
+      "name": "Support offline synchronization/reconciliation",
+      "status": "SPECIFIED"
+    }
+  ],
+  "memory_types": [
+    "FACT",
+    "USER_MEMORY",
+    "MODEL_INFERENCE",
+    "RAG_RESULT",
+    "WORLD_STATE",
+    "GAME_STATE",
+    "BLOCKCHAIN_FACT",
+    "UNVERIFIED_INFORMATION"
+  ],
+  "node_types": [
+    "DEVICE_NODE",
+    "GLOBUSOS_NODE",
+    "SERVER_NODE",
+    "FEDERATION_NODE",
+    "READ_ONLY_KNOWLEDGE_NODE"
+  ],
+  "required_evidence": [
+    "SPECIFICATION",
+    "DOCUMENTATION",
+    "IMPLEMENTATION",
+    "TEST",
+    "EXACT_SHA_CI",
+    "E2E",
+    "AUDIT",
+    "RELEASE"
+  ]
+}
