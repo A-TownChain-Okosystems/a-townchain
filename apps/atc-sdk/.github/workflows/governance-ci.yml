@@ -1,0 +1,21 @@
+name: Repository Governance (ATC-STD-201/202/203)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions: read-all
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: A-TownChain-Okosystems/atc-standards
+          path: atc-standards
+      - name: Repository-Audit (R-Level aus .atc/repository.yaml)
+        run: python3 atc-standards/tools/atc-repo-audit/atc_repo_audit.py . --registry atc-standards/registry/repositories.yaml
