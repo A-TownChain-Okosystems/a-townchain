@@ -1,0 +1,3169 @@
+# ATC-L1-FUNCTION-CATALOG-001 — L1 Boot, Firmware & Hardware Abstraction Function Contracts
+# SSOT: a-townchain-ecosystem (control/mapping/evidence layer)
+# Layer: L1 (ATC-LAYER-L1-BOOT-FIRMWARE-HAL)
+# Source: GitHub Issue #136 (owner Sollarchitektur, 2026-10-15)
+# Version: 0.1.0
+#
+# Proposed stable catalog IDs defining function contracts, NOT existing
+# implementations. All functions start UNRESOLVED until a canonical
+# implementation is mapped and verified. VERIFIED requires exact commit
+# and successful verification evidence; green CI alone is insufficient.
+
+schema_id: ATC-L1-FUNCTION-CATALOG-001
+schema_version: 0.2.0
+generated: '2026-10-15'
+status: DRAFT
+layer_id: L1
+architecture_id: ATC-LAYER-L1-BOOT-FIRMWARE-HAL
+issue_reference: https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/136
+registry_reference: docs/architecture/layers/ATC-LAYER-REGISTRY-001.yaml
+system_boundaries:
+- 'L0: physical CPU, memory, devices, hardware security functions.'
+- 'L1: initialization, integrity checks, platform description, kernel handoff.'
+- 'L2: ShivaCore kernel with own memory management, interrupts, scheduling, IPC, capability enforcement.'
+- 'L3+: GlobusOS and ecosystem services (desktop, blockchain, VM, developer platform, Aurora AI).'
+- L1 does not replace the kernel and implements no second driver/kernel SSOT.
+- Signature verification, measured boot, policy enforcement are separate functions; measurements alone prove no
+  trust.
+- Firmware tables and addresses are untrusted inputs requiring validation.
+- Host adapters (Windows/Linux) are catalogued separately; a host tool is no native boot layer.
+ssot_assignment:
+  kernel_handoff_hal_platform_init: globus-os (ShivaCore kernel modules)
+  uefi_bootloader_efi_entry: canonical GlobusOS boot implementation (globus-os)
+  acpi_ecam_support: canonical GlobusOS platform implementation (globus-os)
+  normative_boot_platform_contracts: atc-standards (if registered)
+  layer_registry_mapping_evidence: a-townchain-ecosystem
+layer_dependencies:
+- target_layer: L2
+  required_l1_capabilities: Validated memory map, CPU/platform state, kernel entry contract, interrupt and timer
+    setup
+- target_layer: L3
+  required_l1_capabilities: Platform description, device inventory, boot parameters for service start
+- target_layer: L4
+  required_l1_capabilities: Graphics and input device availability from platform discovery
+- target_layer: L5
+  required_l1_capabilities: Secure boot chain evidence, memory limits, RNG/timestamp sources
+- target_layer: L6
+  required_l1_capabilities: Deterministic platform state and resource inventory
+- target_layer: L7
+  required_l1_capabilities: Build target characteristics and boot-supported platforms
+- target_layer: L8
+  required_l1_capabilities: Accelerator availability from platform discovery
+- target_layer: L10
+  required_l1_capabilities: Installability, supported firmware and boot modes per platform
+functions:
+- function_id: ATC-L1-BOOT-001
+  name: Bootfähige Systemziele erkennen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot manager entry and configuration (platform-provided))
+    outputs:
+    - - boot manager target/option/sequence/error/recovery/config handling
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No boot target detection (no multi-boot/menu implementation).'
+- function_id: ATC-L1-BOOT-002
+  name: Unterstützte Boot-Optionen auswählen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot manager entry and configuration (platform-provided))
+    outputs:
+    - - boot manager target/option/sequence/error/recovery/config handling
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No boot option selection.'
+- function_id: ATC-L1-BOOT-003
+  name: Boot-Sequenz und Abhängigkeiten steuern
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot manager entry and configuration (platform-provided))
+    outputs:
+    - - boot manager target/option/sequence/error/recovery/config handling
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/boot.rs
+    symbol: BootSequence::next_stage, current_stage
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 7147afd7964dbc5c31a5272e4075faa35f09808
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-bootloader/src/boot.rs::test_boot
+    workflow_runs:
+    - &id001
+      run_type: local_cargo_test_workspace
+      commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+      result: 1298 passed, 0 failed
+      exit_code: 0
+      date: '2026-10-15'
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Boot stage sequence control with staged transitions. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-BOOT-004
+  name: Boot-Fehler klassifizieren und protokollieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot manager entry and configuration (platform-provided))
+    outputs:
+    - - boot manager target/option/sequence/error/recovery/config handling
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/boot.rs
+    symbol: BootSequence::next_stage -> Result<u8, String>
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 7147afd7964dbc5c31a5272e4075faa35f09808
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Error path returns Result with String error; no error-path test (test_boot covers success
+    only). SSOT bound to globus-os main 3bf0001.'
+- function_id: ATC-L1-BOOT-005
+  name: Kontrollierten Recovery- oder Fallback-Pfad auslösen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot manager entry and configuration (platform-provided))
+    outputs:
+    - - boot manager target/option/sequence/error/recovery/config handling
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No recovery/fallback path (stage error only as Result).'
+- function_id: ATC-L1-BOOT-006
+  name: Boot-Konfiguration validieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot manager entry and configuration (platform-provided))
+    outputs:
+    - - boot manager target/option/sequence/error/recovery/config handling
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No boot configuration validation.'
+- function_id: ATC-L1-SEC-001
+  name: Vertrauensanker und Schlüsselreferenzen bestimmen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (signature verification interface (platform-provided, TEE/TPM-backed where available))
+    outputs:
+    - - secure boot trust anchor
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/module_security.rs
+    symbol: TrustAnchor, ModuleSignature::new, SigAlgorithm
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: e28c293d836749c5bd9141b17c84f8cabb517db5
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/module_security.rs::test_anchor_new
+    - modules/atc-shivacore/kernel/src/module_security.rs::test_anchor_with_expiry
+    - modules/atc-shivacore/kernel/src/module_security.rs::test_signature_new
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Trust anchor with expiry + signature model. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-SEC-002
+  name: Signaturen von Boot-Artefakten prüfen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (signature verification interface (platform-provided, TEE/TPM-backed where available))
+    outputs:
+    - - secure boot trust anchor
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/module_security.rs
+    symbol: ModuleSignature, SigAlgorithm (format/length policy)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: e28c293d836749c5bd9141b17c84f8cabb517db5
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Signature model with algorithm/length policy and format tests; cryptographic verification
+    routine not found in module. SSOT bound to globus-os main 3bf0001.'
+- function_id: ATC-L1-SEC-003
+  name: Integrität und Identität geladener Artefakte überprüfen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (signature verification interface (platform-provided, TEE/TPM-backed where available))
+    outputs:
+    - - secure boot trust anchor
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/module_security.rs
+    symbol: ModuleSignature::content_hash (SHA-256 model)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: e28c293d836749c5bd9141b17c84f8cabb517db5
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Content hash model exists (SHA-256, 32 bytes); integrity verification of loaded artifacts
+    not implemented. SSOT bound to globus-os main 3bf0001.'
+- function_id: ATC-L1-SEC-004
+  name: Nicht vertrauenswürdige Boot-Artefakte ablehnen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (signature verification interface (platform-provided, TEE/TPM-backed where available))
+    outputs:
+    - - secure boot trust anchor
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/module_security.rs
+    symbol: TrustLevel::can_load, LoadPolicy
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: e28c293d836749c5bd9141b17c84f8cabb517db5
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/module_security.rs::test_trust_level_can_load
+    - modules/atc-shivacore/kernel/src/module_security.rs::test_trust_level_is_trusted
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: LoadPolicy-based rejection of untrusted modules. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-SEC-005
+  name: Secure-Boot-Status und Prüfergebnisse dokumentieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (signature verification interface (platform-provided, TEE/TPM-backed where available))
+    outputs:
+    - - secure boot trust anchor
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No secure-boot status documentation/attestation report.'
+- function_id: ATC-L1-SEC-006
+  name: Rollback-relevante Versions- und Richtlinienprüfungen unterstützen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (signature verification interface (platform-provided, TEE/TPM-backed where available))
+    outputs:
+    - - secure boot trust anchor
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/module_security.rs
+    symbol: LoadPolicy::enforce_version_pin, version policy
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: e28c293d836749c5bd9141b17c84f8cabb517db5
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Version pinning / minimum version policy fields exist; dedicated test evidence not confirmed.
+    SSOT bound to globus-os main 3bf0001.'
+- function_id: ATC-L1-SEC-007
+  name: Messwerte für eine unterstützte Measured-Boot-Kette bereitstellen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (signature verification interface (platform-provided, TEE/TPM-backed where available))
+    outputs:
+    - - secure boot trust anchor
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No measured-boot chain (no TPM/PCR measurements; consistent with L0 SEC findings).'
+- function_id: ATC-L1-FW-001
+  name: UEFI-Systemumgebung erkennen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (UEFI firmware interfaces (platform-provided))
+    outputs:
+    - - uefi environment
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No UEFI environment detection. Note: boot-image BUILDER exists (atc-shivacore/boot,
+    BIOS+UEFI images via bootloader 0.11) but consumes no UEFI services.'
+- function_id: ATC-L1-FW-002
+  name: Erforderliche Boot-Services vor dem Handoff verwenden
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (UEFI firmware interfaces (platform-provided))
+    outputs:
+    - - uefi environment
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No UEFI boot services usage.'
+- function_id: ATC-L1-FW-003
+  name: Firmware-Memory-Map abrufen und validieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (UEFI firmware interfaces (platform-provided))
+    outputs:
+    - - uefi environment
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/mmap.rs
+    symbol: MemoryMap (firmware memory map)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 0340c1a069abcfb4da7e433925231b2aceff8ae2
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Firmware memory map captured at boot handoff; no UEFI-specific map retrieval (same evidence
+    as L0 MEM-001/002). SSOT bound to globus-os main 3bf0001.'
+- function_id: ATC-L1-FW-004
+  name: Firmwaretabellen und Konfigurationsdaten lokalisieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (UEFI firmware interfaces (platform-provided))
+    outputs:
+    - - uefi environment
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No firmware table locator beyond ACPI RSDP/FADT/MCFG recognition.'
+- function_id: ATC-L1-FW-005
+  name: Runtime-Services auf unterstützte Nutzung begrenzen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (UEFI firmware interfaces (platform-provided))
+    outputs:
+    - - uefi environment
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No UEFI runtime services.'
+- function_id: ATC-L1-FW-006
+  name: Firmwareabhängigkeiten nach dem Boot-Handoff kontrollieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (UEFI firmware interfaces (platform-provided))
+    outputs:
+    - - uefi environment
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No post-handoff firmware dependency control.'
+- function_id: ATC-L1-PLAT-001
+  name: ACPI-Root-Tabellen finden und validieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.4
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (firmware tables (ACPI RSDP/RSDT/XSDT, MCFG/ECAM) as untrusted input requiring validation)
+    outputs:
+    - - acpi root/table validation
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/power.rs
+    symbol: Rsdp::is_valid, is_acpi_v2, SIG checks; main.rs validate_acpi_boot_tables
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 717daef9bf8ad527902c7603f19eb084fbd16224
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/power.rs::test_rsdp_new
+    - modules/atc-shivacore/kernel/src/power.rs::test_rsdp_v1
+    - modules/atc-shivacore/kernel/src/power.rs::test_rsdp_invalid_sig
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: ACPI root table (RSDP) detection incl. invalid-signature path. Proven by inline tests
+    at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-PLAT-002
+  name: ACPI-Tabellen auf Integrität und Grenzen prüfen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.4
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (firmware tables (ACPI RSDP/RSDT/XSDT, MCFG/ECAM) as untrusted input requiring validation)
+    outputs:
+    - - acpi root/table validation
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/power.rs
+    symbol: AcpiTableHeader (checksum field); main.rs acpi_checksum_valid
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 717daef9bf8ad527902c7603f19eb084fbd16224
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Checksum field + validation fn exist; acpi_checksum_valid lives in main.rs without test
+    region. SSOT bound to globus-os main 3bf0001.'
+- function_id: ATC-L1-PLAT-003
+  name: PCIe-Konfiguration und ECAM-Bereiche erkennen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.4
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (firmware tables (ACPI RSDP/RSDT/XSDT, MCFG/ECAM) as untrusted input requiring validation)
+    outputs:
+    - - acpi root/table validation
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/power.rs
+    symbol: SIG_MCFG, table name mapping
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 717daef9bf8ad527902c7603f19eb084fbd16224
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: MCFG (ECAM config table) signature recognized; ECAM region parsing not found. SSOT bound
+    to globus-os main 3bf0001.'
+- function_id: ATC-L1-PLAT-004
+  name: Interrupt-Controller und Plattformtopologie erkennen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.4
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (firmware tables (ACPI RSDP/RSDT/XSDT, MCFG/ECAM) as untrusted input requiring validation)
+    outputs:
+    - - acpi root/table validation
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/interrupts.rs
+    symbol: init_idt, init_pics, UserTrapFrame
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: c9fb3e797527c8b7fb4139a20aa8a2fd68c9c8dd
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: IDT/PIC initialization exists; no test region in interrupts.rs. SSOT bound to globus-os
+    main 3bf0001.'
+- function_id: ATC-L1-PLAT-005
+  name: NUMA- und Speicherkonfiguration verfügbar machen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.4
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (firmware tables (ACPI RSDP/RSDT/XSDT, MCFG/ECAM) as untrusted input requiring validation)
+    outputs:
+    - - acpi root/table validation
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No NUMA configuration exposure.'
+- function_id: ATC-L1-PLAT-006
+  name: Geräte- und Ressourcenbeschreibungen normalisieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.4
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (firmware tables (ACPI RSDP/RSDT/XSDT, MCFG/ECAM) as untrusted input requiring validation)
+    outputs:
+    - - acpi root/table validation
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-drivers/kernel/src/hw_drivers.rs
+    symbol: PciDeviceId, PciDevice::new, add_bar, bdf
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 532a700712765fd34ca6e7700b0be74b2987594b
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_device_id_new
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_device_new
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_device_bdf
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Normalized PCI device/resource model. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-PLAT-007
+  name: Fehlende oder widersprüchliche Plattformdaten klassifizieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.4
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (firmware tables (ACPI RSDP/RSDT/XSDT, MCFG/ECAM) as untrusted input requiring validation)
+    outputs:
+    - - acpi root/table validation
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No classification of missing/contradictory platform data.'
+- function_id: ATC-L1-HAL-001
+  name: Architekturunabhängige Hardwareverträge definieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.5
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (architecture-specific HAL modules (x86-64/ARM64 adapters))
+    outputs:
+    - - architecture-independent hardware contracts
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: hal/mod.rs is a minimal re-export of CpuInfo; no architecture-independent contract
+    set.'
+- function_id: ATC-L1-HAL-002
+  name: Architekturabhängige CPU-Operationen abstrahieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.5
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (architecture-specific HAL modules (x86-64/ARM64 adapters))
+    outputs:
+    - - architecture-independent hardware contracts
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/hal/cpu.rs
+    symbol: CpuInfo::detect, features_from_leaves
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 1719d3ae99108138c74b64c14c9c57e4d2418595
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/hal/cpu.rs::detects_current_cpu_without_panicking
+    - modules/atc-shivacore/kernel/src/hal/cpu.rs::absent_feature_leaves_decode_as_unsupported
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Architecture-dependent CPU operations abstracted behind CpuInfo. Proven by inline
+    tests at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-HAL-003
+  name: MMIO- und Port-I/O-Zugriffe über kontrollierte Schnittstellen vermitteln
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.5
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (architecture-specific HAL modules (x86-64/ARM64 adapters))
+    outputs:
+    - - architecture-independent hardware contracts
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-drivers/kernel/src/hw_drivers.rs
+    symbol: MmioRegion
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 532a700712765fd34ca6e7700b0be74b2987594b
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_mmio_new
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_mmio_read_write
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Controlled MMIO access interface. Proven by inline tests at binding SHA 3bf0001 (workspace
+    suite 1298/1298, exit 0).'
+- function_id: ATC-L1-HAL-004
+  name: Interrupt-Controller über standardisierte Schnittstellen anbinden
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.5
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (architecture-specific HAL modules (x86-64/ARM64 adapters))
+    outputs:
+    - - architecture-independent hardware contracts
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/interrupts.rs
+    symbol: init_idt, init_pics
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: c9fb3e797527c8b7fb4139a20aa8a2fd68c9c8dd
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Interrupt controller attach via IDT/PIC; untested module. SSOT bound to globus-os main
+    3bf0001.'
+- function_id: ATC-L1-HAL-005
+  name: Timer- und Clock-Quellen abstrahieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.5
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (architecture-specific HAL modules (x86-64/ARM64 adapters))
+    outputs:
+    - - architecture-independent hardware contracts
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/interrupts.rs
+    symbol: InterruptIndex::Timer, PIT_INPUT_HZ
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: c9fb3e797527c8b7fb4139a20aa8a2fd68c9c8dd
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: PIT timer IRQ setup exists; no test region. SSOT bound to globus-os main 3bf0001.'
+- function_id: ATC-L1-HAL-006
+  name: Plattformabhängige Speicherattribute bereitstellen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.5
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (architecture-specific HAL modules (x86-64/ARM64 adapters))
+    outputs:
+    - - architecture-independent hardware contracts
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No platform memory attribute provider.'
+- function_id: ATC-L1-HAL-007
+  name: Nicht unterstützte Hardwareoperationen sicher zurückweisen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.5
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (architecture-specific HAL modules (x86-64/ARM64 adapters))
+    outputs:
+    - - architecture-independent hardware contracts
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No generic unsupported-operation rejection contract (cpu.rs fail-closed decode counts
+    for L0 CPU-002).'
+- function_id: ATC-L1-DEV-001
+  name: Gerätebus-Konfiguration zugänglich machen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.6
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bus/device enumeration and configuration interfaces)
+    outputs:
+    - - bus configuration
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-drivers/kernel/src/hw_drivers.rs
+    symbol: PciBus::new, register, scan
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 532a700712765fd34ca6e7700b0be74b2987594b
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_bus_new
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_bus_register
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_bus_scan
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: PCI bus configuration accessible via PciBus. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-DEV-002
+  name: MMIO-Ressourcenbereiche validieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.6
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bus/device enumeration and configuration interfaces)
+    outputs:
+    - - bus configuration
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-drivers/kernel/src/hw_drivers.rs
+    symbol: PciBar, PciDevice::find_mmio_bar
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 532a700712765fd34ca6e7700b0be74b2987594b
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_device_add_bar
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_mmio_new
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: MMIO resource ranges validated (BARs, MMIO regions). Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-DEV-003
+  name: Interrupt-Ressourcen beschreiben
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.6
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bus/device enumeration and configuration interfaces)
+    outputs:
+    - - bus configuration
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/interrupts.rs
+    symbol: IDT entries, PIC setup
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: c9fb3e797527c8b7fb4139a20aa8a2fd68c9c8dd
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Interrupt setup exists; interrupt resource description model absent. SSOT bound to globus-os
+    main 3bf0001.'
+- function_id: ATC-L1-DEV-004
+  name: DMA-Fähigkeiten und Einschränkungen erfassen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.6
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bus/device enumeration and configuration interfaces)
+    outputs:
+    - - bus configuration
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No DMA capability capture (consistent with L0 IO-002).'
+- function_id: ATC-L1-DEV-005
+  name: IOMMU-relevante Ressourcen und Fähigkeiten melden
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.6
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bus/device enumeration and configuration interfaces)
+    outputs:
+    - - bus configuration
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No IOMMU resource reporting.'
+- function_id: ATC-L1-DEV-006
+  name: Gerätekonfiguration auf Konflikte prüfen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.6
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bus/device enumeration and configuration interfaces)
+    outputs:
+    - - bus configuration
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No device conflict checks.'
+- function_id: ATC-L1-LOAD-001
+  name: Unterstützte Boot-Dateisysteme oder Boot-Medien identifizieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.7
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot storage and kernel image loading path)
+    outputs:
+    - - boot media/filesystem
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No boot media/filesystem identification. Boot-image builder exists (atc-shivacore/boot)
+    but creates images, does not identify media.'
+- function_id: ATC-L1-LOAD-002
+  name: Kernel-Image sicher laden
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.7
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot storage and kernel image loading path)
+    outputs:
+    - - boot media/filesystem
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No kernel image loader. Boot-image builder packages a prebuilt ELF into BIOS/UEFI
+    disk images; no load logic in boot chain.'
+- function_id: ATC-L1-LOAD-003
+  name: Kernel-Image vor der Übergabe verifizieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.7
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot storage and kernel image loading path)
+    outputs:
+    - - boot media/filesystem
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No kernel image verification at boot. Module-level signature model exists (module_security.rs)
+    but no kernel-image verify.'
+- function_id: ATC-L1-LOAD-004
+  name: Initramfs oder alternative Startdaten bereitstellen, sofern vorgesehen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.7
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot storage and kernel image loading path)
+    outputs:
+    - - boot media/filesystem
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/info.rs
+    symbol: BootInfo.initrd_addr
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: c08753a9428337ca61de4c5282cafb2712a009ae
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Initrd address field in handoff struct; no loading/verification logic. SSOT bound to globus-os
+    main 3bf0001.'
+- function_id: ATC-L1-LOAD-005
+  name: Ladebereiche und Speichergrenzen prüfen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.7
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot storage and kernel image loading path)
+    outputs:
+    - - boot media/filesystem
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No load-area/memory-limit checks.'
+- function_id: ATC-L1-LOAD-006
+  name: Kernel- und Plattformparameter validieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.7
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot storage and kernel image loading path)
+    outputs:
+    - - boot media/filesystem
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No kernel/platform parameter validation (cmdline passed unvalidated).'
+- function_id: ATC-L1-DIAG-001
+  name: Boot-Phasen und Statusübergänge protokollieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.8
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot-time diagnostics and logging facilities)
+    outputs:
+    - - boot phase logging
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/boot.rs
+    symbol: BootSequence (stage model)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 7147afd7964dbc5c31a5272e4075faa35f09808
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Stage model exists; no persistent boot log implemented. SSOT bound to globus-os main 3bf0001.'
+- function_id: ATC-L1-DIAG-002
+  name: Fehler mit stabilen Fehlercodes klassifizieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.8
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot-time diagnostics and logging facilities)
+    outputs:
+    - - boot phase logging
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/diagnostics.rs
+    symbol: DriverFaultManager::report_crash, DriverState, CrashEvent.code
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 6f48959a2877f59411612edc1000daf7f6532eee
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/diagnostics.rs::driver_fault_is_reported_and_isolated
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Stable error codes (SC-DRV-NNNN) asserted in test. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-DIAG-003
+  name: Firmware- und Plattformfehler erfassen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.8
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot-time diagnostics and logging facilities)
+    outputs:
+    - - boot phase logging
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/diagnostics.rs
+    symbol: DriverFaultManager (report_crash, latest, events)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 6f48959a2877f59411612edc1000daf7f6532eee
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/diagnostics.rs::driver_fault_is_reported_and_isolated
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Fault capture with timestamps and event log. Proven by inline tests at binding SHA
+    3bf0001 (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-DIAG-004
+  name: Diagnoseinformationen für Recovery bereitstellen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.8
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot-time diagnostics and logging facilities)
+    outputs:
+    - - boot phase logging
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/diagnostics.rs
+    symbol: DriverFaultManager::isolate, CrashEvent.recovered
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 6f48959a2877f59411612edc1000daf7f6532eee
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/diagnostics.rs::driver_fault_is_reported_and_isolated
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Isolation + recovery info for recovery decisions. Proven by inline tests at binding
+    SHA 3bf0001 (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-DIAG-005
+  name: Vertrauliche Schlüssel- und Speicherdaten aus Logs ausschließen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.8
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (boot-time diagnostics and logging facilities)
+    outputs:
+    - - boot phase logging
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No log hygiene / secret exclusion contract.'
+- function_id: ATC-L1-HO-001
+  name: Definierten Kernel-Einstiegspunkt aufrufen
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.9
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bootloader-to-kernel handoff protocol)
+    outputs:
+    - - kernel entry point
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/entry.rs
+    symbol: entry_point
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: f24121cdec6a92e1af22f795842b5f2cb7d953de
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-bootloader/src/entry.rs::test_entry
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Defined kernel entry point constant. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-HO-002
+  name: Validierte Speicherkarte übergeben
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.9
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bootloader-to-kernel handoff protocol)
+    outputs:
+    - - kernel entry point
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/mmap.rs
+    symbol: MemoryMap, MemoryMap::is_in_kernel; BootInfo.memory_map_addr
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 0340c1a069abcfb4da7e433925231b2aceff8ae2
+    note: Implementation mapped at exact SHA; CI evidence at SHA pending.
+  verification:
+    test_references:
+    - modules/atc-bootloader/src/mmap.rs::test_mmap
+    workflow_runs:
+    - *id001
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Validated memory map for kernel handoff. Proven by inline tests at binding SHA 3bf0001
+    (workspace suite 1298/1298, exit 0).'
+- function_id: ATC-L1-HO-003
+  name: Bootparameter und Firmwareinformationen übergeben
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.9
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bootloader-to-kernel handoff protocol)
+    outputs:
+    - - kernel entry point
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/info.rs
+    symbol: BootInfo (cmdline, initrd_addr, memory_map_addr)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: c08753a9428337ca61de4c5282cafb2712a009ae
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Boot parameter struct exists; BootInfo itself has no test region. SSOT bound to globus-os
+    main 3bf0001.'
+- function_id: ATC-L1-HO-004
+  name: CPU- und Plattformzustand gemäß Vertrag vorbereiten
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.9
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bootloader-to-kernel handoff protocol)
+    outputs:
+    - - kernel entry point
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/main.rs
+    symbol: 'boot path: CpuInfo::detect + validate_acpi_boot_tables'
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 15123f08bfee471e17eb6eb5f4be00ca2e926be3
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Boot-path CPU/platform state preparation exists; main.rs has no test region. SSOT bound
+    to globus-os main 3bf0001.'
+- function_id: ATC-L1-HO-005
+  name: Firmware-Services nach dem Handoff gemäß Vertrag behandeln
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.9
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bootloader-to-kernel handoff protocol)
+    outputs:
+    - - kernel entry point
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: 'Sollstruktur contract from Issue #136; no canonical implementation mapped yet'
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No post-handoff firmware service handling.'
+- function_id: ATC-L1-HO-006
+  name: Übergabezustand und Fehlerbedingungen testbar definieren
+  version: 0.1.0
+  layer_id: L1
+  sub_layer_id: L1.9
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform/firmware context (bootloader-to-kernel handoff protocol)
+    outputs:
+    - - kernel entry point
+    - status/error classification
+    errors:
+    - firmware_data_invalid
+    - capability_unsupported
+    - verification_failed
+    - resource_conflict
+    preconditions:
+    - boot stage reached where the required platform interface is available
+    postconditions:
+    - results validated before use
+    - untrusted firmware inputs checked before acceptance
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - boot-capable platform
+  security:
+    trust_boundary: boot chain of trust (platform -> L1 -> ShivaCore)
+    dma_iommu_requirements: explicit contracts required for MMIO, DMA, interrupts, IOMMU
+    provenance: platform-provided, untrusted until validated
+    trust_level: untrusted-input-until-validated
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/boot.rs
+    symbol: BootSequence, BootInfo, entry_point (testable handoff model)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 7147afd7964dbc5c31a5272e4075faa35f09808
+    note: Source exists; test evidence for this contract not confirmed.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no test reference for this contract
+  status: MAPPED
+  status_reason: 'MAPPED: Handoff state is testable via boot/mmap/entry tests; error conditions of the handoff itself
+    not covered. SSOT bound to globus-os main 3bf0001.'
+acceptance_criteria:
+- All nine sub-layers have stable IDs and documented responsibilities.
+- All 56 function contracts are catalogued with layer/sub-layer assignment.
+- Every contract carries status, canonical repository, exact path/symbol, commit/blob SHA and evidence — or a reasoned
+  EXCLUDED/UNRESOLVED entry.
+- Boot sequence and kernel handoff are specified as verifiable contracts.
+- UEFI, ACPI and ECAM functions are linked to actual source paths.
+- Signature verification, measured boot and recovery are specified separately.
+- Memory limits, MMIO, interrupts, DMA and IOMMU are covered on the security side.
+- Intel, AMD and QEMU support targets are covered by concrete tests.
+- Negative tests cover invalid tables, corrupted images, invalid memory ranges, failed verifications.
+- VERIFIED only with exact commit and matching successful verification evidence; green CI alone is insufficient.
+mapping_note: 'Inventory at globus-os main 3bf0001: 14 contracts IMPLEMENTED (inline test refs + workspace suite
+  1298/1298 exit 0), 16 MAPPED (source exists, test evidence unconfirmed), 26 UNRESOLVED with documented reasons.
+  No contract VERIFIED: CI evidence at binding SHA pending. Issue #136 acceptance status: catalog integration DONE,
+  Intel/AMD/QEMU verification PENDING.'
