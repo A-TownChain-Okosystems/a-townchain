@@ -17,7 +17,7 @@ from enum import IntEnum, auto
 
 ATCNET_VERSION  = 1
 ATCNET_PORT     = 4001
-MAGIC_BYTES     = b"\xAT\xC0\x01"   # ATC Magic
+MAGIC_BYTES     = b"\x41\x54\xC0\x01"   # ATC Magic
 MAX_MSG_SIZE    = 4 * 1024 * 1024   # 4MB
 K_BUCKET_SIZE   = 20                # Kademlia k
 ALPHA           = 3                 # Parallele Lookups
