@@ -1,0 +1,442 @@
+# ATC Repository Audit CHECK-Katalog — ATC-STD-REPO-AUDIT-002 §2 (SSOT)
+# Generiert von tools/repo-audit/gen_checks.py — Änderungen nur via SCR (REQ-RB-011).
+repo-audit-checks:
+  standard: ATC-STD-REPO-AUDIT-002
+  version: 1.0.0
+  generated: '2026-09-07'
+  note: 'CHECK-Katalog gem. ATC-STD-REPO-AUDIT-002 §2 — SSOT der Check-Definitionen. Ergebnis je Check: PASS/WARN/FAIL/SKIP (SKIP nur mit Begründung, REQ-RB-004). Health-Score-Formel und A-E-Mapping: Standard
+    §4-§5. Regenerierung nur via SCR (REQ-RB-011).'
+  areas:
+  - id: FEHLER
+    weight: 5
+    description: Fehler (REPO-AUDIT-001 §6)
+  - id: VOLLSTAENDIGKEIT
+    weight: 7
+    description: Vollständigkeit (§10)
+  - id: LUECKEN
+    weight: 5
+    description: Lücken (§11)
+  - id: SICHERHEIT
+    weight: 12
+    description: Sicherheit (§12)
+  - id: CODEQUALITAET
+    weight: 6
+    description: Codequalität (§6)
+  - id: ARCHITEKTUR
+    weight: 6
+    description: Architektur (§14)
+  - id: DOKUMENTATION
+    weight: 7
+    description: Dokumentation (§15-16)
+  - id: TESTS
+    weight: 10
+    description: Tests (§9)
+  - id: BUILD
+    weight: 9
+    description: Build & Lauffähigkeit (§7-8)
+  - id: ABHAENGIGKEITEN
+    weight: 6
+    description: Abhängigkeiten (§13)
+  - id: STRUKTUR
+    weight: 4
+    description: Repository-Struktur (§5)
+  - id: KOMPATIBILITAET
+    weight: 6
+    description: Kompatibilität (§20)
+  - id: VERSIONIERUNG
+    weight: 4
+    description: Versionierung (§19)
+  - id: CICD
+    weight: 5
+    description: CI/CD (§17)
+  - id: GOVERNANCE
+    weight: 5
+    description: Governance (§4/§15/§18)
+  - id: VERBESSERUNG
+    weight: 3
+    description: Verbesserungspotenzial (§21)
+  checks:
+  - id: CHECK-001
+    area: FEHLER
+    title: TODO/FIXME-Scan
+    method: AUTO
+    weight: 2
+    description: 'grep-basierter Scan auf TODO/FIXME/XXX im Quellcode; Evidence: Fundliste mit Datei:Zeile'
+  - id: CHECK-002
+    area: FEHLER
+    title: Dummy-/Platzhalter-Code-Scan
+    method: AUTO
+    weight: 3
+    description: 'Scan auf unimplementierte Funktionen, Dummy-Rückgaben, ''not implemented'' Muster; Evidence: Fundliste'
+  - id: CHECK-003
+    area: FEHLER
+    title: Dead-Code-/Unreachable-Scan
+    method: AUTO
+    weight: 1
+    description: 'Lint-Report (clippy dead_code, ruff vulture, tsc noUnusedLocals); Evidence: Lint-Output'
+  - id: CHECK-004
+    area: FEHLER
+    title: Error-Handling-Pfad-Review
+    method: HYBRID
+    weight: 3
+    description: 'Stichproben-Review von Fehlerpfaden (kein Silent Failure, keine unhandled exceptions); Evidence: Review-Notiz + Code-Stellen'
+  - id: CHECK-005
+    area: VOLLSTAENDIGKEIT
+    title: SOLL/IST-Abgleich gegen Spezifikation
+    method: HYBRID
+    weight: 3
+    description: '13 Quellen (README/SPEC/ROADMAP/ISSUES …) gegen Implementierung; Evidence: Anforderungsliste mit Status'
+  - id: CHECK-006
+    area: VOLLSTAENDIGKEIT
+    title: 8-Status-Klassifikation je Anforderung
+    method: MANUAL
+    weight: 3
+    description: 'Je Anforderung: IMPLEMENTED/PARTIAL/MISSING/BROKEN/UNTESTED/UNDOCUMENTED/DEPRECATED/BLOCKED; Evidence: Matrix'
+  - id: CHECK-007
+    area: VOLLSTAENDIGKEIT
+    title: Kernfunktionen laut Repo-Zweck vorhanden
+    method: MANUAL
+    weight: 2
+    description: 'Repo-Zweck vs. implementierter Funktionsumfang; Evidence: Abgleichsnotiz'
+  - id: CHECK-008
+    area: VOLLSTAENDIGKEIT
+    title: Implizite Anforderungen erkannt
+    method: MANUAL
+    weight: 1
+    description: 'Nicht dokumentierte, aber erwartete Verhalten identifiziert; Evidence: Liste'
+  - id: CHECK-009
+    area: LUECKEN
+    title: GAP-Scan über 13 Kategorien
+    method: HYBRID
+    weight: 3
+    description: 'GAP-CODE/TEST/DOC/SECURITY/ARCH/API/DATA/DEP/CI/GOV/OPS/RECOVERY/COMPATIBILITY; Evidence: GAP-<KAT>-NNN-Liste'
+  - id: CHECK-010
+    area: LUECKEN
+    title: Fehlende Standard-Dokumente
+    method: AUTO
+    weight: 2
+    description: 'SECURITY.md, CONTRIBUTING.md, LICENSE vorhanden?; Evidence: Datei-Existenzliste'
+  - id: CHECK-011
+    area: LUECKEN
+    title: Test-Gaps vs. öffentliche APIs
+    method: HYBRID
+    weight: 2
+    description: 'Exportierte/public APIs gegen Testabdeckung; Evidence: Lückenliste'
+  - id: CHECK-012
+    area: LUECKEN
+    title: TODO-Backlog-Datenbasis aktuell
+    method: MANUAL
+    weight: 1
+    description: 'Offene Arbeiten erfasst (Issues/TODO-Standard)?; Evidence: Backlog-Auszug'
+  - id: CHECK-013
+    area: SICHERHEIT
+    title: Secret-Scan
+    method: AUTO
+    weight: 3
+    description: 'gitleaks/trufflehog: Keys, Tokens, Passwörter, .env, private Keys; Evidence: Scan-Report (ohne Klartext-Secrets)'
+  - id: CHECK-014
+    area: SICHERHEIT
+    title: Dependency-Vulnerability-Scan
+    method: AUTO
+    weight: 3
+    description: 'Dependabot/CodeQL/cargo-audit Alerts; Evidence: Alert-Liste'
+  - id: CHECK-015
+    area: SICHERHEIT
+    title: Input-Validation-Review
+    method: HYBRID
+    weight: 2
+    description: 'Eingabepfade auf Unsafe Input/Injection geprüft; Evidence: Review-Notiz'
+  - id: CHECK-016
+    area: SICHERHEIT
+    title: Verschärfung kritischer Bereiche
+    method: MANUAL
+    weight: 3
+    description: 'Blockchain/Wallet/Contracts/Bridges/Mining/Admin-API/KI-Agenten: erweiterter Umfang (AuthN/AuthZ, Privilege Escalation, Deserialization); Evidence: Prüfprotokoll'
+  - id: CHECK-017
+    area: CODEQUALITAET
+    title: Lint clean (clippy/ruff/eslint/tsc)
+    method: AUTO
+    weight: 2
+    description: 'Linter ohne Fehler; Evidence: Lint-Output'
+  - id: CHECK-018
+    area: CODEQUALITAET
+    title: Duplikations-Messung
+    method: AUTO
+    weight: 1
+    description: 'copy-paste-Detektor (jscpd); Evidence: Duplikatsquote'
+  - id: CHECK-019
+    area: CODEQUALITAET
+    title: Komplexitätsmetrik in Toleranz
+    method: HYBRID
+    weight: 2
+    description: 'Zyklomatische Komplexität kritischer Funktionen; Evidence: Metrik-Report'
+  - id: CHECK-020
+    area: CODEQUALITAET
+    title: Naming-/Typisierungs-Review
+    method: HYBRID
+    weight: 1
+    description: 'Konsistenz von Naming und Typisierung; Evidence: Review-Notiz'
+  - id: CHECK-021
+    area: ARCHITEKTUR
+    title: ARCHITECTURE.md vs. Implementierung
+    method: MANUAL
+    weight: 3
+    description: 'Soll/Ist-Abgleich inkl. undokumentierter/nicht existierender Komponenten; Evidence: Abgleichsliste'
+  - id: CHECK-022
+    area: ARCHITEKTUR
+    title: Unerlaubte Abhängigkeiten geprüft
+    method: HYBRID
+    weight: 2
+    description: 'Layer-/Modulgrenzen (z.B. Kernel ohne std, ATC-STD-204 Interfaces); Evidence: Verstoßliste'
+  - id: CHECK-023
+    area: ARCHITEKTUR
+    title: Zyklen-Freiheit
+    method: AUTO
+    weight: 2
+    description: 'Zyklen-Detektor (cargo-depgraph/madge); Evidence: Graph-Report'
+  - id: CHECK-024
+    area: ARCHITEKTUR
+    title: Separation of Concerns
+    method: MANUAL
+    weight: 1
+    description: 'Verantwortlichkeiten sauber getrennt; Evidence: Review-Notiz'
+  - id: CHECK-025
+    area: DOKUMENTATION
+    title: README vollständig & aktuell
+    method: HYBRID
+    weight: 2
+    description: 'README-001-Konformenz; Evidence: Checkliste'
+  - id: CHECK-026
+    area: DOKUMENTATION
+    title: CHANGELOG aktuell
+    method: AUTO
+    weight: 2
+    description: 'Letzte Version im CHANGELOG vs. letzter Release/Tag; Evidence: Diff-Notiz'
+  - id: CHECK-027
+    area: DOKUMENTATION
+    title: Doku-Code-Konsistenz
+    method: HYBRID
+    weight: 2
+    description: 'Beispiele/Anleitungen stimmen mit Code überein; Evidence: Stichprobe'
+  - id: CHECK-028
+    area: DOKUMENTATION
+    title: Codeänderung↔Doku-Prüfung erfolgt
+    method: MANUAL
+    weight: 2
+    description: 'Bei geänderten Dateien seit letztem Audit: zugehörige Doku geprüft (REQ-RA-016); Evidence: Mapping'
+  - id: CHECK-029
+    area: TESTS
+    title: Test-Suite existiert & läuft
+    method: AUTO
+    weight: 3
+    description: 'Tests vorhanden, Suite grün; Evidence: Testrunner-Output'
+  - id: CHECK-030
+    area: TESTS
+    title: Coverage gemessen
+    method: AUTO
+    weight: 2
+    description: 'Coverage-Report (llvm-cov/coverage.py/c8); Evidence: Coverage-%'
+  - id: CHECK-031
+    area: TESTS
+    title: Fehlerfall-/Edge-Case-Tests
+    method: HYBRID
+    weight: 2
+    description: 'Negative Pfade und Grenzfälle getestet; Evidence: Testliste'
+  - id: CHECK-032
+    area: TESTS
+    title: Regression-Tests für bekannte Bugs
+    method: HYBRID
+    weight: 3
+    description: 'Geschlossene F-NNN haben Regression-Tests; Evidence: Mapping'
+  - id: CHECK-033
+    area: BUILD
+    title: Clean Build reproduzierbar
+    method: AUTO
+    weight: 3
+    description: 'Clean-Build ohne Fehler; Evidence: Build-Log'
+  - id: CHECK-034
+    area: BUILD
+    title: Lint + Type Check
+    method: AUTO
+    weight: 2
+    description: 'statischer Check ohne Fehler; Evidence: Output'
+  - id: CHECK-035
+    area: BUILD
+    title: Runtime-Smoke-Test
+    method: HYBRID
+    weight: 3
+    description: 'Installieren/Starten/Initialisieren/Konfiguration/Datenzugriff/Core Functions/Shutdown (§8); Evidence: Smoke-Protokoll'
+  - id: CHECK-036
+    area: BUILD
+    title: Recovery-Verhalten geprüft
+    method: HYBRID
+    weight: 1
+    description: 'Neustart/Fehler-Recovery verhält sich definiert; Evidence: Notiz'
+  - id: CHECK-037
+    area: ABHAENGIGKEITEN
+    title: Manifest-Vollständigkeit & Lockdatei
+    method: AUTO
+    weight: 2
+    description: 'Manifest + Lock konsistent, reproduzierbare Builds; Evidence: Lock-Prüfung'
+  - id: CHECK-038
+    area: ABHAENGIGKEITEN
+    title: Veraltete Dependencies
+    method: AUTO
+    weight: 2
+    description: 'outdated-Report; Evidence: Liste'
+  - id: CHECK-039
+    area: ABHAENGIGKEITEN
+    title: Ungenutzte/doppelte Dependencies
+    method: AUTO
+    weight: 1
+    description: 'unused-Detektor; Evidence: Liste'
+  - id: CHECK-040
+    area: ABHAENGIGKEITEN
+    title: Lizenz-Kompatibilität
+    method: HYBRID
+    weight: 1
+    description: 'Lizenzen je Dep erfasst und kompatibel; Evidence: Lizenzliste'
+  - id: CHECK-041
+    area: STRUKTUR
+    title: Kern-Dateien vorhanden
+    method: AUTO
+    weight: 2
+    description: 'README/LICENSE/CHANGELOG vorhanden; Evidence: Existenzliste'
+  - id: CHECK-042
+    area: STRUKTUR
+    title: Struktur passt zum Repo-Zweck
+    method: MANUAL
+    weight: 2
+    description: 'Vorhandene Struktur vollständig & logisch (keine Schablone); Evidence: Baum-Bewertung'
+  - id: CHECK-043
+    area: STRUKTUR
+    title: Keine Duplikat-/Konkurrenz-Repos
+    method: MANUAL
+    weight: 2
+    description: 'Repo-Zweck eindeutig in der Org (Layer-Zuordnung L0-L7); Evidence: Org-Abgleich'
+  - id: CHECK-044
+    area: STRUKTUR
+    title: Ungenutzte Verzeichnisse/Dateien
+    method: AUTO
+    weight: 1
+    description: 'Leere/tote Pfade; Evidence: Fundliste'
+  - id: CHECK-045
+    area: KOMPATIBILITAET
+    title: API-Breaking-Change-Scan
+    method: AUTO
+    weight: 3
+    description: 'Semver-Diff/ABI-Check gegen letzte Version; Evidence: Diff-Report'
+  - id: CHECK-046
+    area: KOMPATIBILITAET
+    title: 4-Status-Bewertung nach MAJOR
+    method: MANUAL
+    weight: 3
+    description: 'API/ABI/DB/Config/CLI/SDK/Deps/Protokoll/Formate/Contracts/Repos mit COMPATIBLE/PARTIALLY/INCOMPATIBLE/UNKNOWN; Evidence: Matrix'
+  - id: CHECK-047
+    area: KOMPATIBILITAET
+    title: UNKNOWN-Verbot bei Release
+    method: AUTO
+    weight: 3
+    description: 'Kein UNKNOWN in Release-Artefakten (COMPAT-001); Evidence: Status-Scan'
+  - id: CHECK-048
+    area: KOMPATIBILITAET
+    title: COMPAT-001-Wiederherstellung angewendet
+    method: MANUAL
+    weight: 1
+    description: 'Bei Inkompatibilität: Methode A-F dokumentiert; Evidence: COMP-NNN-Verweis'
+  - id: CHECK-049
+    area: VERSIONIERUNG
+    title: Git-Tag vs. Datei-Version
+    method: AUTO
+    weight: 3
+    description: 'Tag == Cargo/package/npm-Version (VERSION-001); Evidence: Abgleich'
+  - id: CHECK-050
+    area: VERSIONIERUNG
+    title: CHANGELOG vs. Version konsistent
+    method: AUTO
+    weight: 2
+    description: 'Letzter CHANGELOG-Eintrag == aktuelle Version; Evidence: Abgleich'
+  - id: CHECK-051
+    area: VERSIONIERUNG
+    title: GitHub-Release/Tag konsistent
+    method: AUTO
+    weight: 2
+    description: 'Releases & Tags synchron (vgl. F-028 verwaister Tag); Evidence: API-Abgleich'
+  - id: CHECK-052
+    area: VERSIONIERUNG
+    title: Docker-/Package-Tags aktuell
+    method: AUTO
+    weight: 1
+    description: 'Published Artefakt-Tags == Quellversion; Evidence: Registry-Abgleich'
+  - id: CHECK-053
+    area: CICD
+    title: CI-Workflow vorhanden
+    method: AUTO
+    weight: 2
+    description: '.github/workflows mit Build+Test; Evidence: Workflow-Liste'
+  - id: CHECK-054
+    area: CICD
+    title: CI grün auf main
+    method: AUTO
+    weight: 3
+    description: 'Letzter Lauf erfolgreich; Evidence: Status-API'
+  - id: CHECK-055
+    area: CICD
+    title: Security-Scan in Pipeline
+    method: AUTO
+    weight: 2
+    description: 'Secret-Scan/Vuln-Scan als CI-Schritt; Evidence: Workflow-Inspektion'
+  - id: CHECK-056
+    area: CICD
+    title: Deployment-/Release-Pipeline
+    method: HYBRID
+    weight: 1
+    description: 'Automatisierung bis Artifact/Release; Evidence: Pipeline-Beschreibung'
+  - id: CHECK-057
+    area: GOVERNANCE
+    title: Kanonische Einordnung korrekt
+    method: MANUAL
+    weight: 2
+    description: 'Layer/Kategorie/Status stimmen mit REALITY_STATUS/a-townchain-os-docs überein; Evidence: Abgleich'
+  - id: CHECK-058
+    area: GOVERNANCE
+    title: Standards-Einhaltung (Registry-Gate)
+    method: AUTO
+    weight: 2
+    description: 'Commit-Trailers, Naming, Copyright-Header ''Michael Wroblewski''; Evidence: Scan'
+  - id: CHECK-059
+    area: GOVERNANCE
+    title: Verantwortlichkeit definiert (CODEOWNERS)
+    method: AUTO
+    weight: 2
+    description: 'CODEOWNERS/Maintainer hinterlegt; Evidence: Datei-Check'
+  - id: CHECK-060
+    area: GOVERNANCE
+    title: Registry-/AD-Einträge aktuell
+    method: HYBRID
+    weight: 1
+    description: 'Repo-/Architektur-Registry-Einträge synchron; Evidence: Abgleich'
+  - id: CHECK-061
+    area: VERBESSERUNG
+    title: IMP-Scan über 12 Kategorien
+    method: MANUAL
+    weight: 2
+    description: 'PERFORMANCE/SECURITY/ARCHITECTURE/MAINTAINABILITY/AUTOMATION/DOCUMENTATION/TESTING/UX/DX/COST/SCALABILITY/OBSERVABILITY; Evidence: IMP-NNN-Liste'
+  - id: CHECK-062
+    area: VERBESSERUNG
+    title: Performance-Engpass-Scan
+    method: HYBRID
+    weight: 1
+    description: 'Offensichtliche Engpässe (O(n²)-Loops, fehlende Caches); Evidence: Fundliste'
+  - id: CHECK-063
+    area: VERBESSERUNG
+    title: Observability-Abdeckung
+    method: HYBRID
+    weight: 1
+    description: 'Logs/Metrics/Tracing vorhanden; Evidence: Abdeckungsnotiz'
+  - id: CHECK-064
+    area: VERBESSERUNG
+    title: Automatisierungspotenzial
+    method: MANUAL
+    weight: 1
+    description: 'Manuelle Schritte, die CI/Agent übernehmen könnte; Evidence: Vorschlagsliste'
