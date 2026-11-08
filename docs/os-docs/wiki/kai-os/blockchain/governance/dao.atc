@@ -1,0 +1,168 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// A-TownChain DAO — Decentralized Governance (ATC-17)
+// On-Chain Governance with Proposal + Voting + Execution
+// Sprint 2.6 — Migrated from Python stub to ATCLang
+// ════════════════════════════════════════════════════════════════
+
+const VOTING_PERIOD: u64 = 604800        // 7 Tage
+const EXECUTION_DELAY: u64 = 86400       // 1 Tag nach Voting-Ende
+const QUORUM_BPS: u128 = 1000            // 10% Quorum
+const PROPOSAL_THRESHOLD: u128 = 10000   // Min. 10.000 ATC für Proposal
+
+enum ProposalState {
+    PENDING,
+    ACTIVE,
+    CANCELLED,
+    DEFEATED,
+    SUCCEEDED,
+    QUEUED,
+    EXPIRED,
+    EXECUTED
+}
+
+struct Proposal {
+    proposal_id:   Hash,
+    proposer:      Address,
+    title:         String,
+    description:   String,
+    start_block:   u64,
+    end_block:     u64,
+    for_votes:     u128,
+    against_votes: u128,
+    abstain_votes: u128,
+    state:         String,
+    executed:      bool
+}
+
+contract DAO {
+
+    state proposals: Map<Hash, Proposal>
+    state proposal_count: u128
+    state votes: Map<Hash, Map<Address, String>>    // proposal → voter → vote choice
+    state voting_power: Map<Address, u128>
+    state governance_token: Address
+    state owner: Address
+
+    event ProposalCreated(proposal_id: Hash, proposer: Address, title: String)
+    event VoteCast(proposal_id: Hash, voter: Address, support: String, weight: u128)
+    event ProposalExecuted(proposal_id: Hash)
+    event ProposalCancelled(proposal_id: Hash)
+
+    fn init() {
+        self.proposal_count = 0
+        self.owner = msg_sender()
+    }
+
+    // ── Proposal erstellen ────────────────────────────
+    fn create_proposal(title: String, description: String) -> Hash {
+        let proposer = msg_sender()
+        let power = self.voting_power[proposer]
+        require(power >= PROPOSAL_THRESHOLD, "DAO: Unzureichende Voting Power")
+
+        let proposal_id = sha256(title + description + to_string(self.proposal_count))
+        let proposal = Proposal {
+            proposal_id:   proposal_id,
+            proposer:      proposer,
+            title:         title,
+            description:   description,
+            start_block:   block_number(),
+            end_block:     block_number() + VOTING_PERIOD,
+            for_votes:     0,
+            against_votes: 0,
+            abstain_votes: 0,
+            state:         "ACTIVE",
+            executed:      false
+        }
+        self.proposals[proposal_id] = proposal
+        self.proposal_count += 1
+
+        emit ProposalCreated(proposal_id, proposer, title)
+        return proposal_id
+    }
+
+    // ── Abstimmen ─────────────────────────────────────
+    fn cast_vote(proposal_id: Hash, support: String) -> bool {
+        let proposal = self.proposals[proposal_id]
+        require(exists(self.proposals, proposal_id), "DAO: Proposal nicht gefunden")
+        require(proposal.state == "ACTIVE", "DAO: Voting nicht aktiv")
+        require(block_number() < proposal.end_block, "DAO: Votingperiode beendet")
+
+        let voter = msg_sender()
+        let weight = self.voting_power[voter]
+        require(weight > 0, "DAO: Keine Voting Power")
+        require(!exists(self.votes[proposal_id], voter), "DAO: Bereits abgestimmt")
+
+        self.votes[proposal_id][voter] = support
+
+        if support == "FOR" {
+            proposal.for_votes += weight
+        } else {
+            if support == "AGAINST" {
+                proposal.against_votes += weight
+            } else {
+                proposal.abstain_votes += weight
+            }
+        }
+        self.proposals[proposal_id] = proposal
+
+        emit VoteCast(proposal_id, voter, support, weight)
+        return true
+    }
+
+    // ── Proposal ausführen ─────────────────────────────
+    fn execute_proposal(proposal_id: Hash) -> bool {
+        let proposal = self.proposals[proposal_id]
+        require(exists(self.proposals, proposal_id), "DAO: Proposal nicht gefunden")
+        require(!proposal.executed, "DAO: Already executed")
+        require(block_number() > proposal.end_block, "DAO: Voting noch aktiv")
+
+        let total_votes = proposal.for_votes + proposal.against_votes + proposal.abstain_votes
+        let quorum = total_votes * QUORUM_BPS / 10000
+        require(quorum > 0, "DAO: Quorum nicht erreicht")
+
+        if proposal.for_votes > proposal.against_votes {
+            proposal.state = "SUCCEEDED"
+            proposal.executed = true
+            self.proposals[proposal_id] = proposal
+            emit ProposalExecuted(proposal_id)
+            return true
+        } else {
+            proposal.state = "DEFEATED"
+            self.proposals[proposal_id] = proposal
+            return false
+        }
+    }
+
+    // ── Proposal abbrechen ────────────────────────────
+    fn cancel_proposal(proposal_id: Hash) -> bool {
+        let proposal = self.proposals[proposal_id]
+        require(msg_sender() == proposal.proposer || msg_sender() == self.owner, "DAO: Nicht autorisiert")
+        proposal.state = "CANCELLED"
+        self.proposals[proposal_id] = proposal
+        emit ProposalCancelled(proposal_id)
+        return true
+    }
+
+    // ── Voting Power setzen (durch Governance Token) ──
+    fn set_voting_power(addr: Address, power: u128) -> bool {
+        require(msg_sender() == self.governance_token, "DAO: Nur Token Contract")
+        self.voting_power[addr] = power
+        return true
+    }
+
+    // ── Proposal abrufen ──────────────────────────────
+    fn get_proposal(proposal_id: Hash) -> Proposal {
+        return self.proposals[proposal_id]
+    }
+
+    // ── Proposal State ────────────────────────────────
+    fn get_state(proposal_id: Hash) -> String {
+        let proposal = self.proposals[proposal_id]
+        if proposal.executed { return "EXECUTED" }
+        if proposal.state == "CANCELLED" { return "CANCELLED" }
+        if block_number() < proposal.end_block { return "ACTIVE" }
+        if proposal.for_votes > proposal.against_votes { return "SUCCEEDED" }
+        return "DEFEATED"
+    }
+}
