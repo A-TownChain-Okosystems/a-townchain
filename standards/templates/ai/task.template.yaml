@@ -1,0 +1,16 @@
+# Task Record — ATC-STD-AI-DEV-004 §1
+# Ablage: .github/ai/tasks/ATC-TASK-NNNN.yaml
+task:
+  id: ATC-TASK-00427                # fortlaufend, nie wiederverwendet (ATC-STD-000 §37)
+  title: "<kurzbeschreibung>"
+  created: "<ISO-8601>"
+  agent: {id: ATC-AI-DEV-001, version: "1.0.0"}
+  task_reference: {issue: "#NNN", milestone: null, standard: null}
+  status: CREATED                   # CREATED|ASSIGNED|IN_PROGRESS|BLOCKED|READY_FOR_REVIEW|CHANGES_REQUESTED|COMPLETED|CANCELLED
+  findings: []                     # F-NNN (ATC-STD-BUG-001)
+  actions: []                      # ACT-NNN
+  assumptions: []                  # ASSUMPTION-ANNN; verification.required blockiert COMPLETED
+  evidence: []                     # Fundstellen (ATC-STD-AI-DEV-001 §4)
+  next_action: null                # {id: ACT-NNN, priority: P0-P2, depends_on: [ACT-NNN]}
+  human_review: {required: false, requested: false}
+  history: []                      # {status, timestamp, note} — lückenlose Übergänge
