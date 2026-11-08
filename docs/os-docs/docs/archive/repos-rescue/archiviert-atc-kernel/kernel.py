@@ -103,4 +103,8 @@ class Channel:
         with self._lock:
             if len(self._queue) >= self.buffer:
                 return False
-            msg.
+            
+
+            # Archiv-Snapshot endet hier: die Datei wurde beim Rescue abgeschnitten.
+            # Vollstaendige Implementierung: shivaos/kernel/kernel.py in a-townchain-os.
+            raise NotImplementedError("Archiv-Snapshot abgeschnitten")
