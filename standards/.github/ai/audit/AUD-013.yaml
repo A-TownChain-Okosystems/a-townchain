@@ -1,0 +1,11 @@
+id: AUD-013
+agent_id: ATC-AI-ARCH-001
+task_id: ATC-TASK-0160
+repository: atc-standards
+action: "F-160 Enforcement-Nachweis komplett mit Zeitstempeln: (1) 17:41:24Z enforce_admins aktiviert via POST /branches/main/protection/enforce_admins (HTTP 200, enabled:true, per GET verifiziert; Aurora-Superagent-Token = gleiches Credential wie historischer Bypass 96d5f12; Owner-Direktive 'enforce_admins aktivieren' ~19:38 UTC+2). (2) Expected Result VORHER dokumentiert: Admin-/Agent-Push auf main muss abgewiesen werden, Required-Reviews + 14 Checks gelten auch fuer Admins. (3) 17:42Z kontrollierter Bypass-Versuch: Leer-Commit fc058ce071a7ac37af2c1b4b60cfc10e472a7f5a (Basis d057531), Push-Exit 1, GitHub-Ablehnung: GH006 Protected branch update failed, 'Changes must be made through a pull request', '14 of 14 required status checks are expected' (primaere Evidence). (4) 19:43Z PR #96 erstellt (f-160-evidence -> main): F-160 OPEN->RESOLVED + Evidence + BREAK_GLASS.md-Entwurf. (5) 19:50Z CI-Quote-Fix 0613d45 (3 unescapte YAML-Quotes in Resolution-Zeile) -> 20/20 Checks GRUEN. (6) 19:57Z Views-Vollregeneration f6d6c76 (AGENT_MANIFEST/README/STATUS/registry.lock, SHA a2a86f3d) -> 20/20 Checks erneut GRUEN. Merge durch Agent blockiert: 'At least 1 approving review is required by reviewers with write access' (Selbst-Approval unmoeglich, Human-Review-Gate greift wie beabsichtigt) — wartet auf Owner-Approval + Merge. Danach: Checker-v1.1.0-Rollout."
+files_changed: "registry/findings.yaml, registry/BREAK_GLASS.md, AGENT_MANIFEST.md, README.md, STATUS.md, registry/registry.lock, .github/ai/audit/AUD-013.yaml"
+result: COMPLETED
+tests: {validate_all: "ALL COMPLIANT (19:51 UTC+2)", cross_registry: "ALL COMPLIANT (19:51 UTC+2)", check_agent_manifest: "GATE PASS A1-A4 (19:51 UTC+2)", ci_checks: "20/20 GRUEN am f6d6c76 (19:58 UTC+2)"}
+commit: "3129a5f (Evidence), 95f93f6 (Quote-Fix), d2300a3 (Views), 50b2e42 (AUD-013) auf f-160-evidence, PR #96 — SHA-Rewrite 07.10. 10:15 UTC+2: Format-Korrektur SCR-0115 ([Ticket]-Praefix statt Doppelpunkt), Inhalte und Zeitstempel unveraendert; Alte SHAs: bd57fc6/0613d45/f6d6c76/2d35dae"
+timestamp: "2026-10-06T19:59:00+02:00"
+human_approval: "Owner-Direktive 'enforce_admins aktivieren' 06.10.2026 ~19:38 UTC+2 (Builder-Chat); PR-Merge wartet auf Owner-Approval (GitHub-Review-Gate)"
