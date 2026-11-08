@@ -1,0 +1,17 @@
+// ATCLang v0.3 — Globus Discovery
+// Discovery von GlobusOS-Nodes und Welten im Netzwerk
+// ATC-Standard: ATC-01
+
+module globus_discovery {
+    fn discover_worlds() {
+        // Verfügbare Welten im Netzwerk finden
+    }
+    
+    fn announce_world(world_id: string) {
+        // Eigene Welt im Netzwerk bekannt machen
+    }
+    
+    fn find_peers_for_world(world_id: string) {
+        // Peers für spezifische Welt finden
+    }
+}
