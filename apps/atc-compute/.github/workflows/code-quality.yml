@@ -1,0 +1,26 @@
+name: ATC Compute Code Quality
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions: read-all
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Rust quality and tests when manifests exist
+        shell: bash
+        run: |
+          if find . -name Cargo.toml -not -path './target/*' | grep -q .; then
+            cargo fmt --all -- --check
+            cargo check --workspace --all-targets
+            cargo clippy --workspace --all-targets -- -D warnings
+            cargo test --workspace --all-targets
+          else
+            echo "No Cargo manifest yet; repository remains a governed skeleton."
+          fi
