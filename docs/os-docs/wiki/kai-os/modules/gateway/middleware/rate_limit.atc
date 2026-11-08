@@ -1,0 +1,50 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — Rate Limiter Middleware
+// Sprint 3.0 | Gateway Layer | Chain-ID 9000
+// Migrated from: modules/gateway/middleware/rate_limit.py (24 lines)
+// Sliding window rate limiting per client IP
+// ─────────────────────────────────────────────────────────────
+
+const MAX_REQUESTS: u16 = 100
+const WINDOW_SECONDS: u32 = 60
+
+contract RateLimiter {
+    state request_history: Map<Address, List<u64>>
+    state blocked_count: u64
+
+    fn init() {
+        self.request_history = {}
+        self.blocked_count = 0
+    }
+
+    fn is_allowed(client: Address) -> bool {
+        let now = Time::now()
+        let history = self.request_history.get(client)
+        if history == null {
+            self.request_history[client] = [now]
+            return true
+        }
+        // Remove old entries
+        let new_history: List<u64> = []
+        let i: u16 = 0
+        while i < history.len() {
+            if now - history[i] < WINDOW_SECONDS {
+                new_history.push(history[i])
+            }
+            i += 1
+        }
+        if new_history.len() >= MAX_REQUESTS {
+            self.blocked_count += 1
+            self.request_history[client] = new_history
+            return false
+        }
+        new_history.push(now)
+        self.request_history[client] = new_history
+        return true
+    }
+
+    fn get_blocked_count() -> u64 {
+        return self.blocked_count
+    }
+}
