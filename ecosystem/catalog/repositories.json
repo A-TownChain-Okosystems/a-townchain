@@ -1,0 +1,439 @@
+{
+  "schema_version": "1.0.0",
+  "organization": "A-TownChain-Okosystems",
+  "generated_at": "2026-10-22",
+  "scope": "organization repository inventory; file-level semantic analysis not yet complete",
+  "repository_count": 33,
+  "known_tracked_file_count_for_eight_repositories": 7741,
+  "repositories": [
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-os",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": "a929fe77c65e3a6da4a2c5805f3e290291d47aaa",
+      "tracked_file_count": 127,
+      "tree_complete": true,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED",
+      "notes": [
+        "Tree entry count recorded from initial recursive tree query; file-level semantics are not implied."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atclang",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": "b5acc59c8d4ac2a35c52f662229cec1e5c96d44a",
+      "tracked_file_count": 139,
+      "tree_complete": true,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED",
+      "notes": [
+        "Tree entry count recorded from initial recursive tree query; file-level semantics are not implied."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-os-docs",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": "1c4bfd2c9cd1c43deb0b88d3a4bfde94fc9d106c",
+      "tracked_file_count": 5070,
+      "tree_complete": true,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED",
+      "notes": [
+        "Tree entry count recorded from initial recursive tree query; file-level semantics are not implied."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-shivacore",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": "dbc14142466c9bcd01abcdd9d36ff09ae5d04d5f",
+      "tracked_file_count": 104,
+      "tree_complete": true,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED",
+      "notes": [
+        "Tree entry count recorded from initial recursive tree query; file-level semantics are not implied."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": "a5e689671b1870699c7a1750f8a166e83590a41c",
+      "tracked_file_count": 1152,
+      "tree_complete": true,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED",
+      "notes": [
+        "Tree entry count recorded from initial recursive tree query; file-level semantics are not implied."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/globus-os",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": "0c95684086f4dcbb29937c4ada2616d65687a0b0",
+      "tracked_file_count": 469,
+      "tree_complete": true,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED",
+      "notes": [
+        "Tree entry count recorded from initial recursive tree query; file-level semantics are not implied."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/aurora-ai",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": "a1f4d34d5241ba2e420c17e1b693f62dce2575f3",
+      "tracked_file_count": 472,
+      "tree_complete": true,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED",
+      "notes": [
+        "Tree entry count recorded from initial recursive tree query; file-level semantics are not implied."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/genesis-engine",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": "a004a13f4b42397d300963a7ab7b17e67d969de1",
+      "tracked_file_count": 208,
+      "tree_complete": true,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED",
+      "notes": [
+        "Tree entry count recorded from initial recursive tree query; file-level semantics are not implied."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-sdk",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-node",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-contracts",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-wallet",
+      "default_branch": "main",
+      "archived": true,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-explorer",
+      "default_branch": "main",
+      "archived": true,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-indexer",
+      "default_branch": "main",
+      "archived": true,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-mining",
+      "default_branch": "main",
+      "archived": true,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-interop",
+      "default_branch": "main",
+      "archived": true,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/genesis-chronicles",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-oracle",
+      "default_branch": "main",
+      "archived": true,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-storage",
+      "default_branch": "main",
+      "archived": true,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-launchpad",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-marketplace",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-compute",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-standards",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-vm",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-algorithm",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-zkp",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/.github",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/demo-repository",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-ide",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/genesis-franchise-factory",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-engineering",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": "c9699e468d2291b7d1b18cc4e9db41acba99b80c",
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-toolchain",
+      "default_branch": "main",
+      "archived": false,
+      "head_commit_sha": null,
+      "tracked_file_count": null,
+      "tree_complete": false,
+      "semantic_file_analysis": "NOT_STARTED",
+      "inventory_status": "REPOSITORY_IDENTIFIED_HEAD_PENDING",
+      "notes": [
+        "Exact commit SHA and recursive tree count not captured in this initial manifest."
+      ]
+    }
+  ]
+}
