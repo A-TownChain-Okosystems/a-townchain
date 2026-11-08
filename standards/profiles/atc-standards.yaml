@@ -1,0 +1,23 @@
+# ATC Standards Profile — verbindlicher Compliance-Vertrag (ATC-STD-LIB-001 sec.8, SCR-0101)
+# SSOT-Kaskade: registry/repositories.yaml + registry/standards.yaml > dieses Profil > .atc/standards.yaml im Repo
+criticality: C1
+domain: governance
+domain_extension: 'pending (fachliche Standards je Domain via SCR — ehrlich: Kernprofil
+  v1.0)'
+layer: L7
+maturity_class: A
+profile: atc-standards
+registry_id: ATC-REPO-GOV-001
+repo: atc-standards
+required_standards:
+- ATC-STD-000
+- ATC-STD-003
+- ATC-STD-012
+- ATC-STD-016
+- ATC-STD-017
+- ATC-STD-018
+- ATC-STD-019
+- ATC-STD-201
+- ATC-STD-202
+security_class: S3
+version: 1.0.0
