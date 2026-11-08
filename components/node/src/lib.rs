@@ -4,6 +4,7 @@
 pub mod bootstrap;
 pub mod chain;
 pub mod config;
+pub mod did;
 pub mod discovery;
 pub mod gossip;
 pub mod mempool;
