@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-105",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #105: docs: align ecosystem SSOT and verification claims",
+  "context": "Pull request 105 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/105",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\n- Clarify that this repository is an integration/evidence control plane, not the canonical implementation owner for all components.\n- Correct the canonical ShivaCore kernel source to `globus-os/modules/atc-shivacore/kernel/`.\n- Reclassify the end-to-end runtime path as an integration contract until every edge has exact-SHA evidence, rather than claiming the whole path is already verified.\n- Replace unsupported whole-system verification wording and stale numbered-PR roadmap instructions with current evidence/reconciliation work.\n\n## Evidence discipline\n- Documentation-only change.\n- No status is upgraded to VERIFIED or PRODUCTION_READY.\n- No CI/release gate is weakened.\n- Review against the canonical source repositories and exact-SHA evidence before merge."
+}
