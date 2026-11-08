@@ -1,0 +1,1555 @@
+{
+  "schema_id": "ATC-MASTER-OVERVIEW-001",
+  "schema_version": "0.3.0",
+  "document_status": "active",
+  "generated": "2026-10-12T15:34:00+02:00",
+  "generator": {
+    "agent_id": "aurora-base44-superagent-6a1d37209d7f46ac065d39c5",
+    "ai_role": "documentation-agent"
+  },
+  "evidence_classification": [
+    "NORMATIVE",
+    "IMPLEMENTED",
+    "RESEARCH",
+    "LEGACY_UNVERIFIED"
+  ],
+  "organization": {
+    "repos_total": 33,
+    "repos_active": 26,
+    "repos_archived": 7,
+    "private_repos": [
+      "demo-repository"
+    ],
+    "archived_reference_repos": [
+      "atc-storage",
+      "atc-explorer",
+      "atc-indexer",
+      "atc-interop",
+      "atc-mining",
+      "atc-oracle",
+      "atc-wallet"
+    ],
+    "layers": {
+      "governance": [
+        "atc-standards",
+        ".github"
+      ],
+      "docs_wiki": [
+        "a-townchain-os-docs",
+        "a-townchain-ecosystem"
+      ],
+      "core": [
+        "a-townchain",
+        "atclang",
+        "atc-shivacore",
+        "aurora-ai",
+        "globus-os",
+        "genesis-engine",
+        "genesis-chronicles"
+      ],
+      "protocol_services": [
+        "atc-node",
+        "atc-vm",
+        "atc-zkp",
+        "atc-algorithm",
+        "atc-compute",
+        "atc-contracts"
+      ],
+      "products_tools": [
+        "atc-sdk",
+        "atc-launchpad",
+        "atc-marketplace",
+        "atc-ide",
+        "atc-toolchain",
+        "atc-engineering",
+        "genesis-franchise-factory",
+        "demo-repository"
+      ]
+    }
+  },
+  "wiki": {
+    "repo": "a-townchain-os-docs",
+    "head_sha_short": "6b311f70d",
+    "topic_wikis": [
+      "aistudio-wiki",
+      "atclang-wiki",
+      "atcnet",
+      "atcpkg-wiki",
+      "backend-wiki",
+      "blockchain-wiki",
+      "bootloader-wiki",
+      "ci-wiki",
+      "cli-wiki",
+      "contracts",
+      "dns-wiki",
+      "drivers-wiki",
+      "explorer-wiki",
+      "frontend-wiki",
+      "gateway",
+      "genesis-engine-wiki",
+      "franchise",
+      "franchise-factory"
+    ],
+    "reference_models": [
+      "ATC_ARCHITECTURE_REFERENCE_MODEL.md",
+      "ATC_OS_ARCHITECTURE_REFERENCE_MODEL.md",
+      "ATC_VM_ARCHITECTURE_REFERENCE_MODEL.md",
+      "ARCHITECTURE.md",
+      "ECOSYSTEM.md",
+      "ECOSYSTEM_STATUS.md",
+      "MILESTONES.md",
+      "FILE_REGISTER.md",
+      "REALITY_STATUS.md",
+      "COMPONENT_PLAN.md",
+      "CONNECTION_MAP.md"
+    ],
+    "notion_master_roadmap_page_id": "373b826d-b85c-8125-ba83-f04995191bf0"
+  },
+  "roadmap": {
+    "milestones_mk": [
+      {
+        "id": "MK1",
+        "name": "Core OS Foundation",
+        "status": "done",
+        "target": "Q2 2026"
+      },
+      {
+        "id": "MK2",
+        "name": "ATCLang Language Core",
+        "status": "done",
+        "target": "05.07.2026",
+        "checkpoint": "code parses error-free with current parser"
+      },
+      {
+        "id": "MK3",
+        "name": "Blockchain & Consensus",
+        "status": "done",
+        "target": "05.07.2026"
+      },
+      {
+        "id": "MK4",
+        "name": "GCL v2.0 Communication",
+        "status": "in_progress",
+        "target": "Q3 2026",
+        "checkpoint": "kernel buses as .atc must parse error-free"
+      },
+      {
+        "id": "MK5",
+        "name": "Smart Contract Engine",
+        "status": "done",
+        "target": "05.07.2026"
+      },
+      {
+        "id": "MK6",
+        "name": "Network & Sharding",
+        "status": "done",
+        "target": "05.07.2026"
+      },
+      {
+        "id": "MK7",
+        "name": "AI Agent Protocol",
+        "status": "in_progress",
+        "target": "Q3 2026",
+        "checkpoint": "AIP-001 specification (a-townchain-os issue #80)"
+      },
+      {
+        "id": "MK8",
+        "name": "Security Audit",
+        "status": "in_progress",
+        "target": "Q3 2026",
+        "checkpoint": "external code review completed"
+      },
+      {
+        "id": "MK9",
+        "name": "Mainnet Launch",
+        "status": "planned",
+        "target": "Q4 2026",
+        "checkpoint": "genesis block signed (Chain-ID 9000), 10+ validators confirmed"
+      },
+      {
+        "id": "MK10",
+        "name": "Genesis Engine v1.0",
+        "status": "in_progress",
+        "target": "Q3 2026",
+        "checkpoint": "code present, runtime not verified"
+      },
+      {
+        "id": "MK11",
+        "name": "Multi-Chain Support",
+        "status": "planned",
+        "target": "Q2 2027"
+      },
+      {
+        "id": "MK12",
+        "name": "AAA Engine Runtime",
+        "status": "in_progress",
+        "target": "Q3 2026",
+        "checkpoint": "asset modules currently Python pseudocode, no ATCLang"
+      },
+      {
+        "id": "MK13",
+        "name": "Franchise Factory v2.0",
+        "status": "in_progress",
+        "target": "Q3 2026",
+        "checkpoint": "28 .atc files, 0 parse (v1.0 dialect problem)"
+      },
+      {
+        "id": "MK14",
+        "name": "MetaFactory v3.0",
+        "status": "in_progress",
+        "target": "Q3 2026",
+        "checkpoint": "8 .atc files, 0 parse (v1.0 dialect problem)"
+      },
+      {
+        "id": "MK15",
+        "name": "Civilization Platform v4.0",
+        "status": "in_progress",
+        "target": "Q3 2026",
+        "checkpoint": "11 .atc files, 0 parse (v1.0 dialect problem)"
+      },
+      {
+        "id": "SUMMARY",
+        "note": "5/15 fully met (33.3%) per MILESTONES.md definition: code exists AND parses error-free"
+      }
+    ],
+    "milestones_m1_m8": [
+      {
+        "id": "M1",
+        "name": "Sprachanpassungen & ATCLang",
+        "status": "G1 done, G2 open",
+        "checkpoint": "AD-019 phase 1 complete"
+      },
+      {
+        "id": "M2",
+        "name": "Kernel Boot & Core Integration",
+        "status": "done",
+        "checkpoint": "atc-shivacore 674/674 tests green"
+      },
+      {
+        "id": "M3",
+        "name": "KI-Layer Integration",
+        "status": "in_progress",
+        "checkpoint": "aurora-ai / AAS-001..025"
+      },
+      {
+        "id": "M4",
+        "name": "Blockchain Infrastructure",
+        "status": "in_progress",
+        "checkpoint": "2 nodes, Chain-ID 658467, contract execution on ATVM"
+      },
+      {
+        "id": "M5",
+        "name": "OS-Schicht & Kernel-Services",
+        "status": "open"
+      },
+      {
+        "id": "M6",
+        "name": "13 Blockchain Services Integration",
+        "status": "open"
+      },
+      {
+        "id": "M7",
+        "name": "Genesis Engine & Chronicles Integration",
+        "status": "open",
+        "checkpoint": "games/NFT on chain"
+      },
+      {
+        "id": "M8",
+        "name": "Full Monorepo Release Candidate",
+        "status": "open",
+        "checkpoint": "audit finalization"
+      }
+    ],
+    "kai_os_core_runtime": {
+      "track": "S01-S26",
+      "status": "closed 2026-09-12",
+      "tests": "80/80 green",
+      "crates": 10,
+      "source": "AD-027 owner directive 2026-09-11",
+      "gate_iteration_2": [
+        {
+          "id": "G2-A",
+          "name": "Model Registry + Verified Cache",
+          "status": "done",
+          "date": "2026-09-12"
+        },
+        {
+          "id": "G2-C",
+          "name": "Real TCP transport",
+          "status": "done",
+          "date": "2026-09-12"
+        },
+        {
+          "id": "G2-D",
+          "name": "Upgrade/Rollback",
+          "status": "done",
+          "date": "2026-09-12"
+        },
+        {
+          "id": "MULTI-NODE-DR",
+          "name": "syncd crate, 5 E2E tests",
+          "status": "done",
+          "date": "2026-09-12",
+          "ref": "issue #113"
+        },
+        {
+          "id": "G2-B",
+          "name": "Persistent storage layer",
+          "status": "open"
+        },
+        {
+          "id": "G2-E",
+          "name": "External security audit",
+          "status": "open",
+          "note": "checklist prepared, auditor decision with owner"
+        },
+        {
+          "id": "CODE-CLOSURE",
+          "name": "GATE-Iteration 2 code closure",
+          "status": "verified",
+          "ref": "a-townchain-os issue #112"
+        }
+      ]
+    },
+    "kernel_sprints": {
+      "track": "K0-K50",
+      "status": "done",
+      "modules": 60,
+      "rust_tests": 2146,
+      "atclang_interfaces": 30,
+      "release": "v1.0.0 (2026-08-04)"
+    },
+    "releases": [
+      {
+        "id": "v1.0.0",
+        "repo": "a-townchain-os",
+        "status": "released",
+        "date": "2026-08-04"
+      },
+      {
+        "id": "v3.2.1",
+        "name": "Test Coverage & Integration",
+        "status": "done"
+      },
+      {
+        "id": "consensus-freeze",
+        "name": "Consensus specification freeze (hybrid PoH+PoS+PoW)",
+        "status": "open",
+        "repo": "atc-algorithm"
+      },
+      {
+        "id": "mainnet",
+        "name": "Mainnet v1.0 (MK9)",
+        "status": "planned",
+        "target": "Q4 2026",
+        "checkpoint": "SC gates G0-G13 passed (no gate, no mainnet), genesis block, 10+ validators"
+      }
+    ],
+    "governance_checkpoints": [
+      {
+        "id": "STD-APPROVAL",
+        "name": "103 standards APPROVED (constitution ATC-STD-000 v1.2.0, AAS, ENT, SC, README, MD, ZKP, AI-DEV, 201-204)",
+        "status": "done"
+      },
+      {
+        "id": "F-160",
+        "name": "Enforcement evidence PR #96",
+        "status": "done"
+      },
+      {
+        "id": "README-MD-ROLLOUT",
+        "name": "README/MD conformity on 26 repos",
+        "status": "in_progress",
+        "deadline_overdue": true,
+        "ref": "issues #116/#117"
+      },
+      {
+        "id": "AGENT-MANIFESTS",
+        "name": "Agent manifests + AGENTS.md in all repos",
+        "status": "in_progress",
+        "ref": "issue #111"
+      },
+      {
+        "id": "SCR-0007",
+        "name": "REQ-ID rollout for 52 standards",
+        "status": "open",
+        "owner_decision": true
+      },
+      {
+        "id": "SC-GATE-ROLLOUT",
+        "name": "SC gates on contract repos + registry fill SC-G0",
+        "status": "in_progress",
+        "ref": "issue #118"
+      },
+      {
+        "id": "ASW-G0",
+        "name": "ATC-AURORA-SWARM-001 §9 approval",
+        "status": "open",
+        "owner_decision": true
+      },
+      {
+        "id": "IF-001",
+        "name": "Dependency graph",
+        "status": "in_progress"
+      },
+      {
+        "id": "IF-002",
+        "name": "Interface registry review",
+        "status": "open"
+      }
+    ],
+    "technical_checkpoints": [
+      {
+        "id": "UEFI-BOOT",
+        "name": "GlobusOS UEFI boot Intel Skylake + AMD EPYC",
+        "status": "VERIFIED",
+        "ref": "PR #58/#59"
+      },
+      {
+        "id": "SECURE-BOOT-ACPI",
+        "name": "Secure Boot / ACPI / bare-metal",
+        "status": "RESIDUAL_NOT_ASSERTED",
+        "ref": "PR #73 draft"
+      },
+      {
+        "id": "CENSUS-BASELINE",
+        "name": "Org source census baseline",
+        "status": "RESIDUAL",
+        "date": "2026-10-12",
+        "detail": "25 scanned + 1 private excluded, a-townchain a70b16f2d"
+      },
+      {
+        "id": "CATALOG-RECONCILE",
+        "name": "98-function catalog reconcile",
+        "status": "RESIDUAL",
+        "detail": "0 blocking findings; PR #115 merge pending"
+      },
+      {
+        "id": "SCANNER-TESTS",
+        "name": "scanner-tests CI green",
+        "status": "BLOCKED",
+        "detail": "owner edit of workflow assertion required"
+      },
+      {
+        "id": "ATVM-SHIVAVM",
+        "name": "canonical contract VM decision",
+        "status": "OPEN"
+      },
+      {
+        "id": "ATC-07-DRIFT",
+        "name": "sharding documentation governance drift",
+        "status": "OPEN"
+      }
+    ]
+  },
+  "sprints_active": [
+    {
+      "name": "Sprint 3.0 - AIP-001 Agent Interaction Protocol",
+      "repo": "a-townchain-os",
+      "ref": "issue #80",
+      "status": "in_progress"
+    },
+    {
+      "name": "Catalog Completeness PR #115",
+      "repo": "a-townchain-ecosystem",
+      "status": "draft",
+      "detail": "19/20 checks green, scanner-tests blocked on workflow assertion"
+    },
+    {
+      "name": "GlobusOS Boot-Evidence-Provenance PR #73",
+      "repo": "globus-os",
+      "status": "draft",
+      "detail": "Secure Boot/ACPI/bare-metal RESIDUAL"
+    },
+    {
+      "name": "ATCLang PR backlog #14-#20",
+      "repo": "atclang",
+      "status": "6/7 green",
+      "detail": "#19 awaits MD025 policy pin"
+    }
+  ],
+  "todos": {
+    "open_issues_count": 46,
+    "open_issues": [
+      {
+        "repo": ".github",
+        "issue_number": 12,
+        "title": "[AD-008] Sprach-Migration L5/L6: 8 Repos von Python/TypeScript auf Soll-Sprachen",
+        "labels": []
+      },
+      {
+        "repo": "a-townchain",
+        "issue_number": 70,
+        "title": "P1: Verify deterministic A-TownChain runtime, persistence and multi-node consensus",
+        "labels": [
+          "P1"
+        ]
+      },
+      {
+        "repo": "a-townchain",
+        "issue_number": 64,
+        "title": "SCR-0127: Resolve missing canonical components/contracts migration",
+        "labels": [
+          "architecture",
+          "migration"
+        ]
+      },
+      {
+        "repo": "a-townchain",
+        "issue_number": 31,
+        "title": "P0: Canonical Crypto Contract reconciliation — secp256k1 TX/Account, Ed25519 Identity",
+        "labels": [
+          "P0"
+        ]
+      },
+      {
+        "repo": "a-townchain",
+        "issue_number": 20,
+        "title": "P1 audit: evidence binding and ZKP placeholder boundary",
+        "labels": [
+          "P1",
+          "security",
+          "audit",
+          "completeness"
+        ]
+      },
+      {
+        "repo": "a-townchain-ecosystem",
+        "issue_number": 112,
+        "title": "P0: Vollständigen Quellcodeabgleich für Komponenten- und Funktionskatalog durchführen",
+        "labels": []
+      },
+      {
+        "repo": "a-townchain-ecosystem",
+        "issue_number": 98,
+        "title": "Assurance Residual Register — PR #97 freeze record",
+        "labels": []
+      },
+      {
+        "repo": "a-townchain-ecosystem",
+        "issue_number": 87,
+        "title": "P0: Fehlende Protokolle, Laufzeiten und Standardbibliothek systematisch schließen",
+        "labels": [
+          "P0"
+        ]
+      },
+      {
+        "repo": "a-townchain-ecosystem",
+        "issue_number": 71,
+        "title": "Master Architecture: canonical A-TownChain layer model L0–L7 + Cross-Layer Control Plane",
+        "labels": [
+          "architecture"
+        ]
+      },
+      {
+        "repo": "a-townchain-os",
+        "issue_number": 124,
+        "title": "P1 audit: Integration Gate workspace path",
+        "labels": [
+          "audit"
+        ]
+      },
+      {
+        "repo": "a-townchain-os",
+        "issue_number": 122,
+        "title": "P1/P2 audit: workspace documentation and evidence drift",
+        "labels": [
+          "documentation",
+          "governance",
+          "audit"
+        ]
+      },
+      {
+        "repo": "a-townchain-os",
+        "issue_number": 112,
+        "title": "[GATE-Iteration 2] Code closure verified — external production gates remain",
+        "labels": []
+      },
+      {
+        "repo": "a-townchain-os-docs",
+        "issue_number": 41,
+        "title": "P0/P1: Census 2026-10-09 konsolidieren und Gap-Audit mit Exact-SHA-Evidence abschließen",
+        "labels": [
+          "documentation",
+          "audit"
+        ]
+      },
+      {
+        "repo": "a-townchain-os-docs",
+        "issue_number": 33,
+        "title": "CONSISTENCY-001: migrate active docs/config/wallet artifacts to canonical L1 values",
+        "labels": [
+          "consistency"
+        ]
+      },
+      {
+        "repo": "atc-algorithm",
+        "issue_number": 3,
+        "title": "Owner-Aktion: Dependency Graph auf Org-Ebene aktivieren — sonst bleibt P0-Gate rot (CI-Diagnose 2026-09-11)",
+        "labels": [
+          "governance",
+          "owner-action",
+          "P0"
+        ]
+      },
+      {
+        "repo": "atc-engineering",
+        "issue_number": 13,
+        "title": "P0: Organisationsweiter Funktions- und Komponenten-Census mit maschinenlesbarer Dokumentation",
+        "labels": [
+          "documentation",
+          "P0",
+          "automation"
+        ]
+      },
+      {
+        "repo": "atc-engineering",
+        "issue_number": 12,
+        "title": "P0: Machine-readable PR comments and gate-failure remediation loop",
+        "labels": [
+          "P0",
+          "automation",
+          "ci"
+        ]
+      },
+      {
+        "repo": "atc-engineering",
+        "issue_number": 10,
+        "title": "P0: Red-Gate Triage and Fail-Closed Auto-Remediation Loop",
+        "labels": [
+          "P0",
+          "automation",
+          "ci"
+        ]
+      },
+      {
+        "repo": "atc-engineering",
+        "issue_number": 2,
+        "title": "P0 — Configure ATC_FLEET_READ_TOKEN for complete private-repository fleet audit",
+        "labels": [
+          "P0",
+          "security",
+          "governance"
+        ]
+      },
+      {
+        "repo": "atc-launchpad",
+        "issue_number": 3,
+        "title": "Owner-Aktion: Dependency Graph auf Org-Ebene aktivieren — sonst bleibt P0-Gate rot (CI-Diagnose 2026-09-11)",
+        "labels": [
+          "governance",
+          "owner-action",
+          "P0"
+        ]
+      },
+      {
+        "repo": "atc-node",
+        "issue_number": 10,
+        "title": "P2: RPC serve() beendet sich bei per-Verbindungs-Fehlern (EPIPE) — Devnet-Flake Root Cause",
+        "labels": []
+      },
+      {
+        "repo": "atc-shivacore",
+        "issue_number": 19,
+        "title": "Fix DependencyGraph::dependencies() placeholder in LKM subsystem",
+        "labels": [
+          "bug",
+          "security",
+          "audit"
+        ]
+      },
+      {
+        "repo": "atc-standards",
+        "issue_number": 79,
+        "title": "ci: restore pull-request creation permission for regenerate-views",
+        "labels": [
+          "governance"
+        ]
+      },
+      {
+        "repo": "atc-standards",
+        "issue_number": 77,
+        "title": "governance: enforce generated-artifact consistency for every generator",
+        "labels": []
+      },
+      {
+        "repo": "atc-standards",
+        "issue_number": 76,
+        "title": "governance: audit main-HEAD provenance across organization",
+        "labels": []
+      },
+      {
+        "repo": "atc-standards",
+        "issue_number": 70,
+        "title": "governance: resolve pre-existing dependency security pinning conflict",
+        "labels": [
+          "governance",
+          "security"
+        ]
+      },
+      {
+        "repo": "atc-standards",
+        "issue_number": 53,
+        "title": "P0: Reconcile frozen ATC-STD-600 transaction signature contract",
+        "labels": [
+          "P0"
+        ]
+      },
+      {
+        "repo": "atc-standards",
+        "issue_number": 50,
+        "title": "L1-TX-001: Canonical Transaction Contract and deterministic serialization",
+        "labels": []
+      },
+      {
+        "repo": "atc-standards",
+        "issue_number": 13,
+        "title": "Owner-Aktion: 14 CI-Gates pushen — 12× Determinism + Integration + Docs (Ziel 26/26 PASS)",
+        "labels": []
+      },
+      {
+        "repo": "atc-vm",
+        "issue_number": 8,
+        "title": "P1: implement enforced gas metering and canonical bytecode verification",
+        "labels": [
+          "P1",
+          "security"
+        ]
+      },
+      {
+        "repo": "atclang",
+        "issue_number": 12,
+        "title": "P1 audit blockers: reference VM security and Rust production boundary",
+        "labels": [
+          "security",
+          "P1",
+          "audit"
+        ]
+      },
+      {
+        "repo": "atclang",
+        "issue_number": 9,
+        "title": "P1 security: fail-closed Python reference VM crypto/auth/network stubs",
+        "labels": [
+          "security",
+          "P1"
+        ]
+      },
+      {
+        "repo": "aurora-ai",
+        "issue_number": 37,
+        "title": "P0: Reconcile Aurora AI target architecture with canonical architecture and implementation evidence",
+        "labels": [
+          "documentation",
+          "architecture"
+        ]
+      },
+      {
+        "repo": "aurora-ai",
+        "issue_number": 35,
+        "title": "P1: Aurora AI isolated runtime, model inference and policy-bound tool execution",
+        "labels": [
+          "P1"
+        ]
+      },
+      {
+        "repo": "aurora-ai",
+        "issue_number": 33,
+        "title": "P0: Aurora-AI-Grundfunktionen katalogisieren, absichern und SHA-verifizieren",
+        "labels": []
+      },
+      {
+        "repo": "genesis-engine",
+        "issue_number": 16,
+        "title": "GENESIS: Species & Civilization Framework",
+        "labels": [
+          "architecture",
+          "gameplay"
+        ]
+      },
+      {
+        "repo": "globus-os",
+        "issue_number": 67,
+        "title": "feat(identity): implement username/password account lifecycle with 24-word recovery",
+        "labels": []
+      },
+      {
+        "repo": "globus-os",
+        "issue_number": 63,
+        "title": "P0: Fail-closed GitHub API retrieval — reject empty/incomplete evidence",
+        "labels": [
+          "ci",
+          "governance",
+          "P0"
+        ]
+      },
+      {
+        "repo": "globus-os",
+        "issue_number": 59,
+        "title": "governance: close post-merge assurance residuals for PR #58",
+        "labels": [
+          "governance"
+        ]
+      },
+      {
+        "repo": "globus-os",
+        "issue_number": 57,
+        "title": "P1: GlobusOS user-space boot, service manager, storage, networking and recovery",
+        "labels": [
+          "P1"
+        ]
+      },
+      {
+        "repo": "globus-os",
+        "issue_number": 51,
+        "title": "P0: Betriebssystem-Grundfunktionen katalogisieren, SSOT abgleichen und verifizieren",
+        "labels": []
+      },
+      {
+        "repo": "globus-os",
+        "issue_number": 45,
+        "title": "P0: ShivaCore TCB completion — Architecture Delta, VMM, Build, Hardware and Evidence",
+        "labels": [
+          "P0"
+        ]
+      },
+      {
+        "repo": "globus-os",
+        "issue_number": 44,
+        "title": "CI-RED: Rust CI \"Check\" fehlschlaegt am main (e28a055) — Kernel-Tests werden nie ausgefuehrt",
+        "labels": [
+          "bug",
+          "kernel",
+          "ci",
+          "priority:high",
+          "governance"
+        ]
+      },
+      {
+        "repo": "globus-os",
+        "issue_number": 20,
+        "title": "[P1][LKM][SECURITY] Enforce dependency ordering, fail-closed imports, and export/import separation",
+        "labels": [
+          "P1",
+          "kernel",
+          "security"
+        ]
+      },
+      {
+        "repo": "globus-os",
+        "issue_number": 19,
+        "title": "P1: LKM export builder incorrectly registers exported symbols as imports",
+        "labels": [
+          "bug",
+          "P1",
+          "kernel",
+          "lkm",
+          "correctness",
+          "logic"
+        ]
+      },
+      {
+        "repo": "globus-os",
+        "issue_number": 18,
+        "title": "[P1][STUB][LKM] Replace DependencyGraph::dependencies placeholder with owned deterministic API",
+        "labels": [
+          "P1",
+          "stub",
+          "kernel",
+          "lkm",
+          "correctness",
+          "completeness"
+        ]
+      }
+    ],
+    "pr_backlogs": {
+      ".github": [
+        22,
+        23
+      ],
+      "a-townchain": [
+        27,
+        36,
+        37,
+        38,
+        39,
+        40,
+        44,
+        47,
+        49,
+        56,
+        59,
+        63,
+        65,
+        66,
+        67,
+        72,
+        73
+      ],
+      "a-townchain-ecosystem": [
+        51,
+        53,
+        54,
+        59,
+        67,
+        68,
+        72,
+        75,
+        76,
+        78,
+        79,
+        81,
+        84,
+        85,
+        86,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        99,
+        100,
+        101,
+        102,
+        103,
+        108,
+        109,
+        110,
+        111,
+        113,
+        114,
+        115
+      ],
+      "a-townchain-os": [
+        126,
+        127,
+        128,
+        129
+      ],
+      "a-townchain-os-docs": [
+        30,
+        32,
+        34,
+        35,
+        36
+      ],
+      "atc-algorithm": [
+        12,
+        13
+      ],
+      "atc-compute": [
+        6
+      ],
+      "atc-contracts": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "atc-engineering": [
+        3,
+        4,
+        9,
+        11
+      ],
+      "atc-launchpad": [
+        7
+      ],
+      "atc-marketplace": [
+        10
+      ],
+      "atc-node": [
+        8,
+        12,
+        13
+      ],
+      "atc-sdk": [
+        10,
+        11,
+        13
+      ],
+      "atc-shivacore": [
+        23,
+        24
+      ],
+      "atc-standards": [
+        43,
+        44,
+        46,
+        47,
+        48,
+        49,
+        51,
+        52,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        66,
+        68,
+        80
+      ],
+      "atc-vm": [
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "atc-zkp": [
+        5,
+        7
+      ],
+      "atclang": [
+        27
+      ],
+      "aurora-ai": [
+        24,
+        25,
+        28,
+        38
+      ],
+      "demo-repository": [
+        3
+      ],
+      "genesis-chronicles": [
+        11
+      ],
+      "genesis-engine": [
+        13,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        30,
+        31
+      ],
+      "genesis-franchise-factory": [
+        5
+      ],
+      "globus-os": [
+        13,
+        23,
+        26,
+        27,
+        28,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        41,
+        42,
+        43,
+        46,
+        47,
+        49,
+        50,
+        52,
+        53,
+        54,
+        64,
+        65,
+        66,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74
+      ]
+    },
+    "task_db_blocked": [
+      {
+        "id": "SCR-0086",
+        "name": "Evidence promotion on PR model",
+        "blocker": "owner workflow scope"
+      },
+      {
+        "id": "INFRA-DEPGRAPH-001",
+        "name": "Dependency graph not provisioned on 6 repos",
+        "blocker": "org UI activation"
+      }
+    ],
+    "owner_actions": [
+      {
+        "id": 1,
+        "action": "Replace workflow assert active_scanned==26 with active_blocked==0 + active_scanned+active_excluded_private==active_expected",
+        "ref": "PR #115 comment issuecomment-6115900594"
+      },
+      {
+        "id": 2,
+        "action": "MD025 policy pin 1c198f3->61f1941 in .github feat/org-markdownlint",
+        "ref": "ATCLang #19"
+      },
+      {
+        "id": 3,
+        "action": "Activate dependency graph org-wide (Security Configuration UI), re-run dependency-review jobs"
+      },
+      {
+        "id": 4,
+        "action": "PR reviews: #115 and ATCLang #14-#20"
+      },
+      {
+        "id": 5,
+        "action": "ASW-G0 §9 approval ATC-AURORA-SWARM-001"
+      },
+      {
+        "id": 6,
+        "action": "Resolve SCR-0086 branch-protection blocker for evidence commits"
+      }
+    ]
+  },
+  "catalog": {
+    "repo": "a-townchain-ecosystem",
+    "path": "docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001",
+    "state": "PR #115 draft, head 8a4708794, not yet on main",
+    "components": 30,
+    "functions": 98,
+    "binding_states": {
+      "lexical_match_pending_functional_verification": 66,
+      "not_in_lexical_scan_spec_doc_data": 12,
+      "not_in_lexical_scan_private_symbol": 15,
+      "blocked_records": 5
+    },
+    "repository_coverage": 33,
+    "reconcile": "RESIDUAL, 0 blocking findings"
+  },
+  "sources": {
+    "baseline_date": "2026-10-12",
+    "repository_heads": {
+      ".github": "af5d803da",
+      "a-townchain": "a70b16f2d",
+      "a-townchain-ecosystem": "5a66f276a",
+      "a-townchain-os": "3f85a6e61",
+      "a-townchain-os-docs": "6b311f70d",
+      "atc-algorithm": "5a5628044",
+      "atc-compute": "d0831dfb7",
+      "atc-contracts": "a7c8b417f",
+      "atc-engineering": "2e91ec61a",
+      "atc-ide": "2a17feda7",
+      "atc-launchpad": "bd1a48c69",
+      "atc-marketplace": "5c3bab7da",
+      "atc-node": "a817db43a",
+      "atc-sdk": "34eef3459",
+      "atc-shivacore": "21c997696",
+      "atc-standards": "dc0ff69d8",
+      "atc-toolchain": "82fe4a238",
+      "atc-vm": "21132a493",
+      "atc-zkp": "ffa8ec109",
+      "atclang": "21c595dc3",
+      "aurora-ai": "1b5ff1824",
+      "demo-repository": "d9b0da9c9",
+      "genesis-chronicles": "a3f417b23",
+      "genesis-engine": "8326eb53e",
+      "genesis-franchise-factory": "673fa5603",
+      "globus-os": "c7337ef4f"
+    },
+    "evidence": [
+      "docs/audit/ATC-CATALOG-COMPLETENESS-AUDIT-001.md (PR #115, R-1 exclusion rationale)",
+      "tools/run_org_source_census.py (a-townchain-ecosystem), full run 2026-10-12: RESIDUAL, 4925 source files, 35581 candidate symbols",
+      "atc-standards/registry/standards.yaml (SSOT, 533 standards, 103 APPROVED)",
+      "MILESTONES.md / REALITY_STATUS.md / FILE_REGISTER.md (a-townchain-os-docs)",
+      "a-townchain-os/ROADMAP.md (M1-M8 AD-027, KAI-OS S01-S26)"
+    ]
+  },
+  "artifacts": {
+    "policy": "Alle organisatorischen JSON-Artefakte sind in MASTER_OVERVIEW-001.json registriert und kreuzverlinkt. Änderungen an einem Artefakt erfordern eine Aktualisierung dieses Index.",
+    "records": [
+      {
+        "artifact_id": "ATC-ORG-REPOSITORY-MANIFEST-001",
+        "schema_id": "ATC-ORG-REPOSITORY-MANIFEST-001",
+        "path": "docs/audit/ATC-ORG-REPOSITORY-MANIFEST-001.json",
+        "repo": "a-townchain-ecosystem",
+        "state": "PR #115 draft, head 8a4708794, not yet on main",
+        "records": 33,
+        "links_to": [
+          "organization",
+          "repository_coverage"
+        ],
+        "link_role": "SSOT fuer Repo-Inventar und Census-Grundlage"
+      },
+      {
+        "artifact_id": "ATC-ORG-REPOSITORY-INTEGRATION-001",
+        "schema_id": "ATC-ORG-REPOSITORY-INTEGRATION-001",
+        "path": "docs/integration/ATC-ORG-REPOSITORY-INTEGRATION-001.json",
+        "repo": "a-townchain-ecosystem",
+        "state": "PR #115 draft, head 8a4708794, not yet on main",
+        "records": 4,
+        "links_to": [
+          "organization.layers",
+          "roadmap.technical_checkpoints"
+        ],
+        "link_role": "Integrations- und Boundary-Registry (33 Repos, Cross-Layer-Grenzen)"
+      },
+      {
+        "artifact_id": "ATC-COMPONENT-FUNCTION-CATALOG-001",
+        "schema_id": "ATC-COMPONENT-FUNCTION-CATALOG-001",
+        "path": "docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.json",
+        "repo": "a-townchain-ecosystem",
+        "state": "PR #115 draft, head 8a4708794, not yet on main",
+        "records": {
+          "components": 30,
+          "functions": 98
+        },
+        "links_to": [
+          "catalog",
+          "sources.repository_heads"
+        ],
+        "link_role": "Komponenten- und Funktionsverzeichnis mit Source-Bindings (66/12/15/5)"
+      },
+      {
+        "artifact_id": "ATC-COMPONENT-FUNCTION-SPECIFICATION-001",
+        "schema_id": "ATC-COMPONENT-FUNCTION-SPECIFICATION-001",
+        "path": "docs/architecture/ATC-COMPONENT-FUNCTION-SPECIFICATION-001.json",
+        "repo": "a-townchain-ecosystem",
+        "state": "PR #115 draft, head 8a4708794, not yet on main",
+        "records": {
+          "function_contract_fields": 18,
+          "component_contract_fields": 17
+        },
+        "links_to": [
+          "catalog"
+        ],
+        "link_role": "Normative Contract-Pflichtfelder fuer Katalog-Eintraege"
+      },
+      {
+        "artifact_id": "ATC-DELIVERY-REGISTRY-001",
+        "schema_id": "ATC-DELIVERY-SSOT",
+        "path": "control-plane/DELIVERY_REGISTRY.json",
+        "repo": "a-townchain-ecosystem",
+        "state": "main 5a66f276a",
+        "records": {
+          "documentation_index": 3
+        },
+        "links_to": [
+          "sprints_active",
+          "todos.owner_actions"
+        ],
+        "link_role": "Control-Plane-Liefer- und Nachweis-Registry (fail-closed Status-Enum)"
+      },
+      {
+        "artifact_id": "AURORA-DECENTRALIZED-MEMORY-FUNCTION-CATALOG",
+        "schema_id": "ATC-CATALOG-AURORA-DECENTRALIZED-MEMORY-001",
+        "path": "docs/AURORA_DECENTRALIZED_MEMORY_FUNCTION_CATALOG.json",
+        "repo": "aurora-ai",
+        "state": "main 1b5ff1824",
+        "records": {
+          "functions": 16,
+          "memory_types": 8
+        },
+        "links_to": [
+          "catalog"
+        ],
+        "link_role": "Spezialkatalog Aurora Memory (Baseline-Commit-verankert, Teilmenge des Org-Katalogs)"
+      },
+      {
+        "artifact_id": "ATCLANG-LANGUAGE-REGISTRY",
+        "schema_id": "atclang-language-registry",
+        "path": "specs/language/registry.json",
+        "repo": "atclang",
+        "state": "main 21c595dc3",
+        "records": {
+          "tokens": 63
+        },
+        "links_to": [
+          "catalog (COMP-LANG FN-LANG-001..010)"
+        ],
+        "link_role": "Normative ATCLang-Token-Registry (SSOT der Sprache)"
+      },
+      {
+        "artifact_id": "ATCLANG-SEMANTICS-REGISTRY",
+        "schema_id": "atclang-semantics-registry",
+        "path": "specs/semantics/registry.json",
+        "repo": "atclang",
+        "state": "main 21c595dc3",
+        "records": {
+          "rules": 12
+        },
+        "links_to": [
+          "ATCLANG-LANGUAGE-REGISTRY"
+        ],
+        "link_role": "Semantik-Registry der Sprache"
+      },
+      {
+        "artifact_id": "ORG-GOV-SCAN-2026-09-11",
+        "schema_id": "org-governance-scan",
+        "path": "docs/ORG-GOV-SCAN-2026-09-11.json",
+        "repo": ".github",
+        "state": "main af5d803da",
+        "records": {
+          "repos": 0
+        },
+        "links_to": [
+          "roadmap.governance_checkpoints"
+        ],
+        "link_role": "Governance-Scan-Snapshot (Agenten-Manifeste/Standards je Repo)"
+      },
+      {
+        "artifact_id": "ORG-COMPLIANCE-SCAN-2026-09-10",
+        "schema_id": "org-compliance-scan",
+        "path": "docs/compliance/ORG-COMPLIANCE-SCAN-2026-09-10.json",
+        "repo": ".github",
+        "state": "main af5d803da",
+        "records": "snapshot",
+        "links_to": [
+          "roadmap.governance_checkpoints"
+        ],
+        "link_role": "Compliance-Scan-Snapshot (Standards-Konformitaet je Repo)"
+      },
+      {
+        "artifact_id": "GOVERNANCE-SOURCES-SCHEMA",
+        "schema_id": "atc://schemas/governance-sources.schema.json",
+        "path": "ai/schemas/governance-sources.schema.json",
+        "repo": ".github",
+        "state": "main af5d803da",
+        "records": "schema",
+        "links_to": [
+          "ORG-GOV-SCAN-2026-09-11",
+          "ORG-COMPLIANCE-SCAN-2026-09-10"
+        ],
+        "link_role": "JSON-Schema-Definition fuer Governance-Quelldaten"
+      },
+      {
+        "artifact_id": "ATC-DEPENDENCY-GRAPH-001",
+        "schema_id": "ATC-DEPENDENCY-GRAPH-001",
+        "path": "docs/architecture/ATC-DEPENDENCY-GRAPH-001.json",
+        "repo": "a-townchain-ecosystem",
+        "state": "draft PR, stacked on PR #115",
+        "records": {
+          "nodes": 26,
+          "edges": 22
+        },
+        "links_to": [
+          "roadmap.governance_checkpoints (F-001)",
+          "sources.repository_heads"
+        ],
+        "link_role": "F-001: maschinenlesbarer Build-Dependency-Graph (abgeleitet aus atc-standards registry/dependencies.yaml SSOT, topologische Ordnung, Zyklen-/Deckungspruefung fail-closed)"
+      },
+      {
+        "artifact_id": "ATC-BUILD-MANIFEST-001",
+        "schema_id": "ATC-BUILD-MANIFEST-001",
+        "path": "docs/build/ATC-BUILD-MANIFEST-001.json",
+        "repo": "a-townchain-ecosystem",
+        "state": "draft PR, stacked on PR #115",
+        "records": {
+          "repos": 26,
+          "build_entry_evidenced": 16,
+          "canonical_elsewhere": 6,
+          "blocked": 2,
+          "exempt": 2
+        },
+        "links_to": [
+          "ATC-DEPENDENCY-GRAPH-001"
+        ],
+        "link_role": "kanonische Build-/Testbefehle, Workspace-Roots, Toolchains und SSOT-Produktionspfade je Repo; FREEZE-Repos (SCR-0127) mit kanonischem Monorepo-Pfad"
+      }
+    ],
+    "related_yaml": [
+      {
+        "artifact_id": "SYSTEM-READINESS",
+        "path": "docs/system-readiness/system-readiness.yaml",
+        "repo": "a-townchain-ecosystem",
+        "state": "main 5a66f276a",
+        "links_to": [
+          "roadmap.technical_checkpoints"
+        ],
+        "link_role": "End-to-End-Runtime-Readiness-Gates (PR #117 gemergt)"
+      },
+      {
+        "artifact_id": "MIGRATION-MANIFEST",
+        "path": "MIGRATION_MANIFEST.yaml",
+        "repo": "a-townchain-ecosystem",
+        "state": "main",
+        "links_to": [
+          "artifacts.records[MANIFEST]"
+        ],
+        "link_role": "Repo-Eigentums- und Abhaigkeits-Mapping"
+      }
+    ]
+  },
+  "cross_references": {
+    "policy": "Verbindungen zwischen den Artefakten. Komponenten-Katalog-Funktionen verweisen auf Repos im MANIFEST; MASTER_OVERVIEW agregiert Milestones, Checkpoints, Todos und Quellen aus allen Artefakten.",
+    "component_to_repository": [
+      {
+        "component": "COMP-ATC-ENG",
+        "repository": "A-TownChain-Okosystems/atc-engineering",
+        "functions": 2
+      },
+      {
+        "component": "COMP-STANDARDS",
+        "repository": "A-TownChain-Okosystems/atc-standards",
+        "functions": 2
+      },
+      {
+        "component": "COMP-LANG",
+        "repository": "A-TownChain-Okosystems/atclang",
+        "functions": 10
+      },
+      {
+        "component": "COMP-SHIVA",
+        "repository": "A-TownChain-Okosystems/globus-os/modules/atc-shivacore/kernel/",
+        "functions": 3
+      },
+      {
+        "component": "COMP-CHAIN",
+        "repository": "A-TownChain-Okosystems/a-townchain",
+        "functions": 3
+      },
+      {
+        "component": "COMP-ALGO",
+        "repository": "A-TownChain-Okosystems/a-townchain/components/algorithm",
+        "functions": 2
+      },
+      {
+        "component": "COMP-VM",
+        "repository": "A-TownChain-Okosystems/a-townchain/components/vm",
+        "functions": 29
+      },
+      {
+        "component": "COMP-GLOBUS",
+        "repository": "A-TownChain-Okosystems/globus-os",
+        "functions": 2
+      },
+      {
+        "component": "COMP-AURORA",
+        "repository": "A-TownChain-Okosystems/aurora-ai",
+        "functions": 3
+      },
+      {
+        "component": "COMP-TOOLCHAIN",
+        "repository": "A-TownChain-Okosystems/atc-toolchain",
+        "functions": 2
+      },
+      {
+        "component": "COMP-GENESIS",
+        "repository": "A-TownChain-Okosystems/genesis-engine",
+        "functions": 2
+      },
+      {
+        "component": "COMP-ECOSYSTEM",
+        "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+        "functions": 2
+      },
+      {
+        "component": "COMP-SDK",
+        "repository": "A-TownChain-Okosystems/atc-sdk",
+        "functions": 2
+      },
+      {
+        "component": "COMP-NODE",
+        "repository": "A-TownChain-Okosystems/atc-node",
+        "functions": 2
+      },
+      {
+        "component": "COMP-CONTRACTS",
+        "repository": "A-TownChain-Okosystems/atc-contracts",
+        "functions": 2
+      },
+      {
+        "component": "COMP-ZKP",
+        "repository": "A-TownChain-Okosystems/atc-zkp",
+        "functions": 2
+      },
+      {
+        "component": "COMP-STORAGE",
+        "repository": "A-TownChain-Okosystems/atc-storage",
+        "functions": 2
+      },
+      {
+        "component": "COMP-COMPUTE",
+        "repository": "A-TownChain-Okosystems/atc-compute",
+        "functions": 2
+      },
+      {
+        "component": "COMP-LAUNCHPAD",
+        "repository": "A-TownChain-Okosystems/atc-launchpad",
+        "functions": 2
+      },
+      {
+        "component": "COMP-MARKET",
+        "repository": "A-TownChain-Okosystems/atc-marketplace",
+        "functions": 2
+      },
+      {
+        "component": "COMP-IDE",
+        "repository": "A-TownChain-Okosystems/atc-ide",
+        "functions": 2
+      },
+      {
+        "component": "COMP-CHRONICLES",
+        "repository": "A-TownChain-Okosystems/genesis-chronicles",
+        "functions": 2
+      },
+      {
+        "component": "COMP-GFF",
+        "repository": "A-TownChain-Okosystems/genesis-franchise-factory",
+        "functions": 2
+      },
+      {
+        "component": "COMP-OS-INTEGRATION",
+        "repository": "A-TownChain-Okosystems/a-townchain-os",
+        "functions": 2
+      },
+      {
+        "component": "COMP-SHIVA-SPEC",
+        "repository": "A-TownChain-Okosystems/atc-shivacore",
+        "functions": 2
+      },
+      {
+        "component": "COMP-VM-SPEC",
+        "repository": "A-TownChain-Okosystems/atc-vm",
+        "functions": 2
+      },
+      {
+        "component": "COMP-ALGO-SPEC",
+        "repository": "A-TownChain-Okosystems/atc-algorithm",
+        "functions": 2
+      },
+      {
+        "component": "COMP-DOCS",
+        "repository": "A-TownChain-Okosystems/a-townchain-os-docs",
+        "functions": 2
+      },
+      {
+        "component": "COMP-ORG-GOV",
+        "repository": "A-TownChain-Okosystems/.github",
+        "functions": 2
+      },
+      {
+        "component": "COMP-DEMO",
+        "repository": "A-TownChain-Okosystems/demo-repository",
+        "functions": 2
+      }
+    ],
+    "aggregation_role": "MASTER_OVERVIEW-001.json ist der verbindende Index: organization aus MANIFEST/INTEGRATION, roadmap aus Task DB + MILESTONES/ROADMAP, todos aus GitHub Live-Scan, catalog aus COMPONENT-FUNCTION-CATALOG, sources je Repo-HEAD-SHA",
+    "sync_dependencies": [
+      "ATC-ORG-REPOSITORY-MANIFEST-001.json (Census-Grundlage)",
+      "ATC-COMPONENT-FUNCTION-CATALOG-001.json (Funktionsverzeichnis)",
+      "GitHub Issues API (Todos)",
+      "Task DB (Meilensteine/Status)"
+    ]
+  }
+}
