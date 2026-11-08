@@ -1,0 +1,175 @@
+# Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# A-TownChain OS — Unified Docker Compose (K5 Konsolidierung)
+# 7 Services: core, blockchain, frontend, gateway, contracts, franchise, game
+# Usage: docker compose -f docker/docker-compose.yml up -d
+# Agent: Aurora #2 (6a275618)
+
+version: "3.9"
+
+x-common: &common
+  restart: unless-stopped
+  networks: [atc-net]
+  environment:
+    ATC_CHAIN_ID: "658467"
+    ATC_ENV: "production"
+    PYTHONPATH: "/app"
+  logging:
+    driver: json-file
+    options:
+      max-size: "50m"
+      max-file: "5"
+
+services:
+  # ── 1. Core Backend (Gateway API) ──────────
+  core:
+    <<: *common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.core
+    container_name: atc-core
+    ports:
+      - "4000:4000"
+      - "8000:8000"
+    volumes:
+      - ../src:/app/src
+      - ../config:/app/config
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:4000/gateway/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ── 2. Blockchain Node ─────────────────────
+  blockchain:
+    <<: *common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.core
+    container_name: atc-blockchain
+    command: ["python", "-m", "src.blockchain"]
+    ports:
+      - "5000:5000"
+      - "9000:9000"
+    volumes:
+      - ../src:/app/src
+      - blockchain-data:/app/data
+    depends_on:
+      core:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ── 3. Frontend (Nginx) ───────────────────
+  frontend:
+    <<: *common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    container_name: atc-frontend
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # ── 4. Gateway (Nginx Reverse Proxy) ──────
+  gateway:
+    <<: *common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.gateway
+    container_name: atc-gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      core:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── 5. Contracts Service ──────────────────
+  contracts:
+    <<: *common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.core
+    container_name: atc-contracts
+    command: ["python", "-m", "src.contracts"]
+    ports:
+      - "8001:8001"
+    volumes:
+      - ../src:/app/src
+    depends_on:
+      core:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── 6. Franchise Service ──────────────────
+  franchise:
+    <<: *common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.core
+    container_name: atc-franchise
+    command: ["python", "-m", "src.franchise"]
+    ports:
+      - "8002:8002"
+    volumes:
+      - ../src:/app/src
+    depends_on:
+      core:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── 7. Shivamon/Game Service ──────────────
+  game:
+    <<: *common
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.core
+    container_name: atc-game
+    command: ["python", "-m", "src.game"]
+    ports:
+      - "8003:8003"
+    volumes:
+      - ../src:/app/src
+    depends_on:
+      core:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  atc-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.20.0.0/16"
+
+volumes:
+  blockchain-data:
