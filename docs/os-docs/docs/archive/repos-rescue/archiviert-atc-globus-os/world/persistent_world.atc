@@ -1,0 +1,29 @@
+// ATCLang v0.3 — Persistent World Engine
+// Persistente Weltspeicherung auf der Chain — ATCFS-basiert
+// ATC-Standard: ATC-24
+
+module persistent_world {
+    struct WorldSnapshot {
+        world_id: string,
+        tick: int,
+        state_hash: string,
+        entity_count: int,
+        changes: List[ChangeRecord],
+    }
+    
+    fn save_snapshot(world_id: string) {
+        // Welt-Zustand auf Chain speichern
+    }
+    
+    fn load_snapshot(world_id: string, tick: int) {
+        // Historischen Weltzustand laden
+    }
+    
+    fn apply_changes(world_id: string, changes: List[ChangeRecord]) {
+        // Inkrementelle Änderungen anwenden
+    }
+    
+    fn rollback(world_id: string, target_tick: int) {
+        // Welt auf früheren Zustand zurücksetzen
+    }
+}
