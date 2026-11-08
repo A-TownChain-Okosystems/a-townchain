@@ -13,7 +13,7 @@ struct Snapshot {
     root_hash: Hash,
 }
 
-contract ATC8300Token {
+contract ATC8300TokenInstance {
     state token_name: String
     state symbol: String
     state decimals: u8
