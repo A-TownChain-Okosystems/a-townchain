@@ -1,0 +1,43 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-13 — Fractional Asset Ownership
+// Tier 2 — Smart Contracts | ATC-8300 Token Standard kompatibel
+// ─────────────────────────────────────────────────────────────
+
+contract FractionalAssetOwnership {
+    state owner: Address
+    state balances: Map<Address, u256>
+    state metadata: Map<Address, String>
+    state total_supply: u256
+    state paused: bool
+
+    event Transfer(from: Address, to: Address, amount: u256)
+    event FractionalAssetOwnershipRegistered(account: Address, data: String)
+
+    fn init(owner: Address) -> bool {
+        self.owner = owner
+        self.total_supply = 0
+        self.paused = false
+        return true
+    }
+
+    fn transfer(to: Address, amount: u256) -> bool {
+        require(!self.paused, "contract paused")
+        require(self.balances[msg.sender] >= amount, "insufficient balance")
+        self.balances[msg.sender] -= amount
+        self.balances[to] += amount
+        emit Transfer(msg.sender, to, amount)
+        return true
+    }
+
+    fn register(account: Address, data: String) -> bool {
+        require(msg.sender == self.owner, "unauthorized")
+        self.metadata[account] = data
+        emit FractionalAssetOwnershipRegistered(account, data)
+        return true
+    }
+
+    fn balance_of(account: Address) -> u256 {
+        return self.balances[account]
+    }
+}
