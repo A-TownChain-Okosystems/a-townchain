@@ -1,0 +1,15 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: net
+family: NET
+family_id: PREFIX
+file: standards/net/ATC-STD-NET-009.md
+mandate: Owner-Entwurf 14.09. 09:42 (ATC Network Release Lifecycle); NET-004 bleibt
+  Promotion-SSOT; 6 REQ-NET-081..086; SCR-0122
+registry_version: 1
+standard_id: ATC-STD-NET-009
+status: approved
+title: Network Release Maturity & Versioning Standard (NETWORK x MATURITY, Reifestufen-Matrix
+  Alpha/Beta/Stable, 6 Release Gates GATE-DEV/TEST/MAINNET, Versionslogik 0.x-Prerelease/1.0.0+,
+  Release State SSOT registry/networks.yaml)
+version: 1.0.0
