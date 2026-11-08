@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-111",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #111: integration: register all organization repositories and enforce fail-closed audit gates",
+  "context": "Pull request 111 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/111",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: True\n\n## Purpose\nEstablish one machine-readable integration baseline for all repositories visible in the `A-TownChain-Okosystems` organization.\n\n## Included\n- `docs/integration/ATC-ORG-REPOSITORY-INTEGRATION-001.json`: inventory of all 33 observed repositories (26 active, 7 archived), proposed ownership roles, integration anchors, migration questions, residuals and required gates.\n- `tools/validate_org_repository_integration.py`: deterministic structural validator. A repository cannot be marked VERIFIED without exact HEAD SHA, tree SHA, CI run/job/step, exit code 0, and log/artifact URL.\n- `.github/workflows/org-repository-integration.yml`: PR/main structural gate and report artifact.\n\n## Architecture / SSOT safeguards\n- Standalone First, Ecosystem Second.\n- The ecosystem remains an integration, architecture, compliance and evidence control plane; it does not become the canonical implementation for component code.\n- Canonical VM and algorithm implementation paths remain `a-townchain/components/vm` and `a-townchain/components/algorithm`; the ShivaCore kernel remains under `globus-os/modules/atc-shivacore/kernel`.\n- Archived repositories are recorded as historical references, not silently reactivated.\n- No repository code was copied, no repository was archived/unarchived, no CI gate was weakened, and no PR was merged.\n\n## Explicit residuals\n- The `a-townchain-os` versus `a-townchain-ecosystem` orchestration/control-plane boundary needs reconciliation against the latest approved architecture.\n- `atc-node`, `atc-contracts`, and `atc-zkp` are unarchived although the existing registry describes migrations into `a-townchain`; exact subtree/source SHA and KEEP/SYNC/ARCHIVE decisions remain open.\n- `atc-sdk` ownership and migration state remain to be verified.\n- This PR records the observed inventory; it does not assert that all repository integrations, APIs, tests, standards checks, or CI runs are verified.\n\n## Merge policy\nDraft until the exact-SHA workflow passes and the ownership/migration residuals are reviewed. No automatic merge."
+}
