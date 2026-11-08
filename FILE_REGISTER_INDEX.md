@@ -1,9 +1,9 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-08 19:28 UTC+2 aus `origin/main` @ `1216b6757`.
+> Vollständige Dateiliste. Erzeugt 2026-11-08 19:33 UTC+2 aus `origin/main` @ `89e5b6b15`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 12339 Dateien**
+**Total: 12340 Dateien**
 
 ## docs (5065)
 
@@ -8502,7 +8502,7 @@
 - `ecosystem/tools/validate_privacy_policy.py`
 - `ecosystem/tools/validate_runtime_symbol_registry.py`
 
-## ai (974)
+## ai (975)
 
 - `ai/atclang/.atc/compliance.yaml`
 - `ai/atclang/.atc/evidence/evidence.yaml`
@@ -8588,6 +8588,7 @@
 - `ai/atclang/crates/atc-core/src/main.rs`
 - `ai/atclang/crates/atc-core/src/native.rs`
 - `ai/atclang/crates/atc-core/src/parser.rs`
+- `ai/atclang/crates/atc-core/src/project.rs`
 - `ai/atclang/crates/atc-core/src/semantics.rs`
 - `ai/atclang/crates/atc-core/src/types.rs`
 - `ai/atclang/crates/atc-core/src/value.rs`
