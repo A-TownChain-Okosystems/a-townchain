@@ -1,0 +1,6 @@
+# Genesis Engine — Vision Document
+# No runtime dependencies — this is a concept/vision repo.
+# Copyright (c) Michael Wroblewski. All Rights Reserved.
+
+# Markdown processing (optional, for doc generation)
+markdown>=3.5
