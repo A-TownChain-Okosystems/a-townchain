@@ -12,6 +12,7 @@ pub mod lower;
 pub mod semantics;
 pub mod types;
 pub mod project;
+pub mod abi;
 pub mod native;
 pub mod parser;
 pub mod value;
