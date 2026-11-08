@@ -1,6 +1,6 @@
 # atcnet — L5: ATCNet P2P — Kademlia DHT, Bootstrap, Block-Propagation
 
-Part of [A-TownChain OS Monorepo](../../../../README.md)
+Part of [A-TownChain OS Monorepo](../../../../../../../README.md)
 
 ## Inhalt
 
