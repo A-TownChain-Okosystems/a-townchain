@@ -58,8 +58,12 @@ vom Gate respektiert.
   `verified`/`audited` brauchen Evidence, `archived` einen Archivmarker
 - **A6** ID-Format `ATC-SC-<KATEGORIE>-<NNN>`, eindeutig, Kategorie passt zur ID
 - **A7** Kategorie im Enum nach SC-001
-- **A8** jede registrierte Quelle besteht `atc check` (ATCLang-Parser und Typprüfung);
-  `--skip-compile` setzt das Gate aus, ein fehlendes Binary ist ein Fehler und kein Pass
+- **A8** jede registrierte Quelle besteht `atc check`; `--skip-compile` setzt das Gate
+  aus, ein fehlendes Binary ist ein Fehler und kein Pass.
+  **Reichweite von A8:** der ATCLang-Frontend parst Top-Level-Deklarationen, die
+  Vertrags-Rümpfe werden jedoch als Token-Liste eingelesen und nicht analysiert.
+  A8 belegt damit Syntax der Deklaration, nicht die Logik im Vertrag — es gibt
+  weder Typprüfung noch Namensauflösung. Siehe STATUS.md/ROADMAP.md (G3-G10 offen)
 
 Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde, alle 16 Quellen
 kompilieren.
@@ -72,8 +76,10 @@ fehlendem Compiler-Binary.
 
 ## 4. Evidenz der Implementierungen
 
-- Alle 16 registrierten Contract-Quellen bestehen `atc check` (ATCLang-Parser und
-  Typprüfung), Exit 0 — inzwischen als Gate A8 automatisiert, nicht mehr nur manuell.
+- Alle 16 registrierten Contract-Quellen bestehen `atc check`, Exit 0 (Gate A8).
+  Das ist eine Strukturprüfung: ein Typfehler (`return "text"` in einer `-> int`-Funktion),
+  ein Aufruf einer nicht existierenden Funktion und selbst `let = ;` innerhalb eines
+  Vertrags werden von `atc check` akzeptiert. Die Vertragslogik ist damit ungeprüft.
 - Neun Contract-Tests liegen als `.atc` unter `apps/atc-contracts/exec_chain/tests/`
   und laufen über den VM-Gate im Smoke-Test (`t10b_mint_positive_accept.ops`:
   12 Ops, PASS).
