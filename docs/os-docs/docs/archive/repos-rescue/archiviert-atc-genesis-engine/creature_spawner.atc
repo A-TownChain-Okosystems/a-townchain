@@ -1,0 +1,12 @@
+// ATCLang v0.3 — atc-genesis-engine :: Creature Spawner
+// procedural DNA, wild Shivamon, ecosystems
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module creature_spawner {
+    // Public API — TBD
+    
+    fn init() {
+        // Initialization — TBD
+    }
+}
