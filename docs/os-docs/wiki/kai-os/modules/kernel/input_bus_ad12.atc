@@ -1,0 +1,184 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-12 — InputBus: Zentrale Eingabe-Verarbeitung
+// Genesis Communication Layer (GCL) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct InputEvent {
+    id: Hash256,
+    device: InputDevice,
+    action: String,
+    value: Float32,
+    raw_value: Float32,
+    timestamp: UInt64,
+    consumed: Bool,
+    modifiers: List<String>,
+}
+
+enum InputDevice { Keyboard, Mouse, Touch, Controller, VRController, Gesture, Gyroscope }
+
+struct InputBinding {
+    action: String,
+    device: InputDevice,
+    code: UInt32,
+    modifiers: List<String>,
+    axis: Bool,
+    dead_zone: Float32,
+    sensitivity: Float32,
+}
+
+struct InputBus {
+    bindings: Map<String, List<InputBinding>>,
+    events: List<InputEvent>,
+    axis_values: Map<String, Float32>,
+    pressed_actions: Set<String>,
+    just_pressed: Set<String>,
+    just_released: Set<String>,
+    consumed: Set<Hash256>,
+    max_events: UInt32,
+    enabled: Bool,
+}
+
+// InputBus: Binding registrieren
+pub fn bind_action(bus: InputBus, action: String, device: InputDevice, code: UInt32, modifiers: List<String>, axis: Bool) -> Bool {
+    let binding = InputBinding {
+        action: action,
+        device: device,
+        code: code,
+        modifiers: modifiers,
+        axis: axis,
+        dead_zone: 0.1,
+        sensitivity: 1.0,
+    }
+    if not bus.bindings.contains(action) {
+        bus.bindings[action] = []
+    }
+    bus.bindings[action].append(binding)
+    return true
+}
+
+// InputBus: Rohe Eingabe verarbeiten
+pub fn process_input(bus: InputBus, device: InputDevice, code: UInt32, value: Float32, modifiers: List<String>) -> Bool {
+    if not bus.enabled { return false }
+
+    // Matching Binding finden
+    for action in bus.bindings.keys() {
+        for binding in bus.bindings[action] {
+            if binding.device == device and binding.code == code {
+                // Modifiers prüfen
+                let mods_match = true
+                for mod in binding.modifiers {
+                    if not modifiers.contains(mod) {
+                        mods_match = false
+                        break
+                    }
+                }
+                if not mods_match { continue }
+
+                // Dead zone für Achsen
+                let processed_value = value * binding.sensitivity
+                if binding.axis and abs(processed_value) < binding.dead_zone {
+                    processed_value = 0.0
+                }
+
+                let event = InputEvent {
+                    id: Crypto::sha256(serialize(device, code, value, Chain::timestamp(), bus.events.len())),
+                    device: device,
+                    action: action,
+                    value: processed_value,
+                    raw_value: value,
+                    timestamp: Chain::timestamp(),
+                    consumed: false,
+                    modifiers: modifiers,
+                }
+                bus.events.append(event)
+                if bus.events.len() > bus.max_events {
+                    bus.events.pop(0)
+                }
+
+                // State tracking
+                if binding.axis {
+                    bus.axis_values[action] = processed_value
+                } else {
+                    if value > 0.5 and not bus.pressed_actions.contains(action) {
+                        bus.just_pressed.add(action)
+                        bus.pressed_actions.add(action)
+                    } else if value < 0.5 and bus.pressed_actions.contains(action) {
+                        bus.just_released.add(action)
+                        bus.pressed_actions.remove(action)
+                    }
+                }
+                emit InputAction(action, processed_value, device)
+            }
+        }
+    }
+    return true
+}
+
+// InputBus: Ist Action gedrückt?
+pub fn is_pressed(bus: InputBus, action: String) -> Bool {
+    return bus.pressed_actions.contains(action)
+}
+
+// InputBus: Wurde Action gerade gedrückt?
+pub fn was_just_pressed(bus: InputBus, action: String) -> Bool {
+    return bus.just_pressed.contains(action)
+}
+
+// InputBus: Wurde Action gerade losgelassen?
+pub fn was_just_released(bus: InputBus, action: String) -> Bool {
+    return bus.just_released.contains(action)
+}
+
+// InputBus: Achsen-Wert abfragen
+pub fn get_axis(bus: InputBus, action: String) -> Float32 {
+    return bus.axis_values.get(action, 0.0)
+}
+
+// InputBus: Event konsumieren (für UI)
+pub fn consume_event(bus: InputBus, event_id: Hash256) -> Bool {
+    if not bus.consumed.contains(event_id) {
+        bus.consumed.add(event_id)
+        return true
+    }
+    return false
+}
+
+// InputBus: Frame zurücksetzen
+pub fn end_input_frame(bus: InputBus) -> Bool {
+    bus.just_pressed = {}
+    bus.just_released = {}
+    // Consumed events entfernen
+    bus.events = bus.events.filter(fn e => not bus.consumed.contains(e.id))
+    bus.consumed = {}
+    return true
+}
+
+// InputBus: Alle Bindings für Action entfernen
+pub fn unbind_action(bus: InputBus, action: String) -> Bool {
+    bus.bindings.delete(action)
+    return true
+}
+
+// InputBus: Dead Zone setzen
+pub fn set_dead_zone(bus: InputBus, action: String, dead_zone: Float32) -> Bool {
+    if not bus.bindings.contains(action) { return false }
+    for binding in bus.bindings[action] {
+        binding.dead_zone = dead_zone
+    }
+    return true
+}
+
+// InputBus: Sensitivity setzen
+pub fn set_sensitivity(bus: InputBus, action: String, sensitivity: Float32) -> Bool {
+    if not bus.bindings.contains(action) { return false }
+    for binding in bus.bindings[action] {
+        binding.sensitivity = sensitivity
+    }
+    return true
+}
+
+event InputAction(action: String, value: Float32, device: InputDevice)
+
+type Set<T> = Any
