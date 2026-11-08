@@ -1,0 +1,15 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: eng
+family: ENG
+family_id: PREFIX
+file: standards/eng/ATC-STD-ENG-001.md
+mandate: 'Owner-Manifest 11.09.2026 (SCR-0092): 18-Punkte-Engineering-Disziplin; §9-FREIGEGEGEBEN
+  11.09.2026 21:21 UTC+2 durch Michael (»Freigabe«) — APPROVED, normativ, §30-eingefroren;
+  Matrix-SSOT registry/code-quality-matrix.yaml'
+registry_version: 1
+standard_id: ATC-STD-ENG-001
+status: approved
+title: Software Engineering & Code Quality Standard (Determinism First-Class, Security
+  by Design, CI-Gates, Code Quality Matrix)
+version: 1.0.0
