@@ -1,0 +1,12 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — portiert aus
+// tests/test_bridge_contract.py::test_lock_mint_burn_release
+// (ATC-95-Testmigration, atc-contracts#5): Lock 1000 ATC, 0.1 % Bridge-Fee
+// -> Fee 1 ATC, Netto-Betrag 999 ATC.
+contract T06BridgeLockFeeNet {
+    fn compute(lock_amount: u64) -> u64 {
+        let fee = lock_amount * 1 / 1000
+        let net_amount = lock_amount - fee
+        return net_amount
+    }
+}
