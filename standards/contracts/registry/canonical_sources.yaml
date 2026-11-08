@@ -1,0 +1,116 @@
+# Copyright (c) 2026 Michael Wroblewski / A-TownChain-Okosystems. Apache-2.0
+# Kanonische Quelle je Vertragsname (Owner-Delegation "Entscheide sinnvoll", 08.11.2026)
+#
+# Regel: jeder Vertragsname hat genau eine kanonische Quelle. Weitere Dateien mit
+# demselben Namen sind entweder byte-gleiche Spiegelkopien (siehe copy_audit.yaml)
+# oder ausdruecklich als nicht-kanonisch eingetragen. Neue Abweichungen meldet
+# tools/atc-sc-validator/audit_contract_copies.py.
+
+contracts:
+  ATCoin:
+    canonical: apps/atc-contracts/atcoin/atcoin.atc
+    registry: ATC-SC-TOKEN-001
+    reason: >-
+      Registry-Eintrag "ATCoiN (ATC-89) nativer Token", Migrationsziel des
+      Genesis-Tokens, vollstaendige Implementierung (15 fn: transfer/approve/
+      allowance/pause/tx_log/holder_count) und der einzige Ort, an dem der
+      Supply-Cap wirkt: mint() liefert false oberhalb von ATC_MAX_SUPPLY, ohne
+      sich auf require zu verlassen (der Assembler verwirft require still).
+    superseded:
+      - file: apps/atc-contracts/atc8300/atc8300.atc
+        was: "contract ATCoin : ATC8300Token (Stub mit 2 fn, Cap nur per require, unwirksam)"
+        action: entfernt, atc8300.atc ist jetzt reiner Standard
+
+  ATC8300Token:
+    canonical: apps/atc-contracts/atc8300/atc8300.atc
+    registry: ATC-SC-TOKEN-002
+    reason: >-
+      Registry-Eintrag "ATC-8300 Fungible Token Standard" (Interface-Basis),
+      fuenf byte-gleiche Kopien, keine Kettenkonstanten mehr enthalten.
+
+  ATC8300TokenInstance:
+    canonical: apps/atc-contracts/atc8300/atc8300_token.atc
+    registry: ATC-SC-TOKEN-003
+    reason: >-
+      Registry nennt den Eintrag "ATC-8300 Token-Instanz", die Datei deklarierte
+      aber denselben Vertragsnamen wie der Standard. Eigener Name
+      ATC8300TokenInstance (aus der Registry-Bezeichnung abgeleitet) macht die
+      Rollen eindeutig; zusaetzliche Funktionen (Snapshot, Pause, holder_count)
+      bleiben erhalten.
+
+  FranchiseToken:
+    canonical: apps/atc-contracts/contracts/token.atc
+    registry: ATC-SC-TOKEN-004
+    reason: eigener Vertragsname, keine Kollision; "Referenz-Token ohne Projektbindung".
+
+  FranchiseRegistry:
+    canonical: apps/atc-contracts/modules/atc-standards-refs/contracts/registry.atc
+    registry: keiner
+    reason: >-
+      Fassung mit kanonischem Typ Hash und fuenf Event-Deklarationen; die beiden
+      anderen Dateien waren veraltete Kopien (bytes32, fehlende Events).
+      Offen: die Kopien riefen sha256(to_string(caller)) flach auf, die kanonische
+      Datei nutzt Hash::sha256(Address::to_string(...)). Welche Aufrufform die
+      Sprachspezifikation fordert, ist nicht dokumentiert (CANONICAL_FUNCS nennt
+      sha256 flach) — Klaerung noetig, nicht in diesem Lauf entschieden.
+
+  GenesisChroniclesContract:
+    canonical: ai/genesis-chronicles/genesis_chronicles_contract.atc
+    registry: keiner
+    reason: >-
+      Traegt den in DECISIONS_REGISTER.md festgelegten Identifier
+      (ShivamonContract -> GenesisChroniclesContract) und ist die vollstaendige
+      Fassung (290 Zeilen). Drei Kopien waren aeltere Entwuerfe und sind
+      angeglichen.
+
+  FederatedLearningCoordinator:
+    canonical: apps/atc-contracts/smart_contracts.atc
+    registry: ATC-SC-CORE-002
+    reason: >-
+      Registry-gebundenes, vierfach gespiegeltes Artefakt. Die Fassung in
+      ai/aurora-ai/modules/atc-aistudio/federated_learning.atc ist eine
+      abweichende API (9 statt 5 fn: register_model, aggregate,
+      update_accuracy, get_balance, stats, find_round).
+    divergent_api: true
+    open: >-
+      Ob die zusaetzlichen Funktionen in den kanonischen Vertrag gehoeren, ist
+      eine Spezifikationsentscheidung. Die Alternativdatei bleibt als Quelle
+      erhalten und ist nicht kanonisch.
+
+  GovernanceDAO:
+    canonical: apps/atc-contracts/smart_contracts.atc
+    registry: ATC-SC-CORE-002
+    reason: >-
+      Registry-gebundenes, vierfach gespiegeltes Artefakt. Die Fassung in
+      modules/atc-blockchain/governance/governance.atc benennt dieselben
+      Operationen anders (propose/vote/finalize statt
+      create_proposal/cast_vote/finalize_vote).
+    divergent_api: true
+    open: >-
+      Funktionsbenennung des DAO ist eine Protokoll-API-Entscheidung des Owners;
+      die Alternativdatei bleibt als Quelle erhalten und ist nicht kanonisch.
+
+  RevenueShare:
+    canonical: apps/atc-contracts/contracts/revenue.atc
+    registry: ATC-SC-DEFI-001
+    reason: kanonische Fassung mit drei Event-Deklarationen; der Entwurf in ai/genesis-franchise-factory war eine veraltete Kopie.
+
+  FractionalAssetOwnership:
+    canonical: apps/atc-contracts/standards/atc-13_fractional_asset_ownership.atc
+    registry: ATC-SC-DEFI-002
+    reason: sieben Kopien; die Referenzfassung nannte das Transfer-Feld "from" statt "sender" und ist angeglichen. Vertrag ist eine Schablone.
+
+  ProofOfAiMining:
+    canonical: apps/atc-contracts/standards/atc-15_proof_of_ai_mining.atc
+    registry: ATC-SC-MINING-001
+    reason: sieben Kopien, Feldname angleichen; Vertrag ist eine Schablone.
+
+  ReferralMultitierRewards:
+    canonical: apps/atc-contracts/standards/atc-16_referral_multitier_rewards.atc
+    registry: ATC-SC-GAMEFI-001
+    reason: sieben Kopien, Feldname angleichen; Vertrag ist eine Schablone.
+
+  WrappedSyntheticAssets:
+    canonical: apps/atc-contracts/standards/atc-20_wrapped_synthetic_assets.atc
+    registry: ATC-SC-BRIDGE-002
+    reason: sieben Kopien, Feldname angleichen; Vertrag ist eine Schablone.
