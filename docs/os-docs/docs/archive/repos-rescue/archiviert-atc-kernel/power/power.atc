@@ -1,0 +1,81 @@
+// K-Sprint 40 — Power Management + ACPI (ATCLang Interface)
+// Rust: kernel/src/power.rs (1153 lines, 69 tests)
+// Agent: Aurora #2 (6a275618)
+
+enum PowerState {
+    C0,
+    C1,
+    C2,
+    C3,
+}
+
+enum PState {
+    P0,
+    P1,
+    P2,
+    P3,
+}
+
+enum SleepState {
+    S0,
+    S1,
+    S3,
+    S4,
+    S5,
+}
+
+struct AcpiTableHeader {
+    signature: List<u8>,
+    length: u32,
+    revision: u8,
+}
+
+struct Rsdp {
+    signature: List<u8>,
+    rsdt_address: u32,
+    revision: u8,
+}
+
+struct BatteryInfo {
+    present: bool,
+    charging: bool,
+    capacity: u32,
+    rate: u32,
+    voltage: u32,
+}
+
+struct ThermalInfo {
+    temperature: u32,
+    critical: u32,
+    passive: u32,
+    active: List<u32>,
+}
+
+module Kernel::Power {
+    contract PowerManager {
+        fn init() -> bool
+        fn set_state(state: PowerState) -> Result<(), String>
+        fn get_state() -> PowerState
+        fn set_p_state(state: PState) -> Result<(), String>
+        fn sleep(state: SleepState) -> Result<(), String>
+        fn wakeup() -> bool
+        fn get_battery() -> BatteryInfo
+        fn get_thermal() -> ThermalInfo
+        fn set_thermal_limit(temp: u32) -> bool
+    }
+
+    contract AcpiParser {
+        fn find_rsdp() -> Option<Rsdp>
+        fn parse_tables(rsdp: Rsdp) -> List<AcpiTableHeader>
+        fn get_table(sig: List<u8>) -> Option<AcpiTableHeader>
+        fn table_name(header: AcpiTableHeader) -> String
+    }
+
+    contract CpuFreqManager {
+        fn get_available_p_states() -> List<PState>
+        fn set_frequency(state: PState) -> bool
+        fn get_frequency() -> u32
+        fn enable_throttling(temp: u32) -> bool
+        fn disable_throttling() -> bool
+    }
+}
