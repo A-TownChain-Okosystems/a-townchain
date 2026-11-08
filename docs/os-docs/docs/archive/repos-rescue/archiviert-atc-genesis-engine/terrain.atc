@@ -1,0 +1,12 @@
+// ATCLang v0.3 — atc-genesis-engine :: Terrain Generator
+// heightmap, biome, erosion, vegetation
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module terrain {
+    // Public API — TBD
+    
+    fn init() {
+        // Initialization — TBD
+    }
+}
