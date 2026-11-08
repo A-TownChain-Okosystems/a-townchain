@@ -13,6 +13,7 @@ Gates:
      brauchen Evidence, archived braucht Archivmarker)
   A6 contract_id eindeutig im Format ATC-SC-<KATEGORIE>-<NNN>
   A7 Kategorie im Enum nach SC-001
+  A8 jede registrierte Quelle besteht `atc check` (ATCLang-Parser/Typpruefung)
 
 Aufruf:
   python3 tools/atc-sc-validator/check_contract_registry.py
@@ -139,7 +140,31 @@ def discover_sources(base: Path, exclusions: list[str], root: Path) -> dict[str,
 # ------------------------------------------------------------------------ GATE
 
 
-def check_registry(root: Path, registry_path: Path, deployments_path: Path) -> tuple[list[dict], dict]:
+def compile_contract(atc_bin: Path, target: Path, timeout: int = 60) -> tuple[bool, str]:
+    """ATCLang-Pruefung einer Quelle. Rueckgabe: (ok, Meldung)."""
+    import subprocess
+
+    try:
+        proc = subprocess.run(
+            [str(atc_bin), "check", str(target)],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:  # Binary fehlt/startet nicht
+        return False, f"atc check nicht ausfuehrbar: {exc}"
+    if proc.returncode == 0:
+        return True, ""
+    meldung = (proc.stdout + proc.stderr).strip().splitlines()
+    return False, meldung[0][:120] if meldung else f"Exit {proc.returncode}"
+
+
+def check_registry(
+    root: Path,
+    registry_path: Path,
+    deployments_path: Path,
+    atc_bin: Path | None = None,
+) -> tuple[list[dict], dict]:
     reg = load_registry(registry_path)
     entries = reg["contracts"]
     findings: list[dict] = []
@@ -185,6 +210,12 @@ def check_registry(root: Path, registry_path: Path, deployments_path: Path) -> t
         if not target.is_file():
             findings.append({"gate": "A2", "id": cid, "detail": f"contract_path existiert nicht: {cpath}"})
             continue
+
+        # A8 Kompilierbarkeit (ATCLang-Parser + Typpruefung)
+        if atc_bin is not None:
+            ok, meldung = compile_contract(atc_bin, target)
+            if not ok:
+                findings.append({"gate": "A8", "id": cid, "detail": f"atc check fehlgeschlagen: {meldung}"})
 
         # A3 Drift
         actual = sha256_of(target)
@@ -270,20 +301,31 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--write-hashes", action="store_true", help="source_sha256 in der Registry aktualisieren")
     ap.add_argument("--json", action="store_true", help="Befunde als JSON")
+    ap.add_argument(
+        "--atc",
+        default=str(ROOT / "target/debug/atc"),
+        help="Pfad zum atc-Binary fuer Gate A8 (Default: target/debug/atc)",
+    )
+    ap.add_argument("--skip-compile", action="store_true", help="Gate A8 (atc check) aussetzen")
     args = ap.parse_args(argv)
 
     if not REGISTRY.exists():
         print(f"FEHLER: Registry fehlt: {REGISTRY}")
         return 2
 
-    findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS)
+    atc_bin = None if args.skip_compile else Path(args.atc)
+    if atc_bin is not None and not atc_bin.exists():
+        print(f"FEHLER: atc-Binary nicht gefunden: {atc_bin} (mit --skip-compile aussetzen)")
+        return 2
+
+    findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin)
 
     drift = [f for f in findings if f["gate"] == "A3" and "fehlt" not in f["detail"]]
     if args.write_hashes and drift:
         reg = load_registry(REGISTRY)
-        _, _ = check_registry(ROOT, REGISTRY, DEPLOYMENTS)  # Hashes in-place nachziehen
+        check_registry(ROOT, REGISTRY, DEPLOYMENTS, None)  # Hashes in-place nachziehen
         write_registry(reg, REGISTRY)
-        findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS)
+        findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin)
 
     if args.json:
         print(json.dumps({"findings": findings, **stats}, indent=2, ensure_ascii=False))
