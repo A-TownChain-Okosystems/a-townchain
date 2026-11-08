@@ -1,0 +1,235 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-22 — World Factory: Erstellt Spielwelten
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct WorldFactory {
+    worlds: Map<Hash256, World>,
+    by_franchise: Map<Hash256, List<Hash256>>,
+    biomes: Map<String, Biome>,
+    cultures: Map<String, Culture>,
+}
+
+struct World {
+    id: Hash256,
+    franchise_id: Hash256,
+    name: String,
+    continents: List<Continent>,
+    cities: List<City>,
+    dungeons: List<Dungeon>,
+    climate_zones: List<ClimateZone>,
+    history: List<HistoricalEvent>,
+    cultures: List<String>,
+    size_km2: Float64,
+    population: UInt64,
+    created_at: UInt64,
+}
+
+struct Continent {
+    id: Hash256,
+    name: String,
+    size_km2: Float64,
+    biomes: List<String>,
+    cities: List<Hash256>,
+    population: UInt64,
+}
+
+struct City {
+    id: Hash256,
+    name: String,
+    continent: String,
+    population: UInt32,
+    biome: String,
+    district_count: UInt8,
+    is_capital: Bool,
+}
+
+struct Dungeon {
+    id: Hash256,
+    name: String,
+    continent: String,
+    difficulty: UInt8,
+    floors: UInt8,
+    boss_count: UInt8,
+    lore_ref: Hash256,
+}
+
+struct ClimateZone {
+    name: String,
+    temperature_range: List<Float32>,
+    humidity: Float32,
+    biome: String,
+}
+
+struct Biome {
+    name: String,
+    flora: List<String>,
+    fauna: List<String>,
+    resources: List<String>,
+    terrain: String,
+}
+
+struct Culture {
+    name: String,
+    language: String,
+    religion: String,
+    architecture: String,
+    cuisine: String,
+    festivals: List<String>,
+    government: String,
+}
+
+struct HistoricalEvent {
+    id: Hash256,
+    name: String,
+    date: String,
+    description: String,
+    impact: String,
+    participants: List<String>,
+}
+
+// World Factory: Welt generieren
+pub fn generate_world(factory: WorldFactory, franchise_id: Hash256) -> Hash256 {
+    let wid = Crypto::sha256(serialize(franchise_id, Chain::timestamp(), factory.worlds.len()))
+    let world = World {
+        id: wid,
+        franchise_id: franchise_id,
+        name: "World " + factory.worlds.len(),
+        continents: [],
+        cities: [],
+        dungeons: [],
+        climate_zones: [],
+        history: [],
+        cultures: [],
+        size_km2: 0.0,
+        population: 0,
+        created_at: Chain::timestamp(),
+    }
+    factory.worlds[wid] = world
+    if not factory.by_franchise.contains(franchise_id) {
+        factory.by_franchise[franchise_id] = []
+    }
+    factory.by_franchise[franchise_id].append(wid)
+    emit WorldGenerated(wid, world.name)
+    return wid
+}
+
+// World Factory: Kontinent hinzufügen
+pub fn add_continent(factory: WorldFactory, world_id: Hash256, name: String, size: Float64, biomes: List<String>) -> Hash256 {
+    require(factory.worlds.contains(world_id), "World not found")
+    let cid = Crypto::sha256(serialize(name, world_id, Chain::timestamp()))
+    let continent = Continent {
+        id: cid,
+        name: name,
+        size_km2: size,
+        biomes: biomes,
+        cities: [],
+        population: 0,
+    }
+    factory.worlds[world_id].continents.append(continent)
+    factory.worlds[world_id].size_km2 = factory.worlds[world_id].size_km2 + size
+    return cid
+}
+
+// World Factory: Stadt hinzufügen
+pub fn add_city(factory: WorldFactory, world_id: Hash256, name: String, continent: String, pop: UInt32, is_capital: Bool) -> Hash256 {
+    require(factory.worlds.contains(world_id), "World not found")
+    let city_id = Crypto::sha256(serialize(name, world_id, Chain::timestamp()))
+    let city = City {
+        id: city_id,
+        name: name,
+        continent: continent,
+        population: pop,
+        biome: "",
+        district_count: if is_capital then 5 else 2,
+        is_capital: is_capital,
+    }
+    factory.worlds[world_id].cities.append(city)
+    factory.worlds[world_id].population = factory.worlds[world_id].population + pop
+    return city_id
+}
+
+// World Factory: Dungeon generieren
+pub fn add_dungeon(factory: WorldFactory, world_id: Hash256, name: String, continent: String, difficulty: UInt8, floors: UInt8) -> Hash256 {
+    require(factory.worlds.contains(world_id), "World not found")
+    let did = Crypto::sha256(serialize(name, world_id, Chain::timestamp()))
+    factory.worlds[world_id].dungeons.append(Dungeon {
+        id: did,
+        name: name,
+        continent: continent,
+        difficulty: difficulty,
+        floors: floors,
+        boss_count = floors / 3,
+        lore_ref: Hash256::zero(),
+    })
+    return did
+}
+
+// World Factory: Historisches Ereignis hinzufügen
+pub fn add_historical_event(factory: WorldFactory, world_id: Hash256, name: String, date: String, desc: String, impact: String) -> Bool {
+    require(factory.worlds.contains(world_id), "World not found")
+    factory.worlds[world_id].history.append(HistoricalEvent {
+        id: Crypto::sha256(serialize(name, date, world_id)),
+        name: name,
+        date: date,
+        description: desc,
+        impact: impact,
+        participants: [],
+    })
+    return true
+}
+
+// World Factory: Kultur definieren
+pub fn define_culture(factory: WorldFactory, name: String, language: String, religion: String, gov: String) -> Bool {
+    factory.cultures[name] = Culture {
+        name: name,
+        language: language,
+        religion: religion,
+        architecture: "",
+        cuisine: "",
+        festivals: [],
+        government: gov,
+    }
+    return true
+}
+
+// World Factory: Biome definieren
+pub fn define_biome(factory: WorldFactory, name: String, terrain: String, flora: List<String>, fauna: List<String>, resources: List<String>) -> Bool {
+    factory.biomes[name] = Biome {
+        name: name,
+        flora: flora,
+        fauna: fauna,
+        resources: resources,
+        terrain: terrain,
+    }
+    return true
+}
+
+// World Factory: Welt-Statistiken
+pub fn world_stats(factory: WorldFactory, world_id: Hash256) -> WorldStats {
+    require(factory.worlds.contains(world_id), "World not found")
+    let w = factory.worlds[world_id]
+    return WorldStats {
+        continents: w.continents.len(),
+        cities: w.cities.len(),
+        dungeons: w.dungeons.len(),
+        population: w.population,
+        size_km2: w.size_km2,
+        history_events: w.history.len(),
+        cultures: w.cultures.len(),
+    }
+}
+
+struct WorldStats {
+    continents: UInt8,
+    cities: UInt16,
+    dungeons: UInt16,
+    population: UInt64,
+    size_km2: Float64,
+    history_events: UInt16,
+    cultures: UInt8,
+}
+
+event WorldGenerated(id: Hash256, name: String)
