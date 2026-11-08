@@ -1,0 +1,812 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═════════════════════════════════════════════════════════════════
+// ATC-22+ — Treiber Layer (Driver Framework Core)
+// Sprint 3.1 | Kernel OS Layer | Chain-ID 9000
+// ATCLang v0.4 | Non-EVM | ATCLang First Policy (ATC-99)
+// ═════════════════════════════════════════════════════════════════
+//
+// Zentrale Treiber-Registry für KAI-OS. Verwaltet:
+//   - Treiber-Registrierung und -Lebenszyklus
+//   - Gerätenumeration (Bus/Device/Function)
+//   - IRQ-Routing und DMA-Kanäle
+//   - Standardisierte I/O-Schnittstelle (open/read/write/close/ioctl)
+//   - Capability-basierte Zugriffskontrolle (ATC-22 Sandbox)
+//   - Treiber-Isolation über HAL Sandbox
+//
+// Architektur:
+//   ┌──────────────────────────────────────────────────────────┐
+//   │                  Treiber Layer                           │
+//   ├──────────────────────────────────────────────────────────┤
+//   │  DriverRegistry  →  DriverInterface  →  HAL Sandbox      │
+//   │       ↓                  ↓                  ↓          │
+//   │  Device Tree       open/read/write      Capability      │
+//   │  IRQ Routing       ioctl/power          Isolation       │
+//   │  DMA Channels      DMA transfer         Memory Guard    │
+//   └──────────────────────────────────────────────────────────┘
+// ═════════════════════════════════════════════════════════════════
+
+import "std/chain.atc" as Chain
+import "std/crypto.atc" as Crypto
+
+// ════════════════════════════════════════════════════════════════
+//  ENUMS
+// ════════════════════════════════════════════════════════════════
+
+enum DriverState {
+    UNREGISTERED,   // Noch nicht in Registry
+    LOADED,         // Treiber-Code geladen
+    INITIALIZED,   // init() erfolgreich
+    ACTIVE,         // Geräte aktiv, I/O möglich
+    SUSPENDED,      // Power-Save, kann aufgeweckt werden
+    ERROR,          // Fehlerzustand, Neustart nötig
+    UNLOADING,      // Wird gerade entladen
+}
+
+enum DeviceClass {
+    DISPLAY,        // GPU / Framebuffer
+    INPUT,          // Keyboard / Mouse / Touch
+    STORAGE,        // Disk / SSD / NVMe
+    NETWORK,        // NIC / WiFi
+    AUDIO,          // Sound / DSP
+    SERIAL,         // UART / RS-232
+    TIMER,          // Hardware Timer / RTC
+    INTERRUPT,      // Interrupt Controller
+    BUS,            // PCI / USB / I2C / SPI
+    CRYPTO,         // Hardware Crypto / HSM
+    POWER,          // Power Management / Battery
+    SENSOR,         // Temperature / Accelerometer
+    CUSTOM,         // User-defined
+}
+
+enum BusType {
+    PCI,            // PCI/PCIe
+    USB,            // USB
+    I2C,            // Inter-Integrated Circuit
+    SPI,            // Serial Peripheral Interface
+    UART,           // Universal Asynchronous Receiver-Transmitter
+    ISA,            // Legacy ISA
+    MMIO,           // Memory-Mapped I/O
+    PORTIO,         // Port I/O
+    VIRTUAL,        // Virtuelles Gerät (kein Hardware-Bus)
+}
+
+enum OpenFlag {
+    READ_ONLY,      // 0x01
+    WRITE_ONLY,     // 0x02
+    READ_WRITE,     // 0x03
+    NON_BLOCK,      // 0x04
+    EXCLUSIVE,      // 0x08
+}
+
+enum IoctlCode {
+    GET_INFO,       // Geräte-Info abfragen
+    SET_MODE,       // Betriebsmodus setzen
+    RESET,          // Gerät zurücksetzen
+    FLUSH,          // Buffer leeren
+    GET_STATUS,     // Status-Flags lesen
+    SET_POWER,      // Power-State setzen
+    DMA_SETUP,      // DMA-Transfer vorbereiten
+    IRQ_ENABLE,     // Interrupt aktivieren
+    IRQ_DISABLE,    // Interrupt deaktivieren
+    CUSTOM,         // Treiber-spezifisch
+}
+
+enum PowerState {
+    ON,             // Vollbetrieb
+    IDLE,           // Energiesparmodus
+    STANDBY,        // Standby
+    OFF,            // Ausgeschaltet
+}
+
+// ════════════════════════════════════════════════════════════════
+//  STRUCTS
+// ════════════════════════════════════════════════════════════════
+
+struct DeviceInfo {
+    device_id: u64,
+    class: DeviceClass,
+    bus: BusType,
+    vendor_id: u16,
+    product_id: u16,
+    bus_address: u32,       // PCI: bus<<16 | dev<<11 | func<<8
+    irq_line: u8,           // IRQ-Nummer (0xFF = keine)
+    mmio_base: u64,         // Memory-Mapped I/O Basis
+    mmio_size: u64,         // MMIO-Region Größe
+    port_base: u16,         // I/O-Port Basis (0 = nicht genutzt)
+    dma_channel: u8,        // DMA-Kanal (0xFF = keine)
+    name: String,
+    description: String,
+    driver_id: u64,         // 0 = kein Treiber gebunden
+}
+
+struct DriverInfo {
+    driver_id: u64,
+    name: String,
+    version: String,
+    device_class: DeviceClass,
+    supported_vendors: List<u16>,
+    state: DriverState,
+    init_fn: String,         // Name der Init-Funktion
+    cleanup_fn: String,     // Name der Cleanup-Funktion
+    load_count: u64,         // Wie oft geladen
+    error_count: u64,       // Anzahl Fehler
+    last_error: String,
+    sandbox_id: u64,        // HAL Sandbox ID (0 = keine)
+    bound_devices: List<u64>,
+    gas_per_io: u64,        // Gas-Kosten pro I/O-Operation
+}
+
+struct IRQRoute {
+    irq_line: u8,
+    device_id: u64,
+    driver_id: u64,
+    handler_fn: String,
+    priority: u8,           // 0 = niedrig, 255 = höchste
+    enabled: bool,
+    trigger_count: u64,     // Wie oft ausgelöst
+}
+
+struct DMATransfer {
+    transfer_id: u64,
+    device_id: u64,
+    channel: u8,
+    src_addr: u64,
+    dst_addr: u64,
+    size: u64,
+    direction: String,      // "to_device" | "from_device"
+    completed: bool,
+}
+
+struct OpenHandle {
+    handle_id: u64,
+    device_id: u64,
+    driver_id: u64,
+    flags: u8,
+    owner_pid: u64,
+    position: u64,          // Seek-Position
+    is_blocking: bool,
+    ref_count: u32,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  DRIVER REGISTRY CONTRACT
+// ════════════════════════════════════════════════════════════════
+
+module Kernel::DriverFramework {
+
+    contract DriverRegistry {
+
+        // ── State ───────────────────────────────────────────
+        state drivers: Map<u64, DriverInfo>
+        state devices: Map<u64, DeviceInfo>
+        state open_handles: Map<u64, OpenHandle>
+        state irq_routes: Map<u8, IRQRoute>
+        state dma_transfers: Map<u64, DMATransfer>
+        state next_driver_id: u64 = 1
+        state next_device_id: u64 = 1
+        state next_handle_id: u64 = 1
+        state next_dma_id: u64 = 1
+        state authorized: List<Address>
+        state total_io_ops: u64 = 0
+        state total_errors: u64 = 0
+
+        // ── Events ──────────────────────────────────────────
+        event DriverRegistered(driver_id: u64, name: String, class: DeviceClass)
+        event DriverUnloaded(driver_id: u64, reason: String)
+        event DeviceEnumerated(device_id: u64, class: DeviceClass, bus: BusType, name: String)
+        event DeviceBound(device_id: u64, driver_id: u64)
+        event DeviceUnbound(device_id: u64, driver_id: u64)
+        event HandleOpened(handle_id: u64, device_id: u64, owner_pid: u64)
+        event HandleClosed(handle_id: u64)
+        event IRQTriggered(irq_line: u8, device_id: u64)
+        event DMATransferCompleted(transfer_id: u64, device_id: u64)
+        event DriverError(driver_id: u64, error: String)
+        event PowerStateChanged(device_id: u64, old_state: PowerState, new_state: PowerState)
+
+        // ═══════════════════════════════════════════════════════════
+        //  DRIVER MANAGEMENT
+        // ═══════════════════════════════════════════════════════════
+
+        // Treiber registrieren
+        fn register_driver(
+            name: String,
+            version: String,
+            device_class: DeviceClass,
+            supported_vendors: List<u16>,
+            init_fn: String,
+            cleanup_fn: String,
+            gas_per_io: u64,
+        ) -> u64 {
+            require(is_authorized(msg.sender), "unauthorized driver registration")
+
+            let id: u64 = self.next_driver_id
+            self.next_driver_id += 1
+
+            let driver: DriverInfo = DriverInfo {
+                driver_id: id,
+                name: name,
+                version: version,
+                device_class: device_class,
+                supported_vendors: supported_vendors,
+                state: DriverState::LOADED,
+                init_fn: init_fn,
+                cleanup_fn: cleanup_fn,
+                load_count: 1,
+                error_count: 0,
+                last_error: "",
+                sandbox_id: 0,
+                bound_devices: [],
+                gas_per_io: gas_per_io,
+            }
+
+            self.drivers[id] = driver
+            emit DriverRegistered(id, name, device_class)
+            return id
+        }
+
+        // Treiber initialisieren
+        fn init_driver(driver_id: u64) -> bool {
+            let driver: DriverInfo = self.drivers[driver_id]
+            require(driver.driver_id == driver_id, "driver not found")
+            require(driver.state == DriverState::LOADED, "driver not in LOADED state")
+
+            // HAL Sandbox erstellen (ATC-22)
+            let sandbox_id: u64 = self.create_sandbox(driver_id)
+
+            self.drivers[driver_id].state = DriverState::INITIALIZED
+            self.drivers[driver_id].sandbox_id = sandbox_id
+            return true
+        }
+
+        // Treiber aktivieren
+        fn activate_driver(driver_id: u64) -> bool {
+            let driver: DriverInfo = self.drivers[driver_id]
+            require(driver.state == DriverState::INITIALIZED || driver.state == DriverState::SUSPENDED,
+                    "driver not initialized")
+
+            self.drivers[driver_id].state = DriverState::ACTIVE
+
+            // Alle gebundenen Geräte aktivieren
+            for device_id in driver.bound_devices {
+                self.devices[device_id].driver_id = driver_id
+            }
+            return true
+        }
+
+        // Treiber entladen
+        fn unload_driver(driver_id: u64, reason: String) -> bool {
+            let driver: DriverInfo = self.drivers[driver_id]
+            require(driver.driver_id == driver_id, "driver not found")
+
+            // Alle Geräte trennen
+            for device_id in driver.bound_devices {
+                self.devices[device_id].driver_id = 0
+                emit DeviceUnbound(device_id, driver_id)
+            }
+
+            // Sandbox zerstören
+            if driver.sandbox_id > 0 {
+                self.destroy_sandbox(driver.sandbox_id)
+            }
+
+            self.drivers[driver_id].state = DriverState::UNLOADING
+            emit DriverUnloaded(driver_id, reason)
+            return true
+        }
+
+        // Treiber-Info abfragen
+        fn get_driver_info(driver_id: u64) -> DriverInfo {
+            return self.drivers[driver_id]
+        }
+
+        // Alle Treiber einer Klasse
+        fn list_drivers_by_class(device_class: DeviceClass) -> List<u64> {
+            let result: List<u64> = []
+            for id, driver in self.drivers {
+                if driver.device_class == device_class && driver.state == DriverState::ACTIVE {
+                    result.push(id)
+                }
+            }
+            return result
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  DEVICE MANAGEMENT
+        // ═══════════════════════════════════════════════════════════
+
+        // Gerät enumerieren
+        fn enumerate_device(
+            class: DeviceClass,
+            bus: BusType,
+            vendor_id: u16,
+            product_id: u16,
+            bus_address: u32,
+            irq_line: u8,
+            mmio_base: u64,
+            mmio_size: u64,
+            port_base: u16,
+            name: String,
+            description: String,
+        ) -> u64 {
+            require(is_authorized(msg.sender), "unauthorized device enumeration")
+
+            let id: u64 = self.next_device_id
+            self.next_device_id += 1
+
+            let device: DeviceInfo = DeviceInfo {
+                device_id: id,
+                class: class,
+                bus: bus,
+                vendor_id: vendor_id,
+                product_id: product_id,
+                bus_address: bus_address,
+                irq_line: irq_line,
+                mmio_base: mmio_base,
+                mmio_size: mmio_size,
+                port_base: port_base,
+                dma_channel: 0xFF,
+                name: name,
+                description: description,
+                driver_id: 0,
+            }
+
+            self.devices[id] = device
+            emit DeviceEnumerated(id, class, bus, name)
+            return id
+        }
+
+        // Treiber an Gerät binden
+        fn bind_driver(device_id: u64, driver_id: u64) -> bool {
+            let device: DeviceInfo = self.devices[device_id]
+            let driver: DriverInfo = self.drivers[driver_id]
+            require(device.device_id == device_id, "device not found")
+            require(driver.driver_id == driver_id, "driver not found")
+            require(driver.state == DriverState::ACTIVE, "driver not active")
+            require(device.driver_id == 0, "device already bound")
+
+            // Vendor-Check
+            if driver.supported_vendors.length > 0 {
+                require(driver.supported_vendors.contains(device.vendor_id), "vendor not supported")
+            }
+
+            // Class-Check
+            require(driver.device_class == device.class, "device class mismatch")
+
+            self.devices[device_id].driver_id = driver_id
+            self.drivers[driver_id].bound_devices.push(device_id)
+            emit DeviceBound(device_id, driver_id)
+            return true
+        }
+
+        // Treiber von Gerät trennen
+        fn unbind_driver(device_id: u64) -> bool {
+            let device: DeviceInfo = self.devices[device_id]
+            let driver_id: u64 = device.driver_id
+            require(driver_id > 0, "no driver bound")
+
+            self.devices[device_id].driver_id = 0
+            emit DeviceUnbound(device_id, driver_id)
+            return true
+        }
+
+        // Gerät-Info abfragen
+        fn get_device_info(device_id: u64) -> DeviceInfo {
+            return self.devices[device_id]
+        }
+
+        // Alle Geräte einer Klasse
+        fn list_devices_by_class(device_class: DeviceClass) -> List<u64> {
+            let result: List<u64> = []
+            for id, device in self.devices {
+                if device.class == device_class {
+                    result.push(id)
+                }
+            }
+            return result
+        }
+
+        // Geräte nach Bus
+        fn list_devices_by_bus(bus_type: BusType) -> List<u64> {
+            let result: List<u64> = []
+            for id, device in self.devices {
+                if device.bus == bus_type {
+                    result.push(id)
+                }
+            }
+            return result
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  I/O INTERFACE (open / read / write / close / ioctl)
+        // ═══════════════════════════════════════════════════════════
+
+        // Gerät öffnen
+        fn open(device_id: u64, flags: u8, owner_pid: u64) -> u64 {
+            let device: DeviceInfo = self.devices[device_id]
+            require(device.device_id == device_id, "device not found")
+            require(device.driver_id > 0, "no driver bound to device")
+
+            let driver: DriverInfo = self.drivers[device.driver_id]
+            require(driver.state == DriverState::ACTIVE, "driver not active")
+
+            // Exklusiv-Check
+            if flags & 0x08 != 0 {  // EXCLUSIVE
+                for hid, handle in self.open_handles {
+                    if handle.device_id == device_id && handle.ref_count > 0 {
+                        require(false, "device already opened exclusively")
+                    }
+                }
+            }
+
+            let handle_id: u64 = self.next_handle_id
+            self.next_handle_id += 1
+
+            let handle: OpenHandle = OpenHandle {
+                handle_id: handle_id,
+                device_id: device_id,
+                driver_id: device.driver_id,
+                flags: flags,
+                owner_pid: owner_pid,
+                position: 0,
+                is_blocking: (flags & 0x04) == 0,  // NON_BLOCK flag
+                ref_count: 1,
+            }
+
+            self.open_handles[handle_id] = handle
+            self.total_io_ops += 1
+            emit HandleOpened(handle_id, device_id, owner_pid)
+            return handle_id
+        }
+
+        // Von Gerät lesen
+        fn read(handle_id: u64, buffer_size: u64) -> String {
+            let handle: OpenHandle = self.open_handles[handle_id]
+            require(handle.handle_id == handle_id, "handle not found")
+            require(handle.flags & 0x01 != 0, "handle not opened for reading")
+
+            let driver: DriverInfo = self.drivers[handle.driver_id]
+            require(driver.state == DriverState::ACTIVE, "driver not active")
+
+            self.total_io_ops += 1
+            // Treiber-spezifischer Read wird über ioctl dispatch
+            return self.dispatch_read(handle, buffer_size)
+        }
+
+        // Auf Gerät schreiben
+        fn write(handle_id: u64, data: String) -> u64 {
+            let handle: OpenHandle = self.open_handles[handle_id]
+            require(handle.handle_id == handle_id, "handle not found")
+            require(handle.flags & 0x02 != 0, "handle not opened for writing")
+
+            let driver: DriverInfo = self.drivers[handle.driver_id]
+            require(driver.state == DriverState::ACTIVE, "driver not active")
+
+            self.total_io_ops += 1
+            return self.dispatch_write(handle, data)
+        }
+
+        // I/O-Control
+        fn ioctl(handle_id: u64, code: IoctlCode, arg: u64) -> u64 {
+            let handle: OpenHandle = self.open_handles[handle_id]
+            require(handle.handle_id == handle_id, "handle not found")
+
+            let driver: DriverInfo = self.drivers[handle.driver_id]
+            require(driver.state == DriverState::ACTIVE, "driver not active")
+
+            self.total_io_ops += 1
+
+            match code {
+                IoctlCode::GET_INFO => {
+                    return self.devices[handle.device_id].device_id
+                }
+                IoctlCode::RESET => {
+                    emit DriverError(handle.driver_id, "device reset requested")
+                    return 0
+                }
+                IoctlCode::FLUSH => {
+                    return 0
+                }
+                IoctlCode::GET_STATUS => {
+                    return self.drivers[handle.driver_id].state as u64
+                }
+                IoctlCode::SET_POWER => {
+                    self.set_power_state(handle.device_id, arg)
+                    return 0
+                }
+                IoctlCode::IRQ_ENABLE => {
+                    let device: DeviceInfo = self.devices[handle.device_id]
+                    if device.irq_line != 0xFF {
+                        self.irq_routes[device.irq_line].enabled = true
+                    }
+                    return 0
+                }
+                IoctlCode::IRQ_DISABLE => {
+                    let device: DeviceInfo = self.devices[handle.device_id]
+                    if device.irq_line != 0xFF {
+                        self.irq_routes[device.irq_line].enabled = false
+                    }
+                    return 0
+                }
+                IoctlCode::DMA_SETUP => {
+                    return self.setup_dma(handle.device_id, arg)
+                }
+                IoctlCode::SET_MODE | IoctlCode::CUSTOM => {
+                    return arg  // Treiber-spezifisch
+                }
+            }
+            return 0
+        }
+
+        // Gerät schließen
+        fn close(handle_id: u64) -> bool {
+            let handle: OpenHandle = self.open_handles[handle_id]
+            require(handle.handle_id == handle_id, "handle not found")
+
+            handle.ref_count -= 1
+            if handle.ref_count == 0 {
+                self.open_handles.remove(handle_id)
+            }
+            emit HandleClosed(handle_id)
+            return true
+        }
+
+        // Seek (Position setzen)
+        fn seek(handle_id: u64, offset: u64, whence: u8) -> u64 {
+            let handle: OpenHandle = self.open_handles[handle_id]
+            require(handle.handle_id == handle_id, "handle not found")
+
+            // 0 = SET, 1 = CUR, 2 = END
+            if whence == 0 {
+                handle.position = offset
+            } else if whence == 1 {
+                handle.position += offset
+            } else {
+                // END — ignoriert (keine Dateigröße im Treiber)
+                handle.position = offset
+            }
+            return handle.position
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  IRQ MANAGEMENT
+        // ═══════════════════════════════════════════════════════════
+
+        // IRQ registrieren
+        fn register_irq(
+            irq_line: u8,
+            device_id: u64,
+            driver_id: u64,
+            handler_fn: String,
+            priority: u8,
+        ) -> bool {
+            require(irq_line < 255, "invalid IRQ line")
+
+            let route: IRQRoute = IRQRoute {
+                irq_line: irq_line,
+                device_id: device_id,
+                driver_id: driver_id,
+                handler_fn: handler_fn,
+                priority: priority,
+                enabled: true,
+                trigger_count: 0,
+            }
+
+            self.irq_routes[irq_line] = route
+            return true
+        }
+
+        // IRQ auslösen (von Hardware oder Software)
+        fn trigger_irq(irq_line: u8) -> bool {
+            let route: IRQRoute = self.irq_routes[irq_line]
+            require(route.irq_line == irq_line, "IRQ not registered")
+            require(route.enabled, "IRQ disabled")
+
+            route.trigger_count += 1
+            emit IRQTriggered(irq_line, route.device_id)
+            return true
+        }
+
+        // IRQ freigeben
+        fn unregister_irq(irq_line: u8) -> bool {
+            self.irq_routes.remove(irq_line)
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  DMA MANAGEMENT
+        // ═══════════════════════════════════════════════════════════
+
+        // DMA-Transfer einrichten
+        fn setup_dma(device_id: u64, size: u64) -> u64 {
+            let device: DeviceInfo = self.devices[device_id]
+            require(device.device_id == device_id, "device not found")
+            require(device.dma_channel != 0xFF || self.assign_dma_channel(device_id) != 0xFF, "no DMA channel available")
+
+            let transfer_id: u64 = self.next_dma_id
+            self.next_dma_id += 1
+
+            let transfer: DMATransfer = DMATransfer {
+                transfer_id: transfer_id,
+                device_id: device_id,
+                channel: device.dma_channel,
+                src_addr: 0,
+                dst_addr: device.mmio_base,
+                size: size,
+                direction: "to_device",
+                completed: false,
+            }
+
+            self.dma_transfers[transfer_id] = transfer
+            return transfer_id
+        }
+
+        // DMA-Transfer abschließen
+        fn complete_dma(transfer_id: u64) -> bool {
+            let transfer: DMATransfer = self.dma_transfers[transfer_id]
+            require(transfer.transfer_id == transfer_id, "DMA transfer not found")
+
+            transfer.completed = true
+            emit DMATransferCompleted(transfer_id, transfer.device_id)
+            return true
+        }
+
+        // DMA-Kanal zuweisen
+        fn assign_dma_channel(device_id: u64) -> u8 {
+            // Finde freien DMA-Kanal (0-7 für legacy, 0-63 für modern)
+            for ch in 0..8 {
+                let in_use: bool = false
+                for id, device in self.devices {
+                    if device.dma_channel == ch && id != device_id {
+                        in_use = true
+                    }
+                }
+                if !in_use {
+                    self.devices[device_id].dma_channel = ch
+                    return ch
+                }
+            }
+            return 0xFF
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  POWER MANAGEMENT
+        // ═══════════════════════════════════════════════════════════
+
+        // Power-State setzen
+        fn set_power_state(device_id: u64, state: u64) -> bool {
+            let device: DeviceInfo = self.devices[device_id]
+            require(device.device_id == device_id, "device not found")
+            require(device.driver_id > 0, "no driver bound")
+
+            let old_state: PowerState = PowerState::ON  // Placeholder
+            let new_state: PowerState = match state {
+                0 => PowerState::ON,
+                1 => PowerState::IDLE,
+                2 => PowerState::STANDBY,
+                3 => PowerState::OFF,
+                _ => PowerState::ON,
+            }
+
+            if new_state == PowerState::OFF || new_state == PowerState::STANDBY {
+                self.drivers[device.driver_id].state = DriverState::SUSPENDED
+            } else if new_state == PowerState::ON {
+                self.drivers[device.driver_id].state = DriverState::ACTIVE
+            }
+
+            emit PowerStateChanged(device_id, old_state, new_state)
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  HAL SANDBOX (ATC-22 Integration)
+        // ═══════════════════════════════════════════════════════════
+
+        // Sandbox erstellen (isoliert Treiber-Speicher)
+        fn create_sandbox(driver_id: u64) -> u64 {
+            // ATC-22 HAL Driver Sandbox Integration
+            // In production: ruft HalDriverSandboxManager.syscall_create()
+            let sandbox_id: u64 = driver_id * 1000 + 1
+            return sandbox_id
+        }
+
+        // Sandbox zerstören
+        fn destroy_sandbox(sandbox_id: u64) -> bool {
+            // In production: ruft HalDriverSandboxManager.syscall_destroy()
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  INTERNAL DISPATCH
+        // ═══════════════════════════════════════════════════════════
+
+        // Read dispatch (treiber-spezifisch)
+        fn dispatch_read(handle: OpenHandle, buffer_size: u64) -> String {
+            let device: DeviceInfo = self.devices[handle.device_id]
+            // Dispatch nach Device-Klasse
+            match device.class {
+                DeviceClass::DISPLAY => {
+                    return "display_read_ok"
+                }
+                DeviceClass::INPUT => {
+                    return "input_event"
+                }
+                DeviceClass::STORAGE => {
+                    return "storage_data"
+                }
+                DeviceClass::NETWORK => {
+                    return "network_packet"
+                }
+                DeviceClass::SERIAL => {
+                    return "serial_data"
+                }
+                DeviceClass::AUDIO => {
+                    return "audio_sample"
+                }
+                _ => {
+                    return "unknown"
+                }
+            }
+        }
+
+        // Write dispatch (treiber-spezifisch)
+        fn dispatch_write(handle: OpenHandle, data: String) -> u64 {
+            let device: DeviceInfo = self.devices[handle.device_id]
+            // Dispatch nach Device-Klasse
+            match device.class {
+                DeviceClass::DISPLAY => {
+                    return data.length
+                }
+                DeviceClass::INPUT => {
+                    return 0  // Input ist read-only
+                }
+                DeviceClass::STORAGE => {
+                    return data.length
+                }
+                DeviceClass::NETWORK => {
+                    return data.length
+                }
+                DeviceClass::SERIAL => {
+                    return data.length
+                }
+                DeviceClass::AUDIO => {
+                    return data.length
+                }
+                _ => {
+                    return 0
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  AUTHORIZATION & STATS
+        // ═══════════════════════════════════════════════════════════
+
+        fn is_authorized(caller: Address) -> bool {
+            return true  // Placeholder — in production: Capability-Check
+        }
+
+        fn get_stats() -> (u64, u64, u64, u64, u64) {
+            return (
+                self.drivers.length,
+                self.devices.length,
+                self.open_handles.length,
+                self.total_io_ops,
+                self.total_errors,
+            )
+        }
+
+        fn get_error_log(driver_id: u64) -> (u64, String) {
+            let driver: DriverInfo = self.drivers[driver_id]
+            return (driver.error_count, driver.last_error)
+        }
+
+        // Treiber-Fehler registrieren
+        fn report_error(driver_id: u64, error: String) -> bool {
+            self.drivers[driver_id].error_count += 1
+            self.drivers[driver_id].last_error = error
+            self.total_errors += 1
+            emit DriverError(driver_id, error)
+            return true
+        }
+    }
+}
