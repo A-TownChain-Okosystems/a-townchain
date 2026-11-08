@@ -1,0 +1,1185 @@
+findings:
+- id: F-001
+  title: ID-Allokationsprozess je Bereich nicht definiert
+  severity: MINOR
+  source: Technical Review ATC-STD-000 v1.0.0 (07.09.)
+  alias: T-F01
+  scr: SCR-0001
+  status: RESOLVED
+  resolution: SCR-0001 ACCEPTED; §37 ID-Allokationsprozess in ATC-STD-000 v1.2.0 APPROVED (07.09.2026, Owner-Freigabe)
+  priority: P3
+- id: F-002
+  title: §34-Integritaetsumsetzung physisch offen (Zweig-Absicherung, Signed Tags)
+  severity: MEDIUM
+  source: Security Review
+  alias: S-F01
+  scr: SCR-0003
+  status: RESOLVED
+  resolution: 'SCR-0003 umgesetzt 07.09. (Owner-Option B): Branch-Protection, Tags, Scanning aktiv'
+  priority: P2
+- id: F-003
+  title: Rollen- und Berechtigungsmodell nicht definiert
+  severity: MEDIUM
+  source: Security Review
+  alias: S-F02
+  scr: SCR-0004
+  status: RESOLVED
+  resolution: Rollenmodell §14.1 per SCR-0004 in ATC-STD-000 v1.1.0 verankert
+  priority: P2
+- id: F-004
+  title: Kein dediziertes Security-Considerations-Kapitel in ATC-STD-000
+  severity: LOW
+  source: Security Review
+  alias: S-F03
+  status: RESOLVED
+  resolution: §38 Security Considerations (REQ-STD-003) in ATC-STD-000 v1.2.0 APPROVED (07.09.2026, Owner-Freigabe) — normativ in Kraft
+  priority: P3
+- id: F-005
+  title: Registry-Naming-Dualitaet (STANDARDS_REGISTRY.md vs standards.yaml)
+  severity: MINOR
+  source: Architecture Review
+  alias: A-F01
+  status: RESOLVED
+  resolution: 'Naming-Dualitaet aufgeloest: registry/standards.yaml ist SSOT (Registry+Repository-Regel); registry/STANDARDS_REGISTRY.md ist explizit als abgeleitete Dokumentations-Sicht markiert und aus der YAML regeneriert'
+  priority: P3
+- id: F-006
+  title: 'registry/standards.yaml Zeile 4 korrupt (Merge-Artefakt: zwei ATC-STD-000-Eintraege ineinandergespleisst, YAML unparbar)'
+  severity: S1
+  source: Governance-Audit AUD-001 (07.09., Agent Aurora ...105b5)
+  status: RESOLVED
+  resolution: 'Eintrag dedupliziert auf status: candidate (lebenszyklus-korrekt, Owner-Freigabe PENDING), Commit folgt'
+  priority: P3
+- id: F-007
+  title: 'Validator-Luecke: validate_all.py pruefte Registry nur per Regex, nicht strukturell — korrupte standards.yaml lief COMPLIANT'
+  severity: S2
+  source: Governance-Audit AUD-001 (07.09.)
+  status: RESOLVED
+  resolution: S-18 Registry-Parse-Check ergaenzt (yaml.safe_load + Pflichtfeld-Pruefung, Fallback ohne PyYAML), validiert PASS
+  priority: P2
+- id: F-008
+  title: 'versions.yaml unvollstaendig: 12 Standards (BUG-001..004, NET-001..008) ohne Versionshistorie trotz §13-Pflicht'
+  severity: S3
+  source: Governance-Audit AUD-001 (07.09.)
+  status: RESOLVED
+  resolution: 12 initiale v1.0.0-Eintraege mit AD-040/AD-041-Mandatsverweis ergaenzt
+  priority: P1
+- id: F-009
+  title: 'CI-V-16 unzuverlaessig: Shallow-Checkout (fetch-depth fehlt in naming-governance.yml) liest nur Head-Commit — CC-Quote zufallsabhaengig'
+  severity: S3
+  source: 'Reality-Check 07.09. (CI-Run 34132214931: FALSE-FAIL auf d6722fa)'
+  status: RESOLVED
+  resolution: 'RESOLVED 08.09.: Owner-Push (michael.worob, 10:45) — fetch-depth: 0 + workflow_dispatch in governance-ci.yml auf 23 Repos; atc-vm/atc-algorithm/atc-zkp nachgeruestet (10:56, Issue #94); 22 CI-Neulaeufe GRUEN, GATE PASS; V-16-Shallow-Clone-Guard ergaenzt (F-048, SCR-0039). Verifiziert im Re-Audit ATC-ORG-AUDIT-002 (08.09.).'
+  priority: P1
+- id: F-010
+  title: 'Agent-OAuth-Token ohne workflow-Scope: Workflow-Aenderungen in Governance Root nur durch Owner moeglich'
+  severity: S3
+  source: Reality-Check 07.09. (GH013-Push-Ablehnung)
+  status: RESOLVED
+  resolution: 'RESOLVED 08.09.: Loesungspfad 2 (manuelle Workflow-Pflege durch Owner) etabliert und gelebt — Owner-Push vom 08.09. 10:45/10:56 hat saemtlliche Workflow-Fixes umgesetzt. Zukuenftige Workflow-Aenderungen im Governance Root bleiben per Definition Owner-Aktion (Agent-Pfad GH013-beschraenkt, kein PAT mit workflow-Scope noetig).'
+  priority: P1
+- id: F-011
+  title: Rollen-Dualitaet a-townchain vs. atc-node (Chain/Node-Zielrolle ueberlappt)
+  severity: MEDIUM
+  source: Technology Profile Audit 07.09.2026
+  scr: SCR-0005
+  status: RESOLVED
+  resolution: 'SCR-0005 Option A (Owner-Freigabe 07.09.): Rollen-Trennung a-townchain (Chain-Protokoll/Bibliothek) vs. atc-node (Full-Node-Binary/Runtime, S4) — ATC-STD-202 v1.1.0 §3a'
+  priority: P2
+- id: F-012
+  title: 'CI-Abdeckung: validate_all pruefte nur 19/81 Standards (file_id-Regex ohne ZKP/AI-DEV/AAS/ENT)'
+  severity: S2
+  source: Self-Compliance-Audit 07.09.2026
+  status: RESOLVED
+  resolution: file_id-Regex um ZKP/AI-DEV/AAS/ENT erweitert; 81/81 Standards werden validiert (ALL COMPLIANT)
+  priority: P2
+- id: F-013
+  title: Validator S-09 akzeptierte nur MUST/SHOULD/MAY, nicht deutsche MUSS/SOLLTE/DARF
+  severity: S3
+  source: Self-Compliance-Audit 07.09.2026
+  status: RESOLVED
+  resolution: S-09-Regex um MUSS/SOLLTE/DARF erweitert; RFC-2119-Deklaration je Standard verbindlich
+  priority: P1
+- id: F-014
+  title: S-19-Mutationssuite nutzte Live-Dateien als Fixtures — nach Freigaben wurden Mutationen zu No-Ops (3 false-negative Tests)
+  severity: S3
+  source: Self-Compliance-Audit 07.09.2026
+  status: RESOLVED
+  resolution: Suite auf synthetische Fixtures umgestellt (12/12 bestanden); zusaetzlich hsv-Regex-Fix (v zwingend, kein False Positive auf (30 Tage)) und WARN-Semantik bei fehlender Kopf-Statuszeile
+  priority: P1
+- id: F-015
+  title: Paragraph 9-Pflichtstruktur fehlte in 62 Standards (Abstract/Scope) — 40+8 Abstract, 38+11 Scope nachgeruestet
+  severity: S2
+  source: Self-Compliance-Audit 07.09.2026
+  status: RESOLVED
+  resolution: Abstract (mit RFC-2119-Deklaration) und Scope (Gilt/Nicht-Gilt) in AI-DEV/ZKP/AAS/ENT nachgeruestet; categories.yaml um ai-dev/aas/enterprise ergänzt; Schema um zkp/aas/ent Dateinamen-Muster + REQ-ZKP-Muster erweitert
+  priority: P2
+- id: F-016
+  title: 'atc-standards selbst: .github/ai/ fehlte (AAS-025 Repo-Manifest, AI-DEV-001 §6, AI-DEV-009 Audit-Ablage)'
+  severity: S2
+  source: Self-Compliance-Audit 07.09.2026
+  status: RESOLVED
+  resolution: 'Repo-Manifest .github/ai/agent.yaml + AGENTS.md + audit/-Records (AUD-001..005, rueckwirkend dokumentiert) angelegt — Vorreiter-Rollout von Task #111'
+  priority: P2
+- id: F-017
+  title: REQ-ID-Traceability (ATC-STD-000 §10/§11) fehlt in 52 neueren Standards (AI-DEV/AAS/ENT) — Pflichtstruktur Requirements/Security/Changelog/References teils nur als WARN
+  severity: S2
+  source: Self-Compliance-Audit 07.09.2026
+  status: OPEN
+  resolution: 'SCR-0007 vorgelegt: Domain-qualifizierte REQ-Präfixe (REQ-AIDEV/REQ-AAS/REQ-ENT) + §9-Reststruktur-Rollout bis 07.10.2026; Owner-Entscheidung ausstehend'
+  priority: P2
+- id: F-018
+  title: 'Agent-Manifest band Agent nur an Teilmenge der Standards (required_standards: 6 statt 81; kein explizites Umsetzungs-Mandat)'
+  severity: S2
+  source: Owner-Auftrag 07.09.2026
+  status: RESOLVED
+  resolution: Voll-Compliance-Mandat in AGENT_MANIFEST.md + agent.yaml required_standards = ALLE 81 Registry-Standards (dynamische Bindung, Registry=SSOT) + CI-Gate check_agent_manifest.py (A1-A4)
+  priority: P2
+- id: F-019
+  title: 82/108 Standards ohne Durchsetzungs-Mechanismus (75% DOCUMENTED-only; nur 8 automatisiert erzwungen)
+  severity: S2
+  source: AUD-2026-0001 (ATC-STD-AUDIT-001)
+  audit: AUD-2026-0001
+  status: OPEN
+  resolution: 'Enforcement-Roadmap empfohlen: SC-Gates (18) → AAS-Operational (24) → Voll-Gates DESC/VERSION/BUG/AUDIT/DECISION; je eigene SCR + Werkzeug'
+  priority: P2
+- id: F-020
+  title: 'AI-DECISION-001: DEC-NNNNNN-Records-Infrastruktur nicht implementiert (Speicherung, AAS-018-Anbindung, decision_hash)'
+  severity: S2
+  source: AUD-2026-0001 (REQ-AUDIT-004 COM-AIDEC-005)
+  audit: AUD-2026-0001
+  status: OPEN
+  resolution: Records-Infra als Brücke ATC-STD-AI-DECISION-001 Abschnitt 16 ↔ ATC-AAS-018; eigene SCR
+  priority: P2
+- id: F-021
+  title: 'AUDIT-001: Engine-Automatisierung ausstehend — Cross-System-Scanner (REQ-AUDIT-029) nicht gebaut; Teilimplementierung: repo-audit R1-R3 + validate_all'
+  severity: S3
+  source: AUD-2026-0001 (REQ-AUDIT-023)
+  audit: AUD-2026-0001
+  status: OPEN
+  resolution: Cross-System Integrity Engine als eigenständiges Werkzeug (Scanner-Suite, AUD-Report-Format)
+  priority: P1
+- id: F-022
+  title: 'BUG-005: Analyse-Felder (4-Ebenen-RCA, RC-Kategorie, Timeline T0-T9, Metrics) nicht in Finding-Workflow/findings-Schema integriert'
+  severity: S3
+  source: AUD-2026-0001 (REQ-STD-147ff)
+  audit: AUD-2026-0001
+  status: OPEN
+  resolution: findings.yaml-Schema um BUG-005-Pflichtfelder erweitern (optional-für-Bestand, Pflicht-für-neue)
+  priority: P1
+- id: F-023
+  title: 'Cross-System-Stichprobe atc-shivacore: STATUS.md, ROADMAP.md, ARCHITECTURE.md fehlen (MD-001 REQ-MD-001: MUSS bei Software/aktiver Entwicklung)'
+  severity: S2
+  source: AUD-2026-0001 (AUD-C20, GitHub-API-Stichprobe 07.09.)
+  audit: AUD-2026-0001
+  status: OPEN
+  resolution: Nachrzug atc-shivacore + Voll-Scan aller 26 Repos per Cross-System-Engine (F-021); MD-Gate je Repo-CI empfohlen
+  priority: P2
+- id: F-024
+  title: 'Org-Level-Settings unsicher: Default-Repo-Permission admin, 2FA-Enforcement aus, keine Org-Beschreibung'
+  severity: S2
+  source: AUD-2026-0002 Organization Audit (Bereich 01, GitHub-API)
+  audit: AUD-2026-0002
+  status: SKIP
+  resolution: 'Owner-Entscheidung 07.09.2026 23:13 (Builder-Chat): Org-Settings-Prüfung/Aktion übersprungen — dokumentiert, kein Agent-Mandat; bei Bedarf Owner-Aktion in GitHub-Org-Settings (Settings → Member privileges → Base permission; Authentication security → 2FA)'
+  priority: P2
+- id: F-025
+  title: 'Security-Automatisierung: Dependabot 0/26, CodeQL 0/26 vor Audit'
+  severity: S2
+  source: AUD-2026-0002 (Bereich 11)
+  audit: AUD-2026-0002
+  status: RESOLVED
+  resolution: 'SCR-0103 + SCR-0105: Dependabot 26/26 (F-043 RESOLVED via API-Rollout der 10 fehlenden Konfigs) und CodeQL 25/26 Code-Repos gruen (9 T1-Repos via Parallel-Session ausgerollt + atc-sdk Sprach-Fix python,rust; a-townchain-os legit EXEMPT docs-only F-133, .github PR-gated, demo-repository Loeschung offen). Beide zum Audit-Stand 0/26 genannten Dimensionen sind damit flächendeckend abgedeckt; Security-Automatisierung aktiv'
+  priority: P2
+- id: F-026
+  title: Manifest-Versionen inkonsistent (5x 0.1.0, atc-contracts 1.0.0, Rest unversioniert); Releases nur 2/26; keine Tag-Disziplin
+  severity: S3
+  source: AUD-2026-0002 (Bereich 13)
+  audit: AUD-2026-0002
+  status: OPEN
+  resolution: 'VERSION-001-Baseline festlegen (einheitliche Startversion je Repo-Typ) + Release/Tag-Disziplin für Meilenstein-Repos → Issue #96'
+  priority: P1
+- id: F-027
+  title: 'a-townchain-os: verwaister Git-Tag v2.0.0 neben Release v1.0.0 (Versionswiderspruch)'
+  severity: S3
+  source: AUD-2026-0002 (Bereich 13, GitHub-API)
+  audit: AUD-2026-0002
+  status: OPEN
+  resolution: 'Tag v2.0.0 entferen ODER Release v2.0.0 nachziehen → Issue #97 (Owner-Entscheidung)'
+  priority: P1
+- id: F-028
+  title: ATC-STD-202 v1.1.0 klassifiziert 22 statt 26 aktiver Repos (atc-vm/atc-algorithm/atc-zkp fehlen in Klassifizierungstabelle)
+  severity: S3
+  source: AUD-2026-0002 (Bereich 15)
+  audit: AUD-2026-0002
+  status: OPEN
+  resolution: 'Minor-Update v1.2.0 per SCR-0017: Klassifizierungstabelle auf 26 Repos erweitern (R1/experimental für die 3 neuen, Registry-Kopplung) → Issue #98'
+  priority: P1
+- id: F-029
+  title: governance-ci.yml fehlt in atc-vm, atc-algorithm, atc-zkp (CI-Abdeckung 23/26)
+  severity: S3
+  source: AUD-2026-0002 (Bereich 10)
+  audit: AUD-2026-0002
+  status: PARTIAL
+  resolution: 'Agent-Push der Workflow-Datei abgelehnt (GH013, kein workflow-Scope — kongruent F-010, in diesem Lauf bestätigt); Lösung: Owner-Edit via GitHub UI oder PAT mit workflow-Scope → Issue #94 mit fertiger YAML'
+  priority: P1
+- id: F-030
+  title: Externe Referenz atc-whitepaper (ChatGPT-Pruefung 07.09.) existiert nicht (Org-API 404, GitHub-Suche 0 Treffer)
+  severity: S4
+  source: AUD-2026-0002 (Bereich 02)
+  audit: AUD-2026-0002
+  status: RESOLVED
+  resolution: Als veraltet/halluziniert dokumentiert — kein Handlungsbedarf
+  priority: P0
+- id: F-031
+  title: 'POSITIV-Befund: Governance-Hygiene 26/26 (README/CHANGELOG/LICENSE/SECURITY/CODEOWNERS/AGENT_MANIFEST/.atc), Secret-Scan 0 Funde in ~7200 Dateien, 0 Duplikate, Chain-ID 658467 + Copyright konsistent'
+  severity: S4
+  source: AUD-2026-0002 (Bereiche 02-07, 11, 12, 15, 16)
+  audit: AUD-2026-0002
+  status: RESOLVED
+  resolution: Kein Handlungsbedarf — Zustand als Benchmark dokumentiert
+  priority: P0
+- id: F-032
+  title: ATC-STD-CHANGE-001 Frontmatter bricht strictes YAML (inneres ASCII-Anfuehrungszeichen im Titel)
+  severity: P2
+  source: AUD-2026-0003 Selbst-Audit (CHECK-058-Abweichung)
+  scr: SCR-0026
+  status: RESOLVED
+  resolution: 'PATCH v1.0.1 (SCR-0026): Quote auf U+201C normalisiert; haette ab sofort von S-25 erkannt werden'
+  priority: P2
+- id: F-033
+  title: 'Validator validate_all.py S-20-Fallback: TypeError (Format-String, 2 Platzhalter/1 Argument) bei fehlendem PyYAML'
+  severity: P2
+  source: AUD-2026-0003 (CI-Log-Analyse, CI-rot seit 22:19)
+  scr: SCR-0026
+  status: RESOLVED
+  resolution: Fallback-Format-String repariert (n_ok als zweites Argument)
+  priority: P2
+- id: F-034
+  title: 'STDDEV-001-Frontmatter-Pflicht im Altbau: 107/119 APPROVED ohne review_date, 107 ohne approved_by, 102 ohne effective_date (REQ-SD-012/§6; Standard in Kraft seit 08.09. 00:36)'
+  severity: P2
+  source: AUD-2026-0003 (CHECK-010/058-Abweichung)
+  scr: null
+  status: RESOLVED
+  resolution: 'SCR-0032 Backfill (08.09.2026): Metadaten-Hüllpflichten im Altbau nachgetragen (effective_date/review_date, license, H1-Status-Suffix); Validator ALL COMPLIANT.'
+  resolved_date: '2026-09-08'
+  priority: P2
+- id: F-035
+  title: PyYAML-Laufzeitabhaengigkeit undeklariert (kein requirements.txt) — Wurzelursache des CI-Failures naming-governance
+  severity: P2
+  source: AUD-2026-0003 (CHECK-037-Abweichung)
+  scr: SCR-0026
+  status: RESOLVED
+  resolution: requirements.txt (pyyaml>=6.0) deklariert; Workflow-Haertung (pip install) via GH013-Issue als Owner-Aktion (Agent-Token ohne workflow-Scope, analog Org-Audit-#94-Klasse)
+  priority: P2
+- id: F-036
+  title: Verwaister GitHub-Release/Tag v1.1.0 (07.09.) widerspricht CHANGELOG v1.4.x (CHECK-049/051, VERSION-001)
+  severity: P2
+  source: AUD-2026-0003 (GitHub-API-Evidenz)
+  scr: null
+  status: OPEN
+  resolution: 'Owner-Entscheidung: Release auf CHANGELOG-Stand v1.4.x anheben ODER verwaisten v1.1.0-Release/Tag entfernen (extern sichtbares Artefakt)'
+  priority: P2
+- id: F-037
+  title: 'CI rot auf main: naming-governance 4+ konsekutive Failure-Runs seit 22:19 (CHECK-054 verletzt)'
+  severity: P2
+  source: 'AUD-2026-0003 (GitHub-API: Runs 24e8e5c..10f3c1b alle failure)'
+  scr: SCR-0026
+  status: RESOLVED
+  resolution: Validator-Fallback-Fix (F-033) behebt die Failure-Ursache; CI laeuft im Fallback-Modus gruen (lokal verifiziert, Exit 0); CI-Gruen via API nach Push verifiziert; Workflow-Haertung folgt via Owner-Issue
+  priority: P2
+- id: F-038
+  title: 'Validator-Gap: kein Strict-Frontmatter-YAML-Gate — F-032 wurde vom Regex-basierten S-16 nicht erkannt'
+  severity: P3
+  source: AUD-2026-0003 (Root-Cause-Analyse)
+  scr: SCR-0026
+  status: RESOLVED
+  resolution: NEU S-25 (Frontmatter-Strict-YAML je CI-Lauf ueber alle Standard-Dateien)
+  priority: P3
+- id: F-039
+  title: 12/121 APPROVED-Standards ohne §9-Approval-Eintrag in versions.yaml (Altbau vor STDDEV-001-00:36-Freigabe; REQ-SD-009 nicht rueckwirkend bindend — Grandfathering)
+  severity: P3
+  source: AUD-2026-0003 (CHECK-058-Abweichung)
+  scr: null
+  status: OPEN
+  resolution: Backfill empfohlen (P3) im Rahmen des F-034-Backfill-SCR
+  priority: P3
+- id: F-040
+  title: 109 Standard-Dateien ohne Wroblewski-License-Feld im Frontmatter (MD/DESC-Feld-Harmonisierung Altbau)
+  severity: P3
+  source: AUD-2026-0003 (CHECK-010-Abweichung)
+  scr: null
+  status: RESOLVED
+  resolution: 'SCR-0032 Backfill (08.09.2026): Metadaten-Hüllpflichten im Altbau nachgetragen (effective_date/review_date, license, H1-Status-Suffix); Validator ALL COMPLIANT.'
+  resolved_date: '2026-09-08'
+  priority: P3
+- id: F-041
+  title: 16 Altbau-Standards ohne Status-/Versions-Suffix im H1-Header (Kopf-Konvention FRAMEWORK-001)
+  severity: P3
+  source: Tiefenpruefung 08.09.2026 (Builder-Chat, SCR-Ketten-Audit)
+  scr: null
+  status: RESOLVED
+  resolution: 'SCR-0032 Backfill (08.09.2026): Metadaten-Hüllpflichten im Altbau nachgetragen (effective_date/review_date, license, H1-Status-Suffix); Validator ALL COMPLIANT.'
+  resolved_date: '2026-09-08'
+  priority: P3
+- id: F-042
+  title: 24/26 Repos ohne Version-Tags (nur a-townchain + a-townchain-os mit verwaistem v2.0.0); VERSION-001-Baseline offen (Issues 96/97)
+  severity: P2
+  source: AUD-2026-0003
+  alias: null
+  scr: null
+  status: OPEN
+  resolution: null
+  discovered: '2026-09-08'
+  priority: P2
+- id: F-043
+  title: 10 Repos ohne Dependabot-Konfiguration (atc-algorithm, atc-compute, atc-launchpad, atc-mining, atc-node, atc-oracle, atc-storage, atc-vm, a-townchain-os, atc-standards)
+  severity: P2
+  source: AUD-2026-0003
+  alias: null
+  scr: null
+  status: RESOLVED
+  resolution: 'SCR-0103: Dependabot-Konfig in allen 10 fehlenden Repos via API (26/26 gesamt); github-actions- + cargo-Ökosysteme, wöchentlich'
+  discovered: '2026-09-08'
+  priority: P2
+- id: F-044
+  title: atc-contracts ohne jegliche Test-Dateien (Contract-Layer) — DeFi/Release-relevant
+  severity: P1
+  source: AUD-2026-0003
+  alias: null
+  scr: null
+  status: OPEN
+  resolution: null
+  discovered: '2026-09-08'
+  priority: P1
+- id: F-045
+  title: 'Org-PR-Regel wird von Admin-Pushes gebypasst (Bypassed rule violations je Push) — Schein-Governance; Owner-Entscheidung: durchsetzen oder entfernen'
+  severity: P2
+  source: AUD-2026-0003
+  alias: null
+  scr: null
+  status: OPEN
+  resolution: null
+  discovered: '2026-09-08'
+  priority: P2
+- id: F-046
+  title: '26/26 Repos: GitHub-Lizenz-Detektion NOASSERTION — LICENSE-Dateien kein SPDX-erkennbares Format. Owner-Entscheidung: SPDX-Lizenz (z. B. Apache-2.0/CC-BY-4.0) ODER Proprietär-Deklaration konsistent org-weit'
+  severity: P2
+  source: AUD-2026-0003 §6 / Fremd-Audit P0-002 verifiziert
+  alias: null
+  scr: null
+  status: RESOLVED
+  resolution: 'SCR-0036 (08.09.2026): Entscheidung Owner-delegiert an Agent — Apache-2.0 (SPDX) für alle 26 Repos; LICENSE je Repo ersetzt + gepusht; GitHub-Detektion Apache-2.0 verifiziert. Copyright ''Michael Wroblewski'' via Attributions-Pflicht verbindlich erhalten.'
+  discovered: '2026-09-08'
+  resolved_date: '2026-09-08'
+  priority: P2
+- id: F-047
+  title: 'STALE GOVERNANCE-STAND-Narrative (AD-034..039, Stand 07.09.: CANDIDATE/BLOCKED) in AGENT_MANIFEST.md von a-townchain-os und a-townchain-os-docs — Archiv-Markierung wie in atc-standards (SCR-0035) nachziehen'
+  severity: P3
+  source: AUD-2026-0003 §6 / Fremd-Audit P0-001
+  alias: null
+  scr: null
+  status: OPEN
+  resolution: null
+  discovered: '2026-09-08'
+  priority: P3
+- id: F-048
+  title: 'Governance-CI V-16 False-NO-GO durch Shallow-Clone (actions/checkout default fetch-depth 1): Conventional-Commits-Bewertung degeneriert auf den HEAD-Commit (0% wenn nicht konventionell). 15 Repos rot nach License-Batch SCR-0036/F-046; 7 weitere latent betroffen'
+  severity: P2
+  source: 'CI-Log Run #28 atc-shivacore (02824b8, 00:35 UTC) + Shallow-Clone-Reproduktion (BUG-001 OBSERVE→VERIFY)'
+  alias: null
+  scr: SCR-0039
+  status: RESOLVED
+  resolution: 'SCR-0039 (08.09.2026): Zweiebenen-Fix — (1) alle 22 governance-ci.yml per API-Batch-Patch: fetch-depth 0 am Repo-Checkout + workflow_dispatch-Trigger; (2) atc-repo-audit V-16 Shallow-Guard (<= 2 Commits = WARN, nie MUST-FAIL). Regressionstest: alle 22 CI-Neulaeufe verifiziert GRUEN/GATE PASS (AUD-2026-0004). Kein Daten- oder Produktionsverlust — reine CI-Konfiguration, SYNC-OK (keine normativen Artefakte betroffen).'
+  discovered: '2026-09-08'
+  resolved_date: '2026-09-08'
+  priority: P2
+- id: F-049
+  title: 'CI-Nicht-Verdrahtung: README/MD/AAS-025/SC-Validatoren existieren, laufen in keinem Workflow (AuditGPT D-01/D-02: real nur 5 Standards CI-erzwungen, nicht 8)'
+  severity: S2
+  source: AUD-2026-0004 (AuditGPT, unabhaengig)
+  audit: AUD-2026-0004
+  status: OPEN
+  resolution: Owner-Patch docs/patches/OWNER_WORKFLOW_PATCH_2026-09-08.md verdrahtet 4 zusaetzliche Gates (danach 9 AUTOMATED)
+  discovered: '2026-09-08'
+  priority: P2
+- id: F-050
+  title: 'SG-01 Fail-Open-Registry-Parsing: S-18/S-20-Fallback maximal WARN, Registry-Cross-Check except:pass, Lesefehler still; deckte 2 unlesbare legacy_series-Dateipfade (Quotes im Wert) auf'
+  severity: S2
+  source: AUD-2026-0004 (SecurityGPT, unabhaengig)
+  audit: AUD-2026-0004
+  status: RESOLVED
+  scr: SCR-0055
+  resolution: S-18-Fallback mit voller Pflichtfeldpruefung (Fluss-Parser), S-20 FAIL statt WARN, S-18a fail-closed, S-01 READ FAIL + Exit 1, Quote-Stripping in collect()
+  discovered: '2026-09-08'
+  resolved_date: '2026-09-08'
+  priority: P2
+- id: F-051
+  title: SG-02 Workflow-Permissions fehlen (naming-governance.yml ohne permissions-Block; Fork-PR-Risiko)
+  severity: S2
+  source: AUD-2026-0004 (SecurityGPT, unabhaengig)
+  audit: AUD-2026-0004
+  status: OPEN
+  resolution: 'GH013: Owner-Patch (permissions: contents:read auf Workflow+Job-Ebene) in OWNER_WORKFLOW_PATCH_2026-09-08.md'
+  discovered: '2026-09-08'
+  priority: P2
+- id: F-052
+  title: 'SG-03 auditRunId-Format-Diskrepanz: AUD-2026-0001 vs. AUD-YYYY-NNNN-Klärung'
+  severity: S3
+  source: AUD-2026-0004 (SecurityGPT, unabhaengig)
+  audit: AUD-2026-0004
+  status: RESOLVED
+  scr: SCR-0055
+  resolution: 'Schema-Note klargestellt: YYYY=Jahr, NNNN=fortlaufende Sequenz; AUD-2026-0001 kanonisch konform'
+  discovered: '2026-09-08'
+  resolved_date: '2026-09-08'
+  priority: P1
+- id: F-053
+  title: Fiktive Standard-Referenz ATC-STD-021 in AUDIT-001 Par.11-Beispiel (existiert nicht in Registry)
+  severity: S4
+  source: AUD-2026-0004 (AuditGPT D-03, unabhaengig)
+  audit: AUD-2026-0004
+  status: RESOLVED
+  scr: SCR-0055
+  resolution: Beispiel auf echte Kette REQ-STD-101 → ATC-STD-BUG-001 korrigiert (§30 mikro-inhaltlich via SCR)
+  discovered: '2026-09-08'
+  resolved_date: '2026-09-08'
+  priority: P0
+- id: F-054
+  title: 'Systemischer MD-001-Pflichtdokumenten-Verstoss org-weit: atc-shivacore, atc-node, globus-os, aurora-ai je 4/8 (STATUS/ROADMAP/ARCHITECTURE/CONTRIBUTING fehlen); atc-sdk 7/8'
+  severity: S2
+  source: AUD-2026-0004 (AuditGPT Cross-System-Scan, GitHub API)
+  audit: AUD-2026-0004
+  status: OPEN
+  resolution: Vorlagen-Rollout STATUS/ROADMAP/ARCHITECTURE/CONTRIBUTING auf die 26 Repos; erweitert F-023 (Stichprobe)
+  discovered: '2026-09-08'
+  priority: P2
+- alias: null
+  discovered: '2026-09-09'
+  id: F-055
+  resolution: 'SCR-0078/0079: Alle 14 Alerts verwaist — Manifest aistudio/temp_repo/requirements-kai.txt existiert nicht (404), 0 Commits in Historie (History-Reset 03.07.2026); 14/14 dokumentiert dismissed (inaccurate); org-weit 0 offene Alerts'
+  scr: SCR-0078
+  severity: P1
+  source: SCR-0057-Rollout (GitHub Push-Notice)
+  status: RESOLVED
+  title: 'a-townchain-os: 14 Dependabot-Schwachstellen auf main (4 high, 7 moderate, 3 low) — Behebung/Sichtung via https://github.com/A-TownChain-Okosystems/a-townchain-os/security/dependabot erforderlich'
+  priority: P1
+- alias: null
+  discovered: '2026-09-09'
+  id: F-056
+  resolution: null
+  scr: SCR-0059
+  severity: P1
+  source: SCR-0059 Binding-Checker Erstlauf (tools/check_binding.py im .github-Hub, docs/BINDING-2026-09-09.md)
+  status: OPEN
+  title: 'atc-standards: agent.yaml bindet ATC-STD-IMPROVEMENT-001 (DRAFT, §9-Freigabe ausstehend) — Bindung auf nicht freigegebenen Standard verstoesst Lifecycle (STDDEV-001)'
+  priority: P1
+- alias: null
+  discovered: '2026-09-09'
+  id: F-057
+  resolution: null
+  scr: SCR-0059
+  severity: P2
+  source: SCR-0059 Binding-Checker Erstlauf
+  status: OPEN
+  title: 16 Repos ohne .github/ai/agent.yaml-Standards-Bindung (a-townchain, a-townchain-os-docs, atc-shivacore, atc-node u.a.); ausserdem 37 CANDIDATE-Bindungen in gebundenen Repos (Design SCR-0056)
+  priority: P2
+- alias: null
+  discovered: '2026-09-10'
+  id: F-058
+  resolution: README auf Apache-2.0 korrigiert (Org-Einheitslizenz F-046/SCR-0036); Copyright Michael Wroblewski unverändert; 0 Proprietary-Vorkommen verifiziert
+  scr: SCR-0068
+  severity: P0
+  source: Owner-Externaudit via ChatGPT; GitHub-Lizenz-Detektion Apache-2.0
+  status: RESOLVED
+  title: 'aurora-ai: Lizenz-Widerspruch — README ''Proprietary / All Rights Reserved'' vs. LICENSE Apache-2.0 (Owner-Externaudit 10.09.)'
+  priority: P0
+- alias: null
+  discovered: '2026-09-10'
+  id: F-059
+  resolution: 'Owner-Entscheidung 11.09.: LOESCHEN; API-Delete an Token-Grenze gescheitert (403, kein delete_repo-Scope) — Ausfuehrung als Owner-UI-Aktion (Settings/Danger Zone), danach RESOLVED und Org 27/27 governed'
+  scr: SCR-0097
+  severity: P2
+  source: SCR-0068 org-scope.yaml Erstlauf (DRIFT_COUNT=1); Owner-Externaudit P0 'sind wirklich alle Repos angebunden?'
+  status: OPEN
+  title: 'demo-repository: ungoverned (kein AGENTS.md, atc--Namensregel-Verstoß, GitHub-Demo-Template, 11:21 09.09. von ShivaCoreDev) — Org-Scope-Drift'
+  priority: P2
+- alias: null
+  discovered: '2026-09-10'
+  id: F-060
+  resolution: null
+  scr: SCR-0068
+  severity: P1
+  source: Owner-Externaudit 10.09. (Evidence-Gate-Forderung)
+  status: OPEN
+  title: 'aurora-ai: Compliance-Claims (ATC-STD-000/201/202/203, ''R3 COMPLIANT'') ohne maschinenprüfbare Evidence (compliance/-Verzeichnis, CI-Run-IDs, Commit-SHAs fehlen)'
+  priority: P1
+- alias: null
+  discovered: '2026-09-10'
+  id: F-061
+  resolution: null
+  scr: SCR-0069
+  severity: P1
+  source: Owner-Audit 10.09. (P1-001)
+  status: OPEN
+  title: 'atc-shivacore: Test-Evidence-Inkonsistenz (423/674/703) — kanonisches test-report.json (Commit, Toolchain, Counts) fehlt; README/STATUS/ROADMAP pflegen Handzahlen'
+  priority: P1
+- alias: null
+  discovered: '2026-09-10'
+  id: F-062
+  resolution: 'Algorithmische Klärung als SPEC-DRAFT WAL-SIGN-001: kanonisch = secp256k1/RFC-6979/Low-S für TX-Signaturen (Ed25519 ausschließlich P2P/DID-Layer); Umsetzung (Cargo.toml-Bereinigung, Trust-Boundary-Code) folgt nach Spec-Freeze — OPEN'
+  scr: SCR-0069
+  severity: P1
+  source: Owner-Audit 10.09. (P1-2)
+  status: OPEN
+  title: 'atc-wallet: Signaturalgorithmus-Red-Flag — Cargo.toml ed25519-dalek vs. README/Architektur secp256k1; kanonischer ATC-Algorithmus + Rust-Trusted-Core/Python-Boundary fehlen'
+  priority: P1
+- alias: null
+  discovered: '2026-09-10'
+  id: F-063
+  resolution: null
+  scr: SCR-0069
+  severity: P1
+  source: Owner-Audit 10.09. (MKT-P1-002/003)
+  status: OPEN
+  title: 'atc-marketplace: Security-Criticality S1/low für DEX+NFT/Asset-Marketplace überprüfen; AMM/Order/Oracle/Settlement-Invarianten und Conformance-Gates fehlen'
+  priority: P1
+- alias: null
+  discovered: '2026-09-10'
+  id: F-064
+  resolution: null
+  scr: SCR-0069
+  severity: P2
+  source: Owner-Audit 10.09. (P2-1)
+  status: OPEN
+  title: 'Documentation Drift in mehreren Repos: READMEs listen nicht existierende Dateien (atc-wallet: GOVERNANCE.md/scripts; Repo-Zählungen 26/27 handgepflegt)'
+  priority: P2
+- alias: null
+  discovered: '2026-09-10'
+  id: F-065
+  resolution: 'Batch-Fix 26/26 Repos auf Apache-2.0 (AD-F-046): .atc/repository.yaml, Cargo.toml license-Felder, README-Lizenzzeilen synchron; Copyright Michael Wroblewski unverändert; docs/archive/ bewusst unangetastet'
+  scr: SCR-0069
+  severity: P0
+  source: Owner-Audit-Welle 10.09.; Org-Sweep (SCR-0069)
+  status: RESOLVED
+  title: 'Org-weiter Lizenz-Widerspruch: 26 Repos ''proprietary''/''ALL RIGHTS RESERVED'' in .atc/Cargo.toml/README gegen Apache-2.0-LICENSE'
+  priority: P0
+- alias: null
+  discovered: '2026-09-10'
+  id: F-066
+  resolution: STATUS auf NOT APPLICABLE / NOT RUN korrigiert (No status without evidence); Implementierungs-Lücke als Backlog dokumentiert (Implementation-Pivot vor weiterer Doku)
+  scr: SCR-0069
+  severity: P0
+  source: Owner-Audit 10.09. (P0 STATUS.md)
+  status: RESOLVED
+  title: 'atc-storage + atc-launchpad: STATUS wies ''Build passing/Tests PASS'' ohne jede Implementierung aus (0 .rs/.py/Cargo.toml)'
+  priority: P0
+- alias: null
+  discovered: '2026-09-10'
+  id: F-067
+  resolution: 'Spezifikationshälfte geschlossen (SCR-0071: ATC-CONSENSUS-301..307+DET+ENC als SPEC-DRAFT, 09 Requirement-Kataloge); Implementierung weiterhin offen — Finding bleibt OPEN bis Consensus-Spec-Freeze + Rust-Implementierung'
+  scr: SCR-0070
+  severity: P0
+  source: Owner-Audit 10.09. (P0-01..04)
+  status: OPEN
+  title: 'atc-algorithm: Konsens-Kern unimplementiert (src/tests nur .gitkeep, kein Cargo.toml) und unspezifiziert — PoH/PoS/PoW/Hybrid/Fork-Choice/Finality/Determinismus/Encoding fehlen formal (S4-Kern)'
+  priority: P0
+- alias: null
+  discovered: '2026-09-10'
+  id: F-068
+  resolution: 'README Zeile 5 auf L3 korrigiert; kanonische Org-Schichten: L0 atclang, L1 atc-shivacore, L3 a-townchain'
+  scr: SCR-0070
+  severity: P1
+  source: Owner-Audit 10.09. (P1 Layer-Bezeichnung)
+  status: RESOLVED
+  title: 'a-townchain: Layer-Terminologie-Widerspruch — README ''Blockchain L1'' vs. ''kanonische Layer-3-Blockchain'' (3 Stellen korrekt L3)'
+  priority: P1
+- alias: null
+  discovered: '2026-09-10'
+  id: F-069
+  resolution: null
+  scr: SCR-0070
+  severity: P0
+  source: Owner-Audit 10.09. (P0-Liste, 5 Tage bis Termin); Readiness Control Plane SCR-0060
+  status: OPEN
+  title: 'a-townchain: Mainnet-Termin 15.09.2026 vs. Readiness-NO-GO — Konsens-Spec, ATVM-Determinismus/Conformance, Krypto-Spec, Reproducible Build, M4-Evidence fehlen (Owner-Entscheidung Termin)'
+  priority: P0
+- alias: null
+  discovered: '2026-09-10'
+  id: F-070
+  resolution: null
+  scr: SCR-0070
+  severity: P1
+  source: Owner-Audit 10.09. (P0-1, P0-3)
+  status: OPEN
+  title: 'atclang: Versionierungs-Inkonsistenz README 1.0.0 vs. GitHub-Beschreibung v0.1.0-alpha; ''Rust-Canonical-Core''-Behauptung ohne Beleg (Rust als ''optional Phase 2'') — kanonische Implementierung + Version festlegen'
+  priority: P1
+- alias: null
+  discovered: '2026-09-10'
+  id: F-071
+  resolution: Compute-Protokoll als SPEC-DRAFT ATC-COMP-500..509 spezifiziert (inkl. Deterministic/AI/Engine-Trennung); Implementierung offen — OPEN
+  scr: SCR-0070
+  severity: P1
+  source: Owner-Audit 10.09. (P1 Compute Protocol, Determinismus)
+  status: OPEN
+  title: 'atc-compute: Compute-Protokoll unspezifiziert (Job/Scheduler/Worker/Attestation/Verification/Determinismus; ATC-STD-500..509-Backlog); Deterministic-/AI-/Engine-Compute trennen'
+  priority: P1
+- alias: null
+  discovered: '2026-09-10'
+  id: F-072
+  resolution: Genesis-Specs als SPEC-DRAFT GEN-TICK/ECS/DET/AI/WORLD-001; Runtime-Evidence folgt mit Implementierung — OPEN
+  scr: SCR-0070
+  severity: P2
+  source: Owner-Audit 10.09. (P1-001)
+  status: OPEN
+  title: 'genesis-engine: Runtime-Evidence-Gap — Engine-Boot/ECS-Tick/World/Creature/Determinismus ohne maschinenlesbare Evidenz (GENESIS-M7-EVIDENCE-GATE-001)'
+  priority: P2
+- alias: null
+  discovered: '2026-09-10'
+  id: F-073
+  resolution: STATUS auf NOT APPLICABLE / NOT RUN / NOT AUDITED korrigiert (No status without evidence)
+  scr: SCR-0070
+  severity: P0
+  source: Owner-Audit 10.09. (P1 Status vs. Artefakte)
+  status: RESOLVED
+  title: 'atc-algorithm: STATUS ''Build passing/Tests passing/Security clear'' ohne jede Implementierung (src/tests nur .gitkeep)'
+  priority: P0
+- id: F-074
+  priority: P0
+  status: RESOLVED
+  repo: atc-mining
+  title: Unbelegte STATUS-Pass-Claims bei fehlendem Cargo-Projekt
+  resolution: 'SCR-0072: NOT IMPLEMENTED / NOT RUNNABLE'
+- id: F-075
+  priority: P0
+  status: RESOLVED
+  repo: atc-oracle
+  title: Unbelegte STATUS-Pass-Claims ohne Implementierung
+  resolution: 'SCR-0072: NOT APPLICABLE / NOT RUN'
+- id: F-076
+  priority: P0
+  status: RESOLVED
+  repo: a-townchain-os
+  title: 'Metadaten-Widersprueche: VERSION 1.0.0, Mainnet-Target 15.09.2026, 60 Module/K29 im About'
+  resolution: 'SCR-0072: Version-SSOT .atc/repository.yaml, About bereinigt; F-069 Owner-Punkt bleibt'
+- id: F-077
+  priority: P1
+  status: OPEN
+  repo: atc-interop
+  title: 'INTEROP-SECURITY-GATE-001-Backlog: 6 Nachweise fehlen; Security:clear-Claim ohne Evidence'
+  resolution: 'SCR-0072: ATC-INTEROP-001..006 als Spec-Grundlage'
+- id: F-078
+  priority: P1
+  status: OPEN
+  repo: atc-indexer
+  title: 'Runtime-Evidence-Gap: E2E/Reorg/Idempotenz nicht nachgewiesen; R2/M6-Claim zu hoch'
+  resolution: 'SCR-0072: ATC-INDEX-001..005 als Spec-Grundlage'
+- id: F-079
+  priority: P1
+  status: OPEN
+  repo: a-townchain-os
+  title: Test-Claims 731/674 ohne maschinenlesbare Evidence-Records
+  resolution: 'SCR-0072: ATC-AOS-001 Standard definiert .evidence/'
+- id: F-080
+  priority: P0
+  status: RESOLVED
+  repo: (org-weit)
+  title: 'Lizenz-Stufe-2: package.json UNLICENSED + All-Rights-Reserved-MD-Header org-weit'
+  resolution: 'SCR-0073: 12 package.json Apache-2.0, ~375 MD-Header ersetzt (16 Repos)'
+- id: F-081
+  priority: P0
+  status: RESOLVED
+  repo: (mehrfach)
+  title: Unbelegte Meilenstein-Claims (globus-os M5, genesis-chronicles M7, atc-sdk/atc-explorer M6)
+  resolution: 'SCR-0073: CLAIMED/GEPLANT-Kennzeichnung mit Evidence-Hinweis'
+- id: F-082
+  priority: P1
+  status: RESOLVED
+  repo: atc-node
+  title: Security-Klassifikation S3 vs S4 inkonsistent
+  resolution: 'SCR-0073: S4 (Audit-Empfehlung, netzwerkexponierte Infrastruktur)'
+- id: F-083
+  priority: P1
+  status: RESOLVED
+  repo: atc-contracts
+  title: Truth-Inkonsistenz (.atc primary rust vs Python-Referenzmodell)
+  resolution: 'SCR-0073: primary python, Referenzmodell ehrlich deklariert'
+- id: F-084
+  priority: P1
+  status: PARTIALLY_RESOLVED
+  repo: atc-contracts
+  title: 'ATC-CONTRACT-EXEC-001: .atc zu Bytecode zu ATC-VM zu Receipt ohne Evidence'
+  resolution: 'SCR-0104: EXEC-Chain-MVP CI-erzwungen — assemble.py kompiliert e2e_adder.atc (EXEC-GATE-Subset, fail-fast Simulation) nach ATVM-Ops; exec_receipt.rs fuehrt aus + verifiziert + schreibt deterministischen Receipt; contract-exec-gate.yml GRUEN (a47373e5). Restoffen: Vollcompiler (symbolische Parameter), Gas-Modell, weitere Contracts'
+- id: F-085
+  priority: P1
+  status: OPEN
+  repo: a-townchain-os-docs
+  title: Snapshot-Modell REALITY_STATUS + Documentation-Release-Gate + ARCHITECTURE.md duenn
+- id: F-086
+  priority: P2
+  status: OPEN
+  repo: (mehrfach)
+  title: AGENT_MANIFEST-Scope-Reduktion (Org-Datenbank aus Repo-Manifesten)
+- id: F-087
+  priority: P2
+  status: OPEN
+  repo: globus-os
+  title: M5-Evidence-Gates G2-G12 + genesis-chronicles M7-Evidence-Paket
+- id: F-088
+  priority: P0
+  status: RESOLVED
+  repo: a-townchain-os, atc-vm
+  title: 'Letzte unbelegte PASS-Claims: AOS 731/731 ohne Evidence-Records; atc-vm Build/Tests passing ohne Implementierungsbaum'
+  resolution: 'SCR-0074: NOT VERIFIED / NOT IMPLEMENTED; AOS wartet auf .evidence/-Records (ATC-AOS-001)'
+- id: F-089
+  priority: P0
+  status: RESOLVED
+  repo: a-townchain-os-docs, aurora-ai
+  title: 'Lizenz-Reststufe 3: 3 versteckte package.json (aistudio-Subtrees) mit UNLICENSED gegen Apache-2.0'
+  resolution: 'SCR-0074: auf Apache-2.0 synchronisiert (AD-F-046)'
+- id: F-090
+  priority: P1
+  status: RESOLVED
+  repo: atc-compute, atc-marketplace, atc-node, globus-os
+  title: Pflichtartefakt STATUS.md fehlte in 4 Repos
+  resolution: 'SCR-0074: ehrliche STATUS.md nachgezogen (NOT APPLICABLE / NOT RUN / NOT AUDITED)'
+- id: F-091
+  priority: P2
+  status: OPEN
+  repo: A-TownChain-Okosystems
+  title: Org-Compliance-Scan nur ad hoc — als wiederverwendbares Tool im .github-Hub verankern
+  resolution: 'SCR-0074: Scan-JSON + Report archiviert; Tool-Verankerung als nächster SCR empfohlen'
+- id: F-092
+  priority: P1
+  status: PARTIALLY_RESOLVED
+  repo: .github
+  title: 'Hub-PRs durch Review-Pflicht blockiert — konsolidiert zu PR #4 (SCR-0077), 1 Owner-Approve noetig'
+  resolution: 'SCR-0077: #1-#3 in PR #4 vereinigt (Merge-Commit), alte PRs geschlossen; nach 1x Approve mergt der Agent per API'
+- id: F-093
+  priority: P1
+  status: RESOLVED
+  repo: (org-weit)
+  title: Post-Merge-CI-Verifikation der ~53 squash-gemergten Dependabot-Bumps (MAJOR-Prioritaet)
+  resolution: 'SCR-0078: Test-Suite-Workflows in 13 Repos etabliert, alle realen Folgefehler behoben (Peer-Konflikte, ts-jest-Relikte, tsc-lose-Builds, lucide-API, eframe-API, fehlende Views/Engine); 13/13 gruen, 0 Rollbacks'
+- id: F-094
+  priority: P0
+  status: RESOLVED
+  repo: atc-standards, .github
+  title: 'Registry-Count-Integrity: 4 Quellen 4 Zahlen (Registry 447 / README 431+432 / Hub 433 / Dateien 443)'
+  resolution: 'SCR-0081: gen_views-Regeneration (444 generiert, registry.lock) + Views-Drift-Gate in Governance-CI (REQ-IMP-006) — Handzahlen maschinell verboten'
+- id: F-095
+  priority: P0
+  status: OPEN
+  repo: (org-weit)
+  title: 'Test-Evidence-Integrity: 423/280/674/731-Zahlen divergieren, kein maschinenlesbares Evidence-Schema'
+  resolution: 'SCR-0079: Evidence-Standard-DRAFT (test-report.json je Repo, CI-generiert) im Master-Backlog'
+- id: F-096
+  priority: P0
+  status: PARTIALLY_RESOLVED
+  repo: (org-weit)
+  title: Layer-Taxonomie fehlt — L0-L7 ohne normativen Standard (System- vs. Blockchain-Protocol-Layer ungetrennt)
+  resolution: 'SCR-0079: ATC-LAYER-001-DRAFT vorgeschlagen (Owner §9-Freigabe ausstehend)'
+- id: F-097
+  priority: P0
+  status: OPEN
+  repo: atclang
+  title: 'ATCLang-Rollen widerspruechlich: Rust-Canonical-Core vs. Rust-Toolchain-optional'
+  resolution: 'SCR-0079: Rollen eindeutig zu definieren (Canonical=Rust, Reference=Python, Release-Authority=Rust)'
+- id: F-098
+  priority: P0
+  status: PARTIALLY_RESOLVED
+  repo: (org-weit)
+  title: Status-Claims (PASS/M4/M5/AUDITED) ohne maschinenlesbare Evidence-Bindung
+  resolution: 'SCR-0079: Statusmodell 9 Lifecycle-Phasen x 6 Dimensionen als DRAFT vorgeschlagen'
+- id: F-099
+  priority: P1
+  status: RESOLVED
+  repo: (org-weit)
+  title: CodeQL org-weit inaktiv — code-scanning-API 404 auf allen Repos (Permissions existieren, Scanner nie aktiviert)
+  resolution: 'SCR-0079: Default-Setup-Rollout = Owner-API-Aktion (Issue #95)'
+- id: F-100
+  priority: P1
+  status: PARTIALLY_RESOLVED
+  repo: (org-weit)
+  title: .evidence/-Verzeichnis existiert in 0/27 Repos (F-079 org-weit bestätigt)
+  resolution: 'SCR-0080: 26/27 main + SCR-0081: 27. Evidence-Datei auf PR-#4-Branch bereit (merge = Owner-Approve); ehrliche Zähler in Registry verankert'
+- id: F-101
+  priority: P1
+  status: RESOLVED
+  repo: a-townchain-os
+  title: Cargo-Workspace ohne Test-Suite-Workflow
+  resolution: 'SCR-0079: test-suite.yml nach SCR-0078-Muster ergänzen'
+- id: F-102
+  priority: P1
+  status: RESOLVED
+  repo: atc-vm, atc-node, atc-storage, atc-oracle, atc-mining, atc-algorithm, atc-compute, atc-launchpad
+  title: 8 Repos mit exakt 0 Code-Dateien — Portfolio-Entscheidung offen
+  resolution: 'SCR-0083: Alle 8 Code-losen Repos haben kompilierende MVP-Kerne + grue Unit-Test-Suiten (PORTFOLIO-ENTSCHEIDUNG: implementieren statt reduzieren); Produktiefe inkrementell'
+- id: F-103
+  priority: P2
+  status: RESOLVED
+  repo: a-townchain, atc-compute, atc-marketplace, atc-node, globus-os
+  title: Roadmap-Referenz fehlt im README
+  resolution: 'SCR-0079: zentrale Roadmap-Referenz ergänzen'
+- id: F-104
+  priority: P2
+  status: RESOLVED
+  repo: atc-interop, atc-standards
+  title: Testbare Code-Bestände ohne Test-Workflow (16 bzw. 26 Dateien)
+  resolution: 'SCR-0079: test-suite.yml nach SCR-0078-Muster ergänzen'
+- id: F-105
+  priority: P0
+  status: OPEN
+  repo: atc-algorithm, a-townchain
+  title: Konsens-Dualimplementierungs-Risiko — atc-algorithm ist KANONISCH, a-townchain orchestriert nur
+  resolution: 'SCR-0080: Registry-Regel + SCR-0081: Consensus-Boundary-Check in a-townchain-CI (Report-Modus; strict nach Refactor des Legacy-Bestands)'
+- id: F-106
+  priority: P1
+  status: RESOLVED
+  repo: atc-contracts
+  title: M6-Status-Semantik-Mismatch (M6-Claim "Dienste laufen" bei SPEC/Rebuild-Stand)
+  resolution: 'SCR-0080: M6 = CLAIMED-Klarstellung im README (ATC-STD-MILESTONE-001); kanonisch .atc/evidence/evidence.yaml'
+- id: F-107
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: Registry-Check + Evidence-bound_commit-Update nur in atc-standards-CI verankert — Ausrollen auf alle Governance-CIs
+  resolution: 'SCR-0080: Muster etabliert; Ausrollung + Test-Suite-Evidence-Hook folgt'
+- id: F-108
+  priority: P0
+  status: RESOLVED
+  repo: atclang
+  title: Rust-Canonical-Core NICHT implementiert — 0 Rust-Dateien auf main (Rollen-READMEfiktion)
+  resolution: 'SCR-0084: Lexer+Parser+Differential live in crates/atc-core (8/8 Corpus bytgleich mit Python-Referenz, CI-verifiziert); volle Compiler-Paritaet via F-111'
+- id: F-109
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: test_run-Schema minimal — Erweiterung um total/passed/failed/skipped + artifacts{path,sha256} je Testlauf
+  resolution: 'SCR-0081: initiale Bindung (workflow/run_id/commit/timestamp/result/runner) in 13 Workflows; Schema-Erweiterung folgt mit F-095-Standardisierung'
+- id: F-110
+  priority: P1
+  status: RESOLVED
+  repo: (org-weit)
+  title: CodeQL-Erstläufe verifizieren (14 Workflows aktiviert, erste Analysen ausstehend)
+  resolution: 'SCR-0105-Verifikation: CodeQL org-weit live und gruen — Parallel-Session rollte codeql.yml (rust, autobuild bzw. Multi-Manifest-Build) auf die 9 fehlenden T1-Repos aus (atclang, atc-shivacore, atc-zkp, atc-wallet, atc-algorithm, atc-node, atc-interop, atc-oracle, globus-os); API-Vollpruefung 11.09. 18:2x: alle vorhandenen CodeQL-Workflows gruen; a-townchain-os legitim EXEMPT (docs-only, F-133)'
+- id: F-111
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: MVP-Kerne zu Produkttiefe ausbauen (Gas-Modell VM, SHA-256-PoH nach Spec-Freeze, atc-lang Parser, Netzwerk-Stacks)
+  resolution: 'SCR-0083: Start-Kerne gelegt; Ausbau entlang der 91 SPEC-DRAFTs (SCR-0071) via Sprints'
+- id: F-112
+  priority: P2
+  status: OPEN
+  repo: atclang
+  title: 'Canonical-Core Stage 3: fn-Definitionen, Kontrollfluss, Structs + Corpus-Erweiterung (Differential-Flaeche waechst mit)'
+  resolution: SCR-0084 gelegt das Muster; Stage 3 nach Owner-Priorisierung (F-111-Paket oder separat)
+- id: F-113
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: test_run-Schema um total/passed/failed/skipped/artifacts erweitern (Deep-Dive P1-01)
+  resolution: SCR-0086 gelegt die idempotente Basis; Zaehlparser je Sprache folgt
+- id: F-114
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: Evidence-Promotion auf PR-/Artifact-Modell umstellen statt Bot-Write auf main (Deep-Dive P1-09)
+  resolution: Design-Vorschlag in SCR-0086; Umstellung nach P0-Stabilisierung
+- id: F-115
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: E2E-Conformance-Kette ATCLang->VM->Contract->Node->Consensus->Deterministic State als Release-Freeze-Gate (Deep-Dive P0-05)
+  resolution: 'Programm-Item: verlangt durchgaengige Pipeline; Bestandteile teils vorhanden (Differential atclang, VM-MVP, Consensus-MVP)'
+- id: F-116
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: 'Unabhaengiges Security-Audit der Kernkomponenten vor Release (Deep-Dive P0-06; security: not_audited bleibt ehrlich bis dahin)'
+  resolution: Audit-Vorbereitung laeuft ueber Evidence-Basis; Beauftragung = Owner-Entscheidung
+- id: F-117
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: 'Layer-Zustaendigkeiten formalisieren: a-townchain (Protocol/canonical chain) vs atc-node (executable node) vs atc-vm (execution engine) vs atclang (language/compiler) — Execution-Chain ATCLang->Compiler->VM->Node->Network (Owner-Audit P1-8, SCR-0090)'
+  resolution: Capability-Grenzen je Repo in repositories.yaml verbindlich + Code-Gate-Check; offen
+- id: F-118
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: Layer-Modell L0 ShivaCore / L1 GlobusOS / L2 Aurora / L3 A-TO-OS-Integration / L4 Services / L5 Network festschreiben; a-townchain-os = Integration/Orchestration, nicht OS-Kern (Owner-Audit P1-9, SCR-0090)
+  resolution: ATC-STD-LAYER-001 finalisieren (§9-Owner-Freigabe ausstehend) + Layer-Zuordnung validieren; offen
+- id: F-119
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: 'Repository-Taxonomie: jede Repo genau EINE Primaer-Kategorie (Core/Runtime/Protocol/Infrastructure/Application/Platform/Documentation/Governance/Experimental/Archived) (Owner-Audit P1-14, SCR-0090)'
+  resolution: Kategorie-Feld in repositories.yaml normativ setzen + Validator-Gate; offen
+- id: F-120
+  priority: P2
+  status: OPEN
+  repo: (org-weit)
+  title: Cross-Repo Dependency-DAG + maschinell generierter Architekturgraph + org-weite State-Snapshot-Datei je Lauf (Owner-Audit P2-18/19/20, SCR-0090)
+  resolution: dependencies.yaml-DAG ausbauen, Graph-Generator, Snapshot-Tool; offen
+- id: F-121
+  priority: P0
+  status: OPEN
+  repo: (org-weit)
+  title: 'Security-Gates organisationsweit vereinheitlichen (Owner-Audit 11.09.2026 P0-5): Secret Scanning + Push Protection (Org-Settings, OWNER-Aktion), SBOM, Artifact-Signing/Provenance, reproducible builds fuer kritische Komponenten'
+  resolution: Org-Settings durch Owner setzen; SBOM/Provenance-SCR planen; CodeQL/Dependabot bereits 27/27 bzw. aktiv
+- id: F-122
+  priority: P0
+  status: OPEN
+  repo: (critical-Repositories)
+  title: 'Critical-Repositories mit CODEOWNERS + verpflichtendem Review (Owner-Audit P0-6): Dateien via SCR-0093 angelegt (Human-Reviewer @A-TownChain, Agenten nie Approver gem. ATC-STD-003); Branch-Protection-Enforcement erfordert Owner-Aktion (Protection-PUT mit Agent-Token 404, RCA SCR-0077)'
+  resolution: CODEOWNERS liegt in Critical-Repos; Owner muss required-review-Branch-Protection aktivieren
+- id: F-123
+  priority: P1
+  status: OPEN
+  repo: atc-standards
+  title: 'SSOT fuer Implementierungsstatus (Owner-Audit P0-4): Version/Status in registry/standards.yaml, Implementierungsstatus nur in .atc/evidence — maschinenlesbare Kopplung als Registry-Feld mit Generator-Ableitung spezifizieren'
+  resolution: Schema-Erweiterung designen (SCR), Generatoren anpassen
+- id: F-125
+  priority: P1
+  status: OPEN
+  repo: atclang
+  title: 'ATCLang-ATC-VM kanonische Synchronisierung (Owner-Audit P1-9, baut auf F-112 auf): ATC-Bytecode als einzige kanonische Semantik, Differential-Tests Compiler-VM'
+  resolution: 'nach Stage 3 (fn/Kontrollfluss, F-112): Bytecode-Contract + Differential-Harness'
+- id: F-126
+  priority: P2
+  status: OPEN
+  repo: (org-weit)
+  title: 'AI-Agent Audit Trail vereinheitlichen (Owner-Audit P1-11): 9-Stufen-Kette IDENTITY-TASK-OBSERVATION-FINDING-DECISION-CHANGE-TEST-EVIDENCE-RESULT als maschinenlesbares Evidence-Schema je Aenderung'
+  resolution: Evidence-Schema-Erweiterung, SCRs als Pilot
+- id: F-124
+  priority: P1
+  status: RESOLVED
+  repo: atc-standards
+  title: 'Repository-Typen/Criticality/maturity/standards_profile maschinenlesbar (Owner-Audit P1-7): repositories.yaml hat Layer-Taxonomie (L0-L7) + Capabilities, aber KEINE criticality-/repository_type-/maturity-Felder (SCR-0093-Verifikation: 0 Vorkommen)'
+  resolution: 'STALE aufgeloest + vervollstaendigt (SCR-0101): criticality/maturity_class/domain/layer existierten bereits (SCR-0093-Verifikung war veraltet); standards_profile jetzt ergaenzt: profile-Feld je repositories.yaml-Eintrag + 27 profiles/<repo>.yaml + R14-Enforcement'
+- id: F-127
+  priority: P1
+  status: OPEN
+  repo: atc-standards
+  title: 'Standards-Library-Phase 1+3: metadata.yaml je Standard (aus Registry GENERIERT, R13-Konsistenz) und Strukturumzug auf Ordner-je-Standard inkl. ATC-STD-000 (MAJOR, COMPAT-001, Owner-Gate) — ATC-STD-LIB-001 par.6/10'
+  resolution: Phasenplan in ATC-STD-LIB-001 par.10; Phase 3 als MAJOR mit Owner-Freigabe
+- id: F-128
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: 'Standards-Library-Phase 2: profiles/<repo>/ + .atc/standards.yaml je Repository (Standards Profile = Compliance-Vertrag) + Org-Scan-Profile-Check; baut auf F-124 (Repo-Klassifikation) auf'
+  resolution: Phase 2 nach F-124; Profile-Daten aus repositories.yaml ableiten
+- id: F-129
+  priority: P2
+  status: OPEN
+  repo: atc-standards
+  title: 'Standards-Library-Phase 4+5: STABLE-Status (GATE-006..008: Reference Implementation, Conformance Evidence, Stability Period) + Validator-CLI + ATC-SPEC/ATC-TEST-Hierarchien fuer kritische Familien'
+  resolution: nach Phase 1-2; Konsens-Familie zuerst
+- id: F-130
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: 'Implementierungs-Mapping der 25 restaurierten Standards (SCR-0102): je Standard Tooling-Evidence zuordnen (Org-Scan 030/031, CodeQL+Dependabot 021/022, Incident-Prozesse 020/035/036), Implementierungs-Matrix nachfuehren; No-Evidence-No-Claim'
+  resolution: Je Familie SCR mit Evidence-Bindung; Matrix-Status specification_only bis Evidence vorliegt
+- id: F-131
+  priority: P2
+  status: OPEN
+  repo: atc-standards
+  title: '12 DRAFT-Standards pruefen: vollstaendige Huelle -> SCR-Elaborierung, unvollstaendig -> ehrlich als GEPLANT/leer dokumentieren; KEIN Blanko-Approval (SCR-0102 begrenzt auf 25 CANDIDATEs)'
+  resolution: Audit je DRAFT via SCR; entscheidung je Standard
+- id: F-132
+  priority: P2
+  status: OPEN
+  repo: .github
+  title: 'Org Compliance Scan robust haerten: tarfile.AbsoluteLinkError durch absolute Symlinks in Repo-Tarballs bricht den GESAMT-Scan ab (atc-contracts .venv-t, 11.09. 12:16, transienter Parallel-Stand) — Symlinks beim Extrahieren ueberspringen + Fehler je Repo isolieren; Hub-Aenderung via PR (PR-gated)'
+  resolution: Hub-PR mit Scanner-Patch (tarfile-Filter + je-Repo-try/except), danach Scan verifizieren
+- id: F-133
+  priority: P3
+  status: OPEN
+  repo: a-townchain-os
+  title: 'CodeQL-Exemption dokumentieren: Monorepo-Shell ist docs-only (18 md, 0 Quellcode, L7-Integrationsshell) — Rust-CodeQL-Rollout 504e3e0 scheiterte konfigurativ (autobuild unanwendbar), codeql.yml-Loeschung war korrekt; CodeQL ohne Quellcode nicht anwendbar; bei Re-Ansiedlung von Code wieder aktivieren'
+  resolution: Exemption in Scan-EXEMPT-Klasse dokumentieren; Reaktivierung an Code-Wiedereinzug binden
+- id: F-134
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: 'Actions-SHA-Pinning: 0 von ~130 Action-Referenzen sind auf Commit-SHA gepinnt (alle Floating-Tags, ATC-ORG-BASELINE-001 par.5 P0) — Pinning-Rollout je Repo mit SHA-Aufloesung via API, Ausnahme nur fuer org-eigene Referenzen'
+  resolution: Pinning-Welle je Tier (T0/T1 zuerst), danach org-weit; CI-verifiziert
+- id: F-135
+  priority: P1
+  status: OPEN
+  repo: (org-weit)
+  title: 'Release-Security-Programm (ATC-ORG-BASELINE-001 par.5 P1): SBOM, signierte Releases, Reproducible Builds, Tag-/Release-Protection — IST 0/26; Proto-Evidence-Gate vorhanden; Ablauf SOURCE->CI->TEST->SECURITY->BUILD->SBOM->HASH->SIGN->RELEASE je Tier ableiten'
+  resolution: Programm-SCR je Teilgabe mit Evidence-Bindung; T1 zuerst
+- id: F-136
+  priority: P0
+  status: OPEN
+  repo: a-townchain-os
+  title: 'Secret-Scanning-Alert #1 (google_api_key, 05.07.2026, Validitaet unknown): Datei aus main entfernt, Alert offen — OWNER-VERIFIKATION noetig: wenn Key real, in Google Cloud Console widerrufen, dann Alert als revoked loesen; wenn Test-Dummy, als false_positive loesen'
+  resolution: Owner-Verifikation + Widerruf; danach Alert-Resolution via API
+- id: F-137
+  priority: P1
+  status: OPEN
+  repo: atc-zkp
+  title: 'ZKVM-Implementierung (ATC-STD-ZKP-009 APPROVED): 7-Crate-MVP, aber keine ZKVM-Crate — Proof-System-Auswahl, Circuit-Modell, ZKVM-Runtime fehlen; Spec approved, Implementation 0'
+  resolution: ZKVM-SCR nach Proof-System-Freeze
+- id: F-138
+  priority: P2
+  status: OPEN
+  repo: (org-weit)
+  title: 'EVM-Compatibility-Layer (ATC-STD-245 APPROVED): kein Implementierungs-Repo — Owner-Entscheidung: eigenes Repo vs. Modul in atc-interop; Scope (Adapter vs. volle EVM) offen'
+  resolution: Owner-Portfolio-Entscheidung, dann SCR
+- id: F-139
+  priority: P1
+  status: PARTIALLY_RESOLVED
+  repo: (org-weit)
+  title: 'Devnet/Testnet-Infrastruktur fehlt komplett: kein Bootstrapping-Repro, keine Node-Aufstellung, Chain-ID 658467 existiert nur als Konstante — Mainnet-Termin (F-069) hat keine erprobte Vorstufe; Devnet-MVP = 2 Nodes + Boot-Genesis + RPC-Erreichbarkeit waere erster Gate'
+  resolution: 'SCR-0106/0108/0109/0112/0113/0114: Devnet sechsstufig CI-verifiziert — Genesis-Bootstrap mit Boot-Hash, TCP-RPC (Zeile plus JSON-RPC), Node als startbarer Prozess (src/main.rs), Zwei-Node-Devnet-Smoke (identische Chain-ID/Boot-Hash ueber zwei lebende Dienste), und jetzt Genesis-File-Bindung via serde: CI-Test erzwingt Code-Genesis == config/devnet/genesis.json (atc-node Test Suite GRUEN e3088555). Restoffen: Docker-Compose-Devnet mit echten Prozessen, echtes P2P-Gossip, Blockproduktion'
+- id: F-140
+  priority: P1
+  status: PARTIALLY_RESOLVED
+  repo: (org-weit)
+  title: 'Chain-Access-Layer fehlt: kein RPC/API-Dienst zwischen atc-node und Wallet/Explorer/SDK — atc-sdk ist Bibliothek ohne Dienstknoten, atc-explorer hat keine Node-Anbindung; IFC-Vertraege 0009/0010 ohne Consumer'
+  resolution: 'SCR-0108/0109/0110/0111: Chain-Access beidseitig UND cross-repo CI-verifiziert — atc-node Devnet-RPC (Zeile + JSON-RPC-Subset, GRUEN 5b0af587), atc-sdk JSON-RPC-Client mit Mock-Roundtrip (GRUEN 9a237047), und jetzt echter Cross-Repo-Integrationstest in atc-sdk CI (GRUEN 6f4db211): SDK-Client gegen ECHTEN atc-node-Code via rev-gepinnter git-Dependency, verifiziert chain_id=658467, peers=2 und Boot-Hash-Identitaet Genesis-vs-RPC. Kein Mock mehr. Restoffen: Auth/TLS, Explorer/Wallet-Consumer (IFC-0009/0010), Gossip, Blockproduktion'
+
+- id: F-141
+  priority: P3
+  status: OPEN
+  repo: atc-ide
+  title: 'Fleet-Audit-Run-153: AUDIT-003 — 7 Dateien mit untriagierten TODO/FIXME-Markern (App/CustomLinterPanel/AutoSyncHubModal/AuditPanel/projectSyncEngine/auditEngine/TodoApp); SEC-AUDIT-001 GitHubSyncModal.tsx als FALSE POSITIVE triagiert (UI-Passwort-Platzhalter, kein Credential-Material, fixiert 16f034a); Owner: Repo-Owner (Marker-Triage)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-142
+  priority: P1
+  status: OPEN
+  repo: a-townchain-ecosystem
+  title: 'Fleet-Audit-Run-153: Compile-Fehler E0425 (MAX_SUPPLY nicht in Scope) + E0046 (Trait-Item send_to nicht implementiert) + SEC-AUDIT-003 (Workflow ohne permissions-Policy) + AUDIT-003/CONS-AUDIT-003; Owner: Repo-Owner (Build) + Security (Policy)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-143
+  priority: P1
+  status: OPEN
+  repo: globus-os
+  title: 'Fleet-Audit-Run-153: Bootloader-Build fehlgeschlagen (UEFI + BIOS stage-1..4, custom build command bootloader v0.11.17) + SEC-AUDIT-003 + AUDIT-003 + CONS-AUDIT-003 (Linux-Edition dupliziert Windows-Editions-Dateien); Owner: Repo-Owner (Build) + Security (Policy)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-144
+  priority: P1
+  status: OPEN
+  repo: atc-shivacore
+  title: 'Fleet-Audit-Run-153: SEC-AUDIT-003 — .github/workflows/sdk.yml ohne explizite permissions-Policy; Owner: Security'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-145
+  priority: P2
+  status: OPEN
+  repo: atc-contracts
+  title: 'Fleet-Audit-Run-153: CONS-AUDIT-003 — Duplikat-Dateiinhalte; Owner: Repo-Owner (Konsolidierung)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-146
+  priority: P1
+  status: OPEN
+  repo: atclang
+  title: 'Fleet-Audit-Run-153: E0614 (usize dereferenzieren) + E0502 (doppelter Borrow bytes) — atc-core (lib) kompiliert nicht; Owner: Repo-Owner (Build)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-147
+  priority: P1
+  status: OPEN
+  repo: a-townchain-os-docs
+  title: 'Fleet-Audit-Run-153: unparstbarer Legacy-Cargo.toml (docs/monorepo-legacy/src-legacy/shivacore/kernel) + npm ERESOLVE + AUDIT-003; Owner: Repo-Owner (Legacy-Bereinigung)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-148
+  priority: P1
+  status: OPEN
+  repo: atc-standards
+  title: 'Fleet-Audit-Run-153: SEC-AUDIT-003 — .github/workflows/sdk.yml ohne explizite permissions-Policy; Owner: Security'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-149
+  priority: P1
+  status: OPEN
+  repo: atc-toolchain
+  title: 'Fleet-Audit-Run-153: AUDIT-002 — erforderliche Governance-Datei docs/ENGINEERING_AUDIT.md fehlt komplett; Owner: Governance'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-150
+  priority: P1
+  status: OPEN
+  repo: a-townchain
+  title: 'Fleet-Audit-Run-153: poh::tests::slot_overflow_is_rejected FAILED (Assertion !c.verify()) — teilt Ursache mit atc-algorithm F-159 (gemeinsames poh-Modul) + SEC-AUDIT-003 + CONS-AUDIT-003; Owner: Repo-Owner (Test) + Security (Policy)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-151
+  priority: P2
+  status: OPEN
+  repo: genesis-chronicles
+  title: 'Fleet-Audit-Run-153: CONS-AUDIT-003 — Duplikat-Dateiinhalte; Owner: Repo-Owner (Konsolidierung)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-152
+  priority: P2
+  status: OPEN
+  repo: atc-explorer
+  title: 'Fleet-Audit-Run-153: CONS-AUDIT-003 — Duplikat-Dateiinhalte; Owner: Repo-Owner (Konsolidierung)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-153
+  priority: P2
+  status: OPEN
+  repo: atc-wallet
+  title: 'Fleet-Audit-Run-153: AUDIT-003 (TODO-Marker) + CONS-AUDIT-003 (src/-Spiegel dupliziert modules/atc-wallet: ecdsa.py, wallet.py, crypto.py, main.rs); Owner: Repo-Owner'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-154
+  priority: P2
+  status: OPEN
+  repo: atc-zkp
+  title: 'Fleet-Audit-Run-153: CONS-AUDIT-001 — Rust-Workspace ohne committete Cargo.lock-Evidence; Owner: Repo-Owner'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-155
+  priority: P1
+  status: OPEN
+  repo: atc-sdk
+  title: 'Fleet-Audit-Run-153: devnet-Integrationstest sdk_spricht_mit_echtem_node im Fleet-Runner FAILED (am 11.09. CI-gruen auf 6f4db211 — Triaging noetig: Runner-Umgebung vs. Regression) + SEC-AUDIT-003; Owner: Repo-Owner (Test-Triage) + Security (Policy)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-156
+  priority: P1
+  status: OPEN
+  repo: genesis-engine
+  title: 'Fleet-Audit-Run-153: gameplay_pipeline_remains_active + network_state_is_applied_to_existing_entity FAILED + SEC-AUDIT-003; Owner: Repo-Owner (Test) + Security (Policy)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-157
+  priority: P1
+  status: OPEN
+  repo: aurora-ai
+  title: 'Fleet-Audit-Run-153: SEC-AUDIT-003 (Workflow ohne permissions-Policy) + AUDIT-003 (TODO-Marker); Owner: Security + Repo-Owner'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-158
+  priority: P2
+  status: OPEN
+  repo: a-townchain-os
+  title: 'Fleet-Audit-Run-153: CONS-AUDIT-001 — kai-os/Cargo.toml Workspace ohne committete Cargo.lock-Evidence; Owner: Repo-Owner'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+- id: F-159
+  priority: P1
+  status: OPEN
+  repo: atc-algorithm
+  title: 'Fleet-Audit-Run-153: poh::tests::slot_overflow_is_rejected FAILED (17 passed/1 failed; Assertion !c.verify() — Test erwartet Reject bei Slot-Overflow); geteilter Ursachenkontext mit a-townchain F-150; Owner: Repo-Owner (Test)'
+  resolution: 'Fleet-Audit-Backlog Run 153 (06.10.2026, Head 7fd11b3, Artifact fleet-audit-results): Remediation mit Evidence-Gate, Wiedervorlage naechster Fleet-Lauf; Owner je Klasse (Owner-Tabelle 06.10.)'
+
+
+- id: F-160
+  priority: P1
+  status: RESOLVED
+  repo: atc-standards
+  title: 'Branch-Protection-Admin-Bypass atc-standards main (06.10.2026): Agent-Push 96d5f12 (Fleet-Backlog F-141..F-159, Owner-Sequenz-Direktive) lief als Admin-Bypass ueber Required-PR-Reviews und 14 Required Checks; Akteur Aurora-Superagent-Token mit Repo-Admin; Ursache strukturell: Enforce-Admins=False (GitHub-Default, kein dokumentiertes Break-Glass — unkontrollierter Pfad); alle 14 umgangenen Checks (ruff, Ruff format baseline, quality, validate, analyze, registry-consistency, Cross-Registry-Konsistenztest, atc-repo-audit, tools-smoke, version-gate, allocation-gate, matrix, dependency-security, cargo) liefen post-hoc auf 96d5f12 mit SUCCESS — Gating wurde umgangen, Verifikation nicht; Owner-Entscheidung noetig: enforce_admins aktivieren (Agent UND Owner via PR) plus dokumentiertes Break-Glass-Verfahren, oder Admin-Bypass explizit als Policy akzeptieren; Kontext: F-122 Branch-Protection-Rollout'
+  resolution: 'Dokumentiert per Owner-Anforderung 06.10. (5 Pruefpunkte: Vorgang, Akteur, umgangene Checks, Break-Glass-Status, Policy-Frage); Registrierung dieses Befunds bewusst ueber PR-Pfad statt erneutem Bypass; P1 bis Policy-Entscheidung des Owners; RESOLVED 06.10. per Owner-Direktive ''enforce_admins aktivieren'': Aktivierung via POST /branches/main/protection/enforce_admins (HTTP 200, enabled:true, 2026-10-06T17:41:24Z, Aurora-Superagent-Token = gleiches Credential wie historischer Bypass 96d5f12); Expected Result VORHER dokumentiert (Admin-/Agent-Push auf main muss abgewiesen werden); kontrollierter Bypass-Versuch: Leer-Commit fc058ce071a7ac37af2c1b4b60cfc10e472a7f5a auf main (Basis d057531), GitHub-Ablehnung als primaere Evidence: GH006 Protected branch update failed, ''Changes must be made through a pull request'', ''14 of 14 required status checks are expected'', Push-Exit 1 (17:42 UTC); Enforcement-Layer wirksam auch fuer Admins/Agenten; Statusflip bewusst per PR (Human-Merge); Break-Glass-Entwurf registry/BREAK_GLASS.md (Owner-Review in diesem PR); Checker-v1.1.0-Rollout startet nach Merge'
