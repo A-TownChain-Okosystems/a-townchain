@@ -28,7 +28,7 @@ atc-security/
 
 ## Abhängigkeiten
 
-- [`A-TownChain-Okosystems/atc-shivacore`](../a-townchain-os/src/modules/atc-shivacore)
+- [`A-TownChain-Okosystems/atc-shivacore`](../..)
 
 ## Copyright
 
