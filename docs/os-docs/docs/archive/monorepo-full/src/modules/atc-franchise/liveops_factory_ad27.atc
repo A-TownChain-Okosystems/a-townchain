@@ -1,0 +1,212 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-27 — LiveOps Factory: Saisons, Events, Battle Passes, Patches
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct LiveOpsFactory {
+    seasons: Map<Hash256, Season>,
+    events: Map<Hash256, LiveEvent>,
+    battle_passes: Map<Hash256, BattlePass>,
+    patches: Map<Hash256, Patch>,
+    ab_tests: Map<Hash256, ABTest>,
+    content_rotation: List<RotationEntry>,
+    current_season: Hash256,
+}
+
+struct Season {
+    id: Hash256,
+    number: UInt16,
+    name: String,
+    theme: String,
+    start_date: UInt64,
+    end_date: UInt64,
+    battle_pass_id: Hash256,
+    events: List<Hash256>,
+    active: Bool,
+}
+
+struct LiveEvent {
+    id: Hash256,
+    name: String,
+    type: EventType,
+    description: String,
+    start_date: UInt64,
+    end_date: UInt64,
+    rewards: List<String>,
+    participants: UInt32,
+    active: Bool,
+}
+
+enum EventType { Festival, Tournament, Holiday, Crossover, Flash, Community, Developer }
+
+struct BattlePass {
+    id: Hash256,
+    season_id: Hash256,
+    name: String,
+    tiers: List<BattlePassTier>,
+    max_tier: UInt16,
+    free_tiers: UInt16,
+    premium_price: UInt64,
+    xp_per_tier: UInt32,
+}
+
+struct BattlePassTier {
+    tier: UInt16,
+    free_reward: String,
+    premium_reward: String,
+    xp_required: UInt32,
+}
+
+struct Patch {
+    id: Hash256,
+    version: String,
+    type: PatchType,
+    notes: List<String>,
+    changes: List<PatchChange>,
+    release_date: UInt64,
+    size_mb: Float32,
+    hotfix: Bool,
+}
+
+enum PatchType { Major, Minor, Hotfix, Content, Balance }
+
+struct PatchChange {
+    category: String,
+    description: String,
+    impact: String,
+}
+
+struct ABTest {
+    id: Hash256,
+    name: String,
+    hypothesis: String,
+    variant_a: String,
+    variant_b: String,
+    metric: String,
+    start_date: UInt64,
+    end_date: UInt64,
+    sample_size: UInt32,
+    result: String,
+    active: Bool,
+}
+
+struct RotationEntry {
+    content_id: Hash256,
+    content_type: String,
+    next_rotation: UInt64,
+    active: Bool,
+}
+
+// LiveOps Factory: Saison erstellen
+pub fn create_season(factory: LiveOpsFactory, number: UInt16, name: String, theme: String, start: UInt64, end: UInt64) -> Hash256 {
+    let sid = Crypto::sha256(serialize(name, number, Chain::timestamp()))
+    factory.seasons[sid] = Season {
+        id: sid, number: number, name: name, theme: theme,
+        start_date: start, end_date: end, battle_pass_id: Hash256::zero(),
+        events: [], active: false,
+    }
+    return sid
+}
+
+// LiveOps Factory: Saison aktivieren
+pub fn activate_season(factory: LiveOpsFactory, season_id: Hash256) -> Bool {
+    require(factory.seasons.contains(season_id), "Season not found")
+    if factory.current_season != Hash256::zero() and factory.seasons.contains(factory.current_season) {
+        factory.seasons[factory.current_season].active = false
+    }
+    factory.seasons[season_id].active = true
+    factory.current_season = season_id
+    return true
+}
+
+// LiveOps Factory: Event erstellen
+pub fn create_event(factory: LiveOpsFactory, name: String, etype: EventType, desc: String, start: UInt64, end: UInt64) -> Hash256 {
+    let eid = Crypto::sha256(serialize(name, etype, Chain::timestamp()))
+    factory.events[eid] = LiveEvent {
+        id: eid, name: name, type: etype, description: desc,
+        start_date: start, end_date: end, rewards: [], participants: 0, active: false,
+    }
+    return eid
+}
+
+// LiveOps Factory: Event zur Saison hinzufügen
+pub fn add_event_to_season(factory: LiveOpsFactory, season_id: Hash256, event_id: Hash256) -> Bool {
+    require(factory.seasons.contains(season_id), "Season not found")
+    factory.seasons[season_id].events.append(event_id)
+    return true
+}
+
+// LiveOps Factory: Battle Pass erstellen
+pub fn create_battle_pass(factory: LiveOpsFactory, season_id: Hash256, name: String, max_tier: UInt16, free_tiers: UInt16, price: UInt64, xp_per_tier: UInt32) -> Hash256 {
+    let bpid = Crypto::sha256(serialize(name, season_id, Chain::timestamp()))
+    let tiers = []
+    for i in 0..max_tier {
+        tiers.append(BattlePassTier {
+            tier: i + 1,
+            free_reward: if i < free_tiers then "Reward_" + i else "",
+            premium_reward: "Premium_Reward_" + i,
+            xp_required: xp_per_tier * (i + 1),
+        })
+    }
+    factory.battle_passes[bpid] = BattlePass {
+        id: bpid, season_id: season_id, name: name,
+        tiers: tiers, max_tier: max_tier, free_tiers: free_tiers,
+        premium_price: price, xp_per_tier: xp_per_tier,
+    }
+    if factory.seasons.contains(season_id) {
+        factory.seasons[season_id].battle_pass_id = bpid
+    }
+    return bpid
+}
+
+// LiveOps Factory: Patch erstellen
+pub fn create_patch(factory: LiveOpsFactory, version: String, ptype: PatchType, notes: List<String>, changes: List<PatchChange>, hotfix: Bool) -> Hash256 {
+    let pid = Crypto::sha256(serialize(version, Chain::timestamp()))
+    factory.patches[pid] = Patch {
+        id: pid, version: version, type: ptype, notes: notes,
+        changes: changes, release_date: Chain::timestamp(), size_mb: 0.0, hotfix: hotfix,
+    }
+    return pid
+}
+
+// LiveOps Factory: A/B Test erstellen
+pub fn create_ab_test(factory: LiveOpsFactory, name: String, hypothesis: String, variant_a: String, variant_b: String, metric: String, duration_days: UInt16) -> Hash256 {
+    let tid = Crypto::sha256(serialize(name, Chain::timestamp()))
+    factory.ab_tests[tid] = ABTest {
+        id: tid, name: name, hypothesis: hypothesis,
+        variant_a: variant_a, variant_b: variant_b, metric: metric,
+        start_date: Chain::timestamp(), end_date: Chain::timestamp() + duration_days * 86400,
+        sample_size: 0, result: "", active: true,
+    }
+    return tid
+}
+
+// LiveOps Factory: A/B Test abschließen
+pub fn conclude_ab_test(factory: LiveOpsFactory, test_id: Hash256, result: String) -> Bool {
+    require(factory.ab_tests.contains(test_id), "A/B test not found")
+    factory.ab_tests[test_id].active = false
+    factory.ab_tests[test_id].result = result
+    return true
+}
+
+// LiveOps Factory: Content-Rotation hinzufügen
+pub fn add_rotation(factory: LiveOpsFactory, content_id: Hash256, content_type: String, rotation_days: UInt16) -> Bool {
+    factory.content_rotation.append(RotationEntry {
+        content_id: content_id,
+        content_type: content_type,
+        next_rotation: Chain::timestamp() + rotation_days * 86400,
+        active: true,
+    })
+    return true
+}
+
+// LiveOps Factory: Setup für neues Franchise
+pub fn setup_liveops(factory: LiveOpsFactory, franchise_id: Hash256) -> Bool {
+    let sid = create_season(factory, 1, "Season 1: Launch", "Launch", Chain::timestamp(), Chain::timestamp() + 7776000)
+    activate_season(factory, sid)
+    create_battle_pass(factory, sid, "Launch Pass", 50, 10, 1000, 1000)
+    create_event(factory, "Launch Celebration", EventType::Festival, "Celebrate the launch!", Chain::timestamp(), Chain::timestamp() + 604800)
+    return true
+}
