@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-217",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #217: docs(rollup): add ATC-L2 Phase 0 evidence matrix",
+  "context": "Pull request 217 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/217",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\n- Add a source-backed Phase 0 evidence matrix for the ATC-L2 rollup feasibility gate.\n- Record inspected file paths and blob SHAs, distinguishing architecture descriptions from executable verification.\n- Define the required L1, proof, data-availability, sequencer recovery, withdrawal, standards, and CI evidence before selecting the rollup proof model.\n\n## Safety boundary\nThis is architecture/evidence control-plane documentation only. It does not implement or claim a working rollup, proof verifier, or production bridge. Optimistic vs. validity proof remains undecided until the pinned-commit source and test audit is complete.\n\nCloses no issue automatically; tracks #216."
+}
