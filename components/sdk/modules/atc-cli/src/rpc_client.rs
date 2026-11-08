@@ -49,10 +49,15 @@ impl RpcClient {
         self.call("chain_id")
     }
 
-    pub fn boot_hash(&mut self) -> Result<u64, String> {
-        self.call("boot_hash")?
-            .parse::<u64>()
-            .map_err(|e| format!("kein u64: {}", e))
+    /// 256-Bit-Bindungs-Hash der Genesis als 64-stelliges Hex. Eine kuerzere
+    /// oder nicht-hexadezimale Antwort wird abgelehnt: sie waere ein
+    /// 64-Bit-Traversal und damit kein Bindungs-Hash (SEC-P0-007).
+    pub fn boot_hash(&mut self) -> Result<String, String> {
+        let wert = self.call("boot_hash")?;
+        if wert.len() != 64 || !wert.bytes().all(|b| b.is_ascii_hexdigit()) {
+            return Err(format!("Boot-Hash ist kein 256-Bit-Hex-Digest: {}", wert));
+        }
+        Ok(wert.to_ascii_lowercase())
     }
 
     pub fn peers(&mut self) -> Result<usize, String> {
@@ -113,7 +118,7 @@ mod tests {
             } else if line.contains("\"peers\"") {
                 "2"
             } else if line.contains("\"boot_hash\"") {
-                "1234567890"
+                "ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12"
             } else {
                 "pong"
             };
