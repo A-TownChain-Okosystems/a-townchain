@@ -1,0 +1,164 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-83 — Proof of Stake (PoS) Validator Selection
+// Sprint 2.3 | Consensus Layer | Chain-ID 9000
+// Upgraded to v0.3 ATCLang syntax
+// Stake-weighted validator selection with slashing
+// ─────────────────────────────────────────────────────────────
+
+const MIN_STAKE: u128 = 1000
+const MAX_VALIDATORS: u16 = 256
+const UNBONDING_PERIOD: u64 = 604800  // 7 days in seconds
+const SLASH_RATE: u8 = 10             // 10% slash for misbehavior
+
+enum Misbehavior { DoubleSign, Downtime, InvalidVote, Equivocation }
+
+struct StakeInfo {
+    address: Address,
+    stake: u128,
+    rewards: u128,
+    slashed: u128,
+    active: bool,
+    joined_at: u64,
+    last_vote: u64,
+    unbonding_at: u64,
+}
+
+contract ProofOfStake {
+    state stakers: Map<Address, StakeInfo>
+    state total_stake: u128
+    state total_rewards: u128
+    state total_slashed: u128
+    state validator_count: u16
+    state owner: Address
+
+    event Staked(addr: Address, amount: u128)
+    event Unstaked(addr: Address, amount: u128)
+    event RewardDistributed(addr: Address, amount: u128)
+    event Slashed(addr: Address, reason: Misbehavior, amount: u128)
+
+    fn init() {
+        self.stakers = {}
+        self.total_stake = 0
+        self.total_rewards = 0
+        self.total_slashed = 0
+        self.validator_count = 0
+        self.owner = msg_sender()
+    }
+
+    fn stake(addr: Address, amount: u128) -> bool {
+        if amount < MIN_STAKE {
+            return false
+        }
+        if self.validator_count >= MAX_VALIDATORS {
+            return false
+        }
+        let s = self.stakers.get(addr)
+        if s == null {
+            let info = StakeInfo {
+                address: addr,
+                stake: amount,
+                rewards: 0,
+                slashed: 0,
+                active: true,
+                joined_at: Time::now(),
+                last_vote: 0,
+                unbonding_at: 0,
+            }
+            self.stakers[addr] = info
+            self.validator_count += 1
+        } else {
+            s.stake += amount
+            s.active = true
+        }
+        self.total_stake += amount
+        emit Staked(addr, amount)
+        return true
+    }
+
+    fn unstake(addr: Address, amount: u128) -> bool {
+        let s = self.stakers.get(addr)
+        if s == null || s.stake < amount {
+            return false
+        }
+        s.stake -= amount
+        self.total_stake -= amount
+        s.unbonding_at = Time::now() + UNBONDING_PERIOD
+        if s.stake < MIN_STAKE {
+            s.active = false
+            if self.validator_count > 0 {
+                self.validator_count -= 1
+            }
+        }
+        emit Unstaked(addr, amount)
+        return true
+    }
+
+    fn slash(addr: Address, reason: Misbehavior) -> bool {
+        let s = self.stakers.get(addr)
+        if s == null || !s.active {
+            return false
+        }
+        let slash_amount = s.stake * SLASH_RATE / 100
+        s.stake -= slash_amount
+        s.slashed += slash_amount
+        self.total_stake -= slash_amount
+        self.total_slashed += slash_amount
+        if reason == Misbehavior::DoubleSign {
+            s.active = false
+            if self.validator_count > 0 {
+                self.validator_count -= 1
+            }
+        }
+        emit Slashed(addr, reason, slash_amount)
+        return true
+    }
+
+    fn distribute_rewards(addr: Address, amount: u128) -> bool {
+        let s = self.stakers.get(addr)
+        if s == null || !s.active {
+            return false
+        }
+        s.rewards += amount
+        self.total_rewards += amount
+        emit RewardDistributed(addr, amount)
+        return true
+    }
+
+    fn record_vote(addr: Address) -> bool {
+        let s = self.stakers.get(addr)
+        if s == null || !s.active {
+            return false
+        }
+        s.last_vote = Time::now()
+        return true
+    }
+
+    fn is_validator(addr: Address) -> bool {
+        let s = self.stakers.get(addr)
+        if s == null {
+            return false
+        }
+        return s.active
+    }
+
+    fn get_stake(addr: Address) -> (u128, u128, u128, bool, u64) {
+        let s = self.stakers.get(addr)
+        if s == null {
+            return (0, 0, 0, false, 0)
+        }
+        return (s.stake, s.rewards, s.slashed, s.active, s.last_vote)
+    }
+
+    fn get_total_stake() -> u128 {
+        return self.total_stake
+    }
+
+    fn get_validator_count() -> u16 {
+        return self.validator_count
+    }
+
+    fn get_stats() -> (u128, u128, u128, u16) {
+        return (self.total_stake, self.total_rewards, self.total_slashed, self.validator_count)
+    }
+}
