@@ -1,0 +1,8 @@
+type: object
+required: [repository, maintainers]
+properties:
+  repository: {type: string}
+  maintainers: {type: array, items: {type: string}}
+  security: {type: object, required: [team]}
+  architecture: {type: object, required: [team]}
+  release: {type: object, required: [team]}
