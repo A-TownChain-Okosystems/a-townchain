@@ -202,14 +202,28 @@ impl<'a> FnLowerer<'a> {
             Stmt::Use { .. }
             | Stmt::Struct { .. }
             | Stmt::Enum { .. }
-            | Stmt::Contract { .. } => Err(LowerError::new(
-                "Native Deklaration ist nur Metadatum und kann nicht als Statement ausgefuehrt werden",
+            | Stmt::Contract { .. }
+            | Stmt::State { .. }
+            | Stmt::StateBlock { .. }
+            | Stmt::Event { .. } => Err(LowerError::new(
+                "Deklaration ist nur Metadatum und kann nicht als Statement ausgefuehrt werden",
+            )),
+            // Vertragslogik wird noch nicht zu Bytecode gesenkt (Frontend-Pruefung only).
+            Stmt::Emit { .. } | Stmt::Require { .. } | Stmt::Assign { .. } => Err(LowerError::new(
+                "Vertragsstatement ausserhalb des ausfuehrbaren Subsets",
             )),
         }
     }
 
     fn lower_expr(&mut self, e: &Expr) -> Result<(), LowerError> {
         match e {
+            Expr::Field { .. } | Expr::Index { .. } | Expr::Array(_) | Expr::StructLiteral { .. }
+            | Expr::MapLiteral(_)
+            | Expr::Tuple(_) => {
+                return Err(LowerError::new(
+                    "Feld-/Index-/Array-Ausdruck ausserhalb des ausfuehrbaren Subsets",
+                ))
+            }
             Expr::Int(v) => self.out.push(Instruction::ConstI64(*v)),
             Expr::BigInt(_) => {
                 return Err(LowerError::new(
@@ -539,8 +553,12 @@ mod tests {
     }
 
     #[test]
-    fn unbekannter_operator_nach_wie_vor_fail_closed() {
-        let prog = crate::parser::parse_program("fn main() -> i64 { return 1 && 2; }");
-        assert!(prog.is_err()); // '&&' lexikographisch nicht im Subset
+    fn logikoperator_parst_aber_bleibt_im_lowering_fail_closed() {
+        // '&&' ist seit dem AST-Umbau syntaktisch gueltig, im VM-Subset aber
+        // weiterhin nicht implementiert: das Lowering muss ablehnen.
+        let prog = crate::parser::parse_program("fn main() -> i64 { return 1 && 2; }")
+            .expect("Parse muss gelingen");
+        let err = lower_program(&prog).expect_err("Lowering muss ablehnen");
+        assert!(format!("{err:?}").contains("Subset"), "{err:?}");
     }
 }
