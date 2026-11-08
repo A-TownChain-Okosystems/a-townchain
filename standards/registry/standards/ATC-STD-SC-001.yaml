@@ -1,0 +1,13 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: sc
+family: SC
+family_id: PREFIX
+file: standards/sc/ATC-STD-SC-001.md
+mandate: 'Owner-Entwurf 07.09. — Familien-Hauptstandard: Kategorien, SSOT-Kette, Gates
+  SC-G0..G13'
+registry_version: 1
+standard_id: ATC-STD-SC-001
+status: approved
+title: Smart Contract General Standard
+version: 1.0.0
