@@ -1,0 +1,25 @@
+# Requirement-Matrix fuer ATC-STD-000 v1.0.0 (Owner-Formalfassung + normatives Naming-Hardening §7)
+# Pruefung der Normativ-Pflichten je Abschnitt am 07.09.2026.
+requirements:
+  - {id: REQ-STD-001, level: MUST, description: "Eindeutige Standard-ID, nicht wiederverwendbar", section: "§5", status: PASS, evidence: "ID-Muster + Validator S-02; 4 Standards registriert"}
+  - {id: REQ-STD-002, level: MUST, description: "Maschinenlesbarer Metadatenblock (inkl. authority)", section: "§6", status: PASS, evidence: "standard.schema.yaml + Validator S-01"}
+  - {id: REQ-STD-003, level: MUST, description: "Kontrollierter Lifecycle, dokumentierte Uebergaenge", section: "§8", status: PASS, evidence: "lifecycle.yaml + Changelog je Standard"}
+  - {id: REQ-STD-004, level: SHOULD, description: "Mindeststruktur (Purpose/Scope/…/Changelog)", section: "§9", status: PASS, evidence: "Validator S-06/S-07"}
+  - {id: REQ-STD-005, level: MUST, description: "Eindeutige REQ-IDs je Anforderung", section: "§10", status: PASS, evidence: "requirement.schema.yaml + Validator S-08"}
+  - {id: REQ-STD-006, level: MUST, description: "Keine zirkulaeren Standard-Abhaengigkeiten", section: "§12", status: PASS, evidence: "Validator S-15 — Graph azyklisch (000 = Wurzel)"}
+  - {id: REQ-STD-007, level: MUST, description: "Normative/Informative-Trennung ohne Widersprueche", section: "§13", status: PASS, evidence: "Validator S-09"}
+  - {id: REQ-STD-008, level: MUST, description: "Review-Chain vor APPROVED/STABLE", section: "§14-18", status: PASS, evidence: "approval/*-REVIEW.md (dieses Paket)"}
+  - {id: REQ-STD-009, level: MUST, description: "Change Management via SCR", section: "§20", status: PASS, evidence: "SCR-Template + SCR-0001…0004 + CHANGE_CONTROL.md"}
+  - {id: REQ-STD-010, level: MUST, description: "SemVer + Breaking-Change-Kriterien", section: "§21-22", status: PASS, evidence: "Validator S-03"}
+  - {id: REQ-STD-011, level: MUST, description: "Pruefbare Compliance je REQ + Validierungskette", section: "§23-24", status: PASS, evidence: "atc-std-validator + atc-repo-audit"}
+  - {id: REQ-STD-012, level: MUST, description: "Registry-Pflicht: kein Eintrag = kein Standard", section: "§25", status: PASS, evidence: "registry/standards.yaml + Validator S-14"}
+  - {id: REQ-STD-013, level: MUST, description: "Supersession/Deprecation/Retirement dokumentiert", section: "§27-29", status: PASS, evidence: "supersedes angewendet: REPO-001ff → 201/202/203"}
+  - {id: REQ-STD-014, level: MUST, description: "Konflikt-Resolution, hoechste Governance-Prioritaet fuer STD-000", section: "§31", status: PASS, evidence: "Verfahren definiert"}
+  - {id: REQ-STD-015, level: MUST, description: "Emergency-Prozess begrenzt", section: "§32", status: PASS, evidence: "Temporary Decision → Formal Standard Revision"}
+  - {id: REQ-STD-016, level: MUST, description: "Meta-Compliance: STD-000 nicht durch untergeordnete Standards definiert", section: "§35", status: PASS, evidence: "Zirkel-Verbot + Validator-Zyklenerkennung"}
+  - {id: REQ-STD-017, level: MUST, description: "Naming-Regeln maschinenlesbar zentral definiert, Validator/CI leiten daraus ab", section: "§7.10", status: PASS, evidence: "naming-conventions.schema.json (additionalProperties:false) + Validator S-16"}
+  - {id: REQ-STD-018, level: MUST, description: "ID-Immutability ueber gesamten Lifecycle", section: "§7.3", status: PASS, evidence: "Normtext MUST-Regel + Version-Pinning §30 + Registry-Allokation §7.7"}
+  - {id: REQ-STD-019, level: MUST, description: "Duplicate Prevention: Registry = Allokations-Autoritaet, CI prueft dateiuebergreifend", section: "§7.8", status: PASS, evidence: "validate_all.py S-17 + Registry-Cross-Check"}
+  - {id: REQ-STD-020, level: MUST, description: "CI Enforcement: FAIL blockiert Merge", section: "§7.11", status: PASS, evidence: ".github/workflows/naming-governance.yml (validate_all + Repo-Audit R3)"}
+  - {id: REQ-STD-021, level: MUST, description: "Rollen- und Berechtigungsmodell mit Mandats- und Delegationsregeln", section: "§14.1", status: PASS, evidence: "SCR-0004 (Owner-Mandat 07.09.) + Registry teams.yaml"}
+summary: {total: 21, pass: 21, partial: 0, fail: 0, not_applicable: 0}
