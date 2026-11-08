@@ -1,0 +1,16 @@
+// ATCLang v0.3 — Timelock Controller
+// Queue, execute, cancel, grace period
+// ATC-Standard: ATC-17
+
+module timelock {
+    struct TimelockTx {
+        tx_hash: string,
+        eta: int,
+        executed: int,
+        canceled: int
+    }
+    
+    fn queue_transaction() {
+        // Queues transaction for delayed execution after delay period
+    }
+}
