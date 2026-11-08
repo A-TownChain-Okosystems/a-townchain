@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-239",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #239: fix(governance): mark G6 integration residual without E2E evidence",
+  "context": "Pull request 239 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/239",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Scope\n\nCorrect exactly one governance field in `docs/architecture/ATC-DEPENDENCY-GRAPH-001.json`:\n\n- `gates.G6_integration`: `DONE - MASTER_OVERVIEW-001.json artifacts registry (commit f659926)` → `RESIDUAL`\n\n## Rationale\n\nAn artifacts registry entry is not evidence of a completed end-to-end composition. No exact-source E2E Run → Job → Step → terminal exit/log evidence is recorded for this gate. The previous `DONE` value overstated integration readiness.\n\n## Safety\n\n- Control-plane metadata only; no canonical implementation changes.\n- No CI gates weakened.\n- No auto-merge or release.\n- Draft pending JSON/schema validation and CI at the exact PR head.\n\n## Evidence\n\n- Previous graph blob: `6b7e988bec8b0be26fd6bde581db05f6e437f764`\n- Updated graph blob: `c6bdca9b0b827ca8a9aafc9a16ee00754a68c29e`\n- Commit: `7dc5cb3fa89109abedd2e59cc64898413c1480b7`"
+}
