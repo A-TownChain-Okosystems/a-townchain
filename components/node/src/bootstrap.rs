@@ -43,11 +43,6 @@ impl Genesis {
         Ok(())
     }
 
-    pub fn boot_hash(&self) -> u64 {
-        let digest = atc_hash(&self.canonical_boot_encoding());
-        u64::from_le_bytes([digest[0], digest[1], digest[2], digest[3], digest[4], digest[5], digest[6], digest[7]])
-    }
-
     fn canonical_boot_encoding(&self) -> Vec<u8> {
         let peers = serde_json::to_string(&self.initial_peers).expect("Vec<String> serialization cannot fail");
         let height = self.genesis_height.to_string();
@@ -69,16 +64,11 @@ impl Genesis {
     }
 }
 
-pub(crate) fn townhash_u64(data: &str) -> u64 {
-    let digest = atc_hash(data.as_bytes());
-    u64::from_le_bytes([digest[0], digest[1], digest[2], digest[3], digest[4], digest[5], digest[6], digest[7]])
-}
-
-pub fn devnet_boot(genesis: &Genesis, peers: &[(u64, String)]) -> Result<(PeerTable, u64), String> {
+pub fn devnet_boot(genesis: &Genesis, peers: &[(u64, String)]) -> Result<(PeerTable, [u8; 32]), String> {
     genesis.validate()?;
     let mut table = PeerTable::new();
     for (id, addr) in peers { if !table.add(*id, addr.clone()) { return Err(format!("Peer {} schon angemeldet", id)); } if !table.verify(*id) { return Err(format!("Peer {} nicht verifizierbar", id)); } }
-    Ok((table, genesis.boot_hash()))
+    Ok((table, genesis.boot_hash256()))
 }
 
 #[cfg(test)]
