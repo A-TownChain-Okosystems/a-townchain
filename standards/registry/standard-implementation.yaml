@@ -1,0 +1,4425 @@
+# ============================================================================
+# ATC Standard Implementation Matrix (SSOT) — VOLL-KLASSIFIKATION (SCR-0048)
+# Standard: ATC-STD-IMPLEMENTATION-001 — Matrix v1.1.0
+# Applicability §1: MANDATORY/CONDITIONAL/REFERENCE/NOT_APPLICABLE
+# Status §2: enforced/implemented/specification_only/reference
+# Klassifikationsregel: familienbezogen mit Evidence (SCR-0048).
+# Keine Fake-Status: Zielsystem fehlt => specification_only, nie IMPLEMENTED.
+# ============================================================================
+version: "1.2.0"
+generated_from: registry/standards.yaml
+updated: "2026-10-07"
+coverage_kpi:
+  registry_total: 533
+  matrix_entries: 533
+  matrix_coverage: "100%"
+  enforced_target: "je Wartungszyklus steigend (REQ-IMP-007)"
+  hinweis: "Wertigkeit der 21 SCR-0045-Detail-Eintraege bleibt; Familien-Evidence konsolidiert"
+
+standards:
+  - standard: ATC-STD-000
+    version: "1.3.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-201
+    version: "1.0.1"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-202
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-203
+    version: "1.0.1"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-204
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-001
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-004
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-007
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-009
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-002
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-003
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-005
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-006
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-008
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-010
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-011
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-AI-DEV-012
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "AI-DEV-Standards: Agent-Governance aktiv (AGENT_MANIFEST, Rollen, Mandate); AI-Kernel-Rebuild K3 offen — Detail-Nachweis je Standard im Coverage-Programm"
+      note: "AI-Familie: vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-STD-BUG-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Issue-Triage a-townchain-os; docs/error-records/ATC-ERR-0001.yaml; atc-contracts 61/61 Tests"
+    independence: L1
+
+  - standard: ATC-STD-BUG-002
+    version: "1.1.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Issue-Triage a-townchain-os; docs/error-records/ATC-ERR-0001.yaml; atc-contracts 61/61 Tests"
+    independence: L1
+
+  - standard: ATC-STD-BUG-003
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Issue-Triage a-townchain-os; docs/error-records/ATC-ERR-0001.yaml; atc-contracts 61/61 Tests"
+    independence: L1
+
+  - standard: ATC-STD-BUG-004
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Issue-Triage a-townchain-os; docs/error-records/ATC-ERR-0001.yaml; atc-contracts 61/61 Tests"
+    independence: L1
+
+  - standard: ATC-STD-NET-001
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-node R1-Skeleton (S4, AD-046); Bootstrap/Discovery-Standards warten auf Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-NET-002
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-node R1-Skeleton (S4, AD-046); Bootstrap/Discovery-Standards warten auf Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-NET-003
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-node R1-Skeleton (S4, AD-046); Bootstrap/Discovery-Standards warten auf Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-NET-004
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-node R1-Skeleton (S4, AD-046); Bootstrap/Discovery-Standards warten auf Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-NET-005
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-node R1-Skeleton (S4, AD-046); Bootstrap/Discovery-Standards warten auf Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-NET-006
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-node R1-Skeleton (S4, AD-046); Bootstrap/Discovery-Standards warten auf Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-NET-007
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-node R1-Skeleton (S4, AD-046); Bootstrap/Discovery-Standards warten auf Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-NET-008
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-node R1-Skeleton (S4, AD-046); Bootstrap/Discovery-Standards warten auf Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-NET-009
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-node R1-Skeleton (S4, AD-046); Bootstrap/Discovery-Standards warten auf Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-100
+    version: "2.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Architektur-Layer AD-026; REPOSITORY_MAP; Rollen AD-046/SCR-0005"
+    independence: L1
+
+  - standard: ATC-ARCH-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Architektur-Layer AD-026; REPOSITORY_MAP; Rollen AD-046/SCR-0005"
+    independence: L1
+
+  - standard: ATC-STD-ZKP-001
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-zkp R1-Skeleton (7 Crates, AD-045); Implementierung G18-vor-Freeze im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-ZKP-002
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-zkp R1-Skeleton (7 Crates, AD-045); Implementierung G18-vor-Freeze im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-ZKP-003
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-zkp R1-Skeleton (7 Crates, AD-045); Implementierung G18-vor-Freeze im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-ZKP-004
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-zkp R1-Skeleton (7 Crates, AD-045); Implementierung G18-vor-Freeze im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-ZKP-005
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-zkp R1-Skeleton (7 Crates, AD-045); Implementierung G18-vor-Freeze im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-ZKP-006
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-zkp R1-Skeleton (7 Crates, AD-045); Implementierung G18-vor-Freeze im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-ZKP-007
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-zkp R1-Skeleton (7 Crates, AD-045); Implementierung G18-vor-Freeze im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-ZKP-008
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-zkp R1-Skeleton (7 Crates, AD-045); Implementierung G18-vor-Freeze im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-ZKP-009
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-zkp R1-Skeleton (7 Crates, AD-045); Implementierung G18-vor-Freeze im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-ZKP-010
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-zkp R1-Skeleton (7 Crates, AD-045); Implementierung G18-vor-Freeze im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-300
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-AAS-001
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-002
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-003
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-004
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-005
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-006
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-007
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-008
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-009
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-010
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-011
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-012
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-013
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-014
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-015
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-016
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-017
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-018
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-019
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-020
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-021
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-022
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-023
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-024
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-AAS-025
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "Agent-Governance aktiv: AGENT_MANIFEST v3.1.7 als Identity/Scope/Discovery-Mechanismus 26/26; Permission via Rollenmodell; Detail-Nachweis je AAS-Standard im Coverage-Programm"
+      note: "vertiefte Einzelerfassung empfohlen"
+    independence: L1
+
+  - standard: ATC-ENT-001
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-002
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-003
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-004
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-005
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-006
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-007
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-008
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-009
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-010
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-011
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-012
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-013
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-014
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-ENT-015
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-114
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-215
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-212
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-213
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-214
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-314
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-000
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-001
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-002
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-003
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-004
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-005
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-006
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-007
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-008
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-009
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-010
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-011
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-012
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-013
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-014
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-015
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-016
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-017
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-018
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-019
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-020
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-021
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-022
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-023
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-024
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-025
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-V2S-026
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "V2S-000 Master integriert; 26 Phasen-Standards V2S-001..026 nicht gebaut (SCR-0042-DoD)"
+    independence: L1
+
+  - standard: ATC-STD-REPO-MAINT-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Maintenance-Report RUN-001 atc-shivacore (SCR-0043 Pilot)"
+    independence: L1
+
+  - standard: ATC-STD-ERR-000
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-002
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-003
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-004
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-005
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-006
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-007
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-008
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-009
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-010
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-011
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-012
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-013
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-014
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-ERR-015
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-ERR-0001 CLOSED; AST-Gate-Test atc-contracts; Dossier docs-hub"
+    independence: L1
+
+  - standard: ATC-STD-IMPLEMENTATION-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "registry/standard-implementation.yaml + generate_views.py + registry.lock (SCR-0045/0048)"
+    independence: L1
+
+  - standard: ATC-STD-REPO-DISCOVERY-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "tools/discovery/scan.py DISC-2026-09-08-001/002; Ausbaustufen RD-004..009 dokumentiert"
+    independence: L1
+
+  - standard: ATC-STD-REPO-DISCOVERY-002
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "tools/discovery/scan.py DISC-2026-09-08-001/002; Ausbaustufen RD-004..009 dokumentiert"
+    independence: L1
+
+  - standard: ATC-STD-REPO-DISCOVERY-003
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "tools/discovery/scan.py DISC-2026-09-08-001/002; Ausbaustufen RD-004..009 dokumentiert"
+    independence: L1
+
+  - standard: ATC-STD-REPO-DISCOVERY-004
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "tools/discovery/scan.py DISC-2026-09-08-001/002; Ausbaustufen RD-004..009 dokumentiert"
+    independence: L1
+
+  - standard: ATC-STD-REPO-DISCOVERY-005
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "tools/discovery/scan.py DISC-2026-09-08-001/002; Ausbaustufen RD-004..009 dokumentiert"
+    independence: L1
+
+  - standard: ATC-STD-REPO-DISCOVERY-006
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "tools/discovery/scan.py DISC-2026-09-08-001/002; Ausbaustufen RD-004..009 dokumentiert"
+    independence: L1
+
+  - standard: ATC-STD-REPO-DISCOVERY-007
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "tools/discovery/scan.py DISC-2026-09-08-001/002; Ausbaustufen RD-004..009 dokumentiert"
+    independence: L1
+
+  - standard: ATC-STD-REPO-DISCOVERY-008
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "tools/discovery/scan.py DISC-2026-09-08-001/002; Ausbaustufen RD-004..009 dokumentiert"
+    independence: L1
+
+  - standard: ATC-STD-REPO-DISCOVERY-009
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "tools/discovery/scan.py DISC-2026-09-08-001/002; Ausbaustufen RD-004..009 dokumentiert"
+    independence: L1
+
+  - standard: ATC-STD-REPO-DISCOVERY-010
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "tools/discovery/scan.py DISC-2026-09-08-001/002; Ausbaustufen RD-004..009 dokumentiert"
+    independence: L1
+
+  - standard: ATC-AURORA-SWARM-001
+    version: "0.1.0"
+    applicability: REFERENCE
+    implementation:
+      status: reference
+      evidence: "Legacy-Serie (atc/): durch ATC-STD-000ff superseded; historische Referenz konserviert"
+    independence: L1
+
+  - standard: ATC-STD-README-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-readme-validator 13/13 Gates CONFORM (SCR-0047)"
+    independence: L1
+
+  - standard: ATC-STD-MD-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-md-validator CONFORM (Meta-Sweep 08.09., SCR-0047)"
+    independence: L1
+
+  - standard: ATC-STD-SC-001
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-002
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-003
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-004
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-005
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-006
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-007
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-008
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-009
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-010
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-011
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-012
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-013
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-014
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-015
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-016
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-017
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-018
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-019
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-SC-020
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "atc-contracts restauriert + Contract-Test-Suite 61/61 GRUEN (Issue #99)"
+    independence: L1
+
+  - standard: ATC-STD-DESC-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "DESC-001-Kategorie im Validator geprueft (S-18/S-19)"
+    independence: L1
+
+  - standard: ATC-STD-VERSION-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "VERSION-001 im Validator; Version-Baseline-Sync 26 Repos = offene P2 (Issue #96)"
+    independence: L1
+
+  - standard: ATC-STD-BUG-005
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Issue-Triage a-townchain-os; docs/error-records/ATC-ERR-0001.yaml; atc-contracts 61/61 Tests"
+    independence: L1
+
+  - standard: ATC-STD-AUDIT-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "AUD-2026-0001/0002; ATC-ORG-AUDIT-002; META-SWEEP-2026-09-08.md"
+    independence: L1
+
+  - standard: ATC-STD-AI-DECISION-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "AID-Datensatz im Validator geprueft (S-22)"
+    independence: L1
+
+  - standard: ATC-STD-UPDATE-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Update-Standard; Dependabot als Update-Kanal (AUD-2026-0002 F-025)"
+    independence: L1
+
+  - standard: ATC-STD-STDDEV-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "ATC-STD-000 v1.3.0 CANDIDATE; Registry revision is canonical; §9-Approval-Process approval/"
+    independence: L1
+
+  - standard: ATC-STD-REGISTRY-001
+    version: "1.1.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "ATC-STD-000 v1.3.0 CANDIDATE; Registry revision is canonical; §9-Approval-Process approval/"
+    independence: L1
+
+  - standard: ATC-STD-CHANGE-001
+    version: "1.1.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "ATC-STD-000 v1.3.0 CANDIDATE; Registry revision is canonical; §9-Approval-Process approval/"
+    independence: L1
+
+  - standard: ATC-STD-TAXONOMY-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "gen_taxonomy.py 431 Standards zugeordnet, Registry-Konsistenz PASS (S-24)"
+    independence: L1
+
+  - standard: ATC-STD-PROTOCOL-001
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "ATC-PROTO-P2P-001; Protokoll-Implementierung im Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-AOS-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "AGENT_MANIFEST-Rollout 23/23; 5 Agenten registriert (incl. Aurora-Bot)"
+    independence: L1
+
+  - standard: ATC-STD-999
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "AUD-Verfahren dokumentiert + angewendet (ATC-ORG-AUDIT-002)"
+    independence: L1
+
+  - standard: ATC-STD-REPO-AUDIT-002
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-repo-audit R3 100/100; 64 Checks; AUD-2026-0001/0002"
+    independence: L1
+
+  - standard: ATC-STD-REPO-AUDIT-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-repo-audit R3 100/100; 64 Checks; AUD-2026-0001/0002"
+    independence: L1
+
+  - standard: ATC-STD-FRAMEWORK-001
+    version: "1.0.7"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "framework.yaml FAM-01..FAM-49; S-21 Framework-PASS"
+    independence: L1
+
+  - standard: ATC-STD-MILESTONE-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "ATC-M-001..008 im Validator (S-20 PASS)"
+    independence: L1
+
+  - standard: ATC-STD-COMPAT-001
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: implemented
+      evidence: "COMPAT-Praefixe im Validator geprueft (S-18/S-25)"
+    independence: L1
+
+  - standard: ATC-STD-REPO-AUDIT-003
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-repo-audit R3 100/100; 64 Checks; AUD-2026-0001/0002"
+    independence: L1
+
+  - standard: ATC-STD-PROTOCOL-002
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "ATC-PROTO-P2P-001; Protokoll-Implementierung im Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-PROTOCOL-003
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "ATC-PROTO-P2P-001; Protokoll-Implementierung im Node-Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-001
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-006
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-008
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-012
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-013
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-015
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-025
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-027
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-040
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-042
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-045
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-048
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-050
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-051
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-052
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-062
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-md-validator CONFORM (Meta-Sweep 08.09., SCR-0047)"
+    independence: L1
+
+  - standard: ATC-STD-063
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-md-validator CONFORM (Meta-Sweep 08.09., SCR-0047)"
+    independence: L1
+
+  - standard: ATC-STD-064
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-md-validator CONFORM (Meta-Sweep 08.09., SCR-0047)"
+    independence: L1
+
+  - standard: ATC-STD-066
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-md-validator CONFORM (Meta-Sweep 08.09., SCR-0047)"
+    independence: L1
+
+  - standard: ATC-STD-067
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-md-validator CONFORM (Meta-Sweep 08.09., SCR-0047)"
+    independence: L1
+
+  - standard: ATC-STD-069
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-md-validator CONFORM (Meta-Sweep 08.09., SCR-0047)"
+    independence: L1
+
+  - standard: ATC-STD-070
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-md-validator CONFORM (Meta-Sweep 08.09., SCR-0047)"
+    independence: L1
+
+  - standard: ATC-STD-072
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "tools/atc-md-validator CONFORM (Meta-Sweep 08.09., SCR-0047)"
+    independence: L1
+
+  - standard: ATC-STD-081
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-082
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-085
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-087
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-088
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-089
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-090
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-091
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-093
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-094
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-095
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-101
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-103
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-104
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-105
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-107
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-129
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Issue-Triage a-townchain-os; docs/error-records/ATC-ERR-0001.yaml; atc-contracts 61/61 Tests"
+    independence: L1
+
+  - standard: ATC-STD-130
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Issue-Triage a-townchain-os; docs/error-records/ATC-ERR-0001.yaml; atc-contracts 61/61 Tests"
+    independence: L1
+
+  - standard: ATC-STD-140
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-141
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-142
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-143
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-144
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-146
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-147
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-148
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-149
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-160
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-161
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-163
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-164
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-169
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-170
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-171
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-172
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-174
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-180
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-181
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-182
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-183
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-184
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-185
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-186
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-187
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-188
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-189
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-190
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-191
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-192
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-193
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-194
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-195
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-196
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-197
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-200
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-205
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-206
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-207
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-208
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-209
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-210
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-240
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-241
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-242
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-243
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-244
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-245
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-246
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-247
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-248
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-249
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-270
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-271
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-272
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-273
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-274
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-275
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-276
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-280
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-282
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-283
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-284
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-285
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-286
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-301
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-302
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-303
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-304
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-306
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-307
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-308
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-309
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-311
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-312
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-340
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-341
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-342
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-343
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-344
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-345
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-346
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-347
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-348
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-349
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-350
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-360
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-361
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-362
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-363
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-364
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-365
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-366
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-367
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-368
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-380
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-381
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-382
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-383
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-384
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-385
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-386
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-387
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-388
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-389
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Legacy-Restore a-townchain (217 Dateien); SC-Rebuild AD-023 qualitaetsgetrieben offen; 76 Chain-Standards warten auf Implementierung im Rebuild"
+    independence: L1
+
+  - standard: ATC-STD-400
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-401
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-402
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-403
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-404
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-405
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-406
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-407
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-408
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-409
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-420
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-421
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-422
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-423
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-424
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-425
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-426
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-427
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-428
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-429
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-430
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-431
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-432
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-433
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-434
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-440
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-441
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-442
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-443
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-444
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-445
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-447
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-448
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-449
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-450
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-460
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-461
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-462
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-463
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-466
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-467
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-468
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-469
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-480
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-481
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-482
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-483
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-484
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-485
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-486
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-488
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-oracle/storage/compute/mining/launchpad R1-Skelette; Infra-Normen warten auf Implementierung"
+    independence: L1
+
+  - standard: ATC-STD-500
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-501
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-502
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-504
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-505
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-507
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-508
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-509
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Secret-Scanning+Push-Protection je Repo; Dependabot-Rollout AUD-2026-0002 F-025; G18-Regel AD-023"
+      note: "CodeQL 0/26 = Coverage-Luecke dokumentiert (P2)"
+    independence: L1
+
+  - standard: ATC-STD-540
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-541
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-542
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-543
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-544
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-545
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-546
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-560
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-561
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-562
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-566
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-580
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-581
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-582
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-583
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-584
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-585
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-586
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-587
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-explorer/-marketplace/-wallet/-sdk/-interop/-indexer restauriert (Vault M6/L5); Norm-Anwendung im Rebuild nachzuweisen"
+    independence: L1
+
+  - standard: ATC-STD-600
+    version: "1.3.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-shivacore Rebuild SC-001+ offen (AD-023); Kernel M2/L1 + 22 Security-Dateien vorhanden"
+    independence: L1
+
+  - standard: ATC-STD-601
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-shivacore Rebuild SC-001+ offen (AD-023); Kernel M2/L1 + 22 Security-Dateien vorhanden"
+    independence: L1
+
+  - standard: ATC-STD-602
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-shivacore Rebuild SC-001+ offen (AD-023); Kernel M2/L1 + 22 Security-Dateien vorhanden"
+    independence: L1
+
+  - standard: ATC-STD-603
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-shivacore Rebuild SC-001+ offen (AD-023); Kernel M2/L1 + 22 Security-Dateien vorhanden"
+    independence: L1
+
+  - standard: ATC-STD-604
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-shivacore Rebuild SC-001+ offen (AD-023); Kernel M2/L1 + 22 Security-Dateien vorhanden"
+    independence: L1
+
+  - standard: ATC-STD-605
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-shivacore Rebuild SC-001+ offen (AD-023); Kernel M2/L1 + 22 Security-Dateien vorhanden"
+    independence: L1
+
+  - standard: ATC-STD-606
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-shivacore Rebuild SC-001+ offen (AD-023); Kernel M2/L1 + 22 Security-Dateien vorhanden"
+    independence: L1
+
+  - standard: ATC-STD-607
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "atc-shivacore Rebuild SC-001+ offen (AD-023); Kernel M2/L1 + 22 Security-Dateien vorhanden"
+    independence: L1
+
+  - standard: ATC-STD-620
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-623
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-624
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-625
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-626
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-627
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "DTC-Praxis in SCR/Commits belegt (STD-300); G0-G19-Gates: ATCLang-Rebuild-Pipeline AD-023 offen (G1/G2 bestanden)"
+      note: "Rebuild qualitaetsgetrieben"
+    independence: L1
+
+  - standard: ATC-STD-640
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "AUD-2026-0001/0002; ATC-ORG-AUDIT-002; META-SWEEP-2026-09-08.md"
+    independence: L1
+
+  - standard: ATC-STD-641
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "AUD-2026-0001/0002; ATC-ORG-AUDIT-002; META-SWEEP-2026-09-08.md"
+    independence: L1
+
+  - standard: ATC-STD-643
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "AUD-2026-0001/0002; ATC-ORG-AUDIT-002; META-SWEEP-2026-09-08.md"
+    independence: L1
+
+  - standard: ATC-STD-646
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "AUD-2026-0001/0002; ATC-ORG-AUDIT-002; META-SWEEP-2026-09-08.md"
+    independence: L1
+
+  - standard: ATC-STD-660
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-662
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-664
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-665
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-666
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-667
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-STD-680
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-681
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-682
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-683
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-684
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-685
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-686
+    version: "1.2.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-700
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-701
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-702
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-703
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-704
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-705
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-706
+    version: "1.2.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-LICENSE-001
+    version: "1.1.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Apache-2.0-Lizensierung 26/26 abgeschlossen (Org-Audit 08.09., FAM-44)"
+    independence: L1
+
+  - standard: ATC-STD-LICENSE-002
+    version: "1.1.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Apache-2.0-Lizensierung 26/26 abgeschlossen (Org-Audit 08.09., FAM-44)"
+    independence: L1
+
+  - standard: ATC-STD-LICENSE-003
+    version: "1.1.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Apache-2.0-Lizensierung 26/26 abgeschlossen (Org-Audit 08.09., FAM-44)"
+    independence: L1
+
+  - standard: ATC-STD-LICENSE-004
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Apache-2.0-Lizensierung 26/26 abgeschlossen (Org-Audit 08.09., FAM-44)"
+    independence: L1
+
+  - standard: ATC-STD-LICENSE-005
+    version: "1.1.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Apache-2.0-Lizensierung 26/26 abgeschlossen (Org-Audit 08.09., FAM-44)"
+    independence: L1
+
+  - standard: ATC-STD-LICENSE-006
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Apache-2.0-Lizensierung 26/26 abgeschlossen (Org-Audit 08.09., FAM-44)"
+    independence: L1
+
+  - standard: ATC-STD-LICENSE-007
+    version: "1.1.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Apache-2.0-Lizensierung 26/26 abgeschlossen (Org-Audit 08.09., FAM-44)"
+    independence: L1
+
+  - standard: ATC-STD-LICENSE-008
+    version: "1.1.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Apache-2.0-Lizensierung 26/26 abgeschlossen (Org-Audit 08.09., FAM-44)"
+    independence: L1
+
+  - standard: ATC-STD-LICENSE-009
+    version: "1.1.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Apache-2.0-Lizensierung 26/26 abgeschlossen (Org-Audit 08.09., FAM-44)"
+    independence: L1
+
+  - standard: ATC-STD-CI-001
+    version: "1.0.0"
+    applicability: REFERENCE
+    implementation:
+      status: reference
+      evidence: "Legacy-Serie (atc/): durch ATC-STD-000ff superseded; historische Referenz konserviert"
+    independence: L1
+
+  - standard: ATC-STD-IMPROVEMENT-001
+    version: "1.0.0"
+    applicability: REFERENCE
+    implementation:
+      status: reference
+      evidence: "Legacy-Serie (atc/): durch ATC-STD-000ff superseded; historische Referenz konserviert"
+    independence: L1
+
+  - standard: ATC-AI-GOV-AGENTS-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-MANIFEST-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-POLICY-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-CHECK-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-AUDIT-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-HANDOFF-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-INCIDENT-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-CHANGE-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-AUTH-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-CAPABILITY-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-FINDING-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-AI-GOV-ACCESS-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "ACCESS-001 (SCR-0121): Rollenprofil-Matrix dokumentiert; PAT-Migration auf Fine-grained Stufe-2-Profil offen"
+    independence: L1
+
+  - standard: ATC-STD-016
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-017
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-018
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-019
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-020
+    version: "1.1.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-TUD-001
+    version: "1.0.0"
+    applicability: REFERENCE
+    implementation:
+      status: reference
+      evidence: "Legacy-Serie (atc/): durch ATC-STD-000ff superseded; historische Referenz konserviert"
+    independence: L1
+
+  - standard: ATC-STD-021
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-022
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-023
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-024
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-026
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-028
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-029
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-GATE-SEC-001
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-030
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-031
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-032
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-033
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-034
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-035
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-036
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-037
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-038
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-039
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-041
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-043
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-002
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-GOV-001
+    version: "1.0.0"
+    applicability: REFERENCE
+    implementation:
+      status: reference
+      evidence: "Legacy-Serie (atc/): durch ATC-STD-000ff superseded; historische Referenz konserviert"
+    independence: L1
+
+  - standard: ATC-STD-220
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "Governance-CI 26/26 (fetch-depth:0, AUD-2026-0002 F-048); AGENT_MANIFEST v3.1.7 Rollout 26/26; Branch-Protection SCR-0003"
+    independence: L1
+
+  - standard: ATC-ORG-BASELINE-001
+    version: "1.0.0"
+    applicability: CONDITIONAL
+    implementation:
+      status: specification_only
+      evidence: "Enterprise-Module ohne aktive Ziel-Repos im 26er-Stand; AD-047-Disposition fuer verwaiste Module gilt"
+    independence: L1
+
+  - standard: ATC-STD-003
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: enforced
+      evidence: "atc-standards Governance-CI + Validator-Suite S-01..S-25 ALL COMPLIANT; immutable Tag-Ruleset"
+    independence: L1
+
+  - standard: ATC-STD-LEGAL-002
+    version: "1.0.0"
+    applicability: REFERENCE
+    implementation:
+      status: reference
+      evidence: "Legacy-Serie (atc/): durch ATC-STD-000ff superseded; historische Referenz konserviert"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-000
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: implemented
+      evidence: "Readiness-Gate implementiert (Welle 1, SCR-0123): gen_maintenance_conformance.py + validate_maintenance_readiness.py CI-live (maintenance-conformance.yml); Readiness-Records fuer beide Released-Komponenten (atc-standards, a-townchain-os)"
+      note: "Naechste Releases bis F-ORG-002 + Rollback-Runbook geschlossen: Readiness FAIL = BLOCK (Records ehrlich)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-002
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-003
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-004
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-005
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-006
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-007
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-008
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-009
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-010
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-011
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-012
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-013
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-014
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-015
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-016
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-017
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-018
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-019
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-020
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-021
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-022
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-023
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-MAINT-024
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "MAINT-Familie 000..024 (SCR-0120): normative Betriebs-Disziplin; Conformance-Struktur via maintenance-conformance-Gate maschinenpruefbar; operative Umsetzung je Anwendung ausstehend"
+      note: "Readiness-Gate-Tooling Welle 1 SCR-0123: MAINT-000 implemented (Override)"
+    independence: L1
+
+  - standard: ATC-STD-ENG-001
+    version: "1.0.0"
+    applicability: REFERENCE
+    implementation:
+      status: reference
+      evidence: "Legacy-Serie (atc/): durch ATC-STD-000ff superseded; historische Referenz konserviert"
+    independence: L1
