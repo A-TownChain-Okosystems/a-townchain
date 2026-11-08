@@ -1,0 +1,21 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: genesis-franchise-factory
+  classification: GAME
+  maturity: R1
+  status: development
+project:
+  organization: A-TownChain-Okosystems
+  domain: franchise-factory
+  component: game-factory
+language:
+  primary: python
+license:
+  type: proprietary
+security:
+  criticality: low
+api:
+  stability: experimental
+protocol:
+  compatibility: required
