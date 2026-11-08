@@ -1,0 +1,141 @@
+name: Organization Function Catalog
+
+on:
+  pull_request:
+    paths:
+      - "scripts/org_function_catalog.py"
+      - "schemas/org-function-catalog.schema.json"
+      - "tests/test_org_function_catalog.py"
+      - "schemas/system-requirements.schema.json"
+      - "docs/architecture/system-requirements.v1.json"
+      - "docs/architecture/SYSTEM_FUNCTION_COMPONENT_REQUIREMENTS.md"
+      - "docs/architecture/implementation-roadmap.v1.json"
+      - "docs/architecture/IMPLEMENTATION_ROADMAP.md"
+      - "schemas/implementation-roadmap.schema.json"
+      - ".github/workflows/org-function-catalog.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/org_function_catalog.py"
+      - "schemas/org-function-catalog.schema.json"
+      - "tests/test_org_function_catalog.py"
+      - "schemas/system-requirements.schema.json"
+      - "docs/architecture/system-requirements.v1.json"
+      - "docs/architecture/SYSTEM_FUNCTION_COMPONENT_REQUIREMENTS.md"
+      - ".github/workflows/org-function-catalog.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  catalog-tool:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install authoritative parser dependencies
+        run: python -m pip install --disable-pip-version-check 'tree-sitter>=0.25,<0.26' 'tree-sitter-rust>=0.24,<0.25' 'tree-sitter-bash>=0.23,<0.24' 'markdown-it-py>=3,<5' 'PyYAML>=6,<7'
+      - name: Python syntax validation
+        run: python -m py_compile scripts/org_function_catalog.py tests/test_org_function_catalog.py
+      - name: Install schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema>=4.20,<5'
+      - name: Catalog unit tests
+        run: python -m unittest discover -s tests -p 'test_org_function_catalog.py' -v
+      - name: Validate catalog schema syntax
+        run: python -m json.tool schemas/org-function-catalog.schema.json > /dev/null
+      - name: Generate and validate source-bound catalog
+        env:
+          ATC_CATALOG_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python scripts/org_function_catalog.py . --repository A-TownChain-Okosystems/atc-engineering --output /tmp/org-function-catalog.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema = json.loads(Path("schemas/org-function-catalog.schema.json").read_text())
+          data = json.loads(Path("/tmp/org-function-catalog.json").read_text())
+          errors = sorted(Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(data),
+                          key=lambda error: list(map(str, error.absolute_path)))
+          if errors:
+              for error in errors:
+                  print(f"{list(error.absolute_path)}: {error.message}")
+              raise SystemExit(1)
+          ids = [symbol["symbol_id"] for symbol in data["symbols"]]
+          if len(ids) != len(set(ids)):
+              raise SystemExit("duplicate symbol_id detected; overload/identity collision requires explicit resolution")
+          if any(file["status"] in {"UNSUPPORTED", "PARSE_ERROR", "SKIPPED"} and not file.get("reason") for file in data["files"]):
+              raise SystemExit("file-level exclusion without reason")
+          print(f"Schema valid: {len(data['files'])} files, {len(data['symbols'])} symbols, {len(data['exclusions'])} explicit exclusions")
+          print(f"Catalog status remains {data['status']}; schema validity does not imply completeness or VERIFIED.")
+          PY
+      - name: Validate component candidate evidence manifest
+        run: |
+          python -m json.tool schemas/atc-engineering-component-evidence.schema.json > /dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema = json.loads(Path("schemas/atc-engineering-component-evidence.schema.json").read_text())
+          data = json.loads(Path("docs/architecture/atc-engineering-component-evidence.v1.json").read_text())
+          errors = sorted(Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(data),
+                          key=lambda error: list(map(str, error.absolute_path)))
+          if errors:
+              for error in errors:
+                  print(f"{list(error.absolute_path)}: {error.message}")
+              raise SystemExit(1)
+          ids = [item["component_id"] for item in data["candidates"]]
+          if len(ids) != len(set(ids)):
+              raise SystemExit("duplicate candidate component_id")
+          if any(item["status"] != "PARTIAL_SOURCE_SUPPORT" for item in data["candidates"]):
+              print("Non-partial candidate status requires explicit reviewer attention.")
+          print(f"Validated {len(ids)} candidate records; none is promoted to CONFIRMED or VERIFIED.")
+          PY
+      - name: Validate system requirements register
+        run: |
+          python -m json.tool schemas/system-requirements.schema.json > /dev/null
+          python -m json.tool docs/architecture/system-requirements.v1.json > /dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          schema = json.loads(Path("schemas/system-requirements.schema.json").read_text())
+          data = json.loads(Path("docs/architecture/system-requirements.v1.json").read_text())
+          assert data["catalog_id"] == "ATC-SYSTEM-REQUIREMENTS"
+          assert data["schema_version"] == "1.0.0"
+          assert len(data["systems"]) == 10, f"expected 10 systems, got {len(data['systems'])}"
+          ids = [item["requirement_id"] for item in data["requirements"]]
+          assert len(ids) == len(set(ids)), "duplicate requirement_id"
+          assert len(data["requirements"]) >= 70, f"unexpectedly low requirement count: {len(ids)}"
+          known_systems = {item["system_id"] for item in data["systems"]}
+          assert all(item["system_id"] in known_systems for item in data["requirements"])
+          assert all(item["status"] == "REQUIRED" for item in data["requirements"]), "requirements must not claim implementation"
+          for system in data["systems"]:
+              expected = set(system["requirement_ids"])
+              actual = {item["requirement_id"] for item in data["requirements"] if item["system_id"] == system["system_id"]}
+              assert expected == actual, f"requirement linkage mismatch for {system['system_id']}"
+          assert "requirements" in schema["properties"]
+          print(f"Validated {len(data['systems'])} systems and {len(ids)} unique requirements")
+          PY
+      - name: Validate implementation roadmap
+        run: |
+          python -m json.tool schemas/implementation-roadmap.schema.json > /dev/null
+          python -m json.tool docs/architecture/implementation-roadmap.v1.json > /dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d = json.loads(Path('docs/architecture/implementation-roadmap.v1.json').read_text())
+          assert d['roadmap_id'] == 'ATC-IMPLEMENTATION-ROADMAP'
+          assert d['status'] == 'PLANNED_NOT_EXECUTED'
+          assert [p['priority'] for p in d['phases']] == ['P0', 'P1', 'P2', 'P3', 'P4']
+          ids = [w['work_id'] for p in d['phases'] for w in p['work_items']]
+          assert len(ids) == len(set(ids)), 'duplicate work_id'
+          assert all(w['status'] == 'PLANNED' for p in d['phases'] for w in p['work_items'])
+          assert all(w.get('completion_evidence') for p in d['phases'] for w in p['work_items'])
+          print(f"Validated {len(d['phases'])} phases and {len(ids)} work items")
+          PY
