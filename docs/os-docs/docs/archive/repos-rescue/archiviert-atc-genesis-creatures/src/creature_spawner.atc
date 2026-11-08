@@ -1,0 +1,43 @@
+// ============================================================================
+// Module: creature_spawner
+// Description: Creature spawner
+// ATC-Standard: ATC-90
+// Sprint: 3.2
+// Language: ATCLang v0.3
+// Created: 2026-08-08
+// Agent: Aurora (MasterBrain · Base44)
+// ============================================================================
+
+module creature_spawner {
+
+// Primary struct
+struct Spawner {
+    id: UInt64,
+    name: String,
+    active: Bool,
+    created_at: UInt64,
+    updated_at: UInt64,
+}
+
+// Initialize module
+fn init() -> Bool {
+    return true
+}
+
+// Get status
+fn status() -> String {
+    return "creature_spawner ready"
+}
+
+// Spawn creature
+fn spawn(biome: String) -> Bool {
+    // TODO: Implement
+    return Bool:default()
+}
+// Despawn creature
+fn despawn(id: UInt64) -> Bool {
+    // TODO: Implement
+    return Bool:default()
+}
+
+} // module creature_spawner
