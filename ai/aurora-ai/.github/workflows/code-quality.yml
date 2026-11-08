@@ -1,0 +1,71 @@
+name: Aurora AI Code Quality
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions: read-all
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Validate Rust modules
+        shell: bash
+        run: |
+          set -e
+          base_ref="${GITHUB_BASE_REF:-main}"
+          git fetch origin "$base_ref" --depth=1
+          changed_rs="$(git diff --name-only "origin/$base_ref...HEAD" -- 'modules/**/*.rs')"
+          if [ -n "$changed_rs" ]; then
+            while IFS= read -r file; do
+              [ -n "$file" ] || continue
+              rustfmt --check "$file"
+            done <<< "$changed_rs"
+          else
+            echo "No changed Rust files to format-check."
+          fi
+          manifests="$(find modules -name Cargo.toml -not -path '*/target/*' -print)"
+          if [ -z "$manifests" ]; then
+            echo "No Rust manifests found; skipping Rust validation."
+            exit 0
+          fi
+          while IFS= read -r manifest; do
+            [ -n "$manifest" ] || continue
+            cargo test --manifest-path "$manifest"
+            cargo clippy --manifest-path "$manifest" --all-targets -- -D warnings
+          done <<< "$manifests"
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
+        with:
+          python-version: '3.11'
+      - name: Compile Python modules
+        if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
+        run: python -m compileall -q modules/atc-aurora-ai
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        if: ${{ hashFiles('modules/**/package.json') != '' }}
+        with:
+          node-version: '20'
+      - name: Validate Node module
+        if: ${{ hashFiles('modules/**/package.json') != '' }}
+        shell: bash
+        run: |
+          if [ -f modules/atc-aistudio/package-lock.json ]; then
+            npm --prefix modules/atc-aistudio ci
+          else
+            npm --prefix modules/atc-aistudio install
+          fi
+          npm --prefix modules/atc-aistudio test --if-present
