@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "modules/atc-assets",
+    "modules/atc-marketplace",
+]
+resolver = "2"
