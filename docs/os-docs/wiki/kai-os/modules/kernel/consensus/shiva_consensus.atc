@@ -1,0 +1,529 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-03 — ShivaConsensus™ Hybrid Consensus Engine
+// Sprint 2.3 | Consensus Layer | Chain-ID 9000
+// Migrated from: modules/kernel/consensus/shiva_consensus.py (640 lines)
+// Phase 1: PoH (VDF time chain) → Phase 2: PoS (validator voting) → Phase 3: PoW (seal)
+// ─────────────────────────────────────────────────────────────
+
+const POH_TICK_ITERATIONS: u32 = 1000
+const POS_MIN_STAKE: u128 = 1000000000      // 1000 ATC in nano-ATC
+const POS_MAX_VALIDATORS: u16 = 100
+const POS_EPOCH_BLOCKS: u16 = 100
+const POW_BASE_DIFFICULTY: u8 = 4
+const POW_MAX_DIFFICULTY: u8 = 24
+const POW_TARGET_TIME_MS: u32 = 3000
+const POW_ADJUSTMENT_WINDOW: u16 = 10
+const BLOCK_TIME_MS: u32 = 3000
+const POH_TICKS_PER_BLOCK: u8 = 10
+const MAX_TXS_PER_BLOCK: u16 = 100
+const GAS_PER_TX: u32 = 21000
+const GAS_LIMIT: u32 = 10000000
+
+enum ProcessType { Agent, Service, Contract, System, Validator }
+enum MessageType { NewBlock, NewTx, GetBlocks, Blocks, GetHeight, Height, Handshake }
+
+struct PoHEntry {
+    sequence: u64,
+    prev_hash: Hash,
+    tick_hash: Hash,
+    timestamp: u64,
+    tx_hash: Hash,
+}
+
+struct ValidatorVote {
+    validator: Address,
+    block_hash: Hash,
+    slot: u64,
+    stake: u128,
+    timestamp: u64,
+    signature: String,
+}
+
+struct BlockHeader {
+    version: u8,
+    height: u64,
+    timestamp: u64,
+    prev_hash: Hash,
+    tx_root: Hash,
+    state_root: Hash,
+    poh_hash: Hash,
+    validator: Address,
+    nonce: u64,
+    difficulty: u8,
+    gas_limit: u32,
+    gas_used: u32,
+    stake_total: u128,
+}
+
+struct ATCBlock {
+    header: BlockHeader,
+    transactions: List<Hash>,
+    poh_entries: List<Hash>,
+    votes: List<Hash>,
+    block_hash: Hash,
+}
+
+struct ValidatorInfo {
+    address: Address,
+    stake: u128,
+    active: bool,
+    reputation: u16,
+    blocks_produced: u64,
+    last_vote: u64,
+}
+
+// ══════════════════════════════════════════════════════════
+//  PHASE 1 — PROOF OF HISTORY
+// ══════════════════════════════════════════════════════════
+
+contract ProofOfHistory {
+    state sequence: u64
+    state last_hash: Hash
+    state entries: List<Hash>
+
+    fn init() {
+        self.sequence = 0
+        self.last_hash = Hash::sha256("ShivaGenesis_PoH_v1")
+        self.entries = []
+    }
+
+    fn vdf_tick(input_hash: Hash, iterations: u32) -> Hash {
+        let h = input_hash
+        let i: u32 = 0
+        while i < iterations {
+            h = Hash::sha256(h)
+            i += 1
+        }
+        return h
+    }
+
+    fn tick(tx_hash: Hash) -> PoHEntry {
+        let ts = Time::now_micros()
+        let combined = Hash::concat(self.last_hash, tx_hash)
+        let tick_hash = self.vdf_tick(combined, POH_TICK_ITERATIONS)
+        let entry = PoHEntry {
+            sequence: self.sequence,
+            prev_hash: self.last_hash,
+            tick_hash: tick_hash,
+            timestamp: ts,
+            tx_hash: tx_hash,
+        }
+        self.entries.push(entry)
+        self.last_hash = tick_hash
+        self.sequence += 1
+        return entry
+    }
+
+    fn batch_tick(count: u8, tx_hashes: List<Hash>) -> List<Hash> {
+        let result: List<Hash> = []
+        let i: u8 = 0
+        while i < count {
+            let txh = Hash::zero()
+            if i < tx_hashes.len() {
+                txh = tx_hashes[i]
+            }
+            result.push(self.tick(txh))
+            i += 1
+        }
+        return result
+    }
+
+    fn verify_entry(entry: PoHEntry) -> bool {
+        let combined = Hash::concat(entry.prev_hash, entry.tx_hash)
+        let recomputed = self.vdf_tick(combined, POH_TICK_ITERATIONS)
+        return recomputed == entry.tick_hash
+    }
+
+    fn verify_chain(entries: List<Hash>) -> bool {
+        let i: u16 = 0
+        while i < entries.len() {
+            if !self.verify_entry(entries[i]) {
+                return false
+            }
+            if i > 0 && entries[i].prev_hash != entries[i - 1].tick_hash {
+                return false
+            }
+            i += 1
+        }
+        return true
+    }
+
+    fn get_checkpoint() -> Hash {
+        return self.last_hash
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+//  PHASE 2 — PROOF OF STAKE
+// ══════════════════════════════════════════════════════════
+
+contract ProofOfStake {
+    state validators: Map<Address, ValidatorInfo>
+    state epoch: u64
+    state votes: Map<Hash, List<Hash>>
+
+    fn init() {
+        self.validators = {}
+        self.epoch = 0
+        self.votes = {}
+    }
+
+    fn register_validator(addr: Address, stake: u128) -> bool {
+        if stake < POS_MIN_STAKE {
+            return false
+        }
+        self.validators[addr] = ValidatorInfo {
+            address: addr,
+            stake: stake,
+            active: true,
+            reputation: 5000,
+            blocks_produced: 0,
+            last_vote: 0,
+        }
+        return true
+    }
+
+    fn slash(addr: Address, penalty_pct: u8) -> bool {
+        let v = self.validators.get(addr)
+        if v == null {
+            return false
+        }
+        let penalty = v.stake * penalty_pct / 100
+        v.stake -= penalty
+        if v.reputation > 1000 {
+            v.reputation -= 1000
+        } else {
+            v.reputation = 0
+        }
+        if v.stake < POS_MIN_STAKE {
+            v.active = false
+        }
+        return true
+    }
+
+    fn get_active_validators() -> List<Address> {
+        let result: List<Address> = []
+        let addrs = self.validators.keys()
+        let i: u16 = 0
+        while i < addrs.len() {
+            let v = self.validators.get(addrs[i])
+            if v != null && v.active && v.stake >= POS_MIN_STAKE {
+                result.push(addrs[i])
+            }
+            i += 1
+        }
+        return result
+    }
+
+    fn select_block_producer(slot: u64) -> Address {
+        let active = self.get_active_validators()
+        if active.len() == 0 {
+            return Address::zero()
+        }
+        let seed_input = "producer_slot_" + Int::to_string(slot) + "_epoch_" + Int::to_string(self.epoch)
+        let seed_hash = Hash::sha256(seed_input)
+        let seed_val = Hash::to_u256(seed_hash)
+        let idx = seed_val % active.len()
+        return active[idx]
+    }
+
+    fn cast_vote(validator: Address, block_hash: Hash, slot: u64) -> bool {
+        let v = self.validators.get(validator)
+        if v == null || !v.active {
+            return false
+        }
+        let vote = ValidatorVote {
+            validator: validator,
+            block_hash: block_hash,
+            slot: slot,
+            stake: v.stake,
+            timestamp: Time::now(),
+            signature: "",
+        }
+        let existing = self.votes.get(block_hash)
+        if existing == null {
+            self.votes[block_hash] = [vote]
+        } else {
+            existing.push(vote)
+        }
+        v.last_vote = slot
+        return true
+    }
+
+    fn check_finality(block_hash: Hash) -> (bool, u32) {
+        let votes = self.votes.get(block_hash)
+        if votes == null {
+            return (false, 0)
+        }
+        let active = self.get_active_validators()
+        let total: u32 = active.len()
+        let voted: u32 = votes.len()
+        if total == 0 {
+            return (false, 0)
+        }
+        let ratio = voted * 100 / total
+        return (ratio >= 67, ratio)
+    }
+
+    fn update_epoch(block_height: u64) {
+        let new_epoch = block_height / POS_EPOCH_BLOCKS
+        if new_epoch > self.epoch {
+            self.epoch = new_epoch
+            self.votes = {}
+        }
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+//  PHASE 3 — PROOF OF WORK (Final Seal)
+// ══════════════════════════════════════════════════════════
+
+contract ProofOfWork {
+    state difficulty: u8
+    state block_times: List<u32>
+
+    fn init() {
+        self.difficulty = POW_BASE_DIFFICULTY
+        self.block_times = []
+    }
+
+    fn count_leading_zeros(h: Hash) -> u8 {
+        return Hash::leading_zeros(h)
+    }
+
+    fn meets_target(h: Hash, diff: u8) -> bool {
+        return self.count_leading_zeros(h) >= diff
+    }
+
+    fn mine_nonce(header: BlockHeader, max_iterations: u64) -> u64 {
+        let mut_h = header
+        let nonce: u64 = 0
+        while nonce < max_iterations {
+            mut_h.nonce = nonce
+            let raw = BlockHeader::to_bytes(mut_h)
+            let h = Hash::sha256(raw)
+            if self.meets_target(h, self.difficulty) {
+        return nonce
+            }
+            nonce += 1
+        }
+        return 0
+    }
+
+    fn verify_pow(header: BlockHeader, diff: u8) -> bool {
+        let raw = BlockHeader::to_bytes(header)
+        let h = Hash::sha256(raw)
+        return self.meets_target(h, diff)
+    }
+
+    fn adjust_difficulty(block_height: u64) -> u8 {
+        if block_height % POW_ADJUSTMENT_WINDOW != 0 {
+            return self.difficulty
+        }
+        if self.block_times.len() < POW_ADJUSTMENT_WINDOW {
+            return self.difficulty
+        }
+        let sum: u32 = 0
+        let start = self.block_times.len() - POW_ADJUSTMENT_WINDOW
+        let i: u16 = 0
+        while i < POW_ADJUSTMENT_WINDOW {
+            sum += self.block_times[start + i]
+            i += 1
+        }
+        let avg = sum / POW_ADJUSTMENT_WINDOW
+        if avg < POW_TARGET_TIME_MS / 2 {
+            if self.difficulty < POW_MAX_DIFFICULTY {
+                self.difficulty += 1
+            }
+        } else if avg > POW_TARGET_TIME_MS * 2 {
+            if self.difficulty > 1 {
+                self.difficulty -= 1
+            }
+        }
+        return self.difficulty
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+//  MERKLE TREE
+// ══════════════════════════════════════════════════════════
+
+contract ATCMerkleTree {
+    fn compute_root(items: List<Hash>) -> Hash {
+        if items.len() == 0 {
+            return Hash::sha256("empty_tree")
+        }
+        let nodes: List<Hash> = items
+        while nodes.len() > 1 {
+            let next: List<Hash> = []
+            let i: u16 = 0
+            while i < nodes.len() {
+                let a = nodes[i]
+                let b = if i + 1 < nodes.len() { nodes[i + 1] } else { nodes[i] }
+                next.push(Hash::sha256(Hash::concat(a, b)))
+                i += 2
+            }
+            nodes = next
+        }
+        return nodes[0]
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+//  SHIVA CONSENSUS — MAIN ORCHESTRATOR
+// ══════════════════════════════════════════════════════════
+
+contract ShivaConsensus {
+    state poh: ProofOfHistory
+    state pos: ProofOfStake
+    state pow_engine: ProofOfWork
+    state chain: List<Hash>
+    state mempool: List<Hash>
+    state slot: u64
+    state running: bool
+
+    fn init() {
+        self.poh = ProofOfHistory::new()
+        self.pos = ProofOfStake::new()
+        self.pow = ProofOfWork::new()
+        self.chain = []
+        self.mempool = []
+        self.slot = 0
+        self.running = false
+        self.init_genesis()
+    }
+
+    fn init_genesis() {
+        let genesis_header = BlockHeader {
+            version: 1,
+            height: 0,
+            timestamp: Time::now(),
+            prev_hash: Hash::zero(),
+            tx_root: Hash::sha256("genesis_txroot"),
+            state_root: Hash::sha256("genesis_stateroot"),
+            poh_hash: self.poh.get_checkpoint(),
+            validator: Address::zero(),
+            nonce: 0,
+            difficulty: self.pow_engine.difficulty,
+            gas_limit: GAS_LIMIT,
+            gas_used: 0,
+            stake_total: 0,
+        }
+        let genesis = ATCBlock {
+            header: genesis_header,
+            transactions: [],
+            poh_entries: [],
+            votes: [],
+            block_hash: Hash::sha256(BlockHeader::to_bytes(genesis_header)),
+        }
+        self.chain.push(genesis)
+    }
+
+    fn add_transaction(tx_hash: Hash) -> bool {
+        self.mempool.push(tx_hash)
+        return true
+    }
+
+    fn produce_block(validator_addr: Address) -> Hash {
+        let prev_block = self.chain[self.chain.len() - 1]
+        let height = self.chain.len()
+        self.slot += 1
+        // Phase 1: PoH ticks
+        let pending = self.mempool
+        let poh_entries = self.poh.batch_tick(POH_TICKS_PER_BLOCK, pending)
+        let poh_checkpoint = self.poh.get_checkpoint()
+        // Phase 2: PoS — select producer
+        let producer = self.pos.select_block_producer(self.slot)
+        // Merkle root
+        let tx_root = ATCMerkleTree::compute_root(pending)
+        // Build header
+        let active = self.pos.get_active_validators()
+        let stake_total: u128 = 0
+        let i: u16 = 0
+        while i < active.len() {
+            let v = self.pos.validators.get(active[i])
+            if v != null {
+                stake_total += v.stake
+            }
+            i += 1
+        }
+        let header = BlockHeader {
+            version: 1,
+            height: height,
+            timestamp: Time::now(),
+            prev_hash: prev_block.block_hash,
+            tx_root: tx_root,
+            state_root: Hash::sha256("state_" + Int::to_string(height)),
+            poh_hash: poh_checkpoint,
+            validator: validator_addr,
+            nonce: 0,
+            difficulty: self.pow_engine.difficulty,
+            gas_limit: GAS_LIMIT,
+            gas_used: pending.len() * GAS_PER_TX,
+            stake_total: stake_total,
+        }
+        // Phase 3: PoW seal
+        let mine_nonce = self.pow_engine.mine_nonce(header, 500000)
+        
+        if mine_nonce > 0 {
+            header.nonce = mine_nonce
+        }
+        // Finalize block
+        let block = ATCBlock {
+            header: header,
+            transactions: pending,
+            poh_entries: poh_entries,
+            votes: [],
+            block_hash: Hash::sha256(BlockHeader::to_bytes(header)),
+        }
+        // PoS votes
+        let j: u16 = 0
+        while j < active.len() && j < 5 {
+            self.pos.cast_vote(active[j], block.block_hash, self.slot)
+            j += 1
+        }
+        self.chain.push(block)
+        self.mempool = []
+        self.pow_engine.adjust_difficulty(height)
+        self.pos.update_epoch(height)
+        return block
+    }
+
+    fn verify_block(block_hash: Hash, header: BlockHeader, tx_hashes: List<Hash>, poh_hashes: List<Hash>) -> (bool, String) {
+        // 1. PoH verify
+        if block.poh_entries.len() > 0 {
+            if !self.poh.verify_chain(block.poh_entries) {
+                return (false, "PoH chain invalid")
+            }
+        }
+        // 2. PoW verify
+        if !self.pow_engine.verify_pow(block.header, block.header.difficulty) {
+            return (false, "PoW seal invalid")
+        }
+        // 3. Merkle verify
+        let computed_root = ATCMerkleTree::compute_root(block.transactions)
+        if computed_root != block.header.tx_root {
+            return (false, "Merkle root mismatch")
+        }
+        // 4. Chain linkage
+        if block.header.height > 0 && block.header.height <= self.chain.len() {
+            let expected_prev = self.chain[block.header.height - 1].block_hash
+            if block.header.prev_hash != expected_prev {
+                return (false, "Prev hash mismatch")
+            }
+        }
+        return (true, "OK")
+    }
+
+    fn get_chain_stats() -> (u64, u8, u16, u64, u16, u64) {
+        return (
+            self.chain.len(),
+            self.pow_engine.difficulty,
+            self.pos.get_active_validators().len(),
+            self.poh.sequence,
+            self.mempool.len(),
+            self.slot
+        )
+    }
+}
