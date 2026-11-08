@@ -1,0 +1,102 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-89 — Genesis Token (ATC-001 Origin Token)
+// Sprint 2.5 | Contract Layer | Chain-ID 9000
+// Upgraded to v0.3 ATCLang syntax
+// One-time origin token: 21M ATC, non-mintable, non-burnable
+// ─────────────────────────────────────────────────────────────
+
+const TOTAL_SUPPLY: u128 = 21000000000000000000000000  // 21M ATC (18 decimals)
+
+struct TransferRecord {
+    from: Address,
+    to: Address,
+    timestamp: u64,
+}
+
+contract GenesisToken {
+    state holder: Address
+    state locked: bool
+    state supply: u128
+    state transfer_log: List<TransferRecord>
+    state owner: Address
+
+    event Genesis(creator: Address, supply: u128)
+    event Transfer(from: Address, to: Address, amount: u128)
+    event Locked(holder: Address)
+    event Unlocked(holder: Address)
+
+    fn init() {
+        self.holder = msg_sender()
+        self.locked = false
+        self.supply = TOTAL_SUPPLY
+        self.transfer_log = []
+        self.owner = msg_sender()
+        emit Genesis(self.holder, self.supply)
+    }
+
+    fn name() -> String {
+        return "A-TownChain Genesis Token"
+    }
+
+    fn symbol() -> String {
+        return "ATC"
+    }
+
+    fn decimals() -> u8 {
+        return 18
+    }
+
+    fn get_holder() -> Address {
+        return self.holder
+    }
+
+    fn get_supply() -> u128 {
+        return self.supply
+    }
+
+    fn transfer(to: Address) -> bool {
+        if self.locked {
+            return false
+        }
+        if msg_sender() != self.holder {
+            return false
+        }
+        let prev = self.holder
+        self.holder = to
+        let record = TransferRecord {
+            from: prev,
+            to: to,
+            timestamp: Time::now(),
+        }
+        self.transfer_log.push(record)
+        emit Transfer(prev, to, self.supply)
+        return true
+    }
+
+    fn lock() -> bool {
+        if msg_sender() != self.holder {
+            return false
+        }
+        self.locked = true
+        emit Locked(self.holder)
+        return true
+    }
+
+    fn unlock() -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.locked = false
+        emit Unlocked(self.holder)
+        return true
+    }
+
+    fn get_transfer_count() -> u32 {
+        return self.transfer_log.len()
+    }
+
+    fn is_locked() -> bool {
+        return self.locked
+    }
+}
