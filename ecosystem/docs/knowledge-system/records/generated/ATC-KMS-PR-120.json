@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-120",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #120: governance: propose ARR lifecycle, schema, and registry",
+  "context": "Pull request 120 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/120",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Purpose\n\nPropose a governed Architecture Requirement Request (ARR) lifecycle for software and architecture requirements in `a-townchain-ecosystem`.\n\n## Changes\n\n- `docs/governance/ARR-LIFECYCLE-001.md`: lifecycle, authority boundaries, exact-SHA evidence rules, and rollout acceptance checklist.\n- `docs/governance/schemas/arr-record.schema.json`: machine-readable ARR record schema.\n- `docs/governance/arr-registry.json`: proposed registry with ARR-0001 and explicit open residuals.\n\n## Separation of duties\n\n- Governance owns normative policy and authorized acceptance.\n- atc-engineering owns technical validators and CI/evidence enforcement.\n- Ecosystem records architecture, SSOT references, integration/compliance mapping, and residuals.\n- Canonical implementation repositories retain implementation source and component-level contracts.\n\n## Explicit limitations\n\n- Draft proposal only; not merged or approved.\n- No validator, tests, CI workflow, or branch-protection changes are included in this PR.\n- The registry has not yet been reconciled against ATC-STD-REGISTRY-001 and other existing SSOT registries.\n- ARR-0001 remains SPECIFIED; governance approval and exact-SHA enforcement are residuals.\n- No merge automation, gate weakening, or production-readiness claim.\n\n## Acceptance gates before promotion\n\n1. Independent Governance and Engineering review.\n2. Reconcile registry ownership with the currently approved registry standard.\n3. Add positive/negative schema tests and a fail-closed validator.\n4. Bind CI execution and evidence to the exact 40-character source SHA.\n5. Verify required checks and migrate existing requirements or record explicit residuals.\n\nDo not merge until review and required evidence are complete."
+}
