@@ -1,0 +1,175 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-97 — AI Routes (LLM Query/Stream API)
+// Sprint 3.2 | AI Layer | Chain-ID 9000
+// Migrated from: backend/api/routes/ai_routes.py (122 lines)
+// AI model health check, query, streaming, status endpoints
+// ─────────────────────────────────────────────────────────────
+
+enum AIModelStatus { Ready, Busy, Error, Offline }
+enum QueryType { Single, Stream, Batch }
+
+struct AIQuery {
+    query_id: Hash,
+    model: String,
+    prompt: String,
+    max_tokens: u32,
+    temperature: u16,
+    query_type: QueryType,
+    response: String,
+    tokens_used: u32,
+    latency_ms: u32,
+    created_at: u64,
+}
+
+struct AIModelInfo {
+    model_id: String,
+    name: String,
+    status: AIModelStatus,
+    max_tokens: u32,
+    loaded: bool,
+    query_count: u64,
+    avg_latency_ms: u32,
+}
+
+contract AIRoutes {
+    state queries: Map<Hash, AIQuery>
+    state models: Map<String, AIModelInfo>
+    state query_count: u64
+    state total_tokens: u64
+    state default_model: String
+    state owner: Address
+
+    event QueryReceived(query_id: Hash, model: String)
+    event QueryCompleted(query_id: Hash, tokens: u32, latency: u32)
+    event ModelStatusChanged(model: String, status: AIModelStatus)
+
+    fn init() {
+        self.queries = {}
+        self.models = {}
+        self.query_count = 0
+        self.total_tokens = 0
+        self.default_model = "atc-llm-v1"
+        self.owner = msg_sender()
+        self.register_model("atc-llm-v1", "ATC LLM v1", 4096)
+        self.register_model("codebert", "CodeBERT", 2048)
+        self.register_model("shiva-core", "ShivaCore AI", 8192)
+    }
+
+    fn register_model(model_id: String, name: String, max_tokens: u32) -> bool {
+        let info = AIModelInfo {
+            model_id: model_id,
+            name: name,
+            status: AIModelStatus::Ready,
+            max_tokens: max_tokens,
+            loaded: true,
+            query_count: 0,
+            avg_latency_ms: 0,
+        }
+        self.models[model_id] = info
+        return true
+    }
+
+    fn health() -> (String, AIModelStatus, u64) {
+        let m = self.models.get(self.default_model)
+        if m == null {
+            return (self.default_model, AIModelStatus::Offline, 0)
+        }
+        return (m.name, m.status, m.query_count)
+    }
+
+    fn query(model: String, prompt: String, max_tokens: u32, temperature: u16) -> Hash {
+        let query_id = Hash::sha256(prompt, msg_sender(), Time::now())
+        let m = self.models.get(model)
+        if m == null || m.status != AIModelStatus::Ready {
+            let q = AIQuery {
+                query_id: query_id,
+                model: model,
+                prompt: prompt,
+                max_tokens: max_tokens,
+                temperature: temperature,
+                query_type: QueryType::Single,
+                response: "Error: Model not available",
+                tokens_used: 0,
+                latency_ms: 0,
+                created_at: Time::now(),
+            }
+            self.queries[query_id] = q
+            return query_id
+        }
+        m.status = AIModelStatus::Busy
+        emit QueryReceived(query_id, model)
+        // In production: call LLM inference API
+        let response = "AI response for: " + prompt
+        let tokens: u32 = response.len()
+        let latency: u32 = 150
+        let q = AIQuery {
+            query_id: query_id,
+            model: model,
+            prompt: prompt,
+            max_tokens: max_tokens,
+            temperature: temperature,
+            query_type: QueryType::Single,
+            response: response,
+            tokens_used: tokens,
+            latency_ms: latency,
+            created_at: Time::now(),
+        }
+        self.queries[query_id] = q
+        self.query_count += 1
+        self.total_tokens += tokens
+        m.query_count += 1
+        m.status = AIModelStatus::Ready
+        emit QueryCompleted(query_id, tokens, latency)
+        return query_id
+    }
+
+    fn stream(model: String, prompt: String, max_tokens: u32) -> Hash {
+        // Streaming query — in production returns a stream ID
+        let query_id = Hash::sha256(prompt, msg_sender(), Time::now(), 1)
+        let q = AIQuery {
+            query_id: query_id,
+            model: model,
+            prompt: prompt,
+            max_tokens: max_tokens,
+            temperature: 50,
+            query_type: QueryType::Stream,
+            response: "",
+            tokens_used: 0,
+            latency_ms: 0,
+            created_at: Time::now(),
+        }
+        self.queries[query_id] = q
+        self.query_count += 1
+        emit QueryReceived(query_id, model)
+        return query_id
+    }
+
+    fn get_query_result(query_id: Hash) -> (String, u32, u32, u64) {
+        let q = self.queries.get(query_id)
+        if q == null {
+            return ("", 0, 0, 0)
+        }
+        return (q.response, q.tokens_used, q.latency_ms, q.created_at)
+    }
+
+    fn ai_status() -> (u64, u64, u16, String) {
+        return (self.query_count, self.total_tokens, self.models.len(), self.default_model)
+    }
+
+    fn set_default_model(model: String) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.default_model = model
+        return true
+    }
+
+    fn get_model_info(model: String) -> (String, AIModelStatus, u32, u64, u32) {
+        let m = self.models.get(model)
+        if m == null {
+            return ("", AIModelStatus::Offline, 0, 0, 0)
+        }
+        return (m.name, m.status, m.max_tokens, m.query_count, m.avg_latency_ms)
+    }
+}
