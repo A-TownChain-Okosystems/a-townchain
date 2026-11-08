@@ -568,10 +568,10 @@ durch Netzwerk-Partition moeglich:
 
 | Dokument | Bezug |
 |---------|------|
-| [ATC-LIC Spezifikation](../standards/ATC-LIC-SMART_CONTRACT_LICENSE.md) | Hauptstandard |
-| [ATC-LIC Spezifikation](../standards/ATS-LIC-SYSTEM_HARDWARE_LICENSE.md) | Hardware-Lizenzen |
-| [Compliance-Handbuch](COMPLIANCE_HANDBUCH.md) | Uebergeordnetes Handbuch |
-| [Lizenz-Uebersicht](../LICENSING_OVERVIEW.md) | Zentrale Uebersicht |
+| [ATC-LIC Spezifikation](../atc/ATC-LIC-SMART_CONTRACT_LICENSE.md) | Hauptstandard |
+| [ATC-LIC Spezifikation](../ats/ATS-LIC-SYSTEM_HARDWARE_LICENSE.md) | Hardware-Lizenzen |
+| [Compliance-Handbuch](../../docs/os-docs/docs/compliance/COMPLIANCE_HANDBUCH.md) | Uebergeordnetes Handbuch |
+| [Lizenz-Uebersicht](../../docs/os-docs/docs/LICENSING_OVERVIEW.md) | Zentrale Uebersicht |
 | ATC-01 | Smart Contracts |
 | ATC-03 | Decentralized Identity |
 | ATC-04 | DAG Consensus |
