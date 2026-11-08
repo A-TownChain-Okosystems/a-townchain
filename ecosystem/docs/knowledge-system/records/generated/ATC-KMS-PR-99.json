@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-99",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #99: fix: remove wall-clock from blockchain determinism tests",
+  "context": "Pull request 99 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "archived",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/99",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: False\nDraft: False\n\n## Scope\nRemove the 24 historical REQ-ENG-002 findings from the a-townchain blockchain test code without weakening the determinism gate.\n\n## Root cause\nThe findings are test-only temporary-path generation using SystemTime::now(). They are not consensus/runtime clock access.\n\n## Fix\n- Replace wall-clock-derived test path suffixes with a process-local AtomicU64 counter.\n- Preserve per-process uniqueness with the existing process ID component.\n- Do not change consensus/runtime clock behavior.\n- Do not modify the determinism gate or its allowlist.\n\n## Evidence target\nDeterminism Gate must show 0 unallowlisted Rust wall-clock/RNG findings and retain the two-run byte comparison.\n\nHistorical reference: prior unmerged PR #77 identified the same 24 findings and proposed this exact class of remediation. This PR is recreated from current main and scoped only to the two affected Rust test files.\n\nOne logical change/scope; the branch currently contains two mechanical file-update commits and is intended to be squash-merged to one commit."
+}
