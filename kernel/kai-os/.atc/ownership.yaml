@@ -1,0 +1,10 @@
+repository: a-townchain-os
+maintainers:
+  - ShivaCoreDev
+  - aurora-superagent
+security:
+  team: ShivaCoreDev
+architecture:
+  team: ShivaCoreDev
+release:
+  team: ShivaCoreDev
