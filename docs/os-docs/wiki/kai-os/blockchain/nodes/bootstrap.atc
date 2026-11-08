@@ -1,0 +1,234 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-01 — Bootstrap Node: DNS Seed & Peer Discovery
+// Sprint 2.2 | Non-EVM | SHA-256 | Chain-ID 9000
+// Migrated from: blockchain/nodes/bootstrap.py
+// ─────────────────────────────────────────────────────────────
+
+const DNS_SEEDS: List<String> = [
+    "seed1.atownchain.io",
+    "seed2.atownchain.io",
+    "seed3.atownchain.io",
+    "dnsseed.atc-chain.net",
+    "atc-seed.shivacore.dev",
+]
+
+const HARDCODED_SEEDS: List<String> = [
+    "5.9.104.210:5005",
+    "95.217.12.33:5005",
+    "144.76.21.88:5005",
+    "148.251.190.4:5005",
+    "78.46.222.55:5005",
+]
+
+const BOOTSTRAP_PORT: u16 = 5005
+const P2P_PORT: u16 = 4001
+const MAX_OUTBOUND: u8 = 8
+const MAX_INBOUND: u16 = 125
+const PEER_TIMEOUT: u16 = 90
+const ADDR_MAX_PER_MSG: u16 = 1000
+const DNS_TIMEOUT: u8 = 5
+const DNS_RETRY: u8 = 3
+const KADEMLIA_K: u8 = 20
+const KADEMLIA_ALPHA: u8 = 3
+const STALE_THRESHOLD: u32 = 1209600  // 14 days in seconds
+
+struct PeerAddress {
+    ip: String,
+    port: u16,
+    last_seen: u64,
+    last_tried: u64,
+    attempt_count: u8,
+    connected: bool,
+    services: u32,
+    source: String,
+}
+
+contract BootstrapNode {
+    state new_table: Map<String, PeerAddress>
+    state tried_table: Map<String, PeerAddress>
+    state bootstrap_port: u16
+
+    event PeerDiscovered(ip: String, port: u16, source: String)
+    event PeerConnected(key: String)
+    event PeerFailed(key: String, attempts: u8)
+    event AddrManSaved(new_count: u32, tried_count: u32)
+
+    fn init() {
+        self.bootstrap_port = BOOTSTRAP_PORT
+    }
+
+    fn peer_key(ip: String, port: u16) -> String {
+        return ip + ":" + Int::to_string(port)
+    }
+
+    fn add_peer(ip: String, port: u16, source: String) -> bool {
+        let key = self.peer_key(ip, port)
+        if self.tried_table.contains(key) {
+            return false
+        }
+        if self.new_table.contains(key) {
+            return false
+        }
+        let peer = PeerAddress {
+            ip: ip,
+            port: port,
+            last_seen: Time::now(),
+            last_tried: 0,
+            attempt_count: 0,
+            connected: false,
+            services: 1,
+            source: source,
+        }
+        self.new_table[key] = peer
+        emit PeerDiscovered(ip, port, source)
+        return true
+    }
+
+    fn mark_tried(key: String) {
+        let peer = self.new_table.get(key)
+        if peer != null {
+            self.new_table.remove(key)
+            peer.connected = true
+            peer.last_seen = Time::now()
+            self.tried_table[key] = peer
+            emit PeerConnected(key)
+        }
+    }
+
+    fn mark_failed(key: String) {
+        let peer = self.new_table.get(key)
+        if peer == null {
+            peer = self.tried_table.get(key)
+        }
+        if peer != null {
+            peer.attempt_count += 1
+            peer.last_tried = Time::now()
+            if peer.attempt_count >= 3 {
+                self.new_table.remove(key)
+                self.tried_table.remove(key)
+            }
+            emit PeerFailed(key, peer.attempt_count)
+        }
+    }
+
+    fn get_candidates(n: u16) -> List<PeerAddress> {
+        let candidates = []
+        let tried_peers = self.tried_table.values()
+        for i in 0..tried_peers.len() {
+            candidates.push(tried_peers[i])
+        }
+        let new_peers = self.new_table.values()
+        for i in 0..new_peers.len() {
+            candidates.push(new_peers[i])
+        }
+        let fresh = []
+        for i in 0..candidates.len() {
+            let age = Time::now() - candidates[i].last_seen
+            if age < STALE_THRESHOLD {
+                fresh.push(candidates[i])
+            }
+        }
+        let result = []
+        let count = n
+        if fresh.len() < count {
+            count = fresh.len()
+        }
+        for i in 0..count {
+            result.push(fresh[i])
+        }
+        return result
+    }
+
+    fn get_addr_sample(max_count: u16) -> List<String> {
+        let all_peers = self.tried_table.values() + self.new_table.values()
+        let result = []
+        let count = max_count
+        if all_peers.len() < count {
+            count = all_peers.len()
+        }
+        for i in 0..count {
+            let p = all_peers[i]
+            result.push(p.ip + ":" + Int::to_string(p.port))
+        }
+        return result
+    }
+
+    fn bootstrap_from_dns() -> u16 {
+        let discovered: u16 = 0
+        for i in 0..DNS_SEEDS.len() {
+            let seed = DNS_SEEDS[i]
+            let ips = DNS::resolve(seed, self.bootstrap_port)
+            for j in 0..ips.len() {
+                if self.add_peer(ips[j], self.bootstrap_port, "dns") {
+                    discovered += 1
+                }
+            }
+        }
+        if discovered == 0 {
+            for i in 0..HARDCODED_SEEDS.len() {
+                let entry = HARDCODED_SEEDS[i]
+                let parts = String::split(entry, ":")
+                let ip = parts[0]
+                let port = Int::parse(parts[1])
+                if self.add_peer(ip, port, "hardcoded") {
+                    discovered += 1
+                }
+            }
+        }
+        return discovered
+    }
+
+    fn bootstrap_hardcoded() -> u16 {
+        let discovered: u16 = 0
+        for i in 0..HARDCODED_SEEDS.len() {
+            let entry = HARDCODED_SEEDS[i]
+            let parts = String::split(entry, ":")
+            let ip = parts[0]
+            let port = Int::parse(parts[1])
+            if self.add_peer(ip, port, "hardcoded") {
+                discovered += 1
+            }
+        }
+        return discovered
+    }
+
+    fn is_valid_ip(ip: String) -> bool {
+        let parts = String::split(ip, ".")
+        if parts.len() != 4 {
+            return false
+        }
+        for i in 0..4 {
+            let n = Int::parse(parts[i])
+            if n < 0 || n > 255 {
+                return false
+            }
+            if i == 0 {
+                if n == 10 || n == 127 {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    fn stats() -> (u32, u32, u32) {
+        let new_count = self.new_table.len()
+        let tried_count = self.tried_table.len()
+        let total = new_count + tried_count
+        return (new_count, tried_count, total)
+    }
+
+    fn kademlia_find_node(target_id: Hash) -> List<PeerAddress> {
+        let result = []
+        let candidates = self.get_candidates(KADEMLIA_K)
+        let count = KADEMLIA_ALPHA
+        if candidates.len() < count {
+            count = candidates.len()
+        }
+        for i in 0..count {
+            result.push(candidates[i])
+        }
+        return result
+    }
+}
