@@ -42,6 +42,10 @@ fn alle_vertragsquellen_parsen_und_validieren() {
                 for e in report.errors {
                     failures.push(format!("{}: {e}", file.display()));
                 }
+                let typed = atc_core::types::check_program(&program);
+                for e in typed.errors {
+                    failures.push(format!("{}: {e}", file.display()));
+                }
             }
         }
     }
