@@ -1,0 +1,207 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-01 — Initial Chain Synchronisation
+// Sprint 2.2 | Non-EVM | SHA-256 | Chain-ID 9000
+// Migrated from: blockchain/nodes/initial_sync.py
+// Protocol: CHAIN_INFO → REQUEST_BLOCKS → APPLY
+// ─────────────────────────────────────────────────────────────
+
+const BATCH_SIZE: u8 = 50
+const SYNC_TIMEOUT: u16 = 10
+const MAX_RETRIES: u8 = 3
+
+struct SyncBlock {
+    height: u64,
+    hash: Hash,
+    prev_hash: Hash,
+    timestamp: u64,
+    data: String,
+}
+
+struct SyncPeer {
+    node_id: String,
+    host: String,
+    port: u16,
+    height: u64,
+    latency_ms: u32,
+}
+
+contract InitialSyncer {
+    state node_id: String
+    state current_height: u64
+    state peers: List<SyncPeer>
+    state progress: u32
+    state running: bool
+
+    event SyncStarted(node_id: String, current_height: u64)
+    event SyncProgress(height: u64, total: u64)
+    event SyncComplete(final_height: u64)
+    event SyncFailed(reason: String)
+    event BlockApplied(height: u64, hash: Hash)
+
+    fn init(node_id: String, current_height: u64, peers: List<SyncPeer>) {
+        self.node_id = node_id
+        self.current_height = current_height
+        self.peers = peers
+        self.progress = 0
+        self.running = false
+    }
+
+    // ── Query peer chain height ─────────────────────
+    fn query_peer_height(peer: SyncPeer) -> u64 {
+        let t0 = Time::now_ms()
+        let msg = JSON::encode({
+            "type": "CHAIN_INFO",
+            "node_id": self.node_id,
+            "height": self.current_height
+        })
+        let resp = Net::udp_send(peer.host, peer.port, msg, SYNC_TIMEOUT)
+        if resp == "" {
+            return 0
+        }
+        peer.latency_ms = Time::now_ms() - t0
+        let parsed = JSON::decode(resp)
+        return parsed.get("height")
+    }
+
+    // ── Select best peer (highest chain, lowest latency) ──
+    fn select_best_peer() -> SyncPeer {
+        let best: SyncPeer = null
+        let best_height: u64 = 0
+        for i in 0..self.peers.len() {
+            let p = self.peers[i]
+            let h = self.query_peer_height(p)
+            p.height = h
+            if h > best_height || (h == best_height && best != null && p.latency_ms < best.latency_ms) {
+                best_height = h
+                best = p
+            }
+        }
+        return best
+    }
+
+    // ── Fetch blocks from peer ──────────────────────
+    fn fetch_blocks(peer: SyncPeer, from_height: u64, to_height: u64) -> List<SyncBlock> {
+        let blocks = []
+        let msg = JSON::encode({
+            "type": "REQUEST_BLOCKS",
+            "from": from_height,
+            "to": to_height,
+            "node_id": self.node_id
+        })
+        let resp = Net::udp_send(peer.host, peer.port, msg, SYNC_TIMEOUT)
+        if resp == "" {
+            return blocks
+        }
+        let parsed = JSON::decode(resp)
+        let raw_blocks = parsed.get("blocks")
+        for i in 0..raw_blocks.len() {
+            let rb = raw_blocks[i]
+            let block = SyncBlock {
+                height: rb.get("height"),
+                hash: rb.get("hash"),
+                prev_hash: rb.get("prev_hash"),
+                timestamp: rb.get("timestamp"),
+                data: rb.get("data"),
+            }
+            blocks.push(block)
+        }
+        return blocks
+    }
+
+    // ── Validate a single block ─────────────────────
+    fn validate_block(block: SyncBlock, expected_prev: Hash) -> bool {
+        if block.prev_hash != expected_prev {
+            return false
+        }
+        if block.timestamp == 0 {
+            return false
+        }
+        let computed = Hash::sha256(block.data)
+        if computed != block.hash {
+            return false
+        }
+        return true
+    }
+
+    // ── Run full sync ───────────────────────────────
+    fn run_sync() -> bool {
+        self.running = true
+        emit SyncStarted(self.node_id, self.current_height)
+
+        let best_peer = self.select_best_peer()
+        if best_peer == null {
+            emit SyncFailed("No suitable peer found")
+            self.running = false
+            return false
+        }
+
+        let target_height = best_peer.height
+        let from = self.current_height + 1
+        let to = from
+
+        while to <= target_height {
+            let batch_end = to + BATCH_SIZE - 1
+            if batch_end > target_height {
+                batch_end = target_height
+            }
+
+            let retries: u8 = 0
+            let blocks = []
+            while retries < MAX_RETRIES {
+                blocks = self.fetch_blocks(best_peer, to, batch_end)
+                if blocks.len() > 0 {
+                    break
+                }
+                retries += 1
+            }
+
+            if blocks.len() == 0 {
+                emit SyncFailed("Failed to fetch blocks after retries")
+                self.running = false
+                return false
+            }
+
+            // Apply blocks
+            for i in 0..blocks.len() {
+                let block = blocks[i]
+                let expected_prev = Hash::zero()
+                if self.current_height > 0 {
+                    expected_prev = self.last_block_hash()
+                }
+                if !self.validate_block(block, expected_prev) {
+                    emit SyncFailed("Block validation failed at height " + Int::to_string(block.height))
+                    self.running = false
+                    return false
+                }
+                self.apply_block(block)
+                emit BlockApplied(block.height, block.hash)
+            }
+
+            self.current_height = batch_end
+            self.progress = (self.current_height * 100) / target_height
+            emit SyncProgress(self.current_height, target_height)
+            to = batch_end + 1
+        }
+
+        self.running = false
+        emit SyncComplete(self.current_height)
+        return true
+    }
+
+    // ── Apply block to local chain ──────────────────
+    fn apply_block(block: SyncBlock) {
+        // Hook: implemented by the blockchain core
+        self.current_height = block.height
+    }
+
+    fn last_block_hash() -> Hash {
+        // Hook: returns hash of last applied block
+        return Hash::zero()
+    }
+
+    // ── Progress query ──────────────────────────────
+    fn get_progress() -> u32 {
+        return self.progress
+    }
+}
