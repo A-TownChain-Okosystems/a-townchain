@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-218",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #218: docs(architecture): define ecosystem-wide target state catalog",
+  "context": "Pull request 218 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/218",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Ziel\nErgänzt einen zentralen Soll-Zustandskatalog für das gesamte A-TownChain-Ökosystem, mit klarer Trennung von Soll, Ist, Abweichungen und Evidence.\n\n## Änderungen\n- dokumentiert SSOT-Grenzen und verhindert Implementierungsduplikate im Ecosystem-Control-Plane;\n- definiert Anforderungen an Repository-Inventar, maschinenlesbare Soll-Datensätze, Abnahmekriterien und negative Tests;\n- beschreibt die Evidence-Kette Commit-SHA → Workflow-Run → Job → Step → Exit-Code/Logs → Artefakt-Hash;\n- definiert fail-closed Gates für Katalog, SSOT, Integration, E2E und Release;\n- gleicht den Zielmodell-Abschnitt an das organisationsweite Agent Manifest an: **L0–L9 + X0–X36**, einschließlich ausdrücklich eingeschlossenem X0;\n- hält den bestehenden Registry-Stand **L0–L10 / X1–X8** davon getrennt und dokumentiert die ausstehende koordinierte Migration.\n\n## Architekturstatus\n**TARGET MODEL RECORDED / REGISTRY MIGRATION PENDING.** Das Zielmodell ist für die weitere Architekturplanung dokumentiert, aber dieser PR behauptet weder normative Freigabe noch eine bereits erfolgte Migration von Registry, Mapping, Katalogen, Validatoren oder atc-standards. Die Behandlung der bisherigen L10-Verantwortlichkeiten sowie Definitionen und Eigentümer für X0–X36 müssen vor einer koordinierten Migration dokumentiert freigegeben werden.\n\n## Akzeptanz\n- [ ] Architektur-/Standards-Owner genehmigt die normative Definition von L0–L9 und X0–X36 einschließlich der Behandlung bisheriger L10-Verantwortlichkeiten\n- [ ] Registry, Mapping, Katalog, Validatoren und Standards werden konsistent angepasst, falls freigegeben\n- [ ] Dokumentations-/Schema-Validierung erfolgreich\n- [ ] vollständiges Repository-Inventar und Evidence-Nachweise geprüft\n- [ ] offene Lücken bleiben explizit; kein Merge als vollständig verifiziert ohne Nachweise\n\nDieser PR ist ein Dokumentationsentwurf. Er behauptet weder vollständige Katalogabdeckung noch implementierte oder E2E-verifizierte Systemreife."
+}
