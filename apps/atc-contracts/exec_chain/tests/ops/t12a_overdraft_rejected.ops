@@ -1,0 +1,18 @@
+# t12a — portiert aus test_atc8300_token.py::test_transfer_insufficient_funds:
+# Balance 100 (Slot 2) < Transfer 200 -> Abweisung, beide Slots unberuehrt.
+Load 2
+Push 200
+Lt
+JumpIfNotZero 14
+Load 2
+Push 200
+Sub
+Store 2
+Load 3
+Push 200
+Add
+Store 3
+Push 1
+Halt
+Push 0
+Halt
