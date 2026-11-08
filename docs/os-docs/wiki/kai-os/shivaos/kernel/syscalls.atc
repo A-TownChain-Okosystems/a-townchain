@@ -1,0 +1,118 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ╔══════════════════════════════════════════════════════╗
+// ║  ShivaOS System-Calls (ATC-96, Sprint 2.4)         ║
+// ║  Syscall-Tabelle für den Microkernel                ║
+// ║  ATCLang v0.4 | Non-EVM | SHA-256                   ║
+// ╚══════════════════════════════════════════════════════╝
+
+contract ShivaOSSyscalls {
+    // Syscall IDs
+    // Prozess: FORK=1, EXIT=2, EXEC=3, WAITPID=4, GETPID=5, GETPPID=6, SLEEP=7
+    // Dateisystem: OPEN=10, CLOSE=11, READ=12, WRITE=13, MKDIR=14, RMDIR=15, STAT=16, LS=17, MOUNT=18
+    // Netzwerk: SOCKET=20, BIND=21, LISTEN=22, ACCEPT=23, CONNECT=24, SEND=25, RECV=26
+    // IPC: CHANNEL_CREATE=30, CHANNEL_SEND=31, CHANNEL_RECV=32
+    // Krypto: HASH=40, SIGN=41, VERIFY=42, ENCRYPT=43, DECRYPT=44
+    // Consensus: VALIDATE=50, PROPOSE=51, VOTE=52
+    // AI: MODEL_LOAD=60, MODEL_INFER=61, MODEL_UNLOAD=62
+
+    state syscall_table: Map<u64, string>
+    state syscall_count: u64 = 0
+    state enabled: bool = true
+
+    fn init() {
+        self.register(1, "fork")
+        self.register(2, "exit")
+        self.register(3, "exec")
+        self.register(4, "waitpid")
+        self.register(5, "getpid")
+        self.register(6, "getppid")
+        self.register(7, "sleep")
+        self.register(10, "open")
+        self.register(11, "close")
+        self.register(12, "read")
+        self.register(13, "write")
+        self.register(14, "mkdir")
+        self.register(15, "rmdir")
+        self.register(16, "stat")
+        self.register(17, "ls")
+        self.register(18, "mount")
+        self.register(20, "socket")
+        self.register(21, "bind")
+        self.register(22, "listen")
+        self.register(23, "accept")
+        self.register(24, "connect")
+        self.register(25, "send")
+        self.register(26, "recv")
+        self.register(30, "channel_create")
+        self.register(31, "channel_send")
+        self.register(32, "channel_recv")
+        self.register(40, "hash")
+        self.register(41, "sign")
+        self.register(42, "verify")
+        self.register(43, "encrypt")
+        self.register(44, "decrypt")
+        self.register(50, "validate")
+        self.register(51, "propose")
+        self.register(52, "vote")
+        self.register(60, "model_load")
+        self.register(61, "model_infer")
+        self.register(62, "model_unload")
+    }
+
+    fn register(id: u64, name: string) {
+        self.syscall_table[id] = name
+        self.syscall_count = self.syscall_count + 1
+    }
+
+    fn dispatch(id: u64, args: string) -> string {
+        require(self.enabled, "Syscalls disabled")
+        require(self.syscall_table[id] != "", "Unknown syscall")
+        
+        let name = self.syscall_table[id]
+        
+        if name == "getpid" {
+            return caller
+        }
+        if name == "sleep" {
+            // Yield execution
+            return "ok"
+        }
+        if name == "hash" {
+            return ATC::Crypto::sha256(args)
+        }
+        if name == "open" {
+            return "handle_1"
+        }
+        if name == "close" {
+            return "ok"
+        }
+        if name == "read" {
+            return ""
+        }
+        if name == "write" {
+            return "ok"
+        }
+        
+        return "enqueued"
+    }
+
+    fn enable() {
+        self.enabled = true
+    }
+
+    fn disable() {
+        self.enabled = false
+    }
+
+    fn list_syscalls() -> string {
+        let result = ""
+        let i = 1
+        while i <= 62 {
+            if self.syscall_table[i] != "" {
+                result = result + i.to_string() + ":" + self.syscall_table[i] + ","
+            }
+            i = i + 1
+        }
+        return result
+    }
+}
