@@ -1,0 +1,15 @@
+# t11a — Owner-Muster aus test_bridge_contract.py::test_pause_security /
+# test_base_contract.py: nur der Owner (Slot 1) darf die geschuetzte
+# Aktion (Mint 500) ausfuehren.
+Caller
+Load 1
+Eq
+JumpIfZero 10
+Load 0
+Push 500
+Add
+Store 0
+Push 1
+Halt
+Push 0
+Halt
