@@ -1,0 +1,10 @@
+[package]
+name = "atc-genesis-physics"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+atc-genesis-platform = { path = "../atc-genesis-platform" }
+atc-genesis-ecs = { path = "../atc-genesis-ecs" }
+atc-genesis-world = { path = "../atc-genesis-world" }
