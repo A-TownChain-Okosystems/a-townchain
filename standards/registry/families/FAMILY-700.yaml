@@ -1,0 +1,11 @@
+# SSOT der Familien-Definition (ATC-STD-002 §1/§6) — normativ, keine Ableitung
+family_id: 700
+family: "AI / AGENTS"
+range: "ATC-STD-700-799"
+purpose: "Aurora, AI, Agenten, Modelle, AI-Safety"
+subfamily_rule: "Die Hunderterstelle bestimmt die Standards-Familie; die letzten zwei Stellen identifizieren den Standard innerhalb dieser Familie."
+reserved: true
+reservation_rules_ref: "ATC-STD-002 §2 (Regeln 1-10)"
+grandfathering_ref: "ATC-STD-002 §3"
+created: "2026-09-11"
+mandate: "Owner-Entwurf 11.09. (SCR-0096 Families-ID, Härtung 02:17)"
