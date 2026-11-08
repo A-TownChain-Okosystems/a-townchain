@@ -1,0 +1,28 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-41 AI Director Factory
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+struct AIDirectorFactory { directors: Map<Hash256, Director>, spawns: Map<Hash256, SpawnSys>, balance: BalEngine, difficulty: DiffMgr, personal: PersonalEngine, directives: List<Directive> }
+enum DMode { Observer, Active, Director, Storyteller }
+enum Flow { Calm, Building, Intense, Peak, Recovery }
+struct Director { id: Hash256, name: String, mode: DMode, intensity: Float32, flow: Flow }
+struct SpawnSys { id: Hash256, name: String, points: List<SpawnPt>, max: UInt16, current: UInt16 }
+struct SpawnPt { id: Hash256, max_e: UInt8, current: UInt8, last: UInt64, cd_ms: UInt32 }
+struct BalEngine { enabled: Bool, params: Map<String, BalParam>, auto: Bool, history: List<BalSnap> }
+struct BalParam { name: String, current: Float32, target: Float32, min: Float32, max: Float32, rate: Float32 }
+struct BalSnap { timestamp: UInt64, win_rate: Float32 }
+struct DiffMgr { current: Float32, min: Float32, max: Float32, speed: Float32, dynamic: Bool }
+struct PersonalEngine { enabled: Bool, profiles: Map<String, Profile>, content: Map<String, List<String>> }
+struct Profile { id: String, skill: Float32, style: String, prefs: Map<String, Float32> }
+struct Directive { id: Hash256, name: String, priority: UInt8, action: String, expires: UInt64 }
+
+pub fn create_director(f, name, mode) -> Hash256 { let did = Crypto::sha256(serialize(name, Chain::timestamp())); f.directors[did] = Director { id: did, name: name, mode: mode, intensity: 0.5, flow: Flow::Calm }; return did }
+pub fn update_flow(f, did, engagement, frustration) -> Bool { require(f.directors.contains(did)); let d = f.directors[did]; if engagement > 0.8 and frustration < 0.3 { d.flow = Flow::Peak; d.intensity = 0.9 } else if frustration > 0.7 { d.flow = Flow::Recovery; d.intensity = 0.3 } else { d.flow = Flow::Building; d.intensity = 0.6 }; return true }
+pub fn create_spawn(f, name, max) -> Hash256 { let sid = Crypto::sha256(serialize(name, Chain::timestamp())); f.spawns[sid] = SpawnSys { id: sid, name: name, points: [], max: max, current: 0 }; return sid }
+pub fn add_spawn_pt(f, sid, max_e, cd) -> Hash256 { require(f.spawns.contains(sid)); let pid = Crypto::sha256(serialize(sid, Chain::timestamp())); f.spawns[sid].points.append(SpawnPt { id: pid, max_e: max_e, current: 0, last: 0, cd_ms: cd }); return pid }
+pub fn spawn_tick(f, sid) -> UInt16 { require(f.spawns.contains(sid)); let s = f.spawns[sid]; let n = 0; for sp in s.points { if s.current >= s.max { break }; if sp.current >= sp.max_e { continue }; if Chain::timestamp_ms() - sp.last < sp.cd_ms { continue }; sp.current = sp.current + 1; sp.last = Chain::timestamp_ms(); s.current = s.current + 1; n = n + 1 }; return n }
+pub fn set_balance(f, name, cur, tgt, min, max) -> Bool { f.balance.params[name] = BalParam { name: name, current: cur, target: tgt, min: min, max: max, rate: 0.05 }; return true }
+pub fn auto_balance(f, win_rate, target) { if not f.balance.auto { return }; let dev = win_rate - target; for name in f.balance.params.keys() { let p = f.balance.params[name]; p.current = p.current - p.rate * dev; if p.current < p.min { p.current = p.min }; if p.current > p.max { p.current = p.max } }; f.balance.history.append(BalSnap { timestamp: Chain::timestamp(), win_rate: win_rate }) }
+pub fn adjust_diff(f, success) { if not f.difficulty.dynamic { return }; let adj = f.difficulty.speed * (if success then 1 else -1); f.difficulty.current = f.difficulty.current + adj; if f.difficulty.current > f.difficulty.max { f.difficulty.current = f.difficulty.max }; if f.difficulty.current < f.difficulty.min { f.difficulty.current = f.difficulty.min } }
+pub fn create_profile(f, pid, style) -> Bool { f.personal.profiles[pid] = Profile { id: pid, skill: 0.5, style: style, prefs: {} }; return true }
+pub fn issue_directive(f, name, priority, action, dur_ms) -> Hash256 { let did = Crypto::sha256(serialize(name, Chain::timestamp())); f.directives.append(Directive { id: did, name: name, priority: priority, action: action, expires: Chain::timestamp_ms() + dur_ms }); return did }
