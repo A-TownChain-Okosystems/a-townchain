@@ -1,0 +1,906 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═════════════════════════════════════════════════════════════════
+// ATC-97 — Agent Interaction Protocol (AIP)
+// Sprint 3.0 | AI Protocol Layer | Chain-ID 9000
+// ATCLang v0.4 | Non-EVM | ATCLang First Policy (ATC-99)
+// ═════════════════════════════════════════════════════════════════
+//
+// Standardisiertes Interaktions-Protokoll zwischen KI-Agenten
+// auf dem KAI-OS Network. Definiert:
+//
+//   1. MESSAGE TYPES — Request, Response, Event, Broadcast, Query
+//   2. HANDSHAKE — Agent Discovery + Capability Negotiation
+//   3. SESSIONS — Stateful Conversations mit Session-ID
+//   4. DELEGATION — Task-Weitergabe mit Result-Rücklauf
+//   5. CONSENSUS — Multi-Agent Voting und Quorum
+//   6. STREAMING — Token-Streaming für LLM-Responses
+//   7. ERROR HANDLING — Standardisierte Error-Codes
+//   8. GAS MODEL — Jede Message kostet Gas,.sender zahlt
+//
+// Architektur:
+//   ┌────────────────────────────────────────────────────────────┐
+//   │              Agent A (Sender)                                │
+//   │  1. create_session() → session_id                            │
+//   │  2. send_message(session_id, Message{...})                   │
+//   │  3. wait_for_response() / poll_responses()                   │
+//   └──────────────────────────┬─────────────────────────────────┘
+//                              │ ATCNet (P2P)
+//   ┌──────────────────────────▼─────────────────────────────────┐
+//   │              Agent B (Receiver)                              │
+//   │  1. on_message_received(session_id, Message{...})           │
+//   │  2. process() → result                                       │
+//   │  3. send_response(session_id, Response{...})                 │
+//   └────────────────────────────────────────────────────────────┘
+//
+// Status: DRAFT (AD-005) — Aurora spec, due Sprint 3.0
+// ═════════════════════════════════════════════════════════════════
+
+import "std/chain.atc" as Chain
+import "std/crypto.atc" as Crypto
+
+// ════════════════════════════════════════════════════════════════
+//  PROTOCOL CONSTANTS
+// ════════════════════════════════════════════════════════════════
+
+const AIP_VERSION: u8 = 1
+const AIP_MAX_MESSAGE_SIZE: u32 = 65536      // 64 KB
+const AIP_MAX_SESSION_DURATION: u64 = 86400 // 24 hours (seconds)
+const AIP_MAX_RETRIES: u8 = 3
+const AIP_TIMEOUT_DEFAULT: u32 = 30000      // 30 seconds
+const AIP_GAS_PER_MESSAGE: u64 = 10
+const AIP_GAS_PER_TOKEN: u64 = 1
+const AIP_MAX_CAPABILITIES: u8 = 32
+const AIP_QUORUM_DEFAULT: u8 = 67           // 67% majority
+
+// ════════════════════════════════════════════════════════════════
+//  ENUMS
+// ════════════════════════════════════════════════════════════════
+
+enum MessageType {
+    REQUEST,        // Agent A → Agent B: Task/Query
+    RESPONSE,       // Agent B → Agent A: Result/Answer
+    EVENT,          // Broadcast an alle Agenten
+    STREAM,         // Token-Stream (LLM partial response)
+    STREAM_END,     // Stream beendet
+    DELEGATE,       // Task-Delegation an anderen Agent
+    DELEGATE_RESULT,// Resultat einer Delegation
+    VOTE,           // Consensus-Vote
+    VOTE_RESULT,    // Consensus-Ergebnis
+    HANDSHAKE,      // Discovery + Capability Exchange
+    HANDSHAKE_ACK,  // Handshake bestätigt
+    HEARTBEAT,      // Keep-Alive
+    GOODBYE,        // Session beenden
+    ERROR,          // Fehlermeldung
+}
+
+enum MessagePriority {
+    LOW = 1,
+    NORMAL = 5,
+    HIGH = 10,
+    URGENT = 15,
+    CRITICAL = 20,
+}
+
+enum SessionState {
+    INITIALIZING,   // Handshake läuft
+    ACTIVE,         // Session aktiv
+    WAITING,        // Wartet auf Response
+    STREAMING,      // Token-Stream aktiv
+    CLOSING,        // Wird geschlossen
+    CLOSED,         // Beendet
+    ERROR,          // Fehler
+    EXPIRED,        // Timeout
+}
+
+enum AgentRole {
+    ORCHESTRATOR,   // Task-Verteiler
+    WORKER,         // Task-Ausführer
+    VALIDATOR,      // Resultat-Prüfer
+    OBSERVER,       // Nur Lesen
+    RELAY,          // Weiterleitung
+}
+
+enum AipErrorCode {
+    NONE = 0,
+    UNKNOWN_AGENT,          // Agent nicht registriert
+    UNKNOWN_SESSION,        // Session nicht gefunden
+    SESSION_EXPIRED,        // Session abgelaufen
+    SESSION_CLOSED,         // Session bereits geschlossen
+    CAPABILITY_MISMATCH,    // Agent hat Capability nicht
+    GAS_INSUFFICIENT,       // Nicht genug Gas
+    TIMEOUT,                // Response-Timeout
+    MAX_RETRIES_EXCEEDED,   // Zu viele Retries
+    MESSAGE_TOO_LARGE,      // Message > 64KB
+    PROTOCOL_VERSION,       // Versions-Konflikt
+    INTERNAL_ERROR,         // Agent-interner Fehler
+    DELEGATION_FAILED,      // Task-Delegation fehlgeschlagen
+    CONSENSUS_FAILED,       // Kein Quorum erreicht
+    RATE_LIMITED,           // Rate-Limit erreicht
+}
+
+enum Capability {
+    // Core
+    TEXT_GENERATION,        // LLM Text-Erzeugung
+    TEXT_ANALYSIS,          // Text-Analyse (Sentiment, NER, etc.)
+    CODE_GENERATION,        // Code-Erzeugung
+    CODE_REVIEW,            // Code-Review
+    TRANSLATION,            // Übersetzung
+    SUMMARIZATION,          // Zusammenfassung
+    EMBEDDING,              // Vektor-Embeddings
+    IMAGE_GENERATION,       // Bild-Erzeugung
+    IMAGE_ANALYSIS,         // Bild-Analyse
+    AUDIO_TRANSCRIPTION,     // Audio → Text
+    AUDIO_SYNTHESIS,        // Text → Audio
+    // Blockchain
+    SMART_CONTRACT_DEPLOY,  // Contract deployen
+    SMART_CONTRACT_CALL,    // Contract aufrufen
+    TRANSACTION_SIGN,       // Transaktion signieren
+    BLOCKCHAIN_QUERY,       // Chain-State lesen
+    VALIDATOR,              // Konsensus-Validator
+    // OS
+    FILE_ACCESS,            // Dateisystem-Zugriff
+    NETWORK_ACCESS,         // Netzwerk-Zugriff
+    PROCESS_MANAGE,         // Prozessverwaltung
+    DRIVER_ACCESS,          // Treiber-Zugriff
+    // Custom (agent-defined, 100+)
+    CUSTOM = 100,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  STRUCTS
+// ════════════════════════════════════════════════════════════════
+
+struct AipMessage {
+    message_id: Hash,           // SHA-256(sender + session + nonce)
+    session_id: Hash,           // Session-ID
+    msg_type: MessageType,
+    priority: MessagePriority,
+    sender: Address,            // Agent Owner Address
+    sender_agent_id: Hash,      // Agent-ID des Senders
+    receiver: Address,          // Ziel-Agent Owner (0 = Broadcast)
+    receiver_agent_id: Hash,    // Ziel-Agent-ID (0 = Broadcast)
+    nonce: u64,                  // Anti-Replay
+    timestamp: u64,             // block_timestamp()
+    payload: String,            // JSON-encoded payload
+    gas_limit: u64,             // Max Gas für diese Message
+    gas_used: u64,               // Tatsächlich verbraucht
+    in_reply_to: Hash,          // Message-ID der ursprünglichen Nachricht (0 = neue)
+    signature: Hash,            // Ed25519 Signatur
+    capability: Capability,     // Angeforderte Capability
+    stream_index: u32,          // Bei STREAM: Token-Index
+    stream_total: u32,          // Bei STREAM: Geschätzte Total-Tokens (0 = unbekannt)
+}
+
+struct AipSession {
+    session_id: Hash,
+    initiator: Address,          // Agent A (Sender)
+    initiator_agent_id: Hash,
+    responder: Address,         // Agent B (Receiver)
+    responder_agent_id: Hash,
+    state: SessionState,
+    created_at: u64,
+    last_activity: u64,
+    expires_at: u64,             // created_at + MAX_SESSION_DURATION
+    message_count: u32,
+    gas_total: u64,
+    capabilities_agreed: List<Capability>,
+    role_initiator: AgentRole,
+    role_responder: AgentRole,
+    timeout_ms: u32,
+    retries: u8,
+}
+
+struct AipHandshake {
+    agent_id: Hash,
+    name: String,
+    version: String,
+    capabilities: List<Capability>,
+    role: AgentRole,
+    model_endpoint: String,
+    max_concurrent_sessions: u8,
+    gas_rate_limit: u64,         // Max Gas/sec
+    reputation: u32,
+    signature: Hash,
+}
+
+struct AipDelegation {
+    delegation_id: Hash,
+    delegator: Address,
+    delegator_agent_id: Hash,
+    delegatee_agent_id: Hash,
+    task: String,                // Task-Beschreibung
+    input_data: String,          // JSON-encoded input
+    gas_budget: u64,             // Gas-Budget für Delegatee
+    deadline: u64,               // Block-Deadline
+    result: String,              // Resultat (leer bis fertig)
+    completed: bool,
+    success: bool,
+}
+
+struct AipVote {
+    vote_id: Hash,
+    proposal: String,           // Proposal-Beschreibung
+    proposer: Address,
+    voters_yes: List<Address>,
+    voters_no: List<Address>,
+    voters_abstain: List<Address>,
+    quorum_pct: u8,              // z.B. 67
+    deadline: u64,
+    passed: bool,
+    vote_count: u32,
+    total_eligible: u32,
+}
+
+struct AipStreamChunk {
+    session_id: Hash,
+    chunk_index: u32,
+    total_chunks: u32,           // 0 = unbekannt (streaming)
+    content: String,
+    is_final: bool,
+    tokens_in_chunk: u16,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  AGENT INTERACTION PROTOCOL CONTRACT
+// ════════════════════════════════════════════════════════════════
+
+module Kernel::AgentInteractionProtocol {
+
+    contract AipManager {
+
+        // ── State ───────────────────────────────────────────
+        state sessions: Map<Hash, AipSession>
+        state messages: Map<Hash, AipMessage>
+        state delegations: Map<Hash, AipDelegation>
+        state votes: Map<Hash, AipVote>
+        state handshakes: Map<Hash, AipHandshake>
+        state agent_capabilities: Map<Hash, List<Capability>>    // agent_id → caps
+        state active_sessions_per_agent: Map<Hash, u8>            // agent_id → count
+        state nonce_counter: u64 = 0
+        state total_messages: u64 = 0
+        state total_sessions: u64 = 0
+        state total_delegations: u64 = 0
+        state total_votes: u64 = 0
+        state total_gas_used: u64 = 0
+        state authorized: List<Address>
+
+        // ── Events ──────────────────────────────────────────
+        event SessionCreated(session_id: Hash, initiator: Hash, responder: Hash)
+        event SessionClosed(session_id: Hash, reason: String)
+        event MessageSent(message_id: Hash, session_id: Hash, msg_type: MessageType)
+        event MessageDelivered(message_id: Hash, session_id: Hash)
+        event HandshakeCompleted(agent_a: Hash, agent_b: Hash, capabilities: List<Capability>)
+        event DelegationCreated(delegation_id: Hash, delegator: Hash, delegatee: Hash)
+        event DelegationCompleted(delegation_id: Hash, success: bool)
+        event VoteStarted(vote_id: Hash, proposal: String, deadline: u64)
+        event VoteCompleted(vote_id: Hash, passed: bool, yes: u32, no: u32)
+        event StreamChunk(session_id: Hash, chunk_index: u32, is_final: bool)
+        event AipError(session_id: Hash, error_code: AipErrorCode, message: String)
+
+        // ═══════════════════════════════════════════════════════════
+        //  SESSION MANAGEMENT
+        // ═══════════════════════════════════════════════════════════
+
+        // Session erstellen
+        fn create_session(
+            initiator_agent_id: Hash,
+            responder_agent_id: Hash,
+            initiator_role: AgentRole,
+            responder_role: AgentRole,
+            timeout_ms: u32,
+        ) -> Hash {
+            let initiator: Address = msg.sender
+            let session_id: Hash = Hash::sha256(
+                initiator_agent_id.to_hex() + responder_agent_id.to_hex() +
+                Int::to_string(self.nonce_counter)
+            )
+            self.nonce_counter += 1
+
+            let now: u64 = Chain::block_timestamp()
+            let session: AipSession = AipSession {
+                session_id: session_id,
+                initiator: initiator,
+                initiator_agent_id: initiator_agent_id,
+                responder: Address::zero(),  // Wird bei Handshake gesetzt
+                responder_agent_id: responder_agent_id,
+                state: SessionState::INITIALIZING,
+                created_at: now,
+                last_activity: now,
+                expires_at: now + AIP_MAX_SESSION_DURATION,
+                message_count: 0,
+                gas_total: 0,
+                capabilities_agreed: [],
+                role_initiator: initiator_role,
+                role_responder: responder_role,
+                timeout_ms: timeout_ms,
+                retries: 0,
+            }
+
+            self.sessions[session_id] = session
+
+            // Session-Counter erhöhen
+            let count: u8 = self.active_sessions_per_agent[initiator_agent_id]
+            self.active_sessions_per_agent[initiator_agent_id] = count + 1
+
+            self.total_sessions += 1
+            emit SessionCreated(session_id, initiator_agent_id, responder_agent_id)
+            return session_id
+        }
+
+        // Session schließen
+        fn close_session(session_id: Hash, reason: String) -> bool {
+            let session: AipSession = self.sessions[session_id]
+            require(session.session_id == session_id, "session not found")
+            require(session.state != SessionState::CLOSED, "already closed")
+
+            session.state = SessionState::CLOSED
+            session.last_activity = Chain::block_timestamp()
+
+            // Session-Counter verringern
+            let count: u8 = self.active_sessions_per_agent[session.initiator_agent_id]
+            if count > 0 {
+                self.active_sessions_per_agent[session.initiator_agent_id] = count - 1
+            }
+
+            emit SessionClosed(session_id, reason)
+            return true
+        }
+
+        // Session abrufen
+        fn get_session(session_id: Hash) -> AipSession {
+            return self.sessions[session_id]
+        }
+
+        // Alle aktiven Sessions eines Agenten
+        fn list_active_sessions(agent_id: Hash) -> List<Hash> {
+            let result: List<Hash> = []
+            for sid, session in self.sessions {
+                if (session.initiator_agent_id == agent_id || session.responder_agent_id == agent_id) &&
+                   session.state != SessionState::CLOSED && session.state != SessionState::EXPIRED {
+                    result.push(sid)
+                }
+            }
+            return result
+        }
+
+        // Session-Timeout prüfen
+        fn check_session_timeout(session_id: Hash) -> bool {
+            let session: AipSession = self.sessions[session_id]
+            let now: u64 = Chain::block_timestamp()
+
+            if now > session.expires_at {
+                session.state = SessionState::EXPIRED
+                emit SessionClosed(session_id, "timeout")
+                return true
+            }
+            return false
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  HANDSHAKE
+        // ═══════════════════════════════════════════════════════════
+
+        // Handshake initiieren
+        fn initiate_handshake(
+            session_id: Hash,
+            agent_id: Hash,
+            name: String,
+            version: String,
+            capabilities: List<Capability>,
+            role: AgentRole,
+            model_endpoint: String,
+            max_sessions: u8,
+            gas_rate: u64,
+            reputation: u32,
+        ) -> bool {
+            let session: AipSession = self.sessions[session_id]
+            require(session.state == SessionState::INITIALIZING, "session not initializing")
+
+            let handshake: AipHandshake = AipHandshake {
+                agent_id: agent_id,
+                name: name,
+                version: version,
+                capabilities: capabilities,
+                role: role,
+                model_endpoint: model_endpoint,
+                max_concurrent_sessions: max_sessions,
+                gas_rate_limit: gas_rate,
+                reputation: reputation,
+                signature: Hash::zero(),
+            }
+
+            self.handshakes[agent_id] = handshake
+            self.agent_capabilities[agent_id] = capabilities
+            return true
+        }
+
+        // Handshake bestätigen
+        fn acknowledge_handshake(session_id: Hash, responder_agent_id: Hash) -> bool {
+            let session: AipSession = self.sessions[session_id]
+            require(session.state == SessionState::INITIALIZING, "session not initializing")
+
+            session.responder_agent_id = responder_agent_id
+            session.state = SessionState::ACTIVE
+            session.last_activity = Chain::block_timestamp()
+
+            // Capability-Überschneidung berechnen
+            let caps_a: List<Capability> = self.agent_capabilities[session.initiator_agent_id]
+            let caps_b: List<Capability> = self.agent_capabilities[responder_agent_id]
+            let agreed: List<Capability> = self.intersect_capabilities(caps_a, caps_b)
+            session.capabilities_agreed = agreed
+
+            emit HandshakeCompleted(session.initiator_agent_id, responder_agent_id, agreed)
+            return true
+        }
+
+        // Capability-Überschneidung
+        fn intersect_capabilities(a: List<Capability>, b: List<Capability>) -> List<Capability> {
+            let result: List<Capability> = []
+            for cap in a {
+                if b.contains(cap) {
+                    result.push(cap)
+                }
+            }
+            return result
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  MESSAGING
+        // ═══════════════════════════════════════════════════════════
+
+        // Message senden
+        fn send_message(
+            session_id: Hash,
+            msg_type: MessageType,
+            priority: MessagePriority,
+            payload: String,
+            capability: Capability,
+            gas_limit: u64,
+            in_reply_to: Hash,
+        ) -> Hash {
+            let session: AipSession = self.sessions[session_id]
+            require(session.session_id == session_id, "session not found")
+            require(session.state == SessionState::ACTIVE || session.state == SessionState::WAITING,
+                    "session not active")
+            require(payload.length <= AIP_MAX_MESSAGE_SIZE, "message too large")
+            require(gas_limit >= AIP_GAS_PER_MESSAGE, "insufficient gas for message")
+
+            let message_id: Hash = Hash::sha256(
+                msg.sender.to_hex() + session_id.to_hex() + Int::to_string(self.nonce_counter)
+            )
+            self.nonce_counter += 1
+
+            let msg_obj: AipMessage = AipMessage {
+                message_id: message_id,
+                session_id: session_id,
+                msg_type: msg_type,
+                priority: priority,
+                sender: msg.sender,
+                sender_agent_id: session.initiator_agent_id,
+                receiver: session.responder,
+                receiver_agent_id: session.responder_agent_id,
+                nonce: self.nonce_counter,
+                timestamp: Chain::block_timestamp(),
+                payload: payload,
+                gas_limit: gas_limit,
+                gas_used: AIP_GAS_PER_MESSAGE,
+                in_reply_to: in_reply_to,
+                signature: Hash::zero(),  // In production: Ed25519 sign
+                capability: capability,
+                stream_index: 0,
+                stream_total: 0,
+            }
+
+            self.messages[message_id] = msg_obj
+            session.message_count += 1
+            session.last_activity = Chain::block_timestamp()
+            session.gas_total += AIP_GAS_PER_MESSAGE
+            self.total_messages += 1
+            self.total_gas_used += AIP_GAS_PER_MESSAGE
+
+            if msg_type == MessageType::REQUEST {
+                session.state = SessionState::WAITING
+            }
+
+            emit MessageSent(message_id, session_id, msg_type)
+            return message_id
+        }
+
+        // Response senden
+        fn send_response(
+            session_id: Hash,
+            in_reply_to: Hash,
+            payload: String,
+            gas_used: u64,
+        ) -> Hash {
+            let session: AipSession = self.sessions[session_id]
+            require(session.state == SessionState::WAITING || session.state == SessionState::ACTIVE,
+                    "session not waiting for response")
+
+            let message_id: Hash = Hash::sha256(
+                msg.sender.to_hex() + session_id.to_hex() + Int::to_string(self.nonce_counter)
+            )
+            self.nonce_counter += 1
+
+            let msg_obj: AipMessage = AipMessage {
+                message_id: message_id,
+                session_id: session_id,
+                msg_type: MessageType::RESPONSE,
+                priority: MessagePriority::NORMAL,
+                sender: msg.sender,
+                sender_agent_id: session.responder_agent_id,
+                receiver: session.initiator,
+                receiver_agent_id: session.initiator_agent_id,
+                nonce: self.nonce_counter,
+                timestamp: Chain::block_timestamp(),
+                payload: payload,
+                gas_limit: 0,
+                gas_used: gas_used,
+                in_reply_to: in_reply_to,
+                signature: Hash::zero(),
+                capability: Capability::TEXT_GENERATION,
+                stream_index: 0,
+                stream_total: 0,
+            }
+
+            self.messages[message_id] = msg_obj
+            session.state = SessionState::ACTIVE
+            session.message_count += 1
+            session.last_activity = Chain::block_timestamp()
+            session.gas_total += gas_used
+            self.total_messages += 1
+            self.total_gas_used += gas_used
+
+            emit MessageSent(message_id, session_id, MessageType::RESPONSE)
+            return message_id
+        }
+
+        // Broadcast an alle Agenten
+        fn broadcast(
+            sender_agent_id: Hash,
+            payload: String,
+            capability: Capability,
+            gas_limit: u64,
+        ) -> Hash {
+            let message_id: Hash = Hash::sha256(
+                msg.sender.to_hex() + sender_agent_id.to_hex() + Int::to_string(self.nonce_counter)
+            )
+            self.nonce_counter += 1
+
+            let msg_obj: AipMessage = AipMessage {
+                message_id: message_id,
+                session_id: Hash::zero(),  // Broadcast: keine Session
+                msg_type: MessageType::EVENT,
+                priority: MessagePriority::NORMAL,
+                sender: msg.sender,
+                sender_agent_id: sender_agent_id,
+                receiver: Address::zero(),  // 0 = Broadcast
+                receiver_agent_id: Hash::zero(),
+                nonce: self.nonce_counter,
+                timestamp: Chain::block_timestamp(),
+                payload: payload,
+                gas_limit: gas_limit,
+                gas_used: AIP_GAS_PER_MESSAGE,
+                in_reply_to: Hash::zero(),
+                signature: Hash::zero(),
+                capability: capability,
+                stream_index: 0,
+                stream_total: 0,
+            }
+
+            self.messages[message_id] = msg_obj
+            self.total_messages += 1
+            self.total_gas_used += AIP_GAS_PER_MESSAGE
+
+            emit MessageSent(message_id, Hash::zero(), MessageType::EVENT)
+            return message_id
+        }
+
+        // Message abrufen
+        fn get_message(message_id: Hash) -> AipMessage {
+            return self.messages[message_id]
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  STREAMING (LLM Token-Streaming)
+        // ═══════════════════════════════════════════════════════════
+
+        // Stream-Chunk senden
+        fn send_stream_chunk(
+            session_id: Hash,
+            chunk_index: u32,
+            total_chunks: u32,
+            content: String,
+            tokens: u16,
+            is_final: bool,
+        ) -> Hash {
+            let session: AipSession = self.sessions[session_id]
+            require(session.state == SessionState::ACTIVE || session.state == SessionState::STREAMING,
+                    "session not active")
+
+            if session.state == SessionState::ACTIVE {
+                session.state = SessionState::STREAMING
+            }
+
+            let message_id: Hash = Hash::sha256(
+                msg.sender.to_hex() + session_id.to_hex() + Int::to_string(self.nonce_counter)
+            )
+            self.nonce_counter += 1
+
+            let msg_type: MessageType = if is_final then MessageType::STREAM_END else MessageType::STREAM
+
+            let msg_obj: AipMessage = AipMessage {
+                message_id: message_id,
+                session_id: session_id,
+                msg_type: msg_type,
+                priority: MessagePriority::NORMAL,
+                sender: msg.sender,
+                sender_agent_id: session.responder_agent_id,
+                receiver: session.initiator,
+                receiver_agent_id: session.initiator_agent_id,
+                nonce: self.nonce_counter,
+                timestamp: Chain::block_timestamp(),
+                payload: content,
+                gas_limit: 0,
+                gas_used: tokens as u64 * AIP_GAS_PER_TOKEN,
+                in_reply_to: Hash::zero(),
+                signature: Hash::zero(),
+                capability: Capability::TEXT_GENERATION,
+                stream_index: chunk_index,
+                stream_total: total_chunks,
+            }
+
+            self.messages[message_id] = msg_obj
+            session.message_count += 1
+            session.last_activity = Chain::block_timestamp()
+            session.gas_total += tokens as u64 * AIP_GAS_PER_TOKEN
+            self.total_messages += 1
+            self.total_gas_used += tokens as u64 * AIP_GAS_PER_TOKEN
+
+            if is_final {
+                session.state = SessionState::ACTIVE
+            }
+
+            emit StreamChunk(session_id, chunk_index, is_final)
+            return message_id
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  DELEGATION
+        // ═══════════════════════════════════════════════════════════
+
+        // Task delegieren
+        fn delegate_task(
+            delegatee_agent_id: Hash,
+            task: String,
+            input_data: String,
+            gas_budget: u64,
+            deadline_blocks: u64,
+        ) -> Hash {
+            let delegation_id: Hash = Hash::sha256(
+                msg.sender.to_hex() + delegatee_agent_id.to_hex() + Int::to_string(self.nonce_counter)
+            )
+            self.nonce_counter += 1
+
+            let delegation: AipDelegation = AipDelegation {
+                delegation_id: delegation_id,
+                delegator: msg.sender,
+                delegator_agent_id: Hash::zero(),  // Set by caller context
+                delegatee_agent_id: delegatee_agent_id,
+                task: task,
+                input_data: input_data,
+                gas_budget: gas_budget,
+                deadline: Chain::block_number() + deadline_blocks,
+                result: "",
+                completed: false,
+                success: false,
+            }
+
+            self.delegations[delegation_id] = delegation
+            self.total_delegations += 1
+
+            emit DelegationCreated(delegation_id, delegation.delegator_agent_id, delegatee_agent_id)
+            return delegation_id
+        }
+
+        // Delegation-Ergebnis einreichen
+        fn submit_delegation_result(
+            delegation_id: Hash,
+            result: String,
+            success: bool,
+        ) -> bool {
+            let delegation: AipDelegation = self.delegations[delegation_id]
+            require(!delegation.completed, "delegation already completed")
+            require(Chain::block_number() <= delegation.deadline, "delegation deadline exceeded")
+
+            delegation.result = result
+            delegation.completed = true
+            delegation.success = success
+
+            emit DelegationCompleted(delegation_id, success)
+            return true
+        }
+
+        // Delegation abrufen
+        fn get_delegation(delegation_id: Hash) -> AipDelegation {
+            return self.delegations[delegation_id]
+        }
+
+        // Offene Delegationen für einen Agenten
+        fn list_pending_delegations(agent_id: Hash) -> List<Hash> {
+            let result: List<Hash> = []
+            for did, del in self.delegations {
+                if del.delegatee_agent_id == agent_id && !del.completed {
+                    result.push(did)
+                }
+            }
+            return result
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  CONSENSUS / VOTING
+        // ═══════════════════════════════════════════════════════════
+
+        // Vote starten
+        fn start_vote(
+            proposal: String,
+            total_eligible: u32,
+            quorum_pct: u8,
+            deadline_blocks: u64,
+        ) -> Hash {
+            let vote_id: Hash = Hash::sha256(
+                msg.sender.to_hex() + proposal + Int::to_string(self.nonce_counter)
+            )
+            self.nonce_counter += 1
+
+            let vote: AipVote = AipVote {
+                vote_id: vote_id,
+                proposal: proposal,
+                proposer: msg.sender,
+                voters_yes: [],
+                voters_no: [],
+                voters_abstain: [],
+                quorum_pct: quorum_pct,
+                deadline: Chain::block_number() + deadline_blocks,
+                passed: false,
+                vote_count: 0,
+                total_eligible: total_eligible,
+            }
+
+            self.votes[vote_id] = vote
+            self.total_votes += 1
+
+            emit VoteStarted(vote_id, proposal, vote.deadline)
+            return vote_id
+        }
+
+        // Stimme abgeben
+        fn cast_vote(vote_id: Hash, vote_yes: bool, abstain: bool) -> bool {
+            let vote: AipVote = self.votes[vote_id]
+            require(Chain::block_number() <= vote.deadline, "voting deadline exceeded")
+            require(vote.vote_count < vote.total_eligible, "all votes cast")
+
+            let voter: Address = msg.sender
+
+            if abstain {
+                vote.voters_abstain.push(voter)
+            } else if vote_yes {
+                vote.voters_yes.push(voter)
+            } else {
+                vote.voters_no.push(voter)
+            }
+
+            vote.vote_count += 1
+
+            // Auto-finalize wenn alle abgestimmt haben
+            if vote.vote_count >= vote.total_eligible {
+                self.finalize_vote(vote_id)
+            }
+
+            return true
+        }
+
+        // Vote finalisieren
+        fn finalize_vote(vote_id: Hash) -> bool {
+            let vote: AipVote = self.votes[vote_id]
+
+            let yes_count: u32 = vote.voters_yes.length
+            let no_count: u32 = vote.voters_no.length
+            let total_valid: u32 = yes_count + no_count
+
+            if total_valid == 0 {
+                vote.passed = false
+            } else {
+                let yes_pct: u8 = (yes_count * 100 / total_valid) as u8
+                vote.passed = yes_pct >= vote.quorum_pct
+            }
+
+            emit VoteCompleted(vote_id, vote.passed, yes_count, no_count)
+            return true
+        }
+
+        // Vote abrufen
+        fn get_vote(vote_id: Hash) -> AipVote {
+            return self.votes[vote_id]
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  ERROR HANDLING
+        // ═══════════════════════════════════════════════════════════
+
+        // Fehler senden
+        fn send_error(
+            session_id: Hash,
+            error_code: AipErrorCode,
+            error_message: String,
+        ) -> bool {
+            let session: AipSession = self.sessions[session_id]
+
+            let message_id: Hash = Hash::sha256(
+                msg.sender.to_hex() + session_id.to_hex() + Int::to_string(self.nonce_counter)
+            )
+            self.nonce_counter += 1
+
+            let msg_obj: AipMessage = AipMessage {
+                message_id: message_id,
+                session_id: session_id,
+                msg_type: MessageType::ERROR,
+                priority: MessagePriority::HIGH,
+                sender: msg.sender,
+                sender_agent_id: session.responder_agent_id,
+                receiver: session.initiator,
+                receiver_agent_id: session.initiator_agent_id,
+                nonce: self.nonce_counter,
+                timestamp: Chain::block_timestamp(),
+                payload: error_message,
+                gas_limit: 0,
+                gas_used: 0,
+                in_reply_to: Hash::zero(),
+                signature: Hash::zero(),
+                capability: Capability::TEXT_GENERATION,
+                stream_index: 0,
+                stream_total: 0,
+            }
+
+            self.messages[message_id] = msg_obj
+            session.state = SessionState::ERROR if error_code != AipErrorCode::TIMEOUT else session.state
+            session.last_activity = Chain::block_timestamp()
+
+            emit AipError(session_id, error_code, error_message)
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  HEARTBEAT
+        // ═══════════════════════════════════════════════════════════
+
+        // Heartbeat senden
+        fn heartbeat(session_id: Hash) -> bool {
+            let session: AipSession = self.sessions[session_id]
+            require(session.session_id == session_id, "session not found")
+            require(session.state == SessionState::ACTIVE, "session not active")
+
+            session.last_activity = Chain::block_timestamp()
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  STATS
+        // ═══════════════════════════════════════════════════════════
+
+        fn get_stats() -> (u64, u64, u64, u64, u64, u64) {
+            return (
+                self.total_sessions,
+                self.total_messages,
+                self.total_delegations,
+                self.total_votes,
+                self.total_gas_used,
+                self.sessions.length,
+            )
+        }
+
+        fn get_agent_session_count(agent_id: Hash) -> u8 {
+            return self.active_sessions_per_agent[agent_id]
+        }
+    }
+}
