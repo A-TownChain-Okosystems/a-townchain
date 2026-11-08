@@ -1,0 +1,354 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a-townchain-okosystems/standards/schemas/milestone.schema.json",
+  "title": "ATC Milestone (ATC-STD-MILESTONE-001 §17)",
+  "description": "Maschinenlesbares Format für ATC-Meilensteine. registry/milestones.yaml ist SSOT; jedes Entry MUSS diesem Schema entsprechen. Pflichtfelder §4, Lebenszyklus §2, Kategorien §5, Risiko §12, Evidence-Pflicht bei ACCEPTED+ §6/§7.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "category",
+    "status",
+    "owner",
+    "goal",
+    "scope",
+    "acceptance_criteria",
+    "dependencies",
+    "risk",
+    "evidence",
+    "start",
+    "target_date",
+    "audit_ref"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Meilenstein-ID: ATC-M-NNN (Basis) oder ATC-M-<PROGRAMM>-NNN",
+      "pattern": "^ATC-M-(?:[A-Z]+-)?[0-9]{3,}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "category": {
+      "type": "string",
+      "description": "Reifeklasse des Zielzustands (§5)",
+      "enum": [
+        "M0",
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5",
+        "M6",
+        "M7",
+        "M8"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Lebenszyklus-Status (§15)",
+      "enum": [
+        "PLANNED",
+        "DEFINED",
+        "IN_PROGRESS",
+        "BLOCKED",
+        "FEATURE_COMPLETE",
+        "VALIDATION",
+        "AUDIT",
+        "FAILED",
+        "ACCEPTED",
+        "RELEASED",
+        "VERIFIED",
+        "CLOSED",
+        "SUPERSEDED"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "description": "Meilenstein-Definitionsversion (SemVer)"
+    },
+    "owner": {
+      "type": "string",
+      "description": "Verantwortlicher Owner (Governance-Rolle)"
+    },
+    "responsible_agent": {
+      "type": "string",
+      "description": "Agent-ID, falls KI beteiligt (§13) — Pflicht sobald Agent arbeitet"
+    },
+    "goal": {
+      "type": "string",
+      "description": "Ziel-Zustand (nachweisbar erreichter Entwicklungszustand)"
+    },
+    "scope": {
+      "type": "string",
+      "description": "Gilt / Nicht-Gilt"
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Requirement-Referenzen (REQ-IDs oder Issue-IDs)"
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "Harte Run-/Test-/Boot-/Audit-Kriterien (Reality-Check-Regel)"
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Test-Suiten-/Bericht-Referenzen"
+    },
+    "security_status": {
+      "type": "string",
+      "enum": [
+        "NOT_STARTED",
+        "IN_PROGRESS",
+        "PASSED",
+        "FAILED",
+        "N_A"
+      ]
+    },
+    "documentation_status": {
+      "type": "string",
+      "enum": [
+        "NOT_STARTED",
+        "IN_PROGRESS",
+        "COMPLETE",
+        "STALE"
+      ]
+    },
+    "compatibility_status": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "VERIFIED",
+        "ISSUES_OPEN",
+        "N_A"
+      ],
+      "description": "UNKNOWN bei Release ist VERBOTEN (COMPAT-001-Kopplung, §11)"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Meilenstein-IDs oder Repo-/Standard-Referenzen (§8, DAG, keine Zyklen)"
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "overall"
+      ],
+      "properties": {
+        "overall": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "technical": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "security": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "dependency": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "compatibility": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "operational": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "business": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "description": "Evidence-Pack-Einträge (§6): je Gate mindestens ein Artefakt bei Abschluss",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "ref"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "test-report",
+              "ci-log",
+              "build-artifact",
+              "audit-report",
+              "boot-log",
+              "benchmark",
+              "screenshot",
+              "hash",
+              "git-commit",
+              "release-artifact",
+              "documentation",
+              "run-log"
+            ]
+          },
+          "ref": {
+            "type": "string",
+            "description": "Pfad, Commit-SHA, Issue, URL oder Record-ID"
+          },
+          "gate": {
+            "type": "string",
+            "description": "zugeordnetes Gate §7 (requirement/implementation/test/security/compatibility/documentation/audit/acceptance)"
+          }
+        }
+      }
+    },
+    "audit_ref": {
+      "type": "string",
+      "description": "Audit-Referenz (AUD-Record, Findings, Bericht) — Pflichtfeld"
+    },
+    "audit_result": {
+      "type": "string",
+      "description": "Audit-Ergebnis-Zusammenfassung (Pflicht ab ACCEPTED)"
+    },
+    "start": {
+      "type": "string",
+      "format": "date"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "actual_completion": {
+      "type": "string",
+      "format": "date",
+      "description": "Pflicht nach Abschluss (§4)"
+    },
+    "release": {
+      "type": "string",
+      "description": "Release-Zuordnung (§10), z. B. v0.8.0 — Pflicht ab RELEASED"
+    },
+    "revalidated": {
+      "type": "string",
+      "description": "MAJOR-Revalidierungs-Vermerk (§11), z. B. '2026-09-xx COMP-001-Lauf'"
+    },
+    "program": {
+      "type": "string",
+      "description": "Programm-Name für ATC-M-<PROG>-NNN (z. B. CORE, CHAIN)"
+    },
+    "mapping_alt": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Alt->Neu-Abbildung (SCR-0136 Anhang A): Referenz-Set der ATC-M-NNN-Alt-IDs. 1->n erlaubt (Set, kein Skalar). Referenz, KEIN Evidence-Feld.",
+      "items": {
+        "type": "string",
+        "pattern": "^ATC-M-[0-9]{3}$"
+      }
+    },
+    "status_alt": {
+      "type": "string",
+      "description": "EINGEFRORENER Alt-Status der gemappten Meilensteine (kein impliziter Ubertrag auf status). status (Lebenszyklus) startet separat bei null und wird ausschliesslich aus neuen Nachweisen gesetzt (Owner-Invariante 06.10.)."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "ACCEPTED",
+              "RELEASED",
+              "VERIFIED",
+              "CLOSED"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "audit_result",
+          "actual_completion"
+        ],
+        "properties": {
+          "evidence": {
+            "minItems": 1
+          },
+          "compatibility_status": {
+            "enum": [
+              "VERIFIED",
+              "N_A"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "RELEASED",
+              "VERIFIED",
+              "CLOSED"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "release"
+        ]
+      }
+    }
+  ]
+}
