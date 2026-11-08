@@ -1,0 +1,39 @@
+# ATC Allocation Conflicts — offene Findings aus dem Standard-ID Allocation / Registry Capacity Audit (12.09.2026)
+conflicts:
+  - id: P1-A1
+    title: "FAMILY-300 Allocation Integrity"
+    status: OPEN
+    severity: P1
+    finding: "FAMILY-300 ist normativ als SOFTWARE ENGINEERING reserviert, enthaelt aber Security (301-314), Mining (340-350), Wallet (360-368) und DeFi (380-389)."
+    classification: GRANDFATHERED (SCR-0030/0031/0034, SCR-0040, SCR-0096)
+    required_action: "Klassifikation je ID bestaetigen oder via SCR in Ziel-Familie dokumentieren; keine automatische Umnummerierung (ID-Immutabilitaet)."
+  - id: P1-A2
+    title: "Allocation State SSOT fehlte"
+    status: RESOLVED_BY_THIS_PR
+    finding: "Keine maschinenlesbare Unterscheidung FREE / RESERVED / ALLOCATABLE / ALLOCATED / HISTORICAL / CONFLICT."
+    resolution: "registry/allocation/allocation-status.yaml + allocation-gate (CI) — Drift wird künftig automatisch erkannt."
+  - id: P1-A3
+    title: "Registry/Framework Divergenz"
+    status: OPEN
+    severity: P2
+    finding: "VERWEIST-Slots (310, 313) existieren nur im Framework-Katalog, nicht als physische Standarddateien. Zwei historische Schichten mit unterschiedlicher Aussagekraft."
+    required_action: "VERWEIST als eigenen Zustand im Allocation-Validator normativ verankern (folgt mit ATC-STD-002-Erweiterung, SCR-0116)."
+  - id: P1-A4
+    title: "Semantic Family Collision"
+    status: OPEN
+    severity: P2
+    finding: "FAMILY-300 mischt Security, Blockchain und Software Engineering in einem numerischen Block."
+    required_action: "Bezugsrahmen dokumentieren: Kategorie-Feld != Familien-Block; Domain-Test in den Allocation-Gates (ALLOC-10 Semantic Overlap)."
+  - id: P1-A5
+    title: "Neue Familie 'Software Build, Integration & Release' BLOCKED"
+    status: OPEN
+    severity: P1
+    finding: "Vorgeschlagene 10 Build-/Release-Standards duerfen NICHT in 300-399 numerisch vergeben werden (300-399 belegt/reserviert; ATC-STD-309 ist bereits Supply Chain Security)."
+    classification: ALLOCATION_BLOCKED
+    required_action: "Vollstaendigen Family-Capacity-Audit (capacity-matrix.yaml) + Semantic-Overlap-Pruefung (FAM-05/08/09/10/30/37/50) durchfuehren, dann Familien-Reservierung via SCR."
+  - id: P1-A6
+    title: "SCR-Tracking-Fragmentierung"
+    status: OPEN
+    severity: P2
+    finding: "SCR-0093..SCR-0115 werden in Commits/Tools/findings.yaml referenziert, change-requests/ endet jedoch bei SCR-0092. Keine eineindeutige SCR-SSOT."
+    required_action: "SCR-Registry als maschinenlesbare SSOT anlegen (aehnlich standards.yaml) und in Allocation-Gate einbinden."
