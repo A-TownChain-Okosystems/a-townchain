@@ -1,0 +1,28 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang v0.3 — Debugger
+// GDB stub, breakpoints, memory inspect, backtrace
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module debug {
+
+    // Set breakpoint at address/symbol
+    fn set_breakpoint() {
+        // TODO: Implement
+    }
+
+    // Single step execution
+    fn step() {
+        // TODO: Implement
+    }
+
+    // Read memory at address
+    fn inspect_memory() {
+        // TODO: Implement
+    }
+
+    // Get call stack backtrace
+    fn backtrace() {
+        // TODO: Implement
+    }
+}
