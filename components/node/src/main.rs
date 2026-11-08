@@ -33,7 +33,7 @@ fn main() -> std::io::Result<()> {
     eprintln!(
         "ATC-Node Devnet gestartet | Chain-ID {} | Boot-Hash {} | Peers {} | RPC auf {} (Zeile + JSON-RPC)",
         genesis.chain_id,
-        boot_hash,
+        hash_hex(&boot_hash),
         peers.len(),
         addr
     );
