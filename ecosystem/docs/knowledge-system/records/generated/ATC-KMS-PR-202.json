@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-202",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #202: audit: reconcile delivery registry against current repository census",
+  "context": "Pull request 202 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/202",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Purpose\nPublish the SHA-bound delivery-registry reconciliation for review and enforce machine-readable validation.\n\n## Evidence baseline\n- Working branch: `audit/reconcile-delivery-registry-2026-10-11`\n- Current exact head: `4b6f95cb99740e14c813bca6a5f8520a083de9a8`\n- Registry covers the 33-repository census (26 active, 7 archived), with per-repository delivery plans and explicit residuals.\n- Formal JSON Schema: `control-plane/DELIVERY_REGISTRY.schema.json` (Draft 2020-12).\n- Fail-closed semantic validator: `tools/validate_delivery_registry.py`.\n- Dedicated CI: `.github/workflows/delivery-registry-validation.yml` with negative self-tests.\n\n## Review gates\n- Require terminal schema + semantic validator results at the exact PR head.\n- Confirm current HEAD/tree evidence and audit timestamps are internally consistent.\n- Review repository roles and migration/SSOT residuals; README text alone is not source-coverage evidence.\n- Keep all unverified workstreams `RESIDUAL` or `BLOCKED`; do not mark `VERIFIED` without exact-SHA Run/Job/Step evidence.\n\n## Safety\nDraft until CI and independent review pass. No auto-merge, no force-push, no weakened checks, no source migration or archival authorized by this PR."
+}
