@@ -1,0 +1,213 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — System Monitoring
+// Sprint 3.0 | Operations Layer | Chain-ID 9000
+// Migrated from: monitoring/prometheus_metrics.py + grafana_exporter.py (261 lines)
+// System health, metrics collection, alerting, Prometheus/Grafana export
+// ─────────────────────────────────────────────────────────────
+
+const METRIC_PREFIX: String = "atcchain_"
+const ALERT_COOLDOWN: u64 = 300  // 5 min
+const MAX_METRICS: u16 = 500
+
+enum MetricType { Counter, Gauge, Histogram, Summary }
+enum AlertSeverity { Info, Warning, Critical, Fatal }
+enum AlertStatus { Active, Resolved, Suppressed }
+
+struct Metric {
+    name: String,
+    metric_type: MetricType,
+    value: u128,
+    labels: Map<String, String>,
+    timestamp: u64,
+}
+
+struct Alert {
+    alert_id: Hash,
+    name: String,
+    severity: AlertSeverity,
+    message: String,
+    status: AlertStatus,
+    triggered_at: u64,
+    resolved_at: u64,
+    value: u128,
+    threshold: u128,
+}
+
+contract SystemMonitor {
+    state metrics: Map<String, Metric>
+    state alerts: Map<Hash, Alert>
+    state active_alerts: u16
+    state total_alerts: u32
+    state metrics_collected: u64
+    state last_collection: u64
+    state owner: Address
+
+    event MetricRecorded(name: String, value: u128)
+    event AlertTriggered(alert_id: Hash, name: String, severity: AlertSeverity)
+    event AlertResolved(alert_id: Hash)
+    event HealthCheckPassed(service: String)
+    event HealthCheckFailed(service: String, reason: String)
+
+    fn init() {
+        self.metrics = {}
+        self.alerts = {}
+        self.active_alerts = 0
+        self.total_alerts = 0
+        self.metrics_collected = 0
+        self.last_collection = 0
+        self.owner = msg_sender()
+    }
+
+    fn record_metric(name: String, metric_type: MetricType, value: u128) -> bool {
+        if self.metrics.len() >= MAX_METRICS {
+            return false
+        }
+        let metric = Metric {
+            name: name,
+            metric_type: metric_type,
+            value: value,
+            labels: {},
+            timestamp: Time::now(),
+        }
+        self.metrics[name] = metric
+        self.metrics_collected += 1
+        self.last_collection = Time::now()
+        emit MetricRecorded(name, value)
+        return true
+    }
+
+    fn increment_counter(name: String, amount: u128) -> bool {
+        let m = self.metrics.get(name)
+        if m == null {
+            return self.record_metric(name, MetricType::Counter, amount)
+        }
+        m.value += amount
+        m.timestamp = Time::now()
+        return true
+    }
+
+    fn set_gauge(name: String, value: u128) -> bool {
+        let m = self.metrics.get(name)
+        if m == null {
+            return self.record_metric(name, MetricType::Gauge, value)
+        }
+        m.value = value
+        m.timestamp = Time::now()
+        return true
+    }
+
+    fn trigger_alert(name: String, severity: AlertSeverity, message: String, value: u128, threshold: u128) -> Hash {
+        let id_input = name + message + Int::to_string(Time::now())
+        let alert_id = Hash::sha256(id_input)
+        let alert = Alert {
+            alert_id: alert_id,
+            name: name,
+            severity: severity,
+            message: message,
+            status: AlertStatus::Active,
+            triggered_at: Time::now(),
+            resolved_at: 0,
+            value: value,
+            threshold: threshold,
+        }
+        self.alerts[alert_id] = alert
+        self.active_alerts += 1
+        self.total_alerts += 1
+        emit AlertTriggered(alert_id, name, severity)
+        return alert_id
+    }
+
+    fn resolve_alert(alert_id: Hash) -> bool {
+        let alert = self.alerts.get(alert_id)
+        if alert == null {
+            return false
+        }
+        alert.status = AlertStatus::Resolved
+        alert.resolved_at = Time::now()
+        if self.active_alerts > 0 {
+            self.active_alerts -= 1
+        }
+        emit AlertResolved(alert_id)
+        return true
+    }
+
+    fn health_check(service: String, is_healthy: bool, reason: String) -> bool {
+        if is_healthy {
+            self.increment_counter("health_checks_passed", 1)
+            emit HealthCheckPassed(service)
+        } else {
+            self.increment_counter("health_checks_failed", 1)
+            self.trigger_alert(
+                service + "_down",
+                AlertSeverity::Critical,
+                service + " is down: " + reason,
+                0,
+                1
+            )
+            emit HealthCheckFailed(service, reason)
+        }
+        return is_healthy
+    }
+
+    fn collect_blockchain_metrics() -> bool {
+        let height = HybridConsensus::get_height()
+        let tx_count = HybridConsensus::get_tx_count()
+        let block_count = HybridConsensus::get_block_count()
+        self.set_gauge("block_height", height)
+        self.set_gauge("total_transactions", tx_count)
+        self.set_gauge("total_blocks", block_count)
+        self.increment_counter("metrics_collection_total", 1)
+        return true
+    }
+
+    fn collect_network_metrics() -> bool {
+        let peer_count = P2PNode::get_peer_count()
+        let active_peers = P2PNode::get_active_peers()
+        self.set_gauge("peer_count", peer_count)
+        self.set_gauge("active_peers", active_peers)
+        self.increment_counter("messages_received", 1)
+        self.increment_counter("messages_sent", 1)
+        return true
+    }
+
+    fn collect_contract_metrics() -> bool {
+        let shivamon_count = ShivamonContract::get_token_count()
+        self.set_gauge("shivamon_count", shivamon_count)
+        self.increment_counter("battles_total", 1)
+        let active_listings = MarketplaceContract::get_active_listings()
+        self.set_gauge("active_listings", active_listings)
+        self.increment_counter("total_sales", 1)
+        return true
+    }
+
+    fn export_prometheus() -> String {
+        let output = ""
+        let names = self.metrics.keys()
+        let i: u16 = 0
+        while i < names.len() {
+            let m = self.metrics.get(names[i])
+            if m != null {
+                output = output + METRIC_PREFIX + m.name + " " + Int::to_string(m.value) + "\n"
+            }
+            i += 1
+        }
+        return output
+    }
+
+    fn get_metric(name: String) -> (u128, MetricType, u64) {
+        let m = self.metrics.get(name)
+        if m == null {
+            return (0, MetricType::Counter, 0)
+        }
+        return (m.value, m.metric_type, m.timestamp)
+    }
+
+    fn get_active_alerts() -> u16 {
+        return self.active_alerts
+    }
+
+    fn get_stats() -> (u16, u32, u64, u16) {
+        return (self.active_alerts, self.total_alerts, self.metrics_collected, self.metrics.len())
+    }
+}
