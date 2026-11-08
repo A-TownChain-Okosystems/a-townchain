@@ -1,6 +1,6 @@
 # Vertrags-Codegen (G11) — Ausgangslage, Schnitte, offene Entscheidungen
 
-Status: Entwurf (Scoping, kein Codegen)
+Status: freigegeben (Owner 08.11.2026), Umsetzung gestartet — Schnitt S1
 Stand: 2026-11-08
 Bezug: ATCLang-Roadmap G11, ATC-STD-SC-002/019 (Contract Registry), Gate A8/A9
 
@@ -79,7 +79,47 @@ Transaktions-/Gas-Modell, Deployment-Ausführung.
   Host-Funktionen und Storage wäre ein Fehlschluss aus grünen Tests; S5/S6
   dürfen nicht als erledigt gelten, solange L6 offen ist.
 
-## 5. Offene Entscheidungen (Owner)
+## 5. Entscheidungen (Owner, 08.11.2026)
+
+Alle vier Fragen sind entschieden und damit verbindlich:
+
+1. **Speicherlayout:** ABI-definierte Zustandsslots fester Breite, Feldnamen nur
+   Metadaten.
+2. **u256:** native VM-Arithmetik, keine Delegation der Konsens-Arithmetik an
+   eine Node-Bibliothek.
+3. **Reihenfolge:** S1–S3 zuerst; die Basistypen für S1–S3 werden vorab
+   definiert, damit S4 keine versteckte Voraussetzung wird.
+4. **Artefakt:** kanonisches Binärformat mit Header (Magic, Format-, VM-, ABI-,
+   Layout-Version, Instruktionszahl, Code-Länge, Prüfsumme); JSON+Base64 nur zur
+   Inspektion.
+
+Zusätzlich verbindlich: Gates G11-A (deterministisches Compiler-Ergebnis),
+G11-B (deterministische Ausführung), G11-C (keine unkontrollierten Host-Aufrufe),
+G11-D (ABI-/Storage-/Artefakt-Kompatibilität). Ein grüner Parser- oder
+Typechecker-Test gilt nicht mehr als Vertragskompilierung.
+
+## 6. Stand S1 (2026-11-08)
+
+Umgesetzt: `atc_core::storage::StorageLayout` — determinstische Slot-Zuordnung
+aus der ABI, 32 Byte je Slot, `offset = index * 32`, Reihenfolge `(Vertrag, Feld)`
+lexikographisch statt Deklarationsreihenfolge, Kollisionsschutz je
+`Vertrag::Feld`, eigene `layout_version`, kanonische Textform und `layout_hash`.
+Dynamische Typen (`string`, `List`, `Map`) werden als `Dynamic` geführt und sind
+in S1 nicht adressierbar; unbekannte Typen als `Opaque`, nichts wird geraten.
+`atc storage <ziel>` zeigt je Quelle `layout_hash`, Slotzahl, Speicherbedarf und
+`s1=yes|no`.
+
+Bestand: 34 Quellen mit Zustand, 1 Quelle vollständig S1-adressierbar
+(`examples/ATCAvatarNFT.atc`); der Rest nutzt `string`/`Map` und wartet auf S4.
+
+**Blocker fuer die naechsten S1-Teile:** `ATC-BC-001` ist als v1.0.0-FROZEN
+eingefroren (Freeze-Anker `ee26531`). `LoadState`/`StoreState` lassen sich daher
+nicht stillschweigend in den bestehenden Instruktionssatz aufnehmen. Der
+Instruktionssatz braucht eine neue Formatversion (ATCB v2) mit eigenem
+kanonischem Encoder und eigener Version im Header — als SCR gegen `ATC-BC-001`
+zu fuehren, nicht als stille Erweiterung.
+
+## 7. Offene Entscheidungen (weiterhin)
 
 1. **Zustandsmodell:** Slots fester Größe aus der ABI (einfach, deterministisch)
    oder Key-Value über Feldnamen (flexibler, aber Hash-/Reihenfolgeabhängig)?
@@ -91,4 +131,7 @@ Transaktions-/Gas-Modell, Deployment-Ausführung.
 4. **Artefaktformat:** ein Binärformat mit Header oder JSON+Base64, dafür sofort
    im Registry-Gate prüfbar?
 
-Bis zu einer Entscheidung bleibt der Status: `NOT PRODUCTION_READY`.
+Weiter offen: Bytecode-Formatversion fuer State-Instruktionen (ATCB v2 per SCR).
+
+Der Status bleibt bis zum Nachweis eines ausfuehrbaren Vertrags:
+`NOT PRODUCTION_READY`.
