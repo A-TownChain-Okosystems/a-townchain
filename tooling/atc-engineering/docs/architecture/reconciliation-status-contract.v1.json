@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0.0",
+  "contract_id": "ATCE-RECONCILIATION-STATUS-001",
+  "repository": "A-TownChain-Okosystems/atc-engineering",
+  "statuses": {
+    "DETECTED": {
+      "meaning": "Findings or candidate declarations were detected; their complete resolution and the completeness of the inspected scope are not established.",
+      "permitted_conclusion": "Findings require assessment within the named report's scope.",
+      "verification_eligible": false,
+      "requires": ["report_type", "scope", "producer_identity"]
+    },
+    "RECONCILED": {
+      "meaning": "Only the explicitly named and pinned inventories and reviewed deltas satisfy their reconciliation contract, with zero blocking findings and complete required dispositions.",
+      "permitted_conclusion": "The defined inventory reconciliation passed for the recorded inputs and scope.",
+      "verification_eligible": false,
+      "requires": ["report_type", "scope", "source_commit_sha", "catalog_commit_sha", "blocking_findings", "disposition_summary", "evidence"]
+    },
+    "VERIFIED": {
+      "meaning": "A specifically scoped claim has met every explicit verification criterion using sufficient, reproducible evidence bound to the exact checked commit.",
+      "permitted_conclusion": "Only the exact claim and scope represented by the verification record are verified.",
+      "verification_eligible": true,
+      "requires": ["claim_id", "scope", "checked_commit_sha", "criteria", "evidence", "decision"]
+    }
+  },
+  "rules": {
+    "implicit_status_promotion": false,
+    "status_string_mapping_is_evidence": false,
+    "report_renaming_is_evidence": false,
+    "single_workflow_success_proves_organization_wide_completeness": false,
+    "unknown_or_missing_status": "BLOCK",
+    "missing_or_invalid_evidence": "BLOCK",
+    "commit_head_mismatch": "BLOCK",
+    "null_or_unknown_counts_are_zero": false,
+    "legacy_and_independent_reports_are_interchangeable": false
+  },
+  "verification_requirements": {
+    "checked_commit_sha_pattern": "^[0-9a-f]{40}$",
+    "evidence_head_must_equal_checked_commit_sha": true,
+    "each_criterion_requires_explicit_pass": true,
+    "evidence_requires_workflow_run_id": true,
+    "evidence_requires_job_and_step_identity": true,
+    "evidence_requires_artifact_identity_or_reproducible_log_reference": true,
+    "artifact_sha256_pattern": "^[0-9a-f]{64}$",
+    "organization_wide_claim_requires_explicit_fleet_scope_and_per_repository_evidence": true
+  },
+  "report_types": {
+    "legacy_reconciliation_report": {
+      "artifact_name": "reconciliation-report.json",
+      "status_interpretation": "DETECTED is a legacy generator/report outcome and is not a completed reconciliation or verification grant. Preserve the artifact's original status; do not rewrite it based on a later independent gate.",
+      "parser_limitations": "Parser completeness must be established from the report's own parser coverage fields and authoritative parser identities. A detected declaration count, successful generator run, or zero identity deltas alone does not establish parser completeness or catalog completeness.",
+      "evidence_scope": "Only the inventory and findings explicitly represented by that legacy artifact."
+    },
+    "independent_bidirectional_reconciliation": {
+      "artifact_name": "independent-bidirectional-reconciliation.json",
+      "status_interpretation": "RECONCILED applies only to the two named inventories, their pinned commits, the explicit expected-delta contract, parser coverage, and the findings/dispositions represented by this report.",
+      "evidence_scope": "The two pinned inventories and reviewed deltas only; not organization-wide source-to-catalog verification."
+    },
+    "verification_record": {
+      "artifact_name": "verification-record.json",
+      "status_interpretation": "VERIFIED is allowed only after the verification-specific criteria and evidence requirements in this contract pass. No current report status implies this record automatically.",
+      "evidence_scope": "The explicitly identified claim and scope only."
+    }
+  }
+}
