@@ -9,4 +9,4 @@
 | ATC-9000 | NFT (Genesis Chronicles) | `blockchain/contracts/genesis-chronicles/genesis_chronicles_contract.py` | ✅ |
 | ATC-9900 | Governance/DAO | geplant | ⏳ v2.1 |
 
-→ Vollständige Dokumentation: [GENESIS_CHRONICLES_NFT_CONTRACT.md](./GENESIS_CHRONICLES_NFT_CONTRACT.md)
+→ Vollständige Dokumentation: [GENESIS_CHRONICLES_NFT_CONTRACT.md](https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/ai/genesis-chronicles/genesis_chronicles_contract.atc)
