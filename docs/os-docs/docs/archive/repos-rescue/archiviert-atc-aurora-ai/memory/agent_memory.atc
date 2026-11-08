@@ -1,0 +1,31 @@
+// ATCLang v0.3 — Agent Memory
+// Kurz- und Langzeitgedächtnis für Agenten — On-chain persistiert
+// ATC-Standard: ATC-24
+
+module agent_memory {
+    struct MemoryEntry {
+        entry_id: string,
+        agent_id: string,
+        category: string,
+        content: string,
+        created_at: int,
+        importance: int,
+        expires: bool,
+    }
+    
+    fn store(agent_id: string, category: string, content: string) {
+        // Erinnerung speichern
+    }
+    
+    fn recall(agent_id: string, query: string) {
+        // Erinnerungen abrufen
+    }
+    
+    fn forget(entry_id: string) {
+        // Erinnerung löschen
+    }
+    
+    fn consolidate(agent_id: string) {
+        // Kurzzeit → Langzeit Konsolidierung
+    }
+}
