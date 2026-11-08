@@ -1,0 +1,73 @@
+schema_version: "1.0.0"
+document_id: "ATC-SYSTEM-READINESS-001"
+title: "End-to-End Runtime Readiness"
+status: "PLANNED_NOT_VERIFIED"
+tracking_issue: "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/116"
+repository_scope: "integration-governance-evidence-only"
+rules:
+  single_source_of_truth: true
+  auto_merge: false
+  no_evidence_no_trust: true
+  fail_closed_on_missing_evidence: true
+  ai_has_direct_kernel_authority: false
+  ai_has_direct_consensus_authority: false
+  smart_contract_logic_in_kernel: false
+statuses:
+  - IMPLEMENTED
+  - VERIFIED
+  - BLOCKED
+  - RESIDUAL
+canonical_sources:
+  atclang: "atclang"
+  atc_vm: "a-townchain/components/vm"
+  atc_algorithm: "a-townchain/components/algorithm"
+  a_townchain_l1: "a-townchain"
+  shivacore_kernel: "globus-os/modules/atc-shivacore/kernel/"
+  globus_os: "globus-os"
+  aurora_ai: "aurora-ai"
+  integration_control_plane: "a-townchain-ecosystem"
+phases:
+  - id: G0
+    name: "Source-of-truth and architecture reconciliation"
+    status: "BLOCKED"
+    required_evidence: ["canonical HEAD SHAs", "subtree provenance SHAs", "dependency and boundary map", "gap register"]
+  - id: G1
+    name: "ShivaCore kernel build, safety and boot"
+    status: "BLOCKED"
+    required_evidence: ["exact-SHA build and tests", "UEFI/QEMU boot logs", "memory isolation tests", "IPC and capability tests", "page-table rollback and mapping lifetime tests"]
+  - id: G2
+    name: "GlobusOS user-space services"
+    status: "BLOCKED"
+    required_evidence: ["boot-to-user-space result", "service lifecycle logs", "storage persistence test", "failure isolation and recovery test"]
+  - id: G2A
+    name: "Integrated OS acceptance"
+    status: "BLOCKED"
+    required_evidence: ["pinned source set", "QEMU configuration", "boot success signal", "reboot persistence", "fault-injection results"]
+  - id: G3
+    name: "A-TownChain local and multi-node runtime"
+    status: "BLOCKED"
+    required_evidence: ["chain config and ID", "transaction validation tests", "VM/state-transition tests", "multi-node consensus/finality", "persistence and restart recovery"]
+  - id: G4
+    name: "Aurora AI policy-bound runtime"
+    status: "BLOCKED"
+    required_evidence: ["model and runtime identifiers", "inference tests", "policy and capability tests", "denied-action tests", "tool audit logs"]
+  - id: G5
+    name: "Full-system release candidate"
+    status: "BLOCKED"
+    required_evidence: ["pinned SHA set", "end-to-end workflow run/job/step", "exit statuses and logs", "security and recovery gates", "explicit residual register"]
+evidence_record_schema:
+  gate_id: "string"
+  component: "string"
+  status: "IMPLEMENTED|VERIFIED|BLOCKED|RESIDUAL"
+  source_shas: ["full git commit SHA"]
+  workflow_run_url: "URL or null"
+  run_id: "string or null"
+  job: "string or null"
+  step: "string or null"
+  exit_status: "integer or null"
+  log_or_artifact_url: "URL or null"
+  command: "string or null"
+  environment: "string or null"
+  timestamp_utc: "ISO-8601 or null"
+  owner: "string or null"
+  residual_ids: []
