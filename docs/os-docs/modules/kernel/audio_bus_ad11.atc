@@ -1,0 +1,199 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-11 — AudioBus: Audio-Event-System
+// Genesis Communication Layer (GCL) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct AudioSource {
+    id: UInt32,
+    name: String,
+    asset_id: Hash256,
+    source_type: SourceType,
+    position: Vec3,
+    velocity: Vec3,
+    volume: Float32,
+    pitch: Float32,
+    loop: Bool,
+    playing: Bool,
+    paused: Bool,
+    spatial: Bool,
+    min_dist: Float32,
+    max_dist: Float32,
+    rolloff: Float32,
+    channel: UInt8,
+}
+
+enum SourceType { SFX, Music, Voice, Ambient, UI, VoiceChat }
+
+struct AudioBus {
+    sources: Map<UInt32, AudioSource>,
+    master_volume: Float32,
+    channel_volumes: Map<UInt8, Float32>,
+    listeners: List<AudioListener>,
+    reverb_enabled: Bool,
+    reverb_preset: ReverbPreset,
+    doppler_factor: Float32,
+    speed_of_sound: Float32,
+    voice_chat_active: Bool,
+    max_voices: UInt16,
+    active_voices: UInt16,
+}
+
+enum ReverbPreset { None, Room, Hall, Cavern, Outdoor, Studio }
+
+struct AudioListener {
+    id: UInt32,
+    position: Vec3,
+    orientation: Vec3,
+    up: Vec3,
+    active: Bool,
+}
+
+// AudioBus: Source erstellen
+pub fn create_source(bus: AudioBus, name: String, asset_id: Hash256, source_type: SourceType) -> UInt32 {
+    let id = bus.sources.len() + 1
+    bus.sources[id] = AudioSource {
+        id: id,
+        name: name,
+        asset_id: asset_id,
+        source_type: source_type,
+        position: Vec3::zero(),
+        velocity: Vec3::zero(),
+        volume: 1.0,
+        pitch: 1.0,
+        loop: source_type == SourceType::Music or source_type == SourceType::Ambient,
+        playing: false,
+        paused: false,
+        spatial: source_type != SourceType::Music and source_type != SourceType::UI,
+        min_dist: 1.0,
+        max_dist: 100.0,
+        rolloff: 1.0,
+        channel: 0,
+    }
+    return id
+}
+
+// AudioBus: Source abspielen
+pub fn play_source(bus: AudioBus, source_id: UInt32) -> Bool {
+    require(bus.sources.contains(source_id), "Source not found")
+    if bus.active_voices >= bus.max_voices {
+        // Älteste nicht-loopende SFX stoppen
+        stop_oldest_sfx(bus)
+    }
+    bus.sources[source_id].playing = true
+    bus.sources[source_id].paused = false
+    bus.active_voices = bus.active_voices + 1
+    emit AudioPlayed(source_id, bus.sources[source_id].name)
+    return true
+}
+
+// AudioBus: Source stoppen
+pub fn stop_source(bus: AudioBus, source_id: UInt32) -> Bool {
+    require(bus.sources.contains(source_id), "Source not found")
+    if bus.sources[source_id].playing {
+        bus.sources[source_id].playing = false
+        bus.active_voices = bus.active_voices - 1
+        emit AudioStopped(source_id)
+    }
+    return true
+}
+
+// AudioBus: Source pausieren
+pub fn pause_source(bus: AudioBus, source_id: UInt32) -> Bool {
+    require(bus.sources.contains(source_id), "Source not found")
+    bus.sources[source_id].paused = true
+    return true
+}
+
+// AudioBus: 3D Position aktualisieren
+pub fn update_3d_position(bus: AudioBus, source_id: UInt32, pos: Vec3, vel: Vec3) -> Bool {
+    require(bus.sources.contains(source_id), "Source not found")
+    let src = bus.sources[source_id]
+    if src.spatial {
+        src.position = pos
+        src.velocity = vel
+        // Doppler-Effekt
+        for listener in bus.listeners {
+            if listener.active {
+                let rel_vel = vel - listener.velocity  // Listener hat velocity
+                let doppler = 1.0 + (rel_vel.length() / bus.speed_of_sound) * bus.doppler_factor
+                src.pitch = doppler
+            }
+        }
+    }
+    return true
+}
+
+// AudioBus: Lautstärke setzen
+pub fn set_volume(bus: AudioBus, source_id: UInt32, volume: Float32) -> Bool {
+    require(bus.sources.contains(source_id), "Source not found")
+    bus.sources[source_id].volume = clamp(volume, 0.0, 1.0)
+    return true
+}
+
+// AudioBus: Master-Lautstärke
+pub fn set_master_volume(bus: AudioBus, volume: Float32) -> Bool {
+    bus.master_volume = clamp(volume, 0.0, 1.0)
+    return true
+}
+
+// AudioBus: Channel-Lautstärke
+pub fn set_channel_volume(bus: AudioBus, channel: UInt8, volume: Float32) -> Bool {
+    bus.channel_volumes[channel] = clamp(volume, 0.0, 1.0)
+    return true
+}
+
+// AudioBus: Reverb aktivieren
+pub fn set_reverb(bus: AudioBus, preset: ReverbPreset) -> Bool {
+    bus.reverb_preset = preset
+    bus.reverb_enabled = preset != ReverbPreset::None
+    return true
+}
+
+// AudioBus: Voice Chat aktivieren
+pub fn enable_voice_chat(bus: AudioBus) -> Bool {
+    bus.voice_chat_active = true
+    return true
+}
+
+// AudioBus: Listener hinzufügen
+pub fn add_listener(bus: AudioBus, pos: Vec3, orientation: Vec3) -> UInt32 {
+    let id = bus.listeners.len() + 1
+    bus.listeners.append(AudioListener {
+        id: id, position: pos, orientation: orientation, up: Vec3::up(), active: true,
+    })
+    return id
+}
+
+// AudioBus: Alle Sources stoppen
+pub fn stop_all(bus: AudioBus) -> Bool {
+    for source_id in bus.sources.keys() {
+        bus.sources[source_id].playing = false
+    }
+    bus.active_voices = 0
+    return true
+}
+
+// Helper: Älteste SFX stoppen
+pub fn stop_oldest_sfx(bus: AudioBus) {
+    for source_id in bus.sources.keys() {
+        let src = bus.sources[source_id]
+        if src.playing and src.source_type == SourceType::SFX and not src.loop {
+            stop_source(bus, source_id)
+            return
+        }
+    }
+}
+
+// Helper: Clamp
+pub fn clamp(val: Float32, min_val: Float32, max_val: Float32) -> Float32 {
+    if val < min_val { return min_val }
+    if val > max_val { return max_val }
+    return val
+}
+
+type Vec3 = Any
+
+event AudioPlayed(id: UInt32, name: String)
+event AudioStopped(id: UInt32)
