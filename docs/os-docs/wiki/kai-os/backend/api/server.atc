@@ -1,0 +1,68 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — REST API Server
+// Sprint 3.0 | Backend Layer | Chain-ID 9000
+// Migrated from: backend/api/server.py
+// Port: 5000 — All blueprints registered
+// ─────────────────────────────────────────────────────────────
+
+const API_VERSION: String = "1.0"
+const CHAIN_NAME: String = "A-TownChain"
+
+contract APIServer {
+    state running: bool
+    state modules: List<String>
+    state kernel_running: bool
+
+    event ServerStarted(port: u16)
+    event StatusQueried(status: String, version: String)
+    event ModulesListed(count: u16)
+
+    fn init() {
+        self.running = false
+        self.modules = []
+        self.kernel_running = false
+    }
+
+    // ── Status endpoint ─────────────────────────────
+    fn status() -> (String, String, bool) {
+        emit StatusQueried("online", API_VERSION)
+        return ("online", API_VERSION, self.kernel_running)
+    }
+
+    // ── Modules endpoint ─────────────────────────────
+    fn modules() -> List<String> {
+        emit ModulesListed(self.modules.len())
+        return self.modules
+    }
+
+    // ── Register module ──────────────────────────────
+    fn register_module(name: String) {
+        self.modules.push(name)
+    }
+
+    // ── Register all blueprints ──────────────────────
+    fn register_blueprints() {
+        self.register_module("blockchain")
+        self.register_module("game")
+        self.register_module("wallet")
+        self.register_module("nodes")
+        self.register_module("ai")
+        self.register_module("governance")
+        self.register_module("marketplace")
+        self.register_module("orchestrator")
+    }
+
+    // ── Start server ────────────────────────────────
+    fn start(kernel_running: bool) {
+        self.running = true
+        self.kernel_running = kernel_running
+        self.register_blueprints()
+        emit ServerStarted(5000)
+    }
+
+    // ── Stop server ──────────────────────────────────
+    fn stop() {
+        self.running = false
+    }
+}
