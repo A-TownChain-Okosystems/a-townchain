@@ -1,0 +1,13 @@
+[package]
+name = "atc-core"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "ATCLang Canonical Core (Rust) — Lexer, Parser, AST, Bytecode-Verifizierer, CLI (SCR-0083/0085)"
+
+[dependencies]
+sha2 = "0.11"
+
+[[bin]]
+name = "atc"
+path = "src/main.rs"
