@@ -1,0 +1,20 @@
+name: Conflict-free review assignment
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  request-review:
+    if: github.event.pull_request.draft == false
+    uses: A-TownChain-Okosystems/.github/.github/workflows/review-conflict-free.yml@main
+    with:
+      pull-request-number: ${{ github.event.pull_request.number }}
+      reviewer: A-TownChain
+    permissions:
+      contents: read
+      pull-requests: write
