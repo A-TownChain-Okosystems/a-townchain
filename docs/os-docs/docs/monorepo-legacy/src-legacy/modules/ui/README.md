@@ -1,6 +1,6 @@
 # ui — L10: Neon Dashboard — ShivaOS Frontend, Wallet UI, Explorer
 
-Part of [A-TownChain OS Monorepo](../../../../README.md)
+Part of [A-TownChain OS Monorepo](../../../../../../../README.md)
 
 ## Inhalt
 
