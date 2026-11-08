@@ -1,0 +1,35 @@
+{
+  "id": "ATC-KMS-PR-86",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #86: feat(architecture): implement deterministic L1 P0 contracts",
+  "context": "Pull request 86 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/86",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-85"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-85"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-85"
+    }
+  ],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Summary\n\nImplements the normative Determinism and Authority Contract requested after PR #85.\n\n### Implemented\n\n- Formal `F(State, Block) = State'` determinism invariant.\n- Canonical input/type/encoding/commitment contract.\n- Layer-by-layer determinism responsibilities and forbidden authority.\n- WHO / WHAT / WHERE enforcement model.\n- Canonical Integrity → Authenticity/Authorization → Validity → Ordering → Consensus → Execution → State Transition → Commitment → Finality chain.\n- Six machine-readable P0 contracts:\n  - P0-NET-001 Network / P2P\n  - P0-ID-001 Identity / Trust\n  - P0-STATE-001 State Ownership\n  - P0-AUTH-001 Global Authority Matrix\n  - P0-IF-001 Canonical Interfaces\n  - P0-FR-001 Failure / Recovery\n- Human-readable P0 contract alignment.\n- Exact-SHA evidence trail and fail-closed verification requirements.\n- Preserves component repositories as implementation SSOTs.\n\n### Existing-First\n\nPR #85 / Source-SHA `2ed57aeca0259362e4ab159cf219fed7934833f4` was used as the architectural baseline. The existing `control-plane/` and `docs/architecture/` structures were inspected before adding new contract artifacts. No duplicate architecture document was introduced.\n\n### Evidence boundary\n\nThis PR implements ecosystem-level normative contracts and machine-readable specifications. It does not claim that component implementations already satisfy these contracts. Component compliance remains subject to exact Source-SHA evidence.\n\nBase: PR #85 source SHA `2ed57aeca0259362e4ab159cf219fed7934833f4`."
+}
