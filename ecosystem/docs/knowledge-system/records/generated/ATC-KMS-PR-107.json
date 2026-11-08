@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-PR-107",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #107: docs(control-plane): machine-readable roadmap, milestones and sprint loop",
+  "context": "Pull request 107 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/107",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-48"
+    }
+  ],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\n- Add `control-plane/DELIVERY_REGISTRY.json` as machine-readable SSOT for roadmap, milestones, checkpoints, components, functions, sprints and TODOs.\n- Add `docs/DELIVERY_CONTROL_PLANE.md` as the versioned wiki/documentation index and loop contract.\n- Extend the existing GitHub Gate-Fix Loop automation to reconcile these records from exact-SHA GitHub/CI evidence every run.\n\n## Governance\n- `IMPLEMENTED` is not `VERIFIED`.\n- Exact-SHA evidence required for verified checkpoints.\n- No weakened gates, fabricated evidence, or automatic merges.\n- GitHub Wiki is currently disabled for this repository; versioned docs are the navigation index until it is enabled.\n\n## Initial residuals\nThe registry intentionally marks unverified or stale evidence as `IN_PROGRESS`, `BLOCKED`, or `RESIDUAL`; it is an initial inventory, not a claim that all components are verified. PR #48 CI and evidence semantics remain open for re-check."
+}
