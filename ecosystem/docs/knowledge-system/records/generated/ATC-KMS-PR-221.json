@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-221",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #221: Draft: Bootstrap machine-readable ecosystem file/function catalog",
+  "context": "Pull request 221 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "archived",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/221",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: False\nDraft: True\n\n## Scope\n\nBootstrap a machine-readable, evidence-bound inventory for the A-TownChain ecosystem. This is an inventory/control-plane artifact only; it does not replace implementation repositories or `atc-standards`.\n\n## Snapshot status\n\n- 33 repository entries are present in `catalog/repositories.json`.\n- All 33 default-branch HEAD commit SHAs and tree SHAs are recorded.\n- All 33 recursive tree snapshots report `tree_truncated=false`.\n- The manifest records 23,808 tracked Git-tree blob entries across the 33 snapshots. This is a Git-tree entry count, not a count of semantically reviewed source files; generated, vendor, binary, and other non-source entries may be included.\n- `demo-repository` is inventoried but explicitly excluded from the live drift gate.\n\n## File-level analysis status\n\n- `catalog/files.jsonl` contains 11 evidence-backed, partial Genesis Engine file records.\n- Functional analysis is incomplete: call-graph completeness is not established, and tests have not been verified against every function.\n- Snapshot inventory completion must not be interpreted as functional-audit completion.\n\n## Validation and CI evidence\n\n- `catalog/scripts/validate_catalog.py` validates manifest counts and SHA shapes, untruncated trees, demo exclusion, coverage consistency, JSONL records against the Draft 2020-12 JSON Schema, and record SHA shapes.\n- `catalog/tests/test_validate_catalog.py` now contains eight regression tests, including a valid-fixture control and negative cases for malformed JSONL, missing required fields, invalid SHAs, duplicate repository IDs, truncated trees, demo exclusion, and coverage mismatch.\n- The workflow runs the validator followed by `python -m unittest discover -s catalog/tests -v`.\n- `catalog/validation-report.json` records earlier in-session structural checks only. The new regression tests are marked as added but not yet executed; this report is not CI evidence.\n- A completed Actions run for the current PR head is still required before claiming CI verification.\n\n## Added\n\n- `catalog/repositories.json`: 33 repository snapshots with default branch, HEAD commit SHA, tree SHA, tracked-entry count, archive status, truncation status, and analysis state.\n- `catalog/files.jsonl`: 11 partial file-level records.\n- `catalog/schema/file-inventory.schema.json`: file-record JSON Schema.\n- `catalog/coverage.json`: coverage counts and explicit limitations.\n- `catalog/dependencies.json`: dependency graph bootstrap; no unsupported edges are fabricated.\n- `catalog/README.md`: scope and evidence rules.\n- `catalog/scripts/validate_catalog.py`, `catalog/tests/test_validate_catalog.py`, and `.github/workflows/validate-file-catalog.yml`: validator, regression tests, and CI workflow.\n\n## Remaining gates\n\n1. Obtain a completed Actions run for the exact PR head and preserve run/job/step/exit/log evidence.\n2. Fix any failures exposed by the validator or regression tests, then repeat against the resulting exact head SHA.\n3. Continue bounded, evidence-backed functional analysis and test mapping.\n\nUnknowns remain explicit. Green CI alone does not establish functional verification. Keep this PR in Draft; do not merge as a complete ecosystem audit until the relevant evidence gates pass. No implementation SSOT, normative standard, protocol registry, or engine format is changed."
+}
