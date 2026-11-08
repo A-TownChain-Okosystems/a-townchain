@@ -45,27 +45,20 @@ impl Parser {
     fn program(&mut self) -> Result<Program, ParseError> {
         let mut statements = Vec::new();
         while self.cur() != Token::Eof {
-            let s = match self.cur() {
-                Token::Let | Token::Const => Stmt::Let(self.let_stmt()?),
-                Token::Fn => self.function_decl()?,
-                Token::Use => self.use_decl()?,
-                Token::Struct => self.struct_decl()?,
-                Token::Enum => self.enum_decl()?,
-                Token::Contract => self.contract_decl()?,
-                // File-level annotations (for example @version and @name) are
-                // metadata, not executable statements. Consume them up to the
-                // next recognized declaration without changing runtime semantics.
-                Token::At => {
-                    self.skip_file_annotations();
-                    continue;
-                }
-                other => {
-                    return Err(ParseError {
-                        message: format!("Deklaration am Top-Level erwartet, fand {:?}", other),
-                    })
-                }
-            };
-            statements.push(s);
+            // File-level annotations (for example @version and @name) are
+            // metadata, not executable statements. Consume them up to the
+            // next recognized declaration without changing runtime semantics.
+            if self.cur() == Token::At {
+                self.skip_file_annotations();
+                continue;
+            }
+            // `module NAME { ... }` gruppiert Deklarationen; der Block selbst
+            // fuehrt nichts aus, die Deklarationen darin gelten programmweit.
+            if self.cur() == Token::Module {
+                statements.extend(self.module_block()?);
+                continue;
+            }
+            statements.push(self.declaration()?);
         }
         Ok(Program { statements })
     }
@@ -248,6 +241,9 @@ impl Parser {
             Token::Policy => "policy".into(),
             Token::Require => "require".into(),
             Token::Use => "use".into(),
+            Token::Module => "module".into(),
+            Token::Import => "import".into(),
+            Token::As => "as".into(),
             Token::Struct => "struct".into(),
             Token::Enum => "enum".into(),
             Token::Pipe => "|".into(),
@@ -305,6 +301,29 @@ impl Parser {
                 });
             }
             self.pos += 1;
+            // Gruppenimport: `use ATC::Net::{TCPSocket, UDPSocket}`.
+            if self.cur() == Token::LBrace {
+                self.pos += 1;
+                let mut names = Vec::new();
+                while self.cur() != Token::RBrace && self.cur() != Token::Eof {
+                    names.push(self.expect_name("Gruppenimport-Name")?);
+                    if self.cur() == Token::Comma {
+                        self.pos += 1;
+                    } else {
+                        break;
+                    }
+                }
+                if self.cur() != Token::RBrace {
+                    return Err(ParseError {
+                        message: "'}' nach Gruppenimport erwartet".into(),
+                    });
+                }
+                self.pos += 1;
+                if self.cur() == Token::Semi {
+                    self.pos += 1;
+                }
+                return Ok(Stmt::UseGroup { path, names });
+            }
             path.push_str("::");
             path.push_str(&self.expect_name("Importpfadsegment")?);
         }
@@ -312,6 +331,73 @@ impl Parser {
             self.pos += 1;
         }
         Ok(Stmt::Use { path })
+    }
+
+    /// Eine Deklaration auf Programmebene oder im Modulblock.
+    fn declaration(&mut self) -> Result<Stmt, ParseError> {
+        match self.cur() {
+            Token::Let | Token::Const => Ok(Stmt::Let(self.let_stmt()?)),
+            Token::Fn => self.function_decl(),
+            Token::Use => self.use_decl(),
+            Token::Import => self.import_decl(),
+            Token::Struct => self.struct_decl(),
+            Token::Enum => self.enum_decl(),
+            Token::Contract => self.contract_decl(),
+            other => Err(ParseError {
+                message: format!("Deklaration am Top-Level erwartet, fand {:?}", other),
+            }),
+        }
+    }
+
+    /// `module NAME` oder `module NAME { deklaration* }`. Der Block ist reine
+    /// Gruppierung: seine Deklarationen behalten Programmebene, damit ein
+    /// Modul keine zweite Namensaufloesung einfuehrt.
+    fn module_block(&mut self) -> Result<Vec<Stmt>, ParseError> {
+        self.pos += 1;
+        let name = self.expect_name("Modulname")?;
+        let mut out = vec![Stmt::Module { name }];
+        if self.cur() == Token::Semi {
+            self.pos += 1;
+        }
+        if self.cur() == Token::LBrace {
+            self.pos += 1;
+            while self.cur() != Token::RBrace && self.cur() != Token::Eof {
+                if self.cur() == Token::At {
+                    self.skip_file_annotations();
+                    continue;
+                }
+                out.push(self.declaration()?);
+            }
+            if self.cur() != Token::RBrace {
+                return Err(ParseError {
+                    message: "'}' nach module erwartet".into(),
+                });
+            }
+            self.pos += 1;
+        }
+        Ok(out)
+    }
+
+    /// `import` in den beiden Korpusformen: `import "std/crypto.atc" as Crypto`
+    /// und `import ATC::OS::Kernel`. Die Pfadform ist semantisch ein `use`.
+    fn import_decl(&mut self) -> Result<Stmt, ParseError> {
+        self.pos += 1;
+        if let Token::String(source) = self.cur() {
+            self.pos += 1;
+            let alias = if self.cur() == Token::As {
+                self.pos += 1;
+                Some(self.expect_name("Import-Alias")?)
+            } else {
+                None
+            };
+            if self.cur() == Token::Semi {
+                self.pos += 1;
+            }
+            return Ok(Stmt::Import { source, alias });
+        }
+        // Pfadform: use_decl erwartet, dass das Schluesselwort noch steht.
+        self.pos -= 1;
+        self.use_decl()
     }
 
     fn struct_decl(&mut self) -> Result<Stmt, ParseError> {
@@ -1392,5 +1478,84 @@ mod tests {
         assert!(parse_program("let x = ;").is_err());
         assert!(parse_program("return 42;").is_err()); // Subset: nur let/const/fn am Top-Level
         assert!(parse_program("fn f(a) { }").is_err()); // Parameter-Typ ist Pflicht
+    }
+
+    #[test]
+    fn hash_kommentar_vor_contract() {
+        let p = parse_program("# ATC AD-86\ncontract T { fn f() -> int { return 1; } }").unwrap();
+        assert!(p.to_json().contains("\"kind\":\"ContractDeclaration\""));
+    }
+
+    #[test]
+    fn module_kopf_ohne_block() {
+        let j = parse_program("module architect_agent\nfn f() -> int { return 1; }")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"ModuleDeclaration\""));
+        assert!(j.contains("\"name\":\"architect_agent\""));
+        assert!(j.contains("\"kind\":\"FunctionDef\""));
+    }
+
+    #[test]
+    fn module_block_gruppiert_deklarationen() {
+        // Der Block ist reine Gruppierung: seine Deklarationen gelten
+        // programmweit, es entsteht kein zweiter Namensraum.
+        let j = parse_program("module m {\nstruct S { a: u64 }\nfn f() -> int { return 1; }\n}")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"ModuleDeclaration\""));
+        assert!(j.contains("\"kind\":\"StructDeclaration\""));
+        assert!(j.contains("\"kind\":\"FunctionDef\""));
+    }
+
+    #[test]
+    fn module_block_verlangt_schliessende_klammer() {
+        assert!(parse_program("module m { fn f() -> int { return 1; }").is_err());
+    }
+
+    #[test]
+    fn dateiimport_mit_alias() {
+        let j = parse_program("import \"std/crypto.atc\" as Crypto")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"FileImportDeclaration\""));
+        assert!(j.contains("\"source\":\"std/crypto.atc\""));
+        assert!(j.contains("\"alias\":\"Crypto\""));
+    }
+
+    #[test]
+    fn dateiimport_ohne_alias() {
+        let j = parse_program("import \"std/chain.atc\";")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"alias\":null"));
+    }
+
+    #[test]
+    fn import_pfadform_ist_semantisch_use() {
+        let j = parse_program("import ATC::OS::Kernel").unwrap().to_json();
+        assert!(j.contains("\"kind\":\"UseDeclaration\""));
+        assert!(j.contains("\"path\":\"ATC::OS::Kernel\""));
+    }
+
+    #[test]
+    fn gruppenimport_mit_mehreren_namen() {
+        let j = parse_program("use ATC::Net::{ TCPSocket, UDPSocket }")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"UseGroupDeclaration\""));
+        assert!(j.contains("\"path\":\"ATC::Net\""));
+        assert!(j.contains("\"names\":[\"TCPSocket\",\"UDPSocket\"]"));
+    }
+
+    #[test]
+    fn gruppenimport_mit_einem_namen_ohne_komma() {
+        let j = parse_program("use ATC::X::{A}").unwrap().to_json();
+        assert!(j.contains("\"names\":[\"A\"]"));
+    }
+
+    #[test]
+    fn gruppenimport_verlangt_schliessende_klammer() {
+        assert!(parse_program("use ATC::X::{A, B").is_err());
     }
 }
