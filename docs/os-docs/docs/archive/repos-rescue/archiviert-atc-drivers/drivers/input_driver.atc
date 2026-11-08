@@ -1,0 +1,493 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═════════════════════════════════════════════════════════════════
+// ATC-22+ — Input Treiber (Keyboard / Mouse / Touch)
+// Sprint 3.1 | Kernel OS Layer | Chain-ID 9000
+// ATCLang v0.4 | Non-EVM | ATCLang First Policy (ATC-99)
+// ═════════════════════════════════════════════════════════════════
+//
+// Input-Treiber für KAI-OS. Unterstützt:
+//   - PS/2 & USB Keyboard (Scancode → Unicode)
+//   - PS/2 & USB Mouse (Movement + Buttons)
+//   - Touchscreen (Multi-Touch, max 10 Punkte)
+//   - Input Event Queue (Ring-Buffer)
+//   - Keymap-Layouts (DE/EN)
+//
+// Bindet an GCL Input Bus (AD-12) für Event-Dispatch.
+// ═════════════════════════════════════════════════════════════════
+
+import "std/chain.atc" as Chain
+
+enum InputDeviceType {
+    KEYBOARD,
+    MOUSE,
+    TOUCHSCREEN,
+    GAMEPAD,
+    TABLET,
+}
+
+enum KeyState {
+    PRESSED,
+    RELEASED,
+    REPEAT,
+}
+
+enum MouseButton {
+    LEFT,
+    RIGHT,
+    MIDDLE,
+    X1,
+    X2,
+}
+
+struct InputEvent {
+    event_id: u64,
+    device_id: u32,
+    device_type: InputDeviceType,
+    timestamp: u64,
+    // Keyboard
+    scancode: u16,
+    keycode: u16,            // Unicode codepoint (0 = nicht-druckbar)
+    key_state: KeyState,
+    modifiers: u8,           // Bitfield: Ctrl=1, Shift=2, Alt=4, Win=8
+    // Mouse
+    mouse_x: i32,
+    mouse_y: i32,
+    mouse_dx: i32,           // Relative Bewegung
+    mouse_dy: i32,
+    mouse_button: MouseButton,
+    // Touch
+    touch_id: u8,            // Multi-Touch-ID
+    touch_x: i32,
+    touch_y: i32,
+    touch_pressure: u16,
+}
+
+struct InputDevice {
+    device_id: u32,
+    device_type: InputDeviceType,
+    name: String,
+    is_active: bool,
+    event_count: u64,
+    last_event_time: u64,
+    // Keyboard
+    layout: String,          // "DE" / "EN"
+    led_state: u8,            // Bitfield: Num=1, Caps=2, Scroll=4
+    // Mouse
+    mouse_x: i32,
+    mouse_y: i32,
+    mouse_buttons: u8,       // Bitfield der gedrückten Buttons
+    mouse_sensitivity: u32,
+    // Touch
+    max_touch_points: u8,
+}
+
+struct InputEventQueue {
+    events: List<InputEvent>,
+    capacity: u32,
+    head: u32,
+    tail: u32,
+    count: u32,
+}
+
+module Kernel::InputDriver {
+
+    contract InputDriverManager {
+
+        state devices: Map<u32, InputDevice>
+        state event_queue: InputEventQueue
+        state next_device_id: u32 = 1
+        state next_event_id: u64 = 1
+        state total_events: u64 = 0
+        state keyboard_layout: String = "EN"
+        state key_repeat_delay: u32 = 500   // ms
+        state key_repeat_rate: u32 = 30     // cps
+        state authorized: List<Address>
+
+        event InputDeviceCreated(device_id: u32, device_type: InputDeviceType, name: String)
+        event KeyPressed(device_id: u32, keycode: u16, modifiers: u8)
+        event KeyReleased(device_id: u32, keycode: u16, modifiers: u8)
+        event MouseMoved(device_id: u32, x: i32, y: i32, dx: i32, dy: i32)
+        event MouseButtonEvent(device_id: u32, button: MouseButton, pressed: bool)
+        event TouchEvent(device_id: u32, touch_id: u8, x: i32, y: i32, pressure: u16)
+
+        // ═══════════════════════════════════════════════════════════
+        //  DEVICE LIFECYCLE
+        // ═══════════════════════════════════════════════════════════
+
+        // Input-Gerät registrieren
+        fn create_device(
+            device_type: InputDeviceType,
+            name: String,
+            layout: String,
+        ) -> u32 {
+            let id: u32 = self.next_device_id
+            self.next_device_id += 1
+
+            let device: InputDevice = InputDevice {
+                device_id: id,
+                device_type: device_type,
+                name: name,
+                is_active: true,
+                event_count: 0,
+                last_event_time: 0,
+                layout: layout,
+                led_state: 0,
+                mouse_x: 0,
+                mouse_y: 0,
+                mouse_buttons: 0,
+                mouse_sensitivity: 100,
+                max_touch_points: if device_type == InputDeviceType::TOUCHSCREEN then 10 else 0,
+            }
+
+            self.devices[id] = device
+
+            // Event-Queue initialisieren falls noch nicht vorhanden
+            if self.event_queue.capacity == 0 {
+                self.event_queue = InputEventQueue {
+                    events: [],
+                    capacity: 1024,
+                    head: 0,
+                    tail: 0,
+                    count: 0,
+                }
+            }
+
+            emit InputDeviceCreated(id, device_type, name)
+            return id
+        }
+
+        // Gerät deaktivieren
+        fn disable_device(device_id: u32) -> bool {
+            self.devices[device_id].is_active = false
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  KEYBOARD INPUT
+        // ═══════════════════════════════════════════════════════════
+
+        // Scancode verarbeiten (von Hardware/IRQ)
+        fn process_scancode(device_id: u32, scancode: u16, pressed: bool) -> bool {
+            let device: InputDevice = self.devices[device_id]
+            require(device.device_type == InputDeviceType::KEYBOARD, "not a keyboard")
+            require(device.is_active, "device not active")
+
+            let keycode: u16 = self.scancode_to_keycode(scancode, device.layout)
+            let modifiers: u8 = self.get_modifier_state()
+
+            let state: KeyState = if pressed then KeyState::PRESSED else KeyState::RELEASED
+
+            self.enqueue_event(InputEvent {
+                event_id: self.next_event_id,
+                device_id: device_id,
+                device_type: InputDeviceType::KEYBOARD,
+                timestamp: Chain::block_timestamp(),
+                scancode: scancode,
+                keycode: keycode,
+                key_state: state,
+                modifiers: modifiers,
+                mouse_x: 0,
+                mouse_y: 0,
+                mouse_dx: 0,
+                mouse_dy: 0,
+                mouse_button: MouseButton::LEFT,
+                touch_id: 0,
+                touch_x: 0,
+                touch_y: 0,
+                touch_pressure: 0,
+            })
+
+            self.next_event_id += 1
+            device.event_count += 1
+            device.last_event_time = Chain::block_timestamp()
+            self.total_events += 1
+
+            if pressed {
+                emit KeyPressed(device_id, keycode, modifiers)
+            } else {
+                emit KeyReleased(device_id, keycode, modifiers)
+            }
+
+            return true
+        }
+
+        // Scancode → Keycode Mapping
+        fn scancode_to_keycode(scancode: u16, layout: String) -> u16 {
+            // Scancode Set 1 (PS/2) → Unicode
+            // Layout-spezifische Übersetzung (DE/EN)
+            let base_map: Map<u16, u16> = {
+                0x1E: 0x0061,  // 'a'
+                0x30: 0x0062,  // 'b'
+                0x2E: 0x0063,  // 'c'
+                0x20: 0x0064,  // 'd'
+                0x12: 0x0065,  // 'e'
+                0x21: 0x0066,  // 'f'
+                0x22: 0x0067,  // 'g'
+                0x23: 0x0068,  // 'h'
+                0x17: 0x0069,  // 'i'
+                0x24: 0x006A,  // 'j'
+                0x25: 0x006B,  // 'k'
+                0x26: 0x006C,  // 'l'
+                0x32: 0x006D,  // 'm'
+                0x31: 0x006E,  // 'n'
+                0x18: 0x006F,  // 'o'
+                0x19: 0x0070,  // 'p'
+                0x10: 0x0071,  // 'q'
+                0x13: 0x0072,  // 'r'
+                0x1F: 0x0073,  // 's'
+                0x14: 0x0074,  // 't'
+                0x16: 0x0075,  // 'u'
+                0x2F: 0x0076,  // 'v'
+                0x2C: 0x0077,  // 'w'
+                0x2D: 0x0078,  // 'x'
+                0x15: 0x0079,  // 'y'
+                0x2C: 0x007A,  // 'z'
+                0x0B: 0x0030,  // '0'
+                0x02: 0x0031,  // '1'
+                0x03: 0x0032,  // '2'
+                0x04: 0x0033,  // '3'
+                0x05: 0x0034,  // '4'
+                0x06: 0x0035,  // '5'
+                0x07: 0x0036,  // '6'
+                0x08: 0x0037,  // '7'
+                0x09: 0x0038,  // '8'
+                0x0A: 0x0039,  // '9'
+                0x1C: 0x000D,  // Enter
+                0x39: 0x0020,  // Space
+                0x0E: 0x0008,  // Backspace
+                0x01: 0x001B,  // Escape
+                0x0F: 0x0009,  // Tab
+            }
+
+            // DE Layout: y und z vertauscht
+            if layout == "DE" {
+                if scancode == 0x15 {
+                    return 0x007A  // 'z' (statt 'y')
+                }
+                if scancode == 0x2C {
+                    return 0x0079  // 'y' (statt 'z')
+                }
+            }
+
+            let code: u16 = base_map[scancode]
+            return code
+        }
+
+        // Modifier-State abfragen
+        fn get_modifier_state() -> u8 {
+            // Bitfield: Ctrl=1, Shift=2, Alt=4, Win=8
+            // In production: von Keyboard-Controller lesen
+            return 0
+        }
+
+        // LED-State setzen
+        fn set_leds(device_id: u32, led_mask: u8) -> bool {
+            self.devices[device_id].led_state = led_mask
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  MOUSE INPUT
+        // ═══════════════════════════════════════════════════════════
+
+        // Mausbewegung verarbeiten
+        fn process_mouse_move(device_id: u32, dx: i32, dy: i32) -> bool {
+            let device: InputDevice = self.devices[device_id]
+            require(device.device_type == InputDeviceType::MOUSE, "not a mouse")
+            require(device.is_active, "device not active")
+
+            let sens: i32 = device.mouse_sensitivity as i32
+            let scaled_dx: i32 = dx * sens / 100
+            let scaled_dy: i32 = dy * sens / 100
+
+            device.mouse_x += scaled_dx
+            device.mouse_y += scaled_dy
+
+            // Clamp an Bildschirmgrenzen (in production: von Display-Treiber)
+            if device.mouse_x < 0 { device.mouse_x = 0 }
+            if device.mouse_y < 0 { device.mouse_y = 0 }
+
+            self.enqueue_event(InputEvent {
+                event_id: self.next_event_id,
+                device_id: device_id,
+                device_type: InputDeviceType::MOUSE,
+                timestamp: Chain::block_timestamp(),
+                scancode: 0,
+                keycode: 0,
+                key_state: KeyState::RELEASED,
+                modifiers: 0,
+                mouse_x: device.mouse_x,
+                mouse_y: device.mouse_y,
+                mouse_dx: scaled_dx,
+                mouse_dy: scaled_dy,
+                mouse_button: MouseButton::LEFT,
+                touch_id: 0,
+                touch_x: 0,
+                touch_y: 0,
+                touch_pressure: 0,
+            })
+
+            self.next_event_id += 1
+            device.event_count += 1
+            self.total_events += 1
+
+            emit MouseMoved(device_id, device.mouse_x, device.mouse_y, scaled_dx, scaled_dy)
+            return true
+        }
+
+        // Mausbutton verarbeiten
+        fn process_mouse_button(device_id: u32, button: MouseButton, pressed: bool) -> bool {
+            let device: InputDevice = self.devices[device_id]
+            require(device.device_type == InputDeviceType::MOUSE, "not a mouse")
+            require(device.is_active, "device not active")
+
+            let btn_bit: u8 = 1 << (button as u8)
+            if pressed {
+                device.mouse_buttons |= btn_bit
+            } else {
+                device.mouse_buttons &= ~btn_bit
+            }
+
+            self.enqueue_event(InputEvent {
+                event_id: self.next_event_id,
+                device_id: device_id,
+                device_type: InputDeviceType::MOUSE,
+                timestamp: Chain::block_timestamp(),
+                scancode: 0,
+                keycode: 0,
+                key_state: if pressed then KeyState::PRESSED else KeyState::RELEASED,
+                modifiers: 0,
+                mouse_x: device.mouse_x,
+                mouse_y: device.mouse_y,
+                mouse_dx: 0,
+                mouse_dy: 0,
+                mouse_button: button,
+                touch_id: 0,
+                touch_x: 0,
+                touch_y: 0,
+                touch_pressure: 0,
+            })
+
+            self.next_event_id += 1
+            device.event_count += 1
+            self.total_events += 1
+
+            emit MouseButtonEvent(device_id, button, pressed)
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  TOUCH INPUT
+        // ═══════════════════════════════════════════════════════════
+
+        // Touch-Event verarbeiten
+        fn process_touch(device_id: u32, touch_id: u8, x: i32, y: i32, pressure: u16) -> bool {
+            let device: InputDevice = self.devices[device_id]
+            require(device.device_type == InputDeviceType::TOUCHSCREEN, "not a touchscreen")
+            require(device.is_active, "device not active")
+            require(touch_id < device.max_touch_points, "touch_id exceeds max")
+
+            self.enqueue_event(InputEvent {
+                event_id: self.next_event_id,
+                device_id: device_id,
+                device_type: InputDeviceType::TOUCHSCREEN,
+                timestamp: Chain::block_timestamp(),
+                scancode: 0,
+                keycode: 0,
+                key_state: if pressure > 0 then KeyState::PRESSED else KeyState::RELEASED,
+                modifiers: 0,
+                mouse_x: 0,
+                mouse_y: 0,
+                mouse_dx: 0,
+                mouse_dy: 0,
+                mouse_button: MouseButton::LEFT,
+                touch_id: touch_id,
+                touch_x: x,
+                touch_y: y,
+                touch_pressure: pressure,
+            })
+
+            self.next_event_id += 1
+            device.event_count += 1
+            self.total_events += 1
+
+            emit TouchEvent(device_id, touch_id, x, y, pressure)
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  EVENT QUEUE (Ring-Buffer)
+        // ═══════════════════════════════════════════════════════════
+
+        // Event in Queue einreihen
+        fn enqueue_event(event: InputEvent) -> bool {
+            let q: InputEventQueue = self.event_queue
+            if q.count >= q.capacity {
+                // Queue voll — ältestes Event verwerfen
+                q.head = (q.head + 1) % q.capacity
+                q.count -= 1
+            }
+            q.events[q.tail] = event
+            q.tail = (q.tail + 1) % q.capacity
+            q.count += 1
+            return true
+        }
+
+        // Nächstes Event aus Queue holen
+        fn dequeue_event() -> InputEvent {
+            let q: InputEventQueue = self.event_queue
+            require(q.count > 0, "event queue empty")
+
+            let event: InputEvent = q.events[q.head]
+            q.head = (q.head + 1) % q.capacity
+            q.count -= 1
+            return event
+        }
+
+        // Event-Queue peek (ohne zu entfernen)
+        fn peek_event() -> InputEvent {
+            let q: InputEventQueue = self.event_queue
+            require(q.count > 0, "event queue empty")
+            return q.events[q.head]
+        }
+
+        // Anzahl Events in Queue
+        fn event_count() -> u32 {
+            return self.event_queue.count
+        }
+
+        // Queue leeren
+        fn flush_events() -> bool {
+            self.event_queue.head = 0
+            self.event_queue.tail = 0
+            self.event_queue.count = 0
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  QUERIES
+        // ═══════════════════════════════════════════════════════════
+
+        // Geräte nach Typ
+        fn list_devices_by_type(device_type: InputDeviceType) -> List<u32> {
+            let result: List<u32> = []
+            for id, device in self.devices {
+                if device.device_type == device_type && device.is_active {
+                    result.push(id)
+                }
+            }
+            return result
+        }
+
+        // Mausposition
+        fn get_mouse_position(device_id: u32) -> (i32, i32) {
+            let device: InputDevice = self.devices[device_id]
+            return (device.mouse_x, device.mouse_y)
+        }
+
+        // Statistik
+        fn get_stats() -> (u32, u64, u32) {
+            return (self.devices.length, self.total_events, self.event_queue.count)
+        }
+    }
+}
