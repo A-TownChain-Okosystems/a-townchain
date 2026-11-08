@@ -1,0 +1,12 @@
+// ATCLang v0.3 — atc-sdk :: Utilities
+// hashing, encoding, serialization, validation
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module utils {
+    // Public API — TBD
+    
+    fn init() {
+        // Initialization — TBD
+    }
+}
