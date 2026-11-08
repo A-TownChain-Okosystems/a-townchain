@@ -1,0 +1,21 @@
+// ATCLang v0.3 — Coding Agent
+// Code-Generierung, Migration, Review für ATCLang
+// ATC-Standard: ATC-97
+
+module coding_agent {
+    fn generate_module(spec: string) {
+        // ATCLang-Modul aus Spezifikation generieren
+    }
+    
+    fn migrate_python_to_atc(python_code: string) {
+        // Python → ATCLang Migration
+    }
+    
+    fn review_code(code: string) {
+        // Code-Review mit Schweregrad-Bewertung
+    }
+    
+    fn fix_parser_error(file: string, error: string) {
+        // Parser-Fehler automatisch beheben
+    }
+}
