@@ -249,7 +249,35 @@ impl Parser {
                 }
             }
         }
+        // `data: u8[120]` — Feldtyp mit fester Laenge steht im Korpus. Die
+        // Laenge ist Teil des Typnamens, nicht des Feldnamens.
+        while self.cur() == Token::LBracket {
+            self.pos += 1;
+            let mut inner = String::from("[");
+            while self.cur() != Token::RBracket && self.cur() != Token::Eof {
+                inner.push_str(&Self::token_text(&self.cur()));
+                self.pos += 1;
+            }
+            if self.cur() != Token::RBracket {
+                return Err(ParseError {
+                    message: "']' nach Typlaenge erwartet".to_string(),
+                });
+            }
+            self.pos += 1;
+            inner.push(']');
+            name.push_str(&inner);
+        }
         Ok(TypeHint { name })
+    }
+
+    /// Steht an dieser Stelle ein Feldname mit Doppelpunkt?
+    ///
+    /// Korpusform: Strukturfelder sind teils nur durch einen Zeilenumbruch
+    /// getrennt. Ein Name, auf den direkt ':' folgt, kann nichts anderes sein
+    /// als das naechste Feld.
+    fn at_field_start(&self) -> bool {
+        let is_name = matches!(self.cur(), Token::Ident(_)) || keyword_text(&self.cur()).is_some();
+        is_name && self.toks.get(self.pos + 1) == Some(&Token::Colon)
     }
 
     fn token_text(token: &Token) -> String {
@@ -404,6 +432,11 @@ impl Parser {
             Token::Struct => self.struct_decl(),
             Token::Enum => self.enum_decl(),
             Token::Contract => self.contract_decl(),
+            // `event Transfer { ... }` steht in 42 Korpusdateien auf Programm-
+            // ebene, nicht nur im Vertragskoerper. `event` bleibt Bezeichner
+            // (kein Schluesselwort), damit Variablen dieses Namens weiter
+            // erlaubt sind.
+            Token::Ident(name) if name == "event" => Ok(self.event_decl()?),
             other => Err(ParseError {
                 message: format!("Deklaration am Top-Level erwartet, fand {:?}", other),
             }),
@@ -510,6 +543,8 @@ impl Parser {
             match self.cur() {
                 Token::Comma | Token::Semi => self.pos += 1,
                 Token::RBrace => {}
+                // Felder ohne Komma, nur durch Zeilenumbruch getrennt.
+                _ if self.at_field_start() => {}
                 other => {
                     return Err(ParseError {
                         message: format!(
@@ -743,6 +778,41 @@ impl Parser {
                 return Err(ParseError {
                     message: format!("')' nach Event {name} erwartet"),
                 });
+            }
+            self.pos += 1;
+        }
+        // Blockform `event Transfer { from: Address, to: Address }` — im Korpus
+        // die Regelform, waehrend die Klammerform oben die Ausnahme ist.
+        if self.cur() == Token::LBrace {
+            self.pos += 1;
+            while self.cur() != Token::RBrace {
+                if self.cur() == Token::Eof {
+                    return Err(ParseError {
+                        message: format!("'}}' nach Event {name} erwartet"),
+                    });
+                }
+                let field = self.expect_field_name("Feldname im Event")?;
+                if self.cur() != Token::Colon {
+                    return Err(ParseError {
+                        message: format!("':' nach Event-Feld {field} erwartet"),
+                    });
+                }
+                self.pos += 1;
+                let ty = self.simple_type()?;
+                fields.push((field, ty));
+                match self.cur() {
+                    Token::Comma | Token::Semi => self.pos += 1,
+                    Token::RBrace => {}
+                    _ if self.at_field_start() => {}
+                    other => {
+                        return Err(ParseError {
+                            message: format!(
+                                "',' oder '}}' nach Event-Feld erwartet, fand {:?}",
+                                other
+                            ),
+                        })
+                    }
+                }
             }
             self.pos += 1;
         }
@@ -1709,5 +1779,43 @@ mod tests {
     #[test]
     fn schluesselwort_im_strukt_literal() {
         assert!(parse_program("fn f() -> int { let s = S { state: 1 }; return 0; }").is_ok());
+    }
+
+    #[test]
+    fn event_auf_programmebene() {
+        // 42 Korpusdateien deklarieren Events ausserhalb eines Contracts.
+        let j = parse_program("event Transfer { from: Address, to: Address }")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"EventDeclaration\""), "{j}");
+        assert!(j.contains("\"name\":\"Transfer\""), "{j}");
+    }
+
+    #[test]
+    fn event_bleibt_als_variablenname_erlaubt() {
+        // `event` ist kein Schluesselwort geworden, damit dieser Code gilt.
+        assert!(parse_program("fn f() -> int { let event = 1; return event; }").is_ok());
+    }
+
+    #[test]
+    fn feldtyp_mit_fester_laenge() {
+        let j = parse_program("struct S { data: u8[120] }")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("u8[120]"), "{j}");
+    }
+
+    #[test]
+    fn typlaenge_ohne_klammer_ist_ein_fehler() {
+        assert!(parse_program("struct S { data: u8[120 }").is_err());
+    }
+
+    #[test]
+    fn strukt_felder_ohne_komma() {
+        let j = parse_program("struct S { a: u64\n b: u64 }")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"name\":\"a\""), "{j}");
+        assert!(j.contains("\"name\":\"b\""), "{j}");
     }
 }
