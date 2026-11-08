@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/A-TownChain-Okosystems/atc-engineering/blob/main/schemas/source-catalog-reconciliation.schema.json",
+  "title": "ATC Engineering source-to-catalog reconciliation report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "repository",
+    "source_commit_sha",
+    "catalog_commit_sha",
+    "status",
+    "scope",
+    "counts",
+    "findings",
+    "limitations",
+    "decision_rule"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "repository": {
+      "const": "A-TownChain-Okosystems/atc-engineering"
+    },
+    "source_commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "catalog_commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "status": {
+      "enum": [
+        "BLOCKED",
+        "IN_PROGRESS",
+        "RECONCILED"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_census",
+        "normative_registry",
+        "parser_coverage",
+        "interfaces_contracts",
+        "organization_ownership"
+      ],
+      "properties": {
+        "source_census": {
+          "enum": [
+            "NOT_RUN",
+            "PARTIAL",
+            "COMPLETE"
+          ]
+        },
+        "normative_registry": {
+          "enum": [
+            "NOT_RUN",
+            "PARTIAL",
+            "COMPLETE"
+          ]
+        },
+        "parser_coverage": {
+          "enum": [
+            "NOT_RUN",
+            "PARTIAL",
+            "COMPLETE"
+          ]
+        },
+        "interfaces_contracts": {
+          "enum": [
+            "NOT_RUN",
+            "PARTIAL",
+            "COMPLETE"
+          ]
+        },
+        "organization_ownership": {
+          "enum": [
+            "NOT_RUN",
+            "PARTIAL",
+            "COMPLETE"
+          ]
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_files_seen",
+        "comparison_source_file_blobs",
+        "catalog_snapshot_file_blobs",
+        "catalog_exclusions",
+        "catalog_symbols",
+        "missing_catalog_entries",
+        "stale_catalog_entries",
+        "duplicate_bindings",
+        "orphan_catalog_entries",
+        "unsupported_files",
+        "parse_errors",
+        "unmapped_interfaces",
+        "ownership_conflicts"
+      ],
+      "properties": {
+        "source_files_seen": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "catalog_symbols": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_catalog_entries": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "stale_catalog_entries": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "duplicate_bindings": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "orphan_catalog_entries": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unsupported_files": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "parse_errors": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unmapped_interfaces": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "ownership_conflicts": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "comparison_source_file_blobs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "catalog_snapshot_file_blobs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "catalog_exclusions": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "finding_id",
+          "category",
+          "status",
+          "description",
+          "evidence"
+        ],
+        "properties": {
+          "finding_id": {
+            "type": "string",
+            "pattern": "^ATCE-RECON-[0-9]{3,}$"
+          },
+          "category": {
+            "enum": [
+              "NORMATIVE_ID",
+              "MISSING_ENTRY",
+              "STALE_ENTRY",
+              "DUPLICATE_BINDING",
+              "ORPHAN_ENTRY",
+              "PARSER_COVERAGE",
+              "PARSE_ERROR",
+              "INTERFACE_CONTRACT",
+              "OWNERSHIP_CONFLICT"
+            ]
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "BLOCKED",
+              "RESOLVED"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "repository",
+                "path",
+                "blob_sha",
+                "symbol"
+              ],
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "blob_sha": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "symbol": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "decision_rule": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
