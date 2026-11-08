@@ -1,0 +1,5 @@
+{
+  "schema": "ATC-DEP-POLICY-1",
+  "block_severities": ["critical", "high"],
+  "deny_unpinned": true
+}
