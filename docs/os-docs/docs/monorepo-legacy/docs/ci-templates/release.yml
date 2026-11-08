@@ -1,0 +1,182 @@
+# Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# A-TownChain OS — Release Pipeline (K6 Konsolidierung)
+# K6.3: Release on tag | K6.7: Docker to ghcr.io | K6.8: Binaries | K6.10: Changelog
+# Agent: Aurora #2 (6a275618)
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. v1.0.0)'
+        required: true
+
+permissions:
+  contents: write
+  packages: write
+  pages: write
+  id-token: write
+
+jobs:
+  # ── K6.7: Docker Image Publishing ─────────
+  docker-publish:
+    name: Docker Images (ghcr.io)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and push Core image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.core
+          push: true
+          tags: |
+            ghcr.io/a-townchain-okosystems/a-townchain-os:latest
+            ghcr.io/a-townchain-okosystems/a-townchain-os:${{ steps.version.outputs.version }}
+          labels: |
+            org.opencontainers.image.version=${{ steps.version.outputs.version }}
+            org.opencontainers.image.source=${{ github.repositoryUrl }}
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.frontend
+          push: true
+          tags: |
+            ghcr.io/a-townchain-okosystems/a-townchain-os-frontend:latest
+            ghcr.io/a-townchain-okosystems/a-townchain-os-frontend:${{ steps.version.outputs.version }}
+
+      - name: Build and push Gateway image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.gateway
+          push: true
+          tags: |
+            ghcr.io/a-townchain-okosystems/a-townchain-os-gateway:latest
+            ghcr.io/a-townchain-okosystems/a-townchain-os-gateway:${{ steps.version.outputs.version }}
+
+  # ── K6.8: Release Artifacts (Binaries) ─────
+  binaries:
+    name: Build Binaries (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: [docker-publish]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: a-townchain-os-linux-x86_64
+            archive: tar.gz
+          - os: macos-latest
+            artifact: a-townchain-os-macos-arm64
+            archive: tar.gz
+          - os: windows-latest
+            artifact: a-townchain-os-windows-x86_64
+            archive: zip
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build binary (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          pyinstaller --onefile --name a-townchain-os \
+            --add-data "src:src" \
+            --add-data "modules:modules" \
+            --add-data "frontend:frontend" \
+            src/gateway/main.py || true
+          tar -czf ${{ matrix.artifact }}.tar.gz dist/ 2>/dev/null || true
+
+      - name: Build binary (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          pyinstaller --onefile --name a-townchain-os `
+            --add-data "src;src" `
+            --add-data "modules;modules" `
+            --add-data "frontend;frontend" `
+            src/gateway/main.py || true
+          Compress-Archive -Path dist/* -DestinationPath ${{ matrix.artifact }}.zip 2>$null || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            ${{ matrix.artifact }}.tar.gz
+            ${{ matrix.artifact }}.zip
+          if-no-files-found: ignore
+
+  # ── K6.10: Automated Changelog ─────────────
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    needs: [binaries]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v5
+        with:
+          configuration: .github/changelog-config.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+
+  # ── K6.9: GitHub Pages Deployment ──────────
+  pages:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [docker-publish]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: './frontend'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
