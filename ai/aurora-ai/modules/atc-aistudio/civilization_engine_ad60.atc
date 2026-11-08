@@ -1,0 +1,236 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang — Civilization Engine (AD-60)
+// Genesis Civilization Platform v4.0
+// Simulation kompletter Zivilisationen
+
+struct Civilization {
+    id: String,
+    name: String,
+    universe: String,
+    planet: String,
+    government: Government,
+    legal_system: LegalSystem,
+    religion: Vec<Religion>,
+    culture: Culture,
+    diplomacy: DiplomaticRelations,
+    science: ScienceState,
+    economy: EconomyState,
+    infrastructure: Infrastructure,
+    population: u64,
+    tech_level: u8,           // 0-15 (Pre-Stone → Post-Scarcity)
+    happiness: f32,           // 0.0-1.0
+    stability: f32,
+    age_years: u64
+}
+
+struct Government {
+    type: String,             // "democracy"|"monarchy"|"republic"|"theocracy"|"oligarchy"|"corporation"|"council"|"ai_rule"|"hive_mind"
+    leader: String,
+    term_length: u32,         // years (0 = lifetime)
+    approval: f32,
+    branches: Vec<GovBranch>,
+    policies: Vec<Policy>,
+    corruption: f32           // 0.0-1.0
+}
+
+struct GovBranch {
+    name: String,
+    role: String,             // "executive"|"legislative"|"judicial"|"military"|"intelligence"
+    head: String,
+    members: u32,
+    power: f32                // 0.0-1.0
+}
+
+struct Policy {
+    id: String,
+    category: String,         // "economic"|"social"|"military"|"science"|"environmental"|"foreign"
+    name: String,
+    description: String,
+    impact: Map<String, f32>, // affected_metric → delta
+    approval_required: bool,
+    enacted: String,
+    expires: Option<String>
+}
+
+struct LegalSystem {
+    id: String,
+    code: Vec<Law>,
+    courts: Vec<Court>,
+    enforcement: f32,         // 0.0-1.0
+    rights: Vec<String>,
+    punishments: Vec<Punishment>
+}
+
+struct Law {
+    id: String,
+    title: String,
+    category: String,
+    text: String,
+    severity: u8,             // 1-10
+    enacted: String,
+    violations: u64
+}
+
+struct Court {
+    id: String,
+    level: String,            // "local"|"regional"|"national"|"supreme"|"international"
+    judges: u32,
+    cases_pending: u32,
+    cases_resolved: u64,
+    efficiency: f32
+}
+
+struct Religion {
+    id: String,
+    name: String,
+    deity: Option<String>,
+    followers: u64,
+    influence: f32,
+    tenets: Vec<String>,
+    rituals: Vec<String>,
+    conflicts: Vec<String>,
+    is_state_religion: bool
+}
+
+struct DiplomaticRelations {
+    alliances: Vec<Alliance>,
+    treaties: Vec<Treaty>,
+    embassies: Vec<Embassy>,
+    relations: Map<String, f32>, // civ_id → relation (-1.0 to 1.0)
+    ongoing_negotiations: Vec<Negotiation>
+}
+
+struct Alliance {
+    id: String,
+    name: String,
+    members: Vec<String>,
+    type: String,             // "military"|"economic"|"cultural"|"research"|"defensive"
+    founded: String,
+    strength: f32
+}
+
+struct Treaty {
+    id: String,
+    parties: Vec<String>,
+    type: String,             // "peace"|"trade"|"non_aggression"|"border"|"resource"|"scientific"
+    terms: Vec<String>,
+    signed: String,
+    expires: Option<String>,
+    violations: u32
+}
+
+struct ScienceState {
+    fields: Vec<ScienceField>,
+    breakthroughs: Vec<Breakthrough>,
+    research_budget: u64,
+    education_level: f32,
+    literacy: f32,
+    universities: u32
+}
+
+struct ScienceField {
+    name: String,             // "physics"|"biology"|"chemistry"|"computing"|"astronomy"|"medicine"|"engineering"
+    level: u8,                // 0-15
+    progress: f32,            // 0.0-1.0 to next level
+    researchers: u32,
+    budget: u64
+}
+
+struct Breakthrough {
+    id: String,
+    field: String,
+    name: String,
+    year: u64,
+    impact: f32,
+    applications: Vec<String>
+}
+
+struct Infrastructure {
+    roads: u64,
+    railways: u64,
+    airports: u32,
+    ports: u32,
+    power_grid: f32,          // coverage 0.0-1.0
+    water_supply: f32,
+    internet_coverage: f32,
+    space_stations: u32,
+    mega_structures: Vec<MegaStructure>
+}
+
+struct MegaStructure {
+    id: String,
+    type: String,             // "dyson_sphere"|"space_elevator"|"orbital_ring"|"ringworld"|"artificial_world"
+    location: String,
+    completion: f32,
+    cost: u64,
+    benefit: String
+}
+
+fn civ_create(name: String, universe: String, planet: String) -> Civilization {
+    Civilization {
+        id: generate_id("CIV"),
+        name: name,
+        universe: universe,
+        planet: planet,
+        government: Government::default(),
+        legal_system: LegalSystem::default(),
+        religion: Vec::new(),
+        culture: Culture::default(),
+        diplomacy: DiplomaticRelations::default(),
+        science: ScienceState::default(),
+        economy: EconomyState::default(),
+        infrastructure: Infrastructure::default(),
+        population: 1000,
+        tech_level: 0,
+        happiness: 0.7,
+        stability: 0.8,
+        age_years: 0
+    }
+}
+
+fn civ_tick(civ_id: String, years: u32) {
+    let c = get_civ(civ_id);
+    for i in 0..years {
+        c.age_years += 1;
+        update_government(c);
+        update_economy(c);
+        update_science(c);
+        update_diplomacy(c);
+        update_population(c);
+        update_infrastructure(c);
+        update_happiness(c);
+        check_collapse(c);
+    }
+}
+
+fn civ_declare_war(civ_a: String, civ_b: String, reason: String) -> Conflict {
+    let a = get_civ(civ_a);
+    let b = get_civ(civ_b);
+    a.diplomacy.relations.insert(b.id, -1.0);
+    b.diplomacy.relations.insert(a.id, -1.0);
+    Conflict {
+        id: generate_id("WAR"),
+        type: "war",
+        factions: vec![civ_a, civ_b],
+        start_tick: now(),
+        intensity: 0.5,
+        casualties: 0,
+        economic_cost: 0,
+        regions: Vec::new(),
+        outcome: None
+    }
+}
+
+fn civ_form_alliance(members: Vec<String>, type_: String, name: String) -> Alliance {
+    Alliance {
+        id: generate_id("AL"),
+        name: name,
+        members: members,
+        type: type_,
+        founded: now(),
+        strength: 0.5
+    }
+}
+
+// Standards: AD-60
+// Dependencies: Universe Factory (AD-44), Simulation Factory (AD-48), Economy Factory (AD-26)
