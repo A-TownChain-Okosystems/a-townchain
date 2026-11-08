@@ -1,0 +1,342 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/blob/main/catalog/schema/file-inventory.schema.json",
+  "title": "A-TownChain Ecosystem File Inventory Record",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "repository",
+    "commit_sha",
+    "path",
+    "blob_sha",
+    "file_type",
+    "analysis_status",
+    "verification"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[^/]+/[^/]+$"
+    },
+    "commit_sha": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "blob_sha": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "file_type": {
+      "type": "string",
+      "enum": [
+        "rust",
+        "python",
+        "typescript",
+        "javascript",
+        "c",
+        "cpp",
+        "go",
+        "java",
+        "shell",
+        "yaml",
+        "yml",
+        "json",
+        "toml",
+        "markdown",
+        "text",
+        "html",
+        "css",
+        "proto",
+        "lockfile",
+        "binary",
+        "generated",
+        "vendored",
+        "other",
+        "unknown"
+      ]
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "source",
+        "test",
+        "configuration",
+        "schema",
+        "documentation",
+        "build",
+        "workflow",
+        "generated",
+        "vendored",
+        "binary",
+        "other",
+        "unknown"
+      ]
+    },
+    "purpose": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "symbols": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "kind",
+          "status"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "signature": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "line_start": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
+          },
+          "line_end": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
+          },
+          "purpose": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "IMPLEMENTED",
+              "RESIDUAL",
+              "BLOCKED",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "callers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "target",
+          "evidence"
+        ],
+        "properties": {
+          "target": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CONFIRMED",
+              "PARTIAL",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "target",
+          "kind",
+          "evidence"
+        ],
+        "properties": {
+          "target": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CONFIRMED",
+              "DECLARED_ONLY",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "test",
+          "status"
+        ],
+        "properties": {
+          "test": {
+            "type": "string"
+          },
+          "result": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "run_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "commit_sha": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "TESTED",
+              "CI_VERIFIED",
+              "E2E_VERIFIED",
+              "BLOCKED",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "analysis_status": {
+      "type": "string",
+      "enum": [
+        "IMPLEMENTED",
+        "TESTED",
+        "CI_VERIFIED",
+        "E2E_VERIFIED",
+        "VERIFIED",
+        "RESIDUAL",
+        "BLOCKED",
+        "UNKNOWN",
+        "EXCLUDED"
+      ]
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "source_inspected",
+        "symbol_extraction_complete",
+        "call_graph_complete",
+        "tests_verified"
+      ],
+      "properties": {
+        "source_inspected": {
+          "type": "boolean"
+        },
+        "symbol_extraction_complete": {
+          "type": "boolean"
+        },
+        "call_graph_complete": {
+          "type": "boolean"
+        },
+        "tests_verified": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "reference"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "commit_sha": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "blob_sha": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "line_range": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "scan_timestamp": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}
