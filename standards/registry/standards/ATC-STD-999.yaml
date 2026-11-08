@@ -1,0 +1,20 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: master-audit
+family: INTEGRATION / INTEROPERABILITY
+family_id: '900'
+file: standards/master-audit/ATC-STD-999.md
+mandate: Owner-Entwurf 07.09. 23:41 (Abschnitt 40) via FRAMEWORK-001 §9/REQ-FW-010
+  — 12 REQ-MA, 16-Stufen-Kette (Requirement..Audit Evidence, je Status CONSISTENT/PARTIAL/INCONSISTENT/MISSING,
+  P0/P1-Blockade), 13 Change-Nachweis-Fragen je Aenderung, MAUD-YYYY-NNNN als AUD-Record
+  Typ MASTER (keine Parallelstruktur), Register-Abdeckung 11 Register, Orchestrierung
+  statt Duplikation (S-01..S-22, Health Scores, RR-Gates, MILESTONE/COMPAT), MAJOR
+  ohne Master-Audit-PASS verboten, Audit-der-Audits als Continuous-Improvement; SCR-0022;
+  §9-Freigabe 08.09. 00:18, APPROVED, normativ, §30-eingefroren
+registry_version: 1
+standard_id: ATC-STD-999
+status: approved
+title: 'ATC Master-Audit — Enterprise Completeness & Consistency Audit: 16-Stufen-System-Audit-Kette,
+  13 Change-Nachweis-Fragen, Register-Abdeckung (11 Register), MAUD-Records, Orchestrierung
+  von S-01..S-22/REPO-AUDIT/RR-G01..G08'
+version: 1.0.0
