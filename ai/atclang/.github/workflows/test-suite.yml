@@ -1,0 +1,196 @@
+name: ATC Test Suite
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  npm-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve execution SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ github.event.pull_request.head.sha }}"
+          if [ -z "$SHA" ]; then
+            echo "::error::pull_request.head.sha is empty; refusing execution"
+            exit 1
+          fi
+          echo "Executing SHA: $SHA"
+          echo "EXECUTION_SHA=$SHA" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Verify execution SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTUAL="$(git rev-parse HEAD)"
+          EXPECTED="${{ github.event.pull_request.head.sha }}"
+          echo "Expected SHA: $EXPECTED"
+          echo "Actual SHA:   $ACTUAL"
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "::error::Execution SHA mismatch"
+            exit 1
+          fi
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: {node-version: "20"}
+      - name: npm install + test/build (SCR-0078)
+        run: |
+          set +e
+          FAIL=0
+          while IFS= read -r f; do
+            d="$(dirname "$f")"
+            echo "=== npm in $d"
+            (cd "$d" && npm install --no-audit --no-fund --silent)
+            (cd "$d" && npm test --if-present --silent) || { echo "npm test FAILED in $d"; FAIL=1; }
+            (cd "$d" && npm run build --if-present --silent) || { echo "npm build FAILED in $d"; FAIL=1; }
+          done < <(find . -name package.json -not -path "*/archive/*" -not -path "*/node_modules/*" -not -path "*/.*/")
+          exit $FAIL
+  rust-core:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve execution SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ github.event.pull_request.head.sha }}"
+          if [ -z "$SHA" ]; then
+            echo "::error::pull_request.head.sha is empty; refusing execution"
+            exit 1
+          fi
+          echo "Executing SHA: $SHA"
+          echo "EXECUTION_SHA=$SHA" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Verify execution SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTUAL="$(git rev-parse HEAD)"
+          EXPECTED="${{ github.event.pull_request.head.sha }}"
+          echo "Expected SHA: $EXPECTED"
+          echo "Actual SHA:   $ACTUAL"
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "::error::Execution SHA mismatch"
+            exit 1
+          fi
+      - uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # master@2026-06-30
+        with:
+          toolchain: stable
+      - name: cargo test (Rust-Canonical-Core, SCR-0083/F-108)
+        run: |
+          set +e
+          FAIL=0
+          while IFS= read -r f; do
+            d="$(dirname "$f")"
+            echo "=== cargo test in $d"
+            if ! (cd "$d" && cargo test --quiet); then
+              echo "cargo test FAILED in $d"; FAIL=1
+            fi
+          done < <(find . -name Cargo.toml -not -path "*/archive/*" -not -path "*/node_modules/*")
+          exit $FAIL
+  differential:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve execution SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ github.event.pull_request.head.sha }}"
+          if [ -z "$SHA" ]; then
+            echo "::error::pull_request.head.sha is empty; refusing execution"
+            exit 1
+          fi
+          echo "Executing SHA: $SHA"
+          echo "EXECUTION_SHA=$SHA" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Verify execution SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTUAL="$(git rev-parse HEAD)"
+          EXPECTED="${{ github.event.pull_request.head.sha }}"
+          echo "Expected SHA: $EXPECTED"
+          echo "Actual SHA:   $ACTUAL"
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "::error::Execution SHA mismatch"
+            exit 1
+          fi
+      - uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # master@2026-06-30
+        with:
+          toolchain: stable
+      - name: Differential-Test (Rust-Canonical vs. eingefrorenem expected/, SCR-0084)
+        run: cd crates/atc-core && cargo test --quiet
+      - name: Differential-Korpus-Integritaet (expected/ vollstaendig committed)
+        run: |
+          test -d crates/atc-core/differential/expected
+          test "$(ls crates/atc-core/differential/expected | wc -l)" -ge 1
+          git diff --exit-code -- crates/atc-core/differential/expected/
+          echo "expected/-Korpus intakt; Referenz-Verhalten dokumentiert unter docs/reference/python/"
+  evidence:
+    needs: [npm-tests, rust-core, differential]
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve execution SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ github.event.pull_request.head.sha }}"
+          if [ -z "$SHA" ]; then
+            echo "::error::pull_request.head.sha is empty; refusing execution"
+            exit 1
+          fi
+          echo "Executing SHA: $SHA"
+          echo "EXECUTION_SHA=$SHA" >> "$GITHUB_ENV"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Verify execution SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACTUAL="$(git rev-parse HEAD)"
+          EXPECTED="${{ github.event.pull_request.head.sha }}"
+          echo "Expected SHA: $EXPECTED"
+          echo "Actual SHA:   $ACTUAL"
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "::error::Execution SHA mismatch"
+            exit 1
+          fi
+      - name: Build immutable evidence artifact
+        run: |
+          mkdir -p evidence
+          python3 - <<'PY'
+          import os, datetime, re
+          sha = os.environ["GITHUB_SHA"]
+          rid = os.environ["GITHUB_RUN_ID"]
+          wf = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
+          ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          t = open(".atc/evidence/evidence.yaml", encoding="utf-8").read()
+          t = re.sub(r"bound_commit: [^\n]*", "bound_commit: " + sha, t)
+          block = ("test_run:\n  workflow: " + wf + "\n  run_id: " + rid + "\n  commit: " + sha + "\n  timestamp: " + ts + "\n  result: PASS\n  runner: github-actions\n")
+          if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", t):
+              t = re.sub(r"(?m)^test_run:\n(?:  [^\n]*\n)+", block, t)
+          else:
+              t = t.rstrip() + "\n" + block
+          open("evidence/evidence.yaml", "w", encoding="utf-8").write(t)
+          PY
+      - name: Upload immutable evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: atclang-evidence-${{ github.sha }}
+          path: evidence/evidence.yaml
+          if-no-files-found: error
