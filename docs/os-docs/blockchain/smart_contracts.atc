@@ -1,0 +1,486 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — System Smart Contracts Registry
+// Sprint 2.5 | Contracts Layer | Chain-ID 9000
+// Migrated from: blockchain/smart_contracts.py (725 lines)
+// Consolidates: ResourceMarket, AgentRegistry, FederatedLearning,
+// GovernanceDAO, PaymentChannel, SmartContractRegistry
+// ─────────────────────────────────────────────────────────────
+
+enum TokenStandard { KaiGovernance, Compute, Reputation }
+enum AuctionStatus { Active, Finalized, Cancelled }
+enum ProposalStatus { Active, Passed, Rejected, Executed }
+enum ChannelStatus { Open, Closing, Closed }
+
+struct ResourceAuction {
+    auction_id: Hash,
+    resource_type: String,
+    creator: Address,
+    min_bid: u128,
+    highest_bid: u128,
+    highest_bidder: Address,
+    deadline: u64,
+    status: AuctionStatus,
+}
+
+struct AgentRecord {
+    agent_id: Hash,
+    owner: Address,
+    capabilities: List<String>,
+    reputation: u32,
+    registered_at: u64,
+    active: bool,
+}
+
+struct FLRound {
+    round_id: Hash,
+    model_hash: Hash,
+    participants: List<Address>,
+    updates: Map<Address, Hash>,
+    status: String,
+    started_at: u64,
+}
+
+struct GovernanceProposal {
+    proposal_id: Hash,
+    creator: Address,
+    title: String,
+    description: String,
+    yes_votes: u128,
+    no_votes: u128,
+    abstain_votes: u128,
+    deadline: u64,
+    status: ProposalStatus,
+    executed: bool,
+}
+
+struct PaymentChannelState {
+    channel_id: Hash,
+    sender: Address,
+    recipient: Address,
+    deposit: u128,
+    balance_sender: u128,
+    balance_recipient: u128,
+    nonce: u64,
+    status: ChannelStatus,
+    opened_at: u64,
+}
+
+contract ResourceMarket {
+    state auctions: Map<Hash, ResourceAuction>
+    state auction_count: u32
+    state owner: Address
+
+    event AuctionCreated(auction_id: Hash, resource_type: String)
+    event BidPlaced(auction_id: Hash, bidder: Address, amount: u128)
+    event AuctionFinalized(auction_id: Hash, winner: Address)
+
+    fn init() {
+        self.auctions = {}
+        self.auction_count = 0
+        self.owner = msg_sender()
+    }
+
+    fn create_auction(resource_type: String, min_bid: u128, duration_blocks: u64) -> Hash {
+        let auction_id = Hash::sha256(resource_type, msg_sender(), Time::now())
+        let auction = ResourceAuction {
+            auction_id: auction_id,
+            resource_type: resource_type,
+            creator: msg_sender(),
+            min_bid: min_bid,
+            highest_bid: 0,
+            highest_bidder: Address::zero(),
+            deadline: Time::now() + duration_blocks * 10,
+            status: AuctionStatus::Active,
+        }
+        self.auctions[auction_id] = auction
+        self.auction_count += 1
+        emit AuctionCreated(auction_id, resource_type)
+        return auction_id
+    }
+
+    fn place_bid(auction_id: Hash, bid_amount: u128) -> bool {
+        let auction = self.auctions.get(auction_id)
+        if auction == null || auction.status != AuctionStatus::Active {
+            return false
+        }
+        if Time::now() > auction.deadline {
+            return false
+        }
+        if bid_amount <= auction.highest_bid || bid_amount < auction.min_bid {
+            return false
+        }
+        // Lock previous bidder's funds (in production: refund)
+        auction.highest_bid = bid_amount
+        auction.highest_bidder = msg_sender()
+        emit BidPlaced(auction_id, msg_sender(), bid_amount)
+        return true
+    }
+
+    fn finalize_auction(auction_id: Hash) -> (Address, u128) {
+        let auction = self.auctions.get(auction_id)
+        if auction == null || auction.status != AuctionStatus::Active {
+            return (Address::zero(), 0)
+        }
+        if Time::now() <= auction.deadline {
+            return (Address::zero(), 0)
+        }
+        auction.status = AuctionStatus::Finalized
+        emit AuctionFinalized(auction_id, auction.highest_bidder)
+        return (auction.highest_bidder, auction.highest_bid)
+    }
+
+    fn cancel_auction(auction_id: Hash) -> bool {
+        let auction = self.auctions.get(auction_id)
+        if auction == null || auction.creator != msg_sender() {
+            return false
+        }
+        auction.status = AuctionStatus::Cancelled
+        return true
+    }
+
+    fn get_auction(auction_id: Hash) -> (String, Address, u128, u64, AuctionStatus) {
+        let a = self.auctions.get(auction_id)
+        if a == null {
+            return ("", Address::zero(), 0, 0, AuctionStatus::Cancelled)
+        }
+        return (a.resource_type, a.highest_bidder, a.highest_bid, a.deadline, a.status)
+    }
+}
+
+contract AgentRegistry {
+    state agents: Map<Hash, AgentRecord>
+    state agent_count: u32
+    state owner: Address
+
+    event AgentRegistered(agent_id: Hash, owner: Address)
+    event ReputationUpdated(agent_id: Hash, new_reputation: u32)
+
+    fn init() {
+        self.agents = {}
+        self.agent_count = 0
+        self.owner = msg_sender()
+    }
+
+    fn register_agent(owner: Address, capabilities: List<String>) -> Hash {
+        let agent_id = Hash::sha256(owner, Time::now())
+        let agent = AgentRecord {
+            agent_id: agent_id,
+            owner: owner,
+            capabilities: capabilities,
+            reputation: 100,
+            registered_at: Time::now(),
+            active: true,
+        }
+        self.agents[agent_id] = agent
+        self.agent_count += 1
+        emit AgentRegistered(agent_id, owner)
+        return agent_id
+    }
+
+    fn get_agent(agent_id: Hash) -> (Address, u32, u64, bool) {
+        let a = self.agents.get(agent_id)
+        if a == null {
+            return (Address::zero(), 0, 0, false)
+        }
+        return (a.owner, a.reputation, a.registered_at, a.active)
+    }
+
+    fn verify_capability(agent_id: Hash, capability: String) -> bool {
+        let a = self.agents.get(agent_id)
+        if a == null || !a.active {
+            return false
+        }
+        let i: u16 = 0
+        while i < a.capabilities.len() {
+            if a.capabilities[i] == capability {
+                return true
+            }
+            i += 1
+        }
+        return false
+    }
+
+    fn update_reputation(agent_id: Hash, delta: i32) -> bool {
+        let a = self.agents.get(agent_id)
+        if a == null {
+            return false
+        }
+        let new_rep: i32 = a.reputation + delta
+        if new_rep < 0 {
+            a.reputation = 0
+        } else {
+            a.reputation = new_rep
+        }
+        emit ReputationUpdated(agent_id, a.reputation)
+        return true
+    }
+
+    fn deactivate_agent(agent_id: Hash) -> bool {
+        let a = self.agents.get(agent_id)
+        if a == null || a.owner != msg_sender() {
+            return false
+        }
+        a.active = false
+        return true
+    }
+}
+
+contract FederatedLearningCoordinator {
+    state rounds: Map<Hash, FLRound>
+    state round_count: u32
+    state min_participants: u8
+    state owner: Address
+
+    event RoundStarted(round_id: Hash, model_hash: Hash)
+    event UpdateSubmitted(round_id: Hash, participant: Address)
+    event RoundAggregated(round_id: Hash, aggregated_hash: Hash)
+
+    fn init() {
+        self.rounds = {}
+        self.round_count = 0
+        self.min_participants = 3
+        self.owner = msg_sender()
+    }
+
+    fn start_round(model_hash: Hash, max_participants: u8) -> Hash {
+        let round_id = Hash::sha256(model_hash, Time::now())
+        let round = FLRound {
+            round_id: round_id,
+            model_hash: model_hash,
+            participants: [],
+            updates: {},
+            status: "collecting",
+            started_at: Time::now(),
+        }
+        self.rounds[round_id] = round
+        self.round_count += 1
+        emit RoundStarted(round_id, model_hash)
+        return round_id
+    }
+
+    fn submit_update(round_id: Hash, update_hash: Hash) -> bool {
+        let round = self.rounds.get(round_id)
+        if round == null || round.status != "collecting" {
+            return false
+        }
+        round.participants.push(msg_sender())
+        round.updates[msg_sender()] = update_hash
+        emit UpdateSubmitted(round_id, msg_sender())
+        return true
+    }
+
+    fn aggregate_updates(round_id: Hash) -> Hash {
+        let round = self.rounds.get(round_id)
+        if round == null {
+            return Hash::zero()
+        }
+        if round.participants.len() < self.min_participants {
+            return Hash::zero()
+        }
+        // FedAvg: hash all update hashes together
+        let combined = Hash::zero()
+        let i: u16 = 0
+        while i < round.participants.len() {
+            let p = round.participants[i]
+            let u = round.updates.get(p)
+            if u != null {
+                combined = Hash::sha256(combined, u)
+            }
+            i += 1
+        }
+        round.status = "aggregated"
+        emit RoundAggregated(round_id, combined)
+        return combined
+    }
+
+    fn get_round_info(round_id: Hash) -> (Hash, u16, String, u64) {
+        let r = self.rounds.get(round_id)
+        if r == null {
+            return (Hash::zero(), 0, "", 0)
+        }
+        return (r.model_hash, r.participants.len(), r.status, r.started_at)
+    }
+}
+
+contract GovernanceDAO {
+    state proposals: Map<Hash, GovernanceProposal>
+    state proposal_count: u32
+    state quorum_pct: u8
+    state voting_period: u64
+    state owner: Address
+
+    event ProposalCreated(proposal_id: Hash, title: String)
+    event VoteCast(proposal_id: Hash, voter: Address, choice: u8)
+    event ProposalFinalized(proposal_id: Hash, passed: bool)
+
+    fn init() {
+        self.proposals = {}
+        self.proposal_count = 0
+        self.quorum_pct = 10
+        self.voting_period = 604800  // 7 days in seconds
+        self.owner = msg_sender()
+    }
+
+    fn create_proposal(creator: Address, title: String, description: String) -> Hash {
+        let proposal_id = Hash::sha256(title, creator, Time::now())
+        let proposal = GovernanceProposal {
+            proposal_id: proposal_id,
+            creator: creator,
+            title: title,
+            description: description,
+            yes_votes: 0,
+            no_votes: 0,
+            abstain_votes: 0,
+            deadline: Time::now() + self.voting_period,
+            status: ProposalStatus::Active,
+            executed: false,
+        }
+        self.proposals[proposal_id] = proposal
+        self.proposal_count += 1
+        emit ProposalCreated(proposal_id, title)
+        return proposal_id
+    }
+
+    fn cast_vote(proposal_id: Hash, choice: u8, voting_power: u128) -> bool {
+        let p = self.proposals.get(proposal_id)
+        if p == null || p.status != ProposalStatus::Active {
+            return false
+        }
+        if Time::now() > p.deadline {
+            return false
+        }
+        if choice == 0 {
+            p.yes_votes += voting_power
+        } else if choice == 1 {
+            p.no_votes += voting_power
+        } else {
+            p.abstain_votes += voting_power
+        }
+        emit VoteCast(proposal_id, msg_sender(), choice)
+        return true
+    }
+
+    fn finalize_vote(proposal_id: Hash) -> bool {
+        let p = self.proposals.get(proposal_id)
+        if p == null || p.status != ProposalStatus::Active {
+            return false
+        }
+        if Time::now() <= p.deadline {
+            return false
+        }
+        let total = p.yes_votes + p.no_votes + p.abstain_votes
+        if total == 0 {
+            p.status = ProposalStatus::Rejected
+            emit ProposalFinalized(proposal_id, false)
+            return true
+        }
+        if p.yes_votes > p.no_votes {
+            p.status = ProposalStatus::Passed
+            emit ProposalFinalized(proposal_id, true)
+        } else {
+            p.status = ProposalStatus::Rejected
+            emit ProposalFinalized(proposal_id, false)
+        }
+        return true
+    }
+
+    fn execute_proposal(proposal_id: Hash) -> bool {
+        let p = self.proposals.get(proposal_id)
+        if p == null || p.status != ProposalStatus::Passed || p.executed {
+            return false
+        }
+        p.executed = true
+        p.status = ProposalStatus::Executed
+        return true
+    }
+
+    fn get_proposal(proposal_id: Hash) -> (String, u128, u128, u128, ProposalStatus, bool) {
+        let p = self.proposals.get(proposal_id)
+        if p == null {
+            return ("", 0, 0, 0, ProposalStatus::Rejected, false)
+        }
+        return (p.title, p.yes_votes, p.no_votes, p.abstain_votes, p.status, p.executed)
+    }
+}
+
+contract PaymentChannel {
+    state channels: Map<Hash, PaymentChannelState>
+    state channel_count: u32
+    state challenge_period: u64
+    state owner: Address
+
+    event ChannelOpened(channel_id: Hash, sender: Address, recipient: Address)
+    event PaymentSent(channel_id: Hash, amount: u128, nonce: u64)
+    event ChannelClosed(channel_id: Hash)
+
+    fn init() {
+        self.channels = {}
+        self.channel_count = 0
+        self.challenge_period = 86400  // 24h
+        self.owner = msg_sender()
+    }
+
+    fn open_channel(sender: Address, recipient: Address, deposit: u128) -> Hash {
+        let channel_id = Hash::sha256(sender, recipient, Time::now())
+        let channel = PaymentChannelState {
+            channel_id: channel_id,
+            sender: sender,
+            recipient: recipient,
+            deposit: deposit,
+            balance_sender: deposit,
+            balance_recipient: 0,
+            nonce: 0,
+            status: ChannelStatus::Open,
+            opened_at: Time::now(),
+        }
+        self.channels[channel_id] = channel
+        self.channel_count += 1
+        emit ChannelOpened(channel_id, sender, recipient)
+        return channel_id
+    }
+
+    fn send_payment(channel_id: Hash, amount: u128) -> bool {
+        let ch = self.channels.get(channel_id)
+        if ch == null || ch.status != ChannelStatus::Open {
+            return false
+        }
+        if msg_sender() != ch.sender {
+            return false
+        }
+        if amount > ch.balance_sender {
+            return false
+        }
+        ch.balance_sender -= amount
+        ch.balance_recipient += amount
+        ch.nonce += 1
+        emit PaymentSent(channel_id, amount, ch.nonce)
+        return true
+    }
+
+    fn close_channel(channel_id: Hash) -> bool {
+        let ch = self.channels.get(channel_id)
+        if ch == null || ch.status != ChannelStatus::Open {
+            return false
+        }
+        // Both parties must agree; in production: signature verification
+        ch.status = ChannelStatus::Closed
+        // Refund remaining balance to sender
+        if ch.balance_sender > 0 {
+            ATCoin::transfer(ch.channel_id, ch.sender, ch.balance_sender)
+        }
+        if ch.balance_recipient > 0 {
+            ATCoin::transfer(ch.channel_id, ch.recipient, ch.balance_recipient)
+        }
+        emit ChannelClosed(channel_id)
+        return true
+    }
+
+    fn get_channel(channel_id: Hash) -> (Address, Address, u128, u128, u64, ChannelStatus) {
+        let ch = self.channels.get(channel_id)
+        if ch == null {
+            return (Address::zero(), Address::zero(), 0, 0, 0, ChannelStatus::Closed)
+        }
+        return (ch.sender, ch.recipient, ch.balance_sender, ch.balance_recipient, ch.nonce, ch.status)
+    }
+}
