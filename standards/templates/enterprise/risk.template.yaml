@@ -1,0 +1,11 @@
+# Risiko-Eintrag — ATC-ENT-011 §1 (registry/risks.yaml)
+risk:
+  id: RISK-0001                  # ^RISK-[0-9]{4,}$ (Schema riskId)
+  category: Security             # Strategic|Financial|Technical|Security|Operational|Legal|Compliance|AI|Infrastructure|Blockchain|Supply Chain
+  severity: Critical              # Critical|High|Medium|Low → S0..S3
+  probability: High
+  impact: Critical
+  owner: ROLE-CISO
+  mitigation: "..."
+  status: OPEN                    # OPEN|MITIGATED|ACCEPTED|CLOSED
+  review: YYYY-MM-DD
