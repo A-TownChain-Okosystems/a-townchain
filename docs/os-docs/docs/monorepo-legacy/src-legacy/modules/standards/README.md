@@ -1,6 +1,6 @@
 # standards — L0: ATC/ATS Standards — Protokoll-Spezifikationen ATC-0001–0009
 
-Part of [A-TownChain OS Monorepo](../../../../README.md)
+Part of [A-TownChain OS Monorepo](../../../../../../../README.md)
 
 ## Inhalt
 
