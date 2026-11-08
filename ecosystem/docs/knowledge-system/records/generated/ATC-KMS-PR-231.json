@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-231",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #231: chore(catalog): reconcile COMP-IDE source bindings",
+  "context": "Pull request 231 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/231",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Scope\n\nRefresh only the catalog evidence for `COMP-IDE` in the architecture control plane. No component implementation is changed.\n\n## Exact evidence\n\n- Base `main`: `547598d04a9daaed13714b39b30b45305d315dd1`\n- Canonical source repository: `A-TownChain-Okosystems/atc-ide`\n- Source HEAD: `40a07acbbb2f240f0d409e97bd0262b8c63688b4`\n- Source tree SHA: `93d4d6353588e04d1ca81ae35a580e5b50fbae63`\n- `src/App.tsx` blob: `b9aa3c7712e8149b016ea23c97edea31cb1abf9b`; mapped symbols `lintLumino`, `FileState`, `LintError` present\n- `src/components/AtcVmSimulatorPanel.tsx` blob: `67e55a6502d2bd21f4363559304143bc212048f8`; mapped symbols `AtcVmSimulatorPanel`, `VmState`, `VmInstruction` present\n- `package.json` blob at source SHA: `2714a41ecd906d8b398d9833193e75a29f143328`; no non-empty `scripts.test`\n\n## Status\n\n- Catalog source binding: `RESIDUAL` — exact commit/file/blob identity and lexical symbol-presence audited; no automated test or functional verification is claimed.\n- Functional verification: `RESIDUAL`\n- Ecosystem build loop: `BLOCKED` until the canonical repository declares and passes a real test entry point or the build-profile contract is authoritatively corrected.\n\nNo readiness upgrade, gate weakening, merge, or release is included. Required catalog and governance CI must reach terminal conclusions before this metadata-only change can be evaluated further."
+}
