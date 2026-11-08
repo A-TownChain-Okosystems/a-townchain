@@ -1,0 +1,378 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═════════════════════════════════════════════════════════════════
+// ATC-22+ — Storage Treiber (Disk / SSD / NVMe)
+// Sprint 3.1 | Kernel OS Layer | Chain-ID 9000
+// ATCLang v0.4 | Non-EVM | ATCLang First Policy (ATC-99)
+// ═════════════════════════════════════════════════════════════════
+//
+// Storage-Treiber für KAI-OS. Unterstützt:
+//   - Block-basierte Geräte (512B bis 4K Sektoren)
+//   - ATA/SATA, NVMe, virtuelle Disks
+//   - Read/Write/Trim/Flush
+//   - Partition Table (GPT/MBR)
+//   - DMA für große Transfers
+//   - Write-Cache und Barrier
+//
+// Bindet an ATCFS (ATC-23) als Backend-Storage.
+// ═════════════════════════════════════════════════════════════════
+
+import "std/chain.atc" as Chain
+
+enum StorageType {
+    HDD,            // Rotational Disk
+    SSD,            // Solid State Drive (SATA)
+    NVME,           // NVMe SSD
+    VIRTUAL,        // Virtuelle Disk (RAM-backed)
+    ATCFS,          // ATCFS-backed Storage
+    NETWORK,        // Network-Attached Storage
+}
+
+enum PartitionType {
+    GPT,            // GUID Partition Table
+    MBR,            // Master Boot Record
+    NONE,           // Keine Partitionstabelle
+}
+
+struct StorageInfo {
+    device_id: u32,
+    storage_type: StorageType,
+    sector_size: u32,        // 512, 4096
+    total_sectors: u64,
+    total_bytes: u64,
+    used_bytes: u64,
+    read_only: bool,
+    write_cache: bool,
+    supports_trim: bool,
+    model: String,
+    serial: String,
+    firmware: String,
+    is_active: bool,
+    total_reads: u64,
+    total_writes: u64,
+    total_errors: u64,
+}
+
+struct Partition {
+    partition_id: u32,
+    device_id: u32,
+    table_type: PartitionType,
+    index: u8,               // Partition-Index (1-128)
+    start_sector: u64,
+    sector_count: u64,
+    start_byte: u64,
+    size_bytes: u64,
+    type_guid: String,       // GPT type GUID
+    name: String,
+    bootable: bool,
+    is_active: bool,
+}
+
+struct TransferRequest {
+    request_id: u64,
+    device_id: u32,
+    start_sector: u64,
+    sector_count: u32,
+    buffer_addr: u64,
+    buffer_size: u64,
+    is_write: bool,          // true = write, false = read
+    use_dma: bool,
+    completed: bool,
+    bytes_transferred: u64,
+    error_code: u8,
+    timestamp: u64,
+}
+
+module Kernel::StorageDriver {
+
+    contract StorageDriverManager {
+
+        state devices: Map<u32, StorageInfo>
+        state partitions: Map<u32, Partition>
+        state active_transfers: Map<u64, TransferRequest>
+        state next_device_id: u32 = 1
+        state next_partition_id: u32 = 1
+        state next_transfer_id: u64 = 1
+        state total_bytes_read: u64 = 0
+        total_bytes_written: u64 = 0
+        state total_transfers: u64 = 0
+        state authorized: List<Address>
+
+        event StorageDeviceCreated(device_id: u32, storage_type: StorageType, size: u64)
+        event PartitionCreated(partition_id: u32, device_id: u32, name: String, size: u64)
+        event TransferStarted(request_id: u64, device_id: u32, is_write: bool, sectors: u64)
+        event TransferCompleted(request_id: u64, device_id: u32, bytes: u64, success: bool)
+        event StorageError(device_id: u32, error: String)
+
+        // ═══════════════════════════════════════════════════════════
+        //  DEVICE LIFECYCLE
+        // ═══════════════════════════════════════════════════════════
+
+        // Storage-Gerät registrieren
+        fn create_device(
+            storage_type: StorageType,
+            sector_size: u32,
+            total_sectors: u64,
+            model: String,
+            serial: String,
+            firmware: String,
+        ) -> u32 {
+            require(sector_size == 512 || sector_size == 4096, "unsupported sector size")
+            require(total_sectors > 0, "invalid disk size")
+
+            let id: u32 = self.next_device_id
+            self.next_device_id += 1
+
+            let total_bytes: u64 = total_sectors * sector_size as u64
+
+            let device: StorageInfo = StorageInfo {
+                device_id: id,
+                storage_type: storage_type,
+                sector_size: sector_size,
+                total_sectors: total_sectors,
+                total_bytes: total_bytes,
+                used_bytes: 0,
+                read_only: false,
+                write_cache: storage_type != StorageType::HDD,
+                supports_trim: storage_type == StorageType::SSD || storage_type == StorageType::NVME,
+                model: model,
+                serial: serial,
+                firmware: firmware,
+                is_active: true,
+                total_reads: 0,
+                total_writes: 0,
+                total_errors: 0,
+            }
+
+            self.devices[id] = device
+            emit StorageDeviceCreated(id, storage_type, total_bytes)
+            return id
+        }
+
+        // Gerät deaktivieren
+        fn disable_device(device_id: u32) -> bool {
+            self.devices[device_id].is_active = false
+            return true
+        }
+
+        // Read-Only setzen
+        fn set_read_only(device_id: u32, read_only: bool) -> bool {
+            self.devices[device_id].read_only = read_only
+            return true
+        }
+
+        // Write-Cache aktivieren
+        fn set_write_cache(device_id: u32, enabled: bool) -> bool {
+            self.devices[device_id].write_cache = enabled
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  PARTITION MANAGEMENT
+        // ═══════════════════════════════════════════════════════════
+
+        // Partition erstellen
+        fn create_partition(
+            device_id: u32,
+            table_type: PartitionType,
+            index: u8,
+            start_sector: u64,
+            sector_count: u64,
+            type_guid: String,
+            name: String,
+            bootable: bool,
+        ) -> u32 {
+            let device: StorageInfo = self.devices[device_id]
+            require(device.is_active, "device not active")
+            require(start_sector + sector_count <= device.total_sectors, "partition exceeds disk size")
+            require(index > 0, "invalid partition index")
+
+            let id: u32 = self.next_partition_id
+            self.next_partition_id += 1
+
+            let partition: Partition = Partition {
+                partition_id: id,
+                device_id: device_id,
+                table_type: table_type,
+                index: index,
+                start_sector: start_sector,
+                sector_count: sector_count,
+                start_byte: start_sector * device.sector_size as u64,
+                size_bytes: sector_count * device.sector_size as u64,
+                type_guid: type_guid,
+                name: name,
+                bootable: bootable,
+                is_active: true,
+            }
+
+            self.partitions[id] = partition
+            emit PartitionCreated(id, device_id, name, partition.size_bytes)
+            return id
+        }
+
+        // Partition löschen
+        fn delete_partition(partition_id: u32) -> bool {
+            self.partitions[partition_id].is_active = false
+            return true
+        }
+
+        // Partitionen eines Geräts auflisten
+        fn list_partitions(device_id: u32) -> List<u32> {
+            let result: List<u32> = []
+            for id, part in self.partitions {
+                if part.device_id == device_id && part.is_active {
+                    result.push(id)
+                }
+            }
+            return result
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  I/O OPERATIONS
+        // ═══════════════════════════════════════════════════════════
+
+        // Sektoren lesen
+        fn read_sectors(device_id: u32, start_sector: u64, sector_count: u32, use_dma: bool) -> u64 {
+            let device: StorageInfo = self.devices[device_id]
+            require(device.is_active, "device not active")
+            require(start_sector + sector_count as u64 <= device.total_sectors, "read exceeds disk")
+
+            let request_id: u64 = self.next_transfer_id
+            self.next_transfer_id += 1
+
+            let request: TransferRequest = TransferRequest {
+                request_id: request_id,
+                device_id: device_id,
+                start_sector: start_sector,
+                sector_count: sector_count,
+                buffer_addr: 0,
+                buffer_size: sector_count as u64 * device.sector_size as u64,
+                is_write: false,
+                use_dma: use_dma,
+                completed: false,
+                bytes_transferred: 0,
+                error_code: 0,
+                timestamp: Chain::block_timestamp(),
+            }
+
+            self.active_transfers[request_id] = request
+            emit TransferStarted(request_id, device_id, false, sector_count as u64)
+
+            // Transfer abschließen
+            let bytes: u64 = sector_count as u64 * device.sector_size as u64
+            request.completed = true
+            request.bytes_transferred = bytes
+            device.total_reads += 1
+            self.total_bytes_read += bytes
+            self.total_transfers += 1
+
+            emit TransferCompleted(request_id, device_id, bytes, true)
+            return request_id
+        }
+
+        // Sektoren schreiben
+        fn write_sectors(device_id: u32, start_sector: u64, sector_count: u32, use_dma: bool) -> u64 {
+            let device: StorageInfo = self.devices[device_id]
+            require(device.is_active, "device not active")
+            require(!device.read_only, "device is read-only")
+            require(start_sector + sector_count as u64 <= device.total_sectors, "write exceeds disk")
+
+            let request_id: u64 = self.next_transfer_id
+            self.next_transfer_id += 1
+
+            let request: TransferRequest = TransferRequest {
+                request_id: request_id,
+                device_id: device_id,
+                start_sector: start_sector,
+                sector_count: sector_count,
+                buffer_addr: 0,
+                buffer_size: sector_count as u64 * device.sector_size as u64,
+                is_write: true,
+                use_dma: use_dma,
+                completed: false,
+                bytes_transferred: 0,
+                error_code: 0,
+                timestamp: Chain::block_timestamp(),
+            }
+
+            self.active_transfers[request_id] = request
+            emit TransferStarted(request_id, device_id, true, sector_count as u64)
+
+            let bytes: u64 = sector_count as u64 * device.sector_size as u64
+            request.completed = true
+            request.bytes_transferred = bytes
+            device.total_writes += 1
+            device.used_bytes += bytes
+            self.total_bytes_written += bytes
+            self.total_transfers += 1
+
+            emit TransferCompleted(request_id, device_id, bytes, true)
+            return request_id
+        }
+
+        // TRIM (SSD Garbage Collection)
+        fn trim_sectors(device_id: u32, start_sector: u64, sector_count: u64) -> bool {
+            let device: StorageInfo = self.devices[device_id]
+            require(device.supports_trim, "device does not support TRIM")
+            require(device.is_active, "device not active")
+            return true
+        }
+
+        // Flush (Write-Barrier)
+        fn flush(device_id: u32) -> bool {
+            let device: StorageInfo = self.devices[device_id]
+            require(device.is_active, "device not active")
+            require(device.write_cache, "write cache not enabled")
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  TRANSFER QUERIES
+        // ═══════════════════════════════════════════════════════════
+
+        // Transfer-Status
+        fn get_transfer_status(request_id: u64) -> (bool, u64, u8) {
+            let req: TransferRequest = self.active_transfers[request_id]
+            return (req.completed, req.bytes_transferred, req.error_code)
+        }
+
+        // Transfer abbrechen
+        fn cancel_transfer(request_id: u64) -> bool {
+            self.active_transfers[request_id].completed = true
+            self.active_transfers[request_id].error_code = 0xFF  // Canceled
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  QUERIES
+        // ═══════════════════════════════════════════════════════════
+
+        // Device-Info
+        fn get_device_info(device_id: u32) -> (StorageType, u64, u64, u64) {
+            let device: StorageInfo = self.devices[device_id]
+            return (device.storage_type, device.total_bytes, device.used_bytes, device.total_sectors)
+        }
+
+        // Alle Geräte
+        fn list_devices() -> List<u32> {
+            let result: List<u32> = []
+            for id, device in self.devices {
+                if device.is_active {
+                    result.push(id)
+                }
+            }
+            return result
+        }
+
+        // Statistik
+        fn get_stats() -> (u32, u64, u64, u64) {
+            return (self.devices.length, self.total_bytes_read, self.total_bytes_written, self.total_transfers)
+        }
+
+        // Fehler melden
+        fn report_error(device_id: u32, error: String) -> bool {
+            self.devices[device_id].total_errors += 1
+            emit StorageError(device_id, error)
+            return true
+        }
+    }
+}
