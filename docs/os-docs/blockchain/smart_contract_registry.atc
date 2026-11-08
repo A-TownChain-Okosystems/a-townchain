@@ -1,0 +1,88 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-89 — Smart Contract Registry
+// Sprint 2.5 | Smart Contract Layer | Chain-ID 9000
+// Migrated from: blockchain/smart_contract_registry.py (57 lines)
+// Central registry for deployed contracts: deploy, call, list
+// ─────────────────────────────────────────────────────────────
+
+struct ContractEntry {
+    addr: Address,
+    name: String,
+    deployer: Address,
+    deployed_at: u64,
+    paused: bool,
+}
+
+contract SmartContractRegistry {
+    state contracts: Map<Address, ContractEntry>
+    state deploy_log: List<Hash>
+    state total_deployed: u32
+
+    event ContractDeployed(addr: Address, name: String, deployer: Address)
+    event ContractCalled(addr: Address, method: String)
+
+    fn init() {
+        self.contracts = {}
+        self.deploy_log = []
+        self.total_deployed = 0
+    }
+
+    fn deploy(name: String) -> Address {
+        let deployer = msg_sender()
+        let addr_input = name + Address::to_string(deployer) + Int::to_string(Time::now())
+        let addr = Address::from_hash(Hash::sha256(addr_input))
+        let entry = ContractEntry {
+            addr: addr,
+            name: name,
+            deployer: deployer,
+            deployed_at: Time::now(),
+            paused: false,
+        }
+        self.contracts[addr] = entry
+        self.deploy_log.push(Hash::sha256(addr_input))
+        self.total_deployed += 1
+        emit ContractDeployed(addr, name, deployer)
+        return addr
+    }
+
+    fn get(addr: Address) -> (String, Address, bool, u64) {
+        let entry = self.contracts.get(addr)
+        if entry == null {
+            return ("", Address::zero(), false, 0)
+        }
+        return (entry.name, entry.deployer, entry.paused, entry.deployed_at)
+    }
+
+    fn list_all() -> List<Address> {
+        return self.contracts.keys()
+    }
+
+    fn call(addr: Address, method: String) -> bool {
+        let entry = self.contracts.get(addr)
+        if entry == null {
+            return false
+        }
+        if entry.paused {
+            return false
+        }
+        emit ContractCalled(addr, method)
+        return true
+    }
+
+    fn set_paused(addr: Address, paused: bool) -> bool {
+        let entry = self.contracts.get(addr)
+        if entry == null {
+            return false
+        }
+        if entry.deployer != msg_sender() {
+            return false
+        }
+        entry.paused = paused
+        return true
+    }
+
+    fn get_deploy_count() -> u32 {
+        return self.total_deployed
+    }
+}
