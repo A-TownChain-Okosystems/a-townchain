@@ -1,0 +1,22 @@
+// ATCLang v0.3 — Genesis Configuration
+// Genesis-Block-Definition für alle Netzwerk-Typen
+// ATC-Standard: ATC-01
+
+module genesis_config {
+    struct GenesisBlock {
+        chain_id: int,
+        timestamp: int,
+        initial_validators: List[string],
+        initial_supply: int,
+        pre_allocations: Map[string, int],
+        consensus_params: Map[string, string],
+    }
+    
+    fn build_genesis(chain_id: int, validators: List[string]) {
+        // Genesis-Block generieren
+    }
+    
+    fn validate_genesis(genesis: GenesisBlock) {
+        // Genesis-Block validieren
+    }
+}
