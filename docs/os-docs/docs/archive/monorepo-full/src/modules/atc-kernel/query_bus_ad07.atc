@@ -1,0 +1,128 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-07 — QueryBus: Read-Only Datenabfrage ohne Seiteneffekte
+// Genesis Communication Layer (GCL) — Component
+// Sprint 2.4 Extension
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct Query<T> {
+    id: Hash256,
+    type: String,
+    params: Map<String, Any>,
+    result: T,
+    cached: Bool,
+    cache_ttl_ms: UInt32,
+    timestamp: UInt64,
+}
+
+struct QueryHandler {
+    query_type: String,
+    handler: fn(Map<String, Any>) -> Any,
+    cacheable: Bool,
+    cache_ttl_ms: UInt32,
+}
+
+struct QueryBus {
+    handlers: Map<String, QueryHandler>,
+    cache: Map<String, CacheEntry>,
+    cache_enabled: Bool,
+    max_cache_entries: UInt32,
+    queries_processed: UInt64,
+    cache_hits: UInt64,
+}
+
+struct CacheEntry {
+    key: String,
+    value: Any,
+    expires_at: UInt64,
+    hit_count: UInt32,
+}
+
+// QueryBus: Handler registrieren
+pub fn register_query(bus: QueryBus, query_type: String, handler: fn(Map<String, Any>) -> Any, cacheable: Bool, ttl_ms: UInt32) -> Bool {
+    bus.handlers[query_type] = QueryHandler {
+        query_type: query_type,
+        handler: handler,
+        cacheable: cacheable,
+        cache_ttl_ms: ttl_ms,
+    }
+    return true
+}
+
+// QueryBus: Query ausführen
+pub fn execute_query<T>(bus: QueryBus, query_type: String, params: Map<String, Any>) -> T {
+    require(bus.handlers.contains(query_type), "Unknown query: " + query_type)
+    let h = bus.handlers[query_type]
+
+    // Cache prüfen
+    if bus.cache_enabled and h.cacheable {
+        let cache_key = query_type + ":" + serialize(params)
+        if bus.cache.contains(cache_key) {
+            let entry = bus.cache[cache_key]
+            if Chain::timestamp_ms() < entry.expires_at {
+                entry.hit_count = entry.hit_count + 1
+                bus.cache_hits = bus.cache_hits + 1
+                return entry.value
+            }
+            bus.cache.delete(cache_key)
+        }
+
+        // Query ausführen
+        let result = h.handler(params)
+        bus.queries_processed = bus.queries_processed + 1
+
+        // Cachen
+        if bus.cache.len() >= bus.max_cache_entries {
+            evict_oldest(bus)
+        }
+        bus.cache[cache_key] = CacheEntry {
+            key: cache_key,
+            value: result,
+            expires_at: Chain::timestamp_ms() + h.cache_ttl_ms,
+            hit_count: 0,
+        }
+        return result
+    }
+
+    bus.queries_processed = bus.queries_processed + 1
+    return h.handler(params)
+}
+
+// QueryBus: Cache leeren
+pub fn clear_cache(bus: QueryBus) -> Bool {
+    bus.cache = {}
+    return true
+}
+
+// QueryBus: Cache-Statistiken
+pub fn cache_stats(bus: QueryBus) -> QueryStats {
+    return QueryStats {
+        total_queries: bus.queries_processed,
+        cache_hits: bus.cache_hits,
+        cache_size: bus.cache.len(),
+        hit_rate: if bus.queries_processed > 0 then (bus.cache_hits * 100) / bus.queries_processed else 0,
+    }
+}
+
+// Helper: Ältesten Cache-Eintrag entfernen
+pub fn evict_oldest(bus: QueryBus) {
+    let oldest_key = ""
+    let oldest_time = UInt64::max()
+    for key in bus.cache.keys() {
+        if bus.cache[key].expires_at < oldest_time {
+            oldest_time = bus.cache[key].expires_at
+            oldest_key = key
+        }
+    }
+    if oldest_key != "" {
+        bus.cache.delete(oldest_key)
+    }
+}
+
+struct QueryStats {
+    total_queries: UInt64,
+    cache_hits: UInt64,
+    cache_size: UInt32,
+    hit_rate: UInt8,
+}
