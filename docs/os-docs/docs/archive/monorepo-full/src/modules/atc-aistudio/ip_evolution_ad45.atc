@@ -1,0 +1,241 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═══════════════════════════════════════════════════════════
+// AD-45 — IP Evolution Engine (MetaFactory v3.0)
+// Entwickelt Marken langfristig: Roadmaps, Spin-offs, Crossover,
+// Reboots, Remakes, Plattformstrategie
+// ═══════════════════════════════════════════════════════════
+module MetaFactory.IPEvolutionEngine[AD-45] {
+
+    import GCL.Core[AD-00]
+    import GCL.EventBus[AD-01]
+    import GCL.QueryBus[AD-07]
+
+    struct IPAsset {
+        id: String
+        name: String
+        franchise_id: String
+        type: IPType             // Game, Novel, Comic, Series, Film, Merch
+        status: IPStatus         // Concept, Active, Mature, Legacy, Retired
+        audience_size: U64
+        revenue_total: Decimal
+        platforms: List<Platform>
+        created_date: Timestamp
+        last_evolution: Timestamp
+    }
+
+    struct EvolutionPlan {
+        id: String
+        ip_id: String
+        phase: EvolutionPhase      // Growth, Expansion, Reinvention, Sunset
+        horizon_years: U32
+        milestones: List<EvolutionMilestone>
+        target_audience: AudienceProfile
+        revenue_projection: RevenueProjection
+        risk_assessment: RiskAssessment
+        platform_strategy: PlatformStrategy
+    }
+
+    struct SpinOff {
+        id: String
+        parent_ip: String
+        name: String
+        type: SpinOffType           // Sequel, Prequel, Side, Alternate, Crossover
+        independence_level: Float   // 0.0 = tight coupling, 1.0 = standalone
+        shared_assets: List<String>
+        shared_lore: List<String>
+        target_release: Timestamp
+    }
+
+    struct Crossover {
+        id: String
+        name: String
+        participants: List<String>  // IP IDs
+        type: CrossoverType          // Event, Character, Shared, Thematic
+        canon_impact: CanonImpact    // None, Minor, Major, Canonical
+        duration: Duration
+        prerequisites: List<String>
+    }
+
+    struct BrandStrategy {
+        ip_id: String
+        positioning: String
+        unique_value_prop: String
+        target_demographic: Demographic
+        competitive_landscape: List<Competitor>
+        brand_pillars: List<String>
+        voice: BrandVoice
+        visual_identity: VisualIdentity
+    }
+
+    struct AudienceAnalysis {
+        ip_id: String
+        segments: List<AudienceSegment>
+        growth_trend: Trend
+        churn_rate: Float
+        engagement_score: Float
+        feedback_sentiment: Float    // -1.0 to 1.0
+        preferred_platforms: List<Platform>
+    }
+
+    interface IIPEvolutionEngine {
+        fn create_evolution_plan(ip_id: String, horizon: U32) -> Result<EvolutionPlan>
+        fn plan_spinoff(parent_ip: String, spec: SpinOffSpec) -> Result<SpinOff>
+        fn plan_crossover(participants: List<String>, spec: CrossoverSpec) -> Result<Crossover>
+        fn analyze_audience(ip_id: String) -> Result<AudienceAnalysis>
+        fn define_brand_strategy(ip_id: String) -> Result<BrandStrategy>
+        fn propose_reboot(ip_id: String, approach: RebootApproach) -> Result<EvolutionPlan>
+        fn track_evolution(ip_id: String) -> EvolutionStatus
+        fn sunset_ip(ip_id: String, strategy: SunsetStrategy) -> Result<()>
+    }
+
+    class IPEvolutionEngine implements IIPEvolutionEngine {
+
+        gcl: GCLCore
+        ips: Map<String, IPAsset>
+        plans: Map<String, EvolutionPlan>
+        spinoffs: List<SpinOff>
+        crossovers: List<Crossover>
+        analyses: Map<String, AudienceAnalysis>
+
+        fn init(gcl: GCLCore) {
+            self.gcl = gcl
+            self.ips = Map::new()
+            self.plans = Map::new()
+            self.spinoffs = List::new()
+            self.crossovers = List::new()
+            self.analyses = Map::new()
+        }
+
+        fn create_evolution_plan(ip_id: String, horizon: U32) -> Result<EvolutionPlan> {
+            let ip = self.ips.get(ip_id)
+            let phase = self.determine_phase(ip)
+
+            let plan = EvolutionPlan {
+                id: generate_id("EVO"),
+                ip_id,
+                phase,
+                horizon_years: horizon,
+                milestones: self.generate_milestones(ip, phase, horizon),
+                target_audience: self.project_audience(ip, horizon),
+                revenue_projection: self.project_revenue(ip, horizon),
+                risk_assessment: self.assess_risks(ip, phase),
+                platform_strategy: self.derive_platform_strategy(ip, phase)
+            }
+
+            self.plans.insert(plan.id, plan)
+            self.gcl.emit("ip.evolution_planned", {plan_id: plan.id, ip_id, phase})
+            Ok(plan)
+        }
+
+        fn plan_spinoff(parent_ip: String, spec: SpinOffSpec) -> Result<SpinOff> {
+            let spinoff = SpinOff {
+                id: generate_id("SPN"),
+                parent_ip,
+                name: spec.name,
+                type: spec.type,
+                independence_level: spec.independence_level,
+                shared_assets: spec.shared_assets,
+                shared_lore: spec.shared_lore,
+                target_release: spec.target_release
+            }
+            self.spinoffs.push(spinoff)
+            self.gcl.emit("ip.spinoff_planned", {spinoff_id: spinoff.id, parent: parent_ip})
+            Ok(spinoff)
+        }
+
+        fn plan_crossover(participants: List<String>, spec: CrossoverSpec) -> Result<Crossover> {
+            let crossover = Crossover {
+                id: generate_id("CRS"),
+                name: spec.name,
+                participants,
+                type: spec.type,
+                canon_impact: spec.canon_impact,
+                duration: spec.duration,
+                prerequisites: spec.prerequisites
+            }
+            self.crossovers.push(crossover)
+            self.gcl.emit("ip.crossover_planned", {crossover_id: crossover.id})
+            Ok(crossover)
+        }
+
+        fn analyze_audience(ip_id: String) -> Result<AudienceAnalysis> {
+            let ip = self.ips.get(ip_id)
+            let analysis = AudienceAnalysis {
+                ip_id,
+                segments: self.segment_audience(ip),
+                growth_trend: self.calc_growth_trend(ip),
+                churn_rate: self.calc_churn(ip),
+                engagement_score: self.calc_engagement(ip),
+                feedback_sentiment: self.calc_sentiment(ip),
+                preferred_platforms: ip.platforms
+            }
+            self.analyses.insert(ip_id, analysis)
+            Ok(analysis)
+        }
+
+        fn define_brand_strategy(ip_id: String) -> Result<BrandStrategy> {
+            let ip = self.ips.get(ip_id)
+            Ok(BrandStrategy {
+                ip_id,
+                positioning: self.derive_positioning(ip),
+                unique_value_prop: self.derive_uvp(ip),
+                target_demographic: Demographic::Gaming18to35,
+                competitive_landscape: List::new(),
+                brand_pillars: self.derive_pillars(ip),
+                voice: BrandVoice::Approachable,
+                visual_identity: VisualIdentity::default()
+            })
+        }
+
+        fn propose_reboot(ip_id: String, approach: RebootApproach) -> Result<EvolutionPlan> {
+            let ip = self.ips.get(ip_id)
+            ip.status = IPStatus::Legacy
+
+            let plan = EvolutionPlan {
+                id: generate_id("EVO"),
+                ip_id,
+                phase: EvolutionPhase::Reinvention,
+                horizon_years: 3,
+                milestones: self.reboot_milestones(ip, approach),
+                target_audience: AudienceProfile::modern(),
+                revenue_projection: RevenueProjection::conservative(),
+                risk_assessment: RiskAssessment::high(),
+                platform_strategy: PlatformStrategy::multi()
+            }
+            self.plans.insert(plan.id, plan)
+            self.gcl.emit("ip.reboot_proposed", {plan_id: plan.id, ip_id, approach})
+            Ok(plan)
+        }
+
+        fn track_evolution(ip_id: String) -> EvolutionStatus {
+            let active_plans = self.plans.filter(|p| p.ip_id == ip_id)
+            let active_spinoffs = self.spinoffs.filter(|s| s.parent_ip == ip_id)
+            let active_crossovers = self.crossovers.filter(|c| c.participants.contains(ip_id))
+            EvolutionStatus {
+                ip_id,
+                active_plans: active_plans.len(),
+                active_spinoffs: active_spinoffs.len(),
+                active_crossovers: active_crossovers.len(),
+                phase: active_plans[0].phase if active_plans else EvolutionPhase::Growth,
+                health: self.calc_ip_health(ip_id)
+            }
+        }
+
+        fn sunset_ip(ip_id: String, strategy: SunsetStrategy) -> Result<()> {
+            let ip = self.ips.get(ip_id)
+            ip.status = IPStatus::Retired
+            self.gcl.emit("ip.sunsetted", {ip_id, strategy})
+            Ok(())
+        }
+
+        fn determine_phase(ip: IPAsset) -> EvolutionPhase {
+            match ip.status {
+                IPStatus::Concept => EvolutionPhase::Growth,
+                IPStatus::Active => EvolutionPhase::Expansion,
+                IPStatus::Mature => EvolutionPhase::Expansion,
+                IPStatus::Legacy => EvolutionPhase::Reinvention,
+                IPStatus::Retired => EvolutionPhase::Sunset
+            }
+        }
+    }
+}
