@@ -1,0 +1,7 @@
+# shivamon — Dependencies
+# Teil des A-TownChain Ökosystems
+
+flask>=3.0
+flask-cors>=4.0
+cryptography>=42.0
+pytest>=8.0
