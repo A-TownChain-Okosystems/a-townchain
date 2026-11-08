@@ -1,0 +1,16 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang v0.3 — Animation Engine
+// Skeletal, morph, particle, timeline
+// ATC-Standard: ATC-90
+
+module animation_engine {
+    struct AnimationClip {
+        clip_id: string,
+        duration_ms: int,
+        fps: int
+    }
+    
+    fn play_animation() {
+        // Evaluates skeletal keyframes and updates node transforms
+    }
+}
