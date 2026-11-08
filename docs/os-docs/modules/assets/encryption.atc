@@ -1,0 +1,149 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-80 — Asset Encryption & Security
+# Genesis Engine — AES-256 Verschlüsselung für Production-Assets
+# Standard: AD-80
+
+enum EncryptionMode:
+    AES_256_GCM       # Empfohlen — Authenticated Encryption
+    AES_256_CBC       # Fallback
+    CHACHA20          # Alternative
+    NONE              # Nur für Core/UI Assets
+
+struct AssetSignature:
+    asset_path: String
+    sha256: String
+    signature: String         # RSA/Ed25519 Signatur
+    signed_by: String         # Publisher Key ID
+    timestamp: Float
+    verified: Bool
+
+struct EncryptionKey:
+    key_id: String
+    key_data: ByteArray       # 256-bit Key (niemals im Klartext speichern)
+    algorithm: EncryptionMode
+    rotation_period: Int32    # Tage bis Key-Rotation
+    created: Float
+
+# Verschlüssele Asset vor dem Packen in Bundle
+func encrypt_asset(data: ByteArray, key: EncryptionKey) -> ByteArray:
+    if key.algorithm == NONE:
+        return data
+    iv = generate_iv(12)  # 12 bytes für GCM
+    match key.algorithm:
+        AES_256_GCM:
+            ciphertext, tag = aes_gcm_encrypt(data, key.key_data, iv)
+            # Format: [iv(12)] [tag(16)] [ciphertext]
+            return iv + tag + ciphertext
+        AES_256_CBC:
+            iv_cbc = generate_iv(16)
+            ciphertext = aes_cbc_encrypt(data, key.key_data, iv_cbc)
+            return iv_cbc + ciphertext
+        CHACHA20:
+            ciphertext = chacha20_encrypt(data, key.key_data, iv)
+            return iv + ciphertext
+    return data
+
+func decrypt_asset(encrypted: ByteArray, key: EncryptionKey) -> ByteArray:
+    if key.algorithm == NONE:
+        return encrypted
+    match key.algorithm:
+        AES_256_GCM:
+            iv = encrypted[:12]
+            tag = encrypted[12:28]
+            ciphertext = encrypted[28:]
+            plaintext = aes_gcm_decrypt(ciphertext, key.key_data, iv, tag)
+            if plaintext is None:
+                log_error("AES-GCM decryption failed — data tampered!")
+                return ByteArray()
+            return plaintext
+        AES_256_CBC:
+            iv = encrypted[:16]
+            ciphertext = encrypted[16:]
+            return aes_cbc_decrypt(ciphertext, key.key_data, iv)
+        CHACHA20:
+            iv = encrypted[:12]
+            ciphertext = encrypted[12:]
+            return chacha20_decrypt(ciphertext, key.key_data, iv)
+    return encrypted
+
+# Hash-Verifikation — Tamper Detection
+func compute_asset_hash(data: ByteArray) -> String:
+    return sha256_hex(data)
+
+func verify_asset_integrity(path: String, expected_hash: String) -> Bool:
+    data = read_binary(path)
+    actual = compute_asset_hash(data)
+    if actual != expected_hash:
+        log_error(f"Asset tampered: {path} — hash mismatch!")
+        log_error(f"  Expected: {expected_hash[:16]}...")
+        log_error(f"  Actual:   {actual[:16]}...")
+        return false
+    return true
+
+# Digitale Signatur — Publisher Authentizität
+func sign_asset(data: ByteArray, private_key: ByteArray) -> AssetSignature:
+    h = sha256(data)
+    sig = ed25519_sign(h, private_key)
+    return AssetSignature {
+        asset_path: "",
+        sha256: to_hex(h),
+        signature: to_hex(sig),
+        signed_by: get_key_id(private_key),
+        timestamp: now(),
+        verified: true
+    }
+
+func verify_signature(asset: AssetSignature, public_key: ByteArray) -> Bool:
+    h = from_hex(asset.sha256)
+    sig = from_hex(asset.signature)
+    valid = ed25519_verify(h, sig, public_key)
+    asset.verified = valid
+    if not valid:
+        log_error(f"Signature verification FAILED for {asset.asset_path}")
+    return valid
+
+# Key Rotation — periodischer Schlüsselwechsel
+func rotate_key(old: EncryptionKey) -> EncryptionKey:
+    new_key = EncryptionKey {
+        key_id: generate_key_id(),
+        key_data: generate_aes_key(256),
+        algorithm: old.algorithm,
+        rotation_period: old.rotation_period,
+        created: now()
+    }
+    # Re-Verschlüssele alle Assets mit neuem Key
+    for asset in get_all_encrypted_assets():
+        plaintext = decrypt_asset(asset.data, old)
+        asset.data = encrypt_asset(plaintext, new_key)
+    log_info(f"Key rotated: {old.key_id[:8]}... → {new_key.key_id[:8]}...")
+    # Sicheres Löschen des alten Keys
+    secure_zero(old.key_data)
+    return new_key
+
+# Anti-Tamper — Runtime Checks
+func runtime_integrity_check() -> Bool:
+    # 1. Prüfe kritische Assets
+    for asset in get_critical_assets():
+        if not verify_asset_integrity(asset.path, asset.hash):
+            # Asset wurde modifiziert — möglicher Cheat/Hack
+            log_error("CRITICAL: Asset tampering detected!")
+            emit_event("security.asset_tampered", {"path": asset.path})
+            # Optional: Spiel pausieren oder beenden
+            return false
+    # 2. Prüfe Code-Integrity
+    if not verify_code_integrity():
+        log_error("CRITICAL: Code integrity check failed!")
+        return false
+    return true
+
+func start_anti_tamper_monitor(interval: Float) -> Bool:
+    set_interval(interval, runtime_integrity_check)
+    log_info(f"Anti-tamper monitor started (interval: {interval}s)")
+    return true
+
+# Secure Zero — sicheres Löschen von Key-Material
+func secure_zero(data: ByteArray) -> Bool:
+    # Überschreibe mit Nullen (verhindert Memory Forensics)
+    for i in range(len(data)):
+        data[i] = 0
+    return true
