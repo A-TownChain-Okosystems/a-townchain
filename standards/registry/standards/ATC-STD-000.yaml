@@ -1,0 +1,13 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: governance
+family: GOVERNANCE / META
+family_id: '000'
+file: governance/ATC-STD-000.md
+mandate: ''
+registry_version: 1
+standard_id: ATC-STD-000
+status: approved
+title: 'Standards Governance & Specification Standard (Verfassung; v1.3.0: Domaenen-Familien-Verweis
+  §7.7)'
+version: 1.3.0
