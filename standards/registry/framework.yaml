@@ -1,0 +1,4213 @@
+# ATC Enterprise Standards Framework Katalog — ATC-STD-FRAMEWORK-001 §5 (SSOT)
+# Generiert von tools/framework/gen_framework.py — Änderungen nur via SCR (REQ-FW-012).
+framework:
+  standard: ATC-STD-FRAMEWORK-001
+  version: 1.0.0
+  generated: '2026-09-07'
+  note: 'ATC Enterprise Standards Framework Katalog — SSOT der Slot-Zuordnung (SCR-0019). Status: BELEGT/VERWEIST = durch Bestand abgedeckt, KONFLIKT = Slot kollidiert mit §30-ID, GEPLANT = reserviert,
+    NEU = Lücke (via SCR zu erstellen). Regenerierung nur via SCR (REQ-FW-012).'
+  stats:
+    families: 44
+    slots_total: 442
+    slots_neu: 1
+    slots_verweist: 150
+    slots_belegt: 285
+    slots_konflikt: 6
+    slots_geplant: 0
+  families:
+  - id: FAM-01
+    name: Enterprise & Governance
+    range: ATC-STD-001..020
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-001
+      title: Enterprise Governance Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-001
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-002
+      title: Organisationsstruktur Standard
+      status: VERWEIST
+      refs:
+      - ATC-ENT-001
+      - ATC-ENT-002
+      - ATC-ENT-003
+      - ATC-ENT-004
+      - ATC-ENT-005
+      - ATC-ENT-006
+      - ATC-ENT-007
+      - ATC-ENT-008
+      - ATC-ENT-009
+      - ATC-ENT-010
+      - ATC-ENT-011
+      - ATC-ENT-012
+      - ATC-ENT-013
+      - ATC-ENT-014
+      - ATC-ENT-015
+      note: Enterprise Layer ATC-ENT-001..015 als Basis
+    - id: ATC-STD-003
+      title: Governance Determinism & Source-of-Truth Matrix
+      status: BELEGT
+      refs:
+      - ATC-STD-003
+      note: Owner-Direktive 11.09. via SCR-0090 — Governance-Determinismus; ersetzt VERWEIST Rollen (ATC-STD-000 §14.1 bleibt ueber ATC-STD-000 gebunden)
+    - id: ATC-STD-004
+      title: Entscheidungsfindungsstandard
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: §9 + AD-Register
+    - id: ATC-STD-005
+      title: Authority & Permission Standard
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: §14.1
+    - id: ATC-STD-006
+      title: Policy Management
+      status: BELEGT
+      refs:
+      - ATC-STD-006
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-007
+      title: Risk Management
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+      note: §12 Risikomodell je Meilenstein; Org-Ebene offen
+    - id: ATC-STD-008
+      title: Compliance Management
+      status: BELEGT
+      refs:
+      - ATC-STD-008
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-009
+      title: Audit Standard
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+    - id: ATC-STD-010
+      title: Vollständigkeitsprüfungs-Audit
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+    - id: ATC-STD-011
+      title: Change Governance
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      - ATC-STD-UPDATE-001
+      note: §19-33 SCR + UPD-Lifecycle
+    - id: ATC-STD-012
+      title: Incident Governance
+      status: BELEGT
+      refs:
+      - ATC-STD-012
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-013
+      title: Escalation Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-013
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-014
+      title: Evidence & Traceability
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-005
+      - ATC-STD-MILESTONE-001
+      note: BUG-005 Evidence + MILESTONE-001 §6 Evidence Packs
+    - id: ATC-STD-015
+      title: Records Management
+      status: BELEGT
+      refs:
+      - ATC-STD-015
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-016
+      title: Repository Artifact & File Inventory Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-016
+      note: Owner-Direktive 10.09. via SCR-0087 — Range-Erweiterung FAM-01
+    - id: ATC-STD-017
+      title: Obsolete & Orphaned Artifact Management Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-017
+      note: Owner-Direktive 10.09. via SCR-0087 — P1, Kerngrundsatz Audit-Signal
+    - id: ATC-STD-018
+      title: Technology Currency, Vulnerability & Security Assurance
+      status: BELEGT
+      refs:
+      - ATC-STD-018
+      note: Owner-Direktive 10.09. via SCR-0088 — Security & Technology Assurance
+    - id: ATC-STD-019
+      title: Dependency & Supply Chain Security
+      status: BELEGT
+      refs:
+      - ATC-STD-019
+      note: Owner-Direktive 10.09. via SCR-0088 — bewusst getrennt von 018
+    - id: ATC-STD-020
+      title: Security Incident & Vulnerability Response
+      status: BELEGT
+      refs:
+      - ATC-STD-020
+      note: Owner-Direktive 10.09. via SCR-0088 — Range-Verschiebung FAM-02 auf 021..033 dokumentiert
+  - id: FAM-02
+    name: Standards-Governance
+    range: ATC-STD-000..033
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-000
+      title: "Standards Governance & Specification Standard (Verfassung; v1.3.0: Domaenen-Fami"
+      status: BELEGT
+      refs:
+      - ATC-STD-000
+    - id: ATC-STD-021
+      title: Standards Registry
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: §7 Registry-Pflicht
+    - id: ATC-STD-022
+      title: Standards Naming
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: §7 Naming, naming-conventions.schema.json
+    - id: ATC-STD-023
+      title: Standards Versionierung
+      status: VERWEIST
+      refs:
+      - ATC-STD-VERSION-001
+    - id: ATC-STD-024
+      title: Standards Status
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: §11 Lifecycle
+    - id: ATC-STD-025
+      title: Standards Review
+      status: BELEGT
+      refs:
+      - ATC-STD-025
+      note: Review-Kadenzen teils in UPDATE-001; eigenständig bei Bedarf; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-026
+      title: Standards Approval
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: §9 Freigabe
+    - id: ATC-STD-027
+      title: Standards Deprecation
+      status: BELEGT
+      refs:
+      - ATC-STD-027
+      note: Deprecation-Pfad in ATC-STD-000 §11; Ausprägung offen; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-028
+      title: Standards Compatibility
+      status: VERWEIST
+      refs:
+      - ATC-STD-COMPAT-001
+    - id: ATC-STD-029
+      title: Standards Change Request
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: §19-33 SCR-Prozess
+    - id: ATC-STD-030
+      title: Standards Conflict Resolution
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+    - id: ATC-STD-031
+      title: Standards Dependency Management
+      status: VERWEIST
+      refs:
+      - ATC-STD-204
+      note: registry/dependencies.yaml DAG
+    - id: ATC-STD-032
+      title: Standards Traceability
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+    - id: ATC-STD-033
+      title: Standards Audit
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+  - id: FAM-03
+    name: Repository Standards
+    range: ATC-STD-040..054
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-040
+      title: Repository Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-040
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-041
+      title: Repository Naming
+      status: VERWEIST
+      refs:
+      - ATC-STD-202
+    - id: ATC-STD-042
+      title: Repository Ownership
+      status: BELEGT
+      refs:
+      - ATC-STD-042
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-043
+      title: Repository README
+      status: VERWEIST
+      refs:
+      - ATC-STD-README-001
+    - id: ATC-STD-044
+      title: Repository Structure
+      status: VERWEIST
+      refs:
+      - ATC-STD-201
+    - id: ATC-STD-045
+      title: Repository Metadata
+      status: BELEGT
+      refs:
+      - ATC-STD-045
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-046
+      title: Repository Documentation
+      status: VERWEIST
+      refs:
+      - ATC-STD-MD-001
+    - id: ATC-STD-047
+      title: Repository Security
+      status: VERWEIST
+      refs:
+      - ATC-STD-203
+    - id: ATC-STD-048
+      title: Repository Branching
+      status: BELEGT
+      refs:
+      - ATC-STD-048
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-049
+      title: Repository Permissions
+      status: VERWEIST
+      refs:
+      - ATC-STD-203
+      note: Security & Release-Teilabdeckung; Org-Settings F-024 SKIP
+    - id: ATC-STD-050
+      title: Repository Archiving
+      status: BELEGT
+      refs:
+      - ATC-STD-050
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-051
+      title: Repository Deprecation
+      status: BELEGT
+      refs:
+      - ATC-STD-051
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-052
+      title: Repository Health
+      status: BELEGT
+      refs:
+      - ATC-STD-052
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-053
+      title: Repository Dependency Management
+      status: VERWEIST
+      refs:
+      - ATC-STD-204
+    - id: ATC-STD-054
+      title: Repository Completeness
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+      note: MD-001 REQ-MD-001 als Teilbasis
+  - id: FAM-04
+    name: Dokumentationsstandards
+    range: ATC-STD-060..075
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-060
+      title: Documentation Standard
+      status: VERWEIST
+      refs:
+      - ATC-STD-MD-001
+    - id: ATC-STD-061
+      title: README Standard
+      status: VERWEIST
+      refs:
+      - ATC-STD-README-001
+    - id: ATC-STD-062
+      title: Wiki Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-062
+      note: Alte Wiki-Struktur archiviert; künftiges Wissens-Management; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-063
+      title: API Documentation
+      status: BELEGT
+      refs:
+      - ATC-STD-063
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-064
+      title: Architecture Documentation
+      status: BELEGT
+      refs:
+      - ATC-STD-064
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-065
+      title: Specification Standard
+      status: VERWEIST
+      refs:
+      - ATC-STD-DESC-001
+    - id: ATC-STD-066
+      title: Whitepaper Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-066
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-067
+      title: Technical Paper Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-067
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-068
+      title: CHANGELOG Standard
+      status: VERWEIST
+      refs:
+      - ATC-STD-VERSION-001
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-069
+      title: Release Notes
+      status: BELEGT
+      refs:
+      - ATC-STD-069
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-070
+      title: TODO Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-070
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-071
+      title: Roadmap Standard
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+      note: §9 Roadmap→Milestone; AD-027
+    - id: ATC-STD-072
+      title: Sprint Documentation
+      status: BELEGT
+      refs:
+      - ATC-STD-072
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-073
+      title: Decision Log
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: AD-Register als Bestands-Implementierung
+    - id: ATC-STD-074
+      title: ADR Standard
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: AD-System (AD-001..046)
+    - id: ATC-STD-075
+      title: Documentation Synchronisation
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+      note: Cross-System-Integrität
+  - id: FAM-05
+    name: Software Development
+    range: ATC-STD-080..095
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-080
+      title: Software Development Lifecycle
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      note: UPD-Lifecycle als Change-Sicht; SDLC-Ausprägung offen
+    - id: ATC-STD-081
+      title: Coding Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-081
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-082
+      title: Code Style
+      status: BELEGT
+      refs:
+      - ATC-STD-082
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-083
+      title: Naming Convention
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: §7 Naming + Repo-NAMING_CONVENTIONS
+    - id: ATC-STD-084
+      title: Architecture Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-100
+      note: ATC-STD-100 ist der Architecture Standard
+    - id: ATC-STD-085
+      title: Modularisation
+      status: BELEGT
+      refs:
+      - ATC-STD-085
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-086
+      title: Dependency Standard
+      status: VERWEIST
+      refs:
+      - ATC-STD-204
+    - id: ATC-STD-087
+      title: Error Handling
+      status: BELEGT
+      refs:
+      - ATC-STD-087
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-088
+      title: Logging
+      status: BELEGT
+      refs:
+      - ATC-STD-088
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-089
+      title: Configuration Management
+      status: BELEGT
+      refs:
+      - ATC-STD-089
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-090
+      title: Environment Management
+      status: BELEGT
+      refs:
+      - ATC-STD-090
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-091
+      title: Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-091
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-092
+      title: Code Review
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-004
+      note: Merge-Gate-Teilabdeckung
+    - id: ATC-STD-093
+      title: Refactoring
+      status: BELEGT
+      refs:
+      - ATC-STD-093
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-094
+      title: Technical Debt
+      status: BELEGT
+      refs:
+      - ATC-STD-094
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-095
+      title: Build Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-095
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-06
+    name: Git & Version Control
+    range: ATC-STD-100..119
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-114
+      title: Git Standard
+      status: BELEGT
+      note: 'KONFLIKT-Aufloesung SCR-0040 (08.09.2026): Slot von ATC-STD-100 nach ATC-STD-114 umallokiert — Range in herrenlose Luecke geweitet (ID-Immutabilitaet §36, S-21-geprueft)'
+      refs:
+      - ATC-STD-114
+    - id: ATC-STD-101
+      title: Branch Naming
+      status: BELEGT
+      refs:
+      - ATC-STD-101
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-102
+      title: Commit Naming
+      status: VERWEIST
+      refs:
+      - ATC-STD-202
+      note: Commit-Trailer-Konventionen teils in 202/UPDATE-001
+    - id: ATC-STD-103
+      title: Commit Message
+      status: BELEGT
+      refs:
+      - ATC-STD-103
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-104
+      title: Pull Request
+      status: BELEGT
+      refs:
+      - ATC-STD-104
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-105
+      title: Merge Policy
+      status: BELEGT
+      refs:
+      - ATC-STD-105
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-106
+      title: Branch Protection
+      status: VERWEIST
+      refs:
+      - ATC-STD-203
+      note: SCR-0003 umgesetzt (Branch-Protection aktiv)
+    - id: ATC-STD-107
+      title: Tagging
+      status: BELEGT
+      refs:
+      - ATC-STD-107
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-108
+      title: Release Management
+      status: VERWEIST
+      refs:
+      - ATC-STD-VERSION-001
+    - id: ATC-STD-109
+      title: Semantic Versioning
+      status: VERWEIST
+      refs:
+      - ATC-STD-VERSION-001
+    - id: ATC-STD-110
+      title: Major-Version Migration
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      - ATC-STD-COMPAT-001
+      note: UPD-G04 + MAJOR-Gate
+    - id: ATC-STD-111
+      title: Backward Compatibility
+      status: VERWEIST
+      refs:
+      - ATC-STD-COMPAT-001
+    - id: ATC-STD-112
+      title: Rollback
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-113
+      title: Release Verification
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      note: UPD Post-Release-Audit
+  - id: FAM-07
+    name: Bug & Fehler-Management
+    range: ATC-STD-120..131
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-120
+      title: Bug Management
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-001
+      - ATC-STD-BUG-003
+    - id: ATC-STD-121
+      title: Bug Detection
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-001
+    - id: ATC-STD-122
+      title: Bug Classification
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-001
+      - ATC-STD-BUG-005
+      note: RC-Kategorien in BUG-005
+    - id: ATC-STD-123
+      title: Bug Documentation
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-002
+    - id: ATC-STD-124
+      title: Root Cause Analysis
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-005
+      note: 4-Ebenen-RCA, Fault Tree, Timeline, Metrics
+    - id: ATC-STD-125
+      title: Bug Prioritisation
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-005
+      note: Impact/Priority-Felder
+    - id: ATC-STD-126
+      title: Bug Fix
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-003
+    - id: ATC-STD-127
+      title: Regression Testing
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-005
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-128
+      title: Fix Verification
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-005
+      note: Closure Gate
+    - id: ATC-STD-129
+      title: Incident Correlation
+      status: BELEGT
+      refs:
+      - ATC-STD-129
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-130
+      title: Post-Incident Review
+      status: BELEGT
+      refs:
+      - ATC-STD-130
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-131
+      title: Code/Wiki/Repository Consistency Check
+      status: VERWEIST
+      refs:
+      - ATC-STD-BUG-004
+      - ATC-STD-AUDIT-001
+  - id: FAM-08
+    name: Testing & Quality Assurance
+    range: ATC-STD-140..153
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-140
+      title: QA Framework
+      status: BELEGT
+      refs:
+      - ATC-STD-140
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-141
+      title: Unit Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-141
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-142
+      title: Integration Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-142
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-143
+      title: System Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-143
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-144
+      title: End-to-End Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-144
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-145
+      title: Regression Testing
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-146
+      title: Performance Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-146
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-147
+      title: Load Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-147
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-148
+      title: Stress Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-148
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-149
+      title: Security Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-149
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-150
+      title: Acceptance Testing
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+      note: §7 Acceptance Gate
+    - id: ATC-STD-151
+      title: Release Gate
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      note: UPD-G01..G09
+    - id: ATC-STD-152
+      title: Quality Gate
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      - ATC-STD-MILESTONE-001
+    - id: ATC-STD-153
+      title: Test Evidence
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+      note: §6 Evidence Packs
+  - id: FAM-09
+    name: CI/CD & DevOps
+    range: ATC-STD-160..174
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-160
+      title: CI/CD
+      status: BELEGT
+      refs:
+      - ATC-STD-160
+      note: governance-ci + validator-Workflows existieren als Bestandspraxis; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-161
+      title: Automated Build
+      status: BELEGT
+      refs:
+      - ATC-STD-161
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-162
+      title: Automated Testing
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+      note: Validator-Suite als Bestandspraxis
+    - id: ATC-STD-163
+      title: Artifact Management
+      status: BELEGT
+      refs:
+      - ATC-STD-163
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-164
+      title: Deployment
+      status: BELEGT
+      refs:
+      - ATC-STD-164
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-165
+      title: Environment Promotion
+      status: VERWEIST
+      refs:
+      - ATC-STD-NET-001
+      note: 'NET-Familie: Devnet/Testnet/Mainnet'
+    - id: ATC-STD-166
+      title: Devnet Deployment
+      status: VERWEIST
+      refs:
+      - ATC-STD-NET-002
+    - id: ATC-STD-167
+      title: Testnet Deployment
+      status: VERWEIST
+      refs:
+      - ATC-STD-NET-002
+    - id: ATC-STD-168
+      title: Mainnet Deployment
+      status: VERWEIST
+      refs:
+      - ATC-STD-NET-002
+      - ATC-STD-NET-003
+    - id: ATC-STD-169
+      title: Infrastructure as Code
+      status: BELEGT
+      refs:
+      - ATC-STD-169
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-170
+      title: Container Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-170
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-171
+      title: Kubernetes Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-171
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-172
+      title: Terraform Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-172
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-173
+      title: Secrets Management
+      status: VERWEIST
+      refs:
+      - ATC-STD-203
+      note: Secret-Scanning aktiv (AUD-2026-0002); Ausprägung offen
+    - id: ATC-STD-174
+      title: Disaster Recovery
+      status: BELEGT
+      refs:
+      - ATC-STD-174
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-10
+    name: Release Readiness (RR-Gates)
+    range: RR-G01..RR-G08
+    note: Keine Standard-Slots, sondern Release-Readiness-Gates gem. FRAMEWORK-001 §7
+    family_refs: null
+    slots:
+    - id: RR-G01
+      title: Repository & Build
+      status: VERWEIST
+      refs:
+      - ATC-STD-201
+      note: FRAMEWORK-001 §7
+    - id: RR-G02
+      title: Unit Tests
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: RR-G03
+      title: Integration
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: RR-G04
+      title: System
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+    - id: RR-G05
+      title: Security
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+    - id: RR-G06
+      title: Performance
+      status: VERWEIST
+      note: 'KONFLIKT-Aufloesung SCR-0040: Abdeckung via Performance Testing/Monitoring'
+      refs:
+      - ATC-STD-146
+      - ATC-STD-488
+    - id: RR-G07
+      title: Deployment
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: RR-G08
+      title: Production Ready
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+      - ATC-STD-COMPAT-001
+  - id: FAM-11
+    name: Blockchain Standards
+    range: ATC-STD-180..198
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-180
+      title: Blockchain Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-180
+      note: 'Referenz: a-townchain (L3), Kernel K14/K16; Fertigbau v1.2.0 via SCR-0030/0031/0034'
+    - id: ATC-STD-181
+      title: Node Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-181
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-182
+      title: Consensus
+      status: BELEGT
+      refs:
+      - ATC-STD-182
+      note: 'Kernel K16: DAG+PoH+Validator+Voting+Finality; Fertigbau v1.2.0 via SCR-0030/0031/0034'
+    - id: ATC-STD-183
+      title: PoW
+      status: BELEGT
+      refs:
+      - ATC-STD-183
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-184
+      title: PoS
+      status: BELEGT
+      refs:
+      - ATC-STD-184
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-185
+      title: PoH
+      status: BELEGT
+      refs:
+      - ATC-STD-185
+      note: Kernel K16 PoH; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-186
+      title: Validator
+      status: BELEGT
+      refs:
+      - ATC-STD-186
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-187
+      title: Staking
+      status: BELEGT
+      refs:
+      - ATC-STD-187
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-188
+      title: Delegation
+      status: BELEGT
+      refs:
+      - ATC-STD-188
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-189
+      title: Slashing
+      status: BELEGT
+      refs:
+      - ATC-STD-189
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-190
+      title: Block
+      status: BELEGT
+      refs:
+      - ATC-STD-190
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-191
+      title: Transaction
+      status: BELEGT
+      refs:
+      - ATC-STD-191
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-192
+      title: Mempool
+      status: BELEGT
+      refs:
+      - ATC-STD-192
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-193
+      title: Fee Market
+      status: BELEGT
+      refs:
+      - ATC-STD-193
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-194
+      title: MEV Mitigation
+      status: BELEGT
+      refs:
+      - ATC-STD-194
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-195
+      title: Fork Handling
+      status: BELEGT
+      refs:
+      - ATC-STD-195
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-196
+      title: Chain Recovery
+      status: BELEGT
+      refs:
+      - ATC-STD-196
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-197
+      title: Genesis
+      status: BELEGT
+      refs:
+      - ATC-STD-197
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-198
+      title: Network Upgrade
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      note: Network-Upgrades laufen als UPD
+  - id: FAM-12
+    name: Token Standards
+    range: ATC-STD-200..215
+    note: 'Kollisionsblock 201-204: Repository-Familie bleibt unantastbar; Token-Slots rücken via SCR auf Ersatzslots'
+    family_refs: null
+    slots:
+    - id: ATC-STD-200
+      title: ATC Token
+      status: BELEGT
+      refs:
+      - ATC-STD-200
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-215
+      title: Tokenomics
+      status: BELEGT
+      note: 'KONFLIKT-Aufloesung SCR-0040 (08.09.2026): Slot von ATC-STD-201 nach ATC-STD-211 umallokiert (ID-Immutabilitaet §36)'
+      refs:
+      - ATC-STD-215
+    - id: ATC-STD-212
+      title: Token Supply
+      status: BELEGT
+      note: 'KONFLIKT-Aufloesung SCR-0040 (08.09.2026): Slot von ATC-STD-202 nach ATC-STD-212 umallokiert (ID-Immutabilitaet §36)'
+      refs:
+      - ATC-STD-212
+    - id: ATC-STD-213
+      title: Emission
+      status: BELEGT
+      note: 'KONFLIKT-Aufloesung SCR-0040 (08.09.2026): Slot von ATC-STD-203 nach ATC-STD-213 umallokiert (ID-Immutabilitaet §36)'
+      refs:
+      - ATC-STD-213
+    - id: ATC-STD-214
+      title: Burning
+      status: BELEGT
+      note: 'KONFLIKT-Aufloesung SCR-0040 (08.09.2026): Slot von ATC-STD-204 nach ATC-STD-214 umallokiert (ID-Immutabilitaet §36)'
+      refs:
+      - ATC-STD-214
+    - id: ATC-STD-205
+      title: Minting
+      status: BELEGT
+      refs:
+      - ATC-STD-205
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-206
+      title: Staking Rewards
+      status: BELEGT
+      refs:
+      - ATC-STD-206
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-207
+      title: Treasury
+      status: BELEGT
+      refs:
+      - ATC-STD-207
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-208
+      title: Governance Token
+      status: BELEGT
+      refs:
+      - ATC-STD-208
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-209
+      title: Token Allocation
+      status: BELEGT
+      refs:
+      - ATC-STD-209
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-210
+      title: Vesting
+      status: BELEGT
+      refs:
+      - ATC-STD-210
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-211
+      title: Token Migration
+      status: VERWEIST
+      refs:
+      - ATC-STD-COMPAT-001
+      note: Migration als COMPAT-Wiederherstellung
+  - id: FAM-13
+    name: Smart Contracts
+    range: ATC-STD-220..230
+    note: Abgedeckt durch ATC-STD-SC-001..020 (Smart Contract Standards Framework); je Slot Mapping bei Ausbau zu prüfen
+    family_refs: null
+    slots:
+    - id: ATC-STD-220
+      title: Smart Contract Architecture
+      status: VERWEIST
+      refs: &id001
+      - ATC-STD-SC-001
+      - ATC-STD-SC-002
+      - ATC-STD-SC-003
+      - ATC-STD-SC-004
+      - ATC-STD-SC-005
+      - ATC-STD-SC-006
+      - ATC-STD-SC-007
+      - ATC-STD-SC-008
+      - ATC-STD-SC-009
+      - ATC-STD-SC-010
+      - ATC-STD-SC-011
+      - ATC-STD-SC-012
+      - ATC-STD-SC-013
+      - ATC-STD-SC-014
+      - ATC-STD-SC-015
+      - ATC-STD-SC-016
+      - ATC-STD-SC-017
+      - ATC-STD-SC-018
+      - ATC-STD-SC-019
+      - ATC-STD-SC-020
+    - id: ATC-STD-221
+      title: Smart Contract Coding
+      status: VERWEIST
+      refs: *id001
+    - id: ATC-STD-222
+      title: Contract Security
+      status: VERWEIST
+      refs: *id001
+    - id: ATC-STD-223
+      title: Contract Testing
+      status: VERWEIST
+      refs: *id001
+    - id: ATC-STD-224
+      title: Contract Upgradeability
+      status: VERWEIST
+      refs: *id001
+    - id: ATC-STD-225
+      title: Contract Ownership
+      status: VERWEIST
+      refs: *id001
+    - id: ATC-STD-226
+      title: Multisig
+      status: VERWEIST
+      refs: *id001
+      note: Kernel K15 Multi-Sig als Referenzimplementierung
+    - id: ATC-STD-227
+      title: Contract Verification
+      status: VERWEIST
+      refs: *id001
+    - id: ATC-STD-228
+      title: Contract Audit
+      status: VERWEIST
+      refs: *id001
+    - id: ATC-STD-229
+      title: Emergency Pause
+      status: VERWEIST
+      refs: *id001
+    - id: ATC-STD-230
+      title: Contract Migration
+      status: VERWEIST
+      refs: *id001
+  - id: FAM-14
+    name: Interoperability
+    range: ATC-STD-240..250
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-240
+      title: Interoperability
+      status: BELEGT
+      refs:
+      - ATC-STD-240
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-241
+      title: Bridge
+      status: BELEGT
+      refs:
+      - ATC-STD-241
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-242
+      title: Bridge Security
+      status: BELEGT
+      refs:
+      - ATC-STD-242
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-243
+      title: Cross-Chain Messaging
+      status: BELEGT
+      refs:
+      - ATC-STD-243
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-244
+      title: IBC
+      status: BELEGT
+      refs:
+      - ATC-STD-244
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-245
+      title: EVM Compatibility
+      status: BELEGT
+      refs:
+      - ATC-STD-245
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-246
+      title: Ethereum Integration
+      status: BELEGT
+      refs:
+      - ATC-STD-246
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-247
+      title: Solana Integration
+      status: BELEGT
+      refs:
+      - ATC-STD-247
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-248
+      title: Polygon Integration
+      status: BELEGT
+      refs:
+      - ATC-STD-248
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-249
+      title: BSC Integration
+      status: BELEGT
+      refs:
+      - ATC-STD-249
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-250
+      title: Bridge Recovery
+      status: VERWEIST
+      refs:
+      - ATC-STD-COMPAT-001
+  - id: FAM-15
+    name: ZKP / Privacy
+    range: ATC-STD-260..267
+    note: Abgedeckt durch ATC-STD-ZKP-001..010 (ZKP-Layer, AD-045)
+    family_refs: null
+    slots:
+    - id: ATC-STD-260
+      title: ZKP Architecture
+      status: VERWEIST
+      refs: &id002
+      - ATC-STD-ZKP-001
+      - ATC-STD-ZKP-002
+      - ATC-STD-ZKP-003
+      - ATC-STD-ZKP-004
+      - ATC-STD-ZKP-005
+      - ATC-STD-ZKP-006
+      - ATC-STD-ZKP-007
+      - ATC-STD-ZKP-008
+      - ATC-STD-ZKP-009
+      - ATC-STD-ZKP-010
+    - id: ATC-STD-261
+      title: Proof Generation
+      status: VERWEIST
+      refs: *id002
+    - id: ATC-STD-262
+      title: Proof Verification
+      status: VERWEIST
+      refs: *id002
+    - id: ATC-STD-263
+      title: Circuit Standard
+      status: VERWEIST
+      refs: *id002
+    - id: ATC-STD-264
+      title: Trusted Setup
+      status: VERWEIST
+      refs: *id002
+    - id: ATC-STD-265
+      title: Privacy
+      status: VERWEIST
+      refs: *id002
+    - id: ATC-STD-266
+      title: Identity Proof
+      status: VERWEIST
+      refs: *id002
+    - id: ATC-STD-267
+      title: ZKP Audit
+      status: VERWEIST
+      refs: *id002
+  - id: FAM-16
+    name: Oracle & External Data
+    range: ATC-STD-270..276
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-270
+      title: Oracle Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-270
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-271
+      title: External Data
+      status: BELEGT
+      refs:
+      - ATC-STD-271
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-272
+      title: Data Verification
+      status: BELEGT
+      refs:
+      - ATC-STD-272
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-273
+      title: Oracle Consensus
+      status: BELEGT
+      refs:
+      - ATC-STD-273
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-274
+      title: Price Feeds
+      status: BELEGT
+      refs:
+      - ATC-STD-274
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-275
+      title: Oracle Failure
+      status: BELEGT
+      refs:
+      - ATC-STD-275
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-276
+      title: External API Binding
+      status: BELEGT
+      refs:
+      - ATC-STD-276
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-17
+    name: Identity & Reputation
+    range: ATC-STD-280..286
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-280
+      title: Identity
+      status: BELEGT
+      refs:
+      - ATC-STD-280
+      note: Kernel K6 DID als Referenzimplementierung; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-281
+      title: Decentralised Identity
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: ATC-03 Legacy (DID) als historische Basis
+    - id: ATC-STD-282
+      title: Wallet Identity
+      status: BELEGT
+      refs:
+      - ATC-STD-282
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-283
+      title: Reputation
+      status: BELEGT
+      refs:
+      - ATC-STD-283
+      note: Kernel K15 Reputation als Referenz; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-284
+      title: Sybil Resistance
+      status: BELEGT
+      refs:
+      - ATC-STD-284
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-285
+      title: Identity Recovery
+      status: BELEGT
+      refs:
+      - ATC-STD-285
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-286
+      title: Credential Verification
+      status: BELEGT
+      refs:
+      - ATC-STD-286
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-18
+    name: Cybersecurity
+    range: ATC-STD-300..319
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-314
+      title: Cybersecurity Framework
+      status: BELEGT
+      note: 'KONFLIKT-Aufloesung SCR-0040 (08.09.2026): Slot von ATC-STD-300 nach ATC-STD-314 umallokiert — Range in herrenlose Luecke geweitet (ID-Immutabilitaet §36, S-21-geprueft)'
+      refs:
+      - ATC-STD-314
+    - id: ATC-STD-301
+      title: Secure Development
+      status: BELEGT
+      refs:
+      - ATC-STD-301
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-302
+      title: Authentication
+      status: BELEGT
+      refs:
+      - ATC-STD-302
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-303
+      title: Authorisation
+      status: BELEGT
+      refs:
+      - ATC-STD-303
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-304
+      title: Key Management
+      status: BELEGT
+      refs:
+      - ATC-STD-304
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-305
+      title: Secrets
+      status: VERWEIST
+      refs:
+      - ATC-STD-203
+      note: Secret-Scanning aktiv
+    - id: ATC-STD-306
+      title: Encryption
+      status: BELEGT
+      refs:
+      - ATC-STD-306
+      note: Kernel K6b Ed25519 als Referenz; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-307
+      title: Network Security
+      status: BELEGT
+      refs:
+      - ATC-STD-307
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-308
+      title: Endpoint Security
+      status: BELEGT
+      refs:
+      - ATC-STD-308
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-309
+      title: Supply Chain Security
+      status: BELEGT
+      refs:
+      - ATC-STD-309
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-310
+      title: Dependency Security
+      status: VERWEIST
+      refs:
+      - ATC-STD-204
+      note: Dependabot/CodeQL aktiv (AUD-2026-0002)
+    - id: ATC-STD-311
+      title: Vulnerability Management
+      status: BELEGT
+      refs:
+      - ATC-STD-311
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-312
+      title: Penetration Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-312
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-313
+      title: Security Incident Response
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      note: Emergency-Prozess als Teilbasis
+  - id: FAM-19
+    name: AI-Agent Standards
+    range: ATC-STD-320..335
+    note: Abgedeckt durch ATC-AAS-001..025 + ATC-STD-AI-DECISION-001 (über den Betriebsstandards)
+    family_refs: null
+    slots:
+    - id: ATC-STD-320
+      title: AI Agent Architecture
+      status: VERWEIST
+      refs: &id003
+      - ATC-AAS-001
+      - ATC-AAS-002
+      - ATC-AAS-003
+      - ATC-AAS-004
+      - ATC-AAS-005
+      - ATC-AAS-006
+      - ATC-AAS-007
+      - ATC-AAS-008
+      - ATC-AAS-009
+      - ATC-AAS-010
+      - ATC-AAS-011
+      - ATC-AAS-012
+      - ATC-AAS-013
+      - ATC-AAS-014
+      - ATC-AAS-015
+      - ATC-AAS-016
+      - ATC-AAS-017
+      - ATC-AAS-018
+      - ATC-AAS-019
+      - ATC-AAS-020
+      - ATC-AAS-021
+      - ATC-AAS-022
+      - ATC-AAS-023
+      - ATC-AAS-024
+      - ATC-AAS-025
+    - id: ATC-STD-321
+      title: Agent Identity
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-322
+      title: Agent Role
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-323
+      title: Agent Permissions
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-324
+      title: Agent Context
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-325
+      title: Agent Memory
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-326
+      title: Agent Decision Making
+      status: VERWEIST
+      refs:
+      - ATC-STD-AI-DECISION-001
+    - id: ATC-STD-327
+      title: Agent Planning
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-328
+      title: Agent Execution
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-329
+      title: Agent Verification
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-330
+      title: Agent Handover
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-331
+      title: Agent Communication
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-332
+      title: Agent Logging
+      status: VERWEIST
+      refs: *id003
+    - id: ATC-STD-333
+      title: Agent Audit
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+    - id: ATC-STD-334
+      title: Agent Safety
+      status: VERWEIST
+      refs:
+      - ATC-STD-AI-DECISION-001
+      - ATC-STD-MILESTONE-001
+      note: Human Gates + Kill-Switch-Dokumentation
+    - id: ATC-STD-335
+      title: Agent Failure Recovery
+      status: VERWEIST
+      refs:
+      - ATC-STD-AI-DECISION-001
+  - id: FAM-20
+    name: Agent Operating (KI-Softwareentwicklungsagent)
+    range: ATC-STD-AOS-001 (reserviert)
+    note: 14 Fragen verbindlich je Agenten-Session gem. FRAMEWORK-001 §8 (REQ-FW-009)
+    family_refs: null
+    slots:
+    - id: ATC-STD-AOS-001
+      title: ATC Agent Operating Standard — 14 Session-Fragen (Wer bin ich? … Welcher Audit-Nachweis entsteht?)
+      status: BELEGT
+      refs:
+      - ATC-STD-AOS-001
+      note: Erstellt via SCR-0022 (REQ-FW-009); Mandatsregel gilt seit FRAMEWORK-001 §8
+  - id: FAM-21
+    name: Mining Standards
+    range: ATC-STD-340..350
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-340
+      title: Mining Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-340
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-341
+      title: Miner
+      status: BELEGT
+      refs:
+      - ATC-STD-341
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-342
+      title: Mining Manager
+      status: BELEGT
+      refs:
+      - ATC-STD-342
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-343
+      title: CPU Mining
+      status: BELEGT
+      refs:
+      - ATC-STD-343
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-344
+      title: GPU Mining
+      status: BELEGT
+      refs:
+      - ATC-STD-344
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-345
+      title: Mobile Mining
+      status: BELEGT
+      refs:
+      - ATC-STD-345
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-346
+      title: Mining Algorithms
+      status: BELEGT
+      refs:
+      - ATC-STD-346
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-347
+      title: Miner Plugins
+      status: BELEGT
+      refs:
+      - ATC-STD-347
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-348
+      title: Mining Rewards
+      status: BELEGT
+      refs:
+      - ATC-STD-348
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-349
+      title: Mining Security
+      status: BELEGT
+      refs:
+      - ATC-STD-349
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-350
+      title: Miner Monitoring
+      status: BELEGT
+      refs:
+      - ATC-STD-350
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-22
+    name: Wallet Standards
+    range: ATC-STD-360..368
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-360
+      title: Wallet Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-360
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-361
+      title: Address
+      status: BELEGT
+      refs:
+      - ATC-STD-361
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-362
+      title: Key Management
+      status: BELEGT
+      refs:
+      - ATC-STD-362
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-363
+      title: Transaction Signing
+      status: BELEGT
+      refs:
+      - ATC-STD-363
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-364
+      title: Wallet Recovery
+      status: BELEGT
+      refs:
+      - ATC-STD-364
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-365
+      title: Hardware Wallet
+      status: BELEGT
+      refs:
+      - ATC-STD-365
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-366
+      title: Wallet Security
+      status: BELEGT
+      refs:
+      - ATC-STD-366
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-367
+      title: Wallet UI
+      status: BELEGT
+      refs:
+      - ATC-STD-367
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-368
+      title: Burning Wallet
+      status: BELEGT
+      refs:
+      - ATC-STD-368
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-23
+    name: DeFi Standards
+    range: ATC-STD-380..389
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-380
+      title: DeFi Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-380
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-381
+      title: DEX
+      status: BELEGT
+      refs:
+      - ATC-STD-381
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-382
+      title: Liquidity
+      status: BELEGT
+      refs:
+      - ATC-STD-382
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-383
+      title: Liquidity Pools
+      status: BELEGT
+      refs:
+      - ATC-STD-383
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-384
+      title: Staking
+      status: BELEGT
+      refs:
+      - ATC-STD-384
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-385
+      title: Lending
+      status: BELEGT
+      refs:
+      - ATC-STD-385
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-386
+      title: Yield
+      status: BELEGT
+      refs:
+      - ATC-STD-386
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-387
+      title: Oracle
+      status: BELEGT
+      refs:
+      - ATC-STD-387
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-388
+      title: DeFi Risk
+      status: BELEGT
+      refs:
+      - ATC-STD-388
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-389
+      title: DeFi Security
+      status: BELEGT
+      refs:
+      - ATC-STD-389
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-24
+    name: NFT / Marketplace
+    range: ATC-STD-400..409
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-400
+      title: NFT Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-400
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-401
+      title: NFT Metadata
+      status: BELEGT
+      refs:
+      - ATC-STD-401
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-402
+      title: NFT Minting
+      status: BELEGT
+      refs:
+      - ATC-STD-402
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-403
+      title: NFT Ownership
+      status: BELEGT
+      refs:
+      - ATC-STD-403
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-404
+      title: NFT Transfer
+      status: BELEGT
+      refs:
+      - ATC-STD-404
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-405
+      title: NFT Marketplace
+      status: BELEGT
+      refs:
+      - ATC-STD-405
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-406
+      title: NFT Royalties
+      status: BELEGT
+      refs:
+      - ATC-STD-406
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-407
+      title: NFT Storage
+      status: BELEGT
+      refs:
+      - ATC-STD-407
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-408
+      title: NFT Verification
+      status: BELEGT
+      refs:
+      - ATC-STD-408
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-409
+      title: NFT Security
+      status: BELEGT
+      refs:
+      - ATC-STD-409
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-25
+    name: GameFi / Shivamon
+    range: ATC-STD-420..434
+    note: L6 genesis-engine/genesis-chronicles als Referenz; ATC-41+-Visionseinordnung beachten
+    family_refs: null
+    slots:
+    - id: ATC-STD-420
+      title: GameFi Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-420
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-421
+      title: Shivamon
+      status: BELEGT
+      refs:
+      - ATC-STD-421
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-422
+      title: Game Economy
+      status: BELEGT
+      refs:
+      - ATC-STD-422
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-423
+      title: PvE
+      status: BELEGT
+      refs:
+      - ATC-STD-423
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-424
+      title: PvP
+      status: BELEGT
+      refs:
+      - ATC-STD-424
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-425
+      title: Guild
+      status: BELEGT
+      refs:
+      - ATC-STD-425
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-426
+      title: Alliance
+      status: BELEGT
+      refs:
+      - ATC-STD-426
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-427
+      title: Territory
+      status: BELEGT
+      refs:
+      - ATC-STD-427
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-428
+      title: Crafting
+      status: BELEGT
+      refs:
+      - ATC-STD-428
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-429
+      title: Mods
+      status: BELEGT
+      refs:
+      - ATC-STD-429
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-430
+      title: DNA
+      status: BELEGT
+      refs:
+      - ATC-STD-430
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-431
+      title: Evolution
+      status: BELEGT
+      refs:
+      - ATC-STD-431
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-432
+      title: Genesis
+      status: BELEGT
+      refs:
+      - ATC-STD-432
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-433
+      title: Game Assets
+      status: BELEGT
+      refs:
+      - ATC-STD-433
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-434
+      title: Game Blockchain Integration
+      status: BELEGT
+      refs:
+      - ATC-STD-434
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-26
+    name: API Standards
+    range: ATC-STD-440..450
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-440
+      title: API Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-440
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-441
+      title: REST API
+      status: BELEGT
+      refs:
+      - ATC-STD-441
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-442
+      title: GraphQL
+      status: BELEGT
+      refs:
+      - ATC-STD-442
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-443
+      title: RPC
+      status: BELEGT
+      refs:
+      - ATC-STD-443
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-444
+      title: WebSocket
+      status: BELEGT
+      refs:
+      - ATC-STD-444
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-445
+      title: Authentication
+      status: BELEGT
+      refs:
+      - ATC-STD-445
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-446
+      title: API Versioning
+      status: VERWEIST
+      refs:
+      - ATC-STD-VERSION-001
+    - id: ATC-STD-447
+      title: Rate Limiting
+      status: BELEGT
+      refs:
+      - ATC-STD-447
+      note: Kernel K15 Rate-Limit als Referenz; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-448
+      title: API Errors
+      status: BELEGT
+      refs:
+      - ATC-STD-448
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-449
+      title: API Security
+      status: BELEGT
+      refs:
+      - ATC-STD-449
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-450
+      title: API Documentation
+      status: BELEGT
+      refs:
+      - ATC-STD-450
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-27
+    name: Datenstandards
+    range: ATC-STD-460..469
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-460
+      title: Data Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-460
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-461
+      title: Data Model
+      status: BELEGT
+      refs:
+      - ATC-STD-461
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-462
+      title: Data Validation
+      status: BELEGT
+      refs:
+      - ATC-STD-462
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-463
+      title: Data Integrity
+      status: BELEGT
+      refs:
+      - ATC-STD-463
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-464
+      title: Data Versioning
+      status: VERWEIST
+      refs:
+      - ATC-STD-VERSION-001
+    - id: ATC-STD-465
+      title: Data Migration
+      status: VERWEIST
+      refs:
+      - ATC-STD-COMPAT-001
+    - id: ATC-STD-466
+      title: Database
+      status: BELEGT
+      refs:
+      - ATC-STD-466
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-467
+      title: Firestore
+      status: BELEGT
+      refs:
+      - ATC-STD-467
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-468
+      title: Backup
+      status: BELEGT
+      refs:
+      - ATC-STD-468
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-469
+      title: Data Recovery
+      status: BELEGT
+      refs:
+      - ATC-STD-469
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-28
+    name: Observability
+    range: ATC-STD-480..488
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-480
+      title: Observability
+      status: BELEGT
+      refs:
+      - ATC-STD-480
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-481
+      title: Logging
+      status: BELEGT
+      refs:
+      - ATC-STD-481
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-482
+      title: Metrics
+      status: BELEGT
+      refs:
+      - ATC-STD-482
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-483
+      title: Tracing
+      status: BELEGT
+      refs:
+      - ATC-STD-483
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-484
+      title: Monitoring
+      status: BELEGT
+      refs:
+      - ATC-STD-484
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-485
+      title: Alerting
+      status: BELEGT
+      refs:
+      - ATC-STD-485
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-486
+      title: Health Checks
+      status: BELEGT
+      refs:
+      - ATC-STD-486
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-487
+      title: Audit Logs
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+    - id: ATC-STD-488
+      title: Performance Monitoring
+      status: BELEGT
+      refs:
+      - ATC-STD-488
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-29
+    name: Incident & Recovery
+    range: ATC-STD-500..509
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-500
+      title: Incident Management
+      status: BELEGT
+      refs:
+      - ATC-STD-500
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-501
+      title: Incident Classification
+      status: BELEGT
+      refs:
+      - ATC-STD-501
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-502
+      title: Incident Response
+      status: BELEGT
+      refs:
+      - ATC-STD-502
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-503
+      title: Emergency Response
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      note: Emergency-Prozess UPD
+    - id: ATC-STD-504
+      title: Disaster Recovery
+      status: BELEGT
+      refs:
+      - ATC-STD-504
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-505
+      title: Fault Recovery
+      status: BELEGT
+      refs:
+      - ATC-STD-505
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-506
+      title: Rollback
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-507
+      title: Failover
+      status: BELEGT
+      refs:
+      - ATC-STD-507
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-508
+      title: Backup Recovery
+      status: BELEGT
+      refs:
+      - ATC-STD-508
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-509
+      title: Business/System Continuity
+      status: BELEGT
+      refs:
+      - ATC-STD-509
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-30
+    name: Release & Update Standards
+    range: ATC-STD-520..529
+    note: Major-Version-Regel (13-Stufen-Prüfkette nach MAJOR) verbindlich via REQ-FW-008/COMPAT-001
+    family_refs: null
+    slots:
+    - id: ATC-STD-520
+      title: Release Management
+      status: VERWEIST
+      refs:
+      - ATC-STD-VERSION-001
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-521
+      title: Release Candidate
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-522
+      title: Release Gate
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      note: UPD-G01..G09
+    - id: ATC-STD-523
+      title: Compatibility Check
+      status: VERWEIST
+      refs:
+      - ATC-STD-COMPAT-001
+    - id: ATC-STD-524
+      title: Major Update
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      - ATC-STD-COMPAT-001
+      note: UPD-G04 + MAJOR-Gate
+    - id: ATC-STD-525
+      title: Minor Update
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-526
+      title: Patch
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-527
+      title: Migration
+      status: VERWEIST
+      refs:
+      - ATC-STD-COMPAT-001
+    - id: ATC-STD-528
+      title: Rollback
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-529
+      title: Post-Release Audit
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+      - ATC-STD-AUDIT-001
+  - id: FAM-31
+    name: Projektmanagement
+    range: ATC-STD-540..549
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-540
+      title: Project Management
+      status: BELEGT
+      refs:
+      - ATC-STD-540
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-541
+      title: Epic
+      status: BELEGT
+      refs:
+      - ATC-STD-541
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-542
+      title: Feature
+      status: BELEGT
+      refs:
+      - ATC-STD-542
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-543
+      title: Requirement
+      status: BELEGT
+      refs:
+      - ATC-STD-543
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-544
+      title: Task
+      status: BELEGT
+      refs:
+      - ATC-STD-544
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-545
+      title: TODO
+      status: BELEGT
+      refs:
+      - ATC-STD-545
+      note: KaiOsTodo-Entity als Bestandspraxis; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-546
+      title: Sprint
+      status: BELEGT
+      refs:
+      - ATC-STD-546
+      note: Sprint ≠ Meilenstein (MILESTONE-001 §9); Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-547
+      title: Milestone
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+    - id: ATC-STD-548
+      title: Roadmap
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+      note: AD-027 als Bestands-Roadmap
+    - id: ATC-STD-549
+      title: Definition of Done
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+      note: §14 18-Punkte-DoD
+  - id: FAM-32
+    name: Requirements Engineering
+    range: ATC-STD-560..566
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-560
+      title: Requirements
+      status: BELEGT
+      refs:
+      - ATC-STD-560
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-561
+      title: Functional Requirements
+      status: BELEGT
+      refs:
+      - ATC-STD-561
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-562
+      title: Non-Functional Requirements
+      status: BELEGT
+      refs:
+      - ATC-STD-562
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-563
+      title: Acceptance Criteria
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+    - id: ATC-STD-564
+      title: Requirement Traceability
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+    - id: ATC-STD-565
+      title: Requirement Changes
+      status: VERWEIST
+      refs:
+      - ATC-STD-UPDATE-001
+    - id: ATC-STD-566
+      title: Requirement Validation
+      status: BELEGT
+      refs:
+      - ATC-STD-566
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-33
+    name: UI/UX
+    range: ATC-STD-580..587
+    note: Desktop-Editions nutzen egui (DESKTOP-S2..S5)
+    family_refs: null
+    slots:
+    - id: ATC-STD-580
+      title: UI/UX
+      status: BELEGT
+      refs:
+      - ATC-STD-580
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-581
+      title: Design System
+      status: BELEGT
+      refs:
+      - ATC-STD-581
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-582
+      title: Component Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-582
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-583
+      title: Accessibility
+      status: BELEGT
+      refs:
+      - ATC-STD-583
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-584
+      title: Responsive Design
+      status: BELEGT
+      refs:
+      - ATC-STD-584
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-585
+      title: UX Consistency
+      status: BELEGT
+      refs:
+      - ATC-STD-585
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-586
+      title: Error UI
+      status: BELEGT
+      refs:
+      - ATC-STD-586
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-587
+      title: Admin UI
+      status: BELEGT
+      refs:
+      - ATC-STD-587
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-34
+    name: Mobile / Desktop / OS
+    range: ATC-STD-600..607
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-600
+      title: Platform Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-600
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-601
+      title: Mobile
+      status: BELEGT
+      refs:
+      - ATC-STD-601
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-602
+      title: Desktop
+      status: BELEGT
+      refs:
+      - ATC-STD-602
+      note: atc-windows-edition/atc-linux-edition, egui; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-603
+      title: Globus OS
+      status: BELEGT
+      refs:
+      - ATC-STD-603
+      note: globus-os (L4), AD-026; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-604
+      title: Shiva OS
+      status: BELEGT
+      refs:
+      - ATC-STD-604
+      note: 'atc-shivacore Kernel (L1) — OS-Standard: Rust no_std; Fertigbau v1.2.0 via SCR-0030/0031/0034'
+    - id: ATC-STD-605
+      title: Aurora OS
+      status: BELEGT
+      refs:
+      - ATC-STD-605
+      note: aurora-ai (L2); Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-606
+      title: Device Integration
+      status: BELEGT
+      refs:
+      - ATC-STD-606
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-607
+      title: Offline Mode
+      status: BELEGT
+      refs:
+      - ATC-STD-607
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-35
+    name: ATCLang
+    range: ATC-STD-620..629
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-620
+      title: ATCLang Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-620
+      note: atclang (L0), AD-022 Gates G1-G6; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-621
+      title: ATCLang Syntax
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: G1 Language Specification als Bestandspraxis
+    - id: ATC-STD-622
+      title: ATCLang Specification
+      status: VERWEIST
+      refs:
+      - ATC-STD-000
+      note: G1 SPEC.md + registry.json
+    - id: ATC-STD-623
+      title: Compiler
+      status: BELEGT
+      refs:
+      - ATC-STD-623
+      note: compile_source-Referenzpipeline; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-624
+      title: VM
+      status: BELEGT
+      refs:
+      - ATC-STD-624
+      note: ATVM (atc-vm, L0); Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-625
+      title: REPL
+      status: BELEGT
+      refs:
+      - ATC-STD-625
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-626
+      title: Package System
+      status: BELEGT
+      refs:
+      - ATC-STD-626
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-627
+      title: Standard Library
+      status: BELEGT
+      refs:
+      - ATC-STD-627
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-628
+      title: Compatibility
+      status: VERWEIST
+      refs:
+      - ATC-STD-COMPAT-001
+    - id: ATC-STD-629
+      title: Language Versioning
+      status: VERWEIST
+      refs:
+      - ATC-STD-VERSION-001
+  - id: FAM-36
+    name: AuditTrail / LogChain
+    range: ATC-STD-640..646
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-640
+      title: AuditTrail
+      status: BELEGT
+      refs:
+      - ATC-STD-640
+      note: Kernel K15 security_audit als Referenz; Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-641
+      title: LogChain
+      status: BELEGT
+      refs:
+      - ATC-STD-641
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-642
+      title: Immutable Audit Log
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+    - id: ATC-STD-643
+      title: Event Recording
+      status: BELEGT
+      refs:
+      - ATC-STD-643
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-644
+      title: Evidence
+      status: VERWEIST
+      refs:
+      - ATC-STD-MILESTONE-001
+    - id: ATC-STD-645
+      title: Audit Correlation
+      status: VERWEIST
+      refs:
+      - ATC-STD-AUDIT-001
+    - id: ATC-STD-646
+      title: Audit Retention
+      status: BELEGT
+      refs:
+      - ATC-STD-646
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-37
+    name: Supply Chain & Dependencies
+    range: ATC-STD-660..667
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-660
+      title: Software Supply Chain
+      status: BELEGT
+      refs:
+      - ATC-STD-660
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-661
+      title: Dependency Management
+      status: VERWEIST
+      refs:
+      - ATC-STD-204
+    - id: ATC-STD-662
+      title: Dependency Pinning
+      status: BELEGT
+      refs:
+      - ATC-STD-662
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-663
+      title: Vulnerability Scanning
+      status: VERWEIST
+      refs:
+      - ATC-STD-203
+      note: Dependabot/CodeQL aktiv (F-025/#95)
+    - id: ATC-STD-664
+      title: SBOM
+      status: BELEGT
+      refs:
+      - ATC-STD-664
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-665
+      title: Third-Party Software
+      status: BELEGT
+      refs:
+      - ATC-STD-665
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-666
+      title: License Compliance
+      status: BELEGT
+      refs:
+      - ATC-STD-666
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-667
+      title: Artifact Integrity
+      status: BELEGT
+      refs:
+      - ATC-STD-667
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-38
+    name: Open Source & Lizenzierung
+    range: ATC-STD-680..686
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-680
+      title: Open Source
+      status: BELEGT
+      refs:
+      - ATC-STD-680
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-681
+      title: License
+      status: BELEGT
+      refs:
+      - ATC-STD-681
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-682
+      title: Contributor
+      status: BELEGT
+      refs:
+      - ATC-STD-682
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-683
+      title: CLA
+      status: BELEGT
+      refs:
+      - ATC-STD-683
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-684
+      title: Code of Conduct
+      status: BELEGT
+      refs:
+      - ATC-STD-684
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-685
+      title: Security Disclosure
+      status: BELEGT
+      refs:
+      - ATC-STD-685
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-686
+      title: Vulnerability Disclosure
+      status: BELEGT
+      refs:
+      - ATC-STD-686
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-39
+    name: Business / Economics
+    range: ATC-STD-700..706
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-700
+      title: Business Model
+      status: BELEGT
+      refs:
+      - ATC-STD-700
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-701
+      title: Treasury
+      status: BELEGT
+      refs:
+      - ATC-STD-701
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-702
+      title: Revenue
+      status: BELEGT
+      refs:
+      - ATC-STD-702
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-703
+      title: Cost Management
+      status: BELEGT
+      refs:
+      - ATC-STD-703
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-704
+      title: Incentive Alignment
+      status: BELEGT
+      refs:
+      - ATC-STD-704
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-705
+      title: Economic Security
+      status: BELEGT
+      refs:
+      - ATC-STD-705
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+    - id: ATC-STD-706
+      title: Sustainability
+      status: BELEGT
+      refs:
+      - ATC-STD-706
+      note: Fertigbau v1.2.0 via SCR-0030/0031/0034
+  - id: FAM-40
+    name: Master-Audit
+    range: ATC-STD-999 (reserviert)
+    note: null
+    family_refs: null
+    slots:
+    - id: ATC-STD-999
+      title: Enterprise Completeness & Consistency Audit
+      status: BELEGT
+      refs:
+      - ATC-STD-999
+      - ATC-STD-AUDIT-001
+      note: Erstellt via SCR-0022 (REQ-FW-010); AUD-Record Typ MASTER als Erweiterung von AUDIT-001
+  - id: FAM-41
+    name: Repository Audit
+    range: ATC-STD-REPO-AUDIT-001..003
+    note: Neuer Namensraum gem. FRAMEWORK-001 §6.3 (BUG-/SC-/AAS-Muster); SCR-0020
+    family_refs: null
+    slots:
+    - id: ATC-STD-REPO-AUDIT-001
+      title: ATC Repository Audit Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-AUDIT-001
+    - id: ATC-STD-REPO-AUDIT-002
+      title: Audit-Checklisten- und Health-Score-Standard (CHECK-001, CHECK-002, …)
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-AUDIT-002
+      note: Automatisierbare Checks + standardisierter Repository Health Score; erstellt via SCR-0021
+    - id: ATC-STD-REPO-AUDIT-003
+      title: Automatisierter ATC Repository Auditor (KI-/Automatisierungsagent)
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-AUDIT-003
+      note: 'Erstellt via SCR-0029 (DRAFT): 11 REQ-RA3; schliesst FAM-41'
+  - id: FAM-42
+    name: Protocol Standards
+    range: ATC-STD-PROTOCOL-001..003
+    note: Neuer Namensraum gem. FRAMEWORK-001 §6.3; ATC-PROTO-Registry (26 Familien) via SCR-0023
+    family_refs: null
+    slots:
+    - id: ATC-STD-PROTOCOL-001
+      title: ATC Protocol Standards Dachstandard (Identität, Versionierung, Nachrichten, Sicherheit, Fehler, Kompatibilität, Governance, Auditing)
+      status: BELEGT
+      refs:
+      - ATC-STD-PROTOCOL-001
+    - id: ATC-STD-PROTOCOL-002
+      title: Protocol Conformance- & Interoperabilitäts-Test-Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-PROTOCOL-002
+      note: 'Erstellt via SCR-0029 (DRAFT): CONF-Stufen, active-Gate'
+    - id: ATC-STD-PROTOCOL-003
+      title: Protocol Threat-Model- & Security-Audit-Standard
+      status: BELEGT
+      refs:
+      - ATC-STD-PROTOCOL-003
+      note: 'Erstellt via SCR-0029 (DRAFT): 12 Pflicht-Angriffe, Security-Registry'
+  - id: FAM-43
+    name: Standards Governance Core
+    range: ATC-STD-TAXONOMY-001 + STDDEV/REGISTRY/CHANGE-001
+    note: Standards Governance Core gem. Owner-Vorgabe 08.09.; TAXONOMY-001 via SCR-0024, STDDEV/REGISTRY/CHANGE via SCR-0025; Taxonomie-Registry S-24-geprueft
+    family_refs: null
+    slots:
+    - id: ATC-STD-TAXONOMY-001
+      title: ATC Standards Taxonomy & Family Creation Standard (vierstufige Taxonomie, FAM-/CAT-REQ/TCR, TAX-CHECK-001..018)
+      status: BELEGT
+      refs:
+      - ATC-STD-TAXONOMY-001
+    - id: ATC-STD-STDDEV-001
+      title: Standards-Development-Standard (Erstellung/Review-Freigabe von Standards)
+      status: BELEGT
+      refs:
+      - ATC-STD-STDDEV-001
+    - id: ATC-STD-REGISTRY-001
+      title: Registry-Management-Standard (SSOT-Verwaltung aller ATC-Registries)
+      status: BELEGT
+      refs:
+      - ATC-STD-REGISTRY-001
+    - id: ATC-STD-CHANGE-001
+      title: Change-Control-Dachnorm (konsolidiert ATC-STD-000 §19-33 + UPDATE-001 + COMPAT-001)
+      status: BELEGT
+      refs:
+      - ATC-STD-CHANGE-001
+  - id: FAM-44
+    name: ATC License System
+    range: ATC-STD-LICENSE-001..009 (Lizenz- & Nutzungsrechte-Governance)
+    note: ATC-LICENSE-System gem. Owner-Vorgabe 08.09. (SCR-0037); getrennt von SPDX-Standardlizenzen (Repos behalten Apache-2.0 als Basisschicht); License-Registry licenses/ (SSOT) mit 9 Typen ATC-LIC-*,
+      5 voll spezifiziert (CORE/OSS/PROTOCOL/ASSET/AI-1.0)
+    family_refs: null
+    slots:
+    - id: ATC-STD-LICENSE-001
+      title: 'License Governance Standard (Dachnorm: Rechte/Pflichten/Einschraenkungen/Durchsetzung, Ebenen OPEN/RESTRICTED/PROPRIETARY)'
+      status: BELEGT
+      refs:
+      - ATC-STD-LICENSE-001
+    - id: ATC-STD-LICENSE-002
+      title: 'License Specification Standard (Spezifikationsformat je Lizenztyp: LICENSE.md + SPEC.md + Metadaten + Schema)'
+      status: BELEGT
+      refs:
+      - ATC-STD-LICENSE-002
+    - id: ATC-STD-LICENSE-003
+      title: License Registry Standard (licenses/LICENSE-REGISTRY.yaml als SSOT, 9 Typen ATC-LIC-*, Lifecycle)
+      status: BELEGT
+      refs:
+      - ATC-STD-LICENSE-003
+    - id: ATC-STD-LICENSE-004
+      title: License Manifest Standard (ATC-LICENSE.yaml je Projekt, Schema ATC-LICENSE-MANIFEST-1.0, maschinenlesbar)
+      status: BELEGT
+      refs:
+      - ATC-STD-LICENSE-004
+    - id: ATC-STD-LICENSE-005
+      title: Third-Party License Management Standard (Dritt-/Copyleft-Erfassung, SBOM-Kopplung, Kompatibilitaetspruefung)
+      status: BELEGT
+      refs:
+      - ATC-STD-LICENSE-005
+    - id: ATC-STD-LICENSE-006
+      title: License Compliance Standard (Compliance Engine/Scanner, PASS/WARNING/P1/P2/BLOCK, AuditTrail-Kopplung)
+      status: BELEGT
+      refs:
+      - ATC-STD-LICENSE-006
+    - id: ATC-STD-LICENSE-007
+      title: License Audit Standard (AUD-Records fuer Lizenzentscheidungen, Review-Kadenz, MAJOR-Rechte-Aenderungen)
+      status: BELEGT
+      refs:
+      - ATC-STD-LICENSE-007
+    - id: ATC-STD-LICENSE-008
+      title: Trademark Separation Standard (Code != Marke != Asset, Markenliste, Trademark-Policy separat)
+      status: BELEGT
+      refs:
+      - ATC-STD-LICENSE-008
+    - id: ATC-STD-LICENSE-009
+      title: License Versioning Standard (SemVer je Lizenz, Rechte-Aenderung = MAJOR + Owner-Gate, Deprecation/Migration)
+      status: BELEGT
+      refs:
+      - ATC-STD-LICENSE-009
+
+  - id: FAM-45
+    name: Vision-to-Software (V2S)
+    range: ATC-STD-V2S-000..026
+    note: 'End-to-End-Lifecycle VISION->EOL — Master + 26 Phasen-Standards vollstaendig (SCR-0041/0042, Bergung 03.10.)'
+    family_refs: null
+    slots:
+    - id: ATC-STD-V2S-000
+      title: V2S Lifecycle Master
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-000
+    - id: ATC-STD-V2S-001
+      title: Vision
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-001
+    - id: ATC-STD-V2S-002
+      title: Idea Intake
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-002
+    - id: ATC-STD-V2S-003
+      title: Objectives
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-003
+    - id: ATC-STD-V2S-004
+      title: Requirements
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-004
+    - id: ATC-STD-V2S-005
+      title: Traceability
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-005
+    - id: ATC-STD-V2S-006
+      title: Specification
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-006
+    - id: ATC-STD-V2S-007
+      title: Architecture
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-007
+    - id: ATC-STD-V2S-008
+      title: Software Design
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-008
+    - id: ATC-STD-V2S-009
+      title: Development
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-009
+    - id: ATC-STD-V2S-010
+      title: Integration
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-010
+    - id: ATC-STD-V2S-011
+      title: Testing
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-011
+    - id: ATC-STD-V2S-012
+      title: Verification
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-012
+    - id: ATC-STD-V2S-013
+      title: Validation
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-013
+    - id: ATC-STD-V2S-014
+      title: Security
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-014
+    - id: ATC-STD-V2S-015
+      title: Software Audit
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-015
+    - id: ATC-STD-V2S-016
+      title: Release Candidate
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-016
+    - id: ATC-STD-V2S-017
+      title: Release
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-017
+    - id: ATC-STD-V2S-018
+      title: Deployment
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-018
+    - id: ATC-STD-V2S-019
+      title: Operations
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-019
+    - id: ATC-STD-V2S-020
+      title: Monitoring
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-020
+    - id: ATC-STD-V2S-021
+      title: Incident
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-021
+    - id: ATC-STD-V2S-022
+      title: Feedback
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-022
+    - id: ATC-STD-V2S-023
+      title: Improvement
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-023
+    - id: ATC-STD-V2S-024
+      title: Version Upgrade
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-024
+    - id: ATC-STD-V2S-025
+      title: Deprecation
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-025
+    - id: ATC-STD-V2S-026
+      title: End-of-Life
+      status: BELEGT
+      refs:
+      - ATC-STD-V2S-026
+  - id: FAM-46
+    name: Repository Maintenance (REPO-MAINT)
+    range: ATC-STD-REPO-MAINT-001..999
+    note: 'Repository-Pflegezyklus: Discovery bis Maintenance Complete, P0-P3, SemVer-Update-Regeln, Dependency-Policy, Build&Test-Gate, Version-Konsistenz (SCR-0043); referenziert 201-204, REPO-AUDIT-001/002, VERSION-001, UPDATE-001, V2S-000'
+    family_refs: null
+    slots:
+    - id: ATC-STD-REPO-MAINT-001
+      title: Repository Maintenance & Lifecycle Master
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-MAINT-001
+
+  - id: FAM-47
+    name: Error Propagation & Prevention (ERR)
+    range: ATC-STD-ERR-000..999
+    note: 'No Local Fix Without System Verification — Master + 15 Kernstandards (SCR-0044): Propagation-Scan, Cross-Repo-Scan, Dependency-Impact, Regression, Prevention-Gate, Pattern-Library; referenziert BUG-001..005'
+    family_refs: null
+    slots:
+    - id: ATC-STD-ERR-000
+      title: ERR-000
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-000
+    - id: ATC-STD-ERR-001
+      title: ERR-001
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-001
+    - id: ATC-STD-ERR-002
+      title: ERR-002
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-002
+    - id: ATC-STD-ERR-003
+      title: ERR-003
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-003
+    - id: ATC-STD-ERR-004
+      title: ERR-004
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-004
+    - id: ATC-STD-ERR-005
+      title: ERR-005
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-005
+    - id: ATC-STD-ERR-006
+      title: ERR-006
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-006
+    - id: ATC-STD-ERR-007
+      title: ERR-007
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-007
+    - id: ATC-STD-ERR-008
+      title: ERR-008
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-008
+    - id: ATC-STD-ERR-009
+      title: ERR-009
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-009
+    - id: ATC-STD-ERR-010
+      title: ERR-010
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-010
+    - id: ATC-STD-ERR-011
+      title: ERR-011
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-011
+    - id: ATC-STD-ERR-012
+      title: ERR-012
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-012
+    - id: ATC-STD-ERR-013
+      title: ERR-013
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-013
+    - id: ATC-STD-ERR-014
+      title: ERR-014
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-014
+    - id: ATC-STD-ERR-015
+      title: ERR-015
+      status: BELEGT
+      refs:
+      - ATC-STD-ERR-015
+
+  - id: FAM-48
+    name: Implementation Tracking (IMPLEMENTATION)
+    range: ATC-STD-IMPLEMENTATION-000..999
+    note: 'Standard → Applicability → Implementation → Test → CI-Gate → Evidence → Verified (SCR-0045); Implementierungs-Matrix registry/standard-implementation.yaml'
+    family_refs: null
+    slots:
+    - id: ATC-STD-IMPLEMENTATION-001
+      title: IMPLEMENTATION-001
+      status: BELEGT
+      refs:
+      - ATC-STD-IMPLEMENTATION-001
+
+  - id: FAM-49
+    name: Repository Content Discovery (REPO-DISCOVERY)
+    range: ATC-STD-REPO-DISCOVERY-001..999
+    note: 'Kein neuer Repository-Inhalt darf unbewertet bleiben — Discovery → Klassifizierung → Standard-Kandidat → Review → Standard (SCR-0046); speist REPO-AUDIT/REPO-MAINT/Registry'
+    family_refs: null
+    slots:
+    - id: ATC-STD-REPO-DISCOVERY-001
+      title: Content Discovery
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-DISCOVERY-001
+    - id: ATC-STD-REPO-DISCOVERY-002
+      title: Change Detection
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-DISCOVERY-002
+    - id: ATC-STD-REPO-DISCOVERY-003
+      title: Standard Candidate Detection
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-DISCOVERY-003
+    - id: ATC-STD-REPO-DISCOVERY-004
+      title: Duplicate Detection
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-DISCOVERY-004
+    - id: ATC-STD-REPO-DISCOVERY-005
+      title: Cross-Repository Discovery
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-DISCOVERY-005
+    - id: ATC-STD-REPO-DISCOVERY-006
+      title: Impact Analysis
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-DISCOVERY-006
+    - id: ATC-STD-REPO-DISCOVERY-007
+      title: Dependency Discovery
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-DISCOVERY-007
+    - id: ATC-STD-REPO-DISCOVERY-008
+      title: Security-Relevant Content Detection
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-DISCOVERY-008
+    - id: ATC-STD-REPO-DISCOVERY-009
+      title: Documentation Gap Detection
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-DISCOVERY-009
+    - id: ATC-STD-REPO-DISCOVERY-010
+      title: Discovery Audit & Reporting
+      status: BELEGT
+      refs:
+      - ATC-STD-REPO-DISCOVERY-010
+
+  - id: FAM-50
+    name: CI/CD-Standards (CICD)
+    range: ATC-STD-CI-001..999
+    note: 'Reproduzierbare CI-Dependencies und Workflow-Governance — Dependency Governance -> Workflow Governance -> Validation -> Regression -> Failure Propagation -> Audit -> Release Gate (Issue #1 P1-Change, SCR-0054); verdrahtet mit ERR-000/004/005/008/009 und REPO-MAINT-001'
+    family_refs:
+    - ATC-STD-ERR-000
+    - ATC-STD-REPO-MAINT-001
+    slots:
+    - id: ATC-STD-CI-001
+      title: Reproducible CI Dependencies
+      status: BELEGT
+  - id: FAM-51
+    name: "Technology Uniqueness & Differentiation (TUD)"
+    range: "ATC-STD-TUD-001..999"
+    note: "Beweisbare Technologie-Differenzierung — Klassifikation UNIQUE/NOVEL/DIFFERENTIATED mit Evidence-Kette (Owner-Strategie-Papier 11.09., SCR-0091); SSOT registry/technology-registry.yaml; verdrahtet mit ATC-STD-000 (§9/§37), ATC-STD-201/202, ZKP-Familie, atc-algorithm"
+    family_refs:
+      - ATC-STD-000
+      - ATC-STD-ZKP-001
+    slots:
+      - id: ATC-STD-TUD-001
+        title: "Technology Uniqueness & Differentiation Standard"
+        status: BELEGT
+  - id: FAM-52
+    name: "Maintenance (MAINT)"
+    range: "ATC-STD-MAINT-000..999"
+    note: 'Maintenance-Familie: Vollstaendige normative Betriebs-Disziplin — MAINT-000 Governance- und Contract-Layer (Maintenance Capability = Release-Eigenschaft, Readiness-Gate, M0-M3, Evidence, Fail-Closed), 001 Klassifikation, 002 Lifecycle, 003-020 Spezialstandards, 021-024 fest eingeplant (Emergency/EOL/Vendor-Supply-Chain/Cross-Ecosystem), ab 025 frei via SCR (Owner-Direktiven 14.09., SCR-0120); REPO-MAINT-001 (FAM-46) bleibt spezialisierter Repository-Domain-Standard unter MAINT-Governance — Migrationspfad nach MAINT-011 nur via SCR, IDs immutable (MAINT-000 §25.1)'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-REPO-MAINT-001
+    slots:
+    - id: ATC-STD-MAINT-000
+      title: "Maintenance Governance & Specification Standard (Parent Standard: Readiness Gate"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-000
+    - id: ATC-STD-MAINT-001
+      title: "Maintenance Classification Standard (M0-Routine, M1-Operational, M2-Security, M3"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-001
+    - id: ATC-STD-MAINT-002
+      title: "Maintenance Lifecycle Standard (DETECT..CLOSE, 13 Phasen, GSEPF-Mapping)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-002
+    - id: ATC-STD-MAINT-003
+      title: "Code Maintenance Standard (Refactoring, Technical Debt, Deprecation)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-003
+    - id: ATC-STD-MAINT-004
+      title: "Dependency Maintenance Standard (Dependencies, Lockfiles, SBOM, Updates, CVE-Rea"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-004
+    - id: ATC-STD-MAINT-005
+      title: "Security Maintenance Standard (CVEs, Hardening, Secrets, Keys, Sandbox, SoD)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-005
+    - id: ATC-STD-MAINT-006
+      title: "Infrastructure Maintenance Standard (CI/CD, Runner, Build-/Release-Infrastruktur"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-006
+    - id: ATC-STD-MAINT-007
+      title: "OS Maintenance Standard (Kernel, Treiber, Runtime, Systemdienste, TCB-Grenzen)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-007
+    - id: ATC-STD-MAINT-008
+      title: "Blockchain Maintenance Standard (Node, P2P, State, Storage, Consensus)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-008
+    - id: ATC-STD-MAINT-009
+      title: "VM & Runtime Maintenance Standard (ATC-VM, ABI/API, 7-Stufen-Pruefkette)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-009
+    - id: ATC-STD-MAINT-010
+      title: "AI Maintenance Standard (Modelle, Registry, Inference, Evaluation)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-010
+    - id: ATC-STD-MAINT-011
+      title: "Repository Maintenance Standard (Bindung an REPO-MAINT-001-SSOT)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-011
+    - id: ATC-STD-MAINT-012
+      title: "Standards Maintenance Standard (Standards, Registry, Schemas, Conformance)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-012
+    - id: ATC-STD-MAINT-013
+      title: "Documentation Maintenance Standard (README, Wiki, API, Architektur)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-013
+    - id: ATC-STD-MAINT-014
+      title: "Performance Maintenance Standard (CPU, RAM, I/O, Netzwerk, Latenz)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-014
+    - id: ATC-STD-MAINT-015
+      title: "Reliability Maintenance Standard (Monitoring, Backup, Recovery, Regression)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-015
+    - id: ATC-STD-MAINT-016
+      title: "Compatibility Maintenance Standard (Bindung an COMPAT-001-SSOT)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-016
+    - id: ATC-STD-MAINT-017
+      title: "Upgrade & Migration Standard (Version Upgrades, Migrationen, Schemaaenderungen)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-017
+    - id: ATC-STD-MAINT-018
+      title: "Rollback & Recovery Standard (Rollback, Restore, Failover, A/B-Prinzip)"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-018
+    - id: ATC-STD-MAINT-019
+      title: "Maintenance Evidence Standard (maschinenlesbares Record-Schema, No Evidence No T"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-019
+    - id: ATC-STD-MAINT-020
+      title: "Maintenance Automation Standard (Scanner, Maintenance Engine, M0 Auto/M1 Review/"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-020
+    - id: ATC-STD-MAINT-021
+      title: "Emergency Maintenance Standard (M3-Emergency-Pfad, Incident Records, Post-Mortem"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-021
+    - id: ATC-STD-MAINT-022
+      title: "End-of-Life & Retirement Standard (Deprecation-Sunset-Retirement, Consumer-Koord"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-022
+    - id: ATC-STD-MAINT-023
+      title: "Vendor & Supply-Chain Maintenance Standard (Vendor-Abhaengigkeiten, Provenance/S"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-023
+    - id: ATC-STD-MAINT-024
+      title: "Cross-Ecosystem Maintenance Standard (Multi-Repo-/Schicht-Koordination, konsolid"
+      status: BELEGT
+      refs:
+      - ATC-STD-MAINT-024
+  - id: FAM-53
+    name: "Bug & Fehler-Reports (BUG)"
+    range: "ATC-STD-BUG-001..499"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt. Namespace BUG-*, abgesetzt von FAM-07 (numerisches Band ATC-STD-120..131).'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-129
+    slots:
+    - id: ATC-STD-BUG-001
+      title: "Bug Finding Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-BUG-001
+    - id: ATC-STD-BUG-002
+      title: "Bug Documentation Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-BUG-002
+    - id: ATC-STD-BUG-003
+      title: "Bug Fix Lifecycle Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-BUG-003
+    - id: ATC-STD-BUG-004
+      title: "Repository Synchronization & Merge Gate"
+      status: BELEGT
+      refs:
+      - ATC-STD-BUG-004
+    - id: ATC-STD-BUG-005
+      title: "Fehleranalyse- und Root-Cause-Analysis-Standard — Analyse- und QMS-Schicht der B"
+      status: BELEGT
+      refs:
+      - ATC-STD-BUG-005
+  - id: FAM-54
+    name: "Zero-Knowledge Proofs (ZKP)"
+    range: "ATC-STD-ZKP-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt. Namespace ZKP-*, abgesetzt von FAM-15 (numerisches Band ATC-STD-260..267).'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-ZKP-001
+    slots:
+    - id: ATC-STD-ZKP-001
+      title: "ZKP Architecture Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-ZKP-001
+    - id: ATC-STD-ZKP-002
+      title: "Proof System Interface Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-ZKP-002
+    - id: ATC-STD-ZKP-003
+      title: "Circuit Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-ZKP-003
+    - id: ATC-STD-ZKP-004
+      title: "On-Chain Verification Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-ZKP-004
+    - id: ATC-STD-ZKP-005
+      title: "Commitment & Nullifier Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-ZKP-005
+    - id: ATC-STD-ZKP-006
+      title: "ZK Identity Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-ZKP-006
+    - id: ATC-STD-ZKP-007
+      title: "Private Transaction Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-ZKP-007
+    - id: ATC-STD-ZKP-008
+      title: "ZK Rollup Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-ZKP-008
+    - id: ATC-STD-ZKP-009
+      title: "ZKVM Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-ZKP-009
+    - id: ATC-STD-ZKP-010
+      title: "ZKP Security & Audit Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-ZKP-010
+  - id: FAM-55
+    name: "AI-Assisted Development (AI-DEV)"
+    range: "ATC-STD-AI-DEV-001..012"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-AI-DEV-001
+    slots:
+    - id: ATC-STD-AI-DEV-001
+      title: "Software Development AI Agent Identity & Workflow Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-001
+    - id: ATC-STD-AI-DEV-002
+      title: "Agent Capabilities & Permissions Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-002
+    - id: ATC-STD-AI-DEV-003
+      title: "Repository Discovery Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-003
+    - id: ATC-STD-AI-DEV-004
+      title: "AI Task Management Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-004
+    - id: ATC-STD-AI-DEV-005
+      title: "Finding & Evidence Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-005
+    - id: ATC-STD-AI-DEV-006
+      title: "AI Decision & Action Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-006
+    - id: ATC-STD-AI-DEV-007
+      title: "AI Git Commit & Pull Request Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-007
+    - id: ATC-STD-AI-DEV-008
+      title: "AI Testing & Validation Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-008
+    - id: ATC-STD-AI-DEV-009
+      title: "AI Audit Trail Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-009
+    - id: ATC-STD-AI-DEV-010
+      title: "AI Documentation Synchronization Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-010
+    - id: ATC-STD-AI-DEV-011
+      title: "Human Approval & Escalation Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-011
+    - id: ATC-STD-AI-DEV-012
+      title: "Multi-Agent Coordination Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DEV-012
+  - id: FAM-56
+    name: "AI-Agent Standards (AAS)"
+    range: "ATC-AAS-001..025"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-AAS-001
+    slots:
+    - id: ATC-AAS-001
+      title: "Agent Identity Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-001
+    - id: ATC-AAS-002
+      title: "Agent Capability Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-002
+    - id: ATC-AAS-003
+      title: "Agent Permission Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-003
+    - id: ATC-AAS-004
+      title: "Agent Scope Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-004
+    - id: ATC-AAS-005
+      title: "Agent Discovery Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-005
+    - id: ATC-AAS-006
+      title: "Agent Context Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-006
+    - id: ATC-AAS-007
+      title: "Agent Task Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-007
+    - id: ATC-AAS-008
+      title: "Agent Workflow Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-008
+    - id: ATC-AAS-009
+      title: "Agent Change Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-009
+    - id: ATC-AAS-010
+      title: "Agent Evidence Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-010
+    - id: ATC-AAS-011
+      title: "Agent Verification Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-011
+    - id: ATC-AAS-012
+      title: "Agent Hallucination / Assumption Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-012
+    - id: ATC-AAS-013
+      title: "Agent Conflict Resolution Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-013
+    - id: ATC-AAS-014
+      title: "Agent Security Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-014
+    - id: ATC-AAS-015
+      title: "Agent Git Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-015
+    - id: ATC-AAS-016
+      title: "Agent PR Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-016
+    - id: ATC-AAS-017
+      title: "Agent Human Approval Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-017
+    - id: ATC-AAS-018
+      title: "Agent Audit Trail Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-018
+    - id: ATC-AAS-019
+      title: "Agent Handoff Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-019
+    - id: ATC-AAS-020
+      title: "Agent Failure Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-020
+    - id: ATC-AAS-021
+      title: "Agent Quality Standard (P2)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-021
+    - id: ATC-AAS-022
+      title: "Agent Versioning Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-022
+    - id: ATC-AAS-023
+      title: "Agent Role Standard (P2)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-023
+    - id: ATC-AAS-024
+      title: "Agent-to-Agent Protocol Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-024
+    - id: ATC-AAS-025
+      title: "Agent Repository Manifest Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-AAS-025
+  - id: FAM-57
+    name: "Enterprise Standards (ATC-ENT)"
+    range: "ATC-ENT-001..015 + ATC-STD-034..039 + ATC-GATE-SEC-001 + ATC-ORG-BASELINE-001"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-ENT-001
+    slots:
+    - id: ATC-ENT-001
+      title: "Enterprise Governance Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-001
+    - id: ATC-ENT-002
+      title: "Rollen & Verantwortlichkeiten Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-002
+    - id: ATC-ENT-003
+      title: "Entscheidungsmanagement Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-003
+    - id: ATC-ENT-004
+      title: "Delegation & Berechtigungen Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-004
+    - id: ATC-ENT-005
+      title: "Unternehmensrichtlinien Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-005
+    - id: ATC-ENT-006
+      title: "Interessenkonflikte Standard (P2)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-006
+    - id: ATC-ENT-007
+      title: "Eskalationsmanagement Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-007
+    - id: ATC-ENT-008
+      title: "Organisationsstruktur Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-008
+    - id: ATC-ENT-009
+      title: "Repository Governance Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-009
+    - id: ATC-ENT-010
+      title: "Enterprise Change Management Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-010
+    - id: ATC-ENT-011
+      title: "Risiko-Management Standard (P0)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-011
+    - id: ATC-ENT-012
+      title: "Wissensmanagement & Consistency-Gate Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-012
+    - id: ATC-ENT-013
+      title: "KPI & Performance Standard (P2)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-013
+    - id: ATC-ENT-014
+      title: "Audit & Nachvollziehbarkeit Standard (P1)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-014
+    - id: ATC-ENT-015
+      title: "Qualitätsmanagement & Definition of Done Standard (P2)"
+      status: BELEGT
+      refs:
+      - ATC-ENT-015
+    - id: ATC-GATE-SEC-001
+      title: "Continuous Security & Technology Assurance Gate (14 Gate-Zeilen, RELEASE-READY-R"
+      status: BELEGT
+      refs:
+      - ATC-GATE-SEC-001
+    - id: ATC-ORG-BASELINE-001
+      title: "ATC Organization Engineering Baseline (5 Schutzschichten, Repo-Tiers T0-T4 mit A"
+      status: BELEGT
+      refs:
+      - ATC-ORG-BASELINE-001
+    - id: ATC-STD-034
+      title: "Exploitability Assessment Standard (7 Bewertungsfaktoren Existence..Network-Reac"
+      status: BELEGT
+      refs:
+      - ATC-STD-034
+    - id: ATC-STD-035
+      title: "Zero-Day Response Standard (9-Schritt-Kette Confirm..Recover, 8 Containment-Maßn"
+      status: BELEGT
+      refs:
+      - ATC-STD-035
+    - id: ATC-STD-036
+      title: "Emergency Security Change Standard (7-Schritt-Notfallpfad mit Security Authoriza"
+      status: BELEGT
+      refs:
+      - ATC-STD-036
+    - id: ATC-STD-037
+      title: "Security Configuration Baseline Standard (15 Konfigurationsbereiche OS..Monitori"
+      status: BELEGT
+      refs:
+      - ATC-STD-037
+    - id: ATC-STD-038
+      title: "Secrets & Credential Security Standard (Source-Control-Verbot P0, Leak-Kette Det"
+      status: BELEGT
+      refs:
+      - ATC-STD-038
+    - id: ATC-STD-039
+      title: "Cryptographic Agility Standard (austauschbare Crypto-Interfaces Current/Alternat"
+      status: BELEGT
+      refs:
+      - ATC-STD-039
+  - id: FAM-58
+    name: "README Governance (README)"
+    range: "ATC-STD-README-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-README-001
+    slots:
+    - id: ATC-STD-README-001
+      title: "README Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-README-001
+  - id: FAM-59
+    name: "Markdown & Metadata (MD)"
+    range: "ATC-STD-MD-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-062
+    slots:
+    - id: ATC-STD-MD-001
+      title: "ATC Markdown & Documentation Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-MD-001
+  - id: FAM-60
+    name: "Smart Contracts (SC)"
+    range: "ATC-STD-SC-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt. Namespace SC-*, abgesetzt von FAM-13 (numerisches Band ATC-STD-220..230).'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-SC-001
+    slots:
+    - id: ATC-STD-SC-001
+      title: "Smart Contract General Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-001
+    - id: ATC-STD-SC-002
+      title: "Smart Contract Identity Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-002
+    - id: ATC-STD-SC-003
+      title: "Smart Contract Security Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-003
+    - id: ATC-STD-SC-004
+      title: "Smart Contract Testing Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-004
+    - id: ATC-STD-SC-005
+      title: "Smart Contract Audit Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-005
+    - id: ATC-STD-SC-006
+      title: "Smart Contract Deployment Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-006
+    - id: ATC-STD-SC-007
+      title: "Smart Contract Upgrade Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-007
+    - id: ATC-STD-SC-008
+      title: "Smart Contract Event Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-008
+    - id: ATC-STD-SC-009
+      title: "Smart Contract Access Control Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-009
+    - id: ATC-STD-SC-010
+      title: "Smart Contract Treasury Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-010
+    - id: ATC-STD-SC-011
+      title: "Token Contract Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-011
+    - id: ATC-STD-SC-012
+      title: "NFT Contract Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-012
+    - id: ATC-STD-SC-013
+      title: "DeFi Contract Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-013
+    - id: ATC-STD-SC-014
+      title: "Governance Contract Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-014
+    - id: ATC-STD-SC-015
+      title: "Bridge Contract Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-015
+    - id: ATC-STD-SC-016
+      title: "Oracle Contract Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-016
+    - id: ATC-STD-SC-017
+      title: "GameFi Contract Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-017
+    - id: ATC-STD-SC-018
+      title: "Mining Contract Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-018
+    - id: ATC-STD-SC-019
+      title: "Contract Registry Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-019
+    - id: ATC-STD-SC-020
+      title: "AI-Assisted Smart Contract Development Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-SC-020
+  - id: FAM-61
+    name: "Network Standards (NET)"
+    range: "ATC-STD-NET-001..899"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-NET-001
+    slots:
+    - id: ATC-STD-NET-001
+      title: "Devnet Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-NET-001
+    - id: ATC-STD-NET-002
+      title: "Testnet Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-NET-002
+    - id: ATC-STD-NET-003
+      title: "Mainnet Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-NET-003
+    - id: ATC-STD-NET-004
+      title: "Network Promotion Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-NET-004
+    - id: ATC-STD-NET-005
+      title: "Network Genesis Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-NET-005
+    - id: ATC-STD-NET-006
+      title: "Network Upgrade Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-NET-006
+    - id: ATC-STD-NET-007
+      title: "Network Security Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-NET-007
+    - id: ATC-STD-NET-008
+      title: "Network Recovery Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-NET-008
+  - id: FAM-62
+    name: "Description Standards (DESC)"
+    range: "ATC-STD-DESC-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-DESC-001
+    slots:
+    - id: ATC-STD-DESC-001
+      title: "Standard Description Standard — Standard zur Beschreibung von Standards"
+      status: BELEGT
+      refs:
+      - ATC-STD-DESC-001
+  - id: FAM-63
+    name: "Versioning Standards (VERSION)"
+    range: "ATC-STD-VERSION-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-VERSION-001
+    slots:
+    - id: ATC-STD-VERSION-001
+      title: "ATC Versioning Standard — einheitliche Versionierung von Software, Standards, AP"
+      status: BELEGT
+      refs:
+      - ATC-STD-VERSION-001
+  - id: FAM-64
+    name: "Audit Standards (AUDIT)"
+    range: "ATC-STD-AUDIT-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt. Namespace AUDIT-*, abgesetzt von FAM-36 (AuditTrail/LogChain, ATC-STD-640..646).'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-640
+    slots:
+    - id: ATC-STD-AUDIT-001
+      title: "ATC Completeness & Audit Standard — Vollständigkeitsprüfung & Audit: Kontrollsch"
+      status: BELEGT
+      refs:
+      - ATC-STD-AUDIT-001
+  - id: FAM-65
+    name: "AI Decision Records (AI-DECISION)"
+    range: "ATC-STD-AI-DECISION-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-AI-DECISION-001
+    slots:
+    - id: ATC-STD-AI-DECISION-001
+      title: "ATC Agent Decision-Making Standard — Entscheidungsmodell für KI-Agenten: Pipelin"
+      status: BELEGT
+      refs:
+      - ATC-STD-AI-DECISION-001
+  - id: FAM-66
+    name: "Update Standards (UPDATE)"
+    range: "ATC-STD-UPDATE-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt. Namespace UPDATE-*, abgesetzt von FAM-30 (numerisches Band ATC-STD-520..529).'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-UPDATE-001
+    slots:
+    - id: ATC-STD-UPDATE-001
+      title: "ATC Update Standard — Change Control für Artefakt-Updates: Kategorien, Lifecycle"
+      status: BELEGT
+      refs:
+      - ATC-STD-UPDATE-001
+  - id: FAM-67
+    name: "Framework Standards (FRAMEWORK)"
+    range: "ATC-STD-FRAMEWORK-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-FRAMEWORK-001
+    slots:
+    - id: ATC-STD-FRAMEWORK-001
+      title: "ATC Enterprise Standards Framework — Master-Dokument (ATC-STANDARDS-MASTER): Zus"
+      status: BELEGT
+      refs:
+      - ATC-STD-FRAMEWORK-001
+  - id: FAM-68
+    name: "Milestone Standards (MILESTONE)"
+    range: "ATC-STD-MILESTONE-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-MILESTONE-001
+    slots:
+    - id: ATC-STD-MILESTONE-001
+      title: "ATC Milestone Standard — Verbindliche Meilenstein-Governance: Zustandsnachweis, "
+      status: BELEGT
+      refs:
+      - ATC-STD-MILESTONE-001
+  - id: FAM-69
+    name: "Compatibility Standards (COMPAT)"
+    range: "ATC-STD-COMPAT-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-COMPAT-001
+    slots:
+    - id: ATC-STD-COMPAT-001
+      title: "ATC Major Version Compatibility & Recovery Standard — Verbindliche Kompatibilitä"
+      status: BELEGT
+      refs:
+      - ATC-STD-COMPAT-001
+  - id: FAM-70
+    name: "Improvement Standards (IMPROVEMENT)"
+    range: "ATC-STD-IMPROVEMENT-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-IMPROVEMENT-001
+    slots:
+    - id: ATC-STD-IMPROVEMENT-001
+      title: "ATC Improvement Standard — Systemverbesserungsstandard: Continuous Improvement M"
+      status: BELEGT
+      refs:
+      - ATC-STD-IMPROVEMENT-001
+  - id: FAM-71
+    name: "AI Governance (ATC-AI-GOV)"
+    range: "ATC-AI-GOV-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-AI-GOV-001
+    slots:
+    - id: ATC-AI-GOV-001
+      title: "ATC Agent Governance Framework v1.0 — Produktionsarchitektur (18-stufige Governa"
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-001
+    - id: ATC-AI-GOV-AGENTS-001
+      title: "ATC Agent Governance — Organisationsweite Arbeitsregeln (Discovery, Hierarchie, "
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-AGENTS-001
+    - id: ATC-AI-GOV-AUDIT-001
+      title: "ATC Agent Governance — Auditverfahren (AGOV-FULL/DELTA/GATE, Snapshot, Readiness"
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-AUDIT-001
+    - id: ATC-AI-GOV-CAPABILITY-001
+      title: "ATC Agent Governance — Capability & Authorization Model (explizite Berechtigunge"
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-CAPABILITY-001
+    - id: ATC-AI-GOV-CHANGE-001
+      title: "ATC Agent Governance — Governance Change Management (SCR-Pflicht, SemVer, Vorher"
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-CHANGE-001
+    - id: ATC-AI-GOV-CHECK-001
+      title: "ATC Agent Governance — Automatisierte Compliance Checks (AGOV-CHECK-001..020 ver"
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-CHECK-001
+    - id: ATC-AI-GOV-FINDING-001
+      title: "ATC Agent Governance — Persistent Findings (ATC-FINDING-YYYY-NNNNNN, Lifecycle b"
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-FINDING-001
+    - id: ATC-AI-GOV-HANDOFF-001
+      title: "ATC Agent Governance — Agent-to-Agent Übergabe (10 Pflichtfelder, Kontinuität, A"
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-HANDOFF-001
+    - id: ATC-AI-GOV-INCIDENT-001
+      title: "ATC Agent Governance — Incident & Fehlerbehandlung (6 Klassen, Lifecycle, RCA-Pf"
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-INCIDENT-001
+    - id: ATC-AI-GOV-MANIFEST-001
+      title: "ATC Agent Governance — Agent Identity & Scope (Manifest, Registry, Capabilities,"
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-MANIFEST-001
+    - id: ATC-AI-GOV-POLICY-001
+      title: "ATC Agent Governance — Maschinenlesbare Policies (ATC-POL-001..010, MUST/SHOULD/"
+      status: BELEGT
+      refs:
+      - ATC-AI-GOV-POLICY-001
+  - id: FAM-72
+    name: "Engineering Standards (ENG)"
+    range: "ATC-STD-ENG-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-ENG-001
+    slots:
+    - id: ATC-STD-ENG-001
+      title: "Software Engineering & Code Quality Standard (Determinism First-Class, Security "
+      status: BELEGT
+      refs:
+      - ATC-STD-ENG-001
+  - id: FAM-73
+    name: "Legal Standards (LEGAL)"
+    range: "ATC-STD-LEGAL-001..999"
+    note: 'Formale Familien-Allokation: Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9) — naechster freier Slot; Grandfathering der Kategorie entfaellt.'
+    family_refs:
+    - ATC-STD-000
+    - ATC-STD-LEGAL-002
+    slots:
+    - id: ATC-STD-LEGAL-002
+      title: "Impressum & Anbieterkennzeichnung Standard"
+      status: BELEGT
+      refs:
+      - ATC-STD-LEGAL-002
+
+  - id: FAM-74
+    name: "Governance Constitution (GOV)"
+    range: "ATC-GOV-001..999"
+    note: 'Einzelfamilien-Allokation: ATC-GOV-001 (Level-0-Verfassung) hatte keine formale Familien-Nummer — Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9); naechster freier Slot.'
+    family_refs:
+    - ATC-STD-000
+    slots:
+    - id: ATC-GOV-001
+      title: "A-TownChain Governance Constitution (Level-0-Verfassung: 5-Ebenen-Hierarchie, 8 "
+      status: BELEGT
+      refs:
+      - ATC-GOV-001
+
+  - id: FAM-75
+    name: "System Architecture (ARCH)"
+    range: "ATC-ARCH-001..999"
+    note: 'Einzelfamilien-Allokation: ATC-ARCH-001 (KAI-OS System Architecture) hatte keine formale Familien-Nummer — Owner-Direktive 14.09. 08:54 "Jede Familie bekommt ihre eigene Nummierung" (SCR-0120 v9); naechster freier Slot.'
+    family_refs:
+    - ATC-STD-000
+    slots:
+    - id: ATC-ARCH-001
+      title: "KAI-OS System Architecture Standard"
+      status: BELEGT
+      refs:
+      - ATC-ARCH-001
+  - id: FAM-76
+    name: "Aurora Swarm Network (AURORA-SWARM)"
+    range: "ATC-AURORA-SWARM-001..999"
+    note: 'Einzelfamilien-Allokation: ATC-AURORA-SWARM-001 (Aurora Swarm Network / ASN) — Owner-Entwurf 07.10.2026 (SCR-0138); naechster freier Slot nach FAM-75.'
+    family_refs:
+    - ATC-STD-000
+    slots:
+    - id: ATC-AURORA-SWARM-001
+      title: "Aurora Swarm Network (ASN) — Neuronales KI-Schwarmnetzwerk"
+      status: BELEGT
+      refs:
+      - ATC-AURORA-SWARM-001
