@@ -1,0 +1,24 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-38 Creator Factory
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct CreatorFactory { mods: Map<Hash256, CMod>, maps: Map<Hash256, CMap>, skins: Map<Hash256, CSkin>, quests: Map<Hash256, CQuest>, plugins: Map<Hash256, CPlugin>, reviews: Map<Hash256, CReview>, queue: List<Hash256>, workshop: WorkshopCfg }
+enum CStatus { Draft, Submitted, Approved, Rejected, Published }
+struct CMod { id: Hash256, name: String, author: String, desc: String, ver: String, cat: String, downloads: UInt32, rating: Float32, status: CStatus, deps: List<String>, tags: List<String>, size_mb: Float32 }
+struct CMap { id: Hash256, name: String, author: String, mode: String, max_p: UInt8, size_mb: Float32, downloads: UInt32, rating: Float32, status: CStatus }
+struct CSkin { id: Hash256, name: String, author: String, target: String, size_mb: Float32, downloads: UInt32, rating: Float32, status: CStatus }
+struct CQuest { id: Hash256, name: String, author: String, objectives: List<String>, rewards: List<String>, min_level: UInt16, time_min: UInt32, rating: Float32, status: CStatus }
+struct CPlugin { id: Hash256, name: String, author: String, ver: String, api_ver: String, perms: List<String>, downloads: UInt32, rating: Float32, status: CStatus }
+struct CReview { id: Hash256, content: Hash256, reviewer: String, rating: UInt8, comment: String, approved: Bool }
+struct WorkshopCfg { enabled: Bool, auto_approve: Bool, max_size: Float32, rev_share: Float32, team: List<String> }
+
+pub fn submit_mod(f, name, author, desc, cat, deps, tags, size) -> Hash256 { let mid = Crypto::sha256(serialize(name, Chain::timestamp())); f.mods[mid] = CMod { id: mid, name: name, author: author, desc: desc, ver: "1.0", cat: cat, downloads: 0, rating: 0, status: CStatus::Submitted, deps: deps, tags: tags, size_mb: size }; f.queue.append(mid); return mid }
+pub fn submit_map(f, name, author, mode, max_p, size) -> Hash256 { let mid = Crypto::sha256(serialize(name, Chain::timestamp())); f.maps[mid] = CMap { id: mid, name: name, author: author, mode: mode, max_p: max_p, size_mb: size, downloads: 0, rating: 0, status: CStatus::Submitted }; f.queue.append(mid); return mid }
+pub fn submit_skin(f, name, author, target, size) -> Hash256 { let sid = Crypto::sha256(serialize(name, Chain::timestamp())); f.skins[sid] = CSkin { id: sid, name: name, author: author, target: target, size_mb: size, downloads: 0, rating: 0, status: CStatus::Submitted }; f.queue.append(sid); return sid }
+pub fn submit_plugin(f, name, author, ver, api, perms) -> Hash256 { let pid = Crypto::sha256(serialize(name, Chain::timestamp())); f.plugins[pid] = CPlugin { id: pid, name: name, author: author, ver: ver, api_ver: api, perms: perms, downloads: 0, rating: 0, status: CStatus::Submitted }; f.queue.append(pid); return pid }
+pub fn review(f, cid, reviewer, rating, comment) -> Hash256 { let rid = Crypto::sha256(serialize(cid, Chain::timestamp())); f.reviews[rid] = CReview { id: rid, content: cid, reviewer: reviewer, rating: rating, comment: comment, approved: f.workshop.auto_approve }; return rid }
+pub fn approve(f, cid, type) -> Bool { match type { "mod" => { if f.mods.contains(cid) { f.mods[cid].status = CStatus::Published; return true } }, "map" => { if f.maps.contains(cid) { f.maps[cid].status = CStatus::Published; return true } }, "skin" => { if f.skins.contains(cid) { f.skins[cid].status = CStatus::Published; return true } }, "plugin" => { if f.plugins.contains(cid) { f.plugins[cid].status = CStatus::Published; return true } }, _ => {} }; return false }
+pub fn reject(f, cid, type) -> Bool { match type { "mod" => { if f.mods.contains(cid) { f.mods[cid].status = CStatus::Rejected; return true } }, _ => {} }; return false }
+pub fn process_queue(f, max) -> UInt8 { let n = 0; for i in 0..min(max, f.queue.len()) { if f.queue.len() == 0 { break }; let cid = f.queue.pop(0); if f.workshop.auto_approve { if f.mods.contains(cid) { approve(f, cid, "mod") } else if f.maps.contains(cid) { approve(f, cid, "map") } else if f.skins.contains(cid) { approve(f, cid, "skin") } else if f.plugins.contains(cid) { approve(f, cid, "plugin") } }; n = n + 1 }; return n }
+pub fn config_workshop(f, auto, max_size, rev, team) -> Bool { f.workshop = WorkshopCfg { enabled: true, auto_approve: auto, max_size: max_size, rev_share: rev, team: team }; return true }
