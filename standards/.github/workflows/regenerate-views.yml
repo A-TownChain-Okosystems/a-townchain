@@ -1,0 +1,55 @@
+name: Regenerate Standards Views
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "registry/standards.yaml"
+      - "registry/framework.yaml"
+      - "registry/standard-implementation.yaml"
+      - "registry/compliance_state.yaml"
+      - "registry/repositories.yaml"
+      - ".atc/repository.yaml"
+      - "tools/gen_views/**"
+      - "tools/gen_views/README.template.md"
+      - ".github/workflows/regenerate-views.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: regenerate-standards-views
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Install generator dependencies
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+      - name: Regenerate canonical views
+        run: python3 tools/gen_views/generate_views.py
+      - name: Commit generated views
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "A-TownChain-Standards-Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md AGENT_MANIFEST.md STATUS.md registry/registry.lock .github/ai/agent.yaml standards
+          if git diff --cached --quiet; then
+            echo "Generated views already current."
+            exit 0
+          fi
+          git commit -m "chore(standards): regenerate SSOT views"
+          BRANCH="bot/regenerate-standards-views-${GITHUB_RUN_ID}"
+          git switch -c "$BRANCH"
+          git push --set-upstream origin "$BRANCH"
+          gh pr create --base main --head "$BRANCH" --title "chore(standards): regenerate SSOT views" --body "Regenerates generated standards views from registry/standards.yaml after SSOT changes."
