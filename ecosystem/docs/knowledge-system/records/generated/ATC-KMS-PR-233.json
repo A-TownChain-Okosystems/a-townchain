@@ -1,0 +1,31 @@
+{
+  "id": "ATC-KMS-PR-233",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #233: CodeQL: enable manual baseline analysis on main",
+  "context": "Pull request 233 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/233",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-232"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-232"
+    }
+  ],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Purpose\n\nAdd `workflow_dispatch` to the existing CodeQL workflow so maintainers can explicitly run the current default-branch analysis after bot-authored commits, when push-triggered workflows may not have run.\n\n## Scope\n- One workflow trigger addition in `.github/workflows/codeql.yml`.\n- No permission changes, no changes to languages/categories, no `continue-on-error`, and no security-gate bypass.\n- This does not itself restore the CodeQL baseline until the change is reviewed/merged and a successful workflow run is triggered on `main`.\n\n## Evidence / acceptance\n- Verify CodeQL Python, JavaScript/TypeScript, and Rust jobs all complete successfully on the current `main` SHA after dispatch.\n- Recheck PR #232 code-scanning configuration comparison after that run.\n- Do not merge PR #232 or claim `VERIFIED` until all required checks and baseline warning are resolved."
+}
