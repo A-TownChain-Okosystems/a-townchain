@@ -11,7 +11,7 @@ contract WrappedSyntheticAssets {
     state total_supply: u256
     state paused: bool
 
-    event Transfer(from: Address, to: Address, amount: u256)
+    event Transfer(sender: Address, to: Address, amount: u256)
     event WrappedSyntheticAssetsRegistered(account: Address, data: String)
 
     fn init(owner: Address) -> bool {
