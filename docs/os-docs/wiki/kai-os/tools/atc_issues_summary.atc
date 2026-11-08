@@ -1,0 +1,212 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — ATC Issues Summary Tool
+// Sprint 3.0 | Tools Layer | Chain-ID 9000
+// Migrated from: tools/atc_issues_summary.py (264 lines)
+// GitHub issue tracking, sprint assignment, summary generation
+// ─────────────────────────────────────────────────────────────
+
+enum IssueStatus { Open, InProgress, Closed, Blocked }
+enum IssuePriority { Critical, High, Medium, Low }
+enum IssueType { Bug, Feature, Documentation, Security, Refactor, Test }
+
+struct GitHubIssue {
+    issue_number: u32,
+    title: String,
+    body: String,
+    status: IssueStatus,
+    priority: IssuePriority,
+    issue_type: IssueType,
+    sprint: String,
+    atc_ref: String,
+    wiki_ref: String,
+    assignee: String,
+    labels: List<String>,
+    created_at: u64,
+    updated_at: u64,
+}
+
+struct SprintSummary {
+    sprint_id: String,
+    total_issues: u16,
+    open_issues: u16,
+    closed_issues: u16,
+    blocked_issues: u16,
+    critical_issues: u16,
+    completion_pct: u8,
+}
+
+struct ProjectSummary {
+    total_issues: u32,
+    open_issues: u32,
+    closed_issues: u32,
+    critical_open: u16,
+    sprints: Map<String, SprintSummary>,
+    generated_at: u64,
+}
+
+contract ATCIssuesSummary {
+    state issues: Map<u32, GitHubIssue>
+    state issue_count: u32
+    state sprint_summaries: Map<String, SprintSummary>
+    state project_summary: ProjectSummary
+    state owner: Address
+
+    event IssueAdded(number: u32, title: String)
+    event IssueUpdated(number: u32, status: IssueStatus)
+    event SummaryGenerated(total: u32, open: u32, closed: u32)
+
+    fn init() {
+        self.issues = {}
+        self.issue_count = 0
+        self.sprint_summaries = {}
+        self.project_summary = ProjectSummary {
+            total_issues: 0,
+            open_issues: 0,
+            closed_issues: 0,
+            critical_open: 0,
+            sprints: {},
+            generated_at: 0,
+        }
+        self.owner = msg_sender()
+    }
+
+    fn add_issue(number: u32, title: String, body: String, priority: IssuePriority, issue_type: IssueType, sprint: String, atc_ref: String) -> bool {
+        let issue = GitHubIssue {
+            issue_number: number,
+            title: title,
+            body: body,
+            status: IssueStatus::Open,
+            priority: priority,
+            issue_type: issue_type,
+            sprint: sprint,
+            atc_ref: atc_ref,
+            wiki_ref: "",
+            assignee: "",
+            labels: [],
+            created_at: Time::now(),
+            updated_at: Time::now(),
+        }
+        self.issues[number] = issue
+        self.issue_count += 1
+        emit IssueAdded(number, title)
+        return true
+    }
+
+    fn update_issue_status(number: u32, status: IssueStatus) -> bool {
+        let issue = self.issues.get(number)
+        if issue == null {
+            return false
+        }
+        issue.status = status
+        issue.updated_at = Time::now()
+        emit IssueUpdated(number, status)
+        return true
+    }
+
+    fn assign_issue(number: u32, assignee: String) -> bool {
+        let issue = self.issues.get(number)
+        if issue == null {
+            return false
+        }
+        issue.assignee = assignee
+        issue.updated_at = Time::now()
+        return true
+    }
+
+    fn link_wiki(number: u32, wiki_ref: String) -> bool {
+        let issue = self.issues.get(number)
+        if issue == null {
+            return false
+        }
+        issue.wiki_ref = wiki_ref
+        return true
+    }
+
+    fn get_issue(number: u32) -> (String, IssueStatus, IssuePriority, String, String) {
+        let i = self.issues.get(number)
+        if i == null {
+            return ("", IssueStatus::Closed, IssuePriority::Low, "", "")
+        }
+        return (i.title, i.status, i.priority, i.sprint, i.atc_ref)
+    }
+
+    fn list_issues_by_sprint(sprint: String) -> List<u32> {
+        let result: List<u32> = []
+        let keys = self.issues.keys()
+        let i: u16 = 0
+        while i < keys.len() {
+            let issue = self.issues.get(keys[i])
+            if issue != null && issue.sprint == sprint {
+                result.push(issue.issue_number)
+            }
+            i += 1
+        }
+        return result
+    }
+
+    fn list_open_issues() -> List<u32> {
+        let result: List<u32> = []
+        let keys = self.issues.keys()
+        let i: u16 = 0
+        while i < keys.len() {
+            let issue = self.issues.get(keys[i])
+            if issue != null && issue.status == IssueStatus::Open {
+                result.push(issue.issue_number)
+            }
+            i += 1
+        }
+        return result
+    }
+
+    fn generate_summary() -> (u32, u32, u32, u16) {
+        let total: u32 = self.issue_count
+        let open_count: u32 = 0
+        let closed_count: u32 = 0
+        let critical_open: u16 = 0
+
+        let keys = self.issues.keys()
+        let i: u16 = 0
+        while i < keys.len() {
+            let issue = self.issues.get(keys[i])
+            if issue != null {
+                if issue.status == IssueStatus::Open || issue.status == IssueStatus::InProgress {
+                    open_count += 1
+                    if issue.priority == IssuePriority::Critical {
+                        critical_open += 1
+                    }
+                } else if issue.status == IssueStatus::Closed {
+                    closed_count += 1
+                }
+            }
+            i += 1
+        }
+
+        self.project_summary.total_issues = total
+        self.project_summary.open_issues = open_count
+        self.project_summary.closed_issues = closed_count
+        self.project_summary.critical_open = critical_open
+        self.project_summary.generated_at = Time::now()
+
+        emit SummaryGenerated(total, open_count, closed_count)
+        return (total, open_count, closed_count, critical_open)
+    }
+
+    fn get_critical_issues() -> List<u32> {
+        let result: List<u32> = []
+        let keys = self.issues.keys()
+        let i: u16 = 0
+        while i < keys.len() {
+            let issue = self.issues.get(keys[i])
+            if issue != null && issue.priority == IssuePriority::Critical && issue.status != IssueStatus::Closed {
+                result.push(issue.issue_number)
+            }
+            i += 1
+        }
+        return result
+    }
+
+    fn get_stats() -> (u32, u32, u16) {
+        return (self.issue_count, self.project_summary.open_issues, self.project_summary.critical_open)
+    }
+}
