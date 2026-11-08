@@ -14,6 +14,8 @@ Gates:
   A6 contract_id eindeutig im Format ATC-SC-<KATEGORIE>-<NNN>
   A7 Kategorie im Enum nach SC-001
   A8 jede registrierte Quelle besteht `atc check` (ATCLang-Parser/Typpruefung)
+  A9 die Vertrags-ABI der Quelle stimmt mit abi_sha256 ueberein (abgeleitete
+     Schnittstelle driftet sonst unbemerkt; archivierte Eintraege ohne Wert)
 
 Aufruf:
   python3 tools/atc-sc-validator/check_contract_registry.py
@@ -159,13 +161,39 @@ def compile_contract(atc_bin: Path, target: Path, timeout: int = 60) -> tuple[bo
     return False, meldung[0][:120] if meldung else f"Exit {proc.returncode}"
 
 
+def abi_digest(atc_bin: Path, target: Path, timeout: int = 60) -> str | None:
+    """Sammel-Digest der Vertrags-ABI einer Quelle: (Hash, Vertragszahl)."""
+    import subprocess
+
+    try:
+        proc = subprocess.run(
+            [str(atc_bin), "abi", "--digest", str(target)],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if proc.returncode != 0:
+        return None
+    line = proc.stdout.strip().splitlines()
+    if not line:
+        return None
+    parts = line[0].split()
+    return parts[0] if parts else None
+
+
 def check_registry(
     root: Path,
     registry_path: Path,
     deployments_path: Path,
     atc_bin: Path | None = None,
+    reg: dict | None = None,
 ) -> tuple[list[dict], dict]:
-    reg = load_registry(registry_path)
+    # `reg` erlaubt dem Aufrufer, die nachgezogenen Hashes/ABIs anschliessend
+    # zu schreiben; ohne ihn wird die Registry frisch geladen.
+    if reg is None:
+        reg = load_registry(registry_path)
     entries = reg["contracts"]
     findings: list[dict] = []
     ids_seen: dict[str, int] = {}
@@ -216,6 +244,31 @@ def check_registry(
             ok, meldung = compile_contract(atc_bin, target)
             if not ok:
                 findings.append({"gate": "A8", "id": cid, "detail": f"atc check fehlgeschlagen: {meldung}"})
+
+        # A9 ABI-Drift
+        if atc_bin is not None:
+            status = e.get("status")
+            declared_abi = e.get("abi_sha256")
+            actual_abi = abi_digest(atc_bin, target)
+            if status == "archived":
+                if declared_abi:
+                    findings.append(
+                        {"gate": "A9", "id": cid, "detail": "archivierter Eintrag traegt abi_sha256"}
+                    )
+                    e.pop("abi_sha256", None)
+            elif actual_abi is not None:
+                if declared_abi in (None, ""):
+                    findings.append({"gate": "A9", "id": cid, "detail": "abi_sha256 fehlt"})
+                    e["abi_sha256"] = actual_abi
+                elif declared_abi != actual_abi:
+                    findings.append(
+                        {
+                            "gate": "A9",
+                            "id": cid,
+                            "detail": f"ABI driftet: {declared_abi[:12]}… != {actual_abi[:12]}…",
+                        }
+                    )
+                    e["abi_sha256"] = actual_abi
 
         # A3 Drift
         actual = sha256_of(target)
@@ -278,15 +331,16 @@ def fmt(value) -> str:
 def write_registry(reg: dict, path: Path) -> None:
     lines = [
         "# Contract Registry — ATC-STD-SC-002/019 · SSOT aller Smart Contracts",
-        "# Geprueft durch tools/atc-sc-validator/check_contract_registry.py (Gate A1-A7).",
-        "# source_sha256 bindet jeden Eintrag an die Quelle; Drift laesst das Gate fehlschlagen.",
+        "# Geprueft durch tools/atc-sc-validator/check_contract_registry.py (Gate A1-A9).",
+        "# source_sha256 bindet jeden Eintrag an die Quelle, abi_sha256 an die ABI;",
+        "# Drift in Quelle oder Schnittstelle laesst das Gate fehlschlagen.",
         "contracts:",
     ]
     for e in sorted(reg["contracts"], key=lambda x: str(x.get("contract_id"))):
         lines.append(f"  - contract_id: {e.get('contract_id')}")
         for key in REQUIRED_FIELDS[1:]:
             lines.append(f"    {key}: {fmt(e.get(key))}")
-        for key in ("source_sha256", "network", "audit_ref", "note"):
+        for key in ("source_sha256", "abi_sha256", "network", "audit_ref", "note"):
             if e.get(key) not in (None, ""):
                 lines.append(f"    {key}: {fmt(e.get(key))}")
         lines.append("")
@@ -300,6 +354,7 @@ def write_registry(reg: dict, path: Path) -> None:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--write-hashes", action="store_true", help="source_sha256 in der Registry aktualisieren")
+    ap.add_argument("--write-abis", action="store_true", help="abi_sha256 in der Registry aktualisieren")
     ap.add_argument("--json", action="store_true", help="Befunde als JSON")
     ap.add_argument(
         "--atc",
@@ -323,7 +378,14 @@ def main(argv: list[str] | None = None) -> int:
     drift = [f for f in findings if f["gate"] == "A3" and "fehlt" not in f["detail"]]
     if args.write_hashes and drift:
         reg = load_registry(REGISTRY)
-        check_registry(ROOT, REGISTRY, DEPLOYMENTS, None)  # Hashes in-place nachziehen
+        check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin, reg=reg)  # Hashes in-place nachziehen
+        write_registry(reg, REGISTRY)
+        findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin)
+
+    abi_drift = [f for f in findings if f["gate"] == "A9"]
+    if args.write_abis and abi_drift:
+        reg = load_registry(REGISTRY)
+        check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin, reg=reg)  # ABIs in-place nachziehen
         write_registry(reg, REGISTRY)
         findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin)
 
