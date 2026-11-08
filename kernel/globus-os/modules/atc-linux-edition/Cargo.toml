@@ -1,0 +1,13 @@
+[package]
+name = "atc-linux-edition"
+version = "0.1.0"
+edition = "2021"
+description = "Linux-native Desktop-Client fuer das A-TownChain-Oekosystem (Rust, std, egui GUI)"
+
+[[bin]]
+name = "atc-linux-edition"
+path = "src/main.rs"
+
+[dependencies]
+eframe = "0.37"
+egui = "0.37"
