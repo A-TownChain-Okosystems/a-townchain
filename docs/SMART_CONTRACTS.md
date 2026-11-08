@@ -1,0 +1,96 @@
+---
+document_id: ATC-DOC-SMARTCONTRACTS-001
+title: "ATC Smart Contracts — Bestand, Registry und Gate-Status"
+version: 1.0.0
+status: active
+owner: A-TownChain-Okosystems
+created: 2026-11-08
+updated: 2026-11-08
+standard: ATC-STD-MD-001
+---
+
+# ATC Smart Contracts — Bestand, Registry und Gate-Status
+
+## 1. Wo die Contracts liegen
+
+Alle Smart Contracts des Ökosystems sind ATCLang-Quellen (`.atc`) unter
+`apps/atc-contracts/` und laufen auf der ATC-VM, nicht auf einer EVM. Die Registry
+`standards/contracts/registry/contracts.yaml` ist der SSOT (SC-019) und war zuletzt
+auf Python-Pfade aus `a-townchain-os` verdrahtet, die im Monorepo nicht mehr
+existieren. Dieser Drift ist behoben: jeder Eintrag zeigt auf eine reale Datei und
+trägt einen `source_sha256`.
+
+## 2. Bestand (16 Contracts)
+
+| ID | Name | Kategorie | Status |
+|---|---|---|---|
+| ATC-SC-CORE-001 | Base Contract (Basis-ABI) | SC-CORE | development |
+| ATC-SC-CORE-002 | Smart-Contract-Suite | SC-CORE | development |
+| ATC-SC-TOKEN-001 | ATCoiN (ATC-89) | SC-TOKEN | development |
+| ATC-SC-TOKEN-002 | ATC-8300 Standard | SC-TOKEN | development |
+| ATC-SC-TOKEN-003 | ATC-8300 Token-Instanz | SC-TOKEN | development |
+| ATC-SC-TOKEN-004 | Generischer Token | SC-TOKEN | development |
+| ATC-SC-TOKEN-005 | ATC-001 Genesis (v0.1) | SC-TOKEN | archived |
+| ATC-SC-DEFI-001 | Revenue Share | SC-DEFI | development |
+| ATC-SC-DEFI-002 | ATC-13 Fractional Ownership | SC-DEFI | development |
+| ATC-SC-GOVERNANCE-001 | ATC-17 Governance DAO | SC-GOVERNANCE | development |
+| ATC-SC-BRIDGE-001 | ATC-91 Cross-Chain Bridge | SC-BRIDGE | development |
+| ATC-SC-BRIDGE-002 | ATC-20 Wrapped Synthetic Assets | SC-BRIDGE | development |
+| ATC-SC-MINING-001 | ATC-15 Proof of AI Mining | SC-MINING | development |
+| ATC-SC-GAMEFI-001 | ATC-16 Referral Multi-Tier Rewards | SC-GAMEFI | development |
+| ATC-SC-NFT-001 | ATCAvatar NFT (Beispiel) | SC-NFT | example |
+| ATC-SC-REGISTRY-001 | On-Chain Contract Registry | SC-REGISTRY | development |
+
+Nicht registriert und bewusst ausgeschlossen: `apps/atc-contracts/modules/**`
+(Spiegel der Repo-Wurzel), `exec_chain/**` (VM-Ausführungsfixtures) und
+`**/tests/**` (Contract-Tests). Die Ausschlüsse stehen in der Registry und werden
+vom Gate respektiert.
+
+## 3. Gate SC-G0: Registry-Konsistenz
+
+`tools/atc-sc-validator/check_contract_registry.py` prüft sieben Punkte:
+
+- **A1** Pflichtfelder je Eintrag
+- **A2** `contract_path` existiert
+- **A3** `source_sha256` stimmt (Drift-Erkennung)
+- **A4** keine Waisen: jede Contract-Quelle ist registriert
+- **A5** Status-Konsistenz: `deployed` braucht Netz und Deploy-Record,
+  `verified`/`audited` brauchen Evidence, `archived` einen Archivmarker
+- **A6** ID-Format `ATC-SC-<KATEGORIE>-<NNN>`, eindeutig, Kategorie passt zur ID
+- **A7** Kategorie im Enum nach SC-001
+
+Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde.
+`--write-hashes` zieht Hashes nach einer bewussten Quelländerung nach.
+
+Gegenprobe: mit absichtlich verfälschtem Hash, fehlendem Pfad und einer
+Waisenquelle meldet das Gate genau diese drei Befunde und endet mit Exit 1.
+13 Regressionstests decken jedes Gate einzeln ab.
+
+## 4. Evidenz der Implementierungen
+
+- Alle 16 registrierten Contract-Quellen bestehen `atc check` (ATCLang-Parser und
+  Typprüfung), Exit 0.
+- Neun Contract-Tests liegen als `.atc` unter `apps/atc-contracts/exec_chain/tests/`
+  und laufen über den VM-Gate im Smoke-Test (`t10b_mint_positive_accept.ops`:
+  12 Ops, PASS).
+
+## 5. Was die Gates noch nicht abdecken
+
+- **Kein Deployment.** `deployments.yaml` ist leer; alle Contracts stehen auf
+  `development`. Damit sind SC-G2 (Audit), SC-G5 (Deploy-Record) und die
+  Netzwerk-Gates nicht berührt, und `verified`/`audited` sind überall `false`.
+- **Kein Audit.** Für keinen Contract existiert ein Audit-Referenznachweis
+  (`audit_ref`), obwohl SC-005 eine Audit-Pipeline verlangt.
+- **Invarianten-Tests sind dünn.** Neun VM-Tests für 16 Contracts, überwiegend für
+  ATC-8300. Governance, Bridge und Revenue haben keinen eigenen Testfall.
+- **CI-Anbindung fehlt.** Das Gate läuft lokal; die Integration als CI-Schritt ist
+  durch fehlenden workflow-Scope des Agent-Tokens blockiert (bekannte
+  Owner-Aktion, F-009/F-010).
+
+## 6. Nächste Schritte
+
+1. Invarianten-Tests für Governance, Bridge und Revenue (SC-004).
+2. Audit-Pipeline aufsetzen und `audit_ref` bei den drei Kern-Contracts füllen
+   (SC-005), dann `audited: true` setzen.
+3. Deploy-Record-Format beim ersten Devnet-Deploy befüllen (SC-006).
+4. Registry-Gate in CI verankern, sobald der workflow-Scope verfügbar ist.
