@@ -17,7 +17,7 @@ standard: ATC-STD-MD-001
 
 ## Subsysteme
 
-1. **Chain Protocol Core:** Block-/Transaktionsmodell, Chain-ID 658467, Validierungsregeln (`modules/`).
+1. **Chain Protocol Core:** Block-/Transaktionsmodell, Chain-ID 658467, Validierungsregeln (`components/node`, `components/wallet`, `components/oracle` — kanonisch seit der Härtung 08.11.2026).
 2. **Hybrid-Konsens-Bindung:** PoW+PoS+PoH — Konsens-Implementierung liegt kanonisch in `atc-algorithm`.
 3. **ZKP-Integration:** Proof-Verifikation — kryptografische Primitive kanonisch in `atc-zkp`.
 4. **On-Chain-Governance:** Abstimmungs- und Parameter-Änderungsmechanismen.
@@ -43,3 +43,16 @@ standard: ATC-STD-MD-001
 
 > Ehrlichkeitsregel: CLAIMED ≠ PASS · IMPLEMENTED ≠ VERIFIED — der verbindliche Implementierungsstand
 > liegt ausschließlich in `.atc/evidence/evidence.yaml`, nicht in dieser Spezifikation.
+
+## Ablage-Status (Stand 08.11.2026)
+
+- **Kanonisch** für Node, Wallet und Oracle ist `components/*` in diesem Repo. Dort liegen
+  Transaktionsprüfung (Mempool + TxLedger), DID-Registry mit Rotation, ECDSA-Validatoren und
+  256-Bit-Blockhashes samt Tests.
+- `modules/*` (atc-blockchain, atc-dns, atc-governance, atc-testnet, atc-zkp, atcnet) ist
+  **Legacy** und wird nicht mehr fortgeführt; `modules/atc-zkp` steht in Konkurrenz zu
+  `components/zkp` und ist zur Stilllegung vorgesehen.
+- Die Standalone-Repos `atc-wallet` und `atc-oracle` sind archiviert; `atc-node` ist um vier
+  Module und die P0-Härtung zurück und wird derzeit als Mirror behandelt. Die Entscheidung
+  "Monorepo-SSOT vs. Standalone-SSOT" ist offen — Evidenz in
+  `a-townchain-ecosystem/docs/audit/2026-11-08-placement-audit.md`.
