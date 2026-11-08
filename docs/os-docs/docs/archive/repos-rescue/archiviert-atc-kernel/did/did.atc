@@ -1,0 +1,38 @@
+// K-Sprint 6 — DID & Remote Capability Tickets (ATCLang Interface)
+// Rust: kernel/src/did.rs (350 lines, 15 tests)
+// Agent: Aurora #2 (6a275618)
+
+import "std/chain.atc" as Chain
+
+struct Did {
+    value: String,
+}
+
+trait CryptoProvider {
+    fn sign(data: List<u8>) -> List<u8>
+    fn verify(data: List<u8>, signature: List<u8>) -> bool
+    fn public_key() -> List<u8>
+}
+
+struct SoftwareSigner {
+    name: String,
+}
+
+struct Ed25519Signer {
+    seed: List<u8>,
+}
+
+module Kernel::Did {
+    contract DidManager {
+        fn new(value: String) -> Did
+        fn as_str(did: Did) -> String
+        fn verify_did(did: Did) -> bool
+    }
+
+    contract SignerRegistry {
+        fn create_signer(name: String) -> SoftwareSigner
+        fn create_ed25519_from_seed(seed: List<u8>) -> Ed25519Signer
+        fn sign(signer: SoftwareSigner, data: List<u8>) -> List<u8>
+        fn verify_sign(signer: SoftwareSigner, data: List<u8>, sig: List<u8>) -> bool
+    }
+}
