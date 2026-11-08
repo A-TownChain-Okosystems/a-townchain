@@ -1,0 +1,134 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-01 — ATCNet Bootstrap Client
+// Sprint 2.2 | Non-EVM | SHA-256 | Chain-ID 9000
+// Migrated from: modules/atcnet/bootstrap_client.py
+// ─────────────────────────────────────────────────────────────
+
+const BOOTSTRAP_NODES: List<String> = [
+    "bootstrap.atcnet.io:4001",
+    "bootstrap2.atcnet.io:4001",
+    "localhost:4001",
+]
+
+const ANNOUNCE_TIMEOUT: u8 = 5
+const PING_TIMEOUT: u8 = 3
+const GET_PEERS_TIMEOUT: u8 = 5
+
+struct Peer {
+    node_id: String,
+    host: String,
+    port: u16,
+    last_seen: u64,
+}
+
+contract BootstrapClient {
+    state node_id: String
+    state host: String
+    state port: u16
+    state peers: List<Peer>
+
+    event Announced(node_id: String, peer_count: u16)
+    event PongReceived(from_host: String)
+    event PeersReceived(count: u16)
+    event BootstrapFailed(host: String, reason: String)
+
+    fn init(node_id: String, host: String, port: u16) {
+        self.node_id = node_id
+        self.host = host
+        self.port = port
+    }
+
+    // ── Announce to bootstrap and get peer list ─────
+    fn announce() -> List<Peer> {
+        let msg = JSON::encode({
+            "type": "ANNOUNCE",
+            "node_id": self.node_id,
+            "host": self.host,
+            "port": self.port,
+            "capabilities": ["relay", "validator"]
+        })
+        for i in 0..BOOTSTRAP_NODES.len() {
+            let entry = BOOTSTRAP_NODES[i]
+            let parts = String::split(entry, ":")
+            let bs_host = parts[0]
+            let bs_port = Int::parse(parts[1])
+            let resp = Net::udp_send(bs_host, bs_port, msg, ANNOUNCE_TIMEOUT)
+            if resp == "" {
+                emit BootstrapFailed(bs_host, "No response")
+                continue
+            }
+            let parsed = JSON::decode(resp)
+            if parsed.get("type") == "PEER_LIST" {
+                let raw_peers = parsed.get("peers")
+                for j in 0..raw_peers.len() {
+                    let rp = raw_peers[j]
+                    let peer = Peer {
+                        node_id: rp.get("node_id"),
+                        host: rp.get("host"),
+                        port: rp.get("port"),
+                        last_seen: rp.get("last_seen", 0),
+                    }
+                    self.peers.push(peer)
+                }
+                emit Announced(self.node_id, self.peers.len())
+                return self.peers
+            }
+        }
+        return self.peers
+    }
+
+    // ── Ping a bootstrap node ───────────────────────
+    fn ping(bs_host: String, bs_port: u16) -> bool {
+        let msg = JSON::encode({
+            "type": "PING",
+            "node_id": self.node_id
+        })
+        let resp = Net::udp_send(bs_host, bs_port, msg, PING_TIMEOUT)
+        if resp == "" {
+            return false
+        }
+        let parsed = JSON::decode(resp)
+        if parsed.get("type") == "PONG" {
+            emit PongReceived(bs_host)
+            return true
+        }
+        return false
+    }
+
+    // ── Get peers from bootstrap ────────────────────
+    fn get_peers(limit: u16) -> List<Peer> {
+        let msg = JSON::encode({
+            "type": "GET_PEERS",
+            "limit": limit
+        })
+        for i in 0..BOOTSTRAP_NODES.len() {
+            let entry = BOOTSTRAP_NODES[i]
+            let parts = String::split(entry, ":")
+            let bs_host = parts[0]
+            let bs_port = Int::parse(parts[1])
+            let resp = Net::udp_send(bs_host, bs_port, msg, GET_PEERS_TIMEOUT)
+            if resp == "" {
+                continue
+            }
+            let parsed = JSON::decode(resp)
+            if parsed.get("type") == "PEER_LIST" {
+                let result = []
+                let raw_peers = parsed.get("peers")
+                for j in 0..raw_peers.len() {
+                    let rp = raw_peers[j]
+                    let peer = Peer {
+                        node_id: rp.get("node_id"),
+                        host: rp.get("host"),
+                        port: rp.get("port"),
+                        last_seen: 0,
+                    }
+                    result.push(peer)
+                }
+                emit PeersReceived(result.len())
+                return result
+            }
+        }
+        return []
+    }
+}
