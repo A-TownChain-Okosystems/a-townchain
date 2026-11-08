@@ -1,0 +1,31 @@
+{
+  "categories": [
+    {
+      "title": "🚀 Features",
+      "labels": ["enhancement", "feature"]
+    },
+    {
+      "title": "🐛 Bug Fixes",
+      "labels": ["bug", "fix"]
+    },
+    {
+      "title": "📝 Documentation",
+      "labels": ["documentation"]
+    },
+    {
+      "title": "🔧 Maintenance",
+      "labels": ["maintenance", "refactor", "consolidation"]
+    },
+    {
+      "title": "🔒 Security",
+      "labels": ["security"]
+    },
+    {
+      "title": "🧪 Testing",
+      "labels": ["testing", "test"]
+    }
+  ],
+  "template": "## What Changed\n\n{{#categories}}\n### {{title}}\n{{#commits}}\n- {{message}} ({{sha}})\n{{/commits}}\n{{/categories}}\n",
+  "pr_template": "- {{title}} (#{{number}}) @{{author}}",
+  "empty_template": "No changes in this release"
+}
