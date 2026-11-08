@@ -1,0 +1,18 @@
+# GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Phase 1) - NICHT MANUELL BEARBEITEN
+authority: A-TownChain Ecosystems
+category: enterprise
+conformance:
+  required: true
+dependencies:
+- ATC-AAS-018
+- ATC-STD-AI-DEV-009
+- ATC-STD-BUG-001
+id: ATC-ENT-014
+implementation:
+  status: specification_only
+normative: true
+owner: ShivaCoreDev
+source_file: standards/enterprise/ATC-ENT-014.md
+status: approved
+title: Audit & Nachvollziehbarkeit Standard (P1)
+version: 1.1.0
