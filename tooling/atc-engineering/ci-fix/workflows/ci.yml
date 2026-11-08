@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  structure:
+    name: Struktur- und Governance-Validierung
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pflichtdokumente pruefen
+        run: |
+          fail=0
+          for doc in README.md AGENTS.md ARCHITECTURE.md ROADMAP.md STATUS.md \
+                     CHANGELOG.md SECURITY.md CONTRIBUTING.md LICENSE \
+                     CODEOWNERS docs/architecture/ATC-ENGINEERING-SPEC-001.md \
+                     .atc/evidence/evidence.yaml; do
+            if [ ! -f "$doc" ] && [ ! -f ".github/$doc" ]; then
+              echo "FEHLT: $doc"; fail=1
+            fi
+          done
+          [ $fail -eq 0 ] && echo "Struktur: OK" || { echo "Struktur: FAIL"; exit 1; }
+      - name: Spec-Version gebunden
+        run: grep -q "Version | 1.0.0" docs/architecture/ATC-ENGINEERING-SPEC-001.md || { echo "SPEC-Version ungebunden"; exit 1; }
+      - name: STATUS ehrlich (kein IMPLEMENTED ohne Code)
+        run: |
+          if grep -q "^| Status | IMPLEMENTED" STATUS.md && [ ! -f Cargo.toml ]; then
+            echo "CLAIMED != PASS: IMPLEMENTED ohne Cargo.toml"; exit 1
+          fi
+          echo "STATUS: ehrlich"
