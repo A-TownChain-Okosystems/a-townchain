@@ -1,0 +1,310 @@
+# ATC-LAYER-MAPPING-001 — Component-to-Layer Mapping
+# SSOT: a-townchain-ecosystem
+# Status: DRAFT (owner review pending)
+# Version: 0.1.0
+# Date: 2026-10-15
+#
+# Maps every component from the component-function catalog
+# (ATC-COMPONENT-FUNCTION-CATALOG-001.json) to the canonical
+# layer architecture defined in ATC-LAYER-REGISTRY-001.yaml.
+# This mapping REPLACES the flat 'layer' field in the catalog.
+
+schema_id: ATC-LAYER-MAPPING-001
+schema_version: "0.1.0"
+generated: "2026-10-15"
+status: DRAFT
+registry_reference: docs/architecture/layers/ATC-LAYER-REGISTRY-001.yaml
+catalog_reference: docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.json
+
+# Legend:
+#   primary_layer:  Exactly one main layer (L0-L10) or cross-cutting layer (X1-X8)
+#   cross_cutting:  Additional cross-cutting layers this component touches
+#   install_models: Supported installation models (A=native, B=Windows, C=Linux, D=dev/test)
+#   old_layer:      Previous flat layer assignment in the catalog (for migration traceability)
+
+component_mappings:
+  - component_id: COMP-ALGO
+    name: "ATC-Algorithm"
+    primary_layer: L5
+    cross_cutting_layers: [X6]
+    install_models: [A, B, C, D]
+    old_layer: L3
+    mapping_reason: "Consensus & algorithms (blockchain sub-layer)"
+    readiness: BLOCKED
+
+  - component_id: COMP-ALGO-SPEC
+    name: "ATC-Algorithm Specification Support"
+    primary_layer: X5
+    cross_cutting_layers: []
+    install_models: [D]
+    old_layer: L7
+    mapping_reason: "Normative consensus/algorithm specification"
+    readiness: RESIDUAL
+
+  - component_id: COMP-ATC-ENG
+    name: "atc-engineering"
+    primary_layer: X6
+    cross_cutting_layers: [X8]
+    install_models: [D]
+    old_layer: L7
+    mapping_reason: "Testing, verification & evidence (Testing cross-cutting)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-AURORA
+    name: "Aurora AI"
+    primary_layer: L8
+    cross_cutting_layers: [X1, X2]
+    install_models: [A, B, C, D]
+    old_layer: L2
+    mapping_reason: "Aurora AI platform"
+    readiness: RESIDUAL
+
+  - component_id: COMP-CHAIN
+    name: "A-TownChain Blockchain Core"
+    primary_layer: L5
+    cross_cutting_layers: [X1, X3]
+    install_models: [A, B, C, D]
+    old_layer: L3
+    mapping_reason: "A-TownChain blockchain core"
+    readiness: RESIDUAL
+
+  - component_id: COMP-CHRONICLES
+    name: "Genesis Chronicles"
+    primary_layer: L9
+    cross_cutting_layers: []
+    install_models: [A, B, C, D]
+    old_layer: L6
+    mapping_reason: "Genesis Chronicles application (GameFi)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-COMPUTE
+    name: "ATC Compute"
+    primary_layer: L0
+    cross_cutting_layers: [L8]
+    install_models: [A, D]
+    old_layer: L5
+    mapping_reason: "Hardware compute (L0), with AI accelerator sub-components in L8"
+    readiness: RESIDUAL
+
+  - component_id: COMP-CONTRACTS
+    name: "ATC Contracts and Registry"
+    primary_layer: L6
+    cross_cutting_layers: []
+    install_models: [A, B, C, D]
+    old_layer: L5
+    mapping_reason: "Smart contracts & contract registry"
+    readiness: RESIDUAL
+
+  - component_id: COMP-DEMO
+    name: "Demo Repository Fixture"
+    primary_layer: L9
+    cross_cutting_layers: [X6]
+    install_models: [D]
+    old_layer: L7
+    mapping_reason: "Demo repository fixture (dev/test model D only)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-DOCS
+    name: "Architecture Documentation Hub"
+    primary_layer: X5
+    cross_cutting_layers: [X6]
+    install_models: [D]
+    old_layer: L7
+    mapping_reason: "Architecture documentation hub (Standards & Governance)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-ECOSYSTEM
+    name: "a-townchain-ecosystem"
+    primary_layer: X5
+    cross_cutting_layers: [X6]
+    install_models: [D]
+    old_layer: L7
+    mapping_reason: "Ecosystem catalog, integration control & compliance (Governance)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-GENESIS
+    name: "Genesis Engine"
+    primary_layer: L9
+    cross_cutting_layers: []
+    install_models: [A, B, C, D]
+    old_layer: L5
+    mapping_reason: "Genesis Engine application (GameFi)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-GFF
+    name: "Genesis Franchise Factory"
+    primary_layer: L9
+    cross_cutting_layers: []
+    install_models: [A, B, C, D]
+    old_layer: L6
+    mapping_reason: "Genesis Franchise Factory application (GameFi)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-GLOBUS
+    name: "GlobusOS"
+    primary_layer: L3
+    cross_cutting_layers: [X3, X4, X7]
+    install_models: [A, D]
+    old_layer: L4
+    mapping_reason: "GlobusOS operating system"
+    readiness: BLOCKED
+
+  - component_id: COMP-IDE
+    name: "ATC IDE"
+    primary_layer: L7
+    cross_cutting_layers: []
+    install_models: [A, B, C, D]
+    old_layer: L6
+    mapping_reason: "IDE & editor support (L7 sub-layer 7-4)"
+    readiness: BLOCKED
+
+  - component_id: COMP-LANG
+    name: "ATCLang"
+    primary_layer: L7
+    cross_cutting_layers: [X6]
+    install_models: [A, B, C, D]
+    old_layer: L0
+    mapping_reason: "ATCLang compiler & developer platform"
+    readiness: RESIDUAL
+
+  - component_id: COMP-LAUNCHPAD
+    name: "ATC Launchpad"
+    primary_layer: L10
+    cross_cutting_layers: []
+    install_models: [A, B, C, D]
+    old_layer: L5
+    mapping_reason: "Installer & deployment (L10 sub-layer 10-1)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-MARKET
+    name: "ATC Marketplace"
+    primary_layer: L9
+    cross_cutting_layers: []
+    install_models: [A, B, C, D]
+    old_layer: L5
+    mapping_reason: "ATC Marketplace application"
+    readiness: RESIDUAL
+
+  - component_id: COMP-NODE
+    name: "ATC Node Runtime"
+    primary_layer: L5
+    cross_cutting_layers: [X7]
+    install_models: [A, B, C, D]
+    old_layer: L5
+    mapping_reason: "Blockchain node runtime (L5 sub-layer 5-1)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-ORG-GOV
+    name: "Organization GitHub Governance"
+    primary_layer: X5
+    cross_cutting_layers: []
+    install_models: [D]
+    old_layer: L7
+    mapping_reason: "Organization GitHub governance (Standards & Governance)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-OS-INTEGRATION
+    name: "A-TownChain OS Integration"
+    primary_layer: L10
+    cross_cutting_layers: [X3]
+    install_models: [A, D]
+    old_layer: L7
+    mapping_reason: "OS integration matrix & traceability (L10)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-SDK
+    name: "ATC SDK / CLI / Package Tooling"
+    primary_layer: L7
+    cross_cutting_layers: [X3]
+    install_models: [A, B, C, D]
+    old_layer: L5
+    mapping_reason: "SDK & client libraries (L7 sub-layer 7-2)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-SHIVA
+    name: "ShivaCore Kernel"
+    primary_layer: L2
+    cross_cutting_layers: [X1, X2, X3]
+    install_models: [A, D]
+    old_layer: L1
+    mapping_reason: "ShivaCore Kernel & TCB"
+    readiness: BLOCKED
+
+  - component_id: COMP-SHIVA-SPEC
+    name: "ShivaCore Specification Support"
+    primary_layer: X5
+    cross_cutting_layers: []
+    install_models: [D]
+    old_layer: L7
+    mapping_reason: "Normative kernel specification (X5: Standards & Governance)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-STANDARDS
+    name: "ATC Standards"
+    primary_layer: X5
+    cross_cutting_layers: []
+    install_models: [D]
+    old_layer: L7
+    mapping_reason: "Normative standards registry (Standards & Governance)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-STORAGE
+    name: "ATC Storage"
+    primary_layer: X4
+    cross_cutting_layers: []
+    install_models: [A, B, C, D]
+    old_layer: L5
+    mapping_reason: "Data, state & storage (cross-cutting)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-TOOLCHAIN
+    name: "ATC Toolchain"
+    primary_layer: L7
+    cross_cutting_layers: [X8]
+    install_models: [A, B, C, D]
+    old_layer: L5
+    mapping_reason: "Developer toolchain (L7 sub-layer 7-3)"
+    readiness: RESIDUAL
+
+  - component_id: COMP-VM
+    name: "ATC-VM"
+    primary_layer: L6
+    cross_cutting_layers: [X1]
+    install_models: [A, B, C, D]
+    old_layer: L3
+    mapping_reason: "ATC-VM bytecode execution & smart contract runtime"
+    readiness: RESIDUAL
+
+  - component_id: COMP-VM-SPEC
+    name: "ATC-VM Specification Support"
+    primary_layer: X5
+    cross_cutting_layers: []
+    install_models: [D]
+    old_layer: L7
+    mapping_reason: "Normative VM specification"
+    readiness: RESIDUAL
+
+  - component_id: COMP-ZKP
+    name: "ATC Zero-Knowledge Proof Layer"
+    primary_layer: X1
+    cross_cutting_layers: []
+    install_models: [A, B, C, D]
+    old_layer: L5
+    mapping_reason: "Zero-knowledge proofs (Security & Trust cross-cutting layer)"
+    readiness: BLOCKED
+
+# Coverage summary:
+#   L0: 1 component(s)
+#   L10: 2 component(s)
+#   L2: 1 component(s)
+#   L3: 1 component(s)
+#   L5: 3 component(s)
+#   L6: 2 component(s)
+#   L7: 4 component(s)
+#   L8: 1 component(s)
+#   L9: 5 component(s)
+#   X1: 1 component(s)
+#   X4: 1 component(s)
+#   X5: 7 component(s)
+#   X6: 1 component(s)
+# Total: 30 components mapped to 13 layers
