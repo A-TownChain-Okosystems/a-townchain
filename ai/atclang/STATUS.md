@@ -68,6 +68,11 @@ Verified by `cargo test --workspace` (498 tests) and `./tools/ecosystem.sh test`
   symbols sorted, so declaration order and re-runs cannot change the hash.
   `atc abi --hash` prints only the hashes. The ABI describes the interface, not
   the execution: it is not bytecode and contract codegen (G11) stays open.
+- Contract codegen (G11) S1: `atc_core::storage::StorageLayout` ordnet Zustand
+  deterministisch ABI-Slots zu (32 Byte, `(Vertrag, Feld)` sortiert,
+  Kollisionsschutz, `layout_version`, `layout_hash`); `atc storage <ziel>` zeigt
+  Layouts. 34 Quellen mit Zustand, 1 vollstaendig S1-adressierbar. State-Instruktionen
+  sind durch den Freeze von ATC-BC-001 blockiert und brauchen eine ATCB-v2-Version.
 - Contract codegen (G11) scoping: `docs/CODEGEN_G11_SCOPE.md` inventories what is
   missing from the verified code (no state slots, no require/emit, no types
   beyond i64, no host calls; contract bodies are rejected by the lowering), lays
