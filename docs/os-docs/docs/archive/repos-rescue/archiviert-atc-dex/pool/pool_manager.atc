@@ -1,0 +1,16 @@
+// ATCLang v0.3 — Liquidity Pool Management
+// Create, add/remove liquidity
+// ATC-Standard: ATC-88
+
+module pool_manager {
+    struct PoolPosition {
+        pool_id: string,
+        provider: string,
+        lp_tokens: int,
+        lock_period: int
+    }
+    
+    fn add_liquidity() {
+        // Adds tokens to liquidity pool and mints LP tokens
+    }
+}
