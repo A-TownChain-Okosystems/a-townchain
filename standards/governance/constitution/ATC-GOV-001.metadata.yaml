@@ -1,0 +1,18 @@
+# GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Phase 1) - NICHT MANUELL BEARBEITEN
+authority: A-TownChain-Okosystems
+category: governance
+conformance:
+  required: true
+dependencies: []
+id: ATC-GOV-001
+implementation:
+  status: specification_only
+normative: true
+owner: Michael (Owner-Entwurf) / Governance Authority
+source_file: governance/constitution/ATC-GOV-001.md
+status: approved
+title: 'A-TownChain Governance Constitution (Level-0-Verfassung: 5-Ebenen-Hierarchie,
+  8 Authorities ohne God Mode, Decision Rights Matrix, Quoren 2/3-of-5/4-of-7 mit
+  Timelock, Emergency/Exception/COI/Appeals/Succession, AI-Agent-Pflichtkette, 8 Governance
+  Gates, GitHub-Enforcement, G0-G4-Profile, Governance Score mit harten Deckeln, Amendment-Prozess)'
+version: 1.0.0
