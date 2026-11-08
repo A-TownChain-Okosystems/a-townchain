@@ -1,0 +1,131 @@
+{
+  "id": "ATC-KMS-REPOSITORY-STRUCTURE",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "architecture",
+  "title": "Repository structure: A-TownChain-Okosystems/a-townchain-ecosystem",
+  "context": "Automatically indexed repository structure.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "github",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "repository",
+    "structure"
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-README-MD-B335630551"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-A-TOWNCHAIN-D50C326A1B"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-A-TOWNCHAIN-OS-28B6B638D6"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-A-TOWNCHAIN-OS-DOCS-C0EC4E01A1"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-ALGORITHM-E0BA364921"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-COMPUTE-EE882A5384"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-CONTRACTS-D3D9C3AEA8"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-EXPLORER-33F9C9F9F5"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-INDEXER-FBBE1FF039"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-INTEROP-B4C9288AD5"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-LAUNCHPAD-EF388A71AD"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-MARKETPLACE-ECF7448F44"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-MINING-7AD0735AEF"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-NODE-25E4F290C9"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-ORACLE-E903814FFA"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-SDK-48E4BE24F5"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-SHIVACORE-C68541EA29"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-STANDARDS-4D797FB528"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-STORAGE-156D99040E"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-VM-BCCE109556"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-WALLET-C1C9E8BBC1"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATC-ZKP-5A7A7539DA"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-ATCLANG-996698D25E"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-AURORA-AI-1C5D3633B6"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-GENESIS-CHRONICLES-D5DF23B2EB"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-GENESIS-ENGINE-39DD0E5B1F"
+    },
+    {
+      "relation": "contains",
+      "target": "ATC-KMS-COMPONENT-GLOBUS-OS-CD602E3D08"
+    }
+  ],
+  "content": "Top-level entries: \"components, .atc, .github, .gitignore, ARCHITECTURE.md, CHANGELOG.md, CODEOWNERS, CONTRIBUTING.md, Cargo.lock, Cargo.toml, LICENSE, MIGRATION_MANIFEST.yaml, README.md, SDK_ARCHITECTURE.md, SECURITY.md, catalog, competitive-monitoring, components, control-plane, docs, integration, schemas, tests, tools\n\nComponents: README.md, a-townchain, a-townchain-os, a-townchain-os-docs, atc-algorithm, atc-compute, atc-contracts, atc-explorer, atc-indexer, atc-interop, atc-launchpad, atc-marketplace, atc-mining, atc-node, atc-oracle, atc-sdk, atc-shivacore, atc-standards, atc-storage, atc-vm, atc-wallet, atc-zkp, atclang, aurora-ai, genesis-chronicles, genesis-engine, globus-os"
+}
