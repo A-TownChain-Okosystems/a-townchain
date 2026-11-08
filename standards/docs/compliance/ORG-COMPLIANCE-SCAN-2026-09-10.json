@@ -1,0 +1,428 @@
+{
+ "date": "2026-09-10",
+ "scr": "SCR-0074",
+ "results": [
+  {
+   "repo": ".github",
+   "exempt": "Governance-Hub (kein Produkt-Repo, eigenes Standard-Regime)",
+   "must_ok": null,
+   "missing": [],
+   "should_missing": []
+  },
+  {
+   "repo": "a-townchain",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "ARCHITECTURE.md",
+    "ROADMAP.md",
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "a-townchain-os",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": true,
+   "impl": false,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "a-townchain-os-docs",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "CONTRIBUTING.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [
+    "package.json",
+    "aistudio/package.json"
+   ],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": false,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-algorithm",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": false,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-compute",
+   "must_ok": 10,
+   "missing": [
+    "STATUS.md"
+   ],
+   "should_missing": [
+    "CONTRIBUTING.md",
+    "ARCHITECTURE.md",
+    "ROADMAP.md",
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": false,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-contracts",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "CONTRIBUTING.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-explorer",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "CONTRIBUTING.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-indexer",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-interop",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-launchpad",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": false,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-marketplace",
+   "must_ok": 10,
+   "missing": [
+    "STATUS.md"
+   ],
+   "should_missing": [
+    "CONTRIBUTING.md",
+    "ARCHITECTURE.md",
+    "ROADMAP.md",
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-mining",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": false,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-node",
+   "must_ok": 10,
+   "missing": [
+    "STATUS.md"
+   ],
+   "should_missing": [
+    "CONTRIBUTING.md",
+    "ARCHITECTURE.md",
+    "ROADMAP.md",
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": false,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-oracle",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": false,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-sdk",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "CONTRIBUTING.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-shivacore",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-standards",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": false,
+   "workflows": 2
+  },
+  {
+   "repo": "atc-storage",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": false,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-vm",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": true,
+   "impl": false,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-wallet",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atc-zkp",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "atclang",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "aurora-ai",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [
+    "modules/atc-aistudio/package.json"
+   ],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "genesis-chronicles",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "CONTRIBUTING.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "genesis-engine",
+   "must_ok": 11,
+   "missing": [],
+   "should_missing": [
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  },
+  {
+   "repo": "globus-os",
+   "must_ok": 10,
+   "missing": [
+    "STATUS.md"
+   ],
+   "should_missing": [
+    "CONTRIBUTING.md",
+    "ARCHITECTURE.md",
+    "ROADMAP.md",
+    "FILE_REGISTER.md"
+   ],
+   "gov_ci": true,
+   "badge": false,
+   "liz_hits": [],
+   "unbelegter_pass": false,
+   "impl": true,
+   "specs": true,
+   "workflows": 1
+  }
+ ]
+}
