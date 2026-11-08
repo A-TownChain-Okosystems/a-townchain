@@ -1,0 +1,21 @@
+{
+  "id": "ATC-KMS-SOURCE-COMPONENTS-A-TOWNCHAIN-COMPONENTS-INDEXER-ARCHITECTURE-MD-A79B9196D8",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "evidence",
+  "title": "Indexed source: components/a-townchain/components/indexer/ARCHITECTURE.md",
+  "context": "Repository architecture, release, security, migration, or build source.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "file",
+    "ref": "components/a-townchain/components/indexer/ARCHITECTURE.md",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "source"
+  ],
+  "links": [],
+  "content": "Source file present at components/a-townchain/components/indexer/ARCHITECTURE.md."
+}
