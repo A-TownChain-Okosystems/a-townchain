@@ -1,0 +1,12 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: enterprise
+family: LEGACY-SERIES
+family_id: LEGACY
+file: standards/enterprise/ATC-ENT-012.md
+mandate: ''
+registry_version: 1
+standard_id: ATC-ENT-012
+status: approved
+title: Wissensmanagement & Consistency-Gate Standard (P1)
+version: 1.1.0
