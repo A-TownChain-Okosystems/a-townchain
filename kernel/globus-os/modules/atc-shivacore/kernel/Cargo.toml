@@ -33,7 +33,6 @@ lazy_static = { version = "1.5", features = ["spin_no_std"] }
 linked_list_allocator = "0.10"
 noto-sans-mono-bitmap = { version = "0.3", default-features = false, features = ["regular", "size_16"], optional = true }
 rand = { version = "0.10", default-features = false }
-ed25519-dalek = { version = "3.0", default-features = false, features = ["alloc"] }
 libm = "0.2"
 globus-diagnostics = { path = "../../../system/diagnostics" }
 libshivacore = { path = "../../../system/shivacore-api" }
