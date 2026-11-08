@@ -35,7 +35,7 @@ fn main() -> std::io::Result<()> {
         eprintln!(
             "Devnet-Kette: Hoehe {} | Best-Hash {} | Blockmodell SCR-0117/0118 (kein Konsens, Devnet-MVP)",
             k.height(),
-            k.best_hash()
+            atc_node::chain::hash_hex(&k.best_hash())
         );
     }
     let gossip_addr = std::env::args()
