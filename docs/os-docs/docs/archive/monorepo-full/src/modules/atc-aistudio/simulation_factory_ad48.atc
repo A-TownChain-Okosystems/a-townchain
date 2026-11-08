@@ -1,0 +1,374 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═══════════════════════════════════════════════════════════
+// AD-48 — Simulation Factory (MetaFactory v3.0)
+// Simuliert ganze Welten: Wirtschaft, Ökologie, Wetter, Politik,
+// Kriege, Bevölkerung, Handel, Migration
+// ═══════════════════════════════════════════════════════════
+module MetaFactory.SimulationFactory[AD-48] {
+
+    import GCL.Core[AD-00]
+    import GCL.EventBus[AD-01]
+    import GCL.TelemetryBus[AD-14]
+
+    struct Simulation {
+        id: String
+        world_id: String
+        type: SimulationType        // Economy, Ecology, Weather, Politics, War, Population, Trade, Migration
+        tick_rate: Float            // Ticks per second
+        current_tick: U64
+        state: SimState
+        subsystems: Map<String, Subsystem>
+        parameters: SimParameters
+        history: RingBuffer<SimSnapshot>
+        status: SimStatus           // Running, Paused, Stopped, Error
+    }
+
+    struct SimState {
+        population: U64
+        resources: Map<ResourceType, U64>
+        weather: WeatherState
+        political: PoliticalState
+        economy: EconomyState
+        military: MilitaryState
+        ecology: EcologyState
+        trade: TradeState
+        migration: MigrationState
+    }
+
+    struct EconomyState {
+        gdp: Decimal
+        inflation: Float
+        unemployment: Float
+        market_index: Float
+        supply_demand: Map<String, SupplyDemand>
+        trade_balance: Decimal
+        currency_value: Float
+        recession_risk: Float
+    }
+
+    struct EcologyState {
+        biodiversity_index: Float
+        pollution_level: Map<Pollutant, Float>
+        forest_coverage: Float
+        water_quality: Float
+        species_population: Map<String, U64>
+        climate_temp: Float
+        co2_level: Float
+    }
+
+    struct PoliticalState {
+        government_type: GovernmentType
+        stability: Float            // 0.0–1.0
+        approval_rating: Float
+        active_policies: List<String>
+        diplomatic_relations: Map<String, DiplomaticRelation>
+        elections: List<Election>
+        civil_unrest: Float
+    }
+
+    struct WeatherState {
+        season: Season
+        temperature: Float
+        humidity: Float
+        pressure: Float
+        wind_speed: Float
+        precipitation: Float
+        extreme_events: List<ExtremeEvent>
+        forecast: List<WeatherForecast>
+    }
+
+    struct MilitaryState {
+        active_conflicts: List<Conflict>
+        military_strength: Map<String, U32>
+        defense_budget: Decimal
+        casualties: U64
+        alliances: List<String>
+        threat_level: Float
+    }
+
+    struct TradeState {
+        routes: List<TradeRoute>
+        active_contracts: List<TradeContract>
+        market_prices: Map<String, Decimal>
+        volume_24h: Decimal
+        tariffs: Map<String, Float>
+    }
+
+    struct MigrationState {
+        migration_flows: List<MigrationFlow>
+        total_migrants: U64
+        push_factors: List<PushFactor>
+        pull_factors: List<PullFactor>
+        border_policies: List<String>
+    }
+
+    struct Subsystem {
+        id: String
+        type: SimulationType
+        enabled: Bool
+        priority: Int
+        last_tick: U64
+        metrics: Map<String, Float>
+    }
+
+    struct SimParameters {
+        difficulty: Float
+        speed_multiplier: Float
+        random_seed: U64
+        determinism: Bool
+        max_population: U64
+        resource_abundance: Float
+        event_frequency: Float
+    }
+
+    struct SimSnapshot {
+        tick: U64
+        timestamp: Timestamp
+        state: SimState
+        events: List<SimEvent>
+        metrics: Map<String, Float>
+    }
+
+    interface ISimulationFactory {
+        fn create_simulation(world_id: String, type: SimulationType, params: SimParameters) -> Result<Simulation>
+        fn tick(sim_id: String, delta_time: Float) -> Result<SimState>
+        fn pause(sim_id: String) -> Result<()>
+        fn resume(sim_id: String) -> Result<()>
+        fn get_state(sim_id: String) -> SimState
+        fn get_history(sim_id: String, ticks: U32) -> List<SimSnapshot>
+        fn inject_event(sim_id: String, event: SimEvent) -> Result<()>
+        fn set_parameter(sim_id: String, key: String, value: Float) -> Result<()>
+        fn forecast(sim_id: String, ticks: U32) -> List<SimSnapshot>
+        fn destroy_simulation(sim_id: String) -> Result<()>
+    }
+
+    class SimulationFactory implements ISimulationFactory {
+
+        gcl: GCLCore
+        sims: Map<String, Simulation>
+
+        fn init(gcl: GCLCore) {
+            self.gcl = gcl
+            self.sims = Map::new()
+        }
+
+        fn create_simulation(world_id: String, type: SimulationType, params: SimParameters) -> Result<Simulation> {
+            let sim = Simulation {
+                id: generate_id("SIM"),
+                world_id,
+                type,
+                tick_rate: 20.0,
+                current_tick: 0,
+                state: SimState::initial(params),
+                subsystems: self.create_subsystems(type),
+                parameters: params,
+                history: RingBuffer::new(10000),
+                status: SimStatus::Running
+            }
+            self.sims.insert(sim.id, sim)
+            self.gcl.emit("sim.created", {sim_id: sim.id, world_id, type})
+            Ok(sim)
+        }
+
+        fn tick(sim_id: String, delta: Float) -> Result<SimState> {
+            let sim = self.sims.get(sim_id)
+            if sim.status != SimStatus::Running { return Err("Simulation not running") }
+
+            let dt = delta * sim.parameters.speed_multiplier
+            let ticks = (dt * sim.tick_rate) as U64
+
+            for _ in 0..ticks {
+                sim.current_tick += 1
+                for (id, sub) in sim.subsystems {
+                    if sub.enabled {
+                        self.process_subsystem(sim, sub, dt)
+                        sub.last_tick = sim.current_tick
+                    }
+                }
+
+                // Check for emergent events
+                let events = self.check_emergent_events(sim)
+                for event in events {
+                    self.process_event(sim, event)
+                }
+
+                // Periodic snapshot
+                if sim.current_tick % 100 == 0 {
+                    let snapshot = SimSnapshot {
+                        tick: sim.current_tick,
+                        timestamp: now(),
+                        state: sim.state.clone(),
+                        events: List::new(),
+                        metrics: self.collect_metrics(sim)
+                    }
+                    sim.history.push(snapshot)
+                }
+            }
+
+            Ok(sim.state.clone())
+        }
+
+        fn process_subsystem(sim: Simulation, sub: Subsystem, dt: Float) {
+            match sub.type {
+                SimulationType::Economy => self.tick_economy(sim, dt),
+                SimulationType::Ecology => self.tick_ecology(sim, dt),
+                SimulationType::Weather => self.tick_weather(sim, dt),
+                SimulationType::Politics => self.tick_politics(sim, dt),
+                SimulationType::War => self.tick_military(sim, dt),
+                SimulationType::Population => self.tick_population(sim, dt),
+                SimulationType::Trade => self.tick_trade(sim, dt),
+                SimulationType::Migration => self.tick_migration(sim, dt)
+            }
+        }
+
+        fn tick_economy(sim: Simulation, dt: Float) {
+            let econ = sim.state.economy
+            // Supply/demand adjustment
+            for (resource, sd) in econ.supply_demand {
+                let price_adjustment = (sd.demand - sd.supply) / max(sd.supply, 1) * 0.01
+                sd.price *= 1.0 + price_adjustment * dt
+                sd.price = clamp(sd.price, 0.01, 1_000_000.0)
+            }
+
+            // GDP growth
+            let growth_rate = 0.02 - econ.inflation * 0.5
+            econ.gdp *= 1.0 + growth_rate * dt / 365.0
+
+            // Inflation drift
+            econ.inflation = clamp(econ.inflation + random(-0.001, 0.001) * dt, -0.1, 0.3)
+
+            // Recession check
+            if econ.gdp_growth < -0.02 {
+                econ.recession_risk = min(econ.recession_risk + 0.01 * dt, 1.0)
+            }
+        }
+
+        fn tick_ecology(sim: Simulation, dt: Float) {
+            let eco = sim.state.ecology
+            // CO2 accumulation
+            eco.co2_level += 0.001 * dt * sim.parameters.resource_abundance
+            // Temperature response
+            eco.climate_temp += eco.co2_level * 0.0001 * dt
+            // Biodiversity impact
+            eco.biodiversity_index = clamp(eco.biodiversity_index - eco.pollution_level.values().sum() * 0.001 * dt, 0.0, 1.0)
+            // Forest recovery/growth
+            if eco.pollution_level[Pollutant::Industrial] < 0.3 {
+                eco.forest_coverage = min(eco.forest_coverage + 0.0001 * dt, 1.0)
+            }
+        }
+
+        fn tick_weather(sim: Simulation, dt: Float) {
+            let w = sim.state.weather
+            // Seasonal temperature variation
+            let seasonal = sin(sim.current_tick as Float / 365.0 * 2.0 * PI) * 15.0
+            w.temperature = seasonal + sim.state.ecology.climate_temp + random(-3.0, 3.0)
+            // Extreme events
+            if random() < sim.parameters.event_frequency * dt * 0.001 {
+                w.extreme_events.push(ExtremeEvent {
+                    type: random_extreme_type(),
+                    severity: random(0.3, 1.0),
+                    duration: random(1, 48) as U32
+                })
+            }
+        }
+
+        fn tick_politics(sim: Simulation, dt: Float) {
+            let p = sim.state.political
+            // Approval rating drift
+            let economic_factor = if sim.state.economy.gdp_growth > 0 { 0.001 } else { -0.002 }
+            p.approval_rating = clamp(p.approval_rating + economic_factor * dt, 0.0, 1.0)
+            // Stability
+            p.stability = clamp(p.stability + (p.approval_rating - 0.5) * 0.001 * dt, 0.0, 1.0)
+            // Civil unrest
+            if p.stability < 0.3 {
+                p.civil_unrest = min(p.civil_unrest + 0.01 * dt, 1.0)
+            }
+        }
+
+        fn tick_military(sim: Simulation, dt: Float) {
+            let m = sim.state.military
+            for conflict in m.active_conflicts {
+                conflict.duration += dt
+                // Resolution probability
+                if random() < 0.001 * dt {
+                    conflict.resolved = true
+                    m.active_conflicts.retain(|c| !c.resolved)
+                }
+                // Casualties
+                m.casualties += (conflict.intensity * dt * 0.1) as U64
+            }
+        }
+
+        fn tick_population(sim: Simulation, dt: Float) {
+            let pop = sim.state.population
+            let growth = sim.state.economy.gdp_growth * 0.01 + 0.001
+            sim.state.population = (pop as Float * (1.0 + growth * dt / 365.0)) as U64
+            if sim.state.population > sim.parameters.max_population {
+                sim.state.population = sim.parameters.max_population
+            }
+        }
+
+        fn tick_trade(sim: Simulation, dt: Float) {
+            let t = sim.state.trade
+            for route in t.routes {
+                let volume = route.capacity * route.efficiency * random(0.8, 1.2)
+                t.volume_24h += volume * dt
+            }
+            // Price fluctuation
+            for (resource, price) in t.market_prices {
+                let noise = random(-0.02, 0.02) * dt
+                t.market_prices[resource] = price * (1.0 + noise)
+            }
+        }
+
+        fn tick_migration(sim: Simulation, dt: Float) {
+            let m = sim.state.migration
+            // Migration driven by push/pull factors
+            let push = m.push_factors.len() as Float * 0.1
+            let pull = m.pull_factors.len() as Float * 0.15
+            let flow = (push + pull) * sim.state.population as Float * 0.0001 * dt
+            m.total_migrants += flow as U64
+        }
+
+        fn check_emergent_events(sim: Simulation) -> List<SimEvent> {
+            let mut events = List::new()
+            let state = sim.state
+
+            if state.political.civil_unrest > 0.8 {
+                events.push(SimEvent { type: "revolution", severity: 0.9, affected: "political", timestamp: now() })
+            }
+            if state.economy.recession_risk > 0.8 {
+                events.push(SimEvent { type: "economic_crisis", severity: 0.8, affected: "economy", timestamp: now() })
+            }
+            if state.ecology.co2_level > 500.0 {
+                events.push(SimEvent { type: "climate_catastrophe", severity: 0.7, affected: "ecology", timestamp: now() })
+            }
+
+            events
+        }
+
+        fn forecast(sim_id: String, ticks: U32) -> List<SimSnapshot> {
+            let sim = self.sims.get(sim_id)
+            let mut forecasts = List::new()
+            let mut state = sim.state.clone()
+
+            for i in 1..=ticks {
+                // Simplified projection
+                state.population = (state.population as Float * 1.001) as U64
+                state.economy.gdp *= 1.0001
+                state.ecology.co2_level += 0.001
+
+                if i % 10 == 0 {
+                    forecasts.push(SimSnapshot {
+                        tick: sim.current_tick + i,
+                        timestamp: now() + Duration::seconds(i as i64),
+                        state: state.clone(),
+                        events: List::new(),
+                        metrics: Map::new()
+                    })
+                }
+            }
+            forecasts
+        }
+    }
+}
