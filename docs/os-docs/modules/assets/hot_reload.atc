@@ -1,0 +1,125 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-82 — Live Hot-Reload System
+# Genesis Engine — Asset-Änderungen sofort ohne Neustart
+# Standard: AD-82
+
+struct FileWatch:
+    path: String
+    file_type: String         # "texture" | "shader" | "audio" | "animation" | "model" | "script"
+    last_modified: Float
+    last_hash: String
+    callback: Func            # Reload-Callback
+    enabled: Bool
+
+struct HotReloadConfig:
+    watch_dirs: Array<String>  # ["assets/", "shaders/", "mods/"]
+    poll_interval: Float        # Sekunden zwischen Checks (default: 0.5)
+    auto_reload: Bool
+    notify_on_reload: Bool
+    debounce_ms: Int32         # Verhindere mehrfaches Triggern
+
+func create_file_watcher(config: HotReloadConfig) -> Bool:
+    for dir in config.watch_dirs:
+        if not directory_exists(dir):
+            continue
+        for file in walk_directory(dir):
+            watch = FileWatch {
+                path: file,
+                file_type: detect_file_type(file),
+                last_modified: get_mtime(file),
+                last_hash: sha256_file(file),
+                callback: get_reload_callback(detect_file_type(file)),
+                enabled: true
+            }
+            register_watch(watch)
+    # Start Polling
+    set_interval(config.poll_interval, func:
+        check_all_watches(config)
+    )
+    log_info(f"Hot-Reload watcher started — {get_watch_count()} files, interval {config.poll_interval}s")
+    return true
+
+func check_all_watches(config: HotReloadConfig) -> Bool:
+    for watch in get_all_watches():
+        if not watch.enabled:
+            continue
+        mtime = get_mtime(watch.path)
+        if mtime > watch.last_modified:
+            # File wurde geändert
+            new_hash = sha256_file(watch.path)
+            if new_hash != watch.last_hash:
+                # Debounce — warte kurz falls Datei noch geschrieben wird
+                debounce(config.debounce_ms, func:
+                    reload_asset(watch)
+                    watch.last_modified = mtime
+                    watch.last_hash = new_hash
+                    if config.notify_on_reload:
+                        show_notification(f"Reloaded: {watch.path}")
+                )
+    return true
+
+func reload_asset(watch: FileWatch) -> Bool:
+    match watch.file_type:
+        "texture":
+            old_tex = get_texture(watch.path)
+            new_tex = load_texture(watch.path)
+            # Atomic Swap — ersetze Textur ohne Frame-Drop
+            atomic_swap_texture(old_tex, new_tex)
+            log_debug(f"Hot-reload texture: {watch.path}")
+        "shader":
+            shader = get_shader_by_file(watch.path)
+            if shader:
+                hot_reload_shader(shader)
+            log_debug(f"Hot-reload shader: {watch.path}")
+        "audio":
+            old_snd = get_sound(watch.path)
+            new_snd = load_sound(watch.path)
+            atomic_swap_sound(old_snd, new_snd)
+            log_debug(f"Hot-reload audio: {watch.path}")
+        "animation":
+            old_anim = get_animation(watch.path)
+            new_anim = load_animation(watch.path)
+            atomic_swap_animation(old_anim, new_anim)
+            log_debug(f"Hot-reload animation: {watch.path}")
+        "model":
+            old_model = get_model(watch.path)
+            new_model = load_model(watch.path)
+            atomic_swap_model(old_model, new_model)
+            log_debug(f"Hot-reload model: {watch.path}")
+        "script":
+            reload_script(watch.path)
+            log_debug(f"Hot-reload script: {watch.path}")
+    emit_event("asset.hot_reloaded", {"path": watch.path, "type": watch.file_type})
+    return true
+
+func add_watch(path: String, callback: Func) -> Bool:
+    watch = FileWatch {
+        path: path,
+        file_type: detect_file_type(path),
+        last_modified: get_mtime(path),
+        last_hash: sha256_file(path),
+        callback: callback,
+        enabled: true
+    }
+    register_watch(watch)
+    return true
+
+func remove_watch(path: String) -> Bool:
+    unregister_watch(path)
+    return true
+
+func pause_reloading() -> Bool:
+    for watch in get_all_watches():
+        watch.enabled = false
+    log_info("Hot-Reload paused")
+    return true
+
+func resume_reloading() -> Bool:
+    for watch in get_all_watches():
+        watch.enabled = true
+    log_info("Hot-Reload resumed")
+    return true
+
+# Development-only — im Production-Build deaktiviert
+func is_hot_reload_enabled() -> Bool:
+    return get_build_mode() == "development"
