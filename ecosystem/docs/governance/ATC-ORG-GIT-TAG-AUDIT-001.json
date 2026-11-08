@@ -1,0 +1,288 @@
+{
+  "schema_id": "ATC-ORG-GIT-TAG-AUDIT-001",
+  "schema_version": "1.0.0",
+  "audit_date_utc": "2026-10-11",
+  "organization": "A-TownChain-Okosystems",
+  "scope": {
+    "repository_count": 33,
+    "archived_repository_count": 7,
+    "active_or_unarchived_repository_count": 26,
+    "method": "GitHub git/matching-refs/tags endpoint per repository; release metadata separately checked for a-townchain-os, atc-standards and atc-toolchain.",
+    "pagination_limit": "No pagination required for matching-refs response as returned in this audit; repeat if repositories grow beyond API response limits."
+  },
+  "summary": {
+    "repositories_with_git_tags": 2,
+    "repositories_without_git_tags": 31,
+    "tag_refs_found": 2,
+    "existing_tags_to_retain_unchanged": [
+      {
+        "repository": "a-townchain-os",
+        "tag": "v1.0.0",
+        "tag_object_sha": "d40605264e08f3299cdeae911127c42025ee688b"
+      },
+      {
+        "repository": "atc-standards",
+        "tag": "v1.1.0",
+        "tag_object_sha": "0d382b4ff8ae5a08729b38bd272233a9375eea65"
+      }
+    ],
+    "verified_release_tags_created_by_audit": 0,
+    "tags_moved_or_deleted": 0,
+    "releases_published_by_audit": 0
+  },
+  "repositories": [
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-os",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": [
+        {
+          "name": "v1.0.0",
+          "object_sha": "d40605264e08f3299cdeae911127c42025ee688b",
+          "type": "tag"
+        }
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atclang",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-os-docs",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-shivacore",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/globus-os",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/aurora-ai",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/genesis-engine",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-sdk",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-node",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-contracts",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-wallet",
+      "default_branch": "main",
+      "archived": true,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-explorer",
+      "default_branch": "main",
+      "archived": true,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-indexer",
+      "default_branch": "main",
+      "archived": true,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-mining",
+      "default_branch": "main",
+      "archived": true,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-interop",
+      "default_branch": "main",
+      "archived": true,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/genesis-chronicles",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-oracle",
+      "default_branch": "main",
+      "archived": true,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-storage",
+      "default_branch": "main",
+      "archived": true,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-launchpad",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-marketplace",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-compute",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-standards",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": [
+        {
+          "name": "v1.1.0",
+          "object_sha": "0d382b4ff8ae5a08729b38bd272233a9375eea65",
+          "type": "tag"
+        }
+      ]
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-vm",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-algorithm",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-zkp",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/.github",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/demo-repository",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-ide",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/genesis-franchise-factory",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-engineering",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-toolchain",
+      "default_branch": "main",
+      "archived": false,
+      "git_tags": []
+    }
+  ],
+  "release_observations": [
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-os",
+      "release_tag": "v1.0.0",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-08-04T14:59:32Z",
+      "consistency": "git tag exists"
+    },
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-os",
+      "release_tag": "v2.0.0",
+      "draft": true,
+      "prerelease": false,
+      "published_at": "2026-05-19T19:36:22Z",
+      "consistency": "draft release; no refs/tags/v2.0.0 returned, which is consistent with an unpublished draft",
+      "action": "do not publish or create tag until release acceptance gates pass"
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-standards",
+      "release_tag": "v1.1.0",
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-09-07T14:22:37Z",
+      "consistency": "git tag exists"
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-toolchain",
+      "releases": [],
+      "consistency": "no release objects returned; no git tags found"
+    }
+  ],
+  "decision": {
+    "status": "AUDITED_RESIDUAL",
+    "create_missing_release_tags": false,
+    "rationale": "No exact-SHA release acceptance evidence was established for the 31 untagged repositories. Creating version tags from the current default branch would falsely imply a reviewed release.",
+    "next_actions": [
+      "Define per-repository release eligibility and canonical versioning policy.",
+      "For each release candidate, bind a tag to an exact commit SHA only after repository-specific CI, security, governance and compatibility gates pass.",
+      "Keep published version tags immutable; corrections require a new version tag, not moving an existing tag.",
+      "Do not release archived repositories without an explicit maintenance/revival decision."
+    ]
+  }
+}
