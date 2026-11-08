@@ -1,0 +1,12 @@
+// ATCLang v0.3 — atc-explorer :: Search Engine
+// block height, tx hash, address, contract name
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module search {
+    // Public API — TBD
+    
+    fn init() {
+        // Initialization — TBD
+    }
+}
