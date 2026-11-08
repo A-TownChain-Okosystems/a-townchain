@@ -9,6 +9,7 @@ pub mod bytecode;
 pub mod ir;
 pub mod lexer;
 pub mod lower;
+pub mod semantics;
 pub mod native;
 pub mod parser;
 pub mod value;
