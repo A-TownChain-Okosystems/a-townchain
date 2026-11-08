@@ -1,0 +1,71 @@
+// K-Sprint 37 — Unix Domain Sockets + Network Socket API (ATCLang Interface)
+// Rust: kernel/src/sockets.rs (1526 lines, 50 tests)
+// Agent: Aurora #2 (6a275618)
+
+enum SocketDomain {
+    UNIX,
+    INET,
+}
+
+enum SocketType {
+    STREAM,
+    DATAGRAM,
+    RAW,
+}
+
+enum SocketProtocol {
+    DEFAULT,
+    TCP,
+    UDP,
+    ICMP,
+}
+
+enum SocketAddr {
+    UNIX(String),
+    INET { ip: List<u8>, port: u16 },
+}
+
+enum SocketState {
+    CREATED,
+    BOUND,
+    LISTENING,
+    CONNECTING,
+    CONNECTED,
+    CLOSED,
+    ERROR,
+}
+
+struct SocketOptions {
+    reuse_addr: bool,
+    keep_alive: bool,
+    recv_timeout: Option<u64>,
+    send_timeout: Option<u64>,
+    recv_buffer_size: u32,
+    send_buffer_size: u32,
+}
+
+struct PollState {
+    readable: bool,
+    writable: bool,
+    error: bool,
+}
+
+module Kernel::Sockets {
+    contract SocketManager {
+        fn socket(domain: SocketDomain, sock_type: SocketType, proto: SocketProtocol, pid: u32) -> Result<u64, String>
+        fn bind(sid: u64, addr: SocketAddr) -> Result<(), String>
+        fn listen(sid: u64, backlog: u32) -> Result<(), String>
+        fn accept(sid: u64, pid: u32) -> Result<u64, String>
+        fn connect(sid: u64, remote: SocketAddr) -> Result<(), String>
+        fn send(sid: u64, data: List<u8>) -> Result<u32, String>
+        fn recv(sid: u64, buf_size: u32) -> Result<List<u8>, String>
+        fn sendto(sid: u64, data: List<u8>, dest: SocketAddr) -> Result<u32, String>
+        fn recvfrom(sid: u64, buf_size: u32) -> Result<(List<u8>, Option<SocketAddr>), String>
+        fn close(sid: u64) -> Result<(), String>
+        fn setsockopt(sid: u64, opt: SocketOptions) -> Result<(), String>
+        fn getsockopt(sid: u64) -> Result<SocketOptions, String>
+        fn poll(sids: List<u64>) -> List<(u64, PollState)>
+        fn socket_count() -> u32
+        fn list_sockets() -> List<u64>
+    }
+}
