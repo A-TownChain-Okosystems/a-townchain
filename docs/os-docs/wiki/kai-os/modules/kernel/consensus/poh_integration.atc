@@ -1,0 +1,78 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-81 — PoH Kernel Integration
+// Sprint 2.3 | Consensus Layer | Chain-ID 9000
+// Migrated from: modules/kernel/consensus/poh_integration.py (28 lines)
+// Proof of History for kernel process timestamps
+// ─────────────────────────────────────────────────────────────
+
+struct PoHEntry {
+    seq: u64,
+    hash: Hash,
+    timestamp: u64,
+    data: String,
+}
+
+contract PoHKernel {
+    state current_hash: Hash
+    state sequence: u64
+    state entries: List<PoHEntry>
+    state owner: Address
+
+    event PoHTick(seq: u64, hash: Hash)
+    event PoHTickBatch(start_seq: u64, count: u16)
+
+    fn init() {
+        self.current_hash = Hash::sha256("genesis")
+        self.sequence = 0
+        self.entries = []
+        self.owner = msg_sender()
+    }
+
+    fn tick(data: String) -> (u64, Hash) {
+        self.sequence += 1
+        self.current_hash = Hash::sha256(self.current_hash, self.sequence, data)
+        let entry = PoHEntry {
+            seq: self.sequence,
+            hash: self.current_hash,
+            timestamp: Time::now(),
+            data: data,
+        }
+        self.entries.push(entry)
+        emit PoHTick(self.sequence, self.current_hash)
+        return (self.sequence, self.current_hash)
+    }
+
+    fn tick_n(n: u16, data: String) -> u16 {
+        let i: u16 = 0
+        while i < n {
+            if i == 0 {
+                self.tick(data)
+            } else {
+                self.tick("")
+            }
+            i += 1
+        }
+        emit PoHTickBatch(self.sequence - n + 1, n)
+        return n
+    }
+
+    fn verify_entry(seq: u64, hash_val: Hash) -> bool {
+        let i: u16 = 0
+        while i < self.entries.len() {
+            if self.entries[i].seq == seq && self.entries[i].hash == hash_val {
+                return true
+            }
+            i += 1
+        }
+        return false
+    }
+
+    fn get_current() -> (u64, Hash) {
+        return (self.sequence, self.current_hash)
+    }
+
+    fn get_entry_count() -> u16 {
+        return self.entries.len()
+    }
+}
