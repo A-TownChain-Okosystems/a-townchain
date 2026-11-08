@@ -1,0 +1,245 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang — Ecosystem AI Mesh (AD-62)
+// Genesis Civilization Platform v4.0
+// Netzwerk spezialisierter KI-Agenten für das gesamte Ökosystem
+
+struct AIMesh {
+    id: String,
+    agents: Vec<MeshAgent>,
+    connections: Vec<MeshConnection>,
+    task_board: Vec<MeshTask>,
+    shared_memory: MeshMemory,
+    protocols: Vec<MeshProtocol>,
+    health: MeshHealth
+}
+
+struct MeshAgent {
+    id: String,
+    agent_type: AgentType,
+    name: String,
+    status: String,           // "idle"|"thinking"|"executing"|"reviewing"|"learning"|"offline"
+    load: f32,                 // 0.0-1.0
+    capabilities: Vec<String>,
+    model_version: String,
+    quality_score: f32,
+    tasks_completed: u64,
+    avg_task_time: u32,       // seconds
+    specialties: Vec<String>,
+    knowledge_domains: Vec<String>,
+    can_delegate: bool,
+    preferred_collaborators: Vec<String>
+}
+
+enum AgentType {
+    WorldBuilder,             // Weltenbau
+    GameplayDesigner,         // Gameplay
+    StoryWriter,             // Story
+    Economist,               // Wirtschaft
+    BalanceEngineer,         // Balancing
+    SecurityOfficer,         // Sicherheit
+    CommunityManager,        // Community
+    Localizer,               // Lokalisierung
+    QAEngineer,              // Qualitätssicherung
+    ArtDirector,             // Kunst
+    AudioDesigner,           // Audio
+    MarketingStrategist,     // Marketing
+    DataAnalyst,             // Datenanalyse
+    DevOpsEngineer,          // DevOps
+    UXResearcher             // UX-Forschung
+}
+
+struct MeshConnection {
+    from_agent: String,
+    to_agent: String,
+    type: String,             // "reports_to"|"collaborates"|"reviews"|"delegates"|"informs"
+    strength: f32,
+    latency_ms: u32,
+    bandwidth: f32            // tasks/hour
+}
+
+struct MeshTask {
+    id: String,
+    title: String,
+    type: String,
+    description: String,
+    priority: u8,              // 1-10
+    assigned_to: Option<String>,
+    delegated_from: Option<String>,
+    dependencies: Vec<String>,
+    estimated_time: u32,
+    actual_time: Option<u32>,
+    status: String,
+    output: Option<String>,
+    quality_score: Option<f32>,
+    created: String,
+    deadline: String
+}
+
+struct MeshMemory {
+    shared_context: Map<String, String>,
+    learned_patterns: Vec<LearnedPattern>,
+    knowledge_base: Vec<KnowledgeEntry>,
+    decision_log: Vec<DecisionRecord>
+}
+
+struct LearnedPattern {
+    id: String,
+    pattern: String,
+    context: String,
+    success_rate: f32,
+    occurrences: u32,
+    last_seen: String
+}
+
+struct KnowledgeEntry {
+    id: String,
+    domain: String,
+    content: String,
+    confidence: f32,
+    sources: Vec<String>,
+    tags: Vec<String>
+}
+
+struct DecisionRecord {
+    id: String,
+    agent: String,
+    task_id: String,
+    decision: String,
+    reasoning: String,
+    outcome: String,
+    timestamp: String
+}
+
+struct MeshProtocol {
+    id: String,
+    name: String,
+    type: String,             // "handoff"|"review"|"escalation"|"collaboration"|"consensus"
+    rules: Vec<String>,
+    trigger: String
+}
+
+struct MeshHealth {
+    active_agents: u32,
+    total_agents: u32,
+    avg_load: f32,
+    avg_quality: f32,
+    tasks_in_flight: u32,
+    throughput_per_hour: f32,
+    error_rate: f32
+}
+
+fn mesh_create() -> AIMesh {
+    let m = AIMesh {
+        id: generate_id("MESH"),
+        agents: Vec::new(),
+        connections: Vec::new(),
+        task_board: Vec::new(),
+        shared_memory: MeshMemory::default(),
+        protocols: Vec::new(),
+        health: MeshHealth::default()
+    };
+    // Standard-Protokolle
+    m.protocols.push(MeshProtocol { id: "P1", name: "Handoff", type: "handoff", rules: vec!["Output validated before handoff", "Context fully transferred"], trigger: "task_completion" });
+    m.protocols.push(MeshProtocol { id: "P2", name: "Review", type: "review", rules: vec!["QA reviews all outputs", "Score >= 0.8 for approval"], trigger: "output_ready" });
+    m.protocols.push(MeshProtocol { id: "P3", name: "Escalation", type: "escalation", rules: vec!["Escalate after 3 failures", "Human review for score < 0.5"], trigger: "quality_threshold" });
+    m
+}
+
+fn mesh_register_agent(mesh_id: String, agent_type: AgentType) -> MeshAgent {
+    let m = get_mesh(mesh_id);
+    let agent = MeshAgent {
+        id: generate_id("MA"),
+        agent_type: agent_type,
+        name: "AI-" + agent_type_name(agent_type),
+        status: "idle",
+        load: 0.0,
+        capabilities: get_capabilities_for_type(agent_type),
+        model_version: "atc-llm-v3",
+        quality_score: 0.75,
+        tasks_completed: 0,
+        avg_task_time: 300,
+        specialties: Vec::new(),
+        knowledge_domains: get_domains_for_type(agent_type),
+        can_delegate: matches!(agent_type, GameDesigner | StoryWriter | ArtDirector),
+        preferred_collaborators: Vec::new()
+    };
+    m.agents.push(agent);
+    update_mesh_health(m);
+    agent
+}
+
+fn mesh_assign_task(mesh_id: String, task: MeshTask) -> bool {
+    let m = get_mesh(mesh_id);
+    // Finde besten Agent: niedrigste Load + passende Capabilities
+    let candidates = m.agents.iter()
+        .filter(|a| a.status == "idle" && a.capabilities.contains(&task.type))
+        .collect();
+    if candidates.is_empty() { return false; }
+    let best = candidates.iter().min_by_key(|a| a.load);
+    if let Some(agent) = best {
+        task.assigned_to = Some(agent.id);
+        task.status = "assigned";
+        agent.status = "executing";
+        agent.load += 0.2;
+        m.task_board.push(task);
+        return true;
+    }
+    false
+}
+
+fn mesh_delegate(mesh_id: String, from_agent: String, task_id: String, to_type: AgentType) -> bool {
+    let m = get_mesh(mesh_id);
+    let from = find_agent(m, from_agent);
+    if !from.can_delegate { return false; }
+    let to = m.agents.iter().find(|a| a.agent_type == to_type && a.status == "idle");
+    if let Some(target) = to {
+        let task = find_task(m, task_id);
+        task.delegated_from = Some(from_agent);
+        task.assigned_to = Some(target.id);
+        target.status = "executing";
+        m.connections.push(MeshConnection {
+            from_agent: from_agent,
+            to_agent: target.id,
+            type: "delegates",
+            strength: 0.8,
+            latency_ms: 50,
+            bandwidth: 10.0
+        });
+        return true;
+    }
+    false
+}
+
+fn mesh_share_knowledge(mesh_id: String, from_agent: String, knowledge: KnowledgeEntry) {
+    let m = get_mesh(mesh_id);
+    m.shared_memory.knowledge_base.push(knowledge);
+    // Broadcast an alle Agenten im gleichen Wissensbereich
+    for agent in m.agents {
+        if agent.knowledge_domains.contains(&knowledge.domain) {
+            notify_agent(agent, "new_knowledge", knowledge.id);
+        }
+    }
+}
+
+fn mesh_health_check(mesh_id: String) -> MeshHealth {
+    let m = get_mesh(mesh_id);
+    let active = m.agents.iter().filter(|a| a.status != "offline").count() as u32;
+    let total = m.agents.len() as u32;
+    let avg_load = m.agents.iter().filter(|a| a.status != "offline").map(|a| a.load).sum::<f32>() / active as f32;
+    let avg_quality = m.agents.iter().map(|a| a.quality_score).sum::<f32>() / total as f32;
+    let in_flight = m.task_board.iter().filter(|t| t.status == "assigned" || t.status == "in_progress").count() as u32;
+    
+    m.health = MeshHealth {
+        active_agents: active,
+        total_agents: total,
+        avg_load: avg_load,
+        avg_quality: avg_quality,
+        tasks_in_flight: in_flight,
+        throughput_per_hour: 60.0,
+        error_rate: 0.02
+    };
+    m.health
+}
+
+// Standards: AD-62
+// Dependencies: AI Studio (AD-49), AIBus (AD-13), AI Director (AD-41), Knowledge Graph (AD-47)
