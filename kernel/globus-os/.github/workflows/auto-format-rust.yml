@@ -1,0 +1,41 @@
+name: Auto Format Rust
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.rs"
+      - "**/Cargo.toml"
+      - ".github/workflows/auto-format-rust.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rustfmt-auto
+  cancel-in-progress: true
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Format workspace
+        run: cargo fmt --all
+      - name: Commit formatting
+        run: |
+          git config user.name "A-TownChain-Rustfmt-Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Rust formatting already current."
+            exit 0
+          fi
+          git commit -m "chore: apply rustfmt"
+          git push
