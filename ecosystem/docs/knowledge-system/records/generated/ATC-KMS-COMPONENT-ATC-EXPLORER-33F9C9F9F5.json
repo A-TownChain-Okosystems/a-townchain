@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-COMPONENT-ATC-EXPLORER-33F9C9F9F5",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "module",
+  "title": "Component: atc-explorer",
+  "context": "Component subtree indexed from A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "file",
+    "ref": "components/atc-explorer",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "atc-explorer",
+    "component",
+    "generated"
+  ],
+  "links": [
+    {
+      "relation": "part-of",
+      "target": "ATC-KMS-REPOSITORY-STRUCTURE"
+    }
+  ],
+  "content": "Files: 69\n\nManifests: components/atc-explorer/modules/atc-explorer/package.json, components/atc-explorer/package.json"
+}
