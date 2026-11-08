@@ -1,0 +1,7 @@
+# ATC Code Quality Profil (SCR-0123 Welle 2, ATC-STD-081/082)
+# Pinned: ruff 0.16.7 | Profil E,W,F,I | Verschaerfung je Wartungszyklus (REQ-IMP-007)
+line-length = 100
+
+[lint]
+select = ["E", "W", "F", "I"]
+ignore = ["E501"]
