@@ -1,0 +1,661 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "ATCE-RECONCILIATION-STATUS-CONSUMER-DISCOVERY-001",
+  "repository": "A-TownChain-Okosystems/atc-engineering",
+  "status": "PARTIAL",
+  "purpose": "Record organization-wide code-search discovery candidates for the PR #29 status-consumer audit. This is a candidate register, not a complete source-tree scan or VERIFIED claim.",
+  "discovery_method": {
+    "source": "GitHub code search across A-TownChain-Okosystems",
+    "queries": [
+      "\"DETECTED\" \"VERIFIED\"",
+      "\"RECONCILED\" \"VERIFIED\"",
+      "\"status\": \"DETECTED\"",
+      "\"status\": \"VERIFIED\"",
+      "\"RECONCILED\" workflow",
+      "\"DETECTED\" workflow"
+    ],
+    "limitations": [
+      "Search results are discovery signals and may be ranked, truncated, indexed incompletely, or limited to default-branch content.",
+      "Search does not prove absence of consumers in unreturned files, private/unindexed repositories, generated code, scripts, or dynamically constructed status mappings.",
+      "Each candidate requires direct file inspection at an exact commit and classification by status domain before the audit can be closed."
+    ]
+  },
+  "status_domains": [
+    {
+      "domain": "reconciliation report status",
+      "statuses": [
+        "DETECTED",
+        "RECONCILED",
+        "VERIFIED"
+      ],
+      "rule": "Apply the PR #29 normative contract. No implicit promotion between states."
+    },
+    {
+      "domain": "individual finding lifecycle",
+      "statuses": [
+        "DETECTED",
+        "CLASSIFIED",
+        "PLANNED",
+        "FIXED",
+        "VERIFIED",
+        "CLOSED",
+        "BLOCKED"
+      ],
+      "rule": "Finding remediation state is not interchangeable with reconciliation-report status."
+    },
+    {
+      "domain": "function-catalog discovery",
+      "statuses": [
+        "DETECTED",
+        "DOCUMENTED",
+        "IMPLEMENTED",
+        "VERIFIED",
+        "STALE"
+      ],
+      "rule": "Catalog record states must be interpreted under the catalog schema and must not be mapped automatically to reconciliation status."
+    },
+    {
+      "domain": "function semantic/test evidence",
+      "statuses": [
+        "DISCOVERED_NOT_SEMANTICALLY_VERIFIED",
+        "NOT_RECONCILED"
+      ],
+      "rule": "Discovery or test detection does not prove semantic correctness or reconciled test evidence."
+    },
+    {
+      "domain": "repository-specific specification/roadmap status",
+      "statuses": [
+        "OPEN",
+        "PLANNED",
+        "IMPLEMENTED",
+        "VERIFIED",
+        "BLOCKED"
+      ],
+      "rule": "Classify according to the owning repository's contract; do not assume a shared enum solely from matching strings."
+    }
+  ],
+  "candidates": [
+    {
+      "repository": "A-TownChain-Okosystems/atc-engineering",
+      "path": "scripts/org_function_catalog.py",
+      "observed_ref": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+      "role_candidate": "producer",
+      "domain": "function-catalog discovery",
+      "discovery": "Search excerpt shows status DETECTED or RESIDUAL based on inventory deltas/exclusions and warns heuristic parser coverage is incomplete.",
+      "disposition": "REVIEWED_AS_RELEVANT",
+      "caveat": "Search ref is the default-branch revision, not the PR #29 head; PR branch version must be separately considered."
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-engineering",
+      "path": "crates/atc-findings/src/lib.rs",
+      "observed_ref": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+      "role_candidate": "producer/consumer",
+      "domain": "individual finding lifecycle",
+      "discovery": "Finding lifecycle includes DETECTED through VERIFIED/CLOSED and is a separate domain.",
+      "disposition": "DOMAIN_SEPARATION_REQUIRED",
+      "caveat": "The exact PR #29 branch implementation is already listed in the bounded audit; the fleet default-branch result is not exact-head evidence."
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-algorithm",
+      "path": "docs/function-catalog.json",
+      "observed_ref": "f25b43383433766c43df6c5c494ecb70cdb4a4b7",
+      "role_candidate": "catalog/report producer",
+      "domain": "function semantic/test evidence",
+      "discovery": "Catalog reports 37 discovered functions, 18 tests detected, zero semantic contracts verified, and tests NOT_RECONCILED.",
+      "disposition": "REVIEW_REQUIRED",
+      "caveat": "Status is not the PR #29 reconciliation-report status; verify source SHA, schema, generator, and workflow consumers."
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-algorithm",
+      "path": "schemas/function-catalog.schema.json",
+      "observed_ref": "f25b43383433766c43df6c5c494ecb70cdb4a4b7",
+      "role_candidate": "schema/consumer",
+      "domain": "function semantic/test evidence",
+      "discovery": "Schema contains DISCOVERED_NOT_SEMANTICALLY_VERIFIED and test reconciliation state.",
+      "disposition": "REVIEW_REQUIRED",
+      "caveat": "Schema validates structure; it does not independently prove semantic verification."
+    },
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+      "path": "tools/reconcile_component_function_catalog.py",
+      "observed_ref": "c91c8c6fc60b1c28403c3125f728495e2efa124b",
+      "role_candidate": "reconciliation producer",
+      "domain": "component/function catalog reconciliation",
+      "discovery": "Search excerpt explicitly states lexical matches are discovery evidence only and notes dynamic/generated/macro-expanded/conditional/indirect entrypoint limitations.",
+      "disposition": "REVIEW_REQUIRED",
+      "caveat": "Must inspect all callers, report schemas, and workflow consumers at the exact same commit."
+    },
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+      "path": "tools/scan_public_symbols.py",
+      "observed_ref": "c91c8c6fc60b1c28403c3125f728495e2efa124b",
+      "role_candidate": "discovery producer",
+      "domain": "component/function catalog discovery",
+      "discovery": "Organization-wide symbol scanning candidate found.",
+      "disposition": "REVIEW_REQUIRED",
+      "caveat": "A scan result is not proof of complete inventory or VERIFIED status."
+    },
+    {
+      "repository": "A-TownChain-Okosystems/globus-os",
+      "path": "ROADMAP.md",
+      "observed_ref": "3bf000143ec9bfad79d0bacc36b99b8111178b95",
+      "role_candidate": "status consumer/documentation",
+      "domain": "repository-specific specification/roadmap status",
+      "discovery": "Search excerpt says implementation status should only be updated from evidence tied to exact current SHA.",
+      "disposition": "REVIEW_REQUIRED",
+      "caveat": "Confirm exact workflow/scripts that read or write implementation status."
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atclang",
+      "path": "tools/ci_independent_audit.py",
+      "observed_ref": "27dc3678f67dc81180768be60ffd025e2fa6c9b9",
+      "role_candidate": "audit producer",
+      "domain": "repository-specific specification/roadmap status",
+      "discovery": "Independent audit script found in status-related code search.",
+      "disposition": "REVIEW_REQUIRED",
+      "caveat": "Search excerpt does not establish that it consumes reconciliation status; inspect before classifying as a true consumer."
+    },
+    {
+      "repository": "A-TownChain-Okosystems/atc-standards",
+      "path": "standards/bug/ATC-STD-BUG-005.md",
+      "observed_ref": "c362d15e77b4818208b41662cf5ceba6fb90e0f2",
+      "role_candidate": "normative specification",
+      "domain": "individual finding lifecycle",
+      "discovery": "Status lifecycle references DETECTED and multiple later remediation states.",
+      "disposition": "DOMAIN_SEPARATION_REQUIRED",
+      "caveat": "Normative text is not executable consumer code; locate validators and workflows implementing it."
+    },
+    {
+      "repository": "A-TownChain-Okosystems/.github",
+      "path": "AGENTS.md",
+      "observed_ref": "af5d803dace369b83e4bffd2e4e6ba001d4aa000",
+      "role_candidate": "organization-wide policy",
+      "domain": "repository-specific specification/roadmap status",
+      "discovery": "Search excerpt contains status vocabulary guidance.",
+      "disposition": "REVIEW_REQUIRED",
+      "caveat": "Policy consumers and repository-level enforcement workflows remain to be identified."
+    },
+    {
+      "repository": "A-TownChain-Okosystems/a-townchain-os-docs",
+      "path": "docs/standards/STANDARDS_REGISTRY.md",
+      "observed_ref": "1c4bfd2c9cd1c43deb0b88d3a4bfde94fc9d106c",
+      "role_candidate": "documentation/report",
+      "domain": "repository-specific specification/roadmap status",
+      "discovery": "Search excerpt includes specification statuses and registry records.",
+      "disposition": "REVIEW_REQUIRED",
+      "caveat": "Documentation references alone are not a machine consumer; find schema/validator/workflow links."
+    }
+  ],
+  "required_follow_up": [
+    "Complete content-level inspection of all candidate workflows, scripts, schemas, catalog/report producers and status readers/writers in the 13 tree-enumerated repositories; path inventories alone do not establish consumer completeness.",
+    "Repeat targeted direct file inspection for the other 13 code-search-indexed active repositories at their pinned SHAs, not just search-result excerpts.",
+    "Classify every candidate as normative specification, producer, consumer, schema, test, documentation, unrelated homonym, or unknown; unknown classifications remain blockers.",
+    "Fetch and bind relevant workflow runs, jobs, steps, exit codes, logs and artifacts to each exact source SHA.",
+    "Add consumer-specific negative regressions proving DETECTED and RECONCILED cannot be promoted to VERIFIED for each executable PR #29 status consumer.",
+    "Re-run all relevant workflows on the final PR head and retain PARTIAL/BLOCKED until all closure criteria pass."
+  ],
+  "closure_criteria": {
+    "repository_fleet_complete": true,
+    "all_candidate_paths_directly_inspected": false,
+    "all_status_readers_and_writers_classified": false,
+    "exact_sha_evidence_bound_per_in_scope_repository": false,
+    "negative_regressions_for_each_executable_consumer": false,
+    "audit_closure_allowed": false,
+    "repository_fleet_complete_note": "Visible non-archived repository inventory and default branch SHAs are pinned for 26/26. This closes only inventory pagination/pinning for the accessible account, not status-consumer audit completeness."
+  },
+  "repository_inventory_snapshot": {
+    "source": "GitHub repositories API via authenticated connector, owner filter A-TownChain-Okosystems, page_size=100, page_offset=0; a second page at offset 100 returned zero records",
+    "captured_at": "2026-10-14",
+    "returned_repository_count": 33,
+    "active_non_archived_repository_count": 26,
+    "archived_repository_count": 7,
+    "private_repositories_visible": 1,
+    "default_branch": "main",
+    "coverage_note": "All 26 active repositories visible to the authenticated account have pinned main SHAs. 13 of 26 are not code-search-indexed; recursive Git Trees API inventories were retrieved for all 13 pinned commits with truncated=false. Tree enumeration is not equivalent to inspecting every file's semantics.",
+    "active_repositories": [
+      {
+        "repository": "a-townchain-os",
+        "default_branch": "main",
+        "default_branch_sha": "a929fe77c65e3a6da4a2c5805f3e290291d47aaa",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "atclang",
+        "default_branch": "main",
+        "default_branch_sha": "27dc3678f67dc81180768be60ffd025e2fa6c9b9",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "a-townchain-os-docs",
+        "default_branch": "main",
+        "default_branch_sha": "1c4bfd2c9cd1c43deb0b88d3a4bfde94fc9d106c",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "atc-shivacore",
+        "default_branch": "main",
+        "default_branch_sha": "21c99769654ff5915c421c3446e62c2a29c22b40",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "a-townchain",
+        "default_branch": "main",
+        "default_branch_sha": "a5e689671b1870699c7a1750f8a166e83590a41c",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "globus-os",
+        "default_branch": "main",
+        "default_branch_sha": "3bf000143ec9bfad79d0bacc36b99b8111178b95",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "aurora-ai",
+        "default_branch": "main",
+        "default_branch_sha": "648e8bbbb94c0facb140a4613dcba29b47165072",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "genesis-engine",
+        "default_branch": "main",
+        "default_branch_sha": "8b7100e8a88f3c9bb6e24ddda31706902f125bb5",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "atc-sdk",
+        "default_branch": "main",
+        "default_branch_sha": "34eef345907935cdaf279e0546f230c03c86bb0c",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "atc-node",
+        "default_branch": "main",
+        "default_branch_sha": "a817db43a089d172dd4688f366286c60dbf71a0e",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "atc-contracts",
+        "default_branch": "main",
+        "default_branch_sha": "a7c8b417f482665ef30e94fcacae6469c28b1125",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "genesis-chronicles",
+        "default_branch": "main",
+        "default_branch_sha": "9710bd9b314ca4bce836589f5fc8649619fc5604",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "atc-launchpad",
+        "default_branch": "main",
+        "default_branch_sha": "bd1a48c69983247a8428f90a77edd061ba79316b",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "atc-marketplace",
+        "default_branch": "main",
+        "default_branch_sha": "5c3bab7da8a80d58af725b7dea2478ece2456f39",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "atc-compute",
+        "default_branch": "main",
+        "default_branch_sha": "89d833edf338085d6141b0c703ebf92a0db83a5e",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "atc-standards",
+        "default_branch": "main",
+        "default_branch_sha": "c362d15e77b4818208b41662cf5ceba6fb90e0f2",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "atc-vm",
+        "default_branch": "main",
+        "default_branch_sha": "21132a49355eb5fd6ea4b8a7b4e4deb5d9be60f0",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "atc-algorithm",
+        "default_branch": "main",
+        "default_branch_sha": "f25b43383433766c43df6c5c494ecb70cdb4a4b7",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "atc-zkp",
+        "default_branch": "main",
+        "default_branch_sha": "df9e694772ffc955129739805fc1692753dbea84",
+        "code_search_indexed": false
+      },
+      {
+        "repository": ".github",
+        "default_branch": "main",
+        "default_branch_sha": "af5d803dace369b83e4bffd2e4e6ba001d4aa000",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "demo-repository",
+        "default_branch": "main",
+        "default_branch_sha": "6fca8f6356751e7e820e85ebf1984584392189b8",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "atc-ide",
+        "default_branch": "main",
+        "default_branch_sha": "40a07acbbb2f240f0d409e97bd0262b8c63688b4",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "genesis-franchise-factory",
+        "default_branch": "main",
+        "default_branch_sha": "673fa560322b1449e8f23cc38bf839de1b246361",
+        "code_search_indexed": false
+      },
+      {
+        "repository": "atc-engineering",
+        "default_branch": "main",
+        "default_branch_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "a-townchain-ecosystem",
+        "default_branch": "main",
+        "default_branch_sha": "c91c8c6fc60b1c28403c3125f728495e2efa124b",
+        "code_search_indexed": true
+      },
+      {
+        "repository": "atc-toolchain",
+        "default_branch": "main",
+        "default_branch_sha": "aaed3daad2f6823349bb8c89bbeb996a7911317e",
+        "code_search_indexed": false
+      }
+    ],
+    "code_search_not_indexed_count": 13
+  },
+  "search_round_2": {
+    "queries": [
+      "\"DETECTED\" \"RECONCILED\" \"VERIFIED\"",
+      "\"independent-bidirectional-reconciliation.json\"",
+      "\"reconciliation-report.json\"",
+      "\"DISCOVERED_NOT_SEMANTICALLY_VERIFIED\"",
+      "\"status == \\\"VERIFIED\\\"\"",
+      "\"status\": \"RECONCILED\""
+    ],
+    "result_summary": [
+      {
+        "repository": "A-TownChain-Okosystems/atc-algorithm",
+        "path": "docs/function-catalog.json",
+        "ref": "f25b43383433766c43df6c5c494ecb70cdb4a4b7",
+        "classification": "catalog producer/artifact",
+        "finding": "Status values are domain-specific; evidence reports tests NOT_RECONCILED and semantic contracts verified count 0."
+      },
+      {
+        "repository": "A-TownChain-Okosystems/atc-algorithm",
+        "path": "schemas/function-catalog.schema.json",
+        "ref": "f25b43383433766c43df6c5c494ecb70cdb4a4b7",
+        "classification": "schema",
+        "finding": "Constrains catalog statuses; does not itself establish behavioral verification."
+      },
+      {
+        "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+        "path": "tools/scan_public_symbols.py",
+        "ref": "c91c8c6fc60b1c28403c3125f728495e2efa124b",
+        "classification": "discovery producer",
+        "finding": "Scans public symbols; discovery output must not be treated as proof of full function coverage."
+      },
+      {
+        "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+        "path": "tools/reconcile_component_function_catalog.py",
+        "ref": "c91c8c6fc60b1c28403c3125f728495e2efa124b",
+        "classification": "reconciliation producer",
+        "finding": "Explicitly warns dynamic/generated/macro-expanded/conditional/indirect entrypoints may be absent and SHA mismatch blocks reconciliation."
+      },
+      {
+        "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+        "path": "docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.md",
+        "ref": "c91c8c6fc60b1c28403c3125f728495e2efa124b",
+        "classification": "normative/architecture documentation",
+        "finding": "Catalog currently describes 30 components, 98 functions, 7 cross-component interfaces and 7 production gates; these counts do not prove source completeness."
+      },
+      {
+        "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+        "path": "docs/architecture/ATC-COMPONENT-FUNCTION-SPECIFICATION-001.json",
+        "ref": "c91c8c6fc60b1c28403c3125f728495e2efa124b",
+        "classification": "normative specification",
+        "finding": "Explicitly says unknown/unscanned functions must not be marked absent and completeness cannot be claimed until active repositories and public/exported entrypoints are covered."
+      },
+      {
+        "repository": "A-TownChain-Okosystems/globus-os",
+        "path": "ROADMAP.md",
+        "ref": "3bf000143ec9bfad79d0bacc36b99b8111178b95",
+        "classification": "roadmap/status documentation",
+        "finding": "Inventory reconciliation and status synchronization remain listed work; status changes are tied to current-SHA evidence."
+      },
+      {
+        "repository": "A-TownChain-Okosystems/atc-engineering",
+        "path": "docs/ENGINEERING_AUDIT.md",
+        "ref": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+        "classification": "audit documentation",
+        "finding": "Uses reconciled/verified vocabulary as audit metadata; not itself an executable consumer."
+      },
+      {
+        "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+        "path": "docs/governance/ATC-PR-REGISTRY-001-POLICY.md",
+        "ref": "c91c8c6fc60b1c28403c3125f728495e2efa124b",
+        "classification": "normative policy",
+        "finding": "Has its own PR registry status vocabulary and completeness limitations; separate from reconciliation status contract."
+      },
+      {
+        "repository": "A-TownChain-Okosystems/atc-engineering",
+        "path": "docs/architecture/reconciliation-status-consumer-discovery.v1.json",
+        "ref": "65456d2a7f87b442928f2ad15f0fe4bf440db594",
+        "classification": "inventory consistency check",
+        "finding": "Cross-checking the 26 pinned entries reveals 13 repositories without code-search indexing, not 12; count corrected in this register."
+      }
+    ],
+    "limitations": "This search round returns additional candidates but does not inspect every path or establish exhaustive producer/consumer classification. Queries for the two report filenames returned no results; absence in code search is not evidence that no such files or consumers exist."
+  },
+  "direct_tree_inventory": {
+    "method": "GitHub Git Trees API recursive=true at each pinned default_branch_sha",
+    "scanned_count": 13,
+    "note": "All 13 repositories lacking code-search indexing were directly enumerated by Git tree at the pinned SHA. All returned trees reported truncated=false. This is path inventory only, not full file-content classification.",
+    "repositories": [
+      {
+        "repository": "aurora-ai",
+        "sha": "648e8bbbb94c0facb140a4613dcba29b47165072",
+        "tree_entries": 521,
+        "review_candidates": [
+          ".github/workflows/governance-ci.yml",
+          "ROADMAP.md",
+          "STATUS.md",
+          "docs/ENGINEERING_AUDIT.md",
+          "docs/AURORA_FUNCTION_CATALOG.md",
+          "modules/atc-aistudio/src/utils/auditUtils.ts",
+          "modules/atc-aistudio/src/components/GitHubStatusDashboard.tsx"
+        ],
+        "directly_inspected": [
+          {
+            "path": "modules/atc-aistudio/src/utils/auditUtils.ts",
+            "blob_sha": "a0aff58128b6eb975f76370f2946bd898ec6f541",
+            "classification": "UI/audit score helper",
+            "finding": "Consumes Pass/Warn/Fail audit-result labels and computes counts/average score; no evidence that it consumes PR #29 reconciliation states."
+          }
+        ]
+      },
+      {
+        "repository": "genesis-engine",
+        "sha": "8b7100e8a88f3c9bb6e24ddda31706902f125bb5",
+        "tree_entries": 270,
+        "review_candidates": [
+          ".github/workflows/governance-ci.yml",
+          "ROADMAP.md",
+          "STATUS.md",
+          "docs/ENGINEERING_AUDIT.md",
+          "docs/architecture/genesis-function-catalog.json",
+          "docs/architecture/genesis-function-catalog.schema.json"
+        ],
+        "directly_inspected": [
+          {
+            "path": "docs/architecture/genesis-function-catalog.json",
+            "blob_sha": "6bac1e3e260e798b12922d54e8d7882759102609",
+            "classification": "function catalog contract/report",
+            "finding": "Defines separate contract, implementation, and verification enums; explicitly states catalog is not implementation evidence and requires exact-SHA workflow evidence for VERIFIED. Domain-separated; potential policy analogue, not a PR #29 status consumer."
+          }
+        ]
+      },
+      {
+        "repository": "atc-node",
+        "sha": "a817db43a089d172dd4688f366286c60dbf71a0e",
+        "tree_entries": 55,
+        "review_candidates": [
+          ".github/workflows/governance-ci.yml",
+          "ROADMAP.md",
+          "STATUS.md",
+          "docs/ENGINEERING_AUDIT.md"
+        ],
+        "directly_inspected": [
+          {
+            "path": ".github/workflows/governance-ci.yml",
+            "blob_sha": "cb51cf53ee4de5ad44aaba8a9a48d6bd1ce56d32",
+            "classification": "governance workflow",
+            "finding": "Runs atc-standards repository audit against repository metadata/registry; not shown to consume PR #29 reconciliation status."
+          }
+        ]
+      },
+      {
+        "repository": "genesis-chronicles",
+        "sha": "9710bd9b314ca4bce836589f5fc8649619fc5604",
+        "tree_entries": 117,
+        "review_candidates": [
+          ".github/workflows/governance-ci.yml",
+          "ROADMAP.md",
+          "STATUS.md",
+          "docs/ENGINEERING_AUDIT.md"
+        ]
+      },
+      {
+        "repository": "atc-launchpad",
+        "sha": "bd1a48c69983247a8428f90a77edd061ba79316b",
+        "tree_entries": 55,
+        "review_candidates": [
+          ".github/workflows/governance-ci.yml",
+          "ROADMAP.md",
+          "STATUS.md",
+          "docs/ENGINEERING_AUDIT.md"
+        ]
+      },
+      {
+        "repository": "atc-marketplace",
+        "sha": "5c3bab7da8a80d58af725b7dea2478ece2456f39",
+        "tree_entries": 121,
+        "review_candidates": [
+          ".github/workflows/governance-ci.yml",
+          "ROADMAP.md",
+          "STATUS.md",
+          "docs/ENGINEERING_AUDIT.md"
+        ]
+      },
+      {
+        "repository": "atc-compute",
+        "sha": "89d833edf338085d6141b0c703ebf92a0db83a5e",
+        "tree_entries": 55,
+        "review_candidates": [
+          ".github/workflows/governance-ci.yml",
+          "ROADMAP.md",
+          "STATUS.md",
+          "docs/ENGINEERING_AUDIT.md",
+          "docs/specs/ATC-COMP-506-VERIFICATION.md"
+        ],
+        "directly_inspected": [
+          {
+            "path": "docs/specs/ATC-COMP-506-VERIFICATION.md",
+            "blob_sha": "5d22df3baecd2029adc3f9664d49edea10368ef4",
+            "classification": "draft normative specification",
+            "finding": "Explicitly says SPEC-DRAFT, implementation PENDING, tests/evidence PENDING; status requirements are not proof of a runtime consumer."
+          }
+        ]
+      },
+      {
+        "repository": "atc-vm",
+        "sha": "21132a49355eb5fd6ea4b8a7b4e4deb5d9be60f0",
+        "tree_entries": 60,
+        "review_candidates": [
+          ".github/workflows/contract-exec-gate.yml",
+          ".github/workflows/governance-ci.yml",
+          "ROADMAP.md",
+          "STATUS.md",
+          "docs/ENGINEERING_AUDIT.md"
+        ],
+        "directly_inspected": [
+          {
+            "path": ".github/workflows/contract-exec-gate.yml",
+            "blob_sha": "5652f82ac1d6398f8f74ee64207f43295ea8acd9",
+            "classification": "executable conformance workflow",
+            "finding": "Builds native VM runner, executes vectors, verifies a receipt with status PASS, and uploads evidence; PASS is a domain-specific execution receipt, not evidence of PR #29 report-status consumption."
+          }
+        ]
+      },
+      {
+        "repository": "atc-zkp",
+        "sha": "df9e694772ffc955129739805fc1692753dbea84",
+        "tree_entries": 91,
+        "review_candidates": [
+          ".github/workflows/determinism-gate.yml",
+          ".github/workflows/governance-ci.yml",
+          "ROADMAP.md",
+          "STATUS.md",
+          "docs/ENGINEERING_AUDIT.md"
+        ]
+      },
+      {
+        "repository": "demo-repository",
+        "sha": "6fca8f6356751e7e820e85ebf1984584392189b8",
+        "tree_entries": 27,
+        "review_candidates": [
+          "ROADMAP.md",
+          "STATUS.md",
+          "docs/ENGINEERING_AUDIT.md"
+        ]
+      },
+      {
+        "repository": "atc-ide",
+        "sha": "40a07acbbb2f240f0d409e97bd0262b8c63688b4",
+        "tree_entries": 98,
+        "review_candidates": [
+          "src/utils/auditEngine.ts",
+          "src/types/audit.ts",
+          "src/components/AuditPanel.tsx",
+          "src/components/WorkflowPanel.tsx",
+          "docs/ENGINEERING_AUDIT.md"
+        ],
+        "directly_inspected": [
+          {
+            "path": "src/utils/auditEngine.ts",
+            "blob_sha": "4666dbd51a9e0c62eb0c7172e358c20bd4e9e322",
+            "classification": "local static project-audit engine",
+            "finding": "Analyzes provided file contents for security/completeness/functionality/linkage and returns severity counts and health score; no PR #29 status consumer semantics observed in inspected excerpt."
+          }
+        ]
+      },
+      {
+        "repository": "genesis-franchise-factory",
+        "sha": "673fa560322b1449e8f23cc38bf839de1b246361",
+        "tree_entries": 66,
+        "review_candidates": [
+          ".github/workflows/governance-ci.yml",
+          "docs/ENGINEERING_AUDIT.md",
+          "tests/test_spec_gate.py"
+        ]
+      },
+      {
+        "repository": "atc-toolchain",
+        "sha": "aaed3daad2f6823349bb8c89bbeb996a7911317e",
+        "tree_entries": 17,
+        "review_candidates": [
+          ".github/workflows/governance-ci.yml",
+          "docs/ENGINEERING_AUDIT.md"
+        ]
+      }
+    ]
+  }
+}
