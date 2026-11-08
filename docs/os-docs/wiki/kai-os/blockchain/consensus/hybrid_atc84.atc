@@ -1,0 +1,98 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-84 — Hybrid Consensus (PoW + PoS + PoH) in ATCLang
+// Migriert von: blockchain/consensus/hybrid_consensus.py → ATCLang
+// Sprint 2.1 — Issue #74
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+import "consensus/pow.atc" as PoW
+import "consensus/pos.atc" as PoS
+import "consensus/poh.atc" as PoH
+
+struct HybridState {
+    pow: PoW::PoWState,
+    pos: PoS::PoSState,
+    poh: PoH::PoHState,
+    finalized_height: UInt64,
+    pending_blocks: List<HybridBlock>,
+}
+
+struct HybridBlock {
+    index: UInt64,
+    poh_hash: Hash256,
+    pow_proof: PoW::PoWBlock,
+    proposer: Address,
+    timestamp: UInt64,
+    transactions: List<Hash256>,
+    hash: Hash256,
+}
+
+// ATC-84: Block vorschlagen (PoS-Auswahl + PoH-Verifikation)
+pub fn propose_block(state: HybridState, txs: List<Hash256>) -> HybridBlock {
+    // 1. PoH-Tick für Zeit-Verifikation
+    state.poh = PoH::poh_tick(state.poh)
+
+    // 2. PoS-Proposer auswählen
+    let proposer = PoS::select_proposer(state.pos, state.pow.blocks.len())
+
+    // 3. Block erstellen
+    let block = HybridBlock {
+        index: state.finalized_height + 1,
+        poh_hash: state.poh.current_hash,
+        pow_proof: PoW::PoWBlock {},
+        proposer: proposer,
+        timestamp: Chain::timestamp(),
+        transactions: txs,
+        hash: Hash256::zero(),
+    }
+
+    // 4. Hash berechnen
+    block.hash = Crypto::sha256(serialize(block.index, block.poh_hash, block.proposer, block.transactions))
+    state.pending_blocks.append(block)
+
+    emit BlockProposed(block.index, block.proposer, block.poh_hash)
+    return block
+}
+
+// ATC-84: Block finalisieren (PoW-Bestätigung + PoS-Vote)
+pub fn finalize_block(state: HybridState, block: HybridBlock) -> Bool {
+    require(state.pending_blocks.contains(block), "Block not pending")
+
+    // PoH verifizieren
+    require(PoH::verify_poh([PoH::PoHEntry { hash: block.poh_hash, num_hashes: 0, timestamp: 0 }], state.poh.entries[0].hash), "PoH verification failed")
+
+    // PoS-Validierung (Proposer muss aktiv sein)
+    require(state.pos.validators[block.proposer].active, "Proposer not active")
+
+    // Block finalisieren
+    state.finalized_height = block.index
+    state.pending_blocks = state.pending_blocks.filter(fn b => b != block)
+
+    emit BlockFinalized(block.index, block.hash)
+    return true
+}
+
+// ATC-84: Fork Resolution
+pub fn resolve_fork(state: HybridState, fork_a: List<HybridBlock>, fork_b: List<HybridBlock>) -> List<HybridBlock> {
+    let score_a = calculate_fork_score(state, fork_a)
+    let score_b = calculate_fork_score(state, fork_b)
+
+    if score_a >= score_b {
+        return fork_a
+    }
+    return fork_b
+}
+
+pub fn calculate_fork_score(state: HybridState, fork: List<HybridBlock>) -> UInt256 {
+    let score = 0
+    for block in fork {
+        let v = state.pos.validators[block.proposer]
+        if v.active {
+            score = score + v.stake
+        }
+    }
+    return score
+}
+
+event BlockProposed(index: UInt64, proposer: Address, poh_hash: Hash256)
+event BlockFinalized(index: UInt64, hash: Hash256)
