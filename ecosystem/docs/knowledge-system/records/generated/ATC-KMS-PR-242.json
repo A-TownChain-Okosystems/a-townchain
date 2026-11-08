@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-242",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #242: docs(catalog): reconcile FN-SHIVA-003 source binding",
+  "context": "Pull request 242 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/242",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Scope\n\nReconcile exactly one catalog entry: `COMP-SHIVA / FN-SHIVA-003`.\n\n## Changes\n\n- Refresh `exact_source_sha` to the canonical `globus-os` main commit `f370b681e5c9ff49577f25c24f15b5fc880d5cba`.\n- Preserve the matching `vmm.rs` blob SHA `a3ad9e0d727d5644ae500ff0bb80f10606121f3f`.\n- Qualify the lifecycle symbols: `HardwareMapper::{map_page,unmap_page}` and `Vmm::{map_owned,unmap}`.\n- Record exact-SHA kernel test evidence: run `41375411834`, job `125054451370`, step 8; logs report 549 passed, 0 failed.\n- Keep readiness `BLOCKED` and source binding `SOURCE_MAPPED_NOT_FUNCTIONALLY_VERIFIED`.\n\n## Explicit residuals\n\nThe existing tests do not inject `FrameBackend` read/write failures. Rollback-write failure behavior and partial unmap mutation are not proven safe. This PR does not claim functional verification and does not change canonical implementation code.\n\n## Governance\n\n- Control-plane catalog metadata only; no core implementation changes.\n- One file, one function contract.\n- Draft pending schema/CI validation.\n- No auto-merge or release."
+}
