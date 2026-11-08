@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-201",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #201: [WIP] Add ATC verification tools baseline inventory",
+  "context": "Pull request 201 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/201",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\nAdds the machine-readable `ATC-VERIFICATION-TOOLS-001` target-vs-actual baseline for the 18 planned verification tools.\n\n## Scope\n- Binds the audit to baseline `12f9f427f5f5fa1d68fe278a026df1f04c67085b` and root tree `af4ec584b0d96a86f19da32e4d46d3efa2e2741c`.\n- Records observed paths, missing implementation/evidence, priorities, dependencies, acceptance criteria, and known discrepancies.\n- Keeps all tools unverified because scripts and tests were not executed during the inventory.\n- Records the `demo-repository` scope conflict and the catalog count discrepancy (104 vs. 105) as unresolved/blocked, not silently normalized.\n\n## Validation performed\n- Retrieved the file from the proposed branch and parsed it as JSON.\n- Confirmed the artifact is tied to a specific baseline commit.\n- No validator/test execution is claimed; this PR is a baseline inventory, not implementation of V03/V10.\n\n## Follow-up\nResolve V04, then implement V03 and V10 with negative tests and exact-SHA evidence."
+}
