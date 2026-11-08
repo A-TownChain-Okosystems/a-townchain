@@ -1,0 +1,10 @@
+{
+  "name": "atc-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "echo 'NOT IMPLEMENTED: keine TS-Quellen (siehe STATUS.md)' && exit 0",
+    "test": "echo \"no tests\" && exit 0"
+  }
+}
