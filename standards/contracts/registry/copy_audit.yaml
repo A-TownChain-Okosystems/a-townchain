@@ -1,0 +1,312 @@
+# Copyright (c) 2026 Michael Wroblewski / A-TownChain-Okosystems. Apache-2.0
+# Erzeugt von tools/atc-sc-validator/audit_contract_copies.py --write
+# kind: identical = byte-gleiche Spiegelkopie, divergent = getrennte Implementierung
+contracts:
+  ATC8300Token:
+    kind: divergent
+    copies: 9
+    variants: 2
+    files:
+      - ai/atclang/examples/atc8300.atc
+      - apps/atc-contracts/atc8300/atc8300.atc
+      - apps/atc-contracts/atc8300/atc8300_token.atc
+      - apps/atc-contracts/modules/atc-contracts/atc8300/atc8300.atc
+      - apps/atc-contracts/modules/atc-contracts/atc8300/atc8300_token.atc
+      - components/contracts/atc8300/atc8300.atc
+      - components/contracts/atc8300/atc8300_token.atc
+      - components/contracts/modules/atc-contracts/atc8300/atc8300.atc
+      - components/contracts/modules/atc-contracts/atc8300/atc8300_token.atc
+  ATCIssuesSummary:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-sdk/modules/atc-cli/atc_issues_summary.atc
+      - components/sdk/modules/atc-cli/atc_issues_summary.atc
+  ATCoin:
+    kind: divergent
+    copies: 9
+    variants: 2
+    files:
+      - ai/atclang/examples/atc8300.atc
+      - apps/atc-contracts/atc8300/atc8300.atc
+      - apps/atc-contracts/atcoin/atcoin.atc
+      - apps/atc-contracts/modules/atc-contracts/atc8300/atc8300.atc
+      - apps/atc-contracts/modules/atc-contracts/atcoin/atcoin.atc
+      - components/contracts/atc8300/atc8300.atc
+      - components/contracts/atcoin/atcoin.atc
+      - components/contracts/modules/atc-contracts/atc8300/atc8300.atc
+      - components/contracts/modules/atc-contracts/atcoin/atcoin.atc
+  AgentRegistry:
+    kind: identical
+    copies: 4
+    variants: 1
+    files:
+      - apps/atc-contracts/modules/atc-contracts/smart_contracts.atc
+      - apps/atc-contracts/smart_contracts.atc
+      - components/contracts/modules/atc-contracts/smart_contracts.atc
+      - components/contracts/smart_contracts.atc
+  BaseContract:
+    kind: identical
+    copies: 4
+    variants: 1
+    files:
+      - apps/atc-contracts/base/base_contract.atc
+      - apps/atc-contracts/modules/atc-contracts/base/base_contract.atc
+      - components/contracts/base/base_contract.atc
+      - components/contracts/modules/atc-contracts/base/base_contract.atc
+  BigQueryPipeline:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-sdk/modules/atc-cli/bigquery_pipeline.atc
+      - components/sdk/modules/atc-cli/bigquery_pipeline.atc
+  BridgeContract:
+    kind: identical
+    copies: 4
+    variants: 1
+    files:
+      - apps/atc-contracts/bridge/bridge_contract.atc
+      - apps/atc-contracts/modules/atc-contracts/bridge/bridge_contract.atc
+      - components/contracts/bridge/bridge_contract.atc
+      - components/contracts/modules/atc-contracts/bridge/bridge_contract.atc
+  E2EAdder:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-contracts/exec_chain/e2e_adder.atc
+      - components/contracts/exec_chain/e2e_adder.atc
+  ECDSASigner:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-sdk/modules/atc-cli/ecdsa_impl.atc
+      - components/sdk/modules/atc-cli/ecdsa_impl.atc
+  FederatedLearningCoordinator:
+    kind: divergent
+    copies: 5
+    variants: 2
+    files:
+      - ai/aurora-ai/modules/atc-aistudio/federated_learning.atc
+      - apps/atc-contracts/modules/atc-contracts/smart_contracts.atc
+      - apps/atc-contracts/smart_contracts.atc
+      - components/contracts/modules/atc-contracts/smart_contracts.atc
+      - components/contracts/smart_contracts.atc
+  FractionalAssetOwnership:
+    kind: divergent
+    copies: 7
+    variants: 2
+    files:
+      - apps/atc-contracts/modules/atc-contracts/standards/atc-13_fractional_asset_ownership.atc
+      - apps/atc-contracts/modules/atc-standards-refs/standards/atc-13_fractional_asset_ownership.atc
+      - apps/atc-contracts/standards/atc-13_fractional_asset_ownership.atc
+      - components/contracts/modules/atc-contracts/standards/atc-13_fractional_asset_ownership.atc
+      - components/contracts/modules/atc-standards-refs/standards/atc-13_fractional_asset_ownership.atc
+      - components/contracts/standards/atc-13_fractional_asset_ownership.atc
+      - standards/references/standards/atc-13_fractional_asset_ownership.atc
+  FranchiseRegistry:
+    kind: divergent
+    copies: 4
+    variants: 3
+    files:
+      - ai/genesis-franchise-factory/specs/contracts/registry.atc
+      - apps/atc-contracts/modules/atc-standards-refs/contracts/registry.atc
+      - components/contracts/modules/atc-standards-refs/contracts/registry.atc
+      - standards/references/contracts/registry.atc
+  FranchiseToken:
+    kind: identical
+    copies: 4
+    variants: 1
+    files:
+      - apps/atc-contracts/contracts/token.atc
+      - apps/atc-contracts/modules/atc-contracts/contracts/token.atc
+      - components/contracts/contracts/token.atc
+      - components/contracts/modules/atc-contracts/contracts/token.atc
+  GenesisChroniclesContract:
+    kind: divergent
+    copies: 4
+    variants: 4
+    files:
+      - ai/genesis-chronicles/contracts/genesis_chronicles.atc
+      - ai/genesis-chronicles/genesis_chronicles_contract.atc
+      - ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon.atc
+      - ai/genesis-chronicles/modules/genesis-chronicles/shivamon_contract.atc
+  GovernanceContract:
+    kind: identical
+    copies: 4
+    variants: 1
+    files:
+      - apps/atc-contracts/governance/governance_contract.atc
+      - apps/atc-contracts/modules/atc-contracts/governance/governance_contract.atc
+      - components/contracts/governance/governance_contract.atc
+      - components/contracts/modules/atc-contracts/governance/governance_contract.atc
+  GovernanceDAO:
+    kind: divergent
+    copies: 5
+    variants: 2
+    files:
+      - apps/atc-contracts/modules/atc-contracts/smart_contracts.atc
+      - apps/atc-contracts/smart_contracts.atc
+      - components/contracts/modules/atc-contracts/smart_contracts.atc
+      - components/contracts/smart_contracts.atc
+      - modules/atc-blockchain/governance/governance.atc
+  HFReviewPipeline:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-sdk/modules/atc-cli/hf_review_pipeline.atc
+      - components/sdk/modules/atc-cli/hf_review_pipeline.atc
+  KAIcli:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-sdk/modules/atc-cli/kai_cli.atc
+      - components/sdk/modules/atc-cli/kai_cli.atc
+  MarketplaceContract:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - ai/genesis-chronicles/marketplace_contract.atc
+      - ai/genesis-chronicles/modules/genesis-chronicles/marketplace_contract.atc
+  PaymentChannel:
+    kind: identical
+    copies: 4
+    variants: 1
+    files:
+      - apps/atc-contracts/modules/atc-contracts/smart_contracts.atc
+      - apps/atc-contracts/smart_contracts.atc
+      - components/contracts/modules/atc-contracts/smart_contracts.atc
+      - components/contracts/smart_contracts.atc
+  ProofOfAiMining:
+    kind: divergent
+    copies: 7
+    variants: 2
+    files:
+      - apps/atc-contracts/modules/atc-contracts/standards/atc-15_proof_of_ai_mining.atc
+      - apps/atc-contracts/modules/atc-standards-refs/standards/atc-15_proof_of_ai_mining.atc
+      - apps/atc-contracts/standards/atc-15_proof_of_ai_mining.atc
+      - components/contracts/modules/atc-contracts/standards/atc-15_proof_of_ai_mining.atc
+      - components/contracts/modules/atc-standards-refs/standards/atc-15_proof_of_ai_mining.atc
+      - components/contracts/standards/atc-15_proof_of_ai_mining.atc
+      - standards/references/standards/atc-15_proof_of_ai_mining.atc
+  ReferralMultitierRewards:
+    kind: divergent
+    copies: 7
+    variants: 2
+    files:
+      - apps/atc-contracts/modules/atc-contracts/standards/atc-16_referral_multitier_rewards.atc
+      - apps/atc-contracts/modules/atc-standards-refs/standards/atc-16_referral_multitier_rewards.atc
+      - apps/atc-contracts/standards/atc-16_referral_multitier_rewards.atc
+      - components/contracts/modules/atc-contracts/standards/atc-16_referral_multitier_rewards.atc
+      - components/contracts/modules/atc-standards-refs/standards/atc-16_referral_multitier_rewards.atc
+      - components/contracts/standards/atc-16_referral_multitier_rewards.atc
+      - standards/references/standards/atc-16_referral_multitier_rewards.atc
+  ResourceMarket:
+    kind: identical
+    copies: 4
+    variants: 1
+    files:
+      - apps/atc-contracts/modules/atc-contracts/smart_contracts.atc
+      - apps/atc-contracts/smart_contracts.atc
+      - components/contracts/modules/atc-contracts/smart_contracts.atc
+      - components/contracts/smart_contracts.atc
+  RevenueShare:
+    kind: divergent
+    copies: 5
+    variants: 2
+    files:
+      - ai/genesis-franchise-factory/specs/contracts/revenue.atc
+      - apps/atc-contracts/contracts/revenue.atc
+      - apps/atc-contracts/modules/atc-contracts/contracts/revenue.atc
+      - components/contracts/contracts/revenue.atc
+      - components/contracts/modules/atc-contracts/contracts/revenue.atc
+  SmartContractRegistry:
+    kind: identical
+    copies: 4
+    variants: 1
+    files:
+      - apps/atc-contracts/modules/atc-contracts/smart_contract_registry.atc
+      - apps/atc-contracts/smart_contract_registry.atc
+      - components/contracts/modules/atc-contracts/smart_contract_registry.atc
+      - components/contracts/smart_contract_registry.atc
+  T01AtCoinMintSupply:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-contracts/exec_chain/tests/t01_atcoin_mint_supply.atc
+      - components/contracts/exec_chain/tests/t01_atcoin_mint_supply.atc
+  T02AtCoinTransferBalance:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-contracts/exec_chain/tests/t02_atcoin_transfer_balance.atc
+      - components/contracts/exec_chain/tests/t02_atcoin_transfer_balance.atc
+  T03AtCoinSupplyCap:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-contracts/exec_chain/tests/t03_atcoin_supply_cap.atc
+      - components/contracts/exec_chain/tests/t03_atcoin_supply_cap.atc
+  T04GovernanceQuorumThreshold:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-contracts/exec_chain/tests/t04_governance_quorum_threshold.atc
+      - components/contracts/exec_chain/tests/t04_governance_quorum_threshold.atc
+  T05GovernanceQuorumShortfall:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-contracts/exec_chain/tests/t05_governance_quorum_shortfall.atc
+      - components/contracts/exec_chain/tests/t05_governance_quorum_shortfall.atc
+  T06BridgeLockFeeNet:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-contracts/exec_chain/tests/t06_bridge_lock_fee_net.atc
+      - components/contracts/exec_chain/tests/t06_bridge_lock_fee_net.atc
+  T07BridgeFeeAccumulation:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-contracts/exec_chain/tests/t07_bridge_fee_accumulation.atc
+      - components/contracts/exec_chain/tests/t07_bridge_fee_accumulation.atc
+  T08Atc8300TransferWithFee:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-contracts/exec_chain/tests/t08_atc8300_transfer_with_fee.atc
+      - components/contracts/exec_chain/tests/t08_atc8300_transfer_with_fee.atc
+  T09Atc8300BurnSupply:
+    kind: identical
+    copies: 2
+    variants: 1
+    files:
+      - apps/atc-contracts/exec_chain/tests/t09_atc8300_burn_supply.atc
+      - components/contracts/exec_chain/tests/t09_atc8300_burn_supply.atc
+  WrappedSyntheticAssets:
+    kind: divergent
+    copies: 7
+    variants: 2
+    files:
+      - apps/atc-contracts/modules/atc-contracts/standards/atc-20_wrapped_synthetic_assets.atc
+      - apps/atc-contracts/modules/atc-standards-refs/standards/atc-20_wrapped_synthetic_assets.atc
+      - apps/atc-contracts/standards/atc-20_wrapped_synthetic_assets.atc
+      - components/contracts/modules/atc-contracts/standards/atc-20_wrapped_synthetic_assets.atc
+      - components/contracts/modules/atc-standards-refs/standards/atc-20_wrapped_synthetic_assets.atc
+      - components/contracts/standards/atc-20_wrapped_synthetic_assets.atc
+      - standards/references/standards/atc-20_wrapped_synthetic_assets.atc
