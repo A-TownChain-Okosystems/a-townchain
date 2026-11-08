@@ -1,0 +1,29 @@
+# ATC Standard Lifecycle-Zustandsmaschine (ATC-STD-000 §9)
+states: [idea, proposed, draft, review, candidate, approved, stable, deprecated, retired]
+transitions:
+  idea:         [proposed]
+  proposed:     [draft]
+  draft:        [review]
+  review:       [candidate, draft]        # draft = Rueckstufung nach abgelehntem Review
+  candidate:    [approved, draft]
+  approved:     [stable]
+  stable:       [deprecated]
+  deprecated:   [retired]
+rules:
+  - Nur sequenzielle Uebergaende; Springen UNZULAESSIG (Ausnahme: Rueckstufung).
+  - Normativkraft (Geltung fuer Implementierungen) entsteht mit APPROVED, volle
+    Verbindlichkeit mit STABLE.
+  - APPROVED setzt die Review-Chain (Technical/Security/Architecture + Approval) voraus.
+  - Aenderungen an STABLE nur via SCR (ATC-STD-000 §14).
+
+# Legacy-Status-Mapping (07.09.2026, Review-Befund): Historische
+# Statusbegriffe der Altsign (STANDARDS_REGISTRY.md, ATC-01…99 /
+# ATS-1000…1007) werden eindeutig auf den kanonischen Lifecycle
+# abgebildet. Nur der kanonische Lifecycle ist normativ (ATC-STD-000 §9).
+legacy_status_map:
+  FINAL:    {maps_to: approved, note: "historisch: in Kraft gesetzt"}
+  ACCEPTED: {maps_to: approved, note: "historisch: angenommen"}
+  MANDATE:  {maps_to: candidate, note: "historisch: Owner-Mandat ohne Review"}
+  ARCHIVED: {maps_to: retired,   note: "historisch: archiviert"}
+  DRAFT:    {maps_to: draft,     note: "identisch"}
+  REVIEW:   {maps_to: review,    note: "identisch"}
