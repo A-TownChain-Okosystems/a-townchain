@@ -1,0 +1,223 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═══════════════════════════════════════════════════════════
+// AD-46 — Cross-Franchise Engine (MetaFactory v3.0)
+// Gemeinsame Systeme zwischen Marken: Accounts, Inventare,
+// Erfolge, Crossover-Events, saisonale Inhalte
+// ═══════════════════════════════════════════════════════════
+module MetaFactory.CrossFranchiseEngine[AD-46] {
+
+    import GCL.Core[AD-00]
+    import GCL.EventBus[AD-01]
+    import GCL.NetworkBus[AD-05]
+    import GCL.CommandBus[AD-02]
+
+    struct UniversalAccount {
+        id: String
+        player_id: String
+        linked_franchises: Map<String, FranchiseLink>
+        universal_inventory: UniversalInventory
+        universal_achievements: Map<String, Achievement>
+        universal_currency: Map<CurrencyType, Decimal>
+        friends: UniversalFriendsList
+        progress: Map<String, FranchiseProgress>
+        created_date: Timestamp
+    }
+
+    struct FranchiseLink {
+        franchise_id: String
+        player_handle: String
+        linked_date: Timestamp
+        data_access: List< DataAccessScope>
+        sync_enabled: Bool
+    }
+
+    struct UniversalInventory {
+        items: Map<String, CrossItem>
+        shared_items: List<String>    // Items usable across franchises
+        exclusive_items: List<String> // Franchise-specific
+    }
+
+    struct CrossItem {
+        id: String
+        name: String
+        origin_franchise: String
+        usable_in: List<String>       // Franchise IDs
+        rarity: Rarity
+        properties: Map<String, PropertyValue>
+        transferable: Bool
+        transfer_count: U32
+        max_transfers: U32
+    }
+
+    struct UniversalAchievement {
+        id: String
+        name: String
+        description: String
+        franchises: List<String>
+        progress: Float               // 0.0–1.0
+        unlocked: Bool
+        unlock_date: Option<Timestamp>
+        rewards: List<CrossReward>
+    }
+
+    struct CrossoverEvent {
+        id: String
+        name: String
+        participating_franchises: List<String>
+        start_date: Timestamp
+        end_date: Timestamp
+        type: CrossoverType           // Story, Cosmetic, Gameplay, Seasonal
+        rewards: List<CrossReward>
+        prerequisites: List<String>
+        canon_impact: Bool
+        status: EventStatus
+    }
+
+    struct CrossReward {
+        id: String
+        type: RewardType
+        item_id: Option<String>
+        currency: Option<(CurrencyType, Decimal)>
+        achievement_id: Option<String>
+        franchise: String             // Which franchise the reward belongs to
+    }
+
+    struct UniversalFriendsList {
+        friends: Map<String, Friendship>
+        cross_franchise: Bool
+        shared_activities: List<SharedActivity>
+    }
+
+    struct SharedActivity {
+        id: String
+        type: ActivityType
+        franchises: List<String>
+        participants: List<String>
+        timestamp: Timestamp
+    }
+
+    interface ICrossFranchiseEngine {
+        fn link_franchise(account_id: String, franchise_id: String) -> Result<FranchiseLink>
+        fn unlink_franchise(account_id: String, franchise_id: String) -> Result<()>
+        fn transfer_item(account_id: String, item_id: String, from_franchise: String, to_franchise: String) -> Result<()>
+        fn sync_progress(account_id: String, franchise_id: String) -> Result<FranchiseProgress>
+        fn create_crossover_event(spec: CrossoverSpec) -> Result<CrossoverEvent>
+        fn get_universal_achievements(account_id: String) -> List<UniversalAchievement>
+        fn share_friends(account_id: String, franchise_ids: List<String>) -> Result<()>
+        fn get_cross_inventory(account_id: String) -> UniversalInventory
+    }
+
+    class CrossFranchiseEngine implements ICrossFranchiseEngine {
+
+        gcl: GCLCore
+        accounts: Map<String, UniversalAccount>
+        events: Map<String, CrossoverEvent>
+
+        fn init(gcl: GCLCore) {
+            self.gcl = gcl
+            self.accounts = Map::new()
+            self.events = Map::new()
+            self.gcl.subscribe("crossfranchise.cmd", self.handle_command)
+        }
+
+        fn link_franchise(account_id: String, franchise_id: String) -> Result<FranchiseLink> {
+            let account = self.accounts.get(account_id)
+            if account.linked_franchises.contains(franchise_id) {
+                return Err("Franchise already linked")
+            }
+
+            let link = FranchiseLink {
+                franchise_id,
+                player_handle: format!("Player-{}", account.player_id),
+                linked_date: now(),
+                data_access: [ DataAccessScope::Inventory,  DataAccessScope::Achievements,  DataAccessScope::Progress],
+                sync_enabled: true
+            }
+            account.linked_franchises.insert(franchise_id, link)
+            self.gcl.emit("crossfranchise.linked", {account_id, franchise_id})
+            Ok(link)
+        }
+
+        fn transfer_item(account_id: String, item_id: String, from: String, to: String) -> Result<()> {
+            let account = self.accounts.get(account_id)
+            let item = account.universal_inventory.items.get(item_id)
+
+            if !item.transferable {
+                return Err("Item not transferable")
+            }
+            if !item.usable_in.contains(to) {
+                return Err("Item not compatible with target franchise")
+            }
+            if item.transfer_count >= item.max_transfers {
+                return Err("Max transfers reached")
+            }
+
+            item.transfer_count += 1
+            self.gcl.emit("crossfranchise.item_transferred", {item_id, from, to, account_id})
+            Ok(())
+        }
+
+        fn sync_progress(account_id: String, franchise_id: String) -> Result<FranchiseProgress> {
+            let account = self.accounts.get(account_id)
+            let link = account.linked_franchises.get(franchise_id)
+            if !link.sync_enabled {
+                return Err("Sync disabled for this franchise")
+            }
+
+            let progress = FranchiseProgress {
+                franchise_id,
+                level: self.fetch_level(account_id, franchise_id),
+                completion: self.fetch_completion(account_id, franchise_id),
+                playtime: self.fetch_playtime(account_id, franchise_id),
+                last_synced: now()
+            }
+            account.progress.insert(franchise_id, progress)
+            self.gcl.emit("crossfranchise.synced", {account_id, franchise_id})
+            Ok(progress)
+        }
+
+        fn create_crossover_event(spec: CrossoverSpec) -> Result<CrossoverEvent> {
+            let event = CrossoverEvent {
+                id: generate_id("CXE"),
+                name: spec.name,
+                participating_franchises: spec.franchises,
+                start_date: spec.start_date,
+                end_date: spec.end_date,
+                type: spec.type,
+                rewards: spec.rewards,
+                prerequisites: spec.prerequisites,
+                canon_impact: spec.canon_impact,
+                status: EventStatus::Scheduled
+            }
+            self.events.insert(event.id, event)
+            self.gcl.emit("crossfranchise.event_created", {event_id: event.id})
+            Ok(event)
+        }
+
+        fn get_universal_achievements(account_id: String) -> List<UniversalAchievement> {
+            let account = self.accounts.get(account_id)
+            account.universal_achievements.values().filter(|a| a.unlocked).collect()
+        }
+
+        fn share_friends(account_id: String, franchise_ids: List<String>) -> Result<()> {
+            let account = self.accounts.get(account_id)
+            for fid in franchise_ids {
+                if account.linked_franchises.contains(fid) {
+                    let link = account.linked_franchises.get(fid)
+                    link.data_access.push( DataAccessScope::Friends)
+                }
+            }
+            self.gcl.emit("crossfranchise.friends_shared", {account_id, franchises: franchise_ids})
+            Ok(())
+        }
+
+        fn handle_command(cmd: Command) {
+            match cmd.action {
+                "link" => { let r = self.link_franchise(cmd.data.account_id, cmd.data.franchise_id); self.gcl.respond(cmd, r) },
+                "transfer" => { let r = self.transfer_item(cmd.data.account_id, cmd.data.item_id, cmd.data.from, cmd.data.to); self.gcl.respond(cmd, r) },
+                "sync" => { let r = self.sync_progress(cmd.data.account_id, cmd.data.franchise_id); self.gcl.respond(cmd, r) },
+                _ => self.gcl.respond(cmd, Err("Unknown command"))
+            }
+        }
+    }
+}
