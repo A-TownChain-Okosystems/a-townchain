@@ -1,0 +1,350 @@
+{
+  "schema_version": "1.0.0",
+  "document_id": "GENESIS-NATIVE-3D-GATE0-INVENTORY-001",
+  "purpose": "Evidence-scoped Gate 0 inventory for Genesis-native game-art and 3D production. This is a partial inventory, not a claim that the entire repository has been exhaustively mapped.",
+  "repository": "A-TownChain-Okosystems/genesis-engine",
+  "audit_base_commit": "8b7100e8a88f3c9bb6e24ddda31706902f125bb5",
+  "audit_base_url": "https://github.com/A-TownChain-Okosystems/genesis-engine/commit/8b7100e8a88f3c9bb6e24ddda31706902f125bb5",
+  "issue": 35,
+  "status": "PARTIAL",
+  "complete": false,
+  "verification": {
+    "repository_commit_identified": true,
+    "exact_commit_sha": "8b7100e8a88f3c9bb6e24ddda31706902f125bb5",
+    "blob_shas_recorded": true,
+    "build_run_in_this_audit": false,
+    "ci_verified_in_this_audit": false,
+    "end_to_end_image_render_proven": false,
+    "native_studio_ui_proven": false,
+    "rule": "File/blob inspection is not proof of runtime integration; CI status is not inferred."
+  },
+  "ssot_policy": {
+    "rule": "Extend canonical Genesis modules first. Do not add parallel renderer, asset, animation, or editor implementations unless an ownership/dependency audit proves a distinct missing responsibility.",
+    "no_external_engine_or_renderer_required": true
+  },
+  "workspace_members_observed_in_Cargo_toml": [
+    "atc-genesis-animation",
+    "atc-genesis-assets",
+    "atc-genesis-audio",
+    "atc-genesis-ecs",
+    "atc-genesis-physics",
+    "atc-genesis-platform",
+    "atc-genesis-renderer",
+    "atc-genesis-ui",
+    "atc-genesis-sdk",
+    "atc-genesis-ai",
+    "atc-genesis-network",
+    "atc-genesis-build",
+    "atc-genesis-tools",
+    "atc-genesis-cli",
+    "atc-genesis-editor",
+    "atc-genesis-input",
+    "atc-genesis-world",
+    "atc-genesis-gameplay",
+    "atc-genesis-runtime"
+  ],
+  "entries": [
+    {
+      "path": "Cargo.toml",
+      "blob_sha": "5befdfbbfedf7756cdc44ca57df9d20b7e3085cc",
+      "symbols": [
+        "[workspace]",
+        "members"
+      ],
+      "responsibility": "Defines Rust workspace and canonical module membership.",
+      "dependencies": [],
+      "status": "IMPLEMENTED",
+      "evidence_gaps": [
+        "Workspace membership alone does not prove runtime integration or tests."
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-platform/src/lib.rs",
+      "blob_sha": "53aea87706fea8a30967475dd670a09581e80bd4",
+      "symbols": [
+        "EntityId",
+        "AssetId",
+        "FrameId",
+        "Transform",
+        "AssetKind",
+        "AssetStore",
+        "Renderer",
+        "WorldAssetResolver",
+        "PlatformServices"
+      ],
+      "responsibility": "Shared contracts and value types between engine subsystems.",
+      "dependencies": [],
+      "status": "IMPLEMENTED",
+      "evidence_gaps": [
+        "Renderer contract only submits entity transforms; no mesh/material/draw packet contract in this file.",
+        "No concrete native GPU or software renderer established by this contract."
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-renderer/src/backend.rs",
+      "blob_sha": "c5bd15099195c933756b734583307941e372a0fc",
+      "symbols": [
+        "GraphicsBackend",
+        "RenderCapabilities",
+        "RenderBackend",
+        "NullBackend",
+        "CommandBufferBackend",
+        "BackendRenderer",
+        "command_backend_is_deterministic"
+      ],
+      "responsibility": "Backend abstraction, null backend, deterministic command collection, Renderer adapter.",
+      "dependencies": [
+        "atc-genesis-platform::{EntityId,FrameId,Renderer,Transform}"
+      ],
+      "status": "PARTIAL",
+      "evidence_gaps": [
+        "Vulkan/Metal/DirectX12/OpenGL/WebGpu are enum variants, not proof of implemented drivers.",
+        "CommandBufferBackend reports GraphicsBackend::Null and compute=true; capability semantics require correction/audit.",
+        "No clipping, triangle rasterization, depth buffer, shading, or image-output implementation established by this file."
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-renderer/src/resources.rs",
+      "blob_sha": "f5d15663b4dbc34daca6ae7aceef993182a50b18",
+      "symbols": [
+        "MeshHandle",
+        "MaterialHandle",
+        "TextureHandle",
+        "MeshMaterialBinding",
+        "RenderResourceBindings"
+      ],
+      "responsibility": "Renderer-facing resource handles and entity-to-resource bindings.",
+      "dependencies": [
+        "atc-genesis-platform::EntityId"
+      ],
+      "status": "PARTIAL",
+      "evidence_gaps": [
+        "Need inspect complete resource lifecycle, ownership, upload, validation and texture resolution."
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-renderer/src/render_item.rs",
+      "blob_sha": "05ace2c83e2c98e8c06134beb8e76be484b80eb3",
+      "symbols": [
+        "RenderItem",
+        "collect_render_items"
+      ],
+      "responsibility": "Collect world transforms and resource bindings into render items.",
+      "dependencies": [
+        "world/ECS transform access",
+        "renderer resource bindings"
+      ],
+      "status": "PARTIAL",
+      "evidence_gaps": [
+        "Observed path leaves texture and instance-group data unset; prove full mesh/material-to-pixel flow."
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-renderer/src/animation.rs",
+      "blob_sha": "0957ca7f846bcad48d10082a5d3552e1c6c2e60a",
+      "symbols": [
+        "SkinnedPose",
+        "animation-to-skinned-pose mapping"
+      ],
+      "responsibility": "Bridge sampled animation poses into renderer-side pose representation.",
+      "dependencies": [
+        "atc-genesis-animation",
+        "renderer"
+      ],
+      "status": "PARTIAL",
+      "evidence_gaps": [
+        "Pose mapping does not prove vertex skinning, inverse-bind handling, CPU/GPU deformation or rendered animated output."
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5",
+      "symbols": [
+        "AssetRecord",
+        "InMemoryAssetStore",
+        "ImportRecord",
+        "AssetPipeline",
+        "MeshAsset",
+        "fnv1a64"
+      ],
+      "responsibility": "In-memory asset registry, import metadata, dependency validation/order, mesh data and validation.",
+      "dependencies": [
+        "atc-genesis-platform::{AssetId,AssetKind,AssetStore,WorldAssetResolver}"
+      ],
+      "status": "PARTIAL",
+      "evidence_gaps": [
+        "FNV-1a 64-bit is not a cryptographic integrity digest.",
+        "Need prove canonical serialized formats, material/texture codecs, cook outputs, dependency invalidation and reproducible import/build.",
+        "Asset store observed is in-memory; persistent production storage not established by this file."
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-animation/src/lib.rs",
+      "blob_sha": "f028cd6950dc9d36faa15f04fc027de42f769c60",
+      "symbols": [
+        "PoseTransform",
+        "Bone",
+        "Skeleton::validate",
+        "Keyframe",
+        "AnimationTrack::sample",
+        "AnimationClip::sample",
+        "AnimationPlayer",
+        "lerp_pose"
+      ],
+      "responsibility": "Skeleton/clip/track data structures and deterministic pose sampling.",
+      "dependencies": [],
+      "status": "PARTIAL",
+      "evidence_gaps": [
+        "Validation coverage for cycles, duplicate track targets, key ordering, non-finite values and invalid durations must be tested.",
+        "Quaternion interpolation is normalized linear interpolation; production interpolation requirements need explicit specification.",
+        "IK, retargeting, animation graphs and deformation pipeline are not established by this file."
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-editor/src/lib.rs",
+      "blob_sha": "f735195d889b90b77778955068dcf8914d1bef74",
+      "symbols": [
+        "SceneNode",
+        "SceneDocument",
+        "create_node",
+        "remove_node",
+        "set_transform",
+        "undo",
+        "apply_to_world",
+        "serialize",
+        "deserialize"
+      ],
+      "responsibility": "Scene document model, transform editing, basic undo, world application and text serialization.",
+      "dependencies": [
+        "atc-genesis-platform::{EntityId,Transform}",
+        "atc-genesis-ecs::World"
+      ],
+      "status": "PARTIAL",
+      "evidence_gaps": [
+        "This file does not prove a native visual Studio shell, 3D viewport, gizmos, mesh editing, material editor, or animation timeline.",
+        "Parent graph cycle/transform hierarchy and serialization edge cases require tests."
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-build/src/lib.rs",
+      "blob_sha": "c8ca893727f292f0ae397dcb35549dabdb68e710",
+      "symbols": [
+        "BuildProfile",
+        "PackageManifest",
+        "PackageManifest::validate",
+        "Artifact",
+        "checksum",
+        "collect_files",
+        "build_artifacts",
+        "manifest_json"
+      ],
+      "responsibility": "Build profile metadata, package file collection, artifact metadata/checksum and manifest serialization.",
+      "dependencies": [
+        "std::fs",
+        "std::path"
+      ],
+      "status": "PARTIAL",
+      "evidence_gaps": [
+        "Checksum is FNV-1a 64-bit, not cryptographic.",
+        "Need prove canonical manifest serialization, artifact digest verification, deterministic build outputs and Windows/Linux packaging in CI."
+      ]
+    }
+  ],
+  "dependency_edges": [
+    {
+      "from": "atc-genesis-renderer",
+      "to": "atc-genesis-platform",
+      "kind": "contract"
+    },
+    {
+      "from": "atc-genesis-renderer",
+      "to": "atc-genesis-assets",
+      "kind": "resource-integration-to-verify"
+    },
+    {
+      "from": "atc-genesis-renderer",
+      "to": "atc-genesis-animation",
+      "kind": "pose-integration-to-verify"
+    },
+    {
+      "from": "atc-genesis-editor",
+      "to": "atc-genesis-platform",
+      "kind": "contract"
+    },
+    {
+      "from": "atc-genesis-editor",
+      "to": "atc-genesis-ecs",
+      "kind": "world-application"
+    },
+    {
+      "from": "atc-genesis-build",
+      "to": "artifact-filesystem",
+      "kind": "filesystem"
+    }
+  ],
+  "gates": [
+    {
+      "gate": 0,
+      "status": "PARTIAL",
+      "exit_criteria": [
+        "Inventory every relevant path/symbol",
+        "Record exact commit and blob SHAs",
+        "Map dependencies and ownership",
+        "Identify tests and evidence gaps"
+      ]
+    },
+    {
+      "gate": 1,
+      "status": "BLOCKED",
+      "exit_criteria": [
+        "Deterministic software rasterizer",
+        "Clipping, triangle rasterization, depth buffer",
+        "Stable image encoding/output",
+        "Reference-image and repeatability tests"
+      ]
+    },
+    {
+      "gate": 2,
+      "status": "BLOCKED",
+      "exit_criteria": [
+        "Native mesh/material/texture format",
+        "Validated asset manifest and cryptographic digests",
+        "Mesh/material-to-image end-to-end test"
+      ]
+    },
+    {
+      "gate": 3,
+      "status": "BLOCKED",
+      "exit_criteria": [
+        "Actual GPU backend implementation",
+        "PBR and shader pipeline",
+        "Resource lifetime and error handling tests"
+      ]
+    },
+    {
+      "gate": 4,
+      "status": "BLOCKED",
+      "exit_criteria": [
+        "Native Studio viewport and authoring UX",
+        "Validated animation and CPU/GPU skinning",
+        "Animated scene rendered end-to-end"
+      ]
+    },
+    {
+      "gate": 5,
+      "status": "BLOCKED",
+      "exit_criteria": [
+        "Windows/Linux release evidence",
+        "Reproducible builds and performance budgets",
+        "GlobusOS integration boundary documented"
+      ]
+    }
+  ],
+  "next_actions": [
+    "Expand inventory across renderer module files, asset formats/importers, editor UI, runtime/render loop, tests and platform-specific code.",
+    "Audit actual dependency graph and identify current render loop ownership.",
+    "Correct or explicitly document CommandBufferBackend capability semantics.",
+    "Specify deterministic software rasterizer contract and reference-image format before implementation.",
+    "Run targeted workspace tests only through an environment that returns verifiable run/job/step/exit-code evidence."
+  ]
+}
