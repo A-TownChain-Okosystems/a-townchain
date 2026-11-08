@@ -1,0 +1,135 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-06 — Inter-Node Latency Optimization in ATCLang
+// Sprint 2.2 — Issue #83
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct LatencyConfig {
+    ping_interval_ms: UInt32,
+    timeout_ms: UInt32,
+    max_retries: UInt8,
+    compression_threshold: UInt32,
+    batch_size: UInt16,
+    parallel_connections: UInt8,
+}
+
+struct PeerLatency {
+    peer_id: Hash256,
+    rtt_ms: UInt32,
+    jitter_ms: UInt32,
+    loss_rate: UInt16,    // in basis points (100 = 1%)
+    last_pings: List<UInt32>,
+    weighted_rtt: UInt32,
+    priority: UInt8,
+}
+
+// ATC-06: Ping messen
+pub fn measure_ping(peer_id: Hash256) -> UInt32 {
+    let start = Chain::timestamp_ms()
+    // Sende Ping, warte auf Pong
+    emit PingSent(peer_id, start)
+    // ... Netzwerk-Call ...
+    let elapsed = Chain::timestamp_ms() - start
+    return elapsed
+}
+
+// ATC-06: Gewichteter RTT (EWMA - Exponentially Weighted Moving Average)
+pub fn update_weighted_rtt(peer: PeerLatency, new_rtt: UInt32, alpha: UInt32) -> UInt32 {
+    // weighted = alpha * new + (1-alpha) * old
+    // alpha in basis points (e.g. 200 = 0.2)
+    let w = (alpha * new_rtt + (1000 - alpha) * peer.weighted_rtt) / 1000
+    peer.weighted_rtt = w
+    return w
+}
+
+// ATC-06: Jitter berechnen
+pub fn calculate_jitter(pings: List<UInt32>) -> UInt32 {
+    if pings.len() < 2 {
+        return 0
+    }
+    let total_diff = 0
+    for i in 1..pings.len() {
+        let diff = pings[i] - pings[i-1]
+        if diff >= 0 {
+            total_diff = total_diff + diff
+        } else {
+            total_diff = total_diff - diff
+        }
+    }
+    return total_diff / (pings.len() - 1)
+}
+
+// ATC-06: Peer-Priorisierung nach Latenz
+pub fn prioritize_peers(peers: Map<Hash256, PeerLatency>) -> List<Hash256> {
+    let peer_list = peers.to_list()
+    // Sort by weighted_rtt (lowest first)
+    peer_list = peer_list.sort(fn a, b => a.weighted_rtt < b.weighted_rtt)
+    return peer_list.map(fn p => p.peer_id)
+}
+
+// ATC-06: Batch-Übertragung (mehrere TX in einer Nachricht)
+pub fn batch_transactions(txs: List<Hash256>, batch_size: UInt16) -> List<List<Hash256>> {
+    let batches = []
+    for i in 0..txs.len() step batch_size {
+        let end = min(i + batch_size, txs.len())
+        batches.append(txs[i:end])
+    }
+    return batches
+}
+
+// ATC-06: Kompression-Entscheidung
+pub fn should_compress(data_size: UInt32, threshold: UInt32) -> Bool {
+    return data_size >= threshold
+}
+
+// ATC-06: Parallele Verbindungen zu Top-Peers
+pub fn select_parallel_peers(peers: Map<Hash256, PeerLatency>, n: UInt8) -> List<Hash256> {
+    let sorted = prioritize_peers(peers)
+    if sorted.len() <= n {
+        return sorted
+    }
+    return sorted[0:n]
+}
+
+// ATC-06: Latency-basierte Peer-Auswahl für Block-Request
+pub fn select_fastest_peer(peers: Map<Hash256, PeerLatency>) -> Hash256 {
+    let sorted = prioritize_peers(peers)
+    require(sorted.len() > 0, "No peers available")
+    return sorted[0]
+}
+
+// ATC-06: Adaptive Ping-Rate
+pub fn adaptive_ping_interval(peer: PeerLatency, base_interval: UInt32) -> UInt32 {
+    if peer.loss_rate > 500 {
+        // >5% loss → häufiger pingen
+        return base_interval / 2
+    }
+    if peer.jitter_ms > 100 {
+        // Hoher Jitter → häufiger pingen
+        return base_interval * 3 / 4
+    }
+    if peer.weighted_rtt < 50 and peer.loss_rate < 50 {
+        // Sehr gute Verbindung → seltener pingen
+        return base_interval * 2
+    }
+    return base_interval
+}
+
+// ATC-06: Connection Pool
+struct ConnectionPool {
+    active: UInt8,
+    max: UInt8,
+    peers: List<Hash256>,
+    round_robin_idx: UInt8,
+}
+
+pub fn pool_next(pool: ConnectionPool) -> Hash256 {
+    require(pool.peers.len() > 0, "Pool empty")
+    let peer = pool.peers[pool.round_robin_idx]
+    pool.round_robin_idx = (pool.round_robin_idx + 1) % pool.peers.len()
+    return peer
+}
+
+event PingSent(peer: Hash256, timestamp: UInt64)
+event LatencyUpdated(peer: Hash256, rtt: UInt32)
