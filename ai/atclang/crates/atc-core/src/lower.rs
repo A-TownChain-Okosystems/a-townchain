@@ -118,6 +118,67 @@ impl<'a> FnLowerer<'a> {
         Ok(d as i16)
     }
 
+    /// Kurzschluss-Auswertung fuer `&&` und `||`.
+    ///
+    /// `a && b` wertet `b` nur aus, wenn `a` wahr ist; `a || b` nur, wenn `a`
+    /// falsch ist. Ergebnis ist immer 1 (wahr) oder 0 (falsch).
+    fn lower_logical(
+        &mut self,
+        op: &str,
+        left: &Expr,
+        right: &Expr,
+    ) -> Result<(), LowerError> {
+        if op == "&&" {
+            self.lower_expr(left)?;
+            let j_left = self.out.len();
+            self.out.push(Instruction::JumpIfFalse(0));
+            self.lower_expr(right)?;
+            let j_right = self.out.len();
+            self.out.push(Instruction::JumpIfFalse(0));
+            self.out.push(Instruction::ConstI64(1));
+            let j_end = self.out.len();
+            self.out.push(Instruction::Jump(0));
+            // falscher Ausgang: beide Sprungziele landen auf ConstI64(0)
+            let target = self.out.len();
+            let d_left = self.disp(j_left, target)?;
+            let d_right = self.disp(j_right, target)?;
+            self.out[j_left] = Instruction::JumpIfFalse(d_left);
+            self.out[j_right] = Instruction::JumpIfFalse(d_right);
+            self.out.push(Instruction::ConstI64(0));
+            let end = self.out.len();
+            let d_end = self.disp(j_end, end)?;
+            self.out[j_end] = Instruction::Jump(d_end);
+            return Ok(());
+        }
+
+        // ||
+        self.lower_expr(left)?;
+        let j_left = self.out.len();
+        self.out.push(Instruction::JumpIfFalse(0));
+        self.out.push(Instruction::ConstI64(1));
+        let j_true = self.out.len();
+        self.out.push(Instruction::Jump(0));
+        let mid = self.out.len();
+        let d_left = self.disp(j_left, mid)?;
+        self.out[j_left] = Instruction::JumpIfFalse(d_left);
+        self.lower_expr(right)?;
+        let j_right = self.out.len();
+        self.out.push(Instruction::JumpIfFalse(0));
+        self.out.push(Instruction::ConstI64(1));
+        let j_true2 = self.out.len();
+        self.out.push(Instruction::Jump(0));
+        let target = self.out.len();
+        let d_right = self.disp(j_right, target)?;
+        self.out[j_right] = Instruction::JumpIfFalse(d_right);
+        self.out.push(Instruction::ConstI64(0));
+        let end = self.out.len();
+        let d_true = self.disp(j_true, end)?;
+        let d_true2 = self.disp(j_true2, end)?;
+        self.out[j_true] = Instruction::Jump(d_true);
+        self.out[j_true2] = Instruction::Jump(d_true2);
+        Ok(())
+    }
+
     fn lower_stmt(&mut self, s: &Stmt, top_level: bool) -> Result<(), LowerError> {
         match s {
             Stmt::Let(l) => {
@@ -251,12 +312,21 @@ impl<'a> FnLowerer<'a> {
                     self.out.push(Instruction::Sub);
                 }
                 "+" => self.lower_expr(operand)?,
+                // logisches Nicht im i64-Subset: (x == 0) ergibt 1/0.
+                "!" => {
+                    self.lower_expr(operand)?;
+                    self.out.push(Instruction::ConstI64(0));
+                    self.out.push(Instruction::Eq);
+                }
                 other => {
                     return Err(LowerError::new(format!(
                         "unarer Operator '{other}' ist nicht im Subset"
                     )))
                 }
             },
+            Expr::Binary { op, left, right } if op == "&&" || op == "||" => {
+                self.lower_logical(op, left, right)?;
+            }
             Expr::Binary { op, left, right } => {
                 self.lower_expr(left)?;
                 self.lower_expr(right)?;
@@ -553,12 +623,42 @@ mod tests {
     }
 
     #[test]
-    fn logikoperator_parst_aber_bleibt_im_lowering_fail_closed() {
-        // '&&' ist seit dem AST-Umbau syntaktisch gueltig, im VM-Subset aber
-        // weiterhin nicht implementiert: das Lowering muss ablehnen.
-        let prog = crate::parser::parse_program("fn main() -> i64 { return 1 && 2; }")
-            .expect("Parse muss gelingen");
-        let err = lower_program(&prog).expect_err("Lowering muss ablehnen");
-        assert!(format!("{err:?}").contains("Subset"), "{err:?}");
+    fn logikoperatoren_mit_kurzschluss() {
+        // && liefert 1/0 und wertet rechts nur bei wahrem links aus.
+        assert_eq!(run("fn main() -> i64 { return 1 && 1; }"), 1);
+        assert_eq!(run("fn main() -> i64 { return 1 && 0; }"), 0);
+        assert_eq!(run("fn main() -> i64 { return 0 && 1; }"), 0);
+        // || wertet rechts nur bei falschem links aus.
+        assert_eq!(run("fn main() -> i64 { return 0 || 1; }"), 1);
+        assert_eq!(run("fn main() -> i64 { return 0 || 0; }"), 0);
+        assert_eq!(run("fn main() -> i64 { return 5 || 0; }"), 1);
+        // ! als Normalisierung auf 0/1
+        assert_eq!(run("fn main() -> i64 { return !0; }"), 1);
+        assert_eq!(run("fn main() -> i64 { return !7; }"), 0);
+    }
+
+    #[test]
+    fn kurzschluss_verhindert_auswertung_der_rechten_seite() {
+        // Division durch Null rechts darf bei 0 && ... nie ausgefuehrt werden.
+        // Divisor bewusst als lokale Variable, damit der Verifizierer die
+        // Division nicht statisch als konstant-null ablehnt.
+        assert_eq!(
+            run("fn main() -> i64 { let d = 0; if 0 == 1 && (1 / d) > 0 { return 1; } return 5; }"),
+            5
+        );
+        // ... und bei wahrer linker Seite von || ebenfalls nicht.
+        assert_eq!(
+            run("fn main() -> i64 { let d = 0; if 1 == 1 || (1 / d) > 0 { return 3; } return 0; }"),
+            3
+        );
+    }
+
+    #[test]
+    fn nicht_unterstuetzter_operator_bleibt_fail_closed() {
+        // '%' ist nicht Teil des Subsets und faellt schon im Frontend durch
+        // (auch der Native-Fallback lehnt ab) — kein stiller Durchlauf.
+        let err = crate::parser::parse_program("fn main() -> i64 { return 1 % 2; }")
+            .expect_err("Frontend muss ablehnen");
+        assert!(err.message.contains("unterst"), "{err:?}");
     }
 }
