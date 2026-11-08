@@ -1,0 +1,26 @@
+# ATC Evidence SSOT — SCR-0080 (Owner-P0-01) — maschinenlesbar und EHRLICH
+# Statusleiter (verbindlich): SPECIFIED -> IMPLEMENTED -> TESTED -> VERIFIED -> AUDITED -> RELEASED
+# CLAIMED != PASS · DOCUMENTED != IMPLEMENTED · IMPLEMENTED != VERIFIED
+schema_version: "1.0.0"
+repository: atc-ide
+generated: "2026-09-13"
+generated_by: "Org-Adoption aus privat Lumino-IDE (ShivaCoreDev, Stand 02.09.2026) — Superagent-Adoption 13.09.2026"
+bound_commit: pending
+maturity_class: C          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
+r_level: R1
+implementation:
+  status: partial          # substantial|partial|skeleton|docs_only
+  summary: "Adoptierter Lumino-IDE-Prototyp (React/Monaco): ATC-VM-Simulator, Doc-Compliance-, Repo-Documentation-, Genesis-Configurator-, GlobusV2/V3- und Rust-Workspace-Panels. Lauffaehiger Applet-Stand (Google-AI-Studio-Skelett), KEIN Production-Build, KEINE Test-Suite, KEINE CI-Gates."
+tests:
+  status: not_applicable
+  evidence: "Keine Test-Suite im Adoptat (Stand 02.09.2026)"
+security:
+  status: not_audited
+  evidence: "Keine Security-Pruefung; .env.example enthaelt nur Placeholders (geprueft 13.09.2026)"
+conformance:
+  status: not_assessed
+  evidence: "Standards-Profil folgt via registry/profiles (atc-standards PR)"
+release:
+  status: not_applicable
+milestone_claims:
+  rule: "M-Claims nur mit Evidence-Bundle (ATC-STD-MILESTONE-001)"
