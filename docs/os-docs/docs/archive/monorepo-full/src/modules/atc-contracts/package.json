@@ -1,0 +1,10 @@
+{
+  "name": "atc-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"no tests\" && exit 0"
+  }
+}
