@@ -1,0 +1,89 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-81 — Proof of Work (PoW) Konsens in ATCLang
+// Migriert von: blockchain/consensus/pow.py → ATCLang
+// Sprint 2.1 — Issue #74
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct PoWBlock {
+    index: UInt64,
+    timestamp: UInt64,
+    prev_hash: Hash256,
+    transactions: List<Hash256>,
+    nonce: UInt64,
+    difficulty: UInt32,
+    hash: Hash256,
+}
+
+struct PoWState {
+    blocks: List<PoWBlock>,
+    current_difficulty: UInt32,
+    target_block_time: UInt64,
+    last_adjustment: UInt64,
+}
+
+// ATC-81: PoW Mining Algorithmus
+pub fn mine_block(state: PoWState, txs: List<Hash256>) -> PoWBlock {
+    let prev = state.blocks[len(state.blocks) - 1]
+    let block = PoWBlock {
+        index: prev.index + 1,
+        timestamp: Chain::timestamp(),
+        prev_hash: prev.hash,
+        transactions: txs,
+        nonce: 0,
+        difficulty: state.current_difficulty,
+        hash: Hash256::zero(),
+    }
+
+    // Mining Loop
+    while true {
+        let header = serialize(block.index, block.timestamp, block.prev_hash, block.transactions, block.nonce)
+        let h = Crypto::sha256(header)
+        if Crypto::leading_zeros(h) >= state.current_difficulty {
+            block.hash = h
+            break
+        }
+        block.nonce = block.nonce + 1
+    }
+
+    emit BlockMined(block.index, block.hash, block.nonce)
+    return block
+}
+
+// ATC-81: Difficulty Adjustment
+pub fn adjust_difficulty(state: PoWState) -> UInt32 {
+    if len(state.blocks) < 10 {
+        return state.current_difficulty
+    }
+
+    let expected = state.target_block_time * 10
+    let actual = state.blocks[len(state.blocks) - 1].timestamp - state.blocks[len(state.blocks) - 10].timestamp
+
+    if actual < expected {
+        // Zu schnell → schwieriger
+        return state.current_difficulty + 1
+    } else if actual > expected {
+        // Zu langsam → einfacher
+        if state.current_difficulty > 1 {
+            return state.current_difficulty - 1
+        }
+    }
+    return state.current_difficulty
+}
+
+// ATC-81: Block Validierung
+pub fn validate_block(prev: PoWBlock, block: PoWBlock) -> Bool {
+    require(block.index == prev.index + 1, "Invalid index")
+    require(block.prev_hash == prev.hash, "Invalid prev_hash")
+    require(block.timestamp > prev.timestamp, "Invalid timestamp")
+
+    let header = serialize(block.index, block.timestamp, block.prev_hash, block.transactions, block.nonce)
+    let h = Crypto::sha256(header)
+    require(h == block.hash, "Invalid hash")
+    require(Crypto::leading_zeros(h) >= block.difficulty, "Difficulty not met")
+
+    return true
+}
+
+event BlockMined(index: UInt64, hash: Hash256, nonce: UInt64)
