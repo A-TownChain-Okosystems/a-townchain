@@ -702,7 +702,7 @@ class BaseContract(ABC):
 | ATC-9000 | NFT (Genesis Chronicles) | `blockchain/contracts/genesis-chronicles/genesis_chronicles_contract.py` | ✅ |
 | ATC-9900 | Governance/DAO | geplant | ⏳ v2.1 |
 
-→ Vollständige Dokumentation: [GENESIS_CHRONICLES_NFT_CONTRACT.md](../contracts/GENESIS_CHRONICLES_NFT_CONTRACT.md)
+→ Vollständige Dokumentation: [GENESIS_CHRONICLES_NFT_CONTRACT.md](https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/ai/genesis-chronicles/genesis_chronicles_contract.atc)
 
 
 ### ATC-8300 Interface (vollständig)
@@ -2394,7 +2394,7 @@ Mai 2026    Jun 2026      Sep 2026       Jan 2027     Okt 2027
 | Python Smart Contract Basis | [#1](../issues/ISSUE_01_SMART_CONTRACTS.md) | ✅ | [`ISSUE_01`](../issues/ISSUE_01_SMART_CONTRACTS.md) |
 | ATC-001 Genesis Token | [#1](../issues/ISSUE_01_SMART_CONTRACTS.md) | ✅ | [`genesis_token.py`](../../blockchain/contracts/atc001/genesis_token.atc) |
 | ATC-8300 Fungible Token | [#1](../issues/ISSUE_01_SMART_CONTRACTS.md) | ✅ | [`atc8300_token.py`](../../modules/contracts/atc8300/atc8300_token.atc) |
-| ATC-9000 Genesis Chronicles NFT | [#3](../issues/ISSUE_03_BATTLE_UI.md) | ✅ | [`GENESIS_CHRONICLES_NFT_CONTRACT.md`](../contracts/GENESIS_CHRONICLES_NFT_CONTRACT.md) |
+| ATC-9000 Genesis Chronicles NFT | [#3](../issues/ISSUE_03_BATTLE_UI.md) | ✅ | [`GENESIS_CHRONICLES_NFT_CONTRACT.md`](https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/ai/genesis-chronicles/genesis_chronicles_contract.atc) |
 | Genesis Chronicles Battle System | [#3](../issues/ISSUE_03_BATTLE_UI.md) | ✅ | [`ISSUE_03`](../issues/ISSUE_03_BATTLE_UI.md) |
 | ECDSA Wallet Implementierung | [#6](../issues/ISSUE_06_ECDSA.md) | ✅ | [`WALLET_KEYGEN.md`](../architecture/WALLET_KEYGEN.md) |
 | Blockchain Explorer UI | [#5](../issues/ISSUE_05_EXPLORER.md) | ✅ | [`ISSUE_05`](../issues/ISSUE_05_EXPLORER.md) |
