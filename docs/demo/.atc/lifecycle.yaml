@@ -1,0 +1,6 @@
+lifecycle:
+  stage: experimental
+  entered: "2026-09-13"
+  history:
+    - {stage: experimental, date: "2026-06-01"}
+    - {stage: registered_experimental, date: "2026-09-13", note: "AUD-2026-0005 F-ORG-001"}
