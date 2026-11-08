@@ -1,0 +1,19 @@
+# ATC License Registry — SSOT (ATC-STD-LICENSE-003, SCR-0037)
+# Generiert 08.09.2026; Aenderungen nur via SCR. SPDX-Basisschicht der Repos
+# bleibt Apache-2.0 (SCR-0036); ATC-LICENSE regelt die Oekosystem-Ebene.
+license_registry:
+  schema: ATC-LICENSE-REGISTRY-1.0
+  version: 1.0.0
+  owner: "A-TownChain Okosystems (Copyright (c) 2026 Michael Wroblewski)"
+  levels: [OPEN, RESTRICTED, PROPRIETARY]
+  types:
+    - {id: ATC-LIC-CORE-000, name: ATC-LICENSE-CORE, version: "1.0", level: OPEN, status: ACTIVE, dir: ATC-LICENSE-CORE-1.0, purpose: "Dach-Spezifikation des Lizenzsystems (License Core, Types, Registry, Metadata, Compliance, Audit)"}
+    - {id: ATC-LIC-OSS-001, name: ATC-OSS, version: "1.0", level: OPEN, status: ACTIVE, dir: ATC-OSS-1.0, purpose: "Offener ATC-Code (OSD-kompatibel konzipiert; OSI-/Rechts-Review ausstehend)"}
+    - {id: ATC-LIC-SOURCE-002, name: ATC-SOURCE, version: null, level: RESTRICTED, status: PLANNED, dir: null, purpose: "Quellcode mit ATC-spezifischen Bedingungen (Spezifikation ausstehend)"}
+    - {id: ATC-LIC-PROTOCOL-003, name: ATC-PROTOCOL, version: "1.0", level: RESTRICTED, status: ACTIVE, dir: ATC-PROTOCOL-1.0, purpose: "Blockchain-/Protokollsoftware (Konsens-/Netzschicht)"}
+    - {id: ATC-LIC-COMMERCIAL-004, name: ATC-COMMERCIAL, version: null, level: RESTRICTED, status: PLANNED, dir: null, purpose: "Kommerzielle Nutzung (Spezifikation ausstehend)"}
+    - {id: ATC-LIC-PROPRIETARY-005, name: ATC-PROPRIETARY, version: null, level: PROPRIETARY, status: PLANNED, dir: null, purpose: "Geschlossene Software (Spezifikation ausstehend)"}
+    - {id: ATC-LIC-ASSET-006, name: ATC-ASSET, version: "1.0", level: RESTRICTED, status: ACTIVE, dir: ATC-ASSET-1.0, purpose: "3D, Bilder, Musik, Videos, Game Assets (Shivamon/Genesis)"}
+    - {id: ATC-LIC-AI-007, name: ATC-AI, version: "1.0", level: RESTRICTED, status: ACTIVE, dir: ATC-AI-1.0, purpose: "KI-Modelle und KI-Komponenten (Aurora)"}
+    - {id: ATC-LIC-DATA-008, name: ATC-DATA, version: null, level: RESTRICTED, status: PLANNED, dir: null, purpose: "Daten und Datensaetze (Spezifikation ausstehend)"}
+    - {id: ATC-LIC-EXPERIMENTAL-009, name: ATC-EXPERIMENTAL, version: null, level: RESTRICTED, status: PLANNED, dir: null, purpose: "Experimentelle Komponenten (Spezifikation ausstehend)"}
