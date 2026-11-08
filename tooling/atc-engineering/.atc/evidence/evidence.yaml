@@ -1,0 +1,33 @@
+# ATC Evidence SSOT — maschinenlesbar und EHRLICH
+# Statusleiter: SPECIFIED -> IMPLEMENTED -> TESTED -> VERIFIED -> AUDITED -> RELEASED
+# Regel: Kein Status-Claim ohne Evidence-Bundle. CLAIMED != PASS.
+schema_version: "1.1.0"
+repository: atc-engineering
+generated: "2026-09-17"
+generated_by: "ATC Engineering gate integration"
+bound_commit: 55f4a5d018a0724cacdd9a10f2dc6882c845f15c
+maturity_class: C
+r_level: null
+implementation:
+  status: partial
+  summary: "Phase 0/1 + gate integration: atc-core, atc-config, atc-standards, atc-maintenance and atc-gates; deterministic GateReport schema atc.gate-report/v1; atc-audit-cli emits gate evidence; engineering CI enforces fmt/test/clippy/release-build/audit-gate and publishes gate artifacts."
+tests:
+  status: pending_ci
+  evidence: "Source-level implementation is committed. CI execution is required to establish fresh runtime evidence for this revision; no CI result is inferred from source inspection."
+security:
+  status: not_audited
+conformance:
+  registry_entry: bound
+  standards_bound: [ATC-STD-000, ATC-STD-VERSION-001, ATC-STD-ENG-001, ATC-AI-GOV-001]
+gate:
+  schema_version: "atc.gate-report/v1"
+  fail_closed: true
+  unknown_evidence: block
+  missing_evidence: block
+  failed_evidence: block
+  production_requires_human_approval: true
+  production_requires_separation_of_duties: true
+ci:
+  workflow: .github/workflows/engineering-ci.yml
+  artifact: atc-engineering-gate-evidence
+  required_checks: [fmt, test, clippy, release-build, audit-gate, gate-schema]
