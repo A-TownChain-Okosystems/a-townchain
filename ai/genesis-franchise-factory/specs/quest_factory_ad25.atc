@@ -1,0 +1,207 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-25 — Quest Factory: Generiert Quests und Kampagnen
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct QuestFactory {
+    quests: Map<Hash256, Quest>,
+    by_franchise: Map<Hash256, List<Hash256>>,
+    campaigns: Map<Hash256, Campaign>,
+    dynamic_events: List<DynamicEvent>,
+    daily_pool: List<Hash256>,
+}
+
+struct Quest {
+    id: Hash256,
+    franchise_id: Hash256,
+    title: String,
+    type: QuestType,
+    description: String,
+    objectives: List<QuestObjective>,
+    rewards: QuestRewards,
+    prerequisites: List<Hash256>,
+    min_level: UInt16,
+    duration_min: UInt32,
+    repeatable: Bool,
+    story_chapter: UInt8,
+    status: String,
+    created_at: UInt64,
+}
+
+enum QuestType { MainQuest, SideQuest, Daily, Weekly, DynamicEvent, StoryCampaign, Tutorial, Raid }
+
+struct QuestObjective {
+    id: Hash256,
+    description: String,
+    type: String,
+    target: String,
+    required_count: UInt16,
+    optional: Bool,
+}
+
+struct QuestRewards {
+    xp: UInt32,
+    gold: UInt32,
+    items: List<String>,
+    reputation: UInt16,
+    unlocks: List<String>,
+}
+
+struct Campaign {
+    id: Hash256,
+    franchise_id: Hash256,
+    name: String,
+    chapters: List<CampaignChapter>,
+    total_quests: UInt16,
+    completed_quests: UInt16,
+}
+
+struct CampaignChapter {
+    number: UInt8,
+    title: String,
+    quest_ids: List<Hash256>,
+    completed: Bool,
+}
+
+struct DynamicEvent {
+    id: Hash256,
+    name: String,
+    trigger: String,
+    location: String,
+    duration_min: UInt32,
+    participants: UInt16,
+    active: Bool,
+}
+
+// Quest Factory: Quest erstellen
+pub fn create_quest(factory: QuestFactory, franchise_id: Hash256, title: String, qtype: QuestType, desc: String, min_level: UInt16) -> Hash256 {
+    let qid = Crypto::sha256(serialize(title, franchise_id, Chain::timestamp()))
+    factory.quests[qid] = Quest {
+        id: qid,
+        franchise_id: franchise_id,
+        title: title,
+        type: qtype,
+        description: desc,
+        objectives: [],
+        rewards: QuestRewards { xp: 100, gold: 50, items: [], reputation: 0, unlocks: [] },
+        prerequisites: [],
+        min_level: min_level,
+        duration_min: 15,
+        repeatable: qtype == QuestType::Daily or qtype == QuestType::DynamicEvent,
+        story_chapter: 0,
+        status: "active",
+        created_at: Chain::timestamp(),
+    }
+    if not factory.by_franchise.contains(franchise_id) {
+        factory.by_franchise[franchise_id] = []
+    }
+    factory.by_franchise[franchise_id].append(qid)
+    if qtype == QuestType::Daily {
+        factory.daily_pool.append(qid)
+    }
+    return qid
+}
+
+// Quest Factory: Objective hinzufügen
+pub fn add_objective(factory: QuestFactory, quest_id: Hash256, desc: String, otype: String, target: String, count: UInt16) -> Bool {
+    require(factory.quests.contains(quest_id), "Quest not found")
+    factory.quests[quest_id].objectives.append(QuestObjective {
+        id: Crypto::sha256(serialize(desc, quest_id)),
+        description: desc, type: otype, target: target, required_count: count, optional: false,
+    })
+    return true
+}
+
+// Quest Factory: Belohnungen setzen
+pub fn set_rewards(factory: QuestFactory, quest_id: Hash256, xp: UInt32, gold: UInt32, items: List<String>) -> Bool {
+    require(factory.quests.contains(quest_id), "Quest not found")
+    factory.quests[quest_id].rewards.xp = xp
+    factory.quests[quest_id].rewards.gold = gold
+    factory.quests[quest_id].rewards.items = items
+    return true
+}
+
+// Quest Factory: Voraussetzung hinzufügen
+pub fn add_prerequisite(factory: QuestFactory, quest_id: Hash256, prereq_id: Hash256) -> Bool {
+    require(factory.quests.contains(quest_id), "Quest not found")
+    factory.quests[quest_id].prerequisites.append(prereq_id)
+    return true
+}
+
+// Quest Factory: Kampagne erstellen
+pub fn create_campaign(factory: QuestFactory, franchise_id: Hash256, name: String, chapters: UInt8) -> Hash256 {
+    let cpid = Crypto::sha256(serialize(name, franchise_id, Chain::timestamp()))
+    let chapter_list = []
+    for i in 0..chapters {
+        chapter_list.append(CampaignChapter {
+            number: i + 1,
+            title: "Chapter " + (i + 1),
+            quest_ids: [],
+            completed: false,
+        })
+    }
+    factory.campaigns[cpid] = Campaign {
+        id: cpid,
+        franchise_id: franchise_id,
+        name: name,
+        chapters: chapter_list,
+        total_quests: 0,
+        completed_quests: 0,
+    }
+    return cpid
+}
+
+// Quest Factory: Quest zu Kampagne hinzufügen
+pub fn add_quest_to_campaign(factory: QuestFactory, campaign_id: Hash256, chapter_num: UInt8, quest_id: Hash256) -> Bool {
+    require(factory.campaigns.contains(campaign_id), "Campaign not found")
+    let campaign = factory.campaigns[campaign_id]
+    for chapter in campaign.chapters {
+        if chapter.number == chapter_num {
+            chapter.quest_ids.append(quest_id)
+            campaign.total_quests = campaign.total_quests + 1
+            factory.quests[quest_id].story_chapter = chapter_num
+            return true
+        }
+    }
+    return false
+}
+
+// Quest Factory: Dynamisches Event erstellen
+pub fn create_dynamic_event(factory: QuestFactory, name: String, trigger: String, location: String, duration: UInt32) -> Hash256 {
+    let eid = Crypto::sha256(serialize(name, trigger, Chain::timestamp()))
+    factory.dynamic_events.append(DynamicEvent {
+        id: eid,
+        name: name,
+        trigger: trigger,
+        location: location,
+        duration_min: duration,
+        participants: 0,
+        active: false,
+    })
+    return eid
+}
+
+// Quest Factory: Batch-Generierung
+pub fn generate_quests(factory: QuestFactory, franchise_id: Hash256, count: UInt32) -> List<Hash256> {
+    let ids = []
+    for i in 0..count {
+        let qtype = if i < 10 then QuestType::MainQuest else if i < 30 then QuestType::SideQuest else QuestType::Daily
+        let qid = create_quest(factory, franchise_id, "Quest " + i, qtype, "Auto-generated quest " + i, 1 + i / 10)
+        ids.append(qid)
+    }
+    emit QuestsGenerated(franchise_id, count)
+    return ids
+}
+
+// Quest Factory: Tägliche Quests rotieren
+pub fn rotate_daily_quests(factory: QuestFactory, max_active: UInt8) -> List<Hash256> {
+    let selected = []
+    for i in 0..min(max_active, factory.daily_pool.len()) {
+        selected.append(factory.daily_pool[i])
+    }
+    return selected
+}
+
+event QuestsGenerated(franchise_id: Hash256, count: UInt32)
