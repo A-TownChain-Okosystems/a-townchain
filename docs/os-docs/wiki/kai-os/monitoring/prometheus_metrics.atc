@@ -1,0 +1,202 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — Prometheus Metrics Registry
+// Sprint 3.0 | Monitoring Layer | Chain-ID 9000
+// Migrated from: monitoring/prometheus_metrics.py (136) + grafana_exporter.py (125)
+// Gauge/Counter registry, Prometheus export, Grafana dashboard config
+// ─────────────────────────────────────────────────────────────
+
+enum MetricType { Gauge, Counter, Histogram }
+enum PanelType { Stat, Graph, Table, Heatmap }
+
+struct MetricDef {
+    name: String,
+    help_text: String,
+    metric_type: MetricType,
+    value: f64,
+    labels: Map<String, String>,
+}
+
+struct GrafanaPanel {
+    panel_id: String,
+    title: String,
+    expression: String,
+    unit: String,
+    panel_type: PanelType,
+    x: u8,
+    y: u8,
+    width: u8,
+    height: u8,
+}
+
+struct GrafanaDashboard {
+    title: String,
+    panels: List<GrafanaPanel>,
+    refresh_interval: String,
+    datasource: String,
+}
+
+contract PrometheusMetricsRegistry {
+    state metrics: Map<String, MetricDef>
+    state metric_count: u16
+    state grafana_dashboard: GrafanaDashboard
+    state export_count: u32
+    state owner: Address
+
+    event MetricSet(name: String, value: f64)
+    event MetricIncremented(name: String, amount: f64)
+    event DashboardExported(panel_count: u16)
+
+    fn init() {
+        self.metrics = {}
+        self.metric_count = 0
+        self.grafana_dashboard = GrafanaDashboard {
+            title: "KAI-OS Dashboard",
+            panels: [],
+            refresh_interval: "10s",
+            datasource: "Prometheus",
+        }
+        self.export_count = 0
+        self.owner = msg_sender()
+        self.register_defaults()
+    }
+
+    fn register_defaults() {
+        self.gauge("block_height", "Current block height")
+        self.gauge("total_transactions", "Total transactions on chain")
+        self.gauge("active_validators", "Number of active validators")
+        self.gauge("total_stake", "Total staked ATC")
+        self.gauge("tps", "Transactions per second")
+        self.gauge("peer_count", "Connected peers")
+        self.gauge("mempool_size", "Transactions in mempool")
+        self.counter("blocks_mined_total", "Total blocks mined")
+        self.counter("transactions_processed_total", "Total transactions processed")
+        self.counter("contract_calls_total", "Total smart contract calls")
+        self.counter("governance_votes_total", "Total governance votes cast")
+    }
+
+    fn gauge(name: String, help_text: String) -> bool {
+        let m = MetricDef {
+            name: name,
+            help_text: help_text,
+            metric_type: MetricType::Gauge,
+            value: 0.0,
+            labels: {},
+        }
+        self.metrics[name] = m
+        self.metric_count += 1
+        return true
+    }
+
+    fn counter(name: String, help_text: String) -> bool {
+        let m = MetricDef {
+            name: name,
+            help_text: help_text,
+            metric_type: MetricType::Counter,
+            value: 0.0,
+            labels: {},
+        }
+        self.metrics[name] = m
+        self.metric_count += 1
+        return true
+    }
+
+    fn set(name: String, value: f64) -> bool {
+        let m = self.metrics.get(name)
+        if m == null {
+            return false
+        }
+        m.value = value
+        emit MetricSet(name, value)
+        return true
+    }
+
+    fn increment(name: String, amount: f64) -> bool {
+        let m = self.metrics.get(name)
+        if m == null {
+            return false
+        }
+        m.value += amount
+        emit MetricIncremented(name, amount)
+        return true
+    }
+
+    fn get_metric(name: String) -> (MetricType, f64, String) {
+        let m = self.metrics.get(name)
+        if m == null {
+            return (MetricType::Gauge, 0.0, "")
+        }
+        return (m.metric_type, m.value, m.help_text)
+    }
+
+    fn export_prometheus() -> String {
+        let output = ""
+        let keys = self.metrics.keys()
+        let i: u16 = 0
+        while i < keys.len() {
+            let m = self.metrics.get(keys[i])
+            if m != null {
+                output = output + "# HELP " + m.name + " " + m.help_text + "\n"
+                output = output + "# TYPE " + m.name + " " + type_str(m.metric_type) + "\n"
+                output = output + m.name + " " + float_str(m.value) + "\n"
+            }
+            i += 1
+        }
+        return output
+    }
+
+    fn build_grafana_dashboard() -> bool {
+        self.grafana_dashboard.panels = []
+        // Stat panels
+        self.add_stat_panel("stat_height", "Block Height", "block_height", "short", 0, 0)
+        self.add_stat_panel("stat_txs", "Total TXs", "total_transactions", "short", 6, 0)
+        self.add_stat_panel("stat_validators", "Validators", "active_validators", "short", 0, 4)
+        self.add_stat_panel("stat_stake", "Total Stake", "total_stake", "ATC", 6, 4)
+        // Graph panels
+        self.add_graph_panel("graph_tps", "TPS Over Time", "rate(transactions_processed_total[5m])", 0, 8)
+        self.add_graph_panel("graph_peers", "Peer Count", "peer_count", 12, 8)
+        self.export_count += 1
+        emit DashboardExported(self.grafana_dashboard.panels.len())
+        return true
+    }
+
+    fn add_stat_panel(pid: String, title: String, expr: String, unit: String, x: u8, y: u8) -> bool {
+        let panel = GrafanaPanel {
+            panel_id: pid,
+            title: title,
+            expression: expr,
+            unit: unit,
+            panel_type: PanelType::Stat,
+            x: x,
+            y: y,
+            width: 6,
+            height: 4,
+        }
+        self.grafana_dashboard.panels.push(panel)
+        return true
+    }
+
+    fn add_graph_panel(pid: String, title: String, expr: String, x: u8, y: u8) -> bool {
+        let panel = GrafanaPanel {
+            panel_id: pid,
+            title: title,
+            expression: expr,
+            unit: "short",
+            panel_type: PanelType::Graph,
+            x: x,
+            y: y,
+            width: 12,
+            height: 8,
+        }
+        self.grafana_dashboard.panels.push(panel)
+        return true
+    }
+
+    fn get_dashboard_info() -> (String, u16, String) {
+        return (self.grafana_dashboard.title, self.grafana_dashboard.panels.len(), self.grafana_dashboard.datasource)
+    }
+
+    fn get_stats() -> (u16, u32, u16) {
+        return (self.metric_count, self.export_count, self.grafana_dashboard.panels.len())
+    }
+}
