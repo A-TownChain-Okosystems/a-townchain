@@ -1,0 +1,9 @@
+# Schema fuer Requirements in Standards (ATC-STD-000 §11)
+type: object
+required: [id, level, description]
+properties:
+  id: {type: string, pattern: "^REQ-[A-Z]+(-[A-Z]+)?-[0-9]{3}$"}
+  level: {enum: [MUST, MUST_NOT, SHOULD, SHOULD_NOT, MAY]}
+  classification: {enum: [mandatory, recommended, optional, conditional]}
+  condition: {type: string, description: "Pflicht bei classification=conditional"}
+  description: {type: string}
