@@ -1,0 +1,537 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// K-Sprint 41 — Container Isolation + Agent Sandboxing (ATCLang Interface)
+// Rust-Implementierung: shivacore/kernel/src/container.rs (2757 Zeilen, 101 Tests)
+//
+// Definiert die Container-Runtime für KI-Agenten-Isolation als ATCLang-Interface,
+// das über Kernel-Syscalls (ATC-96) aufgerufen wird.
+
+import "std/chain.atc" as Chain
+import "std/crypto.atc" as Crypto
+
+// ════════════════════════════════════════════════════════════════
+//  NAMESPACE TYPES (entspricht Rust NamespaceType)
+// ════════════════════════════════════════════════════════════════
+
+enum NamespaceType {
+    PID,        // Prozess-Isolation
+    MOUNT,      // VFS-Root-Isolation
+    NETWORK,    // Netzwerk-Isolation
+    IPC,        // IPC-Channel-Isolation
+    UTS,        // Hostname-Isolation
+    USER,       // UID/GID-Mapping
+    CGROUP,     // Resource-Limit-Isolation
+}
+
+enum ContainerState {
+    CREATED,
+    RUNNING,
+    PAUSED,
+    STOPPED,
+    ERROR,
+    DESTROYED,
+}
+
+enum HealthStatus {
+    UNKNOWN,
+    STARTING,
+    HEALTHY,
+    UNHEALTHY,
+    DEGRADED,
+}
+
+enum FilterMode {
+    ALLOW_ALL,
+    BLOCK_LIST,
+    ALLOW_LIST,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  STRUCTS
+// ════════════════════════════════════════════════════════════════
+
+struct Namespace {
+    ns_id: u32,
+    ns_type: NamespaceType,
+    parent_id: Option<u32>,
+    container_id: u32,
+    process_ids: List<u32>,
+    hostname: String,
+    network_config: Option<NetworkConfig>,
+    mount_root: Option<String>,
+    uid_map: List<(u32, u32, u32)>,
+    gid_map: List<(u32, u32, u32)>,
+}
+
+struct NetworkConfig {
+    ip_address: String,
+    netmask: String,
+    gateway: String,
+    dns_servers: List<String>,
+    mac_address: String,
+    mtu: u16,
+    ports: List<PortMapping>,
+}
+
+struct PortMapping {
+    host_port: u16,
+    container_port: u16,
+    protocol: PortProtocol,
+}
+
+struct ResourceLimits {
+    cpu_quota_us: u64,
+    cpu_period_us: u64,
+    cpu_shares: u32,
+    memory_limit_bytes: u64,
+    memory_soft_limit: u64,
+    pid_max: u32,
+    fd_max: u32,
+    io_read_bps: u64,
+    io_write_bps: u64,
+    net_rx_bps: u64,
+    net_tx_bps: u64,
+}
+
+struct ResourceUsage {
+    cpu_used_us: u64,
+    memory_used_bytes: u64,
+    memory_peak_bytes: u64,
+    io_read_bytes: u64,
+    io_write_bytes: u64,
+    net_rx_bytes: u64,
+    net_tx_bytes: u64,
+    pid_count: u32,
+    fd_count: u32,
+}
+
+struct ContainerImage {
+    name: String,
+    version: String,
+    rootfs_path: String,
+    entry_point: String,
+    args: List<String>,
+    env_vars: List<(String, String)>,
+    working_dir: String,
+    volumes: List<VolumeMount>,
+    exposed_ports: List<u16>,
+}
+
+struct VolumeMount {
+    host_path: String,
+    container_path: String,
+    read_only: bool,
+    mount_type: MountType,
+}
+
+struct Container {
+    container_id: u32,
+    name: String,
+    image: ContainerImage,
+    state: ContainerState,
+    namespaces: List<Namespace>,
+    resource_limits: ResourceLimits,
+    resource_usage: ResourceUsage,
+    init_pid: Option<u32>,
+    process_ids: List<u32>,
+    hostname: String,
+    restart_count: u8,
+    max_restarts: u8,
+    auto_restart: bool,
+    health_status: HealthStatus,
+    agent_id: Option<String>,
+    network_enabled: bool,
+    capabilities: List<String>,
+}
+
+struct ContainerSnapshot {
+    container_id: u32,
+    name: String,
+    state: ContainerState,
+    pid_count: u32,
+    cpu_used_us: u64,
+    memory_used_bytes: u64,
+    health: HealthStatus,
+    uptime_ms: u64,
+    restart_count: u8,
+    agent_id: Option<String>,
+}
+
+struct HealthCheck {
+    check_type: String,
+    interval_ms: u64,
+    timeout_ms: u64,
+    retries: u8,
+    consecutive_failures: u8,
+}
+
+struct SyscallFilter {
+    mode: FilterMode,
+    allowed: List<String>,
+    blocked: List<String>,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  CONTAINER MANAGER CONTRACT
+// ════════════════════════════════════════════════════════════════
+
+module Kernel::ContainerRuntime {
+
+    contract ContainerManager {
+
+        // ── State ───────────────────────────────────────────
+        state containers: Map<u32, Container>
+        state agent_containers: Map<String, u32>
+        state health_checks: Map<u32, HealthCheck>
+        state container_counter: u32 = 0
+        state namespace_counter: u32 = 0
+        state total_created: u64 = 0
+        state total_started: u64 = 0
+        state total_stopped: u64 = 0
+        state total_restarts: u64 = 0
+        state total_failed: u64 = 0
+
+        // ── Events ──────────────────────────────────────────
+        event ContainerCreated(container_id: u32, name: String, agent_id: Option<String>)
+        event ContainerStarted(container_id: u32, init_pid: u32)
+        event ContainerStopped(container_id: u32, exit_code: i32)
+        event ContainerPaused(container_id: u32)
+        event ContainerResumed(container_id: u32)
+        event ContainerDestroyed(container_id: u32)
+        event ContainerRestarted(container_id: u32, new_pid: u32, restart_count: u8)
+        event HealthStatusChanged(container_id: u32, old_status: HealthStatus, new_status: HealthStatus)
+        event ResourceLimitExceeded(container_id: u32, limit_type: String)
+        event AgentContainerCreated(agent_id: String, container_id: u32)
+        event SyscallBlocked(container_id: u32, syscall: String)
+        event PortMapped(container_id: u32, host_port: u16, container_port: u16)
+
+        // ── Container Lifecycle ────────────────────────────
+
+        fn create(name: String, image: ContainerImage) -> u32 {
+            let container_id = self.container_counter
+            self.container_counter += 1
+
+            let container: Container = Container {
+                container_id: container_id,
+                name: name,
+                image: image,
+                state: ContainerState::CREATED,
+                namespaces: [],
+                resource_limits: ResourceLimits {
+                    cpu_quota_us: 100000,
+                    cpu_period_us: 100000,
+                    cpu_shares: 1024,
+                    memory_limit_bytes: 536870912,
+                    memory_soft_limit: 268435456,
+                    pid_max: 256,
+                    fd_max: 1024,
+                    io_read_bps: 10485760,
+                    io_write_bps: 10485760,
+                    net_rx_bps: 104857600,
+                    net_tx_bps: 104857600,
+                },
+                resource_usage: ResourceUsage {
+                    cpu_used_us: 0,
+                    memory_used_bytes: 0,
+                    memory_peak_bytes: 0,
+                    io_read_bytes: 0,
+                    io_write_bytes: 0,
+                    net_rx_bytes: 0,
+                    net_tx_bytes: 0,
+                    pid_count: 0,
+                    fd_count: 0,
+                },
+                init_pid: Option::None,
+                process_ids: [],
+                hostname: "container-" + Int::to_string(container_id),
+                restart_count: 0,
+                max_restarts: 3,
+                auto_restart: false,
+                health_status: HealthStatus::UNKNOWN,
+                agent_id: Option::None,
+                network_enabled: true,
+                capabilities: [],
+            }
+
+            self.containers[container_id] = container
+            self.total_created += 1
+            emit ContainerCreated(container_id, name, Option::None)
+            return container_id
+        }
+
+        fn start(container_id: u32, init_pid: u32) -> bool {
+            let container = self.containers[container_id]
+            require(container.state == ContainerState::CREATED || container.state == ContainerState::STOPPED,
+                    "container not created or stopped")
+
+            container.state = ContainerState::RUNNING
+            container.init_pid = Option::Some(init_pid)
+            container.process_ids.push(init_pid)
+            container.health_status = HealthStatus::STARTING
+            self.total_started += 1
+
+            emit ContainerStarted(container_id, init_pid)
+            return true
+        }
+
+        fn stop(container_id: u32, exit_code: i32) -> bool {
+            let container = self.containers[container_id]
+            require(container.state == ContainerState::RUNNING || container.state == ContainerState::PAUSED,
+                    "container not running")
+
+            container.state = ContainerState::STOPPED
+            self.total_stopped += 1
+
+            if container.auto_restart && container.restart_count < container.max_restarts {
+                container.restart_count += 1
+                self.total_restarts += 1
+            }
+
+            emit ContainerStopped(container_id, exit_code)
+            return true
+        }
+
+        fn pause(container_id: u32) -> bool {
+            let container = self.containers[container_id]
+            require(container.state == ContainerState::RUNNING, "container not running")
+            container.state = ContainerState::PAUSED
+            emit ContainerPaused(container_id)
+            return true
+        }
+
+        fn resume(container_id: u32) -> bool {
+            let container = self.containers[container_id]
+            require(container.state == ContainerState::PAUSED, "container not paused")
+            container.state = ContainerState::RUNNING
+            emit ContainerResumed(container_id)
+            return true
+        }
+
+        fn destroy(container_id: u32) -> bool {
+            let container = self.containers[container_id]
+            require(container.state != ContainerState::RUNNING && container.state != ContainerState::PAUSED,
+                    "container still active")
+
+            if container.agent_id.is_some() {
+                self.agent_containers.remove(container.agent_id.unwrap())
+            }
+
+            self.containers.remove(container_id)
+            emit ContainerDestroyed(container_id)
+            return true
+        }
+
+        fn restart(container_id: u32, new_pid: u32) -> bool {
+            let container = self.containers[container_id]
+            require(container.state == ContainerState::STOPPED, "container not stopped")
+            require(container.restart_count < container.max_restarts, "max restarts reached")
+
+            container.restart_count += 1
+            container.state = ContainerState::RUNNING
+            container.init_pid = Option::Some(new_pid)
+            container.process_ids.push(new_pid)
+            self.total_restarts += 1
+
+            emit ContainerRestarted(container_id, new_pid, container.restart_count)
+            return true
+        }
+
+        // ── Agent Sandboxing ────────────────────────────────
+
+        fn create_agent_container(
+            agent_id: String,
+            name: String,
+            image: ContainerImage,
+            limits: ResourceLimits,
+        ) -> u32 {
+            require(!self.agent_containers.contains(agent_id), "agent already has container")
+
+            let container_id = self.create(name, image)
+            let container = self.containers[container_id]
+            container.agent_id = Option::Some(agent_id)
+            container.resource_limits = limits
+            container.auto_restart = true
+
+            self.agent_containers[agent_id] = container_id
+            emit AgentContainerCreated(agent_id, container_id)
+            return container_id
+        }
+
+        fn get_agent_container(agent_id: String) -> Option<u32> {
+            return self.agent_containers.get(agent_id)
+        }
+
+        fn stop_agent(agent_id: String) -> bool {
+            let container_id = self.agent_containers[agent_id]
+            return self.stop(container_id, 0)
+        }
+
+        // ── Resource Management ─────────────────────────────
+
+        fn set_limits(container_id: u32, limits: ResourceLimits) -> bool {
+            let container = self.containers[container_id]
+            container.resource_limits = limits
+            return true
+        }
+
+        fn update_usage(
+            container_id: u32,
+            cpu_us: u64,
+            mem_bytes: u64,
+            io_read: u64,
+            io_write: u64,
+            net_rx: u64,
+            net_tx: u64,
+        ) -> bool {
+            let container = self.containers[container_id]
+            container.resource_usage.cpu_used_us += cpu_us
+            container.resource_usage.memory_used_bytes = mem_bytes
+            if mem_bytes > container.resource_usage.memory_peak_bytes {
+                container.resource_usage.memory_peak_bytes = mem_bytes
+            }
+            container.resource_usage.io_read_bytes += io_read
+            container.resource_usage.io_write_bytes += io_write
+            container.resource_usage.net_rx_bytes += net_rx
+            container.resource_usage.net_tx_bytes += net_tx
+
+            if mem_bytes > container.resource_limits.memory_limit_bytes {
+                emit ResourceLimitExceeded(container_id, "memory")
+                return false
+            }
+            return true
+        }
+
+        // ── Process Management ──────────────────────────────
+
+        fn add_process(container_id: u32, pid: u32) -> bool {
+            let container = self.containers[container_id]
+            require(container.state == ContainerState::RUNNING || container.state == ContainerState::PAUSED,
+                    "container not running")
+
+            if container.resource_usage.pid_count >= container.resource_limits.pid_max {
+                emit ResourceLimitExceeded(container_id, "pid")
+                return false
+            }
+
+            container.process_ids.push(pid)
+            container.resource_usage.pid_count = container.process_ids.length as u32
+            return true
+        }
+
+        fn remove_process(container_id: u32, pid: u32) -> bool {
+            let container = self.containers[container_id]
+            container.process_ids.remove(pid)
+            container.resource_usage.pid_count = container.process_ids.length as u32
+
+            if container.init_pid == Option::Some(pid) {
+                self.stop(container_id, 0)
+            }
+            return true
+        }
+
+        // ── Health Checks ───────────────────────────────────
+
+        fn run_health_check(container_id: u32, success: bool) -> HealthStatus {
+            let container = self.containers[container_id]
+            let old_status = container.health_status
+
+            if success {
+                container.health_status = HealthStatus::HEALTHY
+            } else {
+                if container.health_status == HealthStatus::HEALTHY {
+                    container.health_status = HealthStatus::DEGRADED
+                } else {
+                    container.health_status = HealthStatus::UNHEALTHY
+                }
+            }
+
+            if old_status != container.health_status {
+                emit HealthStatusChanged(container_id, old_status, container.health_status)
+            }
+            return container.health_status
+        }
+
+        // ── Network ─────────────────────────────────────────
+
+        fn add_port_mapping(container_id: u32, host_port: u16, container_port: u16, protocol: PortProtocol) -> bool {
+            emit PortMapped(container_id, host_port, container_port)
+            return true
+        }
+
+        fn disable_network(container_id: u32) -> bool {
+            let container = self.containers[container_id]
+            container.network_enabled = false
+            return true
+        }
+
+        fn enable_network(container_id: u32) -> bool {
+            let container = self.containers[container_id]
+            container.network_enabled = true
+            return true
+        }
+
+        // ── Queries ─────────────────────────────────────────
+
+        fn get_container(container_id: u32) -> Container {
+            return self.containers[container_id]
+        }
+
+        fn list_containers() -> List<ContainerSnapshot> {
+            let result: List<ContainerSnapshot> = []
+            for id, container in self.containers {
+                result.push(container.snapshot())
+            }
+            return result
+        }
+
+        fn list_running() -> List<u32> {
+            let result: List<u32> = []
+            for id, container in self.containers {
+                if container.state == ContainerState::RUNNING {
+                    result.push(id)
+                }
+            }
+            return result
+        }
+
+        fn list_agent_containers() -> List<(String, u32)> {
+            let result: List<(String, u32)> = []
+            for agent_id, container_id in self.agent_containers {
+                result.push((agent_id, container_id))
+            }
+            return result
+        }
+
+        fn container_count() -> u32 {
+            return self.containers.length as u32
+        }
+
+        fn running_count() -> u32 {
+            return self.list_running().length as u32
+        }
+
+        fn find_by_name(name: String) -> Option<u32> {
+            for id, container in self.containers {
+                if container.name == name {
+                    return Option::Some(id)
+                }
+            }
+            return Option::None
+        }
+
+        // ── Stats ───────────────────────────────────────────
+
+        fn stats() -> (u32, u32, u32, u32, u64, u64, u64, u64, u64) {
+            return (
+                self.containers.length as u32,
+                self.running_count(),
+                self.agent_containers.length as u32,
+                0,  // stopped count (would iterate)
+                self.total_created,
+                self.total_started,
+                self.total_stopped,
+                self.total_restarts,
+                self.total_failed,
+            )
+        }
+    }
+}
