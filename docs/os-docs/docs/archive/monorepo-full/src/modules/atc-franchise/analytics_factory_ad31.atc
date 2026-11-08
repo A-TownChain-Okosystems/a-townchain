@@ -1,0 +1,232 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-31 — Analytics Factory: Kennzahlen und Diagnosedaten
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct AnalyticsFactory {
+    metrics: Map<String, Metric>,
+    reports: Map<Hash256, Report>,
+    funnels: Map<Hash256, Funnel>,
+    cohorts: Map<Hash256, Cohort>,
+    ab_results: Map<Hash256, ABResult>,
+    by_franchise: Map<Hash256, AnalyticsData>,
+    realtime: RealtimeStats,
+}
+
+struct Metric {
+    name: String,
+    category: MetricCategory,
+    value: Float64,
+    target: Float64,
+    trend: Float32,
+    unit: String,
+    last_updated: UInt64,
+    history: List<MetricPoint>,
+}
+
+enum MetricCategory { Retention, Monetization, Economy, Balance, Performance, LiveOps, Engagement }
+
+struct MetricPoint {
+    timestamp: UInt64,
+    value: Float64,
+}
+
+struct Report {
+    id: Hash256,
+    franchise_id: Hash256,
+    type: ReportType,
+    period_start: UInt64,
+    period_end: UInt64,
+    summary: String,
+    metrics: Map<String, Float64>,
+    insights: List<String>,
+    created_at: UInt64,
+}
+
+enum ReportType { Daily, Weekly, Monthly, Quarterly, Sprint, Launch, Custom }
+
+struct Funnel {
+    id: Hash256,
+    name: String,
+    steps: List<FunnelStep>,
+    conversion_rate: Float32,
+}
+
+struct FunnelStep {
+    name: String,
+    visitors: UInt32,
+    conversion: Float32,
+}
+
+struct Cohort {
+    id: Hash256,
+    name: String,
+    start_date: UInt64,
+    size: UInt32,
+    retention_curve: List<Float32>,
+    arpu: Float32,
+    ltv: Float32,
+}
+
+struct ABResult {
+    id: Hash256,
+    test_name: String,
+    variant_a_result: Float64,
+    variant_b_result: Float64,
+    winner: String,
+    confidence: Float32,
+    significance: Bool,
+}
+
+struct AnalyticsData {
+    dau: UInt32,
+    mau: UInt32,
+    retention_d1: Float32,
+    retention_d7: Float32,
+    retention_d30: Float32,
+    arpu: Float32,
+    ltv: Float32,
+    conversion_rate: Float32,
+    crash_rate: Float32,
+    avg_session_min: Float32,
+}
+
+struct RealtimeStats {
+    concurrent_players: UInt32,
+    current_fps_avg: Float32,
+    active_events: UInt16,
+    server_load: Float32,
+    last_updated: UInt64,
+}
+
+// Analytics Factory: Metrik tracken
+pub fn track_metric(factory: AnalyticsFactory, name: String, category: MetricCategory, value: Float64, unit: String) -> Bool {
+    if not factory.metrics.contains(name) {
+        factory.metrics[name] = Metric {
+            name: name, category: category, value: value, target: 0.0,
+            trend: 0.0, unit: unit, last_updated: Chain::timestamp(), history: [],
+        }
+    } else {
+        let m = factory.metrics[name]
+        m.trend = (value - m.value) / m.value
+        m.value = value
+        m.last_updated = Chain::timestamp()
+        m.history.append(MetricPoint { timestamp: Chain::timestamp(), value: value })
+        if m.history.len() > 1000 { m.history.pop(0) }
+    }
+    return true
+}
+
+// Analytics Factory: Report erstellen
+pub fn create_report(factory: AnalyticsFactory, franchise_id: Hash256, rtype: ReportType, start: UInt64, end: UInt64) -> Hash256 {
+    let rid = Crypto::sha256(serialize(franchise_id, rtype, Chain::timestamp()))
+    factory.reports[rid] = Report {
+        id: rid, franchise_id: franchise_id, type: rtype,
+        period_start: start, period_end: end,
+        summary: "Auto-generated report",
+        metrics: {}, insights: [], created_at: Chain::timestamp(),
+    }
+    return rid
+}
+
+// Analytics Factory: Insight hinzufügen
+pub fn add_insight(factory: AnalyticsFactory, report_id: Hash256, insight: String) -> Bool {
+    require(factory.reports.contains(report_id), "Report not found")
+    factory.reports[report_id].insights.append(insight)
+    return true
+}
+
+// Analytics Factory: Funnel erstellen
+pub fn create_funnel(factory: AnalyticsFactory, name: String, steps: List<String>) -> Hash256 {
+    let fid = Crypto::sha256(serialize(name, Chain::timestamp()))
+    let funnel_steps = []
+    for step_name in steps {
+        funnel_steps.append(FunnelStep { name: step_name, visitors: 0, conversion: 0.0 })
+    }
+    factory.funnels[fid] = Funnel {
+        id: fid, name: name, steps: funnel_steps, conversion_rate: 0.0,
+    }
+    return fid
+}
+
+// Analytics Factory: Funnel-Daten aktualisieren
+pub fn update_funnel_step(factory: AnalyticsFactory, funnel_id: Hash256, step_idx: UInt8, visitors: UInt32) -> Bool {
+    require(factory.funnels.contains(funnel_id), "Funnel not found")
+    let funnel = factory.funnels[funnel_id]
+    require(step_idx < funnel.steps.len(), "Step index out of range")
+    funnel.steps[step_idx].visitors = visitors
+    if step_idx > 0 and funnel.steps[step_idx - 1].visitors > 0 {
+        funnel.steps[step_idx].conversion = visitors / funnel.steps[step_idx - 1].visitors
+    }
+    // Overall conversion
+    if funnel.steps.len() > 0 and funnel.steps[0].visitors > 0 {
+        funnel.conversion_rate = funnel.steps[-1].visitors / funnel.steps[0].visitors
+    }
+    return true
+}
+
+// Analytics Factory: Kohorte erstellen
+pub fn create_cohort(factory: AnalyticsFactory, name: String, start: UInt64, size: UInt32) -> Hash256 {
+    let coid = Crypto::sha256(serialize(name, Chain::timestamp()))
+    factory.cohorts[coid] = Cohort {
+        id: coid, name: name, start_date: start, size: size,
+        retention_curve: [1.0, 0.4, 0.25, 0.15, 0.1],  // D1, D7, D14, D30, D60
+        arpu: 0.0, ltv: 0.0,
+    }
+    return coid
+}
+
+// Analytics Factory: A/B Test Ergebnis speichern
+pub fn record_ab_result(factory: AnalyticsFactory, test_name: String, a_result: Float64, b_result: Float64, confidence: Float32) -> Hash256 {
+    let abid = Crypto::sha256(serialize(test_name, Chain::timestamp()))
+    let winner = if a_result > b_result then "A" else "B"
+    factory.ab_results[abid] = ABResult {
+        id: abid, test_name: test_name,
+        variant_a_result: a_result, variant_b_result: b_result,
+        winner: winner, confidence: confidence,
+        significance: confidence >= 0.95,
+    }
+    return abid
+}
+
+// Analytics Factory: Realtime-Stats aktualisieren
+pub fn update_realtime(factory: AnalyticsFactory, concurrent: UInt32, fps: Float32, events: UInt16, load: Float32) -> Bool {
+    factory.realtime.concurrent_players = concurrent
+    factory.realtime.current_fps_avg = fps
+    factory.realtime.active_events = events
+    factory.realtime.server_load = load
+    factory.realtime.last_updated = Chain::timestamp()
+    return true
+}
+
+// Analytics Factory: Analytics für Franchise einrichten
+pub fn setup_analytics(factory: AnalyticsFactory, franchise_id: Hash256) -> Bool {
+    // Standard-Metriken
+    track_metric(factory, "dau", MetricCategory::Engagement, 0.0, "count")
+    track_metric(factory, "mau", MetricCategory::Engagement, 0.0, "count")
+    track_metric(factory, "retention_d1", MetricCategory::Retention, 0.0, "percent")
+    track_metric(factory, "retention_d7", MetricCategory::Retention, 0.0, "percent")
+    track_metric(factory, "retention_d30", MetricCategory::Retention, 0.0, "percent")
+    track_metric(factory, "arpu", MetricCategory::Monetization, 0.0, "USD")
+    track_metric(factory, "ltv", MetricCategory::Monetization, 0.0, "USD")
+    track_metric(factory, "crash_rate", MetricCategory::Performance, 0.0, "percent")
+    track_metric(factory, "avg_session", MetricCategory::Engagement, 0.0, "minutes")
+
+    // Standard-Funnels
+    create_funnel(factory, "Onboarding", ["launch", "create_account", "tutorial", "first_quest", "second_session"])
+    create_funnel(factory, "Monetization", ["launch", "store_visit", "browse", "purchase", "repeat_purchase"])
+
+    // Standard-Report
+    create_report(factory, franchise_id, ReportType::Launch, Chain::timestamp(), Chain::timestamp() + 86400)
+    return true
+}
+
+// Analytics Factory: Dashboard-Daten abrufen
+pub fn get_dashboard(factory: AnalyticsFactory, franchise_id: Hash256) -> AnalyticsData {
+    return factory.by_franchise.get(franchise_id, AnalyticsData {
+        dau: 0, mau: 0, retention_d1: 0.0, retention_d7: 0.0, retention_d30: 0.0,
+        arpu: 0.0, ltv: 0.0, conversion_rate: 0.0, crash_rate: 0.0, avg_session_min: 0.0,
+    })
+}
