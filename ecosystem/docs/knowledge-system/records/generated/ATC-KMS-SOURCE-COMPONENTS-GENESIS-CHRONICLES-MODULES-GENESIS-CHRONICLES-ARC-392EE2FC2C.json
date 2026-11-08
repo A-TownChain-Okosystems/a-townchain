@@ -1,0 +1,21 @@
+{
+  "id": "ATC-KMS-SOURCE-COMPONENTS-GENESIS-CHRONICLES-MODULES-GENESIS-CHRONICLES-ARC-392EE2FC2C",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "evidence",
+  "title": "Indexed source: components/genesis-chronicles/modules/genesis-chronicles/ARCHITECTURE.md",
+  "context": "Repository architecture, release, security, migration, or build source.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "file",
+    "ref": "components/genesis-chronicles/modules/genesis-chronicles/ARCHITECTURE.md",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "source"
+  ],
+  "links": [],
+  "content": "Source file present at components/genesis-chronicles/modules/genesis-chronicles/ARCHITECTURE.md."
+}
