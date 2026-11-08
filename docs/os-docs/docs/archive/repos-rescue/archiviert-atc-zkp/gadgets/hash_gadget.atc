@@ -1,0 +1,17 @@
+// ATCLang v0.3 — Hash Gadget
+// ZKP-Gadget für Hash-Funktionen (SHA-256, Poseidon)
+// ATC-Standard: ATC-24
+
+module hash_gadget {
+    fn sha256_gadget(input: List[bool]) {
+        // SHA-256 als ZKP-Circuit
+    }
+    
+    fn poseidon_gadget(input: List[string]) {
+        // Poseidon-Hash (zk-friendly) als Circuit
+    }
+    
+    fn mimc_gadget(input: List[string]) {
+        // MiMC-Hash als Circuit
+    }
+}
