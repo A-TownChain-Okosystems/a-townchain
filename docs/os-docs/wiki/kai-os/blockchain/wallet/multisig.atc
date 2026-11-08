@@ -1,0 +1,268 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-86 — Multi-Signature Wallet
+// Sprint 2.6 | Wallet Layer | Chain-ID 9000
+// Upgraded to v0.3 ATCLang syntax
+// N-of-M threshold wallet with timelock and revoke
+// ─────────────────────────────────────────────────────────────
+
+const MAX_OWNERS: u8 = 16
+const MAX_PENDING_TX: u32 = 256
+const OWNER_REVOKE_DELAY: u64 = 86400  // 24h
+
+enum TxStatus { Pending, Confirmed, Executed, Revoked, Expired }
+
+struct MultiTx {
+    tx_id: Hash,
+    to: Address,
+    value: u128,
+    data: String,
+    submitted_by: Address,
+    submitted_at: u64,
+    confirmations: u8,
+    executed: bool,
+    status: TxStatus,
+}
+
+struct WalletInfo {
+    owners: List<Address>,
+    threshold: u8,
+    tx_count: u32,
+    created_at: u64,
+}
+
+contract MultiSigWallet {
+    state wallets: Map<Address, WalletInfo>
+    state pending_tx: Map<Address, Map<Hash, MultiTx>>
+    state confirmations: Map<Hash, List<Address>>
+    state next_wallet_id: u64
+    state owner: Address
+
+    event WalletCreated(addr: Address, owner_count: u8, threshold: u8)
+    event TxSubmitted(wallet: Address, tx_id: Hash, to: Address, value: u128)
+    event TxConfirmed(wallet: Address, tx_id: Hash, confirmer: Address, count: u8)
+    event TxExecuted(wallet: Address, tx_id: Hash)
+    event TxRevoked(wallet: Address, tx_id: Hash)
+    event OwnerAdded(wallet: Address, new_owner: Address)
+    event OwnerRemoved(wallet: Address, removed_owner: Address)
+    event ThresholdChanged(wallet: Address, old: u8, new: u8)
+
+    fn init() {
+        self.wallets = {}
+        self.pending_tx = {}
+        self.confirmations = {}
+        self.next_wallet_id = 1
+        self.owner = msg_sender()
+    }
+
+    fn create_wallet(owners: List<Address>, threshold: u8) -> Address {
+        if owners.len() == 0 || owners.len() > MAX_OWNERS {
+            return Address::zero()
+        }
+        if threshold == 0 || threshold > owners.len() {
+            return Address::zero()
+        }
+        let wallet_addr = Hash::to_address(Hash::sha256(
+            Address::to_string(owners[0]),
+            Int::to_string(self.next_wallet_id),
+            Int::to_string(Time::now())
+        ))
+        self.next_wallet_id += 1
+        let info = WalletInfo {
+            owners: owners,
+            threshold: threshold,
+            tx_count: 0,
+            created_at: Time::now(),
+        }
+        self.wallets[wallet_addr] = info
+        emit WalletCreated(wallet_addr, owners.len(), threshold)
+        return wallet_addr
+    }
+
+    fn submit_tx(wallet_addr: Address, to: Address, value: u128, data: String) -> Hash {
+        let w = self.wallets.get(wallet_addr)
+        if w == null {
+            return Hash::zero()
+        }
+        if !self.is_owner(wallet_addr, msg_sender()) {
+            return Hash::zero()
+        }
+        if w.tx_count >= MAX_PENDING_TX {
+            return Hash::zero()
+        }
+        let tx_id = Hash::sha256(wallet_addr, to, value, data, w.tx_count)
+        let tx = MultiTx {
+            tx_id: tx_id,
+            to: to,
+            value: value,
+            data: data,
+            submitted_by: msg_sender(),
+            submitted_at: Time::now(),
+            confirmations: 1,
+            executed: false,
+            status: TxStatus::Pending,
+        }
+        if self.pending_tx.get(wallet_addr) == null {
+            self.pending_tx[wallet_addr] = {}
+        }
+        self.pending_tx[wallet_addr][tx_id] = tx
+        let confs: List<Address> = [msg_sender()]
+        self.confirmations[tx_id] = confs
+        w.tx_count += 1
+        emit TxSubmitted(wallet_addr, tx_id, to, value)
+        return tx_id
+    }
+
+    fn confirm_tx(wallet_addr: Address, tx_id: Hash) -> bool {
+        let w = self.wallets.get(wallet_addr)
+        if w == null {
+            return false
+        }
+        if !self.is_owner(wallet_addr, msg_sender()) {
+            return false
+        }
+        let wallet_txs = self.pending_tx.get(wallet_addr)
+        if wallet_txs == null {
+            return false
+        }
+        let tx = wallet_txs.get(tx_id)
+        if tx == null || tx.executed || tx.status != TxStatus::Pending {
+            return false
+        }
+        let confs = self.confirmations.get(tx_id)
+        if confs == null {
+            return false
+        }
+        // Check not already confirmed
+        let i: u8 = 0
+        while i < confs.len() {
+            if confs[i] == msg_sender() {
+                return false
+            }
+            i += 1
+        }
+        confs.push(msg_sender())
+        tx.confirmations += 1
+        emit TxConfirmed(wallet_addr, tx_id, msg_sender(), tx.confirmations)
+        // Auto-execute when threshold reached
+        if tx.confirmations >= w.threshold {
+            tx.executed = true
+            tx.status = TxStatus::Executed
+            emit TxExecuted(wallet_addr, tx_id)
+        }
+        return true
+    }
+
+    fn revoke_tx(wallet_addr: Address, tx_id: Hash) -> bool {
+        let tx_map = self.pending_tx.get(wallet_addr)
+        if tx_map == null {
+            return false
+        }
+        let tx = tx_map.get(tx_id)
+        if tx == null || tx.executed {
+            return false
+        }
+        if msg_sender() != tx.submitted_by && msg_sender() != self.owner {
+            return false
+        }
+        tx.status = TxStatus::Revoked
+        emit TxRevoked(wallet_addr, tx_id)
+        return true
+    }
+
+    fn add_owner(wallet_addr: Address, new_owner: Address) -> bool {
+        let w = self.wallets.get(wallet_addr)
+        if w == null || w.owners.len() >= MAX_OWNERS {
+            return false
+        }
+        if !self.is_owner(wallet_addr, msg_sender()) {
+            return false
+        }
+        w.owners.push(new_owner)
+        emit OwnerAdded(wallet_addr, new_owner)
+        return true
+    }
+
+    fn remove_owner(wallet_addr: Address, removed: Address) -> bool {
+        let w = self.wallets.get(wallet_addr)
+        if w == null {
+            return false
+        }
+        if !self.is_owner(wallet_addr, msg_sender()) {
+            return false
+        }
+        if w.owners.len() <= w.threshold {
+            return false
+        }
+        let i: u8 = 0
+        while i < w.owners.len() {
+            if w.owners[i] == removed {
+                w.owners.remove(i)
+                emit OwnerRemoved(wallet_addr, removed)
+                return true
+            }
+            i += 1
+        }
+        return false
+    }
+
+    fn change_threshold(wallet_addr: Address, new_threshold: u8) -> bool {
+        let w = self.wallets.get(wallet_addr)
+        if w == null {
+            return false
+        }
+        if !self.is_owner(wallet_addr, msg_sender()) {
+            return false
+        }
+        if new_threshold == 0 || new_threshold > w.owners.len() {
+            return false
+        }
+        let old = w.threshold
+        w.threshold = new_threshold
+        emit ThresholdChanged(wallet_addr, old, new_threshold)
+        return true
+    }
+
+    fn is_owner(wallet_addr: Address, addr: Address) -> bool {
+        let w = self.wallets.get(wallet_addr)
+        if w == null {
+            return false
+        }
+        let i: u8 = 0
+        while i < w.owners.len() {
+            if w.owners[i] == addr {
+                return true
+            }
+            i += 1
+        }
+        return false
+    }
+
+    fn get_tx(wallet_addr: Address, tx_id: Hash) -> (Address, u128, u8, bool, TxStatus) {
+        let tx_map = self.pending_tx.get(wallet_addr)
+        if tx_map == null {
+            return (Address::zero(), 0, 0, false, TxStatus::Revoked)
+        }
+        let tx = tx_map.get(tx_id)
+        if tx == null {
+            return (Address::zero(), 0, 0, false, TxStatus::Revoked)
+        }
+        return (tx.to, tx.value, tx.confirmations, tx.executed, tx.status)
+    }
+
+    fn get_wallet_info(wallet_addr: Address) -> (u8, u8, u32, u64) {
+        let w = self.wallets.get(wallet_addr)
+        if w == null {
+            return (0, 0, 0, 0)
+        }
+        return (w.owners.len(), w.threshold, w.tx_count, w.created_at)
+    }
+
+    fn get_pending_count(wallet_addr: Address) -> u32 {
+        let w = self.wallets.get(wallet_addr)
+        if w == null {
+            return 0
+        }
+        return w.tx_count
+    }
+}
