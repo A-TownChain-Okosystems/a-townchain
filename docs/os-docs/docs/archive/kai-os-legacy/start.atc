@@ -1,0 +1,129 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — KAI-OS Application Entry Point
+// Sprint 3.0 | Core Layer | Chain-ID 9000
+// Migrated from: start.py (53 lines) + backend/main.py (18 lines)
+// Bootstraps all services: blockchain, gateway, P2P, wallet, monitor
+// ─────────────────────────────────────────────────────────────
+
+const STARTUP_TIMEOUT: u64 = 30
+const SHUTDOWN_TIMEOUT: u64 = 10
+
+enum ServiceStatus { Stopped, Starting, Running, Error, Stopping }
+enum ServiceType { Blockchain, Gateway, P2P, Wallet, Monitor, AI, Explorer }
+
+struct ServiceState {
+    service_type: ServiceType,
+    status: ServiceStatus,
+    started_at: u64,
+    pid: u32,
+    port: u16,
+}
+
+contract KAIOSLauncher {
+    state services: Map<ServiceType, ServiceState>
+    state running_count: u8
+    state startup_time: u64
+    state is_initialized: bool
+    state owner: Address
+
+    event ServiceStarted(service: ServiceType, port: u16)
+    event ServiceStopped(service: ServiceType)
+    event ServiceError(service: ServiceType, reason: String)
+    event AllServicesStarted(count: u8)
+
+    fn init() {
+        self.services = {}
+        self.running_count = 0
+        self.startup_time = 0
+        self.is_initialized = false
+        self.owner = msg_sender()
+    }
+
+    fn start_all() -> bool {
+        self.startup_time = Time::now()
+        self.start_service(ServiceType::Blockchain, 5000)
+        self.start_service(ServiceType::Gateway, 4000)
+        self.start_service(ServiceType::P2P, 9001)
+        self.start_service(ServiceType::Wallet, 5002)
+        self.start_service(ServiceType::Monitor, 9090)
+        self.start_service(ServiceType::Explorer, 5003)
+        self.is_initialized = true
+        emit AllServicesStarted(self.running_count)
+        return true
+    }
+
+    fn start_service(svc: ServiceType, port: u16) -> bool {
+        let state = ServiceState {
+            service_type: svc,
+            status: ServiceStatus::Starting,
+            started_at: Time::now(),
+            pid: 0,
+            port: port,
+        }
+        self.services[svc] = state
+        // Initialize service
+        if svc == ServiceType::Blockchain {
+            HybridConsensus::init()
+        } else if svc == ServiceType::Gateway {
+            Gateway::init()
+        } else if svc == ServiceType::P2P {
+            P2PNode::init()
+        } else if svc == ServiceType::Wallet {
+            ATCWalletService::init()
+        } else if svc == ServiceType::Monitor {
+            SystemMonitor::init()
+        }
+        state.status = ServiceStatus::Running
+        self.running_count += 1
+        emit ServiceStarted(svc, port)
+        return true
+    }
+
+    fn stop_service(svc: ServiceType) -> bool {
+        let state = self.services.get(svc)
+        if state == null || state.status != ServiceStatus::Running {
+            return false
+        }
+        state.status = ServiceStatus::Stopping
+        state.status = ServiceStatus::Stopped
+        if self.running_count > 0 {
+            self.running_count -= 1
+        }
+        emit ServiceStopped(svc)
+        return true
+    }
+
+    fn stop_all() -> bool {
+        let types = self.services.keys()
+        let i: u16 = 0
+        while i < types.len() {
+            let svc = self.services.get(types[i])
+            if svc != null && svc.status == ServiceStatus::Running {
+                self.stop_service(svc.service_type)
+            }
+            i += 1
+        }
+        return true
+    }
+
+    fn get_service_status(svc: ServiceType) -> (ServiceStatus, u64, u16) {
+        let s = self.services.get(svc)
+        if s == null {
+            return (ServiceStatus::Stopped, 0, 0)
+        }
+        return (s.status, s.started_at, s.port)
+    }
+
+    fn get_running_count() -> u8 {
+        return self.running_count
+    }
+
+    fn get_startup_time() -> u64 {
+        return self.startup_time
+    }
+
+    fn health_check() -> bool {
+        return self.running_count >= 4 && self.is_initialized
+    }
+}
