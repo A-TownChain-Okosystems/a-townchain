@@ -6,7 +6,7 @@ properties:
     type: object
     required: [id, title, version, status, category, authority, owner, created, updated, normative]
     properties:
-      id: {type: string, pattern: "^ATC-[A-Z0-9-]+$", description: "Registry-ID; Praefix-Familien (ATC-STD-ZKP-001) und nicht-STD-Familien (ATC-AAS-001) gemaess Registry-SSOT erfasst"
+      id: {type: string, pattern: "^ATC-[A-Z0-9-]+$", description: "Registry-ID; Praefix-Familien (ATC-STD-ZKP-001) und nicht-STD-Familien (ATC-AAS-001) gemaess Registry-SSOT erfasst"}
       title: {type: string}
       version: {type: string, pattern: "^\\d+\\.\\d+\\.\\d+$"}
       status: {enum: [idea, proposed, draft, review, candidate, approved, stable, deprecated, retired]}
