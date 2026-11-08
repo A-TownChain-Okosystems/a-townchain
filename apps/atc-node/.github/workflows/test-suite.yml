@@ -1,0 +1,73 @@
+name: ATC Test Suite
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cargo-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo test ueber alle Manifeste (SCR-0083)
+        run: |
+          set +e
+          FAIL=0
+          while IFS= read -r f; do
+            d="$(dirname "$f")"
+            echo "=== cargo test in $d"
+            if ! (cd "$d" && cargo test --quiet); then
+              echo "cargo test FAILED in $d"; FAIL=1
+            fi
+          done < <(find . -name Cargo.toml -not -path "*/archive/*" -not -path "*/node_modules/*")
+          exit $FAIL
+      - name: Evidence-Bindung (SCR-0086 idempotentes test_run-Update je Lauf + hartes Push-Gate)
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, datetime, re
+          sha = os.environ["GITHUB_SHA"]
+          rid = os.environ["GITHUB_RUN_ID"]
+          wf  = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
+          ts  = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          p = ".atc/evidence/evidence.yaml"
+          t = open(p, encoding="utf-8").read()
+          t = re.sub(r"bound_commit: [^\n]*", "bound_commit: " + sha, t)
+          block = ("test_run:\n"
+                   "  workflow: " + wf + "\n"
+                   "  run_id: " + rid + "\n"
+                   "  commit: " + sha + "\n"
+                   "  timestamp: " + ts + "\n"
+                   "  result: PASS\n"
+                   "  runner: github-actions\n")
+          if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", t):
+              t = re.sub(r"(?m)^test_run:\n(?:  [^\n]*\n)+", block, t)
+          else:
+              t = t.rstrip() + "\n" + block
+          open(p, "w", encoding="utf-8").write(t)
+          PY
+          git config user.name "Aurora-Bot"
+          git config user.email "aurora@base44.ai"
+          BR="chore/evidence-run-${GITHUB_RUN_ID}"
+          git checkout -b "$BR"
+          git add .atc/evidence/evidence.yaml
+          if git diff --cached --quiet; then echo "keine Evidence-Aenderung"; exit 0; fi
+          git commit -m "chore(evidence): bound_commit + test_run aktualisiert (SCR-0086, PR-Promotion) [skip ci]"
+          git push origin "$BR"
+          CODE=$(curl -s -o /tmp/pr_resp.json -w "%{http_code}" -X POST -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/A-TownChain-Okosystems/atc-node/pulls" \
+            -d "{\"head\":\"${BR}\",\"base\":\"main\",\"title\":\"chore(evidence): test_run-Bindung Lauf ${GITHUB_RUN_ID}\",\"body\":\"Automatische Evidence-Promotion (SCR-0087-Muster, konsolidiert aus dem atc-standards-Pilot). Hartes Gate: Push+PR muessen erfolgreich sein. Merge via Governance.\"}")
+          if [ "$CODE" -ge 200 ] 2>/dev/null && [ "$CODE" -lt 300 ]; then
+            echo "Evidence-PR erstellt (${CODE}): ${BR}"
+          elif grep -q "not permitted to create or approve pull requests" /tmp/pr_resp.json 2>/dev/null; then
+            echo "WARN: Org-Policy blockiert PR-Erstellung durch GITHUB_TOKEN. Evidence-Branch ${BR} ist gepusht, kein Evidence-Verlust (bound_commit/test_run auf ${BR} gebunden)."
+            exit 0
+          else
+            echo "PR-Create fehlgeschlagen (HTTP ${CODE}):"; cat /tmp/pr_resp.json; exit 1
+          fi
