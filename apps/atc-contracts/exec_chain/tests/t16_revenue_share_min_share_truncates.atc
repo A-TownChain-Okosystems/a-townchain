@@ -1,0 +1,12 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — Invariante an der Untergrenze
+// (apps/atc-contracts/contracts/revenue.atc :: init, require share_percent >= 1):
+// 1 % von 99 ergibt ganzzahlig 0 fuer den Franchisor. Der Betrag darf
+// dabei nicht verfallen: der Franchisee erhaelt die vollen 99.
+contract T16RevenueShareMinShareTruncates {
+    fn compute(amount: u64, share_pct: u64) -> u64 {
+        let franchisor_cut = amount * share_pct / 100
+        let franchisee_cut = amount - franchisor_cut
+        return franchisee_cut
+    }
+}
