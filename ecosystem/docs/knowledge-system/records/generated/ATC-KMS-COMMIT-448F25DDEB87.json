@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-COMMIT-448F25DDEB87",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "Commit: Merge pull request #225 from A-TownChain-Okosystems/catalog/vm-source-binding-blobsha-20261023",
+  "context": "Git commit 448f25ddeb8716d8e31b6d489fd1da23fa48f170 on A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "commit",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/commit/448f25ddeb8716d8e31b6d489fd1da23fa48f170",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "commit",
+    "generated",
+    "git"
+  ],
+  "links": [],
+  "content": "Merge pull request #225 from A-TownChain-Okosystems/catalog/vm-source-binding-blobsha-20261023\n\n[DRAFT] Backfill exact file blob SHA for VM function bindings"
+}
