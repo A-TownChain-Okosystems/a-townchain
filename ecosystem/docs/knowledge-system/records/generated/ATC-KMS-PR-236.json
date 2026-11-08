@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-236",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #236: docs(architecture): clarify seven building-block boundaries",
+  "context": "Pull request 236 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/236",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n\nClarifies the seven-building-block architecture in the existing canonical layer-architecture document, without introducing a parallel architecture SSOT.\n\n### Added\n- Responsibility and authority boundaries for ATCLang, ShivaCore, Aurora AI, A-TownChain, ATC-VM, GlobusOS and Genesis Engine.\n- A conceptual architecture flow that separates the developer/execution domain, system platform and independent domain platforms.\n- Explicit relationship rules for ATCLang ↔ ATC-VM, ShivaCore → GlobusOS, A-TownChain ↔ ATC-VM, and optional Aurora AI / Genesis Engine integrations.\n- Fail-closed evidence language: undocumented or unverified integrations remain RESIDUAL, UNRESOLVED or BLOCKED.\n\n### Governance\n- Preserves Standalone First · Native Implementation · Ecosystem Second.\n- Preserves component repositories as implementation SSOTs.\n- Does not claim full integration, production readiness, compiler/VM compatibility, or E2E verification.\n- Does not silently migrate the draft L0–L10 / X1–X8 registry to the separately documented L0–L9 / X0–X36 target model.\n\n### Validation status\nDocumentation-only change. No implementation or verification status is promoted by this PR. Required CI must be inspected on the exact PR head before acceptance."
+}
