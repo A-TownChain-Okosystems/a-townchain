@@ -1,0 +1,30 @@
+name: Franchise Factory Quality Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'franchise_factory/**'
+      - '.github/workflows/franchise-factory.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  franchise-factory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Install Franchise Factory
+        working-directory: franchise_factory
+        run: python -m pip install -e '.[dev]'
+      - name: Ruff
+        working-directory: franchise_factory
+        run: ruff check gff tests
+      - name: Pytest
+        working-directory: franchise_factory
+        run: pytest -q
