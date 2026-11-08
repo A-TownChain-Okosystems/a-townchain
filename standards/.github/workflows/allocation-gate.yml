@@ -1,0 +1,33 @@
+name: Allocation-Gate
+
+# Standard-ID Allocation Drift-Check (P1-A2): Registry/Bestand + Framework/Verweise
+# vs. registry/allocation/allocation-status.yaml. Drift = FAIL. FREE != ALLOCABLE.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - 'registry/**'
+      - 'tools/allocation-validator/**'
+      - '.github/workflows/allocation-gate.yml'
+  schedule:
+    - cron: '30 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  allocation-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install pyyaml
+      - name: Standard-ID Allocation Gate (FAMILY-300)
+        run: python tools/allocation-validator/atc_allocation_validator.py --family 300
