@@ -1,0 +1,5 @@
+lifecycle:
+  stage: experimental
+  entered: "<YYYY-MM-DD>"
+  history:
+    - {stage: experimental, date: "<YYYY-MM-DD>"}
