@@ -1,0 +1,23 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: protocol
+family: PROTOCOL
+family_id: PREFIX
+file: standards/protocol/ATC-STD-PROTOCOL-001.md
+mandate: Owner-Entwurf 08.09. 00:12 (21 Abschnitte) — 21 REQ-PROTO, 7-Schichten-Protokollarchitektur,
+  ID-Schema ATC-PROTO-[DOMAIN]-[NUMBER], 9-Felder-Nachrichten-Envelope, Encoding-Standard
+  (deterministische Serialisierung für Blockchain), SemVer + Versionsfenster, 7 Kompatibilitätsdimensionen
+  mit Compatibility-Layer-Pflicht, 6-Phasen-Handshake, Authentication/Authorization-Trennung
+  mit Capability-Modell, Threat-Model-Pflicht (12 Angriffe), Cryptographic Abstraction
+  Layer, maschinenlesbare Fehlercodes, Timeout/Retry/Circuit-Breaker, Rate-Limiting,
+  Replay-Schutz mit Chain-ID-Pflicht, 11 Observability-Felder, AUD-Record-Kopplung,
+  13-Schritte-Upgrade-Prozess, Registry registry/protocol-registry.yaml (26 Familien,
+  Validator S-23) mit Status-Ehrlichkeitsregel; SCR-0023; §9-Freigabe 08.09. 00:18,
+  APPROVED, normativ, §30-eingefroren
+registry_version: 1
+standard_id: ATC-STD-PROTOCOL-001
+status: approved
+title: 'ATC Protocol Standards — Dachstandard oberhalb der Einzelprotokolle: einheitliche
+  Regeln für Identität, Versionierung, Nachrichten, Sicherheit, Fehler, Kompatibilität,
+  Governance und Auditing aller ATC-Protokolle (ATC-PROTO-*)'
+version: 1.0.0
