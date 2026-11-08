@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-200",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #200: [Draft] Catalog logic hardening: architecture layers and source accounting",
+  "context": "Pull request 200 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/200",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Purpose\n\nProfessionally harden the canonical component/function catalog against architecture drift and stale metadata. This is a Draft PR; it does not claim source completeness or functional verification.\n\n## Changes\n- Reconcile 31 component primary-layer mappings against `ARCHITECTURE.md` L0-L7 + X.\n- Add `architectural_layers` so cross-domain components such as ATC Node can express L0 + L2 without inventing a new layer taxonomy.\n- Add explicit architecture binding metadata to the catalog.\n- Derive source-binding accounting for all 104 function records: binding objects, source paths, exact source SHAs, and status breakdown.\n- Explicitly classify `COMP-DEMO` as excluded from production-readiness interpretation; it remains a fixture and must not enter the live drift gate.\n- Extend the existing taxonomy validator and regression tests to fail closed on layer drift, stale source counters, invalid multi-layer mappings, and missing demo-fixture exclusion.\n- Update the human-readable catalog and run the existing workflow when `ARCHITECTURE.md` changes.\n\n## Guardrails\n- No second catalog or repository manifest is created.\n- No implementation is marked VERIFIED; catalog release decision remains BLOCKED.\n- No merge, auto-merge, gate weakening, or production-readiness assertion.\n\n## Required validation\n- `python3 tools/validate_catalog_taxonomy.py`\n- `python3 -m unittest tools.tests.test_validate_catalog_taxonomy -v`\n- Existing component/function specification validator and exact-HEAD workflow evidence.\n- Review the layer mapping against architecture owner decisions before merge."
+}
