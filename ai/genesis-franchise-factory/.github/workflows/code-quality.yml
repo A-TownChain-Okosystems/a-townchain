@@ -1,0 +1,23 @@
+# ATC Code Quality Gate — ATC-STD-081 (Coding) / ATC-STD-082 (Code Style), SCR-0123 Welle 2
+# Profil SSOT: ruff.toml (E,W,F,I; E501 ausstehend Welle 3) | ruff gepinnt 0.16.7
+name: ATC Code Quality (STD-081/082)
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Ruff installieren (gepinnt, ATC-STD-CI-001 CI-004)
+        run: pip install ruff==0.16.7
+      - name: Lint-Pruefung (ATC-STD-081)
+        run: ruff check .
+      - name: Format-Pruefung (ATC-STD-082)
+        run: ruff format --check .
