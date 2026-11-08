@@ -1,0 +1,35 @@
+{
+  "id": "ATC-KMS-PR-196",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #196: fix(catalog): reconcile Globus and Aurora contracts with current main",
+  "context": "Pull request 196 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/196",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-130"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-130"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-130"
+    }
+  ],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\nReconciles the three proposed cross-layer function contracts from PR #130 onto the current `main` catalog baseline. This branch starts from current `main` and preserves intervening changes.\n\n### Catalog additions\n- `FN-GLOBUS-003` — OS service boundary and platform integration\n- `FN-AURORA-004` — Policy-gated Neural AI orchestration\n- `FN-ECO-003` — Cross-layer architecture and catalog reconciliation\n\n### Governance and verification\n- All three contracts remain `RESIDUAL` / `UNBOUND_RESIDUAL`; no implementation or verification claim is made.\n- Canonical implementation ownership is unchanged; `a-townchain-ecosystem` remains the integration/compliance/evidence control plane.\n- Unknown consensus/economic rules remain `BLOCKED`.\n- Structural counters now match the catalog: 104 function contracts across 31 components.\n- `functional_verification_performed` remains `false`; release decision remains `BLOCKED` pending source-tree reconciliation and exact-SHA Run → Job → Step → exit-code/log/artifact evidence.\n- No automatic merge. Keep Draft until the catalog gate and required validation evidence are reviewed.\n\nReplaces the diverged branch of PR #130; do not merge PR #130 in parallel."
+}
