@@ -1,0 +1,153 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// Shivamon Battle Engine (ATC-90, Sprint 2.5)
+// Turn-based combat with elemental type advantages
+// ════════════════════════════════════════════════════════════════
+
+const MAX_TURNS: u8 = 20
+const BASE_DAMAGE: u16 = 10
+
+struct BattleStats {
+    hp:    u16,
+    atk:   u16,
+    def:   u16,
+    spd:   u16
+}
+
+struct BattleState {
+    battle_id:     Hash,
+    attacker:      Address,
+    defender:      Address,
+    attacker_hp:   u16,
+    defender_hp:   u16,
+    turn:          u8,
+    winner:        Address,
+    active:        bool
+}
+
+contract BattleEngine {
+
+    state battles: Map<Hash, BattleState>
+    state battle_count: u128
+    state win_counts: Map<Address, u32>
+    state loss_counts: Map<Address, u32>
+
+    event BattleStarted(battle_id: Hash, attacker: Address, defender: Address)
+    event AttackExecuted(battle_id: Hash, damage: u16, attacker_hp: u16, defender_hp: u16)
+    event BattleEnded(battle_id: Hash, winner: Address)
+
+    fn init() {
+        self.battle_count = 0
+    }
+
+    // ── Battle starten ────────────────────────────────
+    fn start_battle(attacker: Address, defender: Address, atk_stats: BattleStats, def_stats: BattleStats) -> Hash {
+        let battle_id = sha256(to_string(attacker) + to_string(defender) + to_string(self.battle_count))
+        let battle = BattleState {
+            battle_id:    battle_id,
+            attacker:     attacker,
+            defender:     defender,
+            attacker_hp:  atk_stats.hp,
+            defender_hp:  def_stats.hp,
+            turn:         0,
+            winner:       "",
+            active:       true
+        }
+        self.battles[battle_id] = battle
+        self.battle_count += 1
+        emit BattleStarted(battle_id, attacker, defender)
+        return battle_id
+    }
+
+    // ── Attack ausführen ──────────────────────────────
+    fn execute_attack(battle_id: Hash, atk_stats: BattleStats, def_stats: BattleStats, atk_element: String, def_element: String) -> u16 {
+        let battle = self.battles[battle_id]
+        require(battle.active, "Battle: Not active")
+        require(battle.turn < MAX_TURNS, "Battle: Max turns")
+
+        // Type advantage: 1.5x if element is strong against defender
+        let multiplier: u16 = 100
+        if is_strong_against(atk_element, def_element) {
+            multiplier = 150
+        }
+        if is_weak_against(atk_element, def_element) {
+            multiplier = 50
+        }
+
+        // Damage = (ATK * multiplier / 100) - DEF / 2
+        let raw_damage = atk_stats.atk * multiplier / 100
+        let defense = def_stats.def / 2
+        let damage = BASE_DAMAGE + raw_damage
+        if damage > defense {
+            damage -= defense
+        } else {
+            damage = 1
+        }
+
+        battle.defender_hp -= damage
+        if battle.defender_hp > battle.defender_hp {
+            // Underflow protection: defender_hp was < damage
+            battle.defender_hp = 0
+        }
+        battle.turn += 1
+
+        // Check win
+        if battle.defender_hp == 0 {
+            battle.winner = battle.attacker
+            battle.active = false
+            self.win_counts[battle.attacker] += 1
+            self.loss_counts[battle.defender] += 1
+            emit BattleEnded(battle_id, battle.attacker)
+        } else if battle.turn >= MAX_TURNS {
+            // Higher HP wins
+            if battle.attacker_hp > battle.defender_hp {
+                battle.winner = battle.attacker
+            } else {
+                battle.winner = battle.defender
+            }
+            battle.active = false
+            emit BattleEnded(battle_id, battle.winner)
+        }
+
+        self.battles[battle_id] = battle
+        emit AttackExecuted(battle_id, damage, battle.attacker_hp, battle.defender_hp)
+        return damage
+    }
+
+    // ── Battle abrufen ────────────────────────────────
+    fn get_battle(battle_id: Hash) -> BattleState {
+        return self.battles[battle_id]
+    }
+
+    // ── Win/Loss Stats ────────────────────────────────
+    fn get_wins(addr: Address) -> u32 {
+        return self.win_counts[addr]
+    }
+
+    fn get_losses(addr: Address) -> u32 {
+        return self.loss_counts[addr]
+    }
+}
+
+// ── Element Type Chart ────────────────────────────────
+fn is_strong_against(atk: String, def: String) -> bool {
+    if atk == "fire" && def == "earth" { return true }
+    if atk == "water" && def == "fire" { return true }
+    if atk == "earth" && def == "air" { return true }
+    if atk == "air" && def == "shadow" { return true }
+    if atk == "shadow" && def == "neon" { return true }
+    if atk == "neon" && def == "quantum" { return true }
+    if atk == "quantum" && def == "fire" { return true }
+    return false
+}
+
+fn is_weak_against(atk: String, def: String) -> bool {
+    if atk == "fire" && def == "water" { return true }
+    if atk == "water" && def == "earth" { return true }
+    if atk == "earth" && def == "fire" { return true }
+    if atk == "air" && def == "earth" { return true }
+    if atk == "shadow" && def == "air" { return true }
+    if atk == "neon" && def == "shadow" { return true }
+    if atk == "quantum" && def == "neon" { return true }
+    return false
+}
