@@ -56,7 +56,7 @@ pub fn serve_gossip(addr: &str, kette: Arc<Mutex<Chain>>) -> std::io::Result<()>
             }
         };
         if befehl == "STATUS" {
-            writeln!(s, "{} {}", k.height(), k.best_hash())?;
+            writeln!(s, "{} {}", k.height(), crate::chain::hash_hex(&k.best_hash()))?;
         } else if let Some(rest) = befehl.strip_prefix("BLOCKS ") {
             let from: usize = rest
                 .trim()
@@ -65,7 +65,7 @@ pub fn serve_gossip(addr: &str, kette: Arc<Mutex<Chain>>) -> std::io::Result<()>
             let teile: Vec<String> = k
                 .blocks_from(from)
                 .iter()
-                .map(|b| format!("{}|{}|{}|{}", b.height, b.prev_hash, b.payload, b.hash))
+                .map(|b| format!("{}|{}|{}|{}", b.height, crate::chain::hash_hex(&b.prev_hash), b.payload, crate::chain::hash_hex(&b.hash)))
                 .collect();
             writeln!(s, "{}", teile.join(";"))?;
         } else {
@@ -143,9 +143,9 @@ fn parse_bloecke(daten: &str) -> Result<Vec<Block>, String> {
         }
         out.push(Block {
             height: f[0].parse().map_err(|e| format!("height: {}", e))?,
-            prev_hash: f[1].parse().map_err(|e| format!("prev_hash: {}", e))?,
+            prev_hash: crate::chain::parse_hash(f[1]).map_err(|e| format!("prev_hash: {}", e))?,
             payload: f[2].to_string(),
-            hash: f[3].parse().map_err(|e| format!("hash: {}", e))?,
+            hash: crate::chain::parse_hash(f[3]).map_err(|e| format!("hash: {}", e))?,
         });
     }
     Ok(out)
