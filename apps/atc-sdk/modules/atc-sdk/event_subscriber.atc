@@ -1,0 +1,13 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang v0.3 — deterministic event subscription primitives
+// ATC-Standard: ATC-24
+
+module event_subscriber {
+    fn next_sequence(sequence: u64) -> u64 {
+        return sequence + 1;
+    }
+
+    fn matches_height(event_height: u64, requested_height: u64) -> bool {
+        return event_height == requested_height;
+    }
+}
