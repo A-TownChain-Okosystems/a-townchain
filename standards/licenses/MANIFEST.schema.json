@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "ATC-LICENSE-MANIFEST-1.0",
+  "title": "ATC License Manifest",
+  "type": "object",
+  "required": ["atc_license", "project", "rights", "requirements", "trademarks", "third_party", "compliance"],
+  "properties": {
+    "atc_license": {"type": "object", "required": ["schema", "license", "version"],
+      "properties": {"schema": {"const": "ATC-LICENSE-MANIFEST-1.0"}, "license": {"type": "string", "pattern": "^ATC-(OSS|SOURCE|PROTOCOL|COMMERCIAL|PROPRIETARY|ASSET|AI|DATA|EXPERIMENTAL)-[0-9]+\\.[0-9]+$"}, "version": {"type": "string"}}},
+    "project": {"type": "object", "required": ["name", "repository"], "properties": {"name": {"type": "string"}, "repository": {"type": "string"}}},
+    "spdx_base": {"type": "object", "properties": {"license": {"type": "string"}, "note": {"type": "string"}}},
+    "copyright": {"type": "object", "properties": {"holder": {"type": "string"}, "year": {"type": "integer"}}},
+    "rights": {"type": "object", "required": ["use", "modify", "distribute", "commercial_use"],
+      "properties": {"use": {"enum": ["granted", "denied"]}, "copy": {"enum": ["granted", "denied"]}, "modify": {"enum": ["granted", "denied"]}, "distribute": {"enum": ["granted", "denied"]}, "commercial_use": {"enum": ["granted", "denied"]}, "self_host": {"enum": ["granted", "denied"]}, "study": {"enum": ["granted", "denied"]}}},
+    "requirements": {"type": "object", "properties": {"attribution": {"enum": ["required", "none"]}, "license_notice": {"enum": ["required", "none"]}, "trademark_notice": {"enum": ["required", "none"]}, "source_disclosure": {"enum": ["required", "optional", "none"]}}},
+    "trademarks": {"type": "object", "required": ["included", "separate_policy"],
+      "properties": {"included": {"type": "boolean"}, "separate_policy": {"type": "boolean"}}},
+    "third_party": {"type": "object", "required": ["required"], "properties": {"required": {"type": "boolean"}, "sbom": {"type": "string"}, "notes": {"type": "string"}}},
+    "compliance": {"type": "object", "required": ["audit"], "properties": {"audit": {"enum": ["required", "none"]}, "last_scan": {"type": "string"}}}
+  }
+}
