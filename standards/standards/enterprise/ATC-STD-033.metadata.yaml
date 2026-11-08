@@ -1,0 +1,16 @@
+# GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Phase 1) - NICHT MANUELL BEARBEITEN
+authority: A-TownChain-Okosystems
+category: enterprise
+conformance:
+  required: true
+dependencies: []
+id: ATC-STD-033
+implementation:
+  status: specification_only
+normative: true
+owner: Michael (Owner-Entwurf) / Standards Governance
+source_file: standards/enterprise/ATC-STD-033.md
+status: approved
+title: Vulnerability Intelligence Standard (10 Quellklassen CVE..Bug-Bounty, 5-Stufen-Betroffenheitskette
+  Technology->Repo->Version->Deployment->Risk, VULN-Record-Pflicht)
+version: 1.0.0
