@@ -1,0 +1,15 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: enterprise
+family: GOVERNANCE / META
+family_id: '000'
+file: standards/enterprise/ATC-STD-017.md
+mandate: 'Owner-Direktive 10.09. ~15:05 UTC+2: verbindlicher P1-Standard (Owner-Entwurf
+  inhaltlich uebernommen); REQ-STD-001..012 (hausweiter Per-Standard-Namespace); SCR-0087'
+registry_version: 1
+standard_id: ATC-STD-017
+status: approved
+title: Obsolete & Orphaned Artifact Management Standard (9 Klassen, Entscheidungslogik,
+  Mindestzuordnung, duale Verwaist-Bestimmung, 6-Kriterien-Loeschschutz, CI-Gate 2
+  Stufen, Audit-Signal-Nicht-Loeschkriterium)
+version: 1.0.0
