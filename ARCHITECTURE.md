@@ -53,6 +53,7 @@ standard: ATC-STD-MD-001
   **Legacy** und wird nicht mehr fortgeführt; `modules/atc-zkp` steht in Konkurrenz zu
   `components/zkp` und ist zur Stilllegung vorgesehen.
 - Die Standalone-Repos `atc-wallet` und `atc-oracle` sind archiviert; `atc-node` ist um vier
-  Module und die P0-Härtung zurück und wird derzeit als Mirror behandelt. Die Entscheidung
-  "Monorepo-SSOT vs. Standalone-SSOT" ist offen — Evidenz in
-  `a-townchain-ecosystem/docs/audit/2026-11-08-placement-audit.md`.
+  Module und die P0-Härtung zurück und wird als Mirror ohne Release-Rolle geführt.
+- **Entscheidung 08.11.2026: Dieses Repository (Monorepo) ist die Source of Truth.**
+  Entwicklung, Tests und Releases laufen hier; Standalone-Repos erhalten keinen neuen Code.
+  Evidenz: `a-townchain-ecosystem/docs/audit/2026-11-08-placement-audit.md`.
