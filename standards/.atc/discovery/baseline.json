@@ -1,0 +1,21 @@
+{
+  "scan_id": "DISC-2026-09-08-001",
+  "repository": "atc-standards",
+  "baseline_commit": "9f4bc2114cd0eefa756a3f2e5592dd94cdf6f07c",
+  "created_at": "2026-09-08 12:59",
+  "totals": {
+    "files": 726
+  },
+  "by_class": {
+    "automation": 16,
+    "configuration": 6,
+    "data": 13,
+    "documentation": 191,
+    "documentation/priority": 26,
+    "governance-registry": 26,
+    "other": 3,
+    "smart-contract": 8,
+    "standards": 420,
+    "template": 17
+  }
+}
