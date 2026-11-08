@@ -1,0 +1,21 @@
+# Repository Manifest — ATC-AAS-025 §1
+# Ablage: .github/ai/agent.yaml je R2+-Repository
+standard: ATC-AAS-025
+repository: "<repo-name>"
+agents:
+  allowed:                      # nur hier gelistete Agenten duerfen das Repo betreiben
+    - ATC-AI-DEV-001
+    - ATC-AI-TEST-001
+    - ATC-AI-AUDIT-001
+required_standards:              # Identity-Manifest je Agenten muss diese referenzieren
+  - ATC-STD-000
+  - ATC-AAS-001
+  - ATC-AAS-003
+  - ATC-AAS-007
+  - ATC-AAS-008
+  - ATC-AAS-011
+workflow:
+  require_tests: true           # Merge-Gate: grue CI noetig
+  require_audit: true            # Merge-Gate: Audit-Record AUD-NNN noetig
+  require_pr: true               # kein Direktpush auf main
+  require_human_merge: true      # Agenten mergen nie selbststaendig
