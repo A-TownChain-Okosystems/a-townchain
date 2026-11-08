@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+target/
+node_modules/
+dist/
+build/
+*.log
+tmp/
+.env
+.DS_Store
