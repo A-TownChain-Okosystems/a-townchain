@@ -1,0 +1,10 @@
+[package]
+name = "kai-os-pkg"
+version = "0.1.0"
+edition = "2021"
+description = "KAI-OS Package Manager: deterministisch, fail-closed (S23-S24, AD-008.2)"
+license = "Apache-2.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+sha2 = "0.10"
