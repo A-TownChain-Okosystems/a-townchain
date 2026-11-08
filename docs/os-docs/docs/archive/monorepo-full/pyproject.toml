@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atclang"
+version = "1.0.0"
+description = "ATCLang — A-TownChain Native Programming Language"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov"]
+
+[tool.setuptools.packages.find]
+include = ["atclang*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
