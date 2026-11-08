@@ -1,0 +1,52 @@
+[kai_system]
+name = "KAI-OS v1.0"
+version = "1.0.0-alpha"
+network = "testnet"  # dev, testnet, mainnet
+log_level = "info"   # trace, debug, info, warn, error
+
+[ai_kernel]
+model = "llama3-8b-q4"
+inference_mode = "hybrid"  # local, distributed, hybrid
+max_memory_gb = 8
+gpu_enabled = false
+temperature = 0.7
+max_tokens = 2048
+
+[blockchain]
+consensus = "npos"  # Nominated Proof of Stake
+network_id = "kai-testnet"
+block_time_ms = 6000
+finalization_depth = 5
+
+[storage]
+ipfs_api = "http://localhost:5001"
+local_path = "/data/kai"
+cache_size_mb = 512
+pinning_enabled = true
+
+[governance]
+proposal_discussion_days = 7
+voting_period_days = 14
+timelock_hours = 48
+min_quorum_percent = 10
+approval_threshold_percent = 60
+
+[api]
+host = "0.0.0.0"
+port = 9933
+rpc_enabled = true
+ws_enabled = true
+cors_origins = ["http://localhost:3000", "http://localhost:5000"]
+max_connections = 1000
+
+[security]
+zero_trust_enabled = true
+encryption_algorithm = "aes-256-gcm"
+signing_algorithm = "ed25519"
+session_timeout_minutes = 60
+
+[monitoring]
+metrics_enabled = true
+tracing_enabled = true
+audit_log_enabled = true
+metrics_port = 9090
