@@ -1,0 +1,289 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═══════════════════════════════════════════════════════════
+// AD-47 — Knowledge Graph Engine (MetaFactory v3.0)
+// Semantischer Wissensgraph: Verknüpft Charaktere, Orte, Quests,
+// Dialoge, Items, Fähigkeiten, Assets, Spielmechaniken
+// ═══════════════════════════════════════════════════════════
+module MetaFactory.KnowledgeGraphEngine[AD-47] {
+
+    import GCL.Core[AD-00]
+    import GCL.EventBus[AD-01]
+    import GCL.QueryBus[AD-07]
+
+    struct KGNode {
+        id: String
+        label: String
+        type: KGNodeType           // Character, Location, Quest, Dialogue, Item, Ability, Asset, Mechanic, Faction, Event
+        properties: Map<String, PropertyValue>
+        franchise_id: String
+        embedding: Option<Vec<Float>>  // For semantic similarity
+        created_date: Timestamp
+        last_updated: Timestamp
+        confidence: Float          // 0.0–1.0, AI-generated = lower
+    }
+
+    struct KGEdge {
+        id: String
+        source: String             // Node ID
+        target: String             // Node ID
+        type: KGEdgeType           // Knows, LocatedIn, Gives, Requires, Uses, Contradicts, RelatedTo, DerivedFrom, PartOf, Influences
+        weight: Float              // 0.0–1.0
+        properties: Map<String, PropertyValue>
+        canon_status: CanonStatus  // Canon, NonCanon, Ambiguous
+        created_date: Timestamp
+    }
+
+    struct GraphQuery {
+        start_nodes: List<String>
+        edge_types: Option<List<KGEdgeType>>
+        max_depth: U32
+        filters: Map<String, PropertyValue>
+        semantic: Option<String>   // Natural language query -> embedding
+        limit: U32
+    }
+
+    struct GraphResult {
+        nodes: List<KGNode>
+        edges: List<KGEdge>
+        paths: List<GraphPath>
+        confidence: Float
+        explanation: String
+    }
+
+    struct GraphPath {
+        nodes: List<String>
+        edges: List<String>
+        total_weight: Float
+        semantic_distance: Float
+    }
+
+    struct ConsistencyCheck {
+        contradictions: List<Contradiction>
+        orphan_nodes: List<String>
+        missing_links: List<MissingLink>
+        coverage: Float             // 0.0–1.0
+    }
+
+    interface IKnowledgeGraphEngine {
+        fn add_node(node: KGNode) -> Result<KGNode>
+        fn add_edge(edge: KGEdge) -> Result<KGEdge>
+        fn query(query: GraphQuery) -> GraphResult
+        fn semantic_search(query_text: String, franchise_id: String) -> List<KGNode>
+        fn find_contradictions(franchise_id: String) -> List<Contradiction>
+        fn check_consistency(franchise_id: String) -> ConsistencyCheck
+        fn merge_nodes(node_a: String, node_b: String) -> Result<KGNode>
+        fn derive_relations(node_id: String) -> List<KGEdge>
+        fn get_subgraph(center: String, depth: U32) -> GraphResult
+        fn export_graph(format: ExportFormat) -> String
+        fn import_graph(data: String, format: ExportFormat) -> Result<()>
+    }
+
+    class KnowledgeGraphEngine implements IKnowledgeGraphEngine {
+
+        gcl: GCLCore
+        nodes: Map<String, KGNode>
+        edges: Map<String, KGEdge>
+        adjacency: Map<String, List<String>>  // node_id -> edge_ids
+        embeddings: EmbeddingIndex
+
+        fn init(gcl: GCLCore) {
+            self.gcl = gcl
+            self.nodes = Map::new()
+            self.edges = Map::new()
+            self.adjacency = Map::new()
+            self.embeddings = EmbeddingIndex::new(1536)  // Standard LLM embedding dim
+            self.gcl.subscribe("kg.query", self.handle_query)
+        }
+
+        fn add_node(node: KGNode) -> Result<KGNode> {
+            self.nodes.insert(node.id, node)
+            self.adjacency.insert(node.id, List::new())
+
+            // Index embedding if present
+            if node.embedding.is_some() {
+                self.embeddings.insert(node.id, node.embedding.unwrap())
+            }
+
+            self.gcl.emit("kg.node_added", {node_id: node.id, type: node.type})
+            Ok(node)
+        }
+
+        fn add_edge(edge: KGEdge) -> Result<KGEdge> {
+            // Check for contradictions
+            let contradictions = self.check_edge_contradiction(edge)
+            if !contradictions.is_empty() {
+                self.gcl.emit("kg.contradiction_detected", {edge_id: edge.id, contradictions})
+            }
+
+            self.edges.insert(edge.id, edge)
+            self.adjacency.get_mut(edge.source).push(edge.id)
+            self.adjacency.get_mut(edge.target).push(edge.id)
+
+            self.gcl.emit("kg.edge_added", {edge_id: edge.id, type: edge.type})
+            Ok(edge)
+        }
+
+        fn query(q: GraphQuery) -> GraphResult {
+            let mut visited = Set::new()
+            let mut result_nodes = List::new()
+            let mut result_edges = List::new()
+            let mut paths = List::new()
+
+            for start in q.start_nodes {
+                let sub = self.bfs(start, q.max_depth, q.edge_types, &mut visited)
+                result_nodes.extend(sub.nodes)
+                result_edges.extend(sub.edges)
+                paths.extend(sub.paths)
+            }
+
+            // Apply filters
+            if !q.filters.is_empty() {
+                result_nodes = result_nodes.filter(|n| self.matches_filters(n, q.filters)).collect()
+            }
+
+            // Apply limit
+            if result_nodes.len() > q.limit {
+                result_nodes = result_nodes.take(q.limit)
+            }
+
+            GraphResult {
+                nodes: result_nodes,
+                edges: result_edges,
+                paths,
+                confidence: self.calc_confidence(result_nodes),
+                explanation: self.generate_explanation(result_nodes, result_edges)
+            }
+        }
+
+        fn semantic_search(query_text: String, franchise_id: String) -> List<KGNode> {
+            let query_embedding = self.embeddings.embed(query_text)
+            let candidates = self.nodes.values().filter(|n| n.franchise_id == franchise_id)
+            let mut scored: List<(String, Float)> = candidates
+                .filter(|n| n.embedding.is_some())
+                .map(|n| (n.id, cosine_similarity(query_embedding, n.embedding.unwrap())))
+                .collect()
+            scored.sort_by(|a, b| b.1.partial_cmp(a.1))
+            scored.take(20).map(|(id, _)| self.nodes.get(id)).collect()
+        }
+
+        fn find_contradictions(franchise_id: String) -> List<Contradiction> {
+            let mut contradictions = List::new()
+            let franchise_edges = self.edges.values()
+                .filter(|e| {
+                    let src = self.nodes.get(e.source)
+                    let tgt = self.nodes.get(e.target)
+                    src.franchise_id == franchise_id and tgt.franchise_id == franchise_id
+                })
+
+            for edge in franchise_edges {
+                // Check for opposing edges (A contradicts B)
+                let opposing = self.edges.values().find(|e| {
+                    e.source == edge.target and e.target == edge.source and e.type == KGEdgeType::Contradicts
+                })
+                if opposing.is_some() {
+                    contradictions.push(Contradiction {
+                        edge_a: edge.id,
+                        edge_b: opposing.unwrap().id,
+                        severity: edge.weight + opposing.unwrap().weight,
+                        description: format!("Contradiction between {} and {}", edge.source, edge.target)
+                    })
+                }
+            }
+            contradictions
+        }
+
+        fn check_consistency(franchise_id: String) -> ConsistencyCheck {
+            let contradictions = self.find_contradictions(franchise_id)
+            let franchise_nodes = self.nodes.values().filter(|n| n.franchise_id == franchise_id).collect()
+            let orphan_nodes = franchise_nodes
+                .filter(|n| self.adjacency.get(n.id).is_empty())
+                .map(|n| n.id)
+                .collect()
+            let missing_links = self.find_missing_links(franchise_nodes)
+
+            let total = franchise_nodes.len()
+            let connected = total - orphan_nodes.len()
+            let coverage = if total > 0 { connected as Float / total as Float } else { 0.0 }
+
+            ConsistencyCheck { contradictions, orphan_nodes, missing_links, coverage }
+        }
+
+        fn derive_relations(node_id: String) -> List<KGEdge> {
+            let node = self.nodes.get(node_id)
+            let mut derived = List::new()
+
+            // Use embedding similarity to suggest relations
+            if node.embedding.is_some() {
+                let similar = self.embeddings.search(node.embedding.unwrap(), 10)
+                for (other_id, score) in similar {
+                    if other_id != node_id and score > 0.85 {
+                        derived.push(KGEdge {
+                            id: generate_id("KGE"),
+                            source: node_id,
+                            target: other_id,
+                            type: KGEdgeType::RelatedTo,
+                            weight: score,
+                            properties: Map::new(),
+                            canon_status: CanonStatus::Ambiguous,
+                            created_date: now()
+                        })
+                    }
+                }
+            }
+
+            derived
+        }
+
+        fn get_subgraph(center: String, depth: U32) -> GraphResult {
+            self.query(GraphQuery {
+                start_nodes: [center],
+                edge_types: None,
+                max_depth: depth,
+                filters: Map::new(),
+                semantic: None,
+                limit: 500
+            })
+        }
+
+        fn export_graph(format: ExportFormat) -> String {
+            match format {
+                ExportFormat::JSON => self.export_json(),
+                ExportFormat::GraphML => self.export_graphml(),
+                ExportFormat::Cypher => self.export_cypher()
+            }
+        }
+
+        fn import_graph(data: String, format: ExportFormat) -> Result<()> {
+            match format {
+                ExportFormat::JSON => self.import_json(data),
+                _ => Err("Unsupported import format")
+            }
+        }
+
+        fn bfs(start: String, max_depth: U32, edge_types: Option<List<KGEdgeType>>, visited: &mut Set<String>) -> GraphResult {
+            let mut queue = [(start, 0u32)]
+            let mut nodes = List::new()
+            let mut edges = List::new()
+            let mut paths = List::new()
+
+            while !queue.is_empty() {
+                let (node_id, depth) = queue.remove(0)
+                if depth > max_depth or visited.contains(node_id) { continue }
+                visited.insert(node_id)
+                nodes.push(self.nodes.get(node_id))
+
+                for edge_id in self.adjacency.get(node_id) {
+                    let edge = self.edges.get(edge_id)
+                    if edge_types.is_some() and !edge_types.unwrap().contains(edge.type) { continue }
+                    edges.push(edge)
+                    let next = if edge.source == node_id { edge.target } else { edge.source }
+                    if !visited.contains(next) {
+                        queue.push((next, depth + 1))
+                    }
+                }
+            }
+
+            GraphResult { nodes, edges, paths, confidence: 1.0, explanation: "BFS traversal".into() }
+        }
+    }
+}
