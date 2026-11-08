@@ -130,3 +130,37 @@ Die häufigsten Ursachen sind erneut Formen ohne Spezifikation, keine Lücken:
 Die eingerückten Rümpfe (34 Dateien zusammen) brauchen zuerst ein Positionsmodell im Lexer:
 ohne Spaltennummer je Token kann der Parser eine Blockausdehnung nicht bestimmen. Das ist ein
 eigener Schritt, keine Zeile im Parser.
+
+---
+
+## 8. Dritter Schritt: `event` auf Programmebene, Typlängen, Zeilentrenner
+
+**Datum:** 08.11.2026, aufbauend auf `e9fce31`
+
+| Form | Gewinn | Entscheidung |
+|------|--------|--------------|
+| `event Transfer { from: Address }` ausserhalb eines Contracts | 42 Dateien | `event` bleibt **Bezeichner**, kein Schlüsselwort: sonst wäre `let event = 1;` nicht mehr erlaubt. Zusätzlich die Blockform mit `{}` neben der bisher einzigen Klammerform `event X(a: T)`. |
+| Feldtyp mit Länge `data: u8[120]` | 19 Dateien | Die Länge ist Teil des Typnamens (`u8[120]`), nicht des Feldnamens. Fehlendes `]` bleibt ein Fehler. |
+| Struct-Felder nur durch Zeilenumbruch getrennt | 9 Dateien | Angenommen, wenn auf den Namen direkt `:` folgt. Ein Name mit Doppelpunkt kann an dieser Stelle nichts anderes sein als das nächste Feld. |
+
+**Neuer Stand:** 1645 Dateien, **1095 angenommen**, 550 abgelehnt.
+Gegenüber `e9fce31` (937) sind das **+158**, gegenüber `583d5a5` (476) **+619**.
+Ohne `/archive/` bleiben **270** aktive Ablehnungen (vorher 340).
+
+`atc-core` hat **146 Tests** (5 neue: `event_auf_programmebene`,
+`event_bleibt_als_variablenname_erlaubt`, `feldtyp_mit_fester_laenge`,
+`typlaenge_ohne_klammer_ist_ein_fehler`, `strukt_felder_ohne_komma`).
+Clippy `-D warnings` weiter sauber.
+
+**Invarianten unverändert:** `apps/atc-contracts` 50/33/0/18, `components/contracts`
+46/29/0/18, Registry-Gate PASS 16/16, EXEC-CHAIN 20/20.
+
+### Verbleibende aktive Ablehnungen (270)
+
+| Anzahl | Form |
+|--------|------|
+| 34 | `struct X:` / `enum X:` mit eingerücktem Rumpf (braucht Spaltenpositionen im Lexer) |
+| 24 | Fortsetzungszeilen / führender Punkt |
+| 11 | `a..b` |
+| 8 | `type X = …` (kein Schlüsselwort im Lexer) |
+| Rest | Einzelfälle: Slices `data[:120]`, `Fn` als Typ, Ausdrücke wie `Rarity::COMMON`, `if` ohne Klammern |
