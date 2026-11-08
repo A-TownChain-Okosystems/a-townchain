@@ -24,6 +24,36 @@ fn path_text(e: &Expr) -> Option<String> {
     }
 }
 
+/// Quelltext eines Schluesselwort-Tokens, falls es eines ist.
+///
+/// Wird gebraucht, wo ein Name stehen muss, der Korpus dort aber ein
+/// Schluesselwort schreibt (`struct S { state: u64 }`).
+fn keyword_text(t: &Token) -> Option<&'static str> {
+    Some(match t {
+        Token::Let => "let",
+        Token::Const => "const",
+        Token::Return => "return",
+        Token::Fn => "fn",
+        Token::If => "if",
+        Token::Else => "else",
+        Token::While => "while",
+        Token::Contract => "contract",
+        Token::State => "state",
+        Token::Function => "function",
+        Token::Capability => "capability",
+        Token::Policy => "policy",
+        Token::Require => "require",
+        Token::Use => "use",
+        Token::Module => "module",
+        Token::Import => "import",
+        Token::As => "as",
+        Token::Pub => "pub",
+        Token::Struct => "struct",
+        Token::Enum => "enum",
+        _ => return None,
+    })
+}
+
 pub fn parse_program(src: &str) -> Result<Program, ParseError> {
     let toks = tokenize(src).map_err(|e| ParseError {
         message: format!("Lex-Fehler bei Position {}: {:?}", e.pos, e.ch),
@@ -244,6 +274,7 @@ impl Parser {
             Token::Module => "module".into(),
             Token::Import => "import".into(),
             Token::As => "as".into(),
+            Token::Pub => "pub".into(),
             Token::Struct => "struct".into(),
             Token::Enum => "enum".into(),
             Token::Pipe => "|".into(),
@@ -287,6 +318,29 @@ impl Parser {
             other => Err(ParseError {
                 message: format!("{what} erwartet, fand {:?}", other),
             }),
+        }
+    }
+
+    /// Feldname, der auch ein Schluesselwort sein darf.
+    ///
+    /// Im Korpus heissen Strukturfelder `state`, `type` oder `const` (23
+    /// Dateien). Das ist kein Konflikt: an dieser Stelle kann nur ein Name
+    /// stehen, ein Schluesselwort hat dort keine andere Bedeutung.
+    fn expect_field_name(&mut self, what: &str) -> Result<String, ParseError> {
+        match self.cur() {
+            Token::Ident(name) => {
+                self.pos += 1;
+                Ok(name)
+            }
+            other => match keyword_text(&other) {
+                Some(word) => {
+                    self.pos += 1;
+                    Ok(word.to_string())
+                }
+                None => Err(ParseError {
+                    message: format!("{what} erwartet, fand {:?}", other),
+                }),
+            },
         }
     }
 
@@ -335,6 +389,13 @@ impl Parser {
 
     /// Eine Deklaration auf Programmebene oder im Modulblock.
     fn declaration(&mut self) -> Result<Stmt, ParseError> {
+        // `pub fn` / `pub struct` steht in 106 Korpusdateien. ATCLang kennt
+        // keine Sichtbarkeitsebenen, das Wort hat also keine Bedeutung; es
+        // wird angenommen und nicht in die AST geschrieben — so bleiben die
+        // kanonischen Vertragsbytes und alle ABI-Hashes unveraendert.
+        if self.cur() == Token::Pub {
+            self.pos += 1;
+        }
         match self.cur() {
             Token::Let | Token::Const => Ok(Stmt::Let(self.let_stmt()?)),
             Token::Fn => self.function_decl(),
@@ -354,7 +415,28 @@ impl Parser {
     /// Modul keine zweite Namensaufloesung einfuehrt.
     fn module_block(&mut self) -> Result<Vec<Stmt>, ParseError> {
         self.pos += 1;
-        let name = self.expect_name("Modulname")?;
+        let mut name = self.expect_name("Modulname")?;
+        // `module ATC.OS.Kernel` — punktierte Namen stehen im Korpus. Der
+        // Punkt ist Namensbestandteil, keine Feldauswahl.
+        while self.cur() == Token::Dot {
+            self.pos += 1;
+            name.push('.');
+            name.push_str(&self.expect_name("Modulsegment")?);
+        }
+        // `module foo[AD-49] {` — der Klammerzusatz ist ein Governance-Verweis
+        // auf das Entscheidungsregister, kein Sprachbestandteil. Annehmen und
+        // verwerfen; ein fehlendes `]` bleibt ein Fehler.
+        if self.cur() == Token::LBracket {
+            while self.cur() != Token::RBracket && self.cur() != Token::Eof {
+                self.pos += 1;
+            }
+            if self.cur() != Token::RBracket {
+                return Err(ParseError {
+                    message: "']' nach Modul-Tag erwartet".into(),
+                });
+            }
+            self.pos += 1;
+        }
         let mut out = vec![Stmt::Module { name }];
         if self.cur() == Token::Semi {
             self.pos += 1;
@@ -416,7 +498,7 @@ impl Parser {
                     message: "'}' in struct erwartet".into(),
                 });
             }
-            let field = self.expect_name("Struct-Feld")?;
+            let field = self.expect_field_name("Struct-Feld")?;
             if self.cur() != Token::Colon {
                 return Err(ParseError {
                     message: "':' nach Struct-Feld erwartet".into(),
@@ -545,6 +627,10 @@ impl Parser {
 
     /// Item im Contract-Koerper: state/event/fn/const/struct/enum/use.
     fn contract_item(&mut self) -> Result<Vec<Stmt>, ParseError> {
+        // `pub fn` auch hier — gleiche Bedeutungslosigkeit wie am Top-Level.
+        if self.cur() == Token::Pub {
+            self.pos += 1;
+        }
         match self.cur() {
             // Im Contract gibt es keinen Native-Fallback: der Koerper MUSS parsen.
             Token::Fn | Token::Function => Ok(vec![Stmt::Fn(self.function()?)]),
@@ -1153,7 +1239,7 @@ impl Parser {
                 }
                 Token::Dot => {
                     self.pos += 1;
-                    let name = self.expect_name("Feldname nach '.'")?;
+                    let name = self.expect_field_name("Feldname nach '.'")?;
                     node = Expr::Field {
                         base: Box::new(node),
                         name,
@@ -1182,7 +1268,7 @@ impl Parser {
                     self.pos += 1;
                     let mut fields = Vec::new();
                     while self.cur() != Token::RBrace {
-                        let field = self.expect_name("Feldname im Struct-Literal")?;
+                        let field = self.expect_field_name("Feldname im Struct-Literal")?;
                         if self.cur() != Token::Colon {
                             return Err(ParseError {
                                 message: format!("':' nach Feld {field} im Struct-Literal erwartet"),
@@ -1557,5 +1643,71 @@ mod tests {
     #[test]
     fn gruppenimport_verlangt_schliessende_klammer() {
         assert!(parse_program("use ATC::X::{A, B").is_err());
+    }
+
+    #[test]
+    fn pub_ist_bedeutungslos_und_landet_nicht_in_der_ast() {
+        // `pub` steht in 106 Korpusdateien. Es gibt keine Sichtbarkeitsebenen,
+        // also darf es die AST (und damit jeden ABI-Hash) nicht veraendern.
+        let j = parse_program("pub fn f() -> int { return 1; }")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"FunctionDef\""));
+        // Das AST-Feld `is_pub` ist im Compiler fest auf false gesetzt; der
+        // Korpus-Marker darf es nicht kippen, sonst verschoeben sich die
+        // ABI-Hashes jeder Datei, die `pub` schreibt.
+        assert!(j.contains("\"is_pub\":false"), "{j}");
+        assert!(!j.contains("\"name\":\"pub\""));
+        assert!(parse_program("pub struct S { a: u64 }").is_ok());
+        assert!(parse_program("pub const X: u64 = 1;").is_ok());
+    }
+
+    #[test]
+    fn pub_im_contract_koerper() {
+        let j = parse_program("contract C { pub fn f() -> int { return 1; } }")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"FunctionDef\""));
+    }
+
+    #[test]
+    fn modulname_darf_punktiert_sein() {
+        let j = parse_program("module ATC.OS.Kernel\nfn f() -> int { return 1; }")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"name\":\"ATC.OS.Kernel\""), "{j}");
+    }
+
+    #[test]
+    fn modul_tag_wird_verworfen() {
+        let j = parse_program("module aistudio[AD-49] {\nfn f() -> int { return 1; }\n}")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"name\":\"aistudio\""), "{j}");
+        assert!(!j.contains("AD-49"));
+    }
+
+    #[test]
+    fn modul_tag_ohne_klammer_ist_ein_fehler() {
+        assert!(parse_program("module a[AD-49").is_err());
+    }
+
+    #[test]
+    fn schluesselwort_als_strukt_feld() {
+        let j = parse_program("struct S { state: u64, return: int }")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"name\":\"state\""), "{j}");
+        assert!(j.contains("\"name\":\"return\""), "{j}");
+    }
+
+    #[test]
+    fn schluesselwort_als_feldzugriff() {
+        assert!(parse_program("fn f(x: S) -> int { return x.state; }").is_ok());
+    }
+
+    #[test]
+    fn schluesselwort_im_strukt_literal() {
+        assert!(parse_program("fn f() -> int { let s = S { state: 1 }; return 0; }").is_ok());
     }
 }
