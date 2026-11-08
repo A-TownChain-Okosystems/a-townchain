@@ -6,7 +6,7 @@
 > Das eigentliche Betriebssystem ist GlobusOS.
 
 > Implementierungsblock S01–S03 · [Issue #102](https://github.com/A-TownChain-Okosystems/a-townchain-os/issues/102)
-> Spezifikation: [KAI-CORE-RUNTIME-001](../docs/architecture/KAI-CORE-RUNTIME-001.md) · Sprachgrenze: [AD-008](../docs/architecture/AD-008.md) (native Runtime = Rust)
+> Spezifikation: [KAI-CORE-RUNTIME-001](../atc-os/docs/architecture/KAI-CORE-RUNTIME-001.md) · Sprachgrenze: [AD-008](../atc-os/docs/architecture/AD-008.md) (native Runtime = Rust)
 
 ## Struktur
 
