@@ -1,0 +1,955 @@
+{
+  "schema_version": "1.0.0",
+  "status": "SOURCE_TREE_MANIFEST_VERIFIED",
+  "purpose": "Immutable path/blob inventory for the source commit; this is not a symbol reconciliation.",
+  "repository": "A-TownChain-Okosystems/atc-engineering",
+  "source_commit_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+  "source_tree_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+  "recursive": true,
+  "response_truncated": false,
+  "totals": {
+    "tree_entries": 165,
+    "blob_files": 115,
+    "tree_directories": 50,
+    "by_extension": {
+      "yaml": 1,
+      "[no extension]": 2,
+      "yml": 8,
+      "gitignore": 1,
+      "md": 36,
+      "lock": 1,
+      "toml": 15,
+      "sh": 3,
+      "json": 10,
+      "rs": 29,
+      "py": 9
+    }
+  },
+  "files": [
+    {
+      "path": ".atc/evidence/evidence.yaml",
+      "blob_sha": "45db339d3e7e2471b54a189cd25ea959614b4136",
+      "size_bytes": 1520,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "yaml"
+    },
+    {
+      "path": ".github/CODEOWNERS",
+      "blob_sha": "670e710232842667ad07d44614d0e51a0c176805",
+      "size_bytes": 215,
+      "mode": "100644",
+      "type": "blob",
+      "extension": null
+    },
+    {
+      "path": ".github/workflows/ai-code-agent-policy.yml",
+      "blob_sha": "4bebb750eea0d44a74d8393cf0e761f0af1d22b3",
+      "size_bytes": 759,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "yml"
+    },
+    {
+      "path": ".github/workflows/ai-code-agent-remediation-intake.yml",
+      "blob_sha": "647a4875e6a7b4eb3f7450bb34e28802858e0f52",
+      "size_bytes": 2175,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "yml"
+    },
+    {
+      "path": ".github/workflows/engineering-ci.yml",
+      "blob_sha": "ed5c9aef24b5929bf5afe79cc8dff58ef7cd8c86",
+      "size_bytes": 3659,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "yml"
+    },
+    {
+      "path": ".github/workflows/fleet-audit.yml",
+      "blob_sha": "dff967bc24af826e537e9f7faada198ba53576df",
+      "size_bytes": 6460,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "yml"
+    },
+    {
+      "path": ".github/workflows/markdownlint.yml",
+      "blob_sha": "b8a3ff1f561783f71ba0bb92420f9e0b88730967",
+      "size_bytes": 309,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "yml"
+    },
+    {
+      "path": ".github/workflows/org-function-catalog.yml",
+      "blob_sha": "b16497c6137f94dbc4c620f3ba51c8578f8cced0",
+      "size_bytes": 6278,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "yml"
+    },
+    {
+      "path": ".github/workflows/review-conflict-free.yml",
+      "blob_sha": "7d25120497090abb75a76bf4728a5297a32e8fb2",
+      "size_bytes": 507,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "yml"
+    },
+    {
+      "path": ".gitignore",
+      "blob_sha": "b2f6b5a487d4e42c352b6504b45b5cde0d40d4d1",
+      "size_bytes": 72,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "gitignore"
+    },
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "0150176a5f194b38ba510c5ee5ebfebc9bcc67bf",
+      "size_bytes": 3772,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "blob_sha": "03375061999813740762edbb272a21252b2b0cac",
+      "size_bytes": 3107,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "Cargo.lock",
+      "blob_sha": "f54a58227b7eed11a83d76b6f40413a09021e7fe",
+      "size_bytes": 1200,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "lock"
+    },
+    {
+      "path": "Cargo.toml",
+      "blob_sha": "080184c1bfa9a1d3edb92ef461333acbadd3dad3",
+      "size_bytes": 559,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "blob_sha": "aa6ed3164bbf8d86bfb37c202d8023b0ca214adc",
+      "size_bytes": 589,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "ci-fix/apply.sh",
+      "blob_sha": "3b9e17f6dce0c55c117bd699343160b071c74d37",
+      "size_bytes": 559,
+      "mode": "100755",
+      "type": "blob",
+      "extension": "sh"
+    },
+    {
+      "path": "ci-fix/workflows/ci.yml",
+      "blob_sha": "65c87d76d472c7165909fceefec51424e7527f0b",
+      "size_bytes": 1242,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "yml"
+    },
+    {
+      "path": "config/ai-code-agent-policy.json",
+      "blob_sha": "a879c032cc8cb83e23915eb74cad6a5a7fcbbee0",
+      "size_bytes": 2238,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "json"
+    },
+    {
+      "path": "config/ai-code-agent-quality-profiles.json",
+      "blob_sha": "570faad0544d82946b1c8c929767d917e529776c",
+      "size_bytes": 1345,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "json"
+    },
+    {
+      "path": "config/examples/atc-engineering.toml",
+      "blob_sha": "b0cb34852189c798a2681abd517a7382ca5f8c06",
+      "size_bytes": 381,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "blob_sha": "6d8444e4fddd8060238e5b2ee953082fd7ca1d87",
+      "size_bytes": 399,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "crates/atc-atclang/Cargo.toml",
+      "blob_sha": "ae45426972e92d1b1c77c66f95f10e48d2f0b562",
+      "size_bytes": 230,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-atclang/src/lib.rs",
+      "blob_sha": "76e1bf1647b46ad7fb16be4b06d2aee6586d445c",
+      "size_bytes": 5612,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-audit-cli/Cargo.toml",
+      "blob_sha": "2caa7703083b9f3e0632980b74ecfe4b5a53bd3e",
+      "size_bytes": 358,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-audit-cli/src/main.rs",
+      "blob_sha": "724717ebccbdd9ed6b6353ec80243bd652321326",
+      "size_bytes": 10032,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-config/Cargo.toml",
+      "blob_sha": "a744f60596e4dc581b29d317287098cc2ecb76d3",
+      "size_bytes": 288,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-config/src/lib.rs",
+      "blob_sha": "1cdc58e6e46c1c28fec0fa943a63cb83afd290b2",
+      "size_bytes": 9127,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-core/Cargo.toml",
+      "blob_sha": "4b32b2aefb1ed05b5be04d8282c4014f397f7a3e",
+      "size_bytes": 210,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-core/src/error.rs",
+      "blob_sha": "cdca571f8607ddbf696202503f71cf5deab8268e",
+      "size_bytes": 1996,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-core/src/ids.rs",
+      "blob_sha": "307d59efb903c8d464a6b03f4bf5f38e4c178954",
+      "size_bytes": 4558,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-core/src/lib.rs",
+      "blob_sha": "6457909115e5a2dfd1568d84c435f0fa9271b6ba",
+      "size_bytes": 534,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-core/src/state.rs",
+      "blob_sha": "b246de4ea76546d80deab28155640aa3528996a6",
+      "size_bytes": 2456,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-core/src/timestamp.rs",
+      "blob_sha": "b796140e6a0da2c6af7b9672133ada47da52c6fe",
+      "size_bytes": 2523,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-core/src/version.rs",
+      "blob_sha": "630a8950481bff9319af68a919e8c0c01c65c48f",
+      "size_bytes": 1427,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-evidence/Cargo.toml",
+      "blob_sha": "aebb6d0475557108ef0ba00f72f64f513b129a0f",
+      "size_bytes": 278,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-evidence/src/lib.rs",
+      "blob_sha": "5bea1f27a09dfda18d59bfd91550cde77a3aa599",
+      "size_bytes": 6551,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-findings/Cargo.toml",
+      "blob_sha": "2dda1884b62e5ee9c27e92a7345d4c6ba882b5ed",
+      "size_bytes": 258,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-findings/src/lib.rs",
+      "blob_sha": "c8f76f969be1ff16cecae99272fa87ea7caf3183",
+      "size_bytes": 6618,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-gates/Cargo.toml",
+      "blob_sha": "c89456bd288ff94a0c638df13cda52fe859849f1",
+      "size_bytes": 156,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-gates/src/lib.rs",
+      "blob_sha": "1336f4605a6709f4fdb14fcdd71699058cfa4f71",
+      "size_bytes": 4709,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-gates/src/report.rs",
+      "blob_sha": "d4c2ab8e09ec4617c83de7e3c5a8ca3607900243",
+      "size_bytes": 4129,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-graph/Cargo.toml",
+      "blob_sha": "5aa3f9a82e73b1a874506ac2ae81120ad0167926",
+      "size_bytes": 251,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-graph/src/lib.rs",
+      "blob_sha": "6da0cdeb019ec305ff258158a376afdf4fa45e56",
+      "size_bytes": 10291,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-integration/Cargo.toml",
+      "blob_sha": "d08c71a85852b6a2f47be1d4bcd591c4ee0a8eae",
+      "size_bytes": 246,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-integration/src/lib.rs",
+      "blob_sha": "19af7db9ae33520ff2ba48305694b7df59d19bba",
+      "size_bytes": 11034,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-maintenance/Cargo.toml",
+      "blob_sha": "ca5e56b1b1b7a98bff41059e4621a569799e900a",
+      "size_bytes": 300,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-maintenance/examples/readiness_gate.rs",
+      "blob_sha": "33ae1a41dda3ba4678637b5592e1da154a25a3dc",
+      "size_bytes": 1802,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-maintenance/src/audit.rs",
+      "blob_sha": "f44462e4ad620d5ef446faaad4385bfc7f739428",
+      "size_bytes": 18790,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-maintenance/src/classification.rs",
+      "blob_sha": "0f87f07f776a08072d32b2322830c6d9cd928f39",
+      "size_bytes": 4765,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-maintenance/src/engineering.rs",
+      "blob_sha": "d9b7b72d1046b546beeae2bab62bc35fb82245c9",
+      "size_bytes": 11379,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-maintenance/src/lib.rs",
+      "blob_sha": "36965d4fe201315cb757b3cc3ad6480d74943c0e",
+      "size_bytes": 814,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-maintenance/src/readiness.rs",
+      "blob_sha": "5b579feefe5549f41b98993869ed8f7c20857267",
+      "size_bytes": 11459,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-maintenance/src/repair.rs",
+      "blob_sha": "4607ccda48dadcc1717be3e67bedca7c197edb54",
+      "size_bytes": 6318,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-requirements/Cargo.toml",
+      "blob_sha": "bae7fca6164cadcf685fc3df2a77b31ee125515f",
+      "size_bytes": 239,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-requirements/src/lib.rs",
+      "blob_sha": "4a79821ec195684d6014377a151ab07e6fc5535e",
+      "size_bytes": 11436,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-standards/Cargo.toml",
+      "blob_sha": "855d75703e45bac0687297d230c1ac67a442b38d",
+      "size_bytes": 310,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-standards/examples/load_registry.rs",
+      "blob_sha": "d723a94b79c789f37caa3c5214120a0136c26e70",
+      "size_bytes": 1435,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-standards/src/flow.rs",
+      "blob_sha": "c8c28e95dc18585ca8b8db28277defa937bb48a6",
+      "size_bytes": 3224,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-standards/src/lib.rs",
+      "blob_sha": "20f0e6175220241cd22d1122cb479f1eb926d662",
+      "size_bytes": 632,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-standards/src/registry.rs",
+      "blob_sha": "6fef4e93d760c87af5ca6cf9e03da5208a330e31",
+      "size_bytes": 10564,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-standards/src/repositories.rs",
+      "blob_sha": "d4e760ad290cddf3b63f64c3ed51013171f485e3",
+      "size_bytes": 7555,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "crates/atc-verification/Cargo.toml",
+      "blob_sha": "8f2b5ec9c158a7df0d1ca6cf1e393ce410c71394",
+      "size_bytes": 292,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "toml"
+    },
+    {
+      "path": "crates/atc-verification/src/lib.rs",
+      "blob_sha": "8de00bb9e79a7f9bba89438e5b5d9b2475b3af59",
+      "size_bytes": 4806,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "rs"
+    },
+    {
+      "path": "docs/architecture/ADR-ATC-TOOLCHAIN-HYBRID-001.md",
+      "blob_sha": "90deeef2e22a92549e967fb02573e4b361bc1365",
+      "size_bytes": 19744,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/ATC-ENGINEERING-SPEC-001.md",
+      "blob_sha": "93c1fe3e389c468b59db95c8600e6befce80fc0d",
+      "size_bytes": 25522,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/ATCLANG-ENGINEERING-001.md",
+      "blob_sha": "84998f74e70c3c0add2bdb512fd68e74249f54aa",
+      "size_bytes": 2797,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/ECOSYSTEM-INTEGRATION-001.md",
+      "blob_sha": "b3bf5b1a3deb05f7d51e0b5b24a24789c19cb9bf",
+      "size_bytes": 2712,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/ENGINEERING-PLATFORM-IMPLEMENTATION-001.md",
+      "blob_sha": "9f77f35e46c2c39cb2e9c19903ae7858e07245c2",
+      "size_bytes": 4201,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/ENGINEERING-PLATFORM-IMPLEMENTATION-002.md",
+      "blob_sha": "dc1dc2d3cc4d41c2c58b2afdce7d3434ceaa07b6",
+      "size_bytes": 2284,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/IMPLEMENTATION_ROADMAP.md",
+      "blob_sha": "a1adf034018266a403ab21a4462b22f4accfd0cf",
+      "size_bytes": 2118,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/implementation-roadmap.v1.json",
+      "blob_sha": "acc5aae6fa17e86e6fad15c9ac6bff474d0bf6d5",
+      "size_bytes": 13702,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "json"
+    },
+    {
+      "path": "docs/architecture/ITERATIVE-REMEDIATION-001.md",
+      "blob_sha": "6bffeb44c989bc82e22917cdb875f75ff5367ac4",
+      "size_bytes": 3442,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/ORG_FUNCTION_CATALOG_SPEC.md",
+      "blob_sha": "860100c6a905755e4373be5bf3d0bd08a9929713",
+      "size_bytes": 8138,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/REQUIREMENTS-DISCOVERY-001.md",
+      "blob_sha": "309a37b13d8aae4d4077f24a116d8e3e27af5165",
+      "size_bytes": 4150,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/SYSTEM_FUNCTION_COMPONENT_REQUIREMENTS.md",
+      "blob_sha": "001cd7e619f33499aad92911cc928a1f961553e1",
+      "size_bytes": 22447,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/architecture/system-requirements.v1.json",
+      "blob_sha": "2745dd661722d649ea6b9b9f026a5fabd8b7a738",
+      "size_bytes": 62513,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "json"
+    },
+    {
+      "path": "docs/AUDIT_SNAPSHOT_2026-09-16.md",
+      "blob_sha": "11028d4e18a34deda4c80b21957deb95ea0c49b0",
+      "size_bytes": 9093,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/audits/CI-INDEPENDENT-FOLLOWUP-2026-09-16.md",
+      "blob_sha": "ebbcaf6fb1787d57273191413e367e9d97fd7c32",
+      "size_bytes": 2039,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/audits/CI-INDEPENDENT-STANDARDS-AUDIT-2026-09-16.md",
+      "blob_sha": "e27fa5acb4e91ad4843f08f7484afabd13af98f5",
+      "size_bytes": 9568,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/audits/DOCUMENTATION-CONSISTENCY-2026-09-16.md",
+      "blob_sha": "837e16b6ef2212896b9c1e4fbb42794e2aee21dd",
+      "size_bytes": 1260,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/audits/FILE-FORMAT-LANGUAGE-AUDIT-2026-09-16.md",
+      "blob_sha": "7002c7fcfb7cb10a610565931145ebe791df5480",
+      "size_bytes": 2353,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/audits/P1-LKM-FOLLOWUP-FINDINGS-2026-09-16.md",
+      "blob_sha": "4ff78e4e443cbd9413a40526d36ee4996e62f595",
+      "size_bytes": 2622,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/audits/SECURITY-STATIC-SCAN-2026-09-16.md",
+      "blob_sha": "a00964f35c2581cae4a79eb1be354430608d8420",
+      "size_bytes": 1592,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/ENGINEERING_AUDIT.md",
+      "blob_sha": "694ae817c7bd43c3db7ed65cd2fb2e517b8e07b4",
+      "size_bytes": 6685,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/engineering/AI_CODE_AGENT_REMEDIATION_INTAKE.md",
+      "blob_sha": "3629771b598a129ea3cd54ed3ef47f0c89b8a7cb",
+      "size_bytes": 2562,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/engineering/MODULES.md",
+      "blob_sha": "05ac8620ce66de5a8a3691733c3f2c809d322629",
+      "size_bytes": 320,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/FLEET_GATE_POLICY.md",
+      "blob_sha": "f6368a11b6044d0b2b7df8575347c32d4c196ccc",
+      "size_bytes": 2332,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/FLEET_INVENTORY.md",
+      "blob_sha": "2c03aae1a643c03486bc88df9474638520a0c457",
+      "size_bytes": 2474,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/governance/GOVERNANCE-MODEL.md",
+      "blob_sha": "10efe41023d71fa908668bfa219b8ac3911ec60a",
+      "size_bytes": 255,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/IMPLEMENTATION-STATUS.md",
+      "blob_sha": "afb877b20dcbc6101fb78d30c9e439af27d84a4b",
+      "size_bytes": 2381,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/operations/RUNBOOKS.md",
+      "blob_sha": "df75545ba7913ca57f6747b1912e90e3a2488257",
+      "size_bytes": 179,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/REPOSITORY_AUDIT_MATRIX_2026-09-16.md",
+      "blob_sha": "5e6b0efd7f7e66cde81add4382089e3fbaf36b29",
+      "size_bytes": 7543,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "docs/security/THREAT-MODEL.md",
+      "blob_sha": "85c8e3d7454d1870900d32a7e6e8482be0d467f8",
+      "size_bytes": 383,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "LICENSE",
+      "blob_sha": "d07ae9a7aaabd3ef56a0a5db3157612094b56b5a",
+      "size_bytes": 709,
+      "mode": "100644",
+      "type": "blob",
+      "extension": null
+    },
+    {
+      "path": "README.md",
+      "blob_sha": "594f9870d890771d6a06846ef7e6ba600f3dc3c9",
+      "size_bytes": 6915,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "ROADMAP.md",
+      "blob_sha": "06d6477deae55cd921a92a9432224ad38504fb1b",
+      "size_bytes": 5184,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "schemas/ai-agent/ATC-AI-VERIFY-001.json",
+      "blob_sha": "71dcc9d554aec989fc3dba8ff09837ea6a0c3be2",
+      "size_bytes": 2358,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "json"
+    },
+    {
+      "path": "schemas/evidence/ATC-EVD-001.json",
+      "blob_sha": "91e4104ca32f31250b6c1f012153c87670c85eec",
+      "size_bytes": 1307,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "json"
+    },
+    {
+      "path": "schemas/findings/ATC-FND-001.json",
+      "blob_sha": "552caf0bb74861d1cee7f14775eafdec4679bbaa",
+      "size_bytes": 438,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "json"
+    },
+    {
+      "path": "schemas/implementation-roadmap.schema.json",
+      "blob_sha": "fc9a7b32b8c64a1a7cbf60be141be07b1c8e9f49",
+      "size_bytes": 1644,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "json"
+    },
+    {
+      "path": "schemas/org-function-catalog.schema.json",
+      "blob_sha": "52e9a8e5b772925f5991e9863781057caa5420b7",
+      "size_bytes": 7187,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "json"
+    },
+    {
+      "path": "schemas/system-requirements.schema.json",
+      "blob_sha": "7d334b8bf9bd092c82b241038ab6bbfd3bedba6b",
+      "size_bytes": 4210,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "json"
+    },
+    {
+      "path": "scripts/ai_agent_ci_triage.py",
+      "blob_sha": "4737741db4517863f4ef0ca10f59ed94b6efc7de",
+      "size_bytes": 14102,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "py"
+    },
+    {
+      "path": "scripts/file_format_language_audit.py",
+      "blob_sha": "1231304e59e1a0c5a0b6628afcadd607023120e0",
+      "size_bytes": 5405,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "py"
+    },
+    {
+      "path": "scripts/fleet_static_audit.sh",
+      "blob_sha": "374f6bf387f45093d2bdf8e95eaf0de7da08a0d9",
+      "size_bytes": 6299,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "sh"
+    },
+    {
+      "path": "scripts/org_function_catalog.py",
+      "blob_sha": "d664e47bee098589ff2bc9a2ff819d2bd604b587",
+      "size_bytes": 15343,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "py"
+    },
+    {
+      "path": "scripts/run_ci_independent_audit.sh",
+      "blob_sha": "e8552e46d9076d1f53da7db22f9f05dee25d0357",
+      "size_bytes": 1217,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "sh"
+    },
+    {
+      "path": "scripts/standards_enforcement_audit.py",
+      "blob_sha": "7bf813773120e0b8bb225862fcace1bda00bfb25",
+      "size_bytes": 12773,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "py"
+    },
+    {
+      "path": "scripts/validate_ai_code_agent_policy.py",
+      "blob_sha": "ee7fddd33c8a5a8484b97222fbd153360aad87ad",
+      "size_bytes": 4761,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "py"
+    },
+    {
+      "path": "scripts/validate_build_evidence.py",
+      "blob_sha": "3b04da8b38dbd0b6523144772f43a745f02e09b8",
+      "size_bytes": 3827,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "py"
+    },
+    {
+      "path": "SECURITY.md",
+      "blob_sha": "3f76ea2d567d21a5c7eec9bd758752084f2ede9c",
+      "size_bytes": 986,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "STATUS.md",
+      "blob_sha": "076588ee0551a1a62cc4e7f212d3f94430286ab8",
+      "size_bytes": 2713,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "md"
+    },
+    {
+      "path": "tests/test_ai_agent_ci_triage.py",
+      "blob_sha": "cf3c5b8f231b950a22a3e06f4b0a284005ff07fb",
+      "size_bytes": 3172,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "py"
+    },
+    {
+      "path": "tests/test_org_function_catalog.py",
+      "blob_sha": "7a29c0f80f8ef5ffa61347037ff1124868b85a60",
+      "size_bytes": 5347,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "py"
+    },
+    {
+      "path": "tests/test_validate_build_evidence.py",
+      "blob_sha": "0edf38d8b55312e304311a6780ae05fb31b079b8",
+      "size_bytes": 4054,
+      "mode": "100644",
+      "type": "blob",
+      "extension": "py"
+    }
+  ],
+  "limitations": [
+    "This manifest records the Git tree only; it does not enumerate source symbols.",
+    "Parser coverage, missing/stale/duplicate/orphan symbol counts, exclusions, interfaces/contracts, and canonical ownership remain unreconciled.",
+    "Counts from other catalog snapshots must not be compared until their input commit/tree is explicitly pinned and reproduced."
+  ]
+}
