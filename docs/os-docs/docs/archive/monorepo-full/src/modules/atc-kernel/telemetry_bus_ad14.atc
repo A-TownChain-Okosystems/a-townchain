@@ -1,0 +1,254 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-14 — TelemetryBus: Diagnose + Performance + Crash Reports
+// Genesis Communication Layer (GCL) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct TelemetrySample {
+    timestamp: UInt64,
+    fps: UInt16,
+    cpu_usage: Float32,
+    gpu_usage: Float32,
+    ram_used_mb: UInt32,
+    vram_used_mb: UInt32,
+    ram_total_mb: UInt32,
+    vram_total_mb: UInt32,
+    draw_calls: UInt32,
+    triangles: UInt64,
+    network_ping_ms: UInt32,
+    asset_load_ms: UInt32,
+    physics_ms: Float32,
+    render_ms: Float32,
+    audio_ms: Float32,
+    ai_ms: Float32,
+    script_ms: Float32,
+}
+
+struct TelemetryBus {
+    samples: List<TelemetrySample>,
+    max_samples: UInt32,
+    sample_interval_ms: UInt32,
+    last_sample: UInt64,
+    alerts: List<TelemetryAlert>,
+    crash_reports: List<CrashReport>,
+    performance_traces: List<PerformanceTrace>,
+    enabled: Bool,
+    auto_report: Bool,
+    thresholds: TelemetryThresholds,
+}
+
+struct TelemetryThresholds {
+    min_fps: UInt16,
+    max_cpu: Float32,
+    max_gpu: Float32,
+    max_ram_pct: Float32,
+    max_vram_pct: Float32,
+    max_load_ms: UInt32,
+}
+
+struct TelemetryAlert {
+    id: Hash256,
+    severity: AlertSeverity,
+    category: String,
+    message: String,
+    timestamp: UInt64,
+    resolved: Bool,
+}
+
+enum AlertSeverity { Info, Warning, Error, Critical }
+
+struct CrashReport {
+    id: Hash256,
+    timestamp: UInt64,
+    stack_trace: String,
+    message: String,
+    module: String,
+    version: String,
+    os_info: String,
+    gpu_info: String,
+    sample: TelemetrySample,
+}
+
+struct PerformanceTrace {
+    id: Hash256,
+    name: String,
+    start_ms: UInt64,
+    end_ms: UInt64,
+    duration_ms: Float32,
+    category: String,
+    children: List<Hash256>,
+}
+
+// TelemetryBus: Sample erfassen
+pub fn sample(bus: TelemetryBus, data: TelemetrySample) -> Bool {
+    if not bus.enabled { return false }
+    data.timestamp = Chain::timestamp_ms()
+    bus.samples.append(data)
+    if bus.samples.len() > bus.max_samples {
+        bus.samples.pop(0)
+    }
+
+    // Thresholds prüfen
+    check_thresholds(bus, data)
+
+    bus.last_sample = data.timestamp
+    return true
+}
+
+// TelemetryBus: Thresholds prüfen
+pub fn check_thresholds(bus: TelemetryBus, data: TelemetrySample) {
+    let t = bus.thresholds
+
+    if data.fps < t.min_fps {
+        raise_alert(bus, AlertSeverity::Warning, "performance", "FPS below threshold: " + data.fps)
+    }
+    if data.cpu_usage > t.max_cpu {
+        raise_alert(bus, AlertSeverity::Warning, "cpu", "CPU usage high: " + data.cpu_usage + "%")
+    }
+    if data.gpu_usage > t.max_gpu {
+        raise_alert(bus, AlertSeverity::Warning, "gpu", "GPU usage high: " + data.gpu_usage + "%")
+    }
+    let ram_pct = (data.ram_used_mb * 100) / data.ram_total_mb
+    if ram_pct > t.max_ram_pct {
+        raise_alert(bus, AlertSeverity::Error, "memory", "RAM usage: " + ram_pct + "%")
+    }
+    let vram_pct = (data.vram_used_mb * 100) / data.vram_total_mb
+    if vram_pct > t.max_vram_pct {
+        raise_alert(bus, AlertSeverity::Error, "memory", "VRAM usage: " + vram_pct + "%")
+    }
+    if data.asset_load_ms > t.max_load_ms {
+        raise_alert(bus, AlertSeverity::Warning, "assets", "Asset load slow: " + data.asset_load_ms + "ms")
+    }
+}
+
+// TelemetryBus: Alert auslösen
+pub fn raise_alert(bus: TelemetryBus, severity: AlertSeverity, category: String, message: String) {
+    let alert = TelemetryAlert {
+        id: Crypto::sha256(serialize(category, message, Chain::timestamp())),
+        severity: severity,
+        category: category,
+        message: message,
+        timestamp: Chain::timestamp(),
+        resolved: false,
+    }
+    bus.alerts.append(alert)
+    emit TelemetryAlertRaised(alert.id, severity, category, message)
+}
+
+// TelemetryBus: Crash-Report erstellen
+pub fn report_crash(bus: TelemetryBus, module: String, message: String, stack: String) -> Hash256 {
+    let crash = CrashReport {
+        id: Crypto::sha256(serialize(module, message, Chain::timestamp())),
+        timestamp: Chain::timestamp(),
+        stack_trace: stack,
+        message: message,
+        module: module,
+        version: "1.0.0",
+        os_info: get_os_info(),
+        gpu_info: get_gpu_info(),
+        sample: if bus.samples.len() > 0 then bus.samples[-1] else nil,
+    }
+    bus.crash_reports.append(crash)
+    emit CrashReported(crash.id, module, message)
+    if bus.auto_report {
+        send_crash_report(crash)
+    }
+    return crash.id
+}
+
+// TelemetryBus: Performance Trace starten
+pub fn begin_trace(bus: TelemetryBus, name: String, category: String) -> Hash256 {
+    let trace_id = Crypto::sha256(serialize(name, Chain::timestamp_ms(), bus.performance_traces.len()))
+    bus.performance_traces.append(PerformanceTrace {
+        id: trace_id,
+        name: name,
+        start_ms: Chain::timestamp_ms(),
+        end_ms: 0,
+        duration_ms: 0.0,
+        category: category,
+        children: [],
+    })
+    return trace_id
+}
+
+// TelemetryBus: Performance Trace beenden
+pub fn end_trace(bus: TelemetryBus, trace_id: Hash256) -> Float32 {
+    for trace in bus.performance_traces {
+        if trace.id == trace_id {
+            trace.end_ms = Chain::timestamp_ms()
+            trace.duration_ms = trace.end_ms - trace.start_ms
+            return trace.duration_ms
+        }
+    }
+    return 0.0
+}
+
+// TelemetryBus: Durchschnittswerte berechnen
+pub fn averages(bus: TelemetryBus) -> TelemetryAverages {
+    if bus.samples.len() == 0 {
+        return TelemetryAverages { avg_fps: 0, avg_cpu: 0, avg_gpu: 0, avg_ram: 0, avg_render: 0, avg_physics: 0 }
+    }
+    let total_fps = 0
+    let total_cpu = 0.0
+    let total_gpu = 0.0
+    let total_ram = 0
+    let total_render = 0.0
+    let total_physics = 0.0
+    for s in bus.samples {
+        total_fps = total_fps + s.fps
+        total_cpu = total_cpu + s.cpu_usage
+        total_gpu = total_gpu + s.gpu_usage
+        total_ram = total_ram + s.ram_used_mb
+        total_render = total_render + s.render_ms
+        total_physics = total_physics + s.physics_ms
+    }
+    let n = bus.samples.len()
+    return TelemetryAverages {
+        avg_fps: total_fps / n,
+        avg_cpu: total_cpu / n,
+        avg_gpu: total_gpu / n,
+        avg_ram: total_ram / n,
+        avg_render: total_render / n,
+        avg_physics: total_physics / n,
+    }
+}
+
+// TelemetryBus: Aktive Alerts
+pub fn active_alerts(bus: TelemetryBus) -> List<TelemetryAlert> {
+    return bus.alerts.filter(fn a => not a.resolved)
+}
+
+// TelemetryBus: Alert auflösen
+pub fn resolve_alert(bus: TelemetryBus, alert_id: Hash256) -> Bool {
+    for alert in bus.alerts {
+        if alert.id == alert_id {
+            alert.resolved = true
+            return true
+        }
+    }
+    return false
+}
+
+// TelemetryBus: Crash-Reports abrufen
+pub fn get_crash_reports(bus: TelemetryBus) -> List<CrashReport> {
+    return bus.crash_reports
+}
+
+// Helper: OS Info (Stub)
+pub fn get_os_info() -> String { return "Genesis OS v1.0" }
+pub fn get_gpu_info() -> String { return "GPU: Genesis Renderer" }
+pub fn send_crash_report(crash: CrashReport) { emit CrashReportSent(crash.id) }
+
+struct TelemetryAverages {
+    avg_fps: UInt16,
+    avg_cpu: Float32,
+    avg_gpu: Float32,
+    avg_ram: UInt32,
+    avg_render: Float32,
+    avg_physics: Float32,
+}
+
+event TelemetryAlertRaised(id: Hash256, severity: AlertSeverity, category: String, message: String)
+event CrashReported(id: Hash256, module: String, message: String)
+event CrashReportSent(id: Hash256)
