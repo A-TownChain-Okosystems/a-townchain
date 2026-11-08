@@ -57,3 +57,39 @@ fn alle_vertragsquellen_parsen_und_validieren() {
         failures.join("\n")
     );
 }
+
+/// Projektweite Pruefung (Stufe 3): ueber alle Quellen hinweg muessen Basen und
+/// Typnamen aufloesbar sein. Warnungen (etwa die offenen emit-Deklarationen oder
+/// Mirror-Duplikate) sind erlaubt, Fehler nicht.
+#[test]
+fn projektweite_aufloesung_ohne_fehler() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../apps/atc-contracts");
+    let mut files = Vec::new();
+    collect_atc(&root, &mut files);
+    files.sort();
+
+    let mut parsed: Vec<(String, atc_core::ast::Program)> = Vec::new();
+    for file in &files {
+        let src = std::fs::read_to_string(file).expect("Quelle lesbar");
+        let program = atc_core::parser::parse_program(&src)
+            .unwrap_or_else(|e| panic!("{}: {}", file.display(), e.message));
+        parsed.push((file.display().to_string(), program));
+    }
+
+    let project = atc_core::project::build(&parsed);
+    let report = project.check();
+
+    assert!(
+        report.errors.is_empty(),
+        "Projektfehler: {:?}",
+        report.errors
+    );
+    assert!(
+        !project.contracts.is_empty(),
+        "Projektindex ohne Vertraege"
+    );
+    // Jeder Vertrag muss projektweit mindestens einmal indiziert sein.
+    for (name, entries) in &project.contracts {
+        assert!(!name.is_empty() && !entries.is_empty(), "leerer Indexeintrag");
+    }
+}
