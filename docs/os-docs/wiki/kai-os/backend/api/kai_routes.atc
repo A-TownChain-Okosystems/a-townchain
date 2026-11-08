@@ -1,0 +1,229 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-97 — KAI Agent Interaction API Routes
+// Sprint 3.2 | AI Layer | Chain-ID 9000
+// Migrated from: backend/api/kai_routes.py (380 lines)
+// Agent lifecycle, IPFS storage, chain queries, governance, system info
+// ─────────────────────────────────────────────────────────────
+
+enum AgentType { Knowledge, Architect, Standards, Roadmap, Product, Coding, QA, Security, Documentation, Repository, Governance, Research }
+enum AgentStatus { Created, Idle, Running, Completed, Failed, Deleted }
+enum TaskStatus { Pending, InProgress, Completed, Failed, Cancelled }
+
+struct KAgent {
+    agent_id: Hash,
+    agent_type: AgentType,
+    name: String,
+    owner: Address,
+    status: AgentStatus,
+    created_at: u64,
+    last_active: u64,
+    task_count: u32,
+}
+
+struct AgentTask {
+    task_id: Hash,
+    agent_id: Hash,
+    input_data: String,
+    output_data: String,
+    status: TaskStatus,
+    created_at: u64,
+    completed_at: u64,
+}
+
+struct StorageItem {
+    cid: Hash,
+    owner: Address,
+    size: u32,
+    mime_type: String,
+    uploaded_at: u64,
+    pinned: bool,
+}
+
+contract KAIRoutes {
+    state agents: Map<Hash, KAgent>
+    state tasks: Map<Hash, AgentTask>
+    state storage: Map<Hash, StorageItem>
+    state agent_count: u32
+    state task_count: u32
+    state storage_count: u32
+    state owner: Address
+
+    event AgentCreated(agent_id: Hash, agent_type: AgentType, name: String)
+    event AgentInvoked(agent_id: Hash, task_id: Hash)
+    event TaskCompleted(task_id: Hash, agent_id: Hash)
+    event StorageUploaded(cid: Hash, owner: Address, size: u32)
+    event StorageDownloaded(cid: Hash, by: Address)
+
+    fn init() {
+        self.agents = {}
+        self.tasks = {}
+        self.storage = {}
+        self.agent_count = 0
+        self.task_count = 0
+        self.storage_count = 0
+        self.owner = msg_sender()
+    }
+
+    // ── Agent Routes ──────────────────────────────────────────
+
+    fn list_agents() -> List<Hash> {
+        return self.agents.keys()
+    }
+
+    fn create_agent(agent_type: AgentType, name: String) -> Hash {
+        let agent_id = Hash::sha256(name, msg_sender(), Time::now())
+        let agent = KAgent {
+            agent_id: agent_id,
+            agent_type: agent_type,
+            name: name,
+            owner: msg_sender(),
+            status: AgentStatus::Created,
+            created_at: Time::now(),
+            last_active: Time::now(),
+            task_count: 0,
+        }
+        self.agents[agent_id] = agent
+        self.agent_count += 1
+        emit AgentCreated(agent_id, agent_type, name)
+        return agent_id
+    }
+
+    fn invoke_agent(agent_id: Hash, input_data: String) -> Hash {
+        let agent = self.agents.get(agent_id)
+        if agent == null || agent.owner != msg_sender() {
+            return Hash::zero()
+        }
+        agent.status = AgentStatus::Running
+        agent.last_active = Time::now()
+        let task_id = Hash::sha256(agent_id, input_data, Time::now())
+        let task = AgentTask {
+            task_id: task_id,
+            agent_id: agent_id,
+            input_data: input_data,
+            output_data: "",
+            status: TaskStatus::InProgress,
+            created_at: Time::now(),
+            completed_at: 0,
+        }
+        self.tasks[task_id] = task
+        agent.task_count += 1
+        self.task_count += 1
+        emit AgentInvoked(agent_id, task_id)
+        return task_id
+    }
+
+    fn get_task_status(agent_id: Hash, task_id: Hash) -> (TaskStatus, String, u64) {
+        let task = self.tasks.get(task_id)
+        if task == null || task.agent_id != agent_id {
+            return (TaskStatus::Failed, "", 0)
+        }
+        return (task.status, task.output_data, task.completed_at)
+    }
+
+    fn complete_task(task_id: Hash, output_data: String) -> bool {
+        let task = self.tasks.get(task_id)
+        if task == null {
+            return false
+        }
+        task.output_data = output_data
+        task.status = TaskStatus::Completed
+        task.completed_at = Time::now()
+        let agent = self.agents.get(task.agent_id)
+        if agent != null {
+            agent.status = AgentStatus::Idle
+        }
+        emit TaskCompleted(task_id, task.agent_id)
+        return true
+    }
+
+    fn delete_agent(agent_id: Hash) -> bool {
+        let agent = self.agents.get(agent_id)
+        if agent == null || agent.owner != msg_sender() {
+            return false
+        }
+        agent.status = AgentStatus::Deleted
+        return true
+    }
+
+    fn get_agent(agent_id: Hash) -> (AgentType, String, AgentStatus, u32, u64) {
+        let a = self.agents.get(agent_id)
+        if a == null {
+            return (AgentType::Knowledge, "", AgentStatus::Deleted, 0, 0)
+        }
+        return (a.agent_type, a.name, a.status, a.task_count, a.last_active)
+    }
+
+    // ── Storage Routes (IPFS-like) ────────────────────────────
+
+    fn upload_storage(data: String, mime_type: String) -> Hash {
+        let cid = Hash::sha256(data, msg_sender(), Time::now())
+        let item = StorageItem {
+            cid: cid,
+            owner: msg_sender(),
+            size: data.len(),
+            mime_type: mime_type,
+            uploaded_at: Time::now(),
+            pinned: true,
+        }
+        self.storage[cid] = item
+        self.storage_count += 1
+        emit StorageUploaded(cid, msg_sender(), data.len())
+        return cid
+    }
+
+    fn download_storage(cid: Hash) -> (Address, u32, String, u64) {
+        let item = self.storage.get(cid)
+        if item == null {
+            return (Address::zero(), 0, "", 0)
+        }
+        emit StorageDownloaded(cid, msg_sender())
+        return (item.owner, item.size, item.mime_type, item.uploaded_at)
+    }
+
+    fn get_storage_info(cid: Hash) -> (Address, u32, String, u64, bool) {
+        let item = self.storage.get(cid)
+        if item == null {
+            return (Address::zero(), 0, "", 0, false)
+        }
+        return (item.owner, item.size, item.mime_type, item.uploaded_at, item.pinned)
+    }
+
+    // ── Chain Routes ──────────────────────────────────────────
+
+    fn get_chain_status() -> (u64, u64, u16, u128) {
+        let height = HybridConsensus::get_height()
+        let tx_count = HybridConsensus::get_tx_count()
+        let validators = HybridConsensus::get_validator_count()
+        let total_stake = HybridConsensus::get_total_stake()
+        return (height, tx_count, validators, total_stake)
+    }
+
+    fn get_balance(addr: Address) -> u128 {
+        return ATCoin::balance_of(addr)
+    }
+
+    fn transfer_tokens(from_addr: Address, to_addr: Address, amount: u128) -> bool {
+        return ATCoin::transfer(from_addr, to_addr, amount)
+    }
+
+    // ── Governance Routes ─────────────────────────────────────
+
+    fn list_proposals() -> List<Hash> {
+        return GovernanceDAO::list_proposals()
+    }
+
+    fn vote_proposal(proposal_id: Hash, choice: u8, voting_power: u128) -> bool {
+        return GovernanceDAO::cast_vote(proposal_id, choice, voting_power)
+    }
+
+    // ── System Routes ─────────────────────────────────────────
+
+    fn system_status() -> (u32, u32, u32, u64) {
+        return (self.agent_count, self.task_count, self.storage_count, Time::now())
+    }
+
+    fn system_info() -> (String, String, u16, u16) {
+        return ("KAI-OS", "1.0.0", 9000, 0)
+    }
+}
