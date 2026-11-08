@@ -1,0 +1,35 @@
+# Kanonischer Anbieter-Datensatz (ATC-STD-LEGAL-002 §7/§11, SCR-0117) — Single Source of Truth.
+# record_status: UNPOPULATED — solange dieser Zustand gilt, DARF kein Publication Target
+# aus diesem Record zitieren (Placeholder-Policy §21, LEGAL-002-REQ-006).
+# Keine Secrets in diesem Record (§34). Datenminimierung (REQ-012).
+record_status: UNPOPULATED
+revision: null
+verified: false
+verified_at: null
+verified_by: null
+provider:
+  name: ""
+  legal_name: ""
+  legal_form: ""
+  address:
+    street: ""
+    postal_code: ""
+    city: ""
+    country: ""
+  contact:
+    email: ""
+    telephone: ""
+    website: ""
+  representative:
+    name: ""
+    role: ""
+  registration:
+    register_type: ""
+    register_court: ""
+    registration_number: ""
+  tax:
+    vat_id: ""
+  responsible_person:
+    name: ""
+    address: ""
+  additional_information: []
