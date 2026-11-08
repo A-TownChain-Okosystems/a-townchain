@@ -1,0 +1,5 @@
+# CODEOWNERS (ATC-STD-000 §33, SCR-0003 Teilumsetzung)
+# Owner hat finale Verantwortung fuer normative Inhalte.
+# Agent (Aurora) arbeitet im Auftrag des Owners; Approvals bleiben beim Owner.
+
+* @ShivaCoreDev
