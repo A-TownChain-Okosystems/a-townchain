@@ -1,9 +1,9 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-08 19:46 UTC+2 aus `origin/main` @ `7008239f1`.
+> Vollständige Dateiliste. Erzeugt 2026-11-08 20:43 UTC+2 aus `origin/main` @ `06b57e1`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 12343 Dateien**
+**Total: 12349 Dateien**
 
 ## docs (5066)
 
@@ -10358,7 +10358,7 @@
 - `components/zkp/docs/specs/SPEC-OVERVIEW.md`
 - `components/zkp/tools/determinism_check.py`
 
-## apps (851)
+## apps (857)
 
 - `apps/atc-compute/.atc/compliance.yaml`
 - `apps/atc-compute/.atc/evidence/evidence.yaml`
@@ -10479,6 +10479,9 @@
 - `apps/atc-contracts/exec_chain/tests/t07_bridge_fee_accumulation.atc`
 - `apps/atc-contracts/exec_chain/tests/t08_atc8300_transfer_with_fee.atc`
 - `apps/atc-contracts/exec_chain/tests/t09_atc8300_burn_supply.atc`
+- `apps/atc-contracts/exec_chain/tests/t14_revenue_share_split.atc`
+- `apps/atc-contracts/exec_chain/tests/t15_revenue_share_cap_rounding.atc`
+- `apps/atc-contracts/exec_chain/tests/t16_revenue_share_min_share_truncates.atc`
 - `apps/atc-contracts/exec_chain/tests/vectors/t01.json`
 - `apps/atc-contracts/exec_chain/tests/vectors/t02.json`
 - `apps/atc-contracts/exec_chain/tests/vectors/t03.json`
@@ -10488,6 +10491,9 @@
 - `apps/atc-contracts/exec_chain/tests/vectors/t07.json`
 - `apps/atc-contracts/exec_chain/tests/vectors/t08.json`
 - `apps/atc-contracts/exec_chain/tests/vectors/t09.json`
+- `apps/atc-contracts/exec_chain/tests/vectors/t14.json`
+- `apps/atc-contracts/exec_chain/tests/vectors/t15.json`
+- `apps/atc-contracts/exec_chain/tests/vectors/t16.json`
 - `apps/atc-contracts/exec_chain/vector.json`
 - `apps/atc-contracts/governance/governance_contract.atc`
 - `apps/atc-contracts/modules/atc-contracts/.gitignore`
