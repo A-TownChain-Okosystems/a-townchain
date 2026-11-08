@@ -11,6 +11,7 @@ pub mod lexer;
 pub mod lower;
 pub mod semantics;
 pub mod types;
+pub mod project;
 pub mod native;
 pub mod parser;
 pub mod value;
