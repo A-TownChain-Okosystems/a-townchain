@@ -1,0 +1,42 @@
+# Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# docker-compose.yml -- FIX(#18): 5-Node Testnet
+version: "3.9"
+services:
+  bootstrap-node:
+    build: .
+    container_name: atc-bootstrap
+    command: python start.py --mode bootstrap --port 8333
+    ports: ["8333:8333","4000:4000"]
+    environment: [NODE_TYPE=BOOTSTRAP, NODE_PORT=8333, BOOTSTRAP_HOST=bootstrap-node]
+    networks: [atcnet]
+  validator-1:
+    build: .
+    command: python start.py --mode validator --port 8334
+    ports: ["8334:8334"]
+    environment: [NODE_TYPE=VALIDATOR, NODE_PORT=8334, BOOTSTRAP_HOST=bootstrap-node, BOOTSTRAP_PORT=8333]
+    depends_on: [bootstrap-node]
+    networks: [atcnet]
+  validator-2:
+    build: .
+    command: python start.py --mode validator --port 8335
+    ports: ["8335:8335"]
+    environment: [NODE_TYPE=VALIDATOR, NODE_PORT=8335, BOOTSTRAP_HOST=bootstrap-node, BOOTSTRAP_PORT=8333]
+    depends_on: [bootstrap-node]
+    networks: [atcnet]
+  miner-node:
+    build: .
+    command: python start.py --mode miner --port 8336
+    ports: ["8336:8336"]
+    environment: [NODE_TYPE=MINER, NODE_PORT=8336, BOOTSTRAP_HOST=bootstrap-node, BOOTSTRAP_PORT=8333]
+    depends_on: [bootstrap-node]
+    networks: [atcnet]
+  light-node:
+    build: .
+    command: python start.py --mode light --port 8337
+    ports: ["8337:8337"]
+    environment: [NODE_TYPE=LIGHT, NODE_PORT=8337, BOOTSTRAP_HOST=bootstrap-node, BOOTSTRAP_PORT=8333]
+    depends_on: [bootstrap-node]
+    networks: [atcnet]
+networks:
+  atcnet:
+    driver: bridge
