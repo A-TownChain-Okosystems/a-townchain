@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-222",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #222: [Draft] Add machine-readable ecosystem file/function inventory",
+  "context": "Pull request 222 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/222",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\nAdds the initial governance-side catalog structure for a file-by-file ecosystem inventory:\n- repository manifest with explicit pending state for unscanned repositories\n- JSONL file-record schema with commit/blob provenance, symbols, callers, dependencies, tests and verification status\n- coverage report that distinguishes tracked-file counts from semantic analysis\n- evidence-bound dependency graph seed\n- three targeted Genesis Engine file records from prior read-only inspection\n\n## Evidence and limitations\n- Initial organization discovery listed 33 repositories.\n- Recursive trees were captured for 8 repositories (7,741 tracked files); this is not complete organization coverage.\n- Only 3 file records are seeded; the full file-by-file analysis has NOT been performed.\n- Most repositories still require exact HEAD/tree capture and semantic scanning.\n- No implementation source-of-truth, standards registry, or demo drift-gate policy is changed.\n\n## Acceptance gates before marking complete\n- All repositories have exact default-branch commit SHA and recursive tree evidence.\n- One validated record per tracked file or an explicit documented exclusion.\n- Symbol/caller/dependency and test evidence tied to exact commits/blobs.\n- Schema validation and deterministic regeneration CI pass.\n- No merge until evidence supports the claimed coverage."
+}
