@@ -46,8 +46,10 @@ ATC-Chain-Quellen, Bindung der Registry an die kanonischen Bytes.
 Namen und Inhalt und friert die Einordnung in
 `standards/contracts/registry/copy_audit.yaml` ein.
 
-Stand: **35 Mehrfachdeklarationen, 24 byte-gleich, 11 divergent.** Neue Drift
-lässt den Audit mit Exit 1 enden (mit einer eingeschleusten Änderung geprüft).
+Stand nach der Reparatur: **36 Mehrfachdeklarationen, 34 byte-gleich,
+2 divergent.** Die beiden verbliebenen sind dokumentierte API-Gabeln
+(Abschnitt 9), keine unbeabsichtigte Drift. Neue Drift lässt den Audit mit
+Exit 1 enden (mit einer eingeschleusten Änderung geprüft).
 
 Die elf divergenten Gruppen, nach Auflösbarkeit getrennt:
 
@@ -114,12 +116,12 @@ gatekonform gesetzt.
 ## 6. Messwerte nach den Änderungen
 
 ```
-atc check apps/atc-contracts      0 Fehler, 17 Warnungen (50 Dateien, 32 Verträge)
-atc check components/contracts    0 Fehler, 17 Warnungen (46 Dateien, 28 Verträge)
+atc check apps/atc-contracts      0 Fehler, 18 Warnungen (50 Dateien, 33 Verträge)
+atc check components/contracts    0 Fehler, 18 Warnungen (46 Dateien, 29 Verträge)
 Registry-Gate                     16 Einträge, 16 Quellen, GATE PASS, 0 Befunde
-Kopien-Audit                      35 Mehrfachdeklarationen, 0 Befunde
+Kopien-Audit                      36 Mehrfachdeklarationen (34 gleich, 2 divergent), 0 Befunde
 EXEC-CHAIN-Tests                  20/20 PASS
-pytest tools/atc-sc-validator     50 passed
+pytest tools/atc-sc-validator     40 passed
 ```
 
 Ausgangslage am Morgen: 56 Warnungen in `apps/atc-contracts` (38 fehlende
@@ -144,3 +146,46 @@ python3 tools/atc-sc-validator/audit_contract_copies.py
 ATC_VM_RUNNER=target/release/atc-vm-runner bash apps/atc-contracts/exec_chain/tests/run_tests.sh
 python3 -m pytest tools/atc-sc-validator/tests -q
 ```
+
+## 9. Entscheidungen zur Referenzimplementierung
+
+Der Owner hat die Auswahl delegiert ("Entscheide sinnvoll"). Maßstab war in
+dieser Reihenfolge: Registry-Bindung, Wirksamkeit der Owner-Regel im Code,
+Vollständigkeit, byte-gleiche Spiegelung. Festgehalten in
+`standards/contracts/registry/canonical_sources.yaml`.
+
+| Vertragsname | kanonisch | Begründung |
+| --- | --- | --- |
+| ATCoin | `atcoin/atcoin.atc` | Registry 001 "nativer Token", 15 Funktionen, und der Cap wirkt dort real: `mint` liefert `false` oberhalb `ATC_MAX_SUPPLY` |
+| ATC8300Token | `atc8300/atc8300.atc` | Registry 002 "Standard", fünf byte-gleiche Kopien |
+| ATC8300TokenInstance | `atc8300/atc8300_token.atc` | Registry 003 "Token-Instanz"; eigener Name aus der Registry-Bezeichnung, Funktionen bleiben erhalten |
+| FranchiseRegistry | `modules/atc-standards-refs/contracts/registry.atc` | Fassung mit `Hash` und fünf Event-Deklarationen |
+| GenesisChroniclesContract | `ai/genesis-chronicles/genesis_chronicles_contract.atc` | Identifier laut `DECISIONS_REGISTER.md`, vollständige Fassung |
+| FederatedLearningCoordinator | `smart_contracts.atc` | Registry CORE-002, vierfach gespiegelt; Alternativdatei bleibt nicht-kanonisch |
+| GovernanceDAO | `smart_contracts.atc` | wie oben |
+| RevenueShare, ATC-13/15/16/20 | `apps/atc-contracts/...` | Registry-gebunden, veraltete Kopien angeglichen |
+
+Der entscheidende Befund für ATCoin: der gestrichene `contract ATCoin :
+ATC8300Token` in `atc8300.atc` sicherte den Cap nur mit
+`require(safe_add(...) <= MAX_SUPPLY, ...)` ab. Der eingefrorene Opcode-Satz
+kennt keinen Assert-Op, der Assembler verwirft `require` still — die Zusicherung
+war also wirkungslos. `atcoin.atc` prüft denselben Cap über den Rückgabewert von
+`mint` und ist damit die einzige Fassung, in der die Owner-Entscheidung
+tatsächlich greift.
+
+Konsequenzen im Baum: `atc8300.atc` ist jetzt reiner Standard (86 statt 104
+Zeilen) in allen fünf Kopien; `atc8300_token.atc` deklariert
+`ATC8300TokenInstance` (vier Kopien byte-gleich); sechs veraltete Kopien
+angeglichen (ATC-13/15/16/20-Referenzen, FranchiseRegistry ×2, RevenueShare-
+Entwurf, drei GenesisChronicles-Entwürfe).
+
+Nach der Rollentrennung trägt kein Token mehr einen `CHAIN_ID`-Zustand. Das ist
+beabsichtigt: die Chain-ID gilt innerhalb der ATC-Blockchain und gehört zur
+Chain-Konfiguration, nicht zum Token-Zustand. Der Test sichert jetzt die
+negative Zusicherung ab (kein fremder Chain-ID-Wert in einer ATCoin-Quelle).
+
+Offen bleiben die zwei API-Gabeln: ob `register_model`, `aggregate`,
+`update_accuracy`, `stats`, `find_round` in den kanonischen
+Federated-Learning-Vertrag gehören und ob das DAO `propose/vote/finalize` statt
+`create_proposal/cast_vote/finalize_vote` heißen soll. Beides sind
+Protokoll-API-Entscheidungen, keine Aufräumarbeit.
