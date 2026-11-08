@@ -1,0 +1,88 @@
+// K-Sprint 50 — Filesystem Journaling (ATCLang Interface)
+// Rust: kernel/src/fs_journal.rs (1161 lines, 55 tests)
+// Agent: Aurora #2 (6a275618)
+
+import "std/chain.atc" as Chain
+
+enum JournalOp {
+    CREATE,
+    WRITE,
+    DELETE,
+    RENAME,
+    TRUNCATE,
+    CHMOD,
+    CHOWN,
+    MKDIR,
+    RMDIR,
+    LINK,
+    SYMLINK,
+    SYNC,
+}
+
+enum TxState {
+    OPEN,
+    COMMITTED,
+    ABORTED,
+    APPLIED,
+}
+
+struct JournalEntry {
+    seq: u64,
+    tx_id: u64,
+    op: JournalOp,
+    path: String,
+    target: Option<String>,
+    data: List<u8>,
+    offset: u64,
+    length: u64,
+    timestamp: u64,
+}
+
+struct JournalTransaction {
+    id: u64,
+    state: TxState,
+    entries: List<JournalEntry>,
+    started_at: u64,
+    committed_at: u64,
+}
+
+struct JournalStats {
+    total_entries: u64,
+    total_transactions: u64,
+    committed_txs: u64,
+    aborted_txs: u64,
+    applied_txs: u64,
+    checkpoints: u64,
+    entries_since_checkpoint: u64,
+    journal_size_bytes: u64,
+}
+
+struct RecoveryResult {
+    committed_replayed: u64,
+    open_aborted: u64,
+    entries_recovered: u64,
+}
+
+module Kernel::FsJournal {
+    contract JournalManager {
+        fn begin() -> u64
+        fn commit(tx_id: u64, timestamp: u64) -> bool
+        fn abort(tx_id: u64) -> bool
+        fn create(tx_id: u64, path: String) -> Option<u64>
+        fn write(tx_id: u64, path: String, data: List<u8>) -> Option<u64>
+        fn delete(tx_id: u64, path: String) -> Option<u64>
+        fn rename(tx_id: u64, old_path: String, new_path: String) -> Option<u64>
+        fn mkdir(tx_id: u64, path: String) -> Option<u64>
+        fn rmdir(tx_id: u64, path: String) -> Option<u64>
+        fn truncate(tx_id: u64, path: String, length: u64) -> Option<u64>
+        fn chmod(tx_id: u64, path: String) -> Option<u64>
+        fn chown(tx_id: u64, path: String) -> Option<u64>
+        fn link(tx_id: u64, target: String, link_path: String) -> Option<u64>
+        fn symlink(tx_id: u64, target: String, link_path: String) -> Option<u64>
+        fn sync(tx_id: u64, path: String) -> Option<u64>
+        fn recover() -> RecoveryResult
+        fn checkpoint() -> u64
+        fn needs_checkpoint() -> bool
+        fn stats() -> JournalStats
+    }
+}
