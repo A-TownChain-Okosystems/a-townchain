@@ -59,7 +59,25 @@ cmd_build() {
       FAIL=1
     fi
   done
+  build_kernel
   return $FAIL
+}
+
+# ShivaCore-Kernel: no_std, eigenes Ziel, deshalb nicht Teil von
+# `cargo build --workspace`. Braucht Nightly und build-std.
+build_kernel() {
+  printf '  %-26s ' "globus-os/shivacore"
+  local log=/tmp/atc_build_kernel.log
+  local bin=target/x86_64-unknown-none/release/shivacore
+  if ( cd kernel/globus-os && cargo +nightly build --release -p shivacore \
+        --features x86-boot --target x86_64-unknown-none \
+        -Z build-std=core,alloc ) >"$log" 2>&1 && [ -f "kernel/globus-os/$bin" ]; then
+    local sz; sz=$(du -h "kernel/globus-os/$bin" | cut -f1)
+    echo "ok (bare metal, $sz)"
+  else
+    echo "FEHLER (Log: $log)"
+    FAIL=1
+  fi
 }
 
 cmd_test() {
