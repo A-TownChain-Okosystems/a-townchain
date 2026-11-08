@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-127",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #127: docs(catalog): add blocked cross-chain interoperability component and functions",
+  "context": "Pull request 127 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/127",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\n\nAdds a proposed cross-chain interoperability component and three function contracts to the machine-readable and human-readable component/function catalog.\n\n### Catalog additions\n- `COMP-XCHAIN-INTEROP` — normative cross-chain message/capability contract proposal.\n- `FN-XCHAIN-001` — cross-chain message contract validation.\n- `FN-XCHAIN-002` — chain capability and proof-policy resolution.\n- `FN-XCHAIN-003` — replay-safe message lifecycle and reconciliation.\n\n### Governance and evidence\n- All new records are `BLOCKED` / `RESIDUAL` and explicitly specification-only.\n- No canonical runtime symbol or exact source SHA has been identified; this PR does not claim implementation or verification.\n- Unknown consensus/finality remains `BLOCKED`; no bridge, mint, unlock, release or asset-transfer functionality is authorized.\n- Normative work tracked in [atc-standards #110](https://github.com/A-TownChain-Okosystems/atc-standards/issues/110), architecture in [ecosystem #126](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/126).\n- Catalog now contains 31 component records and 101 function records in this branch, including proposed entries. Counts are not a completeness claim.\n\n### Validation status\n- JSON was parsed in the editing workflow before modification and serialized deterministically after adding entries.\n- Repository validator, source reconciliation, tests and exact-HEAD CI have **not** been run for this PR; no PASS is claimed.\n- Keep Draft and unmerged until schema/semantic validation, source reconciliation and exact-SHA evidence are reviewed.\n\nVersion: 0.2.0\nWatermark: A-TownChain / Globus OS\nDate: 2026-10-15"
+}
