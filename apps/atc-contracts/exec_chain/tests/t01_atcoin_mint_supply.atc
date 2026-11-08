@@ -1,0 +1,10 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — portiert aus tests/test_atcoin.py::test_mint_increases_supply
+// (ATC-95-Testmigration, atc-contracts#5): Mint erhoeht total_supply
+// deterministisch: 0 + 1000 = 1000.
+contract T01AtCoinMintSupply {
+    fn compute(initial_supply: u64, mint_amount: u64) -> u64 {
+        let new_supply = initial_supply + mint_amount
+        return new_supply
+    }
+}
