@@ -1,0 +1,21 @@
+// ATCLang v0.3 — Research Agent
+// Recherche — Web-Suche, Dokumentation, Best Practices
+// ATC-Standard: ATC-97
+
+module research_agent {
+    fn web_search(query: string) {
+        // Web-Recherche
+    }
+    
+    fn summarize_findings(sources: List[string]) {
+        // Ergebnisse zusammenfassen
+    }
+    
+    fn compare_approaches(option_a: string, option_b: string) {
+        // Ansätze vergleichen
+    }
+    
+    fn recommend(topic: string) {
+        // Empfehlung aussprechen
+    }
+}
