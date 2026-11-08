@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-COMMIT-34F08EB76FA5",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "Commit: docs(catalog): add machine-readable file inventory schema",
+  "context": "Git commit 34f08eb76fa5607aa40e7e344a898c5c5e15212e on A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "commit",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/commit/34f08eb76fa5607aa40e7e344a898c5c5e15212e",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "commit",
+    "generated",
+    "git"
+  ],
+  "links": [],
+  "content": "docs(catalog): add machine-readable file inventory schema"
+}
