@@ -1,0 +1,11 @@
+type: object
+required: [lifecycle]
+properties:
+  lifecycle:
+    type: object
+    required: [stage]
+    properties:
+      stage: {enum: [experimental, development, beta, production, deprecated, archived]}
+      entered: {type: string, format: date}
+      history: {type: array, items: {type: object, required: [stage, date]}}
+# Uebergangsregel (ATC-STD-202 §8): nur sequenzielle Stadien, kein Springen.
