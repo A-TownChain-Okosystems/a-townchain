@@ -1,0 +1,15 @@
+// ATCLang v0.3 — Vote Delegation
+// Delegate voting power, revoke
+// ATC-Standard: ATC-17
+
+module delegation {
+    struct DelegationRecord {
+        delegator: string,
+        delegatee: string,
+        power: int
+    }
+    
+    fn delegate_votes() {
+        // Delegates user voting power to designated delegate address
+    }
+}
