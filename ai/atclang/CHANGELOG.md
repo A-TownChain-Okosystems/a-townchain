@@ -52,11 +52,25 @@ und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v
 - Befund am Bestand: 47 von 47 Quellen ohne Typbefund; absichtlich fehlerhafter
   Vertrag ergibt 4 Befunde und Exit 1.
 
+### Added (Semantik Stufe 3 — Aufloesung ueber Dateigrenzen)
+
+- `atc_core::project`: Projektindex ueber mehrere Quellen (Vertraege, Structs,
+  Enums, Importe).
+- `atc check <verzeichnis>` prueft projektweit: mehrfach deklarierte
+  Vertragsnamen (Mirror-Kopien), nicht aufloesbare Basen (`contract A : B`) und
+  Typnamen, die weder Builtin noch deklariert noch importiert sind.
+- Kanonische Chain-Typen (`Address`, `Hash`, `Bytes`, `Signature`, `PublicKey`,
+  `Timestamp`, `Amount`, `TokenId`) gelten als Builtin; unbekannte Namen werden
+  je Datei und Name einmal gemeldet.
+- Befund am Bestand (`apps/atc-contracts`): 47 Dateien, 29 Vertraege, 0 Fehler,
+  56 Warnungen — 38 offene `emit`-Deklarationen, 17 Mirror-Duplikate,
+  1 unbekannter Typ (`bytes32` im standards-refs-Spiegel).
+
 ### Verification
 
-- `cargo test --workspace`: 479 Tests gruen.
+- `cargo test --workspace`: 486 Tests gruen.
 - `./tools/ecosystem.sh build`: alle sieben Workspaces plus Bare-Metal-Kernel.
-- `./tools/ecosystem.sh test`: 2141 Tests, 0 fehlgeschlagen.
+- `./tools/ecosystem.sh test`: 2148 Tests, 0 fehlgeschlagen.
 - Contract-Registry-Gate A8: GATE PASS (16/16).
 
 ## [Unreleased] - 2026-09-11
