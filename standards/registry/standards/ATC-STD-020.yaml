@@ -1,0 +1,14 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: enterprise
+family: GOVERNANCE / META
+family_id: '000'
+file: standards/enterprise/ATC-STD-020.md
+mandate: 'Owner-Direktive 10.09.: Incident-Response-Standard als Abschluss der Familie;
+  REQ-STD-001..007; SCR-0088'
+registry_version: 1
+standard_id: ATC-STD-020
+status: approved
+title: Security Incident & Vulnerability Response Standard (Erkennung->Eskalation->Containment->Patch->Verifikation->Disclosure->PIR,
+  SEV-1..4 mit SLA, Human-Gate SEV-1/2+Disclosure, ATC-VULN-Record-Schema v1.1.0)
+version: 1.1.0
