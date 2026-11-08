@@ -1,0 +1,165 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-32 — Franchise Blueprint Factory: Ausgangspunkt jeder neuen Marke
+// GFF v2.0 — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct BlueprintFactory {
+    blueprints: Map<Hash256, FranchiseBlueprint>,
+    by_status: Map<String, List<Hash256>>,
+    templates: Map<String, BlueprintTemplate>,
+    approvals: Map<Hash256, BlueprintApproval>,
+}
+
+struct FranchiseBlueprint {
+    id: Hash256,
+    name: String,
+    vision: String,
+    target_audience: String,
+    genre: String,
+    monetization: List<String>,
+    platforms: List<String>,
+    art_style: String,
+    gameplay_pillars: List<String>,
+    brand_guidelines: BrandGuidelines,
+    roadmap: List<RoadmapPhase>,
+    budget_estimate: UInt64,
+    team_size: UInt16,
+    status: BlueprintStatus,
+    created_at: UInt64,
+    approved: Bool,
+}
+
+enum BlueprintStatus { Draft, Review, Approved, Rejected, Archived }
+
+struct BrandGuidelines {
+    logo_rules: String,
+    color_palette: List<String>,
+    typography: String,
+    tone_of_voice: String,
+    visual_identity: String,
+    naming_conventions: String,
+}
+
+struct RoadmapPhase {
+    name: String,
+    duration_months: UInt8,
+    milestones: List<String>,
+    deliverables: List<String>,
+}
+
+struct BlueprintTemplate {
+    name: String,
+    genre: String,
+    default_pillars: List<String>,
+    default_monetization: List<String>,
+    default_platforms: List<String>,
+    default_budget: UInt64,
+}
+
+struct BlueprintApproval {
+    id: Hash256,
+    blueprint_id: Hash256,
+    reviewer: String,
+    decision: String,
+    feedback: String,
+    timestamp: UInt64,
+}
+
+// Blueprint Factory: Blueprint erstellen
+pub fn create_blueprint(factory: BlueprintFactory, name: String, vision: String, genre: String, target: String) -> Hash256 {
+    let bid = Crypto::sha256(serialize(name, genre, Chain::timestamp()))
+    factory.blueprints[bid] = FranchiseBlueprint {
+        id: bid,
+        name: name,
+        vision: vision,
+        target_audience: target,
+        genre: genre,
+        monetization: ["premium", "dlc"],
+        platforms: ["pc", "console", "mobile"],
+        art_style: "realistic",
+        gameplay_pillars: [],
+        brand_guidelines: BrandGuidelines {
+            logo_rules: "", color_palette: [], typography: "",
+            tone_of_voice: "", visual_identity: "", naming_conventions: "",
+        },
+        roadmap: [],
+        budget_estimate: 0,
+        team_size: 0,
+        status: BlueprintStatus::Draft,
+        created_at: Chain::timestamp(),
+        approved: false,
+    }
+    if not factory.by_status.contains("draft") { factory.by_status["draft"] = [] }
+    factory.by_status["draft"].append(bid)
+    return bid
+}
+
+// Blueprint Factory: Gameplay-Säulen setzen
+pub fn set_gameplay_pillars(factory: BlueprintFactory, bp_id: Hash256, pillars: List<String>) -> Bool {
+    require(factory.blueprints.contains(bp_id), "Blueprint not found")
+    factory.blueprints[bp_id].gameplay_pillars = pillars
+    return true
+}
+
+// Blueprint Factory: Markenrichtlinien setzen
+pub fn set_brand_guidelines(factory: BlueprintFactory, bp_id: Hash256, guidelines: BrandGuidelines) -> Bool {
+    require(factory.blueprints.contains(bp_id), "Blueprint not found")
+    factory.blueprints[bp_id].brand_guidelines = guidelines
+    return true
+}
+
+// Blueprint Factory: Roadmap-Phase hinzufügen
+pub fn add_roadmap_phase(factory: BlueprintFactory, bp_id: Hash256, name: String, months: UInt8, milestones: List<String>, deliverables: List<String>) -> Bool {
+    require(factory.blueprints.contains(bp_id), "Blueprint not found")
+    factory.blueprints[bp_id].roadmap.append(RoadmapPhase {
+        name: name, duration_months: months, milestones: milestones, deliverables: deliverables,
+    })
+    return true
+}
+
+// Blueprint Factory: Genehmigung einholen
+pub fn submit_for_approval(factory: BlueprintFactory, bp_id: Hash256) -> Bool {
+    require(factory.blueprints.contains(bp_id), "Blueprint not found")
+    factory.blueprints[bp_id].status = BlueprintStatus::Review
+    return true
+}
+
+// Blueprint Factory: Genehmigung erteilen
+pub fn approve_blueprint(factory: BlueprintFactory, bp_id: Hash256, reviewer: String, decision: String, feedback: String) -> Bool {
+    require(factory.blueprints.contains(bp_id), "Blueprint not found")
+    let aid = Crypto::sha256(serialize(bp_id, reviewer, Chain::timestamp()))
+    factory.approvals[aid] = BlueprintApproval {
+        id: aid, blueprint_id: bp_id, reviewer: reviewer,
+        decision: decision, feedback: feedback, timestamp: Chain::timestamp(),
+    }
+    if decision == "approved" {
+        factory.blueprints[bp_id].status = BlueprintStatus::Approved
+        factory.blueprints[bp_id].approved = true
+    } else {
+        factory.blueprints[bp_id].status = BlueprintStatus::Rejected
+    }
+    return true
+}
+
+// Blueprint Factory: Template speichern
+pub fn save_template(factory: BlueprintFactory, name: String, genre: String, pillars: List<String>, monetization: List<String>, platforms: List<String>, budget: UInt64) -> Bool {
+    factory.templates[name] = BlueprintTemplate {
+        name: name, genre: genre, default_pillars: pillars,
+        default_monetization: monetization, default_platforms: platforms, default_budget: budget,
+    }
+    return true
+}
+
+// Blueprint Factory: Aus Template erstellen
+pub fn from_template(factory: BlueprintFactory, template_name: String, franchise_name: String, vision: String, target: String) -> Hash256 {
+    require(factory.templates.contains(template_name), "Template not found")
+    let tpl = factory.templates[template_name]
+    let bid = create_blueprint(factory, franchise_name, vision, tpl.genre, target)
+    factory.blueprints[bid].gameplay_pillars = tpl.default_pillars
+    factory.blueprints[bid].monetization = tpl.default_monetization
+    factory.blueprints[bid].platforms = tpl.default_platforms
+    factory.blueprints[bid].budget_estimate = tpl.default_budget
+    return bid
+}
