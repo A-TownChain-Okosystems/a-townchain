@@ -1,0 +1,145 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — ATCPKG Package Manager
+// Sprint 3.0 | Tools Layer | Chain-ID 9000
+// Migrated from: atcpkg/manager.py (84 lines)
+// On-chain package registry: install, publish, verify, versioning
+// ─────────────────────────────────────────────────────────────
+
+struct Package {
+    name: String,
+    version: String,
+    author: Address,
+    metadata: String,
+    checksum: Hash,
+    published_at: u64,
+    downloads: u32,
+    verified: bool,
+}
+
+struct Dependency {
+    name: String,
+    version: String,
+}
+
+contract ATCPkgManager {
+    state packages: Map<String, Package>
+    state versions: Map<String, List<String>>
+    state installed: Map<Address, List<String>>
+    state package_count: u32
+    state total_downloads: u64
+    state owner: Address
+
+    event PackagePublished(name: String, version: String, author: Address)
+    event PackageInstalled(name: String, version: String, by: Address)
+    event PackageVerified(name: String, version: String)
+
+    fn init() {
+        self.packages = {}
+        self.versions = {}
+        self.installed = {}
+        self.package_count = 0
+        self.total_downloads = 0
+        self.owner = msg_sender()
+    }
+
+    fn publish(name: String, version: String, metadata: String) -> Hash {
+        let pkg_key = name + ":" + version
+        let checksum = Hash::sha256(name, version, metadata)
+        let pkg = Package {
+            name: name,
+            version: version,
+            author: msg_sender(),
+            metadata: metadata,
+            checksum: checksum,
+            published_at: Time::now(),
+            downloads: 0,
+            verified: false,
+        }
+        self.packages[pkg_key] = pkg
+        // Track versions
+        let vers = self.versions.get(name)
+        if vers == null {
+            self.versions[name] = [version]
+        } else {
+            vers.push(version)
+        }
+        self.package_count += 1
+        emit PackagePublished(name, version, msg_sender())
+        return checksum
+    }
+
+    fn install(name: String, version: String) -> bool {
+        let pkg_key = name + ":" + version
+        let pkg = self.packages.get(pkg_key)
+        if pkg == null {
+            return false
+        }
+        pkg.downloads += 1
+        self.total_downloads += 1
+        // Track installed packages per user
+        let user_pkgs = self.installed.get(msg_sender())
+        if user_pkgs == null {
+            self.installed[msg_sender()] = [pkg_key]
+        } else {
+            user_pkgs.push(pkg_key)
+        }
+        emit PackageInstalled(name, version, msg_sender())
+        return true
+    }
+
+    fn verify(name: String, version: String) -> bool {
+        let pkg_key = name + ":" + version
+        let pkg = self.packages.get(pkg_key)
+        if pkg == null {
+            return false
+        }
+        if pkg.author != msg_sender() && msg_sender() != self.owner {
+            return false
+        }
+        pkg.verified = true
+        emit PackageVerified(name, version)
+        return true
+    }
+
+    fn list_packages() -> List<String> {
+        return self.packages.keys()
+    }
+
+    fn get_package(name: String, version: String) -> (Address, Hash, u32, u64, bool) {
+        let pkg_key = name + ":" + version
+        let pkg = self.packages.get(pkg_key)
+        if pkg == null {
+            return (Address::zero(), Hash::zero(), 0, 0, false)
+        }
+        return (pkg.author, pkg.checksum, pkg.downloads, pkg.published_at, pkg.verified)
+    }
+
+    fn get_versions(name: String) -> List<String> {
+        let vers = self.versions.get(name)
+        if vers == null {
+            return []
+        }
+        return vers
+    }
+
+    fn get_latest_version(name: String) -> String {
+        let vers = self.versions.get(name)
+        if vers == null || vers.len() == 0 {
+            return ""
+        }
+        return vers[vers.len() - 1]
+    }
+
+    fn get_installed(addr: Address) -> List<String> {
+        let pkgs = self.installed.get(addr)
+        if pkgs == null {
+            return []
+        }
+        return pkgs
+    }
+
+    fn get_stats() -> (u32, u64, u16) {
+        return (self.package_count, self.total_downloads, self.installed.len())
+    }
+}
