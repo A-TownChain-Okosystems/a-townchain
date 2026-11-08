@@ -245,6 +245,18 @@ pub fn from_body(contract: &str, bases: &[String], body: &[Stmt]) -> ContractAbi
     abi
 }
 
+/// Sammel-Digest einer Quelldatei: SHA-256 ueber die kanonischen ABI-JSONs
+/// aller Vertraege, sortiert und mit Zeilenumbruch getrennt. Damit bindet eine
+/// Registrierung die Schnittstelle der ganzen Quelle, ohne Vertragsnamen zu
+/// duplizieren.
+pub fn set_digest(abis: &[ContractAbi]) -> String {
+    let mut parts: Vec<String> = abis.iter().map(|a| a.to_json()).collect();
+    parts.sort();
+    let joined = parts.join("\n");
+    let digest = Sha256::digest(joined.as_bytes());
+    digest.iter().map(|b| format!("{b:02x}")).collect()
+}
+
 /// Alle Vertrags-ABIs eines Programms, sortiert nach Vertragsname.
 pub fn from_program(program: &Program) -> Vec<ContractAbi> {
     let mut out = Vec::new();
@@ -316,6 +328,21 @@ mod tests {
         let b = abis("contract T { fn g() -> int { return 2; } state y: int fn f() -> int { return 1; } state x: int }");
         assert_eq!(a[0].to_json(), b[0].to_json());
         assert_eq!(a[0].sha256(), b[0].sha256());
+    }
+
+    #[test]
+    fn sammel_digest_ist_reihenfolge_unabhaengig() {
+        let a = abis("contract A { fn f() -> int { return 1; } } contract B { state x: int }");
+        let b = abis("contract B { state x: int } contract A { fn f() -> int { return 1; } }");
+        assert_eq!(set_digest(&a), set_digest(&b));
+        assert_eq!(set_digest(&a).len(), 64);
+    }
+
+    #[test]
+    fn sammel_digest_aendert_sich_mit_jedem_vertrag() {
+        let one = abis("contract A { fn f() -> int { return 1; } }");
+        let two = abis("contract A { fn f() -> int { return 1; } } contract B { state x: int }");
+        assert_ne!(set_digest(&one), set_digest(&two));
     }
 
     #[test]
