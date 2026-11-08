@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/A-TownChain-Okosystems/atc-engineering/blob/main/schemas/system-requirements.schema.json",
+  "title": "A-TownChain System Requirements Register",
+  "type": "object",
+  "required": [
+    "catalog_id",
+    "schema_version",
+    "document_status",
+    "generated_for_commit",
+    "rule",
+    "systems",
+    "requirements",
+    "status_definitions",
+    "cross_system_rules"
+  ],
+  "properties": {
+    "catalog_id": {
+      "const": "ATC-SYSTEM-REQUIREMENTS"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "document_status": {
+      "enum": [
+        "REQUIREMENTS_BASELINE",
+        "AUDIT_IN_PROGRESS",
+        "AUDIT_COMPLETE"
+      ]
+    },
+    "generated_for_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "rule": {
+      "type": "string",
+      "minLength": 1
+    },
+    "systems": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "required": [
+          "system_id",
+          "name",
+          "canonical_repository",
+          "canonical_path",
+          "purpose",
+          "requirement_ids"
+        ],
+        "properties": {
+          "system_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "canonical_repository": {
+            "type": "string"
+          },
+          "canonical_path": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "requirement_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "requirement_id",
+          "system_id",
+          "system_name",
+          "component_id",
+          "component_name",
+          "status",
+          "canonical_repository",
+          "canonical_path",
+          "requirement",
+          "acceptance_criteria",
+          "implementation_evidence",
+          "verification_evidence",
+          "residuals"
+        ],
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "pattern": "^[A-Z0-9-]+$"
+          },
+          "system_id": {
+            "type": "string"
+          },
+          "system_name": {
+            "type": "string"
+          },
+          "component_id": {
+            "type": "string"
+          },
+          "component_name": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "REQUIRED",
+              "DETECTED",
+              "IMPLEMENTED",
+              "VERIFIED",
+              "RESIDUAL",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "canonical_repository": {
+            "type": "string"
+          },
+          "canonical_path": {
+            "type": "string"
+          },
+          "requirement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "acceptance_criteria": {
+            "type": "string",
+            "minLength": 1
+          },
+          "implementation_evidence": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "verification_evidence": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "residuals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "status_definitions": {
+      "type": "object",
+      "required": [
+        "REQUIRED",
+        "DETECTED",
+        "IMPLEMENTED",
+        "VERIFIED",
+        "RESIDUAL",
+        "NOT_APPLICABLE"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "cross_system_rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}
