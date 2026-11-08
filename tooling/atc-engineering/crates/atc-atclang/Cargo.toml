@@ -1,0 +1,9 @@
+[package]
+name = "atc-atclang"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+description = "Governed ATCLang artifact detection, creation, editing and compiler adapter"
+
+[dependencies]
