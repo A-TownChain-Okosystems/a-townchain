@@ -1,0 +1,25 @@
+# ATC-GOV-001 Kap. 11 — 8 Governance Gates (maschinenlesbar)
+# Naming: ATC-GATE-<DOM>-NNN-Pattern (ATC-STD-002 §4)
+constitution_ref: ATC-GOV-001
+version: "1.0.0"
+rule: "Release nur bei ALL REQUIRED = PASS/APPROVED; 'Tests erfolgreich' ohne Evidence-Verweise ist NICHT GUELTIG"
+
+gates:
+  ATC-GATE-GOV-001: { name: Governance Compliance, evidence: [scr-record, approval-record, coi-check] }
+  ATC-GATE-GOV-002: { name: Architecture Compliance, evidence: [adr-<std>-record, layer-check] }
+  ATC-GATE-GOV-003: { name: Security Compliance, evidence: [security-report/, vuln-records-closed-or-mitigated, gate-sec-001] }
+  ATC-GATE-GOV-004: { name: Test/Verification, evidence: [test-report/, fuzzing-report/, regression-tests] }
+  ATC-GATE-GOV-005: { name: Repository Compliance, evidence: [repo-audit-pass, manifest-current, naming-conform] }
+  ATC-GATE-GOV-006: { name: Release Compliance, evidence: [artifact-record, sbom, signature-or-documented-exception] }
+  ATC-GATE-GOV-007: { name: Operational Readiness, evidence: [runbook, monitoring-active, backup-verified] }
+  ATC-GATE-GOV-008: { name: Post-Release Verification, evidence: [post-release-audit, rollback-test-or-plan] }
+
+governance_score:
+  weights: { decision_integrity: 20, security_governance: 15, standards_compliance: 15, repository_compliance: 10, auditability: 10, transparency: 10, change_management: 10, emergency_governance: 5, succession_recovery: 5 }
+  hard_caps:
+    critical_violation: 5
+    missing_audit_trail: 7
+    single_person_critical_authority: 6
+    uncontrolled_production_access: 4
+    no_emergency_procedure: 8
+  principle: "Nur Evidence erzeugt 10/10 — Dokumentation allein nicht"
