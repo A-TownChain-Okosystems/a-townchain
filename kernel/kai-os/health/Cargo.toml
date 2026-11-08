@@ -1,0 +1,12 @@
+[package]
+name = "kai-os-health"
+version = "0.1.0"
+edition = "2021"
+description = "KAI-OS Health: Watchdog + Health-Gossip (S19-S20, AD-008)"
+license = "Apache-2.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+kai-os-network = { path = "../network" }
