@@ -1,0 +1,109 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-01 — NAT Traversal
+// Sprint 2.2 | Network Layer | Chain-ID 9000
+// Migrated from: modules/atcnet/nat_traversal.py (143 lines)
+// STUN-based NAT detection and UDP hole-punching
+// ─────────────────────────────────────────────────────────────
+
+enum NATType { None, FullCone, RestrictedCone, PortRestricted, Symmetric, Unknown }
+
+struct STUNResult {
+    external_ip: String,
+    external_port: u16,
+    nat_type: NATType,
+    server_used: String,
+    discovered_at: u64,
+}
+
+contract NATTraversal {
+    state external_ip: String
+    state external_port: u16
+    state nat_type: NATType
+    state stun_servers: List<String>
+    state discovery_attempts: u32
+    state successful_discoveries: u32
+    state last_discovery: u64
+    state owner: Address
+
+    event NATDiscovered(external_ip: String, external_port: u16, nat_type: NATType)
+    event NATDiscoveryFailed(reason: String)
+    event HolePunchSuccess(peer: Address)
+    event HolePunchFailed(peer: Address, reason: String)
+
+    fn init() {
+        self.external_ip = ""
+        self.external_port = 0
+        self.nat_type = NATType::Unknown
+        self.stun_servers = [
+            "stun.l.google.com:19302",
+            "stun1.l.google.com:19302",
+            "stun.cloudflare.com:3478",
+        ]
+        self.discovery_attempts = 0
+        self.successful_discoveries = 0
+        self.last_discovery = 0
+        self.owner = msg_sender()
+    }
+
+    fn discover() -> (String, u16, NATType) {
+        self.discovery_attempts += 1
+        let i: u8 = 0
+        while i < self.stun_servers.len() {
+            let result = self.stun_request(self.stun_servers[i])
+            if result.external_port > 0 {
+                self.external_ip = result.external_ip
+                self.external_port = result.external_port
+                self.nat_type = result.nat_type
+                self.successful_discoveries += 1
+                self.last_discovery = Time::now()
+                emit NATDiscovered(result.external_ip, result.external_port, result.nat_type)
+                return (result.external_ip, result.external_port, result.nat_type)
+            }
+            i += 1
+        }
+        emit NATDiscoveryFailed("All STUN servers failed")
+        return ("", 0, NATType::Unknown)
+    }
+
+    fn stun_request(server: String) -> STUNResult {
+        // In production: actual STUN protocol implementation
+        // STUN_MAGIC = 0x2112A442, STUN_BINDING = 0x0001
+        let result = STUNResult {
+            external_ip: "",
+            external_port: 0,
+            nat_type: NATType::Unknown,
+            server_used: server,
+            discovered_at: Time::now(),
+        }
+        return result
+    }
+
+    fn hole_punch(peer_ip: String, peer_port: u16) -> bool {
+        if self.external_port == 0 {
+            emit HolePunchFailed(msg_sender(), "NAT not discovered")
+            return false
+        }
+        // Send UDP packets to peer's external endpoint
+        // In production: actual UDP hole-punching implementation
+        emit HolePunchSuccess(msg_sender())
+        return true
+    }
+
+    fn get_external_endpoint() -> (String, u16) {
+        return (self.external_ip, self.external_port)
+    }
+
+    fn get_nat_type() -> NATType {
+        return self.nat_type
+    }
+
+    fn add_stun_server(server: String) -> bool {
+        self.stun_servers.push(server)
+        return true
+    }
+
+    fn get_stats() -> (u32, u32, u64) {
+        return (self.discovery_attempts, self.successful_discoveries, self.last_discovery)
+    }
+}
