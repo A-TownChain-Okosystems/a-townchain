@@ -1,0 +1,199 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang — Persistent World Engine (AD-61)
+// Genesis Civilization Platform v4.0
+// Dauerhaft laufende Welten mit kontinuierlicher Simulation
+
+struct PersistentWorld {
+    id: String,
+    name: String,
+    universe: String,
+    status: String,           // "initializing"|"running"|"paused"|"maintenance"|"archived"
+    uptime_seconds: u64,
+    tick_rate: u32,
+    total_ticks: u64,
+    shards: Vec<WorldShard>,
+    global_events: Vec<GlobalEvent>,
+    seasonal_cycle: SeasonalCycle,
+    persistence: PersistenceConfig,
+    sync_config: SyncConfig
+}
+
+struct WorldShard {
+    id: String,
+    region: String,           // geographic region this shard handles
+    player_count: u32,
+    max_players: u32,
+    cpu_usage: f32,
+    memory_usage: f32,
+    status: String,           // "active"|"standby"|"draining"|"offline"
+    entities: u64,
+    last_sync: String
+}
+
+struct GlobalEvent {
+    id: String,
+    name: String,
+    type: String,             // "world_boss"|"invasion"|"festival"|"disaster"|"discovery"|"economic_shift"
+    affected_shards: Vec<String>,
+    start_tick: u64,
+    end_tick: Option<u64>,
+    participants: u64,
+    impact: Map<String, f32>,
+    is_scheduled: bool,
+    recurrence: Option<String> // "daily"|"weekly"|"monthly"|"seasonal"
+}
+
+struct SeasonalCycle {
+    current_season: String,   // "spring"|"summer"|"autumn"|"winter"
+    season_progress: f32,     // 0.0-1.0
+    season_length_ticks: u64,
+    weather_effects: Vec<String>,
+    resource_changes: Map<String, f32>,
+    event_schedule: Vec<ScheduledEvent>
+}
+
+struct ScheduledEvent {
+    id: String,
+    name: String,
+    season: String,
+    trigger: String,
+    type: String,
+    duration_ticks: u64
+}
+
+struct PersistenceConfig {
+    auto_save_interval: u32,  // ticks
+    snapshot_interval: u32,   // ticks
+    max_snapshots: u32,
+    storage_backend: String,  // "local"|"cloud"|"distributed"|"hybrid"
+    compression: bool,
+    encryption: bool,
+    delta_encoding: bool
+}
+
+struct SyncConfig {
+    mode: String,             // "eventual"|"strong"|"causal"
+    cross_shard_delay: u32,   // ms
+    conflict_resolution: String, // "last_write_wins"|"vector_clock"|"crdt"|"custom"
+    heartbeat_interval: u32,
+    max_lag_seconds: u32
+}
+
+fn pw_create(name: String, universe: String) -> PersistentWorld {
+    PersistentWorld {
+        id: generate_id("PW"),
+        name: name,
+        universe: universe,
+        status: "initializing",
+        uptime_seconds: 0,
+        tick_rate: 30,
+        total_ticks: 0,
+        shards: Vec::new(),
+        global_events: Vec::new(),
+        seasonal_cycle: SeasonalCycle::default(),
+        persistence: PersistenceConfig {
+            auto_save_interval: 600,
+            snapshot_interval: 3600,
+            max_snapshots: 24,
+            storage_backend: "hybrid",
+            compression: true,
+            encryption: true,
+            delta_encoding: true
+        },
+        sync_config: SyncConfig {
+            mode: "eventual",
+            cross_shard_delay: 100,
+            conflict_resolution: "crdt",
+            heartbeat_interval: 5,
+            max_lag_seconds: 30
+        }
+    }
+}
+
+fn pw_add_shard(world_id: String, region: String, max_players: u32) -> WorldShard {
+    let s = WorldShard {
+        id: generate_id("SH"),
+        region: region,
+        player_count: 0,
+        max_players: max_players,
+        cpu_usage: 0.0,
+        memory_usage: 0.0,
+        status: "active",
+        entities: 0,
+        last_sync: now()
+    };
+    let w = get_world(world_id);
+    w.shards.push(s);
+    s
+}
+
+fn pw_tick(world_id: String) {
+    let w = get_world(world_id);
+    if w.status != "running" { return; }
+    w.total_ticks += 1;
+    w.uptime_seconds += 1;
+    
+    // Seasonal progression
+    w.seasonal_cycle.season_progress += 1.0 / w.seasonal_cycle.season_length_ticks as f32;
+    if w.seasonal_cycle.season_progress >= 1.0 {
+        advance_season(w);
+    }
+    
+    // Process global events
+    for event in w.global_events {
+        if event.end_tick.map_or(false, |et| et <= w.total_ticks) {
+            event.impact.clear();
+        }
+    }
+    
+    // Auto-save
+    if w.total_ticks % w.persistence.auto_save_interval == 0 {
+        pw_snapshot(world_id);
+    }
+    
+    // Cross-shard sync
+    for shard in w.shards {
+        if shard.status == "active" {
+            sync_shard(shard, w.sync_config);
+        }
+    }
+}
+
+fn pw_snapshot(world_id: String) -> SnapshotResult {
+    let w = get_world(world_id);
+    let snapshot = serialize_world(w);
+    if w.persistence.compression { snapshot = compress(snapshot); }
+    if w.persistence.encryption { snapshot = encrypt(snapshot); }
+    store_snapshot(world_id, snapshot);
+    SnapshotResult { success: true, size_bytes: snapshot.len(), tick: w.total_ticks }
+}
+
+struct SnapshotResult {
+    success: bool,
+    size_bytes: u64,
+    tick: u64
+}
+
+fn pw_trigger_event(world_id: String, event: GlobalEvent) {
+    let w = get_world(world_id);
+    event.affected_shards = w.shards.iter().filter(|s| s.status == "active").map(|s| s.id).collect();
+    w.global_events.push(event);
+    notify_all_shards(w, event);
+}
+
+fn pw_rebalance_shards(world_id: String) {
+    let w = get_world(world_id);
+    let avg_players = w.shards.iter().filter(|s| s.status == "active").map(|s| s.player_count).sum::<u32>() / w.shards.len() as u32;
+    for shard in w.shards {
+        if shard.player_count > avg_players * 2 {
+            // Overloaded — spawn new shard or migrate players
+            migrate_players(shard, avg_players / 2);
+        } else if shard.player_count < avg_players / 4 {
+            // Underloaded — drain and consolidate
+            shard.status = "draining";
+        }
+    }
+}
+
+// Standards: AD-61
+// Dependencies: GCL NetworkBus (AD-05), Simulation Factory (AD-48), TelemetryBus (AD-14)
