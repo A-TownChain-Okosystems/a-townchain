@@ -1,0 +1,139 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// Shivamon Breeding — DNA-basiertes Vererbungssystem (ATC-90)
+// Gen 2 Shivamon erben Traits von 2 Eltern-Shivamon
+// Sprint 2.5 — Migrated from Python stub to ATCLang
+// ════════════════════════════════════════════════════════════════
+
+const BREEDING_COOLDOWN: u64 = 86400    // 24h Cooldown zwischen Breedings
+const MAX_GEN: u8 = 10                  // Max Generation
+const BREEDING_FEE: u128 = 100          // Fee in ATC
+
+struct ShivamonDNA {
+    sequence:  Hash,       // 256-bit DNA sequence
+    element:   String,     // fire, water, earth, air, shadow, neon, quantum, fusion
+    rarity:    u8,         // 1=legendary, 100=common
+    hp:        u16,
+    atk:       u16,
+    def:       u16,
+    spd:       u16,
+    gen:       u8
+}
+
+struct BreedingResult {
+    child:     ShivamonDNA,
+    success:   bool,
+    error:     String
+}
+
+contract ShivamonBreeding {
+
+    state shivamons: Map<Hash, ShivamonDNA>
+    state last_bred: Map<Hash, u64>     // last breeding timestamp per shivamon
+    state breeding_count: u128
+    state owner: Address
+
+    event Bred(parent_a: Hash, parent_b: Hash, child: Hash, gen: u8)
+    event DNAGenerated(shivamon_id: Hash, element: String, rarity: u8)
+
+    fn init() {
+        self.breeding_count = 0
+        self.owner = msg_sender()
+    }
+
+    // ── DNA generieren ────────────────────────────────
+    fn generate_dna(seed: String, element: String, gen: u8) -> ShivamonDNA {
+        let seq = sha256(seed + element + to_string(gen))
+        let rarity_raw = to_u8(seq[0..2]) % 100 + 1
+        let rarity = rarity_raw
+        if rarity < 1 { rarity = 1 }
+        if rarity > 100 { rarity = 100 }
+
+        // Stats: bessere Rarity = höhere Stats
+        let rarity_bonus = (100 - rarity) / 5
+        let hp = to_u16(seq[2..6]) % 51 + 50 + rarity_bonus
+        let atk = to_u16(seq[6..10]) % 51 + 40 + rarity_bonus
+        let def = to_u16(seq[10..14]) % 51 + 30 + rarity_bonus
+        let spd = to_u16(seq[14..18]) % 56 + 40 + rarity_bonus
+
+        return ShivamonDNA {
+            sequence: seq,
+            element:  element,
+            rarity:   rarity,
+            hp:       hp,
+            atk:      atk,
+            def:      def,
+            spd:      spd,
+            gen:      gen
+        }
+    }
+
+    // ── Breeding ──────────────────────────────────────
+    fn breed(parent_a_id: Hash, parent_b_id: Hash) -> BreedingResult {
+        let parent_a = self.shivamons[parent_a_id]
+        let parent_b = self.shivamons[parent_b_id]
+
+        require(exists(self.shivamons, parent_a_id), "Breeding: Parent A nicht gefunden")
+        require(exists(self.shivamons, parent_b_id), "Breeding: Parent B nicht gefunden")
+        require(parent_a_id != parent_b_id, "Breeding: Keine Selbst-Befruchtung")
+        require(parent_a.gen < MAX_GEN, "Breeding: Max Generation erreicht")
+        require(parent_b.gen < MAX_GEN, "Breeding: Max Generation erreicht")
+
+        // Cooldown prüfen
+        let now = block_timestamp()
+        let last_a = self.last_bred[parent_a_id]
+        let last_b = self.last_bred[parent_b_id]
+        require(now - last_a >= BREEDING_COOLDOWN, "Breeding: Parent A im Cooldown")
+        require(now - last_b >= BREEDING_COOLDOWN, "Breeding: Parent B im Cooldown")
+
+        // Kind-DNA generieren
+        let child_gen = parent_a.gen + 1
+        if parent_b.gen > parent_a.gen {
+            child_gen = parent_b.gen + 1
+        }
+
+        // DNA-Kombination: SHA-256 beider Eltern-Sequenzen
+        let child_seed = to_string(parent_a.sequence) + to_string(parent_b.sequence) + to_string(self.breeding_count)
+
+        // Element-Vererbung: Fusion bei verschiedenen Elementen
+        let child_element = parent_a.element
+        if parent_a.element != parent_b.element {
+            child_element = "fusion"
+        }
+
+        let child_dna = generate_dna(child_seed, child_element, child_gen)
+
+        // Kind registrieren
+        let child_id = sha256(child_seed)
+        self.shivamons[child_id] = child_dna
+        self.last_bred[parent_a_id] = now
+        self.last_bred[parent_b_id] = now
+        self.breeding_count += 1
+
+        emit Bred(parent_a_id, parent_b_id, child_id, child_gen)
+        return BreedingResult {
+            child:   child_dna,
+            success: true,
+            error:   ""
+        }
+    }
+
+    // ── Shivamon registrieren ─────────────────────────
+    fn register(shivamon_id: Hash, dna: ShivamonDNA) -> bool {
+        require(msg_sender() == self.owner, "Breeding: Nur Owner kann registrieren")
+        self.shivamons[shivamon_id] = dna
+        emit DNAGenerated(shivamon_id, dna.element, dna.rarity)
+        return true
+    }
+
+    // ── Shivamon abrufen ──────────────────────────────
+    fn get_dna(shivamon_id: Hash) -> ShivamonDNA {
+        require(exists(self.shivamons, shivamon_id), "Breeding: Shivamon nicht gefunden")
+        return self.shivamons[shivamon_id]
+    }
+
+    // ── Statistiken ───────────────────────────────────
+    fn total_bred() -> u128 {
+        return self.breeding_count
+    }
+}
