@@ -5,6 +5,7 @@
 #   tools/ecosystem.sh test      alle Testsuiten ausführen
 #   tools/ecosystem.sh smoke     laufende Kette prüfen (Node, RPC, Compiler, VM, Wallet)
 #   tools/ecosystem.sh status    Übersicht: Workspaces, Crates, Programme
+#   tools/ecosystem.sh boot      ShivaCore-Kernel unter QEMU booten (UEFI)
 #
 # Das Monorepo ist ein Root-Workspace plus sechs eigenständige Unter-Workspaces.
 # GlobusOS enthält einen UEFI-Bootloader und baut deshalb auf Nightly; alle
@@ -99,6 +100,63 @@ cmd_test() {
   return $FAIL
 }
 
+cmd_boot() {
+  require_cargo
+  echo "ShivaCore-Kernel booten (QEMU, UEFI)"
+  local elf=kernel/globus-os/target/x86_64-unknown-none/release/shivacore
+  local out=/tmp/atc_boot; local serial=/tmp/atc_boot_serial.log
+  local code=223
+  if [ ! -f "$elf" ]; then
+    printf '  %-26s ' "Kernel-ELF"
+    if ! ( cd kernel/globus-os && cargo +nightly build --release -p shivacore \
+           --features x86-boot --target x86_64-unknown-none \
+           -Z build-std=core,alloc ) >/tmp/atc_boot_kernel.log 2>&1; then
+      echo "FEHLER (Log: /tmp/atc_boot_kernel.log)"; return 1
+    fi
+    echo "ok"
+  fi
+
+  printf '  %-26s ' "Boot-Image"
+  if ( cd kernel/globus-os && cargo build -q -p boot && \
+       ./target/debug/boot target/x86_64-unknown-none/release/shivacore "$out" ) \
+       >/tmp/atc_boot_image.log 2>&1; then
+    echo "ok ($out/shivacore-uefi.img)"
+  else
+    echo "FEHLER (Log: /tmp/atc_boot_image.log)"; return 1
+  fi
+
+  if ! command -v qemu-system-x86_64 >/dev/null; then
+    printf '  %-26s\n' "QEMU" "fehlt — apt-get install qemu-system-x86 ovmf"
+    return 1
+  fi
+  local ovmf=/usr/share/OVMF/OVMF_CODE.fd
+  if [ ! -f "$ovmf" ]; then
+    printf '  %-26s\n' "UEFI-Firmware" "fehlt — apt-get install ovmf"
+    return 1
+  fi
+
+  local secs="${ATC_BOOT_SECONDS:-25}"
+  cp /usr/share/OVMF/OVMF_VARS.fd /tmp/atc_boot_vars.fd 2>/dev/null
+  printf '  %-26s ' "QEMU-Start"
+  timeout $((secs + 15)) qemu-system-x86_64 -machine q35 -m 512 -display none \
+    -serial "file:$serial" -no-reboot \
+    -drive if=pflash,format=raw,unit=0,readonly=on,file="$ovmf" \
+    -drive if=pflash,format=raw,unit=1,file=/tmp/atc_boot_vars.fd \
+    -drive format=raw,file="$out/shivacore-uefi.img" >/tmp/atc_boot_qemu.log 2>&1
+  code=$?
+  # 124 = lief bis zum Timeout, also erwartet: ein Kernel bleibt stehen
+  if [ "$code" = "124" ]; then echo "ok ($secs s)"; else echo "beendet mit $code"; fi
+
+  local entry switches
+  entry=$(grep -ac "Kernel-Einstiegspunkt erreicht" "$serial" 2>/dev/null || echo 0)
+  switches=$(grep -ac "context switch to PID" "$serial" 2>/dev/null || echo 0)
+  [ "$entry" -gt 0 ] && ok "Kernel-Einstiegspunkt erreicht" || bad "Kernel ist nicht gestartet"
+  [ "$switches" -gt 0 ] && ok "Scheduler wechselt Kontexte ($switches Wechsel)" || info "kein Kontextwechsel gesehen"
+  grep -aq "ACPI.*validated" "$serial" && ok "ACPI-Tabellen geprüft" || info "ACPI nicht bestätigt"
+  info "Serielles Protokoll: $serial"
+  return $FAIL
+}
+
 cmd_smoke() {
   require_cargo
   echo "Laufzeit-Smoke — alle Schichten greifen ineinander"
@@ -184,6 +242,7 @@ case "${1:-}" in
   build)  cmd_build ;;
   test)   cmd_test ;;
   smoke)  cmd_smoke ;;
+  boot)   cmd_boot ;;
   status) cmd_status ;;
   *) sed -n '2,13p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 2 ;;
 esac
