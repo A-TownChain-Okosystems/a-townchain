@@ -1,0 +1,122 @@
+{
+  "schema_version": "1.0.0",
+  "repository": "A-TownChain-Okosystems/atc-engineering",
+  "source_commit_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+  "catalog_commit_sha": "5c27a52e476d6ca10ab3650e7d0370a20e741e70",
+  "status": "BLOCKED",
+  "scope": {
+    "source_census": "PARTIAL",
+    "normative_registry": "NOT_RUN",
+    "parser_coverage": "PARTIAL",
+    "interfaces_contracts": "PARTIAL",
+    "organization_ownership": "PARTIAL"
+  },
+  "counts": {
+    "source_files_seen": 117,
+    "catalog_symbols": 342,
+    "missing_catalog_entries": null,
+    "stale_catalog_entries": null,
+    "duplicate_bindings": null,
+    "orphan_catalog_entries": null,
+    "unsupported_files": null,
+    "parse_errors": null,
+    "unmapped_interfaces": null,
+    "ownership_conflicts": null,
+    "comparison_source_file_blobs": 115,
+    "catalog_snapshot_file_blobs": 117,
+    "catalog_exclusions": 79
+  },
+  "findings": [
+    {
+      "finding_id": "ATCE-RECON-001",
+      "category": "NORMATIVE_ID",
+      "status": "BLOCKED",
+      "description": "The 12 candidate component IDs are proposals; no canonical normative registry binding has been established.",
+      "evidence": []
+    },
+    {
+      "finding_id": "ATCE-RECON-002",
+      "category": "MISSING_ENTRY",
+      "status": "OPEN",
+      "description": "Recursive Git-tree comparison is complete for the two pinned snapshots (115 versus 117 file blobs); generator CI on catalog_commit_sha reproduced 117 scanned files, 342 DETECTED symbols, and 79 explicit exclusions. A bidirectional symbol identity diff has not been run; missing-entry count remains unknown.",
+      "evidence": [
+        {
+          "repository": "A-TownChain-Okosystems/atc-engineering",
+          "path": "docs/architecture/source-tree-manifest.b2ad23ee.json",
+          "blob_sha": "7d4ed258529ada3b853cf7b346f22328647d9b8e",
+          "symbol": null
+        }
+      ]
+    },
+    {
+      "finding_id": "ATCE-RECON-003",
+      "category": "STALE_ENTRY",
+      "status": "OPEN",
+      "description": "Stale, duplicate, and orphan catalog entries have not been exhaustively reconciled against the source tree.",
+      "evidence": []
+    },
+    {
+      "finding_id": "ATCE-RECON-004",
+      "category": "PARSER_COVERAGE",
+      "status": "OPEN",
+      "description": "The exact catalog-commit workflow reproduced 79 explicit exclusions, but exclusion-by-exclusion correctness and parser completeness remain unverified.",
+      "evidence": []
+    },
+    {
+      "finding_id": "ATCE-RECON-005",
+      "category": "INTERFACE_CONTRACT",
+      "status": "OPEN",
+      "description": "A bounded, source-bound census now records four initial interface/schema declarations: two have source implementation bindings, two are schema-only, all four lack a reconciled consumer mapping, and the integration-graph contract has no versioned schema. The inventory is intentionally non-exhaustive; the organization-wide unmapped-interface count remains unknown.",
+      "evidence": [
+        {
+          "repository": "A-TownChain-Okosystems/atc-engineering",
+          "path": "docs/architecture/ECOSYSTEM-INTEGRATION-001.md",
+          "blob_sha": "b3bf5b1a3deb05f7d51e0b5b24a24789c19cb9bf",
+          "symbol": null
+        },
+        {
+          "repository": "A-TownChain-Okosystems/atc-engineering",
+          "path": "docs/architecture/interface-contract-census.v1.json",
+          "blob_sha": "39be998cc35961ac6541f9295962019d3fbc5f60",
+          "symbol": null
+        },
+        {
+          "repository": "A-TownChain-Okosystems/atc-engineering",
+          "path": "crates/atc-integration/src/lib.rs",
+          "blob_sha": "19af7db9ae33520ff2ba48305694b7df59d19bba",
+          "symbol": "IntegrationGraph::validate"
+        }
+      ]
+    },
+    {
+      "finding_id": "ATCE-RECON-006",
+      "category": "OWNERSHIP_CONFLICT",
+      "status": "OPEN",
+      "description": "Initial ownership evidence remains proposal-level: the component-evidence manifest contains 12 candidates marked REVIEW_REQUIRED; no normative registry binding or organization-wide duplicate-implementation reconciliation is established.",
+      "evidence": [
+        {
+          "repository": "A-TownChain-Okosystems/atc-engineering",
+          "path": "docs/architecture/atc-engineering-component-evidence.v1.json",
+          "blob_sha": "f972a64f37d1837b5746e138c7821c96ebf20e39",
+          "symbol": null
+        },
+        {
+          "repository": "A-TownChain-Okosystems/atc-engineering",
+          "path": "schemas/atc-engineering-component-evidence.schema.json",
+          "blob_sha": "823823a33974f3c01676c1e2112ddc6b7e6754f7",
+          "symbol": null
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "This is a fail-closed initial reconciliation record, not a completed source-to-catalog symbol diff.",
+    "comparison_source_file_blobs and catalog_snapshot_file_blobs count tracked file blobs in the two recursive Git trees; source_files_seen is the generator's scanned-file count from the catalog commit.",
+    "Null counts mean unknown/not measured; they must not be interpreted as zero.",
+    "The 342 symbols and 79 explicit exclusions were reproduced by workflow run 38549057606 at catalog commit 5c27a52e476d6ca10ab3650e7d0370a20e741e70; output status is DETECTED, not VERIFIED.",
+    "A RECONCILED status requires complete scope dimensions, zero unresolved blocking findings, and exact-head CI evidence.",
+    "Interface and ownership review is PARTIAL: the integration graph is descriptive evidence, and 12 component candidates remain REVIEW_REQUIRED; unmapped interface and ownership-conflict counts are unknown, not zero.",
+    "A bounded interface-contract census is recorded in docs/architecture/interface-contract-census.v1.json. Its listed source/schema blob bindings are checked against the pinned tree manifest; this does not establish inventory completeness, schema conformance, consumer compatibility, or organization-wide unmapped-interface totals."
+  ],
+  "decision_rule": "Do not mark a candidate VERIFIED based only on file existence or CI success. Preserve BLOCKED/OPEN when source, normative, parser, interface, or ownership evidence is missing."
+}
