@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-232",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #232: Catalog: reconcile COMP-ATC-ENG evidence source binding",
+  "context": "Pull request 232 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "archived",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/232",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: False\nDraft: True\n\n## Scope\nRefresh only the stale source binding for `FN-ATC-ENG-002` in the component-function catalog.\n\n- Catalog base: `547598d04a9daaed13714b39b30b45305d315dd1`\n- Canonical source commit: `38ab42e81847ac6bc03c2d288ec7a9b8a940c670`\n- Source file blob: `5dd34c63488b46dd7fc74dd40b0224a25663125a`\n- Updated exact-source evidence URL and the duplicated verification-evidence source SHA.\n- No implementation files changed; no functional verification is claimed.\n- The component-level source inventory HEAD/tree remains a separate residual and is intentionally not changed in this bounded step.\n\nThis is a draft for catalog-gate review. No merge or release is authorized."
+}
