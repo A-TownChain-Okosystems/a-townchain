@@ -1,0 +1,64 @@
+// K-Sprint 19 — ShivaVM Contract Virtual Machine (ATCLang Interface)
+// Rust: kernel/src/vm.rs (54 lines, 21 tests)
+// Agent: Aurora #2 (6a275618)
+
+enum Opcode {
+    NOP = 0x00,
+    PUSH = 0x01,
+    POP = 0x02,
+    ADD = 0x10,
+    SUB = 0x11,
+    MUL = 0x12,
+    DIV = 0x13,
+    MOD = 0x14,
+    EQ = 0x20,
+    NE = 0x21,
+    LT = 0x22,
+    GT = 0x23,
+    JUMP = 0x30,
+    JUMP_IF = 0x31,
+    CALL = 0x32,
+    RET = 0x33,
+    STORE = 0x40,
+    LOAD = 0x41,
+    HALT = 0xFF,
+}
+
+struct ExecResult {
+    success: bool,
+    gas_used: u64,
+    return_value: u64,
+    error: Option<String>,
+}
+
+struct Contract {
+    address: String,
+    bytecode: List<u8>,
+    owner: String,
+}
+
+module Kernel::VM {
+    contract ContractStorage {
+        fn store(key: String, slot: u64, value: u64) -> bool
+        fn load(key: String, slot: u64) -> u64
+        fn exists(key: String, slot: u64) -> bool
+    }
+
+    contract ContractRegistry {
+        fn register(name: String, contract: Contract) -> bool
+        fn get(name: String) -> Option<Contract>
+        fn list() -> List<String>
+    }
+
+    contract ShivaVM {
+        fn execute(storage: ContractStorage, registry: ContractRegistry) -> ExecResult
+        fn gas_remaining() -> u64
+        fn gas_used() -> u64
+    }
+
+    contract VmEngine {
+        fn deploy(bytecode: List<u8>) -> String
+        fn call(addr: String, call_data: List<u8>) -> ExecResult
+        fn build_bytecode(ops: List<(Opcode, Option<u64>)>) -> List<u8>
+    }
+}
