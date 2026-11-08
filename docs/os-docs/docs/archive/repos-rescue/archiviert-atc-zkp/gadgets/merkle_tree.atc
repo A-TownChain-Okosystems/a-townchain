@@ -1,0 +1,17 @@
+// ATCLang v0.3 — Merkle Tree Gadget
+// ZKP-Gadget für Merkle-Tree-Beweise
+// ATC-Standard: ATC-24
+
+module merkle_gadget {
+    fn prove_membership(leaf: string, path: List[string], root: string) {
+        // Beweist: leaf ist in Tree mit root enthalten
+    }
+    
+    fn prove_non_membership(leaf: string, path: List[string]) {
+        // Beweist: leaf ist NICHT im Tree
+    }
+    
+    fn update_leaf(old_leaf: string, new_leaf: string, path: List[string]) {
+        // Beweist korrekte Leaf-Aktualisierung
+    }
+}
