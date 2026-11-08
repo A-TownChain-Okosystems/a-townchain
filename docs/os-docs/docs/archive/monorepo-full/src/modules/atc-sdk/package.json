@@ -1,0 +1,9 @@
+{
+  "name": "atc-sdk-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ATC SDK — multi-language workspace (Rust + TypeScript)",
+  "author": "Michael Wroblewski",
+  "license": "UNLICENSED",
+  "workspaces": ["typescript"]
+}
