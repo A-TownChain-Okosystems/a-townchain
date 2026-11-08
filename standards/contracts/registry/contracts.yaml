@@ -1,11 +1,46 @@
 # Contract Registry — ATC-STD-SC-002/019 · SSOT aller Smart Contracts
-# Geprueft durch tools/atc-sc-validator/check_contract_registry.py (Gate A1-A7).
-# source_sha256 bindet jeden Eintrag an die Quelle; Drift laesst das Gate fehlschlagen.
+# Geprueft durch tools/atc-sc-validator/check_contract_registry.py (Gate A1-A9).
+# source_sha256 bindet jeden Eintrag an die Quelle, abi_sha256 an die ABI;
+# Drift in Quelle oder Schnittstelle laesst das Gate fehlschlagen.
 contracts:
+  - contract_id: ATC-SC-BRIDGE-001
+    name: "ATC-91 Cross-Chain Bridge"
+    category: SC-BRIDGE
+    version: 0.2.0
+    status: development
+    language: atclang
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain
+    contract_path: apps/atc-contracts/bridge/bridge_contract.atc
+    source_sha256: a5d3c27f55bde0dba626f30e0ce82c1818057085c167d203f92a302eadc17710
+    abi_sha256: 49c5524cd314217b8bc53543d36e743755f7ee79cc69f8c34c458d1f65b2710f
+    note: "Lock-Mint/Burn-Release fuer Cross-Chain-Transfers"
+
+  - contract_id: ATC-SC-BRIDGE-002
+    name: "ATC-20 Wrapped Synthetic Assets"
+    category: SC-BRIDGE
+    version: 0.1.0
+    status: development
+    language: atclang
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain
+    contract_path: apps/atc-contracts/standards/atc-20_wrapped_synthetic_assets.atc
+    source_sha256: 115cf9f02f6858933f97999341a8e2b4909555a781ba4b68d606efdcdfa28064
+    abi_sha256: a59b2c36a47211507de2e8d59c42be7fb2f18e52bfb86771b6b0217bbb780afc
+    note: "Verpackte synthetische Assets als ATC-20-Referenzvertrag"
+
   - contract_id: ATC-SC-CORE-001
     name: "Base Contract (Basis-ABI)"
     category: SC-CORE
-    version: "0.1.0"
+    version: 0.1.0
     status: development
     language: atclang
     runtime: atc-vm
@@ -16,12 +51,13 @@ contracts:
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/base/base_contract.atc
     source_sha256: 5e088e8b212b4b7fba306de20adac4055166b5a0289889ca568b3f276c91a91a
+    abi_sha256: 1dacd6779e2a299a0bd50301ef245365bc4b330b2a606c15ac0515707718f823
     note: "Basisvertrag fuer Vererbung: Ownership, Pausable, Events"
 
   - contract_id: ATC-SC-CORE-002
     name: "Smart-Contract-Suite (Sammelmodul)"
     category: SC-CORE
-    version: "0.1.0"
+    version: 0.1.0
     status: development
     language: atclang
     runtime: atc-vm
@@ -32,12 +68,132 @@ contracts:
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/smart_contracts.atc
     source_sha256: 97aaa600d6208b60967b5a864d32f5cb00585f775adae939844defa1d23f4a4d
+    abi_sha256: 298917df428f379b8c0c5f0616065c91ddae8eabac770b2d7cfcf125b4b3939e
     note: "Sammelmodul der Contract-Bibliothek; Einzelvertraege werden separat registriert"
+
+  - contract_id: ATC-SC-DEFI-001
+    name: "Revenue Share"
+    category: SC-DEFI
+    version: 0.2.0
+    status: development
+    language: atclang
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain
+    contract_path: apps/atc-contracts/contracts/revenue.atc
+    source_sha256: 5b5573fffaf84789a64819bbe9079e71e5e8df745be957d82044ae07bd13605a
+    abi_sha256: 0dedd61e7122bc314c68d366febc92e880d41d0ab252273bd766610e3d606bca
+    note: "Automatische Gewinnverteilung, ATC-8300-konform"
+
+  - contract_id: ATC-SC-DEFI-002
+    name: "ATC-13 Fractional Asset Ownership"
+    category: SC-DEFI
+    version: 0.1.0
+    status: development
+    language: atclang
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain
+    contract_path: apps/atc-contracts/standards/atc-13_fractional_asset_ownership.atc
+    source_sha256: 9a4e1511f1dca893ba8c0c69496d8bddea5226053ad228027a8c8c3869c817f8
+    abi_sha256: 68a973cdf0376322fa5b90fb4d078f2f8c3cf2652f5c46fcb065d691ee50a88e
+    note: "Teilbesitz an Assets als ATC-13-Referenzvertrag"
+
+  - contract_id: ATC-SC-GAMEFI-001
+    name: "ATC-16 Referral Multi-Tier Rewards"
+    category: SC-GAMEFI
+    version: 0.1.0
+    status: development
+    language: atclang
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain
+    contract_path: apps/atc-contracts/standards/atc-16_referral_multitier_rewards.atc
+    source_sha256: c2d284ed5e3c7e0bbc935a60db08c6fa1ac27d160859cf945761f4782370bb14
+    abi_sha256: 7e8b6c26bf7cabdf302543b963d47026b2a13320a4e41f1dc7b281344b59d362
+    note: "Mehrstufiges Empfehlungsprogramm als ATC-16-Referenzvertrag"
+
+  - contract_id: ATC-SC-GOVERNANCE-001
+    name: "ATC-17 Governance DAO"
+    category: SC-GOVERNANCE
+    version: 0.2.0
+    status: development
+    language: atclang
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain
+    contract_path: apps/atc-contracts/governance/governance_contract.atc
+    source_sha256: 13da0c04c3961549bc4603dcbc13ec5132d5e8d7ff335833e00f47eeee9d8fb7
+    abi_sha256: d0e56bc1161c0747c183162b22e425e612b676e49b4a0d5b149d45d4a9eb7c9b
+    note: "create_proposal/vote/finalize/execute mit Timelock"
+
+  - contract_id: ATC-SC-MINING-001
+    name: "ATC-15 Proof of AI Mining"
+    category: SC-MINING
+    version: 0.1.0
+    status: development
+    language: atclang
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain
+    contract_path: apps/atc-contracts/standards/atc-15_proof_of_ai_mining.atc
+    source_sha256: bd25350008b7de36babc54d1622803900f8cff48f5e068c5019fc885521b5fed
+    abi_sha256: 18ce86595df4c8a5ce096dbce2db74ba89ff826b3330523019271ea82ce40607
+    note: "Mining-Nachweis ueber KI-Leistung als ATC-15-Referenzvertrag"
+
+  - contract_id: ATC-SC-NFT-001
+    name: "ATCAvatar NFT (Beispiel)"
+    category: SC-NFT
+    version: 0.1.0
+    status: example
+    language: atclang
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain
+    contract_path: apps/atc-contracts/examples/ATCAvatarNFT.atc
+    source_sha256: dc8cce8fe0cf3492149a21b696650d5e0f09e95fcf530db43f44820a2f647db6
+    abi_sha256: 4b199014e4e893343031a3f860af4d4061e6567299f72f84064e6b6697125d4f
+    note: "Beispielvertrag; nicht fuer Deployment vorgesehen"
+
+  - contract_id: ATC-SC-REGISTRY-001
+    name: "On-Chain Contract Registry"
+    category: SC-REGISTRY
+    version: 0.1.0
+    status: development
+    language: atclang
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain
+    contract_path: apps/atc-contracts/smart_contract_registry.atc
+    source_sha256: d3b5240bc0f1ffe75952d3869ff3bf4acbdd74082be0aca180d24beb982b57c6
+    abi_sha256: 4c57cd99138beccb99ae154677ef7d29d31372fa6d84ca77e62811cedb106c32
+    note: "On-Chain-Gegenstueck zur Registry in standards/contracts/registry"
 
   - contract_id: ATC-SC-TOKEN-001
     name: "ATCoiN (ATC-89) nativer Token"
     category: SC-TOKEN
-    version: "0.2.0"
+    version: 0.2.0
     status: development
     language: atclang
     runtime: atc-vm
@@ -48,12 +204,13 @@ contracts:
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/atcoin/atcoin.atc
     source_sha256: 2918aab04ac7627951db9d0898a81915b2efd06dca243d39382ae6e19afcdb4d
+    abi_sha256: b75558ae5604bc30ba985dfc081c44e1cfdb511396744e4f5e331b4a93c0ee96
     note: "Symbol ATC, Max Supply 360M, Migrationsziel des ATC-001-Genesis-Tokens"
 
   - contract_id: ATC-SC-TOKEN-002
     name: "ATC-8300 Fungible Token Standard"
     category: SC-TOKEN
-    version: "0.2.0"
+    version: 0.2.0
     status: development
     language: atclang
     runtime: atc-vm
@@ -64,12 +221,13 @@ contracts:
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/atc8300/atc8300.atc
     source_sha256: 2f1fbd108b7a318f53579d5cca1c30f59eedd4df72d04dd4c6ecfce1db241da0
+    abi_sha256: 365c4b0cc39e9c357fed0e880000ef5cffdd383a816b252da192239bc195ce34
     note: "Token-Standard (kein ERC-20-Fork); Interface-Basis fuer ATCLang-Vertraege"
 
   - contract_id: ATC-SC-TOKEN-003
     name: "ATC-8300 Token-Instanz"
     category: SC-TOKEN
-    version: "0.2.0"
+    version: 0.2.0
     status: development
     language: atclang
     runtime: atc-vm
@@ -80,12 +238,13 @@ contracts:
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/atc8300/atc8300_token.atc
     source_sha256: 643ee15de0119838d61e1e1623b6fa85ad40797a28bd46a3b5955a37526f48cf
+    abi_sha256: 1ece6c7c059217d7541e007ff87798ad2ff184f200277f98ec5f920aad1b1b0e
     note: "Deploybare Token-Instanz auf Basis des ATC-8300-Standards"
 
   - contract_id: ATC-SC-TOKEN-004
     name: "Generischer Token-Contract"
     category: SC-TOKEN
-    version: "0.1.0"
+    version: 0.1.0
     status: development
     language: atclang
     runtime: atc-vm
@@ -96,12 +255,13 @@ contracts:
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/contracts/token.atc
     source_sha256: 35060272e2234bd628fcff88e69ba4a7d36568148f1a50fe74355231302e8c05
+    abi_sha256: 1b77f6f73b2ad2c26be7324b1c8c3957fe0bb635a3993270e4ddb0e856ce9f7d
     note: "Referenz-Token ohne Projektbindung"
 
   - contract_id: ATC-SC-TOKEN-005
     name: "ATC-001 Genesis Token (v0.1)"
     category: SC-TOKEN
-    version: "0.1.0"
+    version: 0.1.0
     status: archived
     language: atclang
     runtime: atc-vm
@@ -114,151 +274,7 @@ contracts:
     source_sha256: 2c0025e6bf1c1f1a4008a94ebad3160590f51e9e82ef9b4ed625be430545c809
     note: "Abgeloest durch ATC-SC-TOKEN-001 (ATCoiN); Datei traegt ARCHIVED-Marker"
 
-  - contract_id: ATC-SC-DEFI-001
-    name: "Revenue Share"
-    category: SC-DEFI
-    version: "0.2.0"
-    status: development
-    language: atclang
-    runtime: atc-vm
-    owner: ATC-Governance
-    upgradeable: false
-    verified: false
-    audited: false
-    source_repository: A-TownChain-Okosystems/a-townchain
-    contract_path: apps/atc-contracts/contracts/revenue.atc
-    source_sha256: 5b5573fffaf84789a64819bbe9079e71e5e8df745be957d82044ae07bd13605a
-    note: "Automatische Gewinnverteilung, ATC-8300-konform"
-
-  - contract_id: ATC-SC-DEFI-002
-    name: "ATC-13 Fractional Asset Ownership"
-    category: SC-DEFI
-    version: "0.1.0"
-    status: development
-    language: atclang
-    runtime: atc-vm
-    owner: ATC-Governance
-    upgradeable: false
-    verified: false
-    audited: false
-    source_repository: A-TownChain-Okosystems/a-townchain
-    contract_path: apps/atc-contracts/standards/atc-13_fractional_asset_ownership.atc
-    source_sha256: 9a4e1511f1dca893ba8c0c69496d8bddea5226053ad228027a8c8c3869c817f8
-    note: "Teilbesitz an Assets als ATC-13-Referenzvertrag"
-
-  - contract_id: ATC-SC-GOVERNANCE-001
-    name: "ATC-17 Governance DAO"
-    category: SC-GOVERNANCE
-    version: "0.2.0"
-    status: development
-    language: atclang
-    runtime: atc-vm
-    owner: ATC-Governance
-    upgradeable: false
-    verified: false
-    audited: false
-    source_repository: A-TownChain-Okosystems/a-townchain
-    contract_path: apps/atc-contracts/governance/governance_contract.atc
-    source_sha256: 13da0c04c3961549bc4603dcbc13ec5132d5e8d7ff335833e00f47eeee9d8fb7
-    note: "create_proposal/vote/finalize/execute mit Timelock"
-
-  - contract_id: ATC-SC-BRIDGE-001
-    name: "ATC-91 Cross-Chain Bridge"
-    category: SC-BRIDGE
-    version: "0.2.0"
-    status: development
-    language: atclang
-    runtime: atc-vm
-    owner: ATC-Governance
-    upgradeable: false
-    verified: false
-    audited: false
-    source_repository: A-TownChain-Okosystems/a-townchain
-    contract_path: apps/atc-contracts/bridge/bridge_contract.atc
-    source_sha256: a5d3c27f55bde0dba626f30e0ce82c1818057085c167d203f92a302eadc17710
-    note: "Lock-Mint/Burn-Release fuer Cross-Chain-Transfers"
-
-  - contract_id: ATC-SC-BRIDGE-002
-    name: "ATC-20 Wrapped Synthetic Assets"
-    category: SC-BRIDGE
-    version: "0.1.0"
-    status: development
-    language: atclang
-    runtime: atc-vm
-    owner: ATC-Governance
-    upgradeable: false
-    verified: false
-    audited: false
-    source_repository: A-TownChain-Okosystems/a-townchain
-    contract_path: apps/atc-contracts/standards/atc-20_wrapped_synthetic_assets.atc
-    source_sha256: 115cf9f02f6858933f97999341a8e2b4909555a781ba4b68d606efdcdfa28064
-    note: "Verpackte synthetische Assets als ATC-20-Referenzvertrag"
-
-  - contract_id: ATC-SC-MINING-001
-    name: "ATC-15 Proof of AI Mining"
-    category: SC-MINING
-    version: "0.1.0"
-    status: development
-    language: atclang
-    runtime: atc-vm
-    owner: ATC-Governance
-    upgradeable: false
-    verified: false
-    audited: false
-    source_repository: A-TownChain-Okosystems/a-townchain
-    contract_path: apps/atc-contracts/standards/atc-15_proof_of_ai_mining.atc
-    source_sha256: bd25350008b7de36babc54d1622803900f8cff48f5e068c5019fc885521b5fed
-    note: "Mining-Nachweis ueber KI-Leistung als ATC-15-Referenzvertrag"
-
-  - contract_id: ATC-SC-GAMEFI-001
-    name: "ATC-16 Referral Multi-Tier Rewards"
-    category: SC-GAMEFI
-    version: "0.1.0"
-    status: development
-    language: atclang
-    runtime: atc-vm
-    owner: ATC-Governance
-    upgradeable: false
-    verified: false
-    audited: false
-    source_repository: A-TownChain-Okosystems/a-townchain
-    contract_path: apps/atc-contracts/standards/atc-16_referral_multitier_rewards.atc
-    source_sha256: c2d284ed5e3c7e0bbc935a60db08c6fa1ac27d160859cf945761f4782370bb14
-    note: "Mehrstufiges Empfehlungsprogramm als ATC-16-Referenzvertrag"
-
-  - contract_id: ATC-SC-NFT-001
-    name: "ATCAvatar NFT (Beispiel)"
-    category: SC-NFT
-    version: "0.1.0"
-    status: example
-    language: atclang
-    runtime: atc-vm
-    owner: ATC-Governance
-    upgradeable: false
-    verified: false
-    audited: false
-    source_repository: A-TownChain-Okosystems/a-townchain
-    contract_path: apps/atc-contracts/examples/ATCAvatarNFT.atc
-    source_sha256: dc8cce8fe0cf3492149a21b696650d5e0f09e95fcf530db43f44820a2f647db6
-    note: "Beispielvertrag; nicht fuer Deployment vorgesehen"
-
-  - contract_id: ATC-SC-REGISTRY-001
-    name: "On-Chain Contract Registry"
-    category: SC-REGISTRY
-    version: "0.1.0"
-    status: development
-    language: atclang
-    runtime: atc-vm
-    owner: ATC-Governance
-    upgradeable: false
-    verified: false
-    audited: false
-    source_repository: A-TownChain-Okosystems/a-townchain
-    contract_path: apps/atc-contracts/smart_contract_registry.atc
-    source_sha256: d3b5240bc0f1ffe75952d3869ff3bf4acbdd74082be0aca180d24beb982b57c6
-    note: "On-Chain-Gegenstueck zur Registry in standards/contracts/registry"
-
 exclusions:
-  - "apps/atc-contracts/modules/**"     # Spiegel der Repo-Wurzel im Monorepo (identische Dateien)
-  - "apps/atc-contracts/exec_chain/**"  # VM-Ausfuehrungsfixtures und Testprogramme
-  - "apps/atc-contracts/**/tests/**"    # Contract-Tests, keine deploybaren Vertraege
+  - "apps/atc-contracts/modules/**"
+  - "apps/atc-contracts/exec_chain/**"
+  - "apps/atc-contracts/**/tests/**"
