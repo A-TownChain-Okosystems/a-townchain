@@ -1,0 +1,104 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-71 — Asset Bundle System
+# Genesis Engine — Production-grade asset bundling
+# Standard: AD-71, Teil des AAA Asset Management Systems
+
+struct AssetBundle:
+    name: String
+    bundle_type: String      # "core" | "gameplay" | "expansion" | "mod"
+    assets: Map<String, AssetRef>
+    dependencies: Array<String>
+    size_bytes: Int64
+    checksum: String
+    encrypted: Bool
+    version: String
+    loaded: Bool
+
+struct AssetRef:
+    path: String
+    asset_type: String       # "texture" | "audio" | "font" | "animation" | "shader" | "model3d" | "ai"
+    priority: String          # "critical" | "high" | "medium" | "low"
+    size_bytes: Int64
+    ref_count: Int32
+
+# Core Bundle — immer geladen
+#   UI, Fonts, Icons, Buttons
+# Gameplay Bundle — beim Spielstart
+#   Portraits, Sounds, Animations, Characters
+# Expansion Bundle — bei Bedarf
+#   DLC, Mods, Seasonal Content
+
+func create_bundle(name: String, btype: String) -> AssetBundle:
+    return AssetBundle {
+        name: name,
+        bundle_type: btype,
+        assets: {},
+        dependencies: [],
+        size_bytes: 0,
+        checksum: "",
+        encrypted: btype != "core",
+        version: "1.0.0",
+        loaded: false
+    }
+
+func add_asset(bundle: AssetBundle, ref: AssetRef) -> Bool:
+    bundle.assets[ref.path] = ref
+    bundle.size_bytes += ref.size_bytes
+    return true
+
+func load_bundle(bundle: AssetBundle) -> Bool:
+    if bundle.loaded:
+        return true
+    # Lade Dependencies zuerst
+    for dep in bundle.dependencies:
+        dep_bundle = get_bundle(dep)
+        if dep_bundle and not dep_bundle.loaded:
+            load_bundle(dep_bundle)
+    # Entschlüssele falls nötig
+    if bundle.encrypted:
+        decrypt_bundle(bundle)
+    # Lade alle Assets gemäß Priorität
+    for ref in bundle.assets:
+        load_asset_by_priority(ref)
+    bundle.loaded = true
+    log_info(f"Bundle '{bundle.name}' loaded ({bundle.size_bytes} bytes)")
+    return true
+
+func unload_bundle(bundle: AssetBundle) -> Bool:
+    if not bundle.loaded:
+        return true
+    for ref in bundle.assets:
+        if ref.ref_count == 0:
+            unload_asset(ref)
+    bundle.loaded = false
+    log_info(f"Bundle '{bundle.name}' unloaded")
+    return true
+
+func verify_bundle(bundle: AssetBundle) -> Bool:
+    computed = compute_checksum(bundle)
+    return computed == bundle.checksum
+
+# Standard-Bundles die bei Engine-Start registriert werden
+func init_standard_bundles() -> Map<String, AssetBundle>:
+    bundles = {}
+    # Core Bundle — immer aktiv
+    core = create_bundle("core", "core")
+    core.encrypted = false
+    add_asset(core, AssetRef{"ui/skin.atlas", "texture", "critical", 0, 0})
+    add_asset(core, AssetRef{"fonts/main.bmf", "font", "critical", 0, 0})
+    add_asset(core, AssetRef{"icons/set.atlas", "texture", "critical", 0, 0})
+    bundles["core"] = core
+    # Gameplay Bundle — beim Spielstart
+    gameplay = create_bundle("gameplay", "gameplay")
+    gameplay.dependencies = ["core")
+    add_asset(gameplay, AssetRef{"characters/*.atlas", "texture", "high", 0, 0})
+    add_asset(gameplay, AssetRef{"sounds/*.ogg", "audio", "high", 0, 0})
+    add_asset(gameplay, AssetRef{"animations/*.anim", "animation", "high", 0, 0})
+    bundles["gameplay"] = gameplay
+    # Expansion Bundle — bei Bedarf
+    expansion = create_bundle("expansion", "expansion")
+    expansion.dependencies = ["core", "gameplay")
+    add_asset(expansion, AssetRef{"dlc/**", "texture", "medium", 0, 0})
+    add_asset(expansion, AssetRef{"mods/**", "texture", "low", 0, 0})
+    bundles["expansion"] = expansion
+    return bundles
