@@ -1,0 +1,15 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: enterprise
+family: GOVERNANCE / META
+family_id: '000'
+file: standards/enterprise/ATC-STD-030.md
+mandate: Owner-Entwurf 11.09. (SCR-0095 Automated Assurance; Owner-Referenz 028 —
+  Slot belegt, §37 -> 030)
+registry_version: 1
+standard_id: ATC-STD-030
+status: approved
+title: Automated Repository Health & Compliance Standard (10-Scanner-Dimensionen,
+  P0-P3-Finding-Klassen mit 10 Kategorien und ID-Format, Continuous-Assurance-Prinzip,
+  Feedback-Loop, Standards-Evolution-Engine)
+version: 1.0.0
