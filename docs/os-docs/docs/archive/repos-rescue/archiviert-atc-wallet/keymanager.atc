@@ -1,0 +1,12 @@
+// ATCLang v0.3 — atc-wallet :: Key Manager
+// keypair gen, import, export, encrypt, store
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module keymanager {
+    // Public API — TBD
+    
+    fn init() {
+        // Initialization — TBD
+    }
+}
