@@ -1,0 +1,15 @@
+[package]
+name = "globus-wallet-service"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+globus-identity = { path = "../identity" }
+globus-security = { path = "../security" }
+globus-ipc = { path = "../ipc" }
+sha2 = "0.10"
+zeroize = { version = "1", features = ["zeroize_derive"] }
+
+[lints]
+workspace = true
