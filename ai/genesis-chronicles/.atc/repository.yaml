@@ -1,0 +1,21 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: genesis-chronicles
+  classification: GAME
+  maturity: R2
+  status: development
+project:
+  organization: A-TownChain-Okosystems
+  domain: game
+  component: game
+language:
+  primary: rust
+license:
+  type: apache-2.0
+security:
+  criticality: low
+api:
+  stability: experimental
+protocol:
+  compatibility: required
