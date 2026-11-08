@@ -1,0 +1,345 @@
+{
+  "schema_version": "1.0.0",
+  "repository": "A-TownChain-Okosystems/atc-engineering",
+  "observed_commit_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+  "status": "DETECTED",
+  "decision_rule": "These 12 names are carried-forward hypotheses, not canonical component declarations. Evidence proves cited source blobs exist at the observed commit only; it does not prove semantic completeness, component boundaries, runtime integration, or VERIFIED status.",
+  "candidates": [
+    {
+      "component_id": "ATCE-COMP-001",
+      "name": "Engineering Standards",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "A standards adapter and registry types are present; canonical boundary and completeness are not established.",
+      "evidence": [
+        {
+          "path": "crates/atc-standards/src/lib.rs",
+          "blob_sha": "20f0e6175220241cd22d1122cb479f1eb926d662",
+          "symbols": [
+            "parse_flow_map",
+            "StandardEntry",
+            "StandardsRegistry",
+            "Status",
+            "RepoEntry",
+            "RepoRegistry"
+          ]
+        },
+        {
+          "path": "crates/atc-standards/src/registry.rs",
+          "blob_sha": "6fef4e93d760c87af5ca6cf9e03da5208a330e31",
+          "symbols": [
+            "StandardsRegistry::load",
+            "StandardsRegistry::resolve",
+            "StandardsRegistry::require_normative_released"
+          ]
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-002",
+      "name": "Repository Governance",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "Repository registry and governed/exempt classification exist; organization-wide coverage remains unverified.",
+      "evidence": [
+        {
+          "path": "crates/atc-standards/src/repositories.rs",
+          "blob_sha": "d4e760ad290cddf3b63f64c3ed51013171f485e3",
+          "symbols": [
+            "RepoEntry",
+            "RepoRegistry::load",
+            "RepoRegistry::resolve_by_name",
+            "RepoRegistry::governed"
+          ]
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-003",
+      "name": "CI/CD Orchestration",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "CI workflow definitions exist, but are not proof of a standalone orchestration component or complete event coverage.",
+      "evidence": [
+        {
+          "path": ".github/workflows/engineering-ci.yml",
+          "blob_sha": "ed5c9aef24b5929bf5afe79cc8dff58ef7cd8c86",
+          "symbols": []
+        },
+        {
+          "path": ".github/workflows/org-function-catalog.yml",
+          "blob_sha": "b16497c6137f94dbc4c620f3ba51c8578f8cced0",
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-004",
+      "name": "Build & Test Validation",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "Workspace, CI validation, and audit code exist; completeness of build/test gates is not established.",
+      "evidence": [
+        {
+          "path": "Cargo.toml",
+          "blob_sha": "080184c1bfa9a1d3edb92ef461333acbadd3dad3",
+          "symbols": []
+        },
+        {
+          "path": ".github/workflows/engineering-ci.yml",
+          "blob_sha": "ed5c9aef24b5929bf5afe79cc8dff58ef7cd8c86",
+          "symbols": []
+        },
+        {
+          "path": "crates/atc-maintenance/src/audit.rs",
+          "blob_sha": "f44462e4ad620d5ef446faaad4385bfc7f739428",
+          "symbols": [
+            "audit_repository",
+            "audit_cargo_path_dependencies"
+          ]
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-005",
+      "name": "Dependency Governance",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "Dependency graph and verification functions exist; exhaustive dependency-source reconciliation is not demonstrated.",
+      "evidence": [
+        {
+          "path": "crates/atc-graph/src/lib.rs",
+          "blob_sha": "6da0cdeb019ec305ff258158a376afdf4fa45e56",
+          "symbols": [
+            "DependencyGraph::add_node",
+            "DependencyGraph::add_dependency",
+            "DependencyGraph::topological_sort",
+            "DependencyGraph::has_cycle",
+            "DependencyGraph::load_order"
+          ]
+        },
+        {
+          "path": "crates/atc-verification/src/lib.rs",
+          "blob_sha": "8de00bb9e79a7f9bba89438e5b5d9b2475b3af59",
+          "symbols": [
+            "verify_dependency_graph",
+            "VerificationReport::ready"
+          ]
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-006",
+      "name": "Architecture & SSOT Validation",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "Path-dependency audit and integration graph exist; canonical ownership validation across registered repositories remains unproven.",
+      "evidence": [
+        {
+          "path": "crates/atc-maintenance/src/audit.rs",
+          "blob_sha": "f44462e4ad620d5ef446faaad4385bfc7f739428",
+          "symbols": [
+            "audit_cargo_path_dependencies",
+            "audit_repository"
+          ]
+        },
+        {
+          "path": "crates/atc-integration/src/lib.rs",
+          "blob_sha": "19af7db9ae33520ff2ba48305694b7df59d19bba",
+          "symbols": [
+            "IntegrationGraph::validate",
+            "IntegrationGraph::canonical",
+            "IntegrationGraph::dependency_order"
+          ]
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-007",
+      "name": "Evidence Management",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "Evidence records, artifact/standard links, validation, and serialization exist; immutable run/job/step binding needs separate verification.",
+      "evidence": [
+        {
+          "path": "crates/atc-evidence/src/lib.rs",
+          "blob_sha": "5bea1f27a09dfda18d59bfd91550cde77a3aa599",
+          "symbols": [
+            "EvidenceRecord::new",
+            "EvidenceRecord::add_standard",
+            "EvidenceRecord::add_artifact",
+            "EvidenceRecord::validate",
+            "EvidenceRecord::to_json",
+            "EvidenceRecord::write_to"
+          ]
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-008",
+      "name": "Compliance & Audit",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "Repository audit and finding types exist; policy coverage and independent audit evidence are not proven by declarations alone.",
+      "evidence": [
+        {
+          "path": "crates/atc-maintenance/src/audit.rs",
+          "blob_sha": "f44462e4ad620d5ef446faaad4385bfc7f739428",
+          "symbols": [
+            "audit_repository",
+            "AuditReport",
+            "FindingKind"
+          ]
+        },
+        {
+          "path": "crates/atc-audit-cli/src/main.rs",
+          "blob_sha": "724717ebccbdd9ed6b6353ec80243bd652321326",
+          "symbols": [
+            "main"
+          ]
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-009",
+      "name": "Release Governance",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "Fail-closed gates and readiness evaluators exist; complete release authority and production controls need separate evidence.",
+      "evidence": [
+        {
+          "path": "crates/atc-gates/src/lib.rs",
+          "blob_sha": "1336f4605a6709f4fdb14fcdd71699058cfa4f71",
+          "symbols": [
+            "EvidenceStatus::is_blocking",
+            "GateDecision",
+            "SeparationOfDuties::valid",
+            "evaluate"
+          ]
+        },
+        {
+          "path": "crates/atc-maintenance/src/readiness.rs",
+          "blob_sha": "5b579feefe5549f41b98993869ed8f7c20857267",
+          "symbols": [
+            "evaluate_record",
+            "evaluate_coverage"
+          ]
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-010",
+      "name": "Catalog Validation",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "Generator, schema, tests and CI validation exist; non-Python extraction is heuristic and coverage incomplete.",
+      "evidence": [
+        {
+          "path": "scripts/org_function_catalog.py",
+          "blob_sha": "d664e47bee098589ff2bc9a2ff819d2bd604b587",
+          "symbols": [
+            "scan",
+            "reconcile",
+            "stable_symbol_id",
+            "extract_python",
+            "extract_heuristic"
+          ]
+        },
+        {
+          "path": "schemas/org-function-catalog.schema.json",
+          "blob_sha": "52e9a8e5b772925f5991e9863781057caa5420b7",
+          "symbols": []
+        },
+        {
+          "path": "tests/test_org_function_catalog.py",
+          "blob_sha": "7a29c0f80f8ef5ffa61347037ff1124868b85a60",
+          "symbols": [
+            "CatalogTests"
+          ]
+        },
+        {
+          "path": ".github/workflows/org-function-catalog.yml",
+          "blob_sha": "b16497c6137f94dbc4c620f3ba51c8578f8cced0",
+          "symbols": []
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-011",
+      "name": "Risk & Exception Management",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "Finding lifecycle and fail-closed maintenance classification/repair exist; unified exception/risk authority is not established.",
+      "evidence": [
+        {
+          "path": "crates/atc-findings/src/lib.rs",
+          "blob_sha": "c8f76f969be1ff16cecae99272fa87ea7caf3183",
+          "symbols": [
+            "FindingState::can_transition_to",
+            "FindingRegistry::register",
+            "FindingRegistry::open_findings"
+          ]
+        },
+        {
+          "path": "crates/atc-maintenance/src/classification.rs",
+          "blob_sha": "0f87f07f776a08072d32b2322830c6d9cd928f39",
+          "symbols": [
+            "MaintenanceClass::in_doubt",
+            "MaintenanceClass::gate",
+            "MaintenanceClass::requires_separation_of_duties"
+          ]
+        },
+        {
+          "path": "crates/atc-maintenance/src/repair.rs",
+          "blob_sha": "4607ccda48dadcc1717be3e67bedca7c197edb54",
+          "symbols": [
+            "repair_until_stable"
+          ]
+        }
+      ]
+    },
+    {
+      "component_id": "ATCE-COMP-012",
+      "name": "Reporting & Metrics",
+      "status": "PARTIAL_SOURCE_SUPPORT",
+      "decision": "REVIEW_REQUIRED",
+      "rationale": "Gate reports, evidence serialization, and graph counts exist; a consolidated reporting/metrics component is not established.",
+      "evidence": [
+        {
+          "path": "crates/atc-gates/src/report.rs",
+          "blob_sha": "d4c2ab8e09ec4617c83de7e3c5a8ca3607900243",
+          "symbols": [
+            "GateReport::from_input",
+            "GateReport::is_allowed",
+            "GateReport::to_json"
+          ]
+        },
+        {
+          "path": "crates/atc-evidence/src/lib.rs",
+          "blob_sha": "5bea1f27a09dfda18d59bfd91550cde77a3aa599",
+          "symbols": [
+            "EvidenceRecord::to_json",
+            "EvidenceRecord::write_to"
+          ]
+        },
+        {
+          "path": "crates/atc-graph/src/lib.rs",
+          "blob_sha": "6da0cdeb019ec305ff258158a376afdf4fa45e56",
+          "symbols": [
+            "DependencyGraph::node_count",
+            "DependencyGraph::edge_count",
+            "ImpactGraph::node_count",
+            "ImpactGraph::edge_count"
+          ]
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Candidate IDs are not confirmed by a normative registry.",
+    "Symbol names are source-derived references, not proof of semantic completeness.",
+    "No candidate is marked CONFIRMED or VERIFIED.",
+    "Workflow and documentation evidence is path/blob based; those artifacts do not provide callable symbols.",
+    "No cross-repository census or full interface/contract mapping is included."
+  ]
+}
