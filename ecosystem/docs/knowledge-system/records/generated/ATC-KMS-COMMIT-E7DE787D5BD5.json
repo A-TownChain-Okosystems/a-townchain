@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-COMMIT-E7DE787D5BD5",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "Commit: chore(competitive-monitoring): add expanded registry v0.2.5",
+  "context": "Git commit e7de787d5bd513dac14f654b8208934e123dc3f7 on A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "commit",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/commit/e7de787d5bd513dac14f654b8208934e123dc3f7",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "commit",
+    "generated",
+    "git"
+  ],
+  "links": [],
+  "content": "chore(competitive-monitoring): add expanded registry v0.2.5"
+}
