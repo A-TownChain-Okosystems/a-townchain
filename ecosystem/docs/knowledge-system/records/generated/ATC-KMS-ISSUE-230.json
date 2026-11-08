@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-230",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #230: Native implementation backlog from competitive monitoring — Aurora, ShivaCore, Wallet and Factories",
+  "context": "Issue 230 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/230",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Objective\n\nConvert the accepted competitive-monitoring findings into native A-TownChain/ShivaCore capabilities. Adopt concepts and requirements, not proprietary source code or mandatory third-party runtime services.\n\n**Architecture rule:** Standalone First · Native Implementation · Ecosystem Second.\n\n## Implementation order\n\n### P0 — authority, enforcement, wallet and evidence\n- [ ] Review the normative catalog and bind every item to its existing component SSOT before coding.\n- [ ] Aurora Authority Plane: agent identity, capability grants, delegation, approval, policy versioning and revocation.\n- [ ] Aurora Runtime + ShivaCore: per-agent isolation, tool/action allowlists, resource/network/filesystem/IPC boundaries, fail-closed enforcement and revocation tests.\n- [ ] Wallet SSOT: transaction simulation, limits, destination/contract allowlists, risk-based approvals and signing authorization that agents cannot bypass.\n- [ ] atc-engineering / a-townchain-ecosystem: exact-head evidence, run/job/step provenance, artifact SHA-256 and BLOCKED handling for missing or mismatched evidence.\n\n### P1 — durable agents and native factories\n- [ ] Aurora task lifecycle: durable state, checkpoint/resume, cancellation, bounded retries, idempotency, versioned skills and memory provenance.\n- [ ] Identify the authoritative SSOT repositories for AI Franchise Factory, Research Factory and Business Factory before implementation.\n- [ ] Native process/context graph: versioned process, role, rule, control and evidence relationships with source provenance and freshness.\n- [ ] Native factory lifecycle: idea → research → validation → production → release → monitoring, with approval gates and artifact lineage.\n- [ ] Local-first inference/model routing in Aurora AI; optional remote inference must be explicitly scoped and never required for core operation.\n\n### P2 — evaluation and GlobusOS integration\n- [ ] Identify the SSOT for agent evaluation before adding a new test harness.\n- [ ] Measure task success, policy violations, revocation latency, sandbox escape resistance, resource exhaustion, audit completeness and recovery.\n- [ ] GlobusOS desktop controls for approval, agent status, capability visibility, audit and kill/revoke; UI is not the enforcement boundary.\n\n## Acceptance criteria\n- Every item has NATIVE_BUILD_CANDIDATE, TARGET_SSOT, ARCHITECTURE_GAP, IMPLEMENTATION_PRIORITY, ACCEPTANCE_CRITERIA, EXTERNAL_RUNTIME_DEPENDENCY=false and EVIDENCE_STATUS.\n- No duplicated core implementation in a-townchain-ecosystem.\n- Negative security tests and component-specific tests pass.\n- Evidence is tied to exact commit SHA and relevant paths/symbols/blob SHAs; Actions run → job → step evidence and artifact hashes are recorded.\n- Unknown SSOT, missing evidence, or failing tests is BLOCKED; green CI alone is not VERIFIED.\n- No merge or VERIFIED claim until the applicable governance/security gates and exact-head evidence pass.\n\n## Evidence inputs\n- ServiceNow Arc / NVIDIA: long-running task ownership, action-level authorization, runtime containment and revocation are design patterns only; AI Passport hardware/runtime enforcement remains future availability per the official announcement.\n- Oracle Fusion Claw: deterministic execution, human approvals and auditable outcome receipts.\n- ARIS Process Context: versioned process context and provenance; verify live availability before relying on it.\n- Ethereum Glamsterdam/Hoodi postponement: revocable activation schedules and stale-target withdrawal.\n- Windows/Linux release-health findings: external regression-test inspiration, not evidence of existing GlobusOS defects.\n\n## Governance\nCatalog First, Implementation Second. This issue is a planning/control record, not implementation evidence. Keep the monitoring PR Draft until its own acceptance checks are independently verified."
+}
