@@ -8,7 +8,7 @@
 
 | Dokument | Beschreibung |
 |---------|-------------|
-| [GENESIS_CHRONICLES_NFT_CONTRACT.md](../../../../contracts/GENESIS_CHRONICLES_NFT_CONTRACT.md) | Genesis Chronicles NFT (ATC-9000) — vollständige Doku |
+| [GENESIS_CHRONICLES_NFT_CONTRACT.md](https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/ai/genesis-chronicles/genesis_chronicles_contract.atc) | Genesis Chronicles NFT (ATC-9000) — vollständige Doku |
 | [ATC_TOKEN_STANDARD.md](../contracts/ATC_TOKEN_STANDARD.md) | ATC Token Standard Übersicht |
 
 ---
