@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-COMMIT-53C75AD0EA63",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "Commit: Merge pull request #217 from A-TownChain-Okosystems/feat/atc-l2-phase0-evidence-matrix",
+  "context": "Git commit 53c75ad0ea6309c061f6421309be917f3ac445c9 on A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "commit",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/commit/53c75ad0ea6309c061f6421309be917f3ac445c9",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "commit",
+    "generated",
+    "git"
+  ],
+  "links": [],
+  "content": "Merge pull request #217 from A-TownChain-Okosystems/feat/atc-l2-phase0-evidence-matrix\n\ndocs(rollup): add ATC-L2 Phase 0 evidence matrix"
+}
