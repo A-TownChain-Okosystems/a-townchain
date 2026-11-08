@@ -1,0 +1,18 @@
+# ATC Standards Profile — verbindlicher Compliance-Vertrag (ATC-STD-LIB-001 sec.8, SCR-0101)
+# SSOT-Kaskade: registry/repositories.yaml + registry/standards.yaml > dieses Profil > .atc/standards.yaml im Repo
+criticality: C3
+domain: franchise_factory
+domain_extension: 'Org-Build 13.09.2026: GFF-Plattform (AD-20..43) aus kanonischen Specs des Org-Archivs.
+  Pipeline-Orchestrator + ATC-9900 DAO-Modell + 12-Phasen-Lifecycle; EXPERIMENTAL: partial,
+  nicht auditiert; fachliche Factory-Standards via SCR nachzureichen'
+layer: L6
+maturity_class: C
+profile: genesis-franchise-factory
+registry_id: ATC-REPO-GFF-001
+repo: genesis-franchise-factory
+required_standards:
+- ATC-STD-000
+- ATC-STD-201
+- ATC-STD-202
+security_class: S2
+version: 1.0.0
