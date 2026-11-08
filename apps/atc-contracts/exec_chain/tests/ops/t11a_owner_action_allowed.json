@@ -1,0 +1,1 @@
+{"expected": 1, "caller": 42, "set_slot": {"1": 42}, "expect_slot": {"0": 500}}
