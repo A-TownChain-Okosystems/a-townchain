@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a-townchain-okosystems/standards/schemas/maintenance/maintenance-record.schema.json",
+  "title": "ATC Maintenance Record (ATC-STD-MAINT-019 §1)",
+  "description": "Maschinenlesbares Record-Schema fuer Maintenance-Aufgaben. 'No Evidence, No Trust': kein CLOSE ohne vollstaendigen Record (MAINT-000 §7.1). Klassifikation M0-M3 gemaess ATC-STD-MAINT-001; Lifecycle 13 Phasen gemaess ATC-STD-MAINT-002. Fuer M2/M3 zusaetzlich SoD-Vermerke und critical_maintenance-Nachweise.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["maintenance", "validation", "rollback", "evidence", "status"],
+  "properties": {
+    "maintenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "classification", "component", "detected", "reason"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^MAINT-[0-9]{4}-[0-9]{4}$", "description": "Record-ID: MAINT-YYYY-NNNN"},
+        "classification": {"type": "string", "enum": ["M0", "M1", "M2", "M3"], "description": "Klasse gemaess ATC-STD-MAINT-001 (im Zweifel die hoehere Klasse)"},
+        "component": {"type": "string", "minLength": 2, "description": "Betroffene Komponente/Repository"},
+        "detected": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "reason": {"type": "string", "minLength": 3, "description": "z.B. dependency_update, cve, consensus_fault"},
+        "group": {"type": "string", "enum": ["Governance & Classification", "Engineering", "Security", "Platform", "Governance Assets", "Lifecycle", "Assurance", "Supply & Ecosystem"], "description": "Familiengruppe (MAINT-000 §1), informativ"},
+        "sod": {"type": "object", "description": "SoD-Vermerk, MUSS fuer M2/M3 (MAINT-000 §7.4)", "additionalProperties": false, "required": ["implementer", "validator", "auditor"], "properties": {"implementer": {"type": "string"}, "validator": {"type": "string"}, "auditor": {"type": "string"}, "release_authority": {"type": "string", "description": "MUSS ungleich implementer sein bei besonders kritischen Aenderungen"}}}
+      }
+    },
+    "change": {"type": "object", "additionalProperties": false, "required": ["before", "after"], "properties": {"before": {"type": "string"}, "after": {"type": "string"}}},
+    "validation": {"type": "object", "additionalProperties": false, "required": ["unit_tests", "integration_tests", "security_scan", "compatibility", "performance"], "properties": {"unit_tests": {"type": "string", "enum": ["PASS", "FAIL", "N/A"]}, "integration_tests": {"type": "string", "enum": ["PASS", "FAIL", "N/A"]}, "security_scan": {"type": "string", "enum": ["PASS", "FAIL", "N/A"]}, "compatibility": {"type": "string", "enum": ["PASS", "FAIL", "N/A"]}, "performance": {"type": "string", "enum": ["PASS", "FAIL", "N/A"]}}},
+    "rollback": {"type": "object", "additionalProperties": false, "required": ["available", "tested"], "properties": {"available": {"type": "boolean"}, "tested": {"type": "boolean", "description": "M2/M3: kein CLOSE ohne tested=true (MAINT-018)"}}},
+    "evidence": {"type": "object", "additionalProperties": false, "required": ["commit", "pull_request", "test_report", "audit_report"], "properties": {"commit": {"type": "string"}, "pull_request": {"type": "string"}, "test_report": {"type": "string"}, "audit_report": {"type": "string"}, "incident_record": {"type": "string", "description": "M3: zusaetzlich erforderlich (MAINT-021)"}}},
+    "status": {"type": "string", "enum": ["OPEN", "IN_PROGRESS", "VALIDATED", "CLOSED"], "description": "CLOSED nur mit vollstaendigem Record (MAINT-002 §3)"}
+  },
+  "$defs": {}
+}
