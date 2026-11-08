@@ -1,0 +1,13 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang v0.3 — contract binding helpers
+// ATC-Standard: ATC-24
+
+module contract_bindings {
+    fn selector_seed(name_hash: u64) -> u64 {
+        return name_hash;
+    }
+
+    fn argument_count(count: u64) -> u64 {
+        return count;
+    }
+}
