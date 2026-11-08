@@ -1,0 +1,16 @@
+# ATC Standards Profile — verbindlicher Compliance-Vertrag (ATC-STD-LIB-001 sec.8, SCR-0101)
+criticality: C1
+domain: ecosystem
+domain_extension: 'Ecosystem integration and repository orchestration'
+layer: L7
+maturity_class: C
+profile: a-townchain-ecosystem
+registry_id: ATC-REPO-ECOSYS-001
+repo: a-townchain-ecosystem
+required_standards:
+- ATC-STD-000
+- ATC-STD-003
+- ATC-STD-201
+- ATC-STD-202
+security_class: S3
+version: 1.0.0
