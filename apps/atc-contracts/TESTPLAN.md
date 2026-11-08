@@ -33,7 +33,7 @@ expected vector
 PASS / FAIL
 ```
 
-The suite includes positive and negative execution vectors for ATCoin, ATC-8300, governance, bridge, authorization, balance/supply invariants and storage transitions.
+The suite includes positive and negative execution vectors for ATCoin, ATC-8300, governance, bridge, revenue-share splits, authorization, balance/supply invariants and storage transitions.
 
 ### 3. Determinism
 
