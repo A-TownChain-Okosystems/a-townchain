@@ -1,0 +1,259 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — API Orchestrator
+// Sprint 3.0 | Backend Layer | Chain-ID 9000
+// Migrated from: backend/api/orchestrator/orchestrator.py (221 lines)
+// Task routing, load-balancing, circuit-breaker, event-bus
+// ─────────────────────────────────────────────────────────────
+
+enum TaskType { Blockchain, Wallet, AI, Game, Governance, Marketplace, Nodes, System }
+enum TaskStatus { Pending, Running, Done, Failed, Timeout }
+
+const MAX_QUEUE_SIZE: u16 = 1000
+const DEFAULT_TIMEOUT: u32 = 30
+const CIRCUIT_BREAKER_THRESHOLD: u8 = 5
+const MAX_RPS: u16 = 100
+
+struct Task {
+    task_id: Hash,
+    task_type: TaskType,
+    payload: Bytes,
+    status: TaskStatus,
+    result: Bytes,
+    error: String,
+    created: u64,
+    started: u64,
+    finished: u64,
+    timeout: u32,
+}
+
+struct ServiceEndpoint {
+    name: String,
+    task_types: List<TaskType>,
+    max_rps: u16,
+    req_count: u16,
+    error_count: u8,
+    circuit_open: bool,
+    last_reset: u64,
+}
+
+contract APIOrchestrator {
+    state services: Map<TaskType, List<ServiceEndpoint>>
+    state task_queue: List<Hash>
+    state tasks: Map<Hash, Task>
+    state rr_index: Map<TaskType, u16>
+    state total_dispatched: u64
+    state total_completed: u64
+    state total_failed: u64
+    state running: bool
+
+    event TaskCreated(task_id: Hash, task_type: TaskType)
+    event TaskDispatched(task_id: Hash, service: String)
+    event TaskCompleted(task_id: Hash, duration_ms: u32)
+    event TaskFailed(task_id: Hash, error: String)
+    event CircuitBreakerOpened(service: String)
+    event CircuitBreakerClosed(service: String)
+
+    fn init() {
+        self.services = {}
+        self.task_queue = []
+        self.tasks = {}
+        self.rr_index = {}
+        self.total_dispatched = 0
+        self.total_completed = 0
+        self.total_failed = 0
+        self.running = false
+    }
+
+    fn start() {
+        self.running = true
+    }
+
+    // ── Register service ─────────────────────────────
+    fn register_service(name: String, task_type: TaskType, max_rps: u16) -> bool {
+        let endpoint = ServiceEndpoint {
+            name: name,
+            task_types: [task_type],
+            max_rps: max_rps,
+            req_count: 0,
+            error_count: 0,
+            circuit_open: false,
+            last_reset: Time::now(),
+        }
+        let existing = self.services.get(task_type)
+        if existing == null {
+            self.services[task_type] = [endpoint]
+        } else {
+            existing.push(endpoint)
+        }
+        return true
+    }
+
+    // ── Check circuit breaker ────────────────────────
+    fn is_available(endpoint: ServiceEndpoint) -> bool {
+        if endpoint.circuit_open {
+            return false
+        }
+        let now = Time::now()
+        if now - endpoint.last_reset > 1 {
+            endpoint.req_count = 0
+            endpoint.last_reset = now
+        }
+        return endpoint.req_count < endpoint.max_rps
+    }
+
+    // ── Create task ──────────────────────────────────
+    fn create_task(task_type: TaskType, payload: Bytes, timeout: u32) -> Hash {
+        if self.task_queue.len() >= MAX_QUEUE_SIZE {
+            return Hash::zero()
+        }
+        let id_input = Int::to_string(Time::now()) + Int::to_string(self.total_dispatched)
+        let task_id = Hash::sha256(id_input)
+        let task = Task {
+            task_id: task_id,
+            task_type: task_type,
+            payload: payload,
+            status: TaskStatus::Pending,
+            result: [],
+            error: "",
+            created: Time::now(),
+            started: 0,
+            finished: 0,
+            timeout: timeout,
+        }
+        self.tasks[task_id] = task
+        self.task_queue.push(task_id)
+        emit TaskCreated(task_id, task_type)
+        return task_id
+    }
+
+    // ── Dispatch task (round-robin) ──────────────────
+    fn dispatch(task_id: Hash) -> (bool, String) {
+        let task = self.tasks.get(task_id)
+        if task == null {
+            return (false, "Task not found")
+        }
+        let endpoints = self.services.get(task.task_type)
+        if endpoints == null || endpoints.len() == 0 {
+            return (false, "No service registered")
+        }
+        // Round-robin selection
+        let idx = self.rr_index.get(task.task_type)
+        if idx == null {
+            idx = 0
+        }
+        let attempts: u16 = 0
+        let selected: ServiceEndpoint = null
+        while attempts < endpoints.len() {
+            let ep = endpoints[idx]
+            if self.is_available(ep) {
+                selected = ep
+                break
+            }
+            idx = (idx + 1) % endpoints.len()
+            attempts += 1
+        }
+        if selected == null {
+            return (false, "All services unavailable")
+        }
+        selected.req_count += 1
+        self.rr_index[task.task_type] = (idx + 1) % endpoints.len()
+        task.status = TaskStatus::Running
+        task.started = Time::now()
+        self.total_dispatched += 1
+        emit TaskDispatched(task_id, selected.name)
+        return (true, selected.name)
+    }
+
+    // ── Complete task ────────────────────────────────
+    fn complete_task(task_id: Hash, result: Bytes) -> bool {
+        let task = self.tasks.get(task_id)
+        if task == null {
+            return false
+        }
+        task.status = TaskStatus::Done
+        task.result = result
+        task.finished = Time::now()
+        let duration = (task.finished - task.started) * 1000
+        self.total_completed += 1
+        emit TaskCompleted(task_id, duration)
+        return true
+    }
+
+    // ── Fail task ────────────────────────────────────
+    fn fail_task(task_id: Hash, error: String) -> bool {
+        let task = self.tasks.get(task_id)
+        if task == null {
+            return false
+        }
+        task.status = TaskStatus::Failed
+        task.error = error
+        task.finished = Time::now()
+        self.total_failed += 1
+        emit TaskFailed(task_id, error)
+        return true
+    }
+
+    // ── Record service error (circuit breaker) ───────
+    fn record_error(task_type: TaskType, service_name: String) -> bool {
+        let endpoints = self.services.get(task_type)
+        if endpoints == null {
+            return false
+        }
+        let i: u16 = 0
+        while i < endpoints.len() {
+            if endpoints[i].name == service_name {
+                endpoints[i].error_count += 1
+                if endpoints[i].error_count >= CIRCUIT_BREAKER_THRESHOLD {
+                    endpoints[i].circuit_open = true
+                    emit CircuitBreakerOpened(service_name)
+                }
+                return true
+            }
+            i += 1
+        }
+        return false
+    }
+
+    // ── Reset circuit breaker ────────────────────────
+    fn reset_circuit(task_type: TaskType, service_name: String) -> bool {
+        let endpoints = self.services.get(task_type)
+        if endpoints == null {
+            return false
+        }
+        let i: u16 = 0
+        while i < endpoints.len() {
+            if endpoints[i].name == service_name {
+                endpoints[i].circuit_open = false
+                endpoints[i].error_count = 0
+                emit CircuitBreakerClosed(service_name)
+                return true
+            }
+            i += 1
+        }
+        return false
+    }
+
+    // ── Get task status ──────────────────────────────
+    fn get_task_status(task_id: Hash) -> (TaskStatus, String, u64) {
+        let task = self.tasks.get(task_id)
+        if task == null {
+            return (TaskStatus::Failed, "Not found", 0)
+        }
+        let duration = 0
+        if task.finished > 0 && task.started > 0 {
+            duration = task.finished - task.started
+        }
+        return (task.status, task.error, duration)
+    }
+
+    // ── Orchestrator stats ───────────────────────────
+    fn stats() -> (u64, u64, u64, u16, u16) {
+        return (self.total_dispatched, self.total_completed, self.total_failed, self.task_queue.len(), self.tasks.len())
+    }
+
+    // ── Stop orchestrator ────────────────────────────
+    fn stop() {
+        self.running = false
+    }
+}
