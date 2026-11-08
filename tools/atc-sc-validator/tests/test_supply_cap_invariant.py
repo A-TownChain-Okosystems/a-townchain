@@ -83,10 +83,11 @@ def test_no_unauthorized_21_million_cap_anywhere():
     assert not offenders, f"nicht autorisierter 21-Mio-Cap in: {offenders}"
 
 
-def test_canonical_source_declares_decimals():
-    canonical = ROOT / "apps/atc-contracts/atc8300/atc8300.atc"
+def test_canonical_atcoin_source_declares_decimals():
+    """Kanonisch ist atcoin.atc (ATC-89); dort steht die Dezimalzahl als Konstante."""
+    canonical = ROOT / "apps/atc-contracts/atcoin/atcoin.atc"
     text = canonical.read_text(encoding="utf-8")
-    assert re.search(rf"decimals_\s*:\s*u8\s*=\s*{DECIMALS}\b", text), "Dezimalstellen != 18"
+    assert re.search(rf"ATC_DECIMALS\s*:\s*u8\s*=\s*{DECIMALS}\b", text), "Dezimalstellen != 18"
 
 
 CHAIN_ID_RE = re.compile(r"CHAIN_ID\s*:\s*u64\s*=\s*([0-9_]+)")
@@ -109,15 +110,20 @@ def test_chain_id_is_the_atc_chain_inside_atc_chain_sources(path: Path):
         )
 
 
-def test_canonical_source_declares_the_atc_chain_id():
-    canonical = ROOT / "apps/atc-contracts/atc8300/atc8300.atc"
-    values = [int(m.group(1).replace("_", "")) for m in CHAIN_ID_RE.finditer(canonical.read_text(encoding="utf-8"))]
-    assert values == [CHAIN_ID], f"kanonische Quelle deklariert die ATC-Chain-ID nicht eindeutig: {values}"
+def test_no_token_source_declares_a_foreign_chain_id():
+    """Nach der Rollentrennung traegt kein Token den Chain-ID-Zustand.
+
+    Die Chain-ID gilt innerhalb der ATC-Blockchain und gehoert zur
+    Chain-Konfiguration, nicht zum Token-Zustand.
+    """
+    for path in atcoin_sources():
+        values = [int(m.group(1).replace("_", "")) for m in CHAIN_ID_RE.finditer(path.read_text(encoding="utf-8"))]
+        assert all(v == CHAIN_ID for v in values), f"{path.relative_to(ROOT)}: fremde Chain-ID {values}"
 
 
 def test_registry_binds_cap_to_the_canonical_bytes():
     registry = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))
-    entry = next(e for e in registry["contracts"] if e["contract_id"] == "ATC-SC-TOKEN-002")
+    entry = next(e for e in registry["contracts"] if e["contract_id"] == "ATC-SC-TOKEN-001")
     canonical = ROOT / entry["contract_path"]
     actual = hashlib.sha256(canonical.read_bytes()).hexdigest()
     assert entry["source_sha256"] == actual, "source_sha256 bindet nicht an die kanonischen Bytes"
