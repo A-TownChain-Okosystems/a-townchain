@@ -111,7 +111,14 @@ fn main() -> ExitCode {
         }
         "check" => {
             // Semantische Stufe: erst nach erfolgreichem Parse.
-            let report = atc_core::semantics::check_program(&program);
+            let mut report = atc_core::semantics::check_program(&program);
+            // Stufe 2: Typ- und Signaturpruefung (konservativ, siehe types.rs).
+            let types = atc_core::types::check_program(&program);
+            report.errors.extend(types.errors);
+            report.warnings.extend(types.warnings);
+            report
+                .warnings
+                .extend(atc_core::types::check_call_arities(&program));
             for w in &report.warnings {
                 eprintln!("  warnung: {w}");
             }
