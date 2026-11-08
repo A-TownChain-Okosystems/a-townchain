@@ -1,0 +1,8 @@
+# 🗺️ Roadmap — atcnet-wiki
+
+> Siehe [docs/ROADMAP.md](docs/ROADMAP.md) für die detaillierte Roadmap.
+
+**Code-Repo:** [atcnet](https://github.com/A-TownChain-Okosystems/atcnet)
+
+---
+*Auto-generiert 2026-08-06 · Aurora*
