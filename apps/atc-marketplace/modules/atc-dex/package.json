@@ -1,0 +1,22 @@
+{
+  "name": "atc-dex",
+  "version": "0.1.0",
+  "description": "atc-dex — A-TownChain-Okosystems",
+  "author": "Michael Wroblewski",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "react": "^19.3",
+    "ethers": "^6",
+    "typescript": "^7"
+  },
+  "devDependencies": {
+    "@types/node": "^26",
+    "@types/jest": "^30",
+    "jest": "^30"
+  }
+}
