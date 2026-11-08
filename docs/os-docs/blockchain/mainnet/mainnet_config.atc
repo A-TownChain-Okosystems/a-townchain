@@ -1,0 +1,151 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// A-TownChain Mainnet Configuration (Sprint 4.0)
+// Chain-ID 9000 | SHA-256 | Non-EVM
+// ════════════════════════════════════════════════════════════════
+
+const CHAIN_ID: u64 = 9000
+const CHAIN_NAME: String = "A-TownChain"
+const BLOCK_TIME: u64 = 10          // 10 seconds
+const MAX_BLOCK_SIZE: u32 = 1048576 // 1 MB
+const MAX_TX_PER_BLOCK: u32 = 500
+const MIN_STAKE: u128 = 1000000000000000000000  // 1000 ATC
+const EPOCH_LENGTH: u32 = 1000
+const GENESIS_TIMESTAMP: u64 = 1735689600
+
+struct ChainConfig {
+    chain_id:           u64,
+    chain_name:         String,
+    block_time:         u64,
+    max_block_size:     u32,
+    max_tx_per_block:   u32,
+    min_stake:          u128,
+    epoch_length:       u32,
+    genesis_timestamp:  u64,
+    consensus_type:     String,
+    hash_algorithm:     String
+}
+
+struct ValidatorConfig {
+    address:        Address,
+    stake:          u128,
+    commission:     u8,     // percentage
+    active:         bool,
+    jailed:         bool
+}
+
+struct NetworkConfig {
+    p2p_port:           u16,
+    rpc_port:           u16,
+    gateway_port:       u16,
+    max_peers:          u32,
+    enable_discovery:   bool,
+    enable_mempool:     bool
+}
+
+contract MainnetConfig {
+
+    state chain_config: ChainConfig
+    state validators: Map<Address, ValidatorConfig>
+    state validator_count: u32
+    state network_config: NetworkConfig
+    state is_mainnet: bool
+    state owner: Address
+
+    event ValidatorAdded(addr: Address, stake: u128)
+    event ValidatorJailed(addr: Address, reason: String)
+    event ValidatorSlashed(addr: Address, amount: u128)
+    event ConfigUpdated(field: String)
+
+    fn init() {
+        self.is_mainnet = false
+        self.owner = msg_sender()
+        self.validator_count = 0
+        self.chain_config = ChainConfig {
+            chain_id:          CHAIN_ID,
+            chain_name:        CHAIN_NAME,
+            block_time:        BLOCK_TIME,
+            max_block_size:    MAX_BLOCK_SIZE,
+            max_tx_per_block:  MAX_TX_PER_BLOCK,
+            min_stake:         MIN_STAKE,
+            epoch_length:      EPOCH_LENGTH,
+            genesis_timestamp: GENESIS_TIMESTAMP,
+            consensus_type:    "hybrid",
+            hash_algorithm:    "sha256"
+        }
+        self.network_config = NetworkConfig {
+            p2p_port:          9000,
+            rpc_port:          5000,
+            gateway_port:      4000,
+            max_peers:         50,
+            enable_discovery:  true,
+            enable_mempool:    true
+        }
+    }
+
+    // ── Validator hinzufügen ──────────────────────────
+    fn add_validator(addr: Address, stake: u128, commission: u8) -> bool {
+        require(msg_sender() == self.owner, "Config: Nur Owner")
+        require(stake >= MIN_STAKE, "Config: Stake zu gering")
+        require(commission <= 100, "Config: Commission > 100%")
+
+        let validator = ValidatorConfig {
+            address:    addr,
+            stake:      stake,
+            commission: commission,
+            active:     true,
+            jailed:     false
+        }
+        self.validators[addr] = validator
+        self.validator_count += 1
+        emit ValidatorAdded(addr, stake)
+        return true
+    }
+
+    // ── Validator jailen ──────────────────────────────
+    fn jail_validator(addr: Address, reason: String) -> bool {
+        require(msg_sender() == self.owner, "Config: Nur Owner")
+        let v = self.validators[addr]
+        v.jailed = true
+        v.active = false
+        self.validators[addr] = v
+        emit ValidatorJailed(addr, reason)
+        return true
+    }
+
+    // ── Validator slashen ─────────────────────────────
+    fn slash_validator(addr: Address, amount: u128) -> bool {
+        require(msg_sender() == self.owner, "Config: Nur Owner")
+        let v = self.validators[addr]
+        require(v.stake >= amount, "Config: Stake < slash amount")
+        v.stake -= amount
+        self.validators[addr] = v
+        emit ValidatorSlashed(addr, amount)
+        return true
+    }
+
+    // ── Config abrufen ────────────────────────────────
+    fn get_chain_config() -> ChainConfig {
+        return self.chain_config
+    }
+
+    fn get_network_config() -> NetworkConfig {
+        return self.network_config
+    }
+
+    fn get_validator(addr: Address) -> ValidatorConfig {
+        return self.validators[addr]
+    }
+
+    fn get_validator_count() -> u32 {
+        return self.validator_count
+    }
+
+    // ── Mainnet aktivieren ────────────────────────────
+    fn activate_mainnet() -> bool {
+        require(msg_sender() == self.owner, "Config: Nur Owner")
+        require(self.validator_count >= 3, "Config: Min 3 validators")
+        self.is_mainnet = true
+        return true
+    }
+}
