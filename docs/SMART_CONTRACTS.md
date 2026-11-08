@@ -85,8 +85,12 @@ vom Gate respektiert.
   Kopien), nicht auflösbare Basen und Typnamen, die weder Builtin noch
   deklariert noch importiert sind (kanonisch: `Address`, `Hash`, `Bytes`,
   `Signature`, `PublicKey`, `Timestamp`, `Amount`, `TokenId`).
+  **Vertrags-ABI (G7-Grundlage):** `atc abi <datei|verzeichnis>` erzeugt je
+  Vertrag eine kanonische JSON-Schnittstelle (Zustand, Events, Signaturen) mit
+  stabilem `abi_sha256`; Grundlage für die Registry-Bindung nach ATC-STD-SC-019.
+  Die ABI beschreibt die Schnittstelle, nicht die Ausführung — kein Bytecode.
   **Noch offen:** vollständige Import-Auflösung (`use ATC::X::Y` gegen einen
-  Modulindex) und Codegen für Verträge.
+  Modulindex) und Codegen für Verträge (G11).
   Siehe STATUS.md/ROADMAP.md (G3-G10 offen)
 
 Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde, alle 16 Quellen
