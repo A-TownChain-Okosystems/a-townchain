@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/blob/main/control-plane/DELIVERY_REGISTRY.schema.json",
+  "title": "ATC Delivery Registry",
+  "description": "Normative structural schema for control-plane/DELIVERY_REGISTRY.json. Semantic cross-record invariants are enforced by tools/validate_delivery_registry.py.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "registry_id",
+    "updated_at",
+    "authority",
+    "status_enum",
+    "priority_enum",
+    "evidence_policy",
+    "documentation_index",
+    "roadmap",
+    "milestones",
+    "checkpoints",
+    "components",
+    "functions",
+    "sprints",
+    "todos",
+    "repository_inventory",
+    "repository_delivery_plans",
+    "repository_census"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "registry_id": {
+      "const": "ATC-DELIVERY-SSOT"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "repository",
+        "branch",
+        "role"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "const": "integration/compliance/evidence/architecture control plane only"
+        }
+      },
+      "additionalProperties": true
+    },
+    "status_enum": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "priority_enum": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "P0",
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    "evidence_policy": {
+      "type": "object",
+      "required": [
+        "rule",
+        "required_fields",
+        "missing_evidence_status",
+        "merge_policy"
+      ],
+      "properties": {
+        "rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "missing_evidence_status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "merge_policy": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "documentation_index": {
+      "$ref": "#/$defs/idRecords"
+    },
+    "roadmap": {
+      "$ref": "#/$defs/idRecords"
+    },
+    "milestones": {
+      "$ref": "#/$defs/idRecords"
+    },
+    "checkpoints": {
+      "$ref": "#/$defs/idRecords"
+    },
+    "components": {
+      "$ref": "#/$defs/idRecords"
+    },
+    "functions": {
+      "$ref": "#/$defs/idRecords"
+    },
+    "sprints": {
+      "$ref": "#/$defs/idRecords"
+    },
+    "todos": {
+      "$ref": "#/$defs/idRecords"
+    },
+    "repository_inventory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "repository",
+          "default_branch",
+          "repository_state",
+          "audit_status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "repository": {
+            "type": "string",
+            "pattern": "^[^/]+/[^/]+$"
+          },
+          "default_branch": {
+            "type": "string",
+            "minLength": 1
+          },
+          "repository_state": {
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ]
+          },
+          "audit_status": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "repository_delivery_plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "repository",
+          "status",
+          "priority",
+          "repository_state"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "repository": {
+            "type": "string",
+            "pattern": "^[^/]+/[^/]+$"
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priority": {
+            "enum": [
+              "P0",
+              "P1",
+              "P2",
+              "P3"
+            ]
+          },
+          "repository_state": {
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "repository_census": {
+      "type": "object",
+      "required": [
+        "id",
+        "observed_at",
+        "total",
+        "active",
+        "archived",
+        "default_branch",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "active": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "archived": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "default_branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "idRecords": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priority": {
+            "enum": [
+              "P0",
+              "P1",
+              "P2",
+              "P3"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}
