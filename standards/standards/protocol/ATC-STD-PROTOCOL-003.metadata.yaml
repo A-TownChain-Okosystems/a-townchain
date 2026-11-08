@@ -1,0 +1,22 @@
+# GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Phase 1) - NICHT MANUELL BEARBEITEN
+authority: A-TownChain-Okosystems
+category: protocol
+conformance:
+  required: true
+dependencies:
+- ATC-STD-000
+- ATC-STD-203
+- ATC-STD-AUDIT-001
+- ATC-STD-FRAMEWORK-001
+- ATC-STD-PROTOCOL-001
+- ATC-STD-REPO-AUDIT-001
+id: ATC-STD-PROTOCOL-003
+implementation:
+  status: specification_only
+normative: true
+owner: Michael (Owner-Entwurf)
+source_file: standards/protocol/ATC-STD-PROTOCOL-003.md
+status: approved
+title: ATC Protocol Threat-Model- & Security-Audit-Standard — 12 Pflicht-Angriffe
+  je Familie, Ehrlichkeitsregel, Security-Registry, Audit-Kadenz, Crypto-HAL-Disziplin
+version: 1.0.0
