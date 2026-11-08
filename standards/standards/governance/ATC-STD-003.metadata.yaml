@@ -1,0 +1,19 @@
+# GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Phase 1) - NICHT MANUELL BEARBEITEN
+authority: A-TownChain-Okosystems
+category: governance
+conformance:
+  required: true
+dependencies: []
+id: ATC-STD-003
+implementation:
+  status: specification_only
+normative: true
+owner: Michael (Owner-Entwurf)
+source_file: standards/governance/ATC-STD-003.md
+status: approved
+title: Governance Determinism & Source-of-Truth Matrix Standard (SSOT-Matrix je Informationsklasse,
+  State-ID/Ein-Zahl-Regel mit Registry-SHA, README-Vollregeneration/CURRENT-STATE-only,
+  .github-Referenzpflicht, Autoritaetskaskade Registry>Evidence>Doku, ATC-STD-000-Bootstrap
+  mit Sunset, Slot-Prinzip, APPROVED!=IMPLEMENTED, Agent-Autoritaetsgrenzen 2-of-N,
+  State-Snapshot-Pflicht)
+version: 1.0.0
