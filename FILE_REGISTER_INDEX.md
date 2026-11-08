@@ -1,13 +1,14 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-08 19:41 UTC+2 aus `origin/main` @ `c6c876323`.
+> Vollständige Dateiliste. Erzeugt 2026-11-08 19:42 UTC+2 aus `origin/main` @ `c0cea1f9f`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 12341 Dateien**
+**Total: 12342 Dateien**
 
-## docs (5065)
+## docs (5066)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
+- `docs/CODEGEN_G11_SCOPE.md`
 - `docs/CONSENSUS.md`
 - `docs/ENGINEERING_AUDIT.md`
 - `docs/MAINNET_READINESS.md`
