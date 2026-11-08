@@ -1,0 +1,255 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-10 — PhysicsBus: Physik-System Kommunikation
+// Genesis Communication Layer (GCL) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct PhysicsBody {
+    id: UInt32,
+    entity_id: UInt32,
+    body_type: BodyType,
+    mass: Float32,
+    position: Vec3,
+    velocity: Vec3,
+    angular_vel: Vec3,
+    collider: ColliderShape,
+    is_static: Bool,
+    is_trigger: Bool,
+    layer: UInt8,
+    active: Bool,
+}
+
+enum BodyType { Dynamic, Static, Kinematic }
+enum ColliderShape { Box, Sphere, Capsule, Mesh, ConvexHull, Plane }
+
+struct PhysicsBus {
+    bodies: Map<UInt32, PhysicsBody>,
+    contacts: List<Contact>,
+    raycasts: List<RaycastResult>,
+    constraints: Map<UInt32, Constraint>,
+    gravity: Vec3,
+    fixed_timestep: Float32,
+    max_substeps: UInt8,
+    broadphase: BroadphaseType,
+    stats: PhysicsStats,
+}
+
+enum BroadphaseType { AABB, SweepPrune, BVH, Grid }
+
+struct Contact {
+    body_a: UInt32,
+    body_b: UInt32,
+    point: Vec3,
+    normal: Vec3,
+    distance: Float32,
+    impulse: Float32,
+    timestamp: UInt64,
+}
+
+struct RaycastResult {
+    body_id: UInt32,
+    point: Vec3,
+    normal: Vec3,
+    distance: Float32,
+    hit: Bool,
+}
+
+struct Constraint {
+    id: UInt32,
+    type: ConstraintType,
+    body_a: UInt32,
+    body_b: UInt32,
+    params: Map<String, Any>,
+    active: Bool,
+}
+
+enum ConstraintType { Hinge, Spring, Distance, Point, Slider, ConeTwist, Ragdoll }
+
+struct PhysicsStats {
+    body_count: UInt32,
+    active_bodies: UInt32,
+    contact_count: UInt32,
+    raycast_count: UInt32,
+    simulation_time_ms: Float32,
+}
+
+// PhysicsBus: Body hinzufügen
+pub fn add_body(bus: PhysicsBus, entity_id: UInt32, body_type: BodyType, collider: ColliderShape, mass: Float32) -> UInt32 {
+    let id = bus.bodies.len() + 1
+    bus.bodies[id] = PhysicsBody {
+        id: id,
+        entity_id: entity_id,
+        body_type: body_type,
+        mass: mass,
+        position: Vec3::zero(),
+        velocity: Vec3::zero(),
+        angular_vel: Vec3::zero(),
+        collider: collider,
+        is_static: body_type == BodyType::Static,
+        is_trigger: false,
+        layer: 0,
+        active: true,
+    }
+    bus.stats.body_count = bus.bodies.len()
+    emit BodyAdded(id, entity_id)
+    return id
+}
+
+// PhysicsBus: Body entfernen
+pub fn remove_body(bus: PhysicsBus, body_id: UInt32) -> Bool {
+    if bus.bodies.contains(body_id) {
+        bus.bodies.delete(body_id)
+        bus.stats.body_count = bus.bodies.len()
+        emit BodyRemoved(body_id)
+    }
+    return true
+}
+
+// PhysicsBus: Position setzen
+pub fn set_position(bus: PhysicsBus, body_id: UInt32, pos: Vec3) -> Bool {
+    require(bus.bodies.contains(body_id), "Body not found")
+    bus.bodies[body_id].position = pos
+    return true
+}
+
+// PhysicsBus: Kraft anwenden
+pub fn apply_force(bus: PhysicsBus, body_id: UInt32, force: Vec3) -> Bool {
+    require(bus.bodies.contains(body_id), "Body not found")
+    require(not bus.bodies[body_id].is_static, "Cannot apply force to static body")
+    let body = bus.bodies[body_id]
+    body.velocity = body.velocity + force / body.mass
+    return true
+}
+
+// PhysicsBus: Impuls anwenden
+pub fn apply_impulse(bus: PhysicsBus, body_id: UInt32, impulse: Vec3) -> Bool {
+    require(bus.bodies.contains(body_id), "Body not found")
+    require(not bus.bodies[body_id].is_static, "Cannot apply impulse to static body")
+    let body = bus.bodies[body_id]
+    body.velocity = body.velocity + impulse / body.mass
+    return true
+}
+
+// PhysicsBus: Raycast
+pub fn raycast(bus: PhysicsBus, origin: Vec3, direction: Vec3, max_dist: Float32) -> RaycastResult {
+    bus.stats.raycast_count = bus.stats.raycast_count + 1
+    // Stub: In echter Engine Physik-Engine abfragen
+    let result = RaycastResult { body_id: 0, point: Vec3::zero(), normal: Vec3::zero(), distance: 0.0, hit: false }
+    for body_id in bus.bodies.keys() {
+        let body = bus.bodies[body_id]
+        if not body.active { continue }
+        // Vereinfachte AABB-Ray intersection
+        let hit_dist = simple_ray_aabb(origin, direction, body.position, max_dist)
+        if hit_dist > 0 and hit_dist < max_dist {
+            result.body_id = body_id
+            result.distance = hit_dist
+            result.point = origin + direction * hit_dist
+            result.hit = true
+            return result
+        }
+    }
+    return result
+}
+
+// PhysicsBus: Simulation Step
+pub fn step(bus: PhysicsBus, dt: Float32) -> Bool {
+    let start = Chain::timestamp_ms()
+    let substeps = bus.max_substeps
+
+    for s in 0..substeps {
+        let sub_dt = dt / substeps
+        // Gravity
+        for body_id in bus.bodies.keys() {
+            let body = bus.bodies[body_id]
+            if body.active and not body.is_static {
+                body.velocity = body.velocity + bus.gravity * sub_dt
+                body.position = body.position + body.velocity * sub_dt
+            }
+        }
+        // Collision detection (Stub)
+        detect_collisions(bus)
+        // Resolve constraints
+        resolve_constraints(bus, sub_dt)
+    }
+
+    bus.stats.simulation_time_ms = Chain::timestamp_ms() - start
+    return true
+}
+
+// PhysicsBus: Constraint hinzufügen
+pub fn add_constraint(bus: PhysicsBus, ctype: ConstraintType, body_a: UInt32, body_b: UInt32) -> UInt32 {
+    let id = bus.constraints.len() + 1
+    bus.constraints[id] = Constraint {
+        id: id,
+        type: ctype,
+        body_a: body_a,
+        body_b: body_b,
+        params: {},
+        active: true,
+    }
+    return id
+}
+
+// PhysicsBus: Trigger setzen
+pub fn set_trigger(bus: PhysicsBus, body_id: UInt32, is_trigger: Bool) -> Bool {
+    require(bus.bodies.contains(body_id), "Body not found")
+    bus.bodies[body_id].is_trigger = is_trigger
+    return true
+}
+
+// Helper: Kollisionen erkennen
+pub fn detect_collisions(bus: PhysicsBus) {
+    bus.contacts = []
+    let body_ids = bus.bodies.keys()
+    for i in 0..body_ids.len() {
+        for j in (i+1)..body_ids.len() {
+            let a = bus.bodies[body_ids[i]]
+            let b = bus.bodies[body_ids[j]]
+            if not a.active or not b.active { continue }
+            if a.is_static and b.is_static { continue }
+            let dist = distance_aabb(a.position, b.position)
+            if dist < 1.0 {
+                bus.contacts.append(Contact {
+                    body_a: a.id,
+                    body_b: b.id,
+                    point: midpoint(a.position, b.position),
+                    normal: normalize(b.position - a.position),
+                    distance: dist,
+                    impulse: 0.0,
+                    timestamp: Chain::timestamp(),
+                })
+                if not a.is_trigger and not b.is_trigger {
+                    emit Collision(a.id, b.id, dist)
+                } else {
+                    emit Trigger(a.id, b.id)
+                }
+            }
+        }
+    }
+    bus.stats.contact_count = bus.contacts.len()
+}
+
+// Helper: Constraints auflösen
+pub fn resolve_constraints(bus: PhysicsBus, dt: Float32) {
+    for cid in bus.constraints.keys() {
+        let c = bus.constraints[cid]
+        if not c.active { continue }
+        // Stub: echte Constraint-Auflösung
+    }
+}
+
+// Helper: Simple Ray-AABB
+pub fn simple_ray_aabb(origin: Vec3, dir: Vec3, center: Vec3, max_dist: Float32) -> Float32 {
+    let d = center - origin
+    let proj = d.x * dir.x + d.y * dir.y + d.z * dir.z
+    if proj < 0 or proj > max_dist { return -1.0 }
+    return proj
+}
+
+type Vec3 = Any  // Stub für Vec3 type
+
+event BodyAdded(id: UInt32, entity: UInt32)
+event BodyRemoved(id: UInt32)
+event Collision(a: UInt32, b: UInt32, distance: Float32)
+event Trigger(a: UInt32, b: UInt32)
