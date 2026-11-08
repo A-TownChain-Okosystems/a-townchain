@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-PR-225",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #225: [DRAFT] Backfill exact file blob SHA for VM function bindings",
+  "context": "Pull request 225 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/225",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-220"
+    }
+  ],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Scope\nMetadata-only catalog correction for `COMP-VM`: populate the missing `source_binding.file_blob_sha` for `FN-VM-014` through `FN-VM-029`.\n\n## Exact source evidence\n- Canonical repository: `A-TownChain-Okosystems/a-townchain` at `a70b16f2d23c6e47ea1cd8691fed8a6d86f0efc9`.\n- `components/vm/src/assembler.rs` blob SHA: `816f3ebb3ae62e4e6e054c0c992a9fd60dd3b7c4`; declarations checked: assemble, new, peek, take, expr, term, factor, tokenize, find_function, json_u64_for_key, simulate.\n- `components/vm/src/main.rs` blob SHA: `ae010fc16ac310e8a98316f63c89e7d9b96cbca8`; declarations checked: parse_slot_pair, parse_args, run_ops_file, main, usage.\n- All 16 catalog records already referenced this exact source commit and expected file path; the change fills only the missing blob hashes.\n\n## Verification boundary\n- No implementation source was changed.\n- No functional correctness, test pass, or production-readiness claim is made.\n- Existing catalog/JSON CI must pass on this PR head before the metadata correction is accepted.\n- This PR does not address the separate `atc-ide` `npm test` blocker in PR #220."
+}
