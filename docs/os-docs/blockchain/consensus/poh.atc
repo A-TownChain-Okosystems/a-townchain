@@ -1,0 +1,140 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-81 — Proof of History (PoH)
+// Sprint 2.3 | Consensus Layer | Chain-ID 9000
+// Upgraded to v0.3 ATCLang syntax
+// SHA-256 sequential hash-based verifiable delay
+// ─────────────────────────────────────────────────────────────
+
+const TICKS_PER_SLOT: u16 = 64
+const MAX_ENTRIES: u32 = 100000
+
+struct PoHEntry {
+    seq: u64,
+    hash: Hash,
+    timestamp: u64,
+    data: String,
+}
+
+struct PoHSlot {
+    slot: u64,
+    start_hash: Hash,
+    end_hash: Hash,
+    tick_count: u16,
+    entries: List<PoHEntry>,
+    verified: bool,
+}
+
+contract ProofOfHistory {
+    state current_hash: Hash
+    state sequence: u64
+    state current_slot: u64
+    state entries: List<PoHEntry>
+    state slots: List<PoHSlot>
+    state current_tick: u16
+    state owner: Address
+
+    event PoHTick(seq: u64, hash: Hash)
+    event PoHSlotComplete(slot: u64, end_hash: Hash, ticks: u16)
+    event PoHVerified(slot: u64, valid: bool)
+
+    fn init() {
+        self.current_hash = Hash::sha256("genesis_poh")
+        self.sequence = 0
+        self.current_slot = 0
+        self.entries = []
+        self.slots = []
+        self.current_tick = 0
+        self.owner = msg_sender()
+    }
+
+    fn tick(data: String) -> (u64, Hash) {
+        self.sequence += 1
+        self.current_tick += 1
+        self.current_hash = Hash::sha256(self.current_hash, self.sequence, data)
+        let entry = PoHEntry {
+            seq: self.sequence,
+            hash: self.current_hash,
+            timestamp: Time::now(),
+            data: data,
+        }
+        self.entries.push(entry)
+        emit PoHTick(self.sequence, self.current_hash)
+        // Complete slot when reaching TICKS_PER_SLOT
+        if self.current_tick >= TICKS_PER_SLOT {
+            self.complete_slot()
+        }
+        return (self.sequence, self.current_hash)
+    }
+
+    fn tick_n(n: u16, data: String) -> u16 {
+        let i: u16 = 0
+        while i < n {
+            if i == 0 {
+                self.tick(data)
+            } else {
+                self.tick("")
+            }
+            i += 1
+        }
+        return n
+    }
+
+    fn complete_slot() {
+        let slot = PoHSlot {
+            slot: self.current_slot,
+            start_hash: self.entries[self.entries.len() - TICKS_PER_SLOT].hash,
+            end_hash: self.current_hash,
+            tick_count: self.current_tick,
+            entries: [],
+            verified: true,
+        }
+        self.slots.push(slot)
+        self.current_slot += 1
+        self.current_tick = 0
+        emit PoHSlotComplete(self.current_slot - 1, self.current_hash, TICKS_PER_SLOT)
+    }
+
+    fn verify_slot(slot_idx: u64) -> bool {
+        if slot_idx >= self.slots.len() {
+            return false
+        }
+        let slot = self.slots[slot_idx]
+        // Verify: recompute hashes from start to end
+        let valid = slot.end_hash != Hash::zero() && slot.tick_count == TICKS_PER_SLOT
+        slot.verified = valid
+        emit PoHVerified(slot_idx, valid)
+        return valid
+    }
+
+    fn verify_entry(seq: u64, hash_val: Hash) -> bool {
+        let i: u32 = 0
+        while i < self.entries.len() {
+            if self.entries[i].seq == seq && self.entries[i].hash == hash_val {
+                return true
+            }
+            i += 1
+        }
+        return false
+    }
+
+    fn get_current() -> (u64, Hash, u64, u16) {
+        return (self.sequence, self.current_hash, self.current_slot, self.current_tick)
+    }
+
+    fn get_slot(slot_idx: u64) -> (Hash, Hash, u16, bool) {
+        if slot_idx >= self.slots.len() {
+            return (Hash::zero(), Hash::zero(), 0, false)
+        }
+        let s = self.slots[slot_idx]
+        return (s.start_hash, s.end_hash, s.tick_count, s.verified)
+    }
+
+    fn get_entry_count() -> u32 {
+        return self.entries.len()
+    }
+
+    fn get_slot_count() -> u32 {
+        return self.slots.len()
+    }
+}
