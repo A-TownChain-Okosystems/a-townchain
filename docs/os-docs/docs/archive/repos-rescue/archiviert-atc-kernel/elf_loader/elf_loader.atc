@@ -1,0 +1,74 @@
+// K-Sprint 31 — ELF64 Loader + Signal Handling (ATCLang Interface)
+// Rust: kernel/src/elf_loader.rs (1104 lines, 46 tests)
+// Agent: Aurora #2 (6a275618)
+
+struct Elf64Header {
+    entry: u64,
+    program_header_offset: u64,
+    program_header_count: u16,
+    machine: u16,
+}
+
+struct Elf64ProgramHeader {
+    p_type: u32,
+    p_flags: u32,
+    p_offset: u64,
+    p_vaddr: u64,
+    p_paddr: u64,
+    p_filesz: u64,
+    p_memsz: u64,
+}
+
+enum Signal {
+    HUP = 1,
+    INT = 2,
+    QUIT = 3,
+    ILL = 4,
+    TRAP = 5,
+    ABRT = 6,
+    BUS = 7,
+    FPE = 8,
+    KILL = 9,
+    USR1 = 10,
+    SEGV = 11,
+    USR2 = 12,
+    PIPE = 13,
+    ALRM = 14,
+    TERM = 15,
+}
+
+enum SignalDisposition {
+    DEFAULT,
+    IGNORE,
+    HANDLER(u64),
+}
+
+module Kernel::ElfLoader {
+    contract ElfParser {
+        fn parse(data: List<u8>) -> Result<Elf64Header, String>
+        fn entry_point() -> u64
+        fn loadable_segments() -> List<Elf64ProgramHeader>
+        fn code_segment() -> Option<Elf64ProgramHeader>
+        fn data_segment() -> Option<Elf64ProgramHeader>
+        fn segment_data(phdr: Elf64ProgramHeader) -> Result<List<u8>, String>
+    }
+
+    contract ElfLoader {
+        fn load_elf(data: List<u8>) -> Result<u64, String>
+        fn create_minimal_elf(entry: u64, code: List<u8>) -> List<u8>
+    }
+
+    contract SignalManager {
+        fn register(pid: u64) -> bool
+        fn unregister(pid: u64) -> bool
+        fn set_handler(pid: u64, signal: Signal, disp: SignalDisposition) -> bool
+        fn get_handler(pid: u64, signal: Signal) -> SignalDisposition
+        fn block(pid: u64, signal: Signal) -> bool
+        fn unblock(pid: u64, signal: Signal) -> bool
+        fn send(pid: u64, signal: Signal, sender: Option<u64>) -> bool
+        fn pending_signals(pid: u64) -> List<Signal>
+        fn deliver(pid: u64) -> Option<(Signal, SignalDisposition)>
+        fn signals_sent() -> u64
+        fn signals_delivered() -> u64
+    }
+}
