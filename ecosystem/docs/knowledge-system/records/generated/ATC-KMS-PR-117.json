@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-117",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #117: docs: define end-to-end OS, kernel, AI and blockchain readiness gates",
+  "context": "Pull request 117 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/117",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\nCloses #116\n\n## Changes\n- Add the end-to-end runtime roadmap for ShivaCore, GlobusOS, A-TownChain, ATC-VM, ATCLang and Aurora AI.\n- Add a machine-readable readiness manifest with acceptance gates G0–G5 and a strict evidence-record schema.\n- Preserve SSOT boundaries: this repository remains the integration/evidence control plane; implementation work stays in canonical source repositories.\n- Explicitly prohibit treating merges or isolated green gates as end-to-end verification.\n\n## Validation\n- Documentation and YAML structure added; CI validation is still pending.\n- All gates are initially marked BLOCKED because this change does not claim runtime verification.\n- Draft PR; no auto-merge. Runtime implementation and exact-SHA evidence remain follow-up work."
+}
