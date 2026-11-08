@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-COMPONENT-A-TOWNCHAIN-OS-28B6B638D6",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "module",
+  "title": "Component: a-townchain-os",
+  "context": "Component subtree indexed from A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "file",
+    "ref": "components/a-townchain-os",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "a-townchain-os",
+    "component",
+    "generated"
+  ],
+  "links": [
+    {
+      "relation": "part-of",
+      "target": "ATC-KMS-REPOSITORY-STRUCTURE"
+    }
+  ],
+  "content": "Files: 127\n\nManifests: components/a-townchain-os/kai-os/Cargo.toml, components/a-townchain-os/kai-os/ai/Cargo.toml, components/a-townchain-os/kai-os/cli/Cargo.toml, components/a-townchain-os/kai-os/health/Cargo.toml, components/a-townchain-os/kai-os/integration/Cargo.toml, components/a-townchain-os/kai-os/keyring/Cargo.toml, components/a-townchain-os/kai-os/network/Cargo.toml, components/a-townchain-os/kai-os/node/Cargo.toml, components/a-townchain-os/kai-os/pkg/Cargo.toml, components/a-townchain-os/kai-os/runtime/Cargo.toml, components/a-townchain-os/kai-os/state/Cargo.toml, components/a-townchain-os/kai-os/syncd/Cargo.toml"
+}
