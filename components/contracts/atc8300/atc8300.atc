@@ -15,6 +15,12 @@ contract ATC8300Token {
     state balances:     Map<Address, u128>
     state allowances:   Map<Address, Map<Address, u128>>
 
+    event TokenInitialized(name: string, symbol: string, owner: Address)
+    event Transfer(sender: Address, to: Address, amount: u128)
+    event Approval(sender: Address, spender: Address, amount: u128)
+    event Mint(to: Address, amount: u128)
+    event Burn(sender: Address, amount: u128)
+
     fn init(name: string, symbol: string, owner_addr: Address) {
         self.name_   = name
         self.symbol_ = symbol
@@ -83,6 +89,8 @@ contract ATC8300Token {
 contract ATCoin : ATC8300Token {
     state CHAIN_ID:  u64  = 658467
     state MAX_SUPPLY: u128 = 360_000_000_000_000_000_000_000_000  // 360M ATC; canonical L1 cap
+
+    event ATCoinInitialized(owner: Address, max_supply: u128)
 
     fn init_atcoin(owner_addr: Address) {
         self.init("A-TownCoin", "ATC", owner_addr)
