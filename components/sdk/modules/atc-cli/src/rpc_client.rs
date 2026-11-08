@@ -42,10 +42,11 @@ impl RpcClient {
         extract_result(&line).ok_or_else(|| format!("kein result in: {}", line.trim()))
     }
 
-    pub fn chain_id(&mut self) -> Result<u64, String> {
-        self.call("chain_id")?
-            .parse::<u64>()
-            .map_err(|e| format!("kein u64: {}", e))
+    /// Ketten-ID wie vom Node gemeldet (kanonisch: Zeichenkette aus config::CHAIN_ID,
+    /// z. B. "atc"). Die numerische Domain-Separation (658467) gehoert in die
+    /// Signaturpfade und ist bewusst nicht Teil dieser Abfrage.
+    pub fn chain_id(&mut self) -> Result<String, String> {
+        self.call("chain_id")
     }
 
     pub fn boot_hash(&mut self) -> Result<u64, String> {
@@ -132,7 +133,7 @@ mod tests {
         let addr = listener.local_addr().expect("keine Adresse");
         std::thread::spawn(move || mock_node(listener));
         let mut c = RpcClient::new(format!("127.0.0.1:{}", addr.port()));
-        assert_eq!(c.chain_id().expect("chain_id fehlgeschlagen"), 658467);
+        assert_eq!(c.chain_id().expect("chain_id fehlgeschlagen"), "658467");
 
         let listener2 = TcpListener::bind("127.0.0.1:0").expect("bind2 fehlgeschlagen");
         let addr2 = listener2.local_addr().expect("keine Adresse2");
