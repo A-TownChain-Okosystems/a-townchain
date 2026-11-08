@@ -1,0 +1,17 @@
+// ATCLang v0.3 — Range Proof Circuit
+// Beweist dass ein Wert in einem Bereich liegt, ohne den Wert zu offenbaren
+// ATC-Standard: ATC-24
+
+module range_circuit {
+    fn prove_range(value: int, min: int, max: int) {
+        // Range-Proof generieren
+    }
+    
+    fn prove_positive(value: int) {
+        // Beweist value >= 0
+    }
+    
+    fn prove_bit_length(value: int, bits: int) {
+        // Beweist value passt in N Bits
+    }
+}
