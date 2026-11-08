@@ -1,0 +1,12 @@
+# ATC Compliance-State (SSOT) — SCR-0094, Owner-Audit P1-01 (11.09.2026)
+# Drei GETRENNTE Zustaende statt flachem 'COMPLIANCE: YES' — kein Zustand behauptet einen anderen.
+# R12 im Cross-Registry-Test erzwingt jede Zeile (CI-Job cross-registry).
+schema_version: "1.0.0"
+generated: "2026-09-11"
+formal_compliance: PASS
+implementation_compliance: PARTIAL
+production_readiness: NOT_READY
+derivation:
+  formal_compliance: "PASS nur wenn Cross-Registry-Test R1-R12 + Validator ALL COMPLIANT; R12 erzwingt diesen Wert"
+  implementation_compliance: "aus registry/standard-implementation.yaml abgeleitet: 65 enforced + 129 implemented + 265 specification_only + 15 reference von 474; R12-Drift-Gate"
+  production_readiness: "NOT_READY solange kein ACCEPTED Mainnet-/Release-Meilenstein in registry/milestones.yaml bzw. releases.yaml existiert (R12-Gate, von Agenten nicht frei setzbar)"
