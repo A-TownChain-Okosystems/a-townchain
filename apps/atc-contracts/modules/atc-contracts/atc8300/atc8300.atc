@@ -88,7 +88,7 @@ contract ATC8300Token {
 // ATC-Coin — nativer Token
 contract ATCoin : ATC8300Token {
     state CHAIN_ID:  u64  = 658467
-    state MAX_SUPPLY: u128 = 21_000_000_000_000_000_000_000_000  // 21 Mio ATC
+    state MAX_SUPPLY: u128 = 360_000_000_000_000_000_000_000_000  // 360M ATC; canonical L1 cap
 
     event ATCoinInitialized(owner: Address, max_supply: u128)
 
