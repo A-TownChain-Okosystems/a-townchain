@@ -1,0 +1,220 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-17 — DAO Treasury Management
+// Sprint 2.6 | Governance Layer | Chain-ID 9000
+// On-chain treasury with spending limits and governance approval
+// ─────────────────────────────────────────────────────────────
+
+const MAX_ALLOCATION: u128 = 10000000000000000000000  // 10,000 ATC
+const SMALL_EXPENSE_LIMIT: u128 = 100000000000000000000  // 100 ATC
+const EXPENSE_COOLDOWN: u64 = 86400  // 24h between small expenses
+
+enum ExpenseCategory { Engineering, Marketing, Audit, Infrastructure, Community, Legal, Emergency }
+enum ExpenseStatus { Requested, Approved, Rejected, Disbursed }
+
+struct Expense {
+    expense_id: Hash,
+    category: ExpenseCategory,
+    recipient: Address,
+    amount: u128,
+    description: String,
+    requested_by: Address,
+    requested_at: u64,
+    status: ExpenseStatus,
+    approved_by: Address,
+    disbursed_at: u64,
+}
+
+struct Balance {
+    token: String,
+    amount: u128,
+    locked: u128,
+}
+
+contract DAOTreasury {
+    state balances: Map<String, Balance>
+    state expenses: Map<Hash, Expense>
+    state expense_ids: List<Hash>
+    state total_disbursed: u128
+    state last_small_expense: u64
+    state guardian: Address
+    state owner: Address
+
+    event Deposit(token: String, amount: u128, from: Address)
+    event Withdrawal(token: String, amount: u128, to: Address)
+    event ExpenseRequested(id: Hash, category: ExpenseCategory, amount: u128)
+    event ExpenseApproved(id: Hash, approver: Address)
+    event ExpenseRejected(id: Hash, reason: String)
+    event ExpenseDisbursed(id: Hash, recipient: Address, amount: u128)
+
+    fn init() {
+        self.balances = {}
+        self.expenses = {}
+        self.expense_ids = []
+        self.total_disbursed = 0
+        self.last_small_expense = 0
+        self.owner = msg_sender()
+        self.guardian = msg_sender()
+    }
+
+    fn deposit(token: String, amount: u128) -> bool {
+        if amount == 0 {
+            return false
+        }
+        let b = self.balances.get(token)
+        if b == null {
+            b = Balance { token: token, amount: 0, locked: 0 }
+        }
+        b.amount += amount
+        self.balances[token] = b
+        emit Deposit(token, amount, msg_sender())
+        return true
+    }
+
+    fn request_expense(category: ExpenseCategory, recipient: Address, amount: u128, description: String) -> Hash {
+        if amount == 0 || amount > MAX_ALLOCATION {
+            return Hash::zero()
+        }
+        let eid = Hash::sha256(category, recipient, amount, description, Time::now())
+        let expense = Expense {
+            expense_id: eid,
+            category: category,
+            recipient: recipient,
+            amount: amount,
+            description: description,
+            requested_by: msg_sender(),
+            requested_at: Time::now(),
+            status: ExpenseStatus::Requested,
+            approved_by: Address::zero(),
+            disbursed_at: 0,
+        }
+        self.expenses[eid] = expense
+        self.expense_ids.push(eid)
+        emit ExpenseRequested(eid, category, amount)
+        return eid
+    }
+
+    fn approve_expense(eid: Hash) -> bool {
+        if msg_sender() != self.owner && msg_sender() != self.guardian {
+            return false
+        }
+        let e = self.expenses.get(eid)
+        if e == null || e.status != ExpenseStatus::Requested {
+            return false
+        }
+        // Check balance
+        let b = self.balances.get("ATC")
+        if b == null || b.amount < e.amount {
+            return false
+        }
+        e.status = ExpenseStatus::Approved
+        e.approved_by = msg_sender()
+        emit ExpenseApproved(eid, msg_sender())
+        return true
+    }
+
+    fn reject_expense(eid: Hash, reason: String) -> bool {
+        if msg_sender() != self.owner && msg_sender() != self.guardian {
+            return false
+        }
+        let e = self.expenses.get(eid)
+        if e == null || e.status != ExpenseStatus::Requested {
+            return false
+        }
+        e.status = ExpenseStatus::Rejected
+        emit ExpenseRejected(eid, reason)
+        return true
+    }
+
+    fn disburse(eid: Hash) -> bool {
+        let e = self.expenses.get(eid)
+        if e == null || e.status != ExpenseStatus::Approved {
+            return false
+        }
+        let b = self.balances.get("ATC")
+        if b == null || b.amount < e.amount {
+            return false
+        }
+        b.amount -= e.amount
+        self.total_disbursed += e.amount
+        e.status = ExpenseStatus::Disbursed
+        e.disbursed_at = Time::now()
+        emit ExpenseDisbursed(eid, e.recipient, e.amount)
+        return true
+    }
+
+    fn small_expense(recipient: Address, amount: u128, description: String) -> bool {
+        if amount > SMALL_EXPENSE_LIMIT {
+            return false
+        }
+        if msg_sender() != self.guardian {
+            return false
+        }
+        if Time::now() - self.last_small_expense < EXPENSE_COOLDOWN {
+            return false
+        }
+        let b = self.balances.get("ATC")
+        if b == null || b.amount < amount {
+            return false
+        }
+        b.amount -= amount
+        self.total_disbursed += amount
+        self.last_small_expense = Time::now()
+        emit Withdrawal("ATC", amount, recipient)
+        return true
+    }
+
+    fn lock_funds(token: String, amount: u128) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        let b = self.balances.get(token)
+        if b == null || b.amount < amount {
+            return false
+        }
+        b.amount -= amount
+        b.locked += amount
+        return true
+    }
+
+    fn unlock_funds(token: String, amount: u128) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        let b = self.balances.get(token)
+        if b == null || b.locked < amount {
+            return false
+        }
+        b.locked -= amount
+        b.amount += amount
+        return true
+    }
+
+    fn get_balance(token: String) -> (u128, u128) {
+        let b = self.balances.get(token)
+        if b == null {
+            return (0, 0)
+        }
+        return (b.amount, b.locked)
+    }
+
+    fn get_expense(eid: Hash) -> (ExpenseCategory, Address, u128, ExpenseStatus, u64) {
+        let e = self.expenses.get(eid)
+        if e == null {
+            return (ExpenseCategory::Engineering, Address::zero(), 0, ExpenseStatus::Rejected, 0)
+        }
+        return (e.category, e.recipient, e.amount, e.status, e.disbursed_at)
+    }
+
+    fn get_stats() -> (u32, u128, u64) {
+        return (self.expense_ids.len(), self.total_disbursed, self.last_small_expense)
+    }
+
+    fn set_guardian(addr: Address) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.guardian = addr
+        return true
+    }
+}
