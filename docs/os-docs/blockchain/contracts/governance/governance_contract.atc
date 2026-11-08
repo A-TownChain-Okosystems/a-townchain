@@ -1,0 +1,202 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-17 — Governance Contract (On-Chain Voting)
+// Sprint 2.6 | Non-EVM | SHA-256 | Chain-ID 9000
+// Migrated from: blockchain/contracts/governance/governance_contract.py
+// ─────────────────────────────────────────────────────────────
+
+const MIN_PROPOSAL_TOKENS: u128 = 1000000000000000000000  // 1000 ATC
+const VOTING_PERIOD: u64 = 604800    // 7 days
+const DEFAULT_QUORUM: u32 = 1000      // 10% in basis points
+const DEFAULT_THRESHOLD: u32 = 5100   // 51% in basis points
+
+enum ProposalStatus { Pending, Active, Passed, Rejected, Executed, Expired }
+enum VoteChoice { Yes, No, Abstain }
+
+struct Vote {
+    voter: Address,
+    choice: VoteChoice,
+    weight: u128,
+    ts: u64,
+}
+
+struct Proposal {
+    id: Hash,
+    title: String,
+    description: String,
+    proposer: Address,
+    created: u64,
+    voting_end: u64,
+    quorum_bps: u32,
+    threshold_bps: u32,
+    status: ProposalStatus,
+    votes_yes: u128,
+    votes_no: u128,
+    votes_abstain: u128,
+    total_weight: u128,
+    executed_at: u64,
+}
+
+contract GovernanceContract {
+    state proposals: Map<Hash, Proposal>
+    state votes: Map<Hash, Map<Address, VoteChoice>>
+    state balances: Map<Address, u128>
+    state total_supply: u128
+    state owner: Address
+
+    event ProposalCreated(id: Hash, proposer: Address, title: String)
+    event VoteCast(id: Hash, voter: Address, choice: VoteChoice, weight: u128)
+    event ProposalPassed(id: Hash, yes: u128, no: u128)
+    event ProposalRejected(id: Hash, yes: u128, no: u128)
+    event ProposalExecuted(id: Hash)
+
+    fn init() {
+        self.owner = msg_sender()
+        self.total_supply = 1000000000000000000000000  // 1M ATC
+    }
+
+    // ── Set balance (testnet) ───────────────────────
+    fn set_balance(addr: Address, amount: u128) {
+        self.balances[addr] = amount
+    }
+
+    // ── Get balance ─────────────────────────────────
+    fn get_balance(addr: Address) -> u128 {
+        let bal = self.balances.get(addr)
+        if bal == null {
+            return 0
+        }
+        return bal
+    }
+
+    // ── Create proposal ─────────────────────────────
+    fn create_proposal(title: String, description: String) -> Hash {
+        let proposer = msg_sender()
+        let bal = self.get_balance(proposer)
+        if bal < MIN_PROPOSAL_TOKENS {
+            return Hash::zero()
+        }
+        let id_input = title + Address::to_hex(proposer) + Int::to_string(Time::now())
+        let pid = Hash::sha256(id_input)
+        let now = Time::now()
+        let proposal = Proposal {
+            id: pid,
+            title: title,
+            description: description,
+            proposer: proposer,
+            created: now,
+            voting_end: now + VOTING_PERIOD,
+            quorum_bps: DEFAULT_QUORUM,
+            threshold_bps: DEFAULT_THRESHOLD,
+            status: ProposalStatus::Active,
+            votes_yes: 0,
+            votes_no: 0,
+            votes_abstain: 0,
+            total_weight: 0,
+            executed_at: 0,
+        }
+        self.proposals[pid] = proposal
+        emit ProposalCreated(pid, proposer, title)
+        return pid
+    }
+
+    // ── Cast vote ───────────────────────────────────
+    fn vote(proposal_id: Hash, choice: VoteChoice) -> bool {
+        let proposal = self.proposals.get(proposal_id)
+        if proposal == null {
+            return false
+        }
+        if proposal.status != ProposalStatus::Active {
+            return false
+        }
+        if Time::now() >= proposal.voting_end {
+            return false
+        }
+        // Check double voting
+        let proposal_votes = self.votes.get(proposal_id)
+        if proposal_votes != null {
+            if proposal_votes.contains(msg_sender()) {
+                return false
+            }
+        } else {
+            proposal_votes = {}
+        }
+        let weight = self.get_balance(msg_sender())
+        if weight == 0 {
+            return false
+        }
+        proposal_votes[msg_sender()] = choice
+        self.votes[proposal_id] = proposal_votes
+        if choice == VoteChoice::Yes {
+            proposal.votes_yes += weight
+        } else if choice == VoteChoice::No {
+            proposal.votes_no += weight
+        } else {
+            proposal.votes_abstain += weight
+        }
+        proposal.total_weight += weight
+        emit VoteCast(proposal_id, msg_sender(), choice, weight)
+        return true
+    }
+
+    // ── Finalize proposal ───────────────────────────
+    fn finalize(proposal_id: Hash) -> bool {
+        let p = self.proposals.get(proposal_id)
+        if p == null {
+            return false
+        }
+        if p.status != ProposalStatus::Active {
+            return false
+        }
+        if Time::now() < p.voting_end {
+            return false
+        }
+        // Quorum check
+        let quorum_needed = self.total_supply * p.quorum_bps / 10000
+        if p.total_weight < quorum_needed {
+            p.status = ProposalStatus::Rejected
+            emit ProposalRejected(proposal_id, p.votes_yes, p.votes_no)
+            return false
+        }
+        // Threshold check
+        let total_cast = p.votes_yes + p.votes_no
+        if total_cast == 0 {
+            p.status = ProposalStatus::Rejected
+            emit ProposalRejected(proposal_id, 0, 0)
+            return false
+        }
+        let yes_bps = p.votes_yes * 10000 / total_cast
+        if yes_bps >= p.threshold_bps {
+            p.status = ProposalStatus::Passed
+            emit ProposalPassed(proposal_id, p.votes_yes, p.votes_no)
+        } else {
+            p.status = ProposalStatus::Rejected
+            emit ProposalRejected(proposal_id, p.votes_yes, p.votes_no)
+        }
+        return true
+    }
+
+    // ── Execute proposal ─────────────────────────────
+    fn execute(proposal_id: Hash) -> bool {
+        let p = self.proposals.get(proposal_id)
+        if p == null {
+            return false
+        }
+        if p.status != ProposalStatus::Passed {
+            return false
+        }
+        p.status = ProposalStatus::Executed
+        p.executed_at = Time::now()
+        emit ProposalExecuted(proposal_id)
+        return true
+    }
+
+    // ── Tally ───────────────────────────────────────
+    fn tally(proposal_id: Hash) -> (u128, u128, u128) {
+        let p = self.proposals.get(proposal_id)
+        if p == null {
+            return (0, 0, 0)
+        }
+        return (p.votes_yes, p.votes_no, p.votes_abstain)
+    }
+}
