@@ -1,0 +1,190 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang — Identity Layer (AD-65)
+// Genesis Civilization Platform v4.0
+// Verwaltet Identitäten über das gesamte Ökosystem
+
+struct IdentityLayer {
+    id: String,
+    identities: Vec<Identity>,
+    organizations: Vec<Organization>,
+    teams: Vec<Team>,
+    roles: Vec<Role>,
+    permissions: Vec<Permission>,
+    sessions: Vec<Session>,
+    auth_config: AuthConfig
+}
+
+struct Identity {
+    id: String,
+    type: IdentityType,
+    display_name: String,
+    email: Option<String>,
+    avatar: Option<String>,
+    bio: Option<String>,
+    created: String,
+    last_active: String,
+    status: String,           // "active"|"suspended"|"banned"|"deleted"
+    verified: bool,
+    mfa_enabled: bool,
+    linked_accounts: Vec<LinkedAccount>,
+    reputation: f32,
+    badges: Vec<String>
+}
+
+enum IdentityType {
+    Player,
+    Developer,
+    Creator,
+    Organization,
+    AI_Agent,
+    Service
+}
+
+struct LinkedAccount {
+    platform: String,          // "steam"|"epic"|"psn"|"xbox"|"google"|"github"|"discord"
+    external_id: String,
+    linked_since: String,
+    verified: bool
+}
+
+struct Organization {
+    id: String,
+    name: String,
+    type: String,              // "studio"|"publisher"|"indie"|"team"|"community"
+    members: Vec<OrgMember>,
+    roles: Vec<String>,
+    projects: Vec<String>,
+    billing: BillingInfo,
+    created: String
+}
+
+struct OrgMember {
+    identity_id: String,
+    role: String,              // "owner"|"admin"|"developer"|"creator"|"viewer"
+    joined: String,
+    permissions: Vec<String>
+}
+
+struct Team {
+    id: String,
+    name: String,
+    org: String,
+    members: Vec<String>,
+    lead: String,
+    focus: String,             // "engineering"|"art"|"design"|"qa"|"marketing"|"community"
+    projects: Vec<String>
+}
+
+struct Role {
+    id: String,
+    name: String,
+    permissions: Vec<String>,
+    inherits: Option<String>,
+    description: String,
+    scope: String              // "global"|"org"|"team"|"project"
+}
+
+struct Permission {
+    id: String,
+    name: String,
+    resource: String,          // "assets"|"builds"|"releases"|"players"|"economy"|"content"
+    actions: Vec<String>,      // "read"|"write"|"delete"|"admin"|"publish"
+    conditions: Map<String, String>
+}
+
+struct Session {
+    id: String,
+    identity_id: String,
+    token: String,             // hashed
+    ip: String,
+    device: String,
+    started: String,
+    expires: String,
+    active: bool
+}
+
+struct AuthConfig {
+    provider: String,          // "oauth2"|"jwt"|"session"|"api_key"
+    token_lifetime: u32,       // seconds
+    refresh_enabled: bool,
+    mfa_required: bool,
+    rate_limit: u32,           // requests per minute
+    cors_origins: Vec<String>
+}
+
+struct BillingInfo {
+    plan: String,              // "free"|"indie"|"pro"|"enterprise"
+    seats: u32,
+    monthly_cost: u64,
+    payment_method: Option<String>,
+    next_billing: String
+}
+
+fn identity_create(type_: IdentityType, name: String) -> Identity {
+    Identity {
+        id: generate_id("ID"),
+        type: type_,
+        display_name: name,
+        email: None,
+        avatar: None,
+        bio: None,
+        created: now(),
+        last_active: now(),
+        status: "active",
+        verified: false,
+        mfa_enabled: false,
+        linked_accounts: Vec::new(),
+        reputation: 0.0,
+        badges: Vec::new()
+    }
+}
+
+fn identity_link_account(id: String, platform: String, external_id: String) -> bool {
+    let identity = get_identity(id);
+    identity.linked_accounts.push(LinkedAccount {
+        platform: platform,
+        external_id: external_id,
+        linked_since: now(),
+        verified: false
+    });
+    true
+}
+
+fn identity_check_permission(id: String, resource: String, action: String) -> bool {
+    let identity = get_identity(id);
+    // Direkte Permissions
+    for role_id in get_identity_roles(id) {
+        let role = get_role(role_id);
+        for perm_id in role.permissions {
+            let perm = get_permission(perm_id);
+            if perm.resource == resource && perm.actions.contains(action) {
+                return true;
+            }
+        }
+        // Vererbte Rollen
+        if let Some(parent) = role.inherits {
+            if check_role_permission(parent, resource, action) {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+fn identity_create_session(id: String, ip: String, device: String) -> Session {
+    let identity = get_identity(id);
+    let cfg = get_auth_config();
+    Session {
+        id: generate_id("SES"),
+        identity_id: id,
+        token: hash(generate_token()),
+        ip: ip,
+        device: device,
+        started: now(),
+        expires: now() + cfg.token_lifetime,
+        active: true
+    }
+}
+
+// Standards: AD-65
+// Dependencies: Security Factory (AD-42), Cross-Franchise Engine (AD-46)
