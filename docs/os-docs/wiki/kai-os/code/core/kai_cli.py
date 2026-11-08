@@ -143,7 +143,7 @@ Examples:
             logger.info(f"💬 Invoking agent: {args.agent_id}")
             print(json.dumps({
                 "task_id": "task_01HZ...",
-                "status": "queued" if args.async else "completed"
+                "status": "queued" if getattr(args, "async", False) else "completed"
             }, indent=2))
             return 0
         
