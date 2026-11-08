@@ -1,0 +1,15 @@
+// ATCLang v0.3 — Price Oracle
+// TWAP, spot price, manipulation resistance
+// ATC-Standard: ATC-88
+
+module price_oracle {
+    struct PriceObservation {
+        timestamp: int,
+        price_cumulative: int,
+        spot_price: int
+    }
+    
+    fn update_twap() {
+        // Updates Time-Weighted Average Price accumulator
+    }
+}
