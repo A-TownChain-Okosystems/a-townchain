@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-206",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #206: [P0] Bind delivery evidence to exact source SHAs and workflow runs",
+  "context": "Issue 206 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/206",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Goal\nMake the ecosystem evidence registry mechanically auditable and prevent stale evidence from being mistaken for current verification.\n\n## Scope\nExtend the delivery registry/evidence validation path to record repository, source SHA, workflow/run URL, gate name, result, timestamp, environment and acceptance criterion.\n\n## Acceptance criteria\n- [ ] Every VERIFIED entry contains a concrete source SHA and retrievable workflow/test evidence.\n- [ ] Validator flags absent SHAs, absent run references and evidence whose SHA differs from the assessed revision.\n- [ ] IMPLEMENTED, VERIFIED, AUDITED and PRODUCTION_READY remain distinct states with documented transition criteria.\n- [ ] Stale evidence is visibly marked stale, not silently reused.\n- [ ] Tests include valid evidence, missing fields, SHA mismatch and stale run.\n- [ ] The validator's CI run and tested SHA are linked in the PR.\n\n## Dependencies\nNone; this can proceed in parallel with contract work."
+}
