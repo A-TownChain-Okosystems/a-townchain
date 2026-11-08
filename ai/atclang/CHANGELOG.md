@@ -28,11 +28,20 @@ und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v
 - Befund dokumentiert: 38 `emit`-Aufrufe in Bestandsvertraegen ohne
   Event-Deklaration (offener Punkt, keine stille Reparatur).
 
+### Added (VM-Subset — Logikoperatoren)
+
+- `&&` und `||` werden kurzgeschlossen gelowerd: die rechte Seite wird nur
+  ausgewertet, wenn die linke Seite die Entscheidung nicht schon trifft
+  (`0 && x` und `1 || x` werten `x` nie aus).
+- `!` als logisches Nicht im i64-Subset, normalisiert auf 0/1.
+- Nicht unterstuetzte Operatoren (`%`) lehnen weiterhin im Frontend ab
+  (fail-closed, kein stiller Durchlauf).
+
 ### Verification
 
-- `cargo test --workspace`: 469 Tests gruen.
+- `cargo test --workspace`: 471 Tests gruen.
 - `./tools/ecosystem.sh build`: alle sieben Workspaces plus Bare-Metal-Kernel.
-- `./tools/ecosystem.sh test`: 2131 Tests, 0 fehlgeschlagen.
+- `./tools/ecosystem.sh test`: 2133 Tests, 0 fehlgeschlagen.
 - Contract-Registry-Gate A8: GATE PASS (16/16).
 
 ## [Unreleased] - 2026-09-11
