@@ -1,0 +1,175 @@
+{
+  "schema_id": "ATC-ORG-REPOSITORY-MANIFEST-001",
+  "schema_version": "1.0.0",
+  "owner": "A-TownChain-Okosystems",
+  "catalog_ref": "ATC-COMPONENT-FUNCTION-CATALOG-001",
+  "manifest_note": "Repository census from connected GitHub repository listing on 2026-10-11. A successful scan must still be reconciled to the catalog and functional contracts.",
+  "repositories": [
+    {
+      "name": "a-townchain-os",
+      "archived": false,
+      "role": "L7 orchestrator"
+    },
+    {
+      "name": "atclang",
+      "archived": false,
+      "role": "L0 language"
+    },
+    {
+      "name": "a-townchain-os-docs",
+      "archived": false,
+      "role": "documentation"
+    },
+    {
+      "name": "atc-shivacore",
+      "archived": false,
+      "role": "kernel specifications/governance/support"
+    },
+    {
+      "name": "a-townchain",
+      "archived": false,
+      "role": "L3 blockchain core"
+    },
+    {
+      "name": "globus-os",
+      "archived": false,
+      "role": "L4 operating system"
+    },
+    {
+      "name": "aurora-ai",
+      "archived": false,
+      "role": "L2 AI runtime"
+    },
+    {
+      "name": "genesis-engine",
+      "archived": false,
+      "role": "genesis tooling"
+    },
+    {
+      "name": "atc-sdk",
+      "archived": false,
+      "role": "SDK"
+    },
+    {
+      "name": "atc-node",
+      "archived": false,
+      "role": "blockchain node"
+    },
+    {
+      "name": "atc-contracts",
+      "archived": false,
+      "role": "contract interfaces"
+    },
+    {
+      "name": "atc-wallet",
+      "archived": true,
+      "role": "archived historical reference"
+    },
+    {
+      "name": "atc-explorer",
+      "archived": true,
+      "role": "archived historical reference"
+    },
+    {
+      "name": "atc-indexer",
+      "archived": true,
+      "role": "archived historical reference"
+    },
+    {
+      "name": "atc-mining",
+      "archived": true,
+      "role": "archived historical reference"
+    },
+    {
+      "name": "atc-interop",
+      "archived": true,
+      "role": "archived historical reference"
+    },
+    {
+      "name": "genesis-chronicles",
+      "archived": false,
+      "role": "application/service"
+    },
+    {
+      "name": "atc-oracle",
+      "archived": true,
+      "role": "archived historical reference"
+    },
+    {
+      "name": "atc-storage",
+      "archived": true,
+      "role": "archived historical reference"
+    },
+    {
+      "name": "atc-launchpad",
+      "archived": false,
+      "role": "application"
+    },
+    {
+      "name": "atc-marketplace",
+      "archived": false,
+      "role": "application"
+    },
+    {
+      "name": "atc-compute",
+      "archived": false,
+      "role": "service"
+    },
+    {
+      "name": "atc-standards",
+      "archived": false,
+      "role": "standards/governance"
+    },
+    {
+      "name": "atc-vm",
+      "archived": false,
+      "role": "VM support/specification; canonical production VM is a-townchain/components/vm"
+    },
+    {
+      "name": "atc-algorithm",
+      "archived": false,
+      "role": "algorithm support/specification; canonical production algorithm is a-townchain/components/algorithm"
+    },
+    {
+      "name": "atc-zkp",
+      "archived": false,
+      "role": "zero-knowledge proofs"
+    },
+    {
+      "name": ".github",
+      "archived": false,
+      "role": "organization GitHub configuration"
+    },
+    {
+      "name": "demo-repository",
+      "archived": false,
+      "role": "demo/reference",
+      "private": true
+    },
+    {
+      "name": "atc-ide",
+      "archived": false,
+      "role": "developer tooling"
+    },
+    {
+      "name": "genesis-franchise-factory",
+      "archived": false,
+      "role": "application/tooling"
+    },
+    {
+      "name": "atc-engineering",
+      "archived": false,
+      "role": "engineering governance"
+    },
+    {
+      "name": "a-townchain-ecosystem",
+      "archived": false,
+      "role": "integration/compliance/evidence/architecture control plane"
+    },
+    {
+      "name": "atc-toolchain",
+      "archived": false,
+      "role": "compiler/toolchain"
+    }
+  ]
+}
