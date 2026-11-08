@@ -8,7 +8,7 @@
 //! nackte Ausdruecke werden als ExprStatement gewrappt.
 
 use crate::ast::{Expr, FunctionDef, LetStmt, Param, Program, Stmt, TypeHint};
-use crate::lexer::{tokenize, Token};
+use crate::lexer::{tokenize_pos, Pos, Token};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ParseError {
@@ -55,19 +55,40 @@ fn keyword_text(t: &Token) -> Option<&'static str> {
 }
 
 pub fn parse_program(src: &str) -> Result<Program, ParseError> {
-    let toks = tokenize(src).map_err(|e| ParseError {
+    let (toks, cols) = tokenize_pos(src).map_err(|e| ParseError {
         message: format!("Lex-Fehler bei Position {}: {:?}", e.pos, e.ch),
     })?;
-    let mut p = Parser { toks, pos: 0 };
+    let mut p = Parser { toks, pos: 0, cols };
     p.program()
 }
 
 struct Parser {
     toks: Vec<Token>,
     pos: usize,
+    /// Zeile/Spalte je Token. Leer, wenn ohne Positionen geparst wird; dann
+    /// stehen die eingerueckten Rumpfformen nicht zur Verfuegung.
+    cols: Vec<Pos>,
 }
 
 impl Parser {
+    /// Spalte des aktuellen Tokens, falls Positionen bekannt sind.
+    fn col(&self) -> Option<u32> {
+        self.cols.get(self.pos).map(|p| p.col)
+    }
+
+    /// Steht das aktuelle Token in einem eingerueckten Rumpf?
+    ///
+    /// Eingerueckt heisst: weiter rechts als die Deklaration, die den Rumpf
+    /// aufmacht. Genau das ist die DEDENT-Regel aus SPEC 3.2, auf Spalten
+    /// abgebildet; ohne Spalten ist die Frage nicht beantwortbar und die
+    /// Antwort bleibt `false`.
+    fn at_indented_line(&self, base: Option<u32>) -> bool {
+        match (self.col(), base) {
+            (Some(col), Some(base)) => col > base && self.cur() != Token::Eof,
+            _ => false,
+        }
+    }
+
     fn cur(&self) -> Token {
         self.toks.get(self.pos).cloned().unwrap_or(Token::Eof)
     }
@@ -516,8 +537,33 @@ impl Parser {
     }
 
     fn struct_decl(&mut self) -> Result<Stmt, ParseError> {
+        let decl_col = self.col();
         self.pos += 1;
         let name = self.expect_name("Struct-Name")?;
+        // Eingerueckte Form `struct X:` mit Feldern je Zeile.
+        if self.cur() == Token::Colon {
+            self.pos += 1;
+            let mut fields = Vec::new();
+            while self.at_indented_line(decl_col) {
+                let field = self.expect_field_name("Struct-Feld")?;
+                if self.cur() != Token::Colon {
+                    return Err(ParseError {
+                        message: "':' nach Struct-Feld erwartet".into(),
+                    });
+                }
+                self.pos += 1;
+                let ty = self.simple_type()?;
+                fields.push((field, ty));
+                match self.cur() {
+                    Token::Comma | Token::Semi => self.pos += 1,
+                    _ => {}
+                }
+            }
+            if self.cur() == Token::Semi {
+                self.pos += 1;
+            }
+            return Ok(Stmt::Struct { name, fields });
+        }
         if self.cur() != Token::LBrace {
             return Err(ParseError {
                 message: "'{' nach struct erwartet".into(),
@@ -563,8 +609,45 @@ impl Parser {
     }
 
     fn enum_decl(&mut self) -> Result<Stmt, ParseError> {
+        let decl_col = self.col();
         self.pos += 1;
         let name = self.expect_name("Enum-Name")?;
+        // Eingerueckte Form `enum X:`, eine Variante je Zeile.
+        if self.cur() == Token::Colon {
+            self.pos += 1;
+            let mut variants = Vec::new();
+            while self.at_indented_line(decl_col) && matches!(self.cur(), Token::Ident(_)) {
+                variants.push(self.expect_name("Enum-Variante")?);
+                if self.cur() == Token::LParen {
+                    let mut depth = 0usize;
+                    while self.cur() != Token::Eof {
+                        let token = self.cur();
+                        self.pos += 1;
+                        if token == Token::LParen {
+                            depth += 1;
+                        }
+                        if token == Token::RParen {
+                            depth = depth.saturating_sub(1);
+                            if depth == 0 {
+                                break;
+                            }
+                        }
+                    }
+                }
+                match self.cur() {
+                    Token::Comma | Token::Semi => self.pos += 1,
+                    Token::Assign => {
+                        self.pos += 1;
+                        self.expr()?;
+                    }
+                    _ => {}
+                }
+            }
+            if self.cur() == Token::Semi {
+                self.pos += 1;
+            }
+            return Ok(Stmt::Enum { name, variants });
+        }
         if self.cur() != Token::LBrace {
             return Err(ParseError {
                 message: "'{' nach enum erwartet".into(),
@@ -1817,5 +1900,57 @@ mod tests {
             .to_json();
         assert!(j.contains("\"name\":\"a\""), "{j}");
         assert!(j.contains("\"name\":\"b\""), "{j}");
+    }
+
+    #[test]
+    fn eingeruecktes_struct() {
+        let j = parse_program("struct Stat:\n    base: u64\n    growth: u64")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"name\":\"base\""), "{j}");
+        assert!(j.contains("\"name\":\"growth\""), "{j}");
+    }
+
+    #[test]
+    fn eingeruecktes_enum() {
+        let j = parse_program("enum Rarity:\n    COMMON\n    RARE\n")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"COMMON\""), "{j}");
+        assert!(j.contains("\"RARE\""), "{j}");
+    }
+
+    #[test]
+    fn eingerueckter_rumpf_endet_an_der_dedent() {
+        // Der Rumpf endet, wo die Einrueckung zurueckgeht; `fn` gehoert dem
+        // umgebenden Contract, nicht dem Struct.
+        let j = parse_program(
+            "contract C {\n  struct S:\n    a: u64\n  fn f() -> int { return 1; }\n}\n",
+        )
+        .unwrap()
+        .to_json();
+        assert!(j.contains("\"name\":\"a\""), "{j}");
+        assert!(j.contains("\"kind\":\"FunctionDef\""), "{j}");
+    }
+
+    #[test]
+    fn eingerueckter_rumpf_ohne_positionen_ist_ein_fehler() {
+        // Ohne Spalten ist die Blockausdehnung nicht bestimmbar. Der Parser
+        // darf dann nicht raten, sondern muss ablehnen.
+        let toks = crate::lexer::tokenize("struct S:\n    a: u64").unwrap();
+        let mut p = Parser {
+            toks,
+            pos: 0,
+            cols: Vec::new(),
+        };
+        assert!(p.program().is_err());
+    }
+
+    #[test]
+    fn func_ist_ein_fn() {
+        let j = parse_program("func f() -> int { return 1; }")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"FunctionDef\""), "{j}");
     }
 }
