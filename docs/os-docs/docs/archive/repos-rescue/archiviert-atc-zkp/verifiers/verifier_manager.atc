@@ -1,0 +1,17 @@
+// ATCLang v0.3 — Verifier Manager
+// Verwaltet Proof-Verifikation: On-chain und Off-chain
+// ATC-Standard: ATC-24
+
+module verifier_manager {
+    fn verify_onchain(proof: string, vk: string, inputs: List[string]) {
+        // Verifikation als Smart Contract Call
+    }
+    
+    fn verify_offchain(proof: string, vk: string, inputs: List[string]) {
+        // Off-chain Verifikation (schneller)
+    }
+    
+    fn batch_verify(proofs: List[string], vk: string) {
+        // Batch-Verifikation mehrener Proofs
+    }
+}
