@@ -1,0 +1,8 @@
+FROM python:3.12-slim
+WORKDIR /app
+COPY blockchain/nodes/bootstrap.py blockchain/nodes/
+COPY blockchain/__init__.py blockchain/
+COPY blockchain/nodes/__init__.py blockchain/nodes/
+ENV PYTHONPATH=/app
+EXPOSE 4001/udp
+CMD ["python3", "-m", "blockchain.nodes.bootstrap"]
