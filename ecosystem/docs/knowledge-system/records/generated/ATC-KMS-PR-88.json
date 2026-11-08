@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-88",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #88: P0: machine-readable runtime and protocol evidence durations",
+  "context": "Pull request 88 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "archived",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/88",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: False\nDraft: True\n\nSuperseded by the current evidence-contract work in PRs #84/#86 and the current release/evidence pipeline; this intermediate runtime/protocol evidence-duration PR is no longer required separately."
+}
