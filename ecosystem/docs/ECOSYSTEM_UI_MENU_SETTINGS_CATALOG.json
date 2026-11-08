@@ -1,0 +1,341 @@
+{
+  "schema_id": "ATC-ECOSYSTEM-UI-SETTINGS-001",
+  "schema_version": "1.0.0",
+  "catalog_version": "0.1.0-draft",
+  "review_date": "2026-10-15",
+  "status": "PROPOSED",
+  "completeness": "SOURCE_RECONCILIATION_INCOMPLETE",
+  "purpose": "Cross-ecosystem navigation and settings ownership index; not implementation evidence.",
+  "authority_rule": "Standalone First, Ecosystem Second: canonical feature implementations remain in their owning repositories; this repository only integrates, indexes, reconciles, and records evidence.",
+  "contract_chain": [
+    "SETTING_ID",
+    "SPEC",
+    "DOC",
+    "OWNER",
+    "SCHEMA",
+    "READ_WRITE_API",
+    "AUTHORIZATION",
+    "IMPLEMENTATION_SHA",
+    "TEST",
+    "EXACT_SHA_CI",
+    "AUDIT"
+  ],
+  "allowed_evidence_states": [
+    "NOT_COLLECTED",
+    "PENDING",
+    "FAILED",
+    "BLOCKED",
+    "VERIFIED",
+    "RESIDUAL"
+  ],
+  "repositories": [
+    {
+      "name": "a-townchain-ecosystem",
+      "role": "integration, cross-repository contracts and evidence control plane",
+      "implementation_authority": false
+    },
+    {
+      "name": "globus-os",
+      "role": "desktop, Control Center, system settings, OS APIs; canonical ShivaCore kernel path is within GlobusOS",
+      "implementation_authority": true
+    },
+    {
+      "name": "aurora-ai",
+      "role": "AI agents, models, tools and AI policy integration",
+      "implementation_authority": true
+    },
+    {
+      "name": "a-townchain",
+      "role": "L1 blockchain, wallet/node behavior and canonical components/vm",
+      "implementation_authority": true
+    },
+    {
+      "name": "atclang",
+      "role": "canonical language and toolchain",
+      "implementation_authority": true
+    },
+    {
+      "name": "atc-standards",
+      "role": "normative cross-system contracts and standards",
+      "implementation_authority": true
+    }
+  ],
+  "navigation": [
+    {
+      "id": "NAV-OVERVIEW",
+      "label": "Übersicht",
+      "surfaces": [
+        "System status",
+        "Alerts",
+        "Resources",
+        "Recent events",
+        "Evidence summary"
+      ],
+      "owner": "globus-os",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "NAV-SYSTEM",
+      "label": "System",
+      "surfaces": [
+        "Kernel status",
+        "Services",
+        "Hardware",
+        "Network",
+        "Storage",
+        "Updates"
+      ],
+      "owner": "globus-os",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "NAV-PERSONAL",
+      "label": "Persönlich",
+      "surfaces": [
+        "Profile",
+        "Language",
+        "Appearance",
+        "Accessibility",
+        "Notifications"
+      ],
+      "owner": "globus-os",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "NAV-SECURITY",
+      "label": "Sicherheit",
+      "surfaces": [
+        "Identity",
+        "Keys",
+        "Capabilities",
+        "Policies",
+        "Secure Boot",
+        "TPM/TEE status",
+        "Audit"
+      ],
+      "owner": "globus-os + authoritative identity/security services",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "NAV-ADMIN",
+      "label": "Verwaltung",
+      "surfaces": [
+        "Users",
+        "Devices",
+        "Services",
+        "Organization policies"
+      ],
+      "owner": "globus-os",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "NAV-AURORA",
+      "label": "Aurora AI",
+      "surfaces": [
+        "Models",
+        "Agents",
+        "Tools",
+        "Memory",
+        "Permissions",
+        "Approval queue",
+        "AI audit"
+      ],
+      "owner": "aurora-ai + globus-os authorization boundary",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "NAV-ATC",
+      "label": "A-TownChain",
+      "surfaces": [
+        "Network profile",
+        "Wallet connection",
+        "Transactions",
+        "Node/chain status"
+      ],
+      "owner": "a-townchain",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "NAV-DEV",
+      "label": "Entwicklung",
+      "surfaces": [
+        "ATCLang",
+        "Canonical ATC-VM",
+        "SDKs",
+        "APIs",
+        "Diagnostics",
+        "Logs",
+        "Test environments"
+      ],
+      "owner": "respective canonical developer-tool repositories",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "NAV-TRUST",
+      "label": "Trust Center",
+      "surfaces": [
+        "Identity posture",
+        "Capability grants",
+        "Policy decisions",
+        "Security events",
+        "Evidence"
+      ],
+      "owner": "globus-os + canonical security services",
+      "status": "UNASSESSED"
+    }
+  ],
+  "settings_domains": [
+    {
+      "id": "SET-SYSTEM",
+      "domain": "System",
+      "candidate_controls": [
+        "Startup behavior",
+        "Service lifecycle",
+        "Resource limits",
+        "Update channel/state"
+      ],
+      "owner": "globus-os",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "SET-HARDWARE",
+      "domain": "Hardware",
+      "candidate_controls": [
+        "CPU/GPU/NPU visibility",
+        "Driver status",
+        "Device permissions",
+        "Accelerator selection"
+      ],
+      "owner": "globus-os + device services",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "SET-NETWORK",
+      "domain": "Netzwerk",
+      "candidate_controls": [
+        "P2P connectivity",
+        "Connection profiles",
+        "DNS",
+        "Proxy",
+        "Network policy"
+      ],
+      "owner": "globus-os + network services",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "SET-IDENTITY",
+      "domain": "Identität",
+      "candidate_controls": [
+        "User/device identity",
+        "Key-provider references",
+        "Session lifecycle"
+      ],
+      "owner": "canonical identity/security service",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "SET-SECURITY",
+      "domain": "Sicherheit",
+      "candidate_controls": [
+        "Secure Boot status/configuration",
+        "TPM/TEE integration",
+        "Capability grants",
+        "Policy rules"
+      ],
+      "owner": "globus-os + ShivaCore/security services",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "SET-PRIVACY",
+      "domain": "Datenschutz",
+      "candidate_controls": [
+        "Telemetry",
+        "Data sharing",
+        "Retention",
+        "Export controls"
+      ],
+      "owner": "service that owns each data store; UI in globus-os",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "SET-AURORA",
+      "domain": "Aurora AI",
+      "candidate_controls": [
+        "Model/provider selection",
+        "Agent enablement",
+        "Tool scopes",
+        "Memory/data access",
+        "Approval requirements"
+      ],
+      "owner": "aurora-ai + globus-os authorization boundary",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "SET-BLOCKCHAIN",
+      "domain": "Blockchain",
+      "candidate_controls": [
+        "Network profile",
+        "RPC endpoint",
+        "Wallet attachment",
+        "Transaction limits",
+        "Confirmation policy"
+      ],
+      "owner": "a-townchain / canonical wallet and node APIs",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "SET-DEVELOPER",
+      "domain": "Entwickler",
+      "candidate_controls": [
+        "SDK/toolchain selection",
+        "API endpoints",
+        "Diagnostics",
+        "Logging",
+        "Test environments"
+      ],
+      "owner": "respective canonical developer-tool repository",
+      "status": "UNASSESSED"
+    },
+    {
+      "id": "SET-APPEARANCE",
+      "domain": "Oberfläche",
+      "candidate_controls": [
+        "Theme",
+        "Layout",
+        "Language",
+        "Accessibility",
+        "Notifications"
+      ],
+      "owner": "globus-os",
+      "status": "UNASSESSED"
+    }
+  ],
+  "security_invariants": [
+    "UI toggle is a request, not authority.",
+    "UI -> API -> Identity -> Capability -> Policy -> Validation -> Authoritative State -> Audit",
+    "Unknown authorization or approval context fails closed.",
+    "Model output does not grant privilege; Aurora actions follow capability and policy checks, with approval when required.",
+    "Wallet signing, transaction submission, consensus, VM execution, kernel/TCB changes, TPM/TEE operations and security-policy changes cannot bypass authoritative boundaries.",
+    "Configuration intent, observed state and verified evidence remain distinct."
+  ],
+  "reconciliation_gates": [
+    "Enumerate actual routes, screens, commands, settings keys, schemas, APIs, IPC/RPC surfaces and service symbols from canonical source HEADs.",
+    "Map every runtime/UI symbol to a catalog ID or a reproducible exclusion reason.",
+    "Map every catalog item to source or mark BLOCKED/RESIDUAL with reason.",
+    "Detect duplicate/overlapping functions and preserve one canonical owner.",
+    "Run schema validation and strict bidirectional reconciliation with completeness required.",
+    "Record exact HEAD SHA and Run -> Job -> Step -> exit code/log or artifact evidence.",
+    "Keep Draft and release BLOCKED until mandatory gates pass; no gate weakening or authorization bypass."
+  ],
+  "known_residuals": [
+    "GlobusOS PR #27 has an existing OS/UI/settings baseline and remains the detailed source catalog.",
+    "Cross-repository source heads, routes, APIs and setting contracts are not reconciled by this draft.",
+    "Catalog presence does not prove implementation, test, CI verification, E2E or production readiness.",
+    "Concrete setting keys, schemas, owner symbols, tests and exact-SHA evidence remain to be collected."
+  ],
+  "related_records": [
+    "https://github.com/A-TownChain-Okosystems/globus-os/pull/27",
+    "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/blob/main/README.md",
+    "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/115"
+  ]
+}
