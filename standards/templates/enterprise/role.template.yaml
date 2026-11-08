@@ -1,0 +1,14 @@
+# Rollen-Definition — ATC-ENT-002 §1
+role:
+  id: ROLE-XXX                    # ^ROLE-[A-Z][A-Z0-9-]*$ (Schema roleId)
+  name: "..."
+  purpose: "..."
+  responsibilities:
+    - "..."
+  authority:
+    - "..."
+  limitations:
+    - "..."
+  required_approvals:
+    - "..."
+  audit_required: true            # Agenten: immer true (ATC-STD-000 §14.1)
