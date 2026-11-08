@@ -1,0 +1,222 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-30 — Community Factory: Gilden, Clans, Turniere, Creator-Programme
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct CommunityFactory {
+    guilds: Map<Hash256, Guild>,
+    clans: Map<Hash256, Clan>,
+    tournaments: Map<Hash256, Tournament>,
+    leaderboards: Map<String, Leaderboard>,
+    creator_program: Map<Hash256, Creator>,
+    mods: Map<Hash256, ModEntry>,
+    by_franchise: Map<Hash256, CommunityData>,
+}
+
+struct Guild {
+    id: Hash256,
+    name: String,
+    franchise_id: Hash256,
+    leader: String,
+    members: List<String>,
+    max_members: UInt16,
+    level: UInt16,
+    description: String,
+    emblem: String,
+    created_at: UInt64,
+}
+
+struct Clan {
+    id: Hash256,
+    name: String,
+    franchise_id: Hash256,
+    leader: String,
+    members: List<String>,
+    max_members: UInt8,
+    tag: String,
+    rank: UInt16,
+}
+
+struct Tournament {
+    id: Hash256,
+    name: String,
+    franchise_id: Hash256,
+    type: TournamentType,
+    start_date: UInt64,
+    end_date: UInt64,
+    participants: List<String>,
+    max_participants: UInt32,
+    prize_pool: UInt64,
+    status: String,
+}
+
+enum TournamentType { PvP, PvE, Speedrun, Building, Creative, Community }
+
+struct Leaderboard {
+    name: String,
+    entries: List<LeaderboardEntry>,
+    scope: String,
+    reset_period: String,
+}
+
+struct LeaderboardEntry {
+    player: String,
+    score: UInt64,
+    rank: UInt32,
+    timestamp: UInt64,
+}
+
+struct Creator {
+    id: Hash256,
+    name: String,
+    platform: String,
+    followers: UInt32,
+    content_count: UInt32,
+    revenue_share: Float32,
+    tier: String,
+    active: Bool,
+}
+
+struct ModEntry {
+    id: Hash256,
+    name: String,
+    author: String,
+    description: String,
+    download_count: UInt32,
+    rating: Float32,
+    approved: Bool,
+    created_at: UInt64,
+}
+
+struct CommunityData {
+    guild_count: UInt16,
+    clan_count: UInt16,
+    tournament_count: UInt16,
+    creator_count: UInt16,
+    mod_count: UInt16,
+    total_members: UInt32,
+}
+
+// Community Factory: Gilde erstellen
+pub fn create_guild(factory: CommunityFactory, name: String, franchise_id: Hash256, leader: String, max: UInt16) -> Hash256 {
+    let gid = Crypto::sha256(serialize(name, franchise_id, Chain::timestamp()))
+    factory.guilds[gid] = Guild {
+        id: gid, name: name, franchise_id: franchise_id, leader: leader,
+        members: [leader], max_members: max, level: 1,
+        description: "", emblem: "", created_at: Chain::timestamp(),
+    }
+    return gid
+}
+
+// Community Factory: Gilde beitreten
+pub fn join_guild(factory: CommunityFactory, guild_id: Hash256, player: String) -> Bool {
+    require(factory.guilds.contains(guild_id), "Guild not found")
+    let g = factory.guilds[guild_id]
+    require(g.members.len() < g.max_members, "Guild full")
+    g.members.append(player)
+    return true
+}
+
+// Community Factory: Clan erstellen
+pub fn create_clan(factory: CommunityFactory, name: String, franchise_id: Hash256, leader: String, tag: String) -> Hash256 {
+    let cid = Crypto::sha256(serialize(name, tag, Chain::timestamp()))
+    factory.clans[cid] = Clan {
+        id: cid, name: name, franchise_id: franchise_id, leader: leader,
+        members: [leader], max_members: 8, tag: tag, rank: 0,
+    }
+    return cid
+}
+
+// Community Factory: Turnier erstellen
+pub fn create_tournament(factory: CommunityFactory, name: String, franchise_id: Hash256, ttype: TournamentType, start: UInt64, end: UInt64, max_part: UInt32, prize: UInt64) -> Hash256 {
+    let tid = Crypto::sha256(serialize(name, franchise_id, Chain::timestamp()))
+    factory.tournaments[tid] = Tournament {
+        id: tid, name: name, franchise_id: franchise_id, type: ttype,
+        start_date: start, end_date: end, participants: [],
+        max_participants: max_part, prize_pool: prize, status: "upcoming",
+    }
+    return tid
+}
+
+// Community Factory: Turnier-Teilnehmer hinzufügen
+pub fn join_tournament(factory: CommunityFactory, tournament_id: Hash256, player: String) -> Bool {
+    require(factory.tournaments.contains(tournament_id), "Tournament not found")
+    let t = factory.tournaments[tournament_id]
+    require(t.participants.len() < t.max_participants, "Tournament full")
+    t.participants.append(player)
+    return true
+}
+
+// Community Factory: Leaderboard-Eintrag hinzufügen
+pub fn add_leaderboard_entry(factory: CommunityFactory, board_name: String, player: String, score: UInt64) -> Bool {
+    if not factory.leaderboards.contains(board_name) {
+        factory.leaderboards[board_name] = Leaderboard {
+            name: board_name, entries: [], scope: "global", reset_period: "season",
+        }
+    }
+    factory.leaderboards[board_name].entries.append(LeaderboardEntry {
+        player: player, score: score, rank: 0, timestamp: Chain::timestamp(),
+    })
+    // Sort by score descending
+    factory.leaderboards[board_name].entries = factory.leaderboards[board_name].entries.sort(
+        fn a, b => a.score > b.score
+    )
+    // Re-rank
+    for i in 0..factory.leaderboards[board_name].entries.len() {
+        factory.leaderboards[board_name].entries[i].rank = i + 1
+    }
+    return true
+}
+
+// Community Factory: Creator registrieren
+pub fn register_creator(factory: CommunityFactory, name: String, platform: String) -> Hash256 {
+    let crid = Crypto::sha256(serialize(name, platform, Chain::timestamp()))
+    factory.creator_program[crid] = Creator {
+        id: crid, name: name, platform: platform, followers: 0,
+        content_count: 0, revenue_share: 0.05, tier: "bronze", active: true,
+    }
+    return crid
+}
+
+// Community Factory: Mod veröffentlichen
+pub fn publish_mod(factory: CommunityFactory, name: String, author: String, desc: String) -> Hash256 {
+    let mid = Crypto::sha256(serialize(name, author, Chain::timestamp()))
+    factory.mods[mid] = ModEntry {
+        id: mid, name: name, author: author, description: desc,
+        download_count: 0, rating: 0.0, approved: false, created_at: Chain::timestamp(),
+    }
+    return mid
+}
+
+// Community Factory: Mod genehmigen
+pub fn approve_mod(factory: CommunityFactory, mod_id: Hash256) -> Bool {
+    require(factory.mods.contains(mod_id), "Mod not found")
+    factory.mods[mod_id].approved = true
+    return true
+}
+
+// Community Factory: Community-Statistiken
+pub fn community_stats(factory: CommunityFactory, franchise_id: Hash256) -> CommunityData {
+    let guilds = 0
+    let clans = 0
+    let tournaments = 0
+    for gid in factory.guilds.keys() {
+        if factory.guilds[gid].franchise_id == franchise_id { guilds = guilds + 1 }
+    }
+    for cid in factory.clans.keys() {
+        if factory.clans[cid].franchise_id == franchise_id { clans = clans + 1 }
+    }
+    for tid in factory.tournaments.keys() {
+        if factory.tournaments[tid].franchise_id == franchise_id { tournaments = tournaments + 1 }
+    }
+    return CommunityData {
+        guild_count: guilds,
+        clan_count: clans,
+        tournament_count: tournaments,
+        creator_count: factory.creator_program.len(),
+        mod_count: factory.mods.len(),
+        total_members: 0,
+    }
+}
