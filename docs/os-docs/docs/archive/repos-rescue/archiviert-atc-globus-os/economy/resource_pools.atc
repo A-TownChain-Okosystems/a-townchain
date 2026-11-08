@@ -1,0 +1,27 @@
+// ATCLang v0.3 — Resource Pools
+// Planetare Ressourcen-Verwaltung — Abbau, Regeneration, Knappheit
+// ATC-Standard: ATC-24
+
+module resource_pools {
+    struct ResourcePool {
+        pool_id: string,
+        world_id: string,
+        resource_type: string,
+        total: int,
+        extracted: int,
+        regeneration_rate: float,
+        depleted: bool,
+    }
+    
+    fn extract_resource(world_id: string, resource: string, amount: int) {
+        // Ressource abbauen
+    }
+    
+    fn regenerate(world_id: string) {
+        // Ressourcen regenerieren (pro Tick)
+    }
+    
+    fn check_scarcity(world_id: string) {
+        // Knappheits-Warnung
+    }
+}
