@@ -1,0 +1,15 @@
+name: Smoke Tests (unittest)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions: read-all
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Governance-Smoke-Tests
+        run: python3 -m unittest discover -s tests -v
