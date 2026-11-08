@@ -1,0 +1,125 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — Database Connection & Migration
+// Sprint 3.0 | Backend Layer | Chain-ID 9000
+// Migrated from: backend/db/connection.py (39) + migrate.py (53)
+// SQLite/PostgreSQL connection, schema migration, version tracking
+// ─────────────────────────────────────────────────────────────
+
+const DB_VERSION: u16 = 1
+const MAX_MIGRATIONS: u8 = 32
+
+enum DBType { SQLite, PostgreSQL, InMemory }
+
+struct DBConfig {
+    db_type: DBType,
+    host: String,
+    port: u16,
+    database: String,
+    username: String,
+    password: String,
+    max_connections: u8,
+    timeout: u32,
+}
+
+struct Migration {
+    version: u16,
+    name: String,
+    sql: String,
+    applied_at: u64,
+}
+
+contract DatabaseConnection {
+    state config: DBConfig
+    state migrations: List<Migration>
+    state current_version: u16
+    state connected: bool
+    state query_count: u64
+    state owner: Address
+
+    event MigrationApplied(version: u16, name: String)
+    event Connected(db_type: DBType)
+    event Disconnected()
+
+    fn init() {
+        self.config = DBConfig {
+            db_type: DBType::SQLite,
+            host: "localhost",
+            port: 5432,
+            database: "atcchain",
+            username: "",
+            password: "",
+            max_connections: 10,
+            timeout: 30,
+        }
+        self.migrations = []
+        self.current_version = 0
+        self.connected = false
+        self.query_count = 0
+        self.owner = msg_sender()
+    }
+
+    fn connect(db_type: DBType, database: String) -> bool {
+        self.config.db_type = db_type
+        self.config.database = database
+        self.connected = true
+        emit Connected(db_type)
+        return true
+    }
+
+    fn disconnect() -> bool {
+        self.connected = false
+        emit Disconnected()
+        return true
+    }
+
+    fn is_connected() -> bool {
+        return self.connected
+    }
+
+    fn apply_migration(version: u16, name: String, sql: String) -> bool {
+        if version <= self.current_version {
+            return false
+        }
+        let migration = Migration {
+            version: version,
+            name: name,
+            sql: sql,
+            applied_at: Time::now(),
+        }
+        self.migrations.push(migration)
+        self.current_version = version
+        emit MigrationApplied(version, name)
+        return true
+    }
+
+    fn run_default_migrations() -> bool {
+        // Migration 1: Create wallets table
+        self.apply_migration(1, "create_wallets", "CREATE TABLE wallets (addr TEXT PRIMARY KEY, pub_key TEXT, label TEXT, created_at INTEGER)")
+        // Migration 2: Create blocks table
+        self.apply_migration(2, "create_blocks", "CREATE TABLE blocks (height INTEGER PRIMARY KEY, hash TEXT, prev_hash TEXT, timestamp INTEGER, tx_count INTEGER)")
+        // Migration 3: Create transactions table
+        self.apply_migration(3, "create_transactions", "CREATE TABLE transactions (hash TEXT PRIMARY KEY, from_addr TEXT, to_addr TEXT, amount INTEGER, fee INTEGER, block_height INTEGER)")
+        // Migration 4: Create shivamon table
+        self.apply_migration(4, "create_shivamon", "CREATE TABLE shivamon (token_id TEXT PRIMARY KEY, owner TEXT, element TEXT, rarity TEXT, generation INTEGER)")
+        // Migration 5: Create listings table
+        self.apply_migration(5, "create_listings", "CREATE TABLE listings (listing_id TEXT PRIMARY KEY, token_id TEXT, seller TEXT, price INTEGER, active INTEGER)")
+        return true
+    }
+
+    fn get_version() -> u16 {
+        return self.current_version
+    }
+
+    fn get_migration_count() -> u16 {
+        return self.migrations.len()
+    }
+
+    fn get_config() -> (DBType, String, u16, u8) {
+        return (self.config.db_type, self.config.database, self.config.port, self.config.max_connections)
+    }
+
+    fn get_stats() -> (u64, u16, u16, bool) {
+        return (self.query_count, self.current_version, self.migrations.len(), self.connected)
+    }
+}
