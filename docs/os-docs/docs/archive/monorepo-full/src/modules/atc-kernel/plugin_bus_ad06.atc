@@ -1,0 +1,286 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-06 — PluginBus: Standardisierte Plugin-Kommunikation
+// Layer 6 der Genesis Engine Bus-Architektur
+// Sprint 2.4 Extension — Issue #77
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+// ── Plugin-Struktur ──────────────────────────────────
+struct Plugin {
+    id: Hash256,
+    name: String,
+    version: String,
+    author: String,
+    description: String,
+    state: PluginState,
+    api_version: String,
+    permissions: List<PluginPermission>,
+    hooks: Map<String, fn(PluginContext) -> Any>,
+    loaded_at: UInt64,
+    config: Map<String, Any>,
+}
+
+enum PluginState {
+    Unloaded,
+    Loading,
+    Loaded,
+    Activated,
+    Deactivated,
+    Error,
+}
+
+enum PluginPermission {
+    FileSystem,
+    Network,
+    Rendering,
+    Audio,
+    Input,
+    Scene,
+    Memory,
+    Compute,
+    Editor,
+    All,
+}
+
+struct PluginContext {
+    plugin_id: Hash256,
+    engine: EngineRef,
+    scene: SceneRef,
+    renderer: RendererRef,
+    config: Map<String, Any>,
+    logger: fn(String) -> Bool,
+}
+
+struct PluginBus {
+    plugins: Map<Hash256, Plugin>,
+    by_name: Map<String, Hash256>,
+    hooks: Map<String, List<Hash256>>,      // hook_name → plugin IDs
+    api_registry: Map<String, PluginAPI>,
+    sandbox_enabled: Bool,
+    max_plugins: UInt16,
+    load_order: List<Hash256>,
+}
+
+struct PluginAPI {
+    name: String,
+    version: String,
+    functions: Map<String, fn(List<Any>) -> Any>,
+    description: String,
+}
+
+// PluginBus: Plugin laden
+pub fn load_plugin(bus: PluginBus, name: String, version: String, author: String, desc: String, perms: List<PluginPermission>, api_ver: String) -> Hash256 {
+    require(bus.plugins.len() < bus.max_plugins, "Max plugins reached")
+    require(not bus.by_name.contains(name), "Plugin already loaded: " + name)
+
+    let plugin_id = Crypto::sha256(serialize(name, version, Chain::timestamp()))
+
+    let plugin = Plugin {
+        id: plugin_id,
+        name: name,
+        version: version,
+        author: author,
+        description: desc,
+        state: PluginState::Loading,
+        api_version: api_ver,
+        permissions: perms,
+        hooks: {},
+        loaded_at: Chain::timestamp(),
+        config: {},
+    }
+
+    bus.plugins[plugin_id] = plugin
+    bus.by_name[name] = plugin_id
+    bus.load_order.append(plugin_id)
+
+    plugin.state = PluginState::Loaded
+    emit PluginLoaded(plugin_id, name, version)
+    return plugin_id
+}
+
+// PluginBus: Plugin aktivieren
+pub fn activate_plugin(bus: PluginBus, plugin_id: Hash256) -> Bool {
+    require(bus.plugins.contains(plugin_id), "Plugin not found")
+    let plugin = bus.plugins[plugin_id]
+    require(plugin.state == PluginState::Loaded or plugin.state == PluginState::Deactivated, "Plugin not in loadable state")
+
+    plugin.state = PluginState::Activated
+
+    // onLoad hook aufrufen
+    if plugin.hooks.contains("on_load") {
+        let ctx = create_context(bus, plugin_id)
+        plugin.hooks["on_load"](ctx)
+    }
+
+    emit PluginActivated(plugin_id, plugin.name)
+    return true
+}
+
+// PluginBus: Plugin deaktivieren
+pub fn deactivate_plugin(bus: PluginBus, plugin_id: Hash256) -> Bool {
+    require(bus.plugins.contains(plugin_id), "Plugin not found")
+    let plugin = bus.plugins[plugin_id]
+    require(plugin.state == PluginState::Activated, "Plugin not activated")
+
+    // on_unload hook aufrufen
+    if plugin.hooks.contains("on_unload") {
+        let ctx = create_context(bus, plugin_id)
+        plugin.hooks["on_unload"](ctx)
+    }
+
+    plugin.state = PluginState::Deactivated
+    emit PluginDeactivated(plugin_id, plugin.name)
+    return true
+}
+
+// PluginBus: Plugin entladen
+pub fn unload_plugin(bus: PluginBus, plugin_id: Hash256) -> Bool {
+    require(bus.plugins.contains(plugin_id), "Plugin not found")
+    let plugin = bus.plugins[plugin_id]
+
+    if plugin.state == PluginState::Activated {
+        deactivate_plugin(bus, plugin_id)
+    }
+
+    bus.plugins.delete(plugin_id)
+    bus.by_name.delete(plugin.name)
+    bus.load_order = bus.load_order.filter(fn id => id != plugin_id)
+
+    // Hooks entfernen
+    for hook_name in bus.hooks.keys() {
+        bus.hooks[hook_name] = bus.hooks[hook_name].filter(fn id => id != plugin_id)
+    }
+
+    emit PluginUnloaded(plugin_id, plugin.name)
+    return true
+}
+
+// PluginBus: Hook registrieren
+pub fn register_hook(bus: PluginBus, plugin_id: Hash256, hook_name: String, callback: fn(PluginContext) -> Any) -> Bool {
+    require(bus.plugins.contains(plugin_id), "Plugin not found")
+    bus.plugins[plugin_id].hooks[hook_name] = callback
+    if not bus.hooks.contains(hook_name) {
+        bus.hooks[hook_name] = []
+    }
+    bus.hooks[hook_name].append(plugin_id)
+    return true
+}
+
+// PluginBus: Hook aufrufen (alle Plugins)
+pub fn fire_hook(bus: PluginBus, hook_name: String, data: Any) -> List<Any> {
+    let results = []
+    if not bus.hooks.contains(hook_name) {
+        return results
+    }
+    for plugin_id in bus.hooks[hook_name] {
+        let plugin = bus.plugins[plugin_id]
+        if plugin.state == PluginState::Activated and plugin.hooks.contains(hook_name) {
+            let ctx = create_context(bus, plugin_id)
+            ctx.config["hook_data"] = data
+            let result = plugin.hooks[hook_name](ctx)
+            results.append(result)
+        }
+    }
+    return results
+}
+
+// PluginBus: API registrieren (für Plugin-zu-Plugin)
+pub fn register_api(bus: PluginBus, plugin_id: Hash256, api: PluginAPI) -> Bool {
+    require(bus.plugins.contains(plugin_id), "Plugin not found")
+    bus.api_registry[api.name] = api
+    emit APIRegistered(plugin_id, api.name, api.version)
+    return true
+}
+
+// PluginBus: API aufrufen (Cross-Plugin)
+pub fn call_api(bus: PluginBus, api_name: String, fn_name: String, args: List<Any>) -> Any {
+    require(bus.api_registry.contains(api_name), "API not found: " + api_name)
+    let api = bus.api_registry[api_name]
+    require(api.functions.contains(fn_name), "Function not found: " + fn_name)
+    return api.functions[fn_name](args)
+}
+
+// PluginBus: Permission prüfen
+pub fn has_permission(bus: PluginBus, plugin_id: Hash256, perm: PluginPermission) -> Bool {
+    if not bus.plugins.contains(plugin_id) {
+        return false
+    }
+    let plugin = bus.plugins[plugin_id]
+    if plugin.permissions.contains(PluginPermission::All) {
+        return true
+    }
+    return plugin.permissions.contains(perm)
+}
+
+// PluginBus: Plugin-Konfiguration setzen
+pub fn set_plugin_config(bus: PluginBus, plugin_id: Hash256, key: String, value: Any) -> Bool {
+    require(bus.plugins.contains(plugin_id), "Plugin not found")
+    bus.plugins[plugin_id].config[key] = value
+    return true
+}
+
+// PluginBus: Plugin-Liste
+pub fn list_plugins(bus: PluginBus) -> List<PluginInfo> {
+    let info = []
+    for id in bus.load_order {
+        let p = bus.plugins[id]
+        info.append(PluginInfo {
+            name: p.name,
+            version: p.version,
+            state: p.state,
+            author: p.author,
+        })
+    }
+    return info
+}
+
+// PluginBus: Reload (für Development)
+pub fn reload_plugin(bus: PluginBus, plugin_id: Hash256) -> Bool {
+    let plugin = bus.plugins[plugin_id]
+    let name = plugin.name
+    let version = plugin.version
+    let author = plugin.author
+    let desc = plugin.description
+    let perms = plugin.permissions
+    let api_ver = plugin.api_version
+
+    unload_plugin(bus, plugin_id)
+    let new_id = load_plugin(bus, name, version, author, desc, perms, api_ver)
+    activate_plugin(bus, new_id)
+    return true
+}
+
+// Helper: Context erstellen
+pub fn create_context(bus: PluginBus, plugin_id: Hash256) -> PluginContext {
+    return PluginContext {
+        plugin_id: plugin_id,
+        engine: nil,
+        scene: nil,
+        renderer: nil,
+        config: bus.plugins[plugin_id].config,
+        logger: fn(msg: String) -> Bool {
+            emit PluginLog(plugin_id, msg)
+            return true
+        },
+    }
+}
+
+struct PluginInfo {
+    name: String,
+    version: String,
+    state: PluginState,
+    author: String,
+}
+
+// Engine refs (stubs für Integration)
+type EngineRef = Any
+type SceneRef = Any
+type RendererRef = Any
+
+event PluginLoaded(id: Hash256, name: String, version: String)
+event PluginActivated(id: Hash256, name: String)
+event PluginDeactivated(id: Hash256, name: String)
+event PluginUnloaded(id: Hash256, name: String)
+event APIRegistered(id: Hash256, name: String, version: String)
+event PluginLog(id: Hash256, msg: String)
