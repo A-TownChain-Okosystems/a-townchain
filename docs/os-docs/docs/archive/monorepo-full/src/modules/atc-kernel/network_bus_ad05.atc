@@ -1,0 +1,307 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-05 — NetworkBus: Multiplayer + verteilte Simulation
+// Layer 5 der Genesis Engine Bus-Architektur
+// Sprint 2.4 Extension — Issue #77
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+// ── Network-Nachricht ────────────────────────────────
+struct NetMessage {
+    id: Hash256,
+    type: NetMsgType,
+    channel: String,
+    from_peer: Hash256,
+    to_peer: Hash256,    // zero = broadcast
+    payload: Bytes,
+    timestamp: UInt64,
+    seq: UInt64,
+    ack: Bool,
+    reliable: Bool,
+    ordered: Bool,
+    fragment_idx: UInt16,
+    fragment_total: UInt16,
+}
+
+enum NetMsgType {
+    StateSync,
+    RPC,
+    Event,
+    Join,
+    Leave,
+    Snapshot,
+    Delta,
+    Heartbeat,
+    Disconnect,
+}
+
+struct NetworkBus {
+    peers: Map<Hash256, NetPeer>,
+    channels: Map<String, NetChannel>,
+    local_peer: Hash256,
+    seq_counter: UInt64,
+    reliable_queue: List<NetMessage>,
+    pending_acks: Map<Hash256, UInt64>,  // msg_id → timeout
+    snapshot_interval_ms: UInt32,
+    interpolation_buffer_ms: UInt32,
+    max_fragment_size: UInt32,
+}
+
+struct NetPeer {
+    id: Hash256,
+    addr: String,
+    port: UInt16,
+    rtt_ms: UInt32,
+    last_snapshot: UInt64,
+    last_heartbeat: UInt64,
+    connected: Bool,
+    simulating: Bool,
+}
+
+struct NetChannel {
+    name: String,
+    reliable: Bool,
+    ordered: Bool,
+    compression: Bool,
+    encryption: Bool,
+    last_seq: UInt64,
+}
+
+// NetworkBus: Peer beitreten
+pub fn peer_join(bus: NetworkBus, peer_id: Hash256, addr: String, port: UInt16) -> Bool {
+    bus.peers[peer_id] = NetPeer {
+        id: peer_id,
+        addr: addr,
+        port: port,
+        rtt_ms: 0,
+        last_snapshot: 0,
+        last_heartbeat: Chain::timestamp(),
+        connected: true,
+        simulating: true,
+    }
+    emit PeerJoined(peer_id, addr)
+    return true
+}
+
+// NetworkBus: Peer verlassen
+pub fn peer_leave(bus: NetworkBus, peer_id: Hash256) -> Bool {
+    if bus.peers.contains(peer_id) {
+        bus.peers[peer_id].connected = false
+        bus.peers[peer_id].simulating = false
+        emit PeerLeft(peer_id)
+    }
+    return true
+}
+
+// NetworkBus: State-Sync senden (zuverlässig)
+pub fn send_state_sync(bus: NetworkBus, channel: String, state: Bytes, target: Hash256) -> Hash256 {
+    let msg = NetMessage {
+        id: Crypto::sha256(serialize(channel, state, bus.seq_counter)),
+        type: NetMsgType::StateSync,
+        channel: channel,
+        from_peer: bus.local_peer,
+        to_peer: target,
+        payload: state,
+        timestamp: Chain::timestamp(),
+        seq: bus.seq_counter,
+        ack: false,
+        reliable: true,
+        ordered: true,
+        fragment_idx: 0,
+        fragment_total: 1,
+    }
+    bus.seq_counter = bus.seq_counter + 1
+
+    // Fragmentierung für große State
+    if state.len() > bus.max_fragment_size {
+        let fragments = fragment_payload(state, bus.max_fragment_size)
+        msg.fragment_total = fragments.len()
+        for i in 0..fragments.len() {
+            msg.fragment_idx = i
+            msg.payload = fragments[i]
+            send_net_message(bus, msg, target)
+        }
+    } else {
+        send_net_message(bus, msg, target)
+    }
+
+    return msg.id
+}
+
+// NetworkBus: RPC senden (unzuverlässig, schnell)
+pub fn send_rpc(bus: NetworkBus, channel: String, fn_name: String, args: Bytes, target: Hash256) -> Hash256 {
+    let msg = NetMessage {
+        id: Crypto::sha256(serialize(channel, fn_name, args, bus.seq_counter)),
+        type: NetMsgType::RPC,
+        channel: channel,
+        from_peer: bus.local_peer,
+        to_peer: target,
+        payload: serialize(fn_name, args),
+        timestamp: Chain::timestamp(),
+        seq: bus.seq_counter,
+        ack: false,
+        reliable: false,
+        ordered: false,
+        fragment_idx: 0,
+        fragment_total: 1,
+    }
+    bus.seq_counter = bus.seq_counter + 1
+    send_net_message(bus, msg, target)
+    return msg.id
+}
+
+// NetworkBus: Broadcast an alle Peers
+pub fn broadcast(bus: NetworkBus, channel: String, msg_type: NetMsgType, payload: Bytes) -> Bool {
+    for peer_id in bus.peers.keys() {
+        if bus.peers[peer_id].connected and peer_id != bus.local_peer {
+            let msg = NetMessage {
+                id: Crypto::sha256(serialize(channel, payload, bus.seq_counter, peer_id)),
+                type: msg_type,
+                channel: channel,
+                from_peer: bus.local_peer,
+                to_peer: peer_id,
+                payload: payload,
+                timestamp: Chain::timestamp(),
+                seq: bus.seq_counter,
+                ack: false,
+                reliable: false,
+                ordered: false,
+                fragment_idx: 0,
+                fragment_total: 1,
+            }
+            bus.seq_counter = bus.seq_counter + 1
+            send_net_message(bus, msg, peer_id)
+        }
+    }
+    return true
+}
+
+// NetworkBus: Snapshot senden (periodisch)
+pub fn send_snapshot(bus: NetworkBus, snapshot: Bytes) -> Bool {
+    for peer_id in bus.peers.keys() {
+        let peer = bus.peers[peer_id]
+        if peer.connected and peer.simulating {
+            if Chain::timestamp_ms() - peer.last_snapshot >= bus.snapshot_interval_ms {
+                send_state_sync(bus, "snapshot", snapshot, peer_id)
+                peer.last_snapshot = Chain::timestamp_ms()
+            }
+        }
+    }
+    return true
+}
+
+// NetworkBus: Delta-Compression (nur Änderungen senden)
+pub fn send_delta(bus: NetworkBus, channel: String, delta: Bytes, target: Hash256) -> Hash256 {
+    let msg = NetMessage {
+        id: Crypto::sha256(serialize(channel, delta, bus.seq_counter)),
+        type: NetMsgType::Delta,
+        channel: channel,
+        from_peer: bus.local_peer,
+        to_peer: target,
+        payload: delta,
+        timestamp: Chain::timestamp(),
+        seq: bus.seq_counter,
+        ack: false,
+        reliable: false,
+        ordered: true,
+        fragment_idx: 0,
+        fragment_total: 1,
+    }
+    bus.seq_counter = bus.seq_counter + 1
+    send_net_message(bus, msg, target)
+    return msg.id
+}
+
+// NetworkBus: Heartbeat
+pub fn send_heartbeat(bus: NetworkBus) -> Bool {
+    for peer_id in bus.peers.keys() {
+        if bus.peers[peer_id].connected {
+            let msg = NetMessage {
+                id: Crypto::sha256(serialize("heartbeat", bus.seq_counter, peer_id)),
+                type: NetMsgType::Heartbeat,
+                channel: "system",
+                from_peer: bus.local_peer,
+                to_peer: peer_id,
+                payload: serialize(Chain::timestamp()),
+                timestamp: Chain::timestamp(),
+                seq: bus.seq_counter,
+                ack: true,
+                reliable: true,
+                ordered: false,
+                fragment_idx: 0,
+                fragment_total: 1,
+            }
+            bus.seq_counter = bus.seq_counter + 1
+            send_net_message(bus, msg, peer_id)
+            bus.pending_acks[msg.id] = Chain::timestamp() + 5000  // 5s timeout
+        }
+    }
+    return true
+}
+
+// NetworkBus: ACK verarbeiten
+pub fn handle_ack(bus: NetworkBus, msg_id: Hash256) -> Bool {
+    if bus.pending_acks.contains(msg_id) {
+        bus.pending_acks.delete(msg_id)
+        return true
+    }
+    return false
+}
+
+// NetworkBus: Timeout-ACKs retry
+pub fn retry_timeouts(bus: NetworkBus) -> UInt16 {
+    let now = Chain::timestamp()
+    let retried = 0
+    for msg_id in bus.pending_acks.keys() {
+        if now > bus.pending_acks[msg_id] {
+            // Retry logic hier
+            bus.pending_acks.delete(msg_id)
+            retried = retried + 1
+        }
+    }
+    return retried
+}
+
+// NetworkBus: Interpolation Buffer (Client-Side)
+pub fn get_interpolation_delay(bus: NetworkBus) -> UInt32 {
+    return bus.interpolation_buffer_ms
+}
+
+// NetworkBus: Disconnected Peers aufräumen
+pub fn cleanup_disconnected(bus: NetworkBus, timeout_s: UInt32) -> UInt16 {
+    let now = Chain::timestamp()
+    let cleaned = 0
+    for peer_id in bus.peers.keys() {
+        let p = bus.peers[peer_id]
+        if not p.connected and now - p.last_heartbeat > timeout_s {
+            bus.peers.delete(peer_id)
+            cleaned = cleaned + 1
+        }
+    }
+    return cleaned
+}
+
+// Helper: Payload fragmentieren
+pub fn fragment_payload(payload: Bytes, max_size: UInt32) -> List<Bytes> {
+    let fragments = []
+    let offset = 0
+    while offset < payload.len() {
+        let end = min(offset + max_size, payload.len())
+        fragments.append(payload[offset:end])
+        offset = end
+    }
+    return fragments
+}
+
+// Helper: Nachricht senden (Stub für Transport Layer)
+pub fn send_net_message(bus: NetworkBus, msg: NetMessage, target: Hash256) -> Bool {
+    if msg.reliable {
+        bus.reliable_queue.append(msg)
+    }
+    emit NetMessageSent(msg.id, msg.channel, target, msg.type)
+    return true
+}
+
+event PeerJoined(id: Hash256, addr: String)
+event PeerLeft(id: Hash256)
+event NetMessageSent(id: Hash256, channel: String, to: Hash256, type: NetMsgType)
