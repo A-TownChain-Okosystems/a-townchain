@@ -1,0 +1,17 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang v0.3 — Voting Engine
+// FFT voting, quorum, delegation, snapshot
+// ATC-Standard: ATC-17
+
+module voting_engine {
+    struct VoteRecord {
+        voter: string,
+        proposal_id: int,
+        weight: int,
+        support: int
+    }
+    
+    fn cast_vote() {
+        // Records weighted vote for specified governance proposal
+    }
+}
