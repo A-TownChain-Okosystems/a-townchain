@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-PR-118",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #118: [DRAFT] feat(build): dependency graph (F-001) + build manifest",
+  "context": "Pull request 118 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/118",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-115"
+    }
+  ],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n> **Status: DRAFT, nicht automatisch mergen.** Stacked auf PR #115 (Katalog-Baseline a70b16f2d).\n\nF-001/ATC-STD-204: `ATC-DEPENDENCY-GRAPH-001.json` — abgeleitete, validierte Projektion der Repo-Kanten (SSOT: atc-standards `registry/dependencies.yaml`, Draft-PR registry/f-001-repository-edges). 26 aktive Repos, 22 Interface-gekapselte Kanten (IFC-0001..0007), deterministische topologische Build-Ordnung, Kahn-Zyklusprüfung, explizite Architektur-Blocker (ATVM vs ShivaVM, AD-008, MK13-15-Dialekte, INFRA-DEPGRAPH-001).\n\n`ATC-BUILD-MANIFEST-001.json` — kanonischer Build-Pfad, Workspace-Root, Toolchain, Build-/Testbefehle je Repo mit Entry-Evidence am exakten SHA; SCR-0127-FREEZE-Repos auf `a-townchain/components/*` gepinnt (Quellrepos nur Referenz); atc-toolchain und a-townchain-os explizit BLOCKED mit Begründung. Keine Scheinvalididierung: belegte Befehle sind keine erfolgreichen Builds.\n\n`tools/validate_build_graph.py` (fail-closed G1-Schema/G2-Topologie/G3-Build-Entries) + 19/19 Tests grün. Gates: G1 PASS, G2 PASS, G3 PARTIAL (Entry-Ebene), G4 PENDING (Build-Test-Evidenz), G5 PARTIAL (Registry-SHAs gepinnt, CI-Run-IDs offen), G6 DONE (MASTER_OVERVIEW-001.json v0.3.0, Commit f659926).\n\nKeine zweite Quelle der Wahrheit: Kanten leben ausschließlich in der Registry-SSOT; dieses Artefakt ist eine abgeleitete, validierte Projektion."
+}
