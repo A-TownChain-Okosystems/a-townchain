@@ -1,0 +1,118 @@
+name: engineering-ci
+
+on:
+  push:
+    branches: [main]
+  # Validate stacked/feature-branch PRs as well as PRs targeting main.
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  engineering-self-test:
+    name: Engineering self-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.90.0
+          components: rustfmt, clippy
+      - name: Format check
+        run: cargo fmt --all -- --check
+      - name: Build evidence negative regression tests
+        run: python3 tests/test_validate_build_evidence.py
+      - name: Test workspace
+        run: cargo test --locked --workspace --all-features
+      - name: Install JSON Schema validator
+        run: python3 -m pip install --disable-pip-version-check 'jsonschema>=4.20,<5'
+      - name: Validate Rust serialization against JSON Schemas
+        run: python3 tests/test_rust_serialization_json_schema.py
+      - name: Clippy
+        run: cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
+
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.90.0
+          components: rustfmt, clippy
+
+      - name: Record build identity
+        id: build_identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "${GITHUB_SHA}" =~ ^[0-9a-f]{40}$ ]]
+          mkdir -p artifacts
+          printf '%s\n' "${GITHUB_SHA}" > artifacts/source-sha.txt
+
+      - name: Format check
+        run: cargo fmt --all -- --check
+
+      - name: Test workspace
+        run: cargo test --locked --workspace --all-features
+
+      - name: Clippy
+        run: cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
+
+      - name: Release build
+        run: cargo build --locked --release
+
+      - name: Audit gate report
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo run --locked -p atc-audit-cli -- . --gate | tee artifacts/gate-report.txt
+          mapfile -t reports < <(grep '^GATE_REPORT ' artifacts/gate-report.txt | sed 's/^GATE_REPORT //')
+          test "${#reports[@]}" -eq 1
+          printf '%s\n' "${reports[0]}" > artifacts/gate-report.json
+
+      - name: Validate gate evidence and bind it to this run
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          REPOSITORY: ${{ github.repository }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+        run: |
+          set -euo pipefail
+          test -s artifacts/gate-report.txt
+          test -s artifacts/gate-report.json
+          checked_out_sha="$(git rev-parse HEAD)"
+          python3 scripts/validate_build_evidence.py \
+            --report artifacts/gate-report.json \
+            --binary target/release/atc-audit-cli \
+            --expected-sha "$EXPECTED_SHA" \
+            --checked-out-sha "$checked_out_sha" \
+            --run-id "$RUN_ID" \
+            --run-attempt "$RUN_ATTEMPT" \
+            --repository "$REPOSITORY" \
+            --workflow-ref "$WORKFLOW_REF" \
+            --output artifacts/evidence-manifest.json
+
+          test -s artifacts/evidence-manifest.json
+          sha256sum target/release/atc-audit-cli artifacts/gate-report.json artifacts/evidence-manifest.json > artifacts/SHA256SUMS
+          test -s artifacts/SHA256SUMS
+
+      - name: Upload gate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atc-engineering-gate-evidence
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 30
