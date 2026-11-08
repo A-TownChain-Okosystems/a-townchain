@@ -1,0 +1,9 @@
+{
+  "name": "@a-townchain/atc-sdk",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "exports": {
+    "./chain-identity": "./chain-identity.ts"
+  }
+}
