@@ -1,0 +1,38 @@
+// ATCLang v0.3 — Procedural Universe Generator
+// Generiert komplette Universen mit Sternensystemen, Planeten, Monden
+// ATC-Standard: ATC-45
+
+module proc_universe {
+    struct StarSystem {
+        system_id: string,
+        star_type: string,
+        planets: List[Planet],
+        position: List[float],
+    }
+    
+    struct Planet {
+        planet_id: string,
+        name: string,
+        planet_type: string,
+        biome: string,
+        gravity: float,
+        atmosphere: string,
+        habitable: bool,
+    }
+    
+    fn generate_universe(seed: string) {
+        // Universum mit Sternensystemen generieren
+    }
+    
+    fn generate_star_system(seed: string) {
+        // Einzelnes Sternensystem
+    }
+    
+    fn generate_planet(seed: string, star_type: string) {
+        // Planet mit Biomen und Ressourcen
+    }
+    
+    fn explore_system(system_id: string) {
+        // System erkunden ( Discovery-Mechanik )
+    }
+}
