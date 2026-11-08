@@ -1,0 +1,40 @@
+name: SDK Build and Test
+on:
+  push:
+  pull_request:
+jobs:
+  canonical-typescript-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Canonical V2 signing vector
+        run: npm test
+
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: cargo check --manifest-path modules/atc-sdk/rust/Cargo.toml
+      - name: Test
+        run: cargo test --manifest-path modules/atc-sdk/rust/Cargo.toml
+  typescript:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: modules/atc-sdk/typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
