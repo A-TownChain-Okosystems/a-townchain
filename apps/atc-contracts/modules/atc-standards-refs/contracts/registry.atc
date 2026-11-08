@@ -36,6 +36,11 @@ contract FranchiseRegistry {
     state total:        u64   = 0
     state reg_fee:      u128  = 1_000_000_000_000_000_000_000  // 1000 ATC
 
+    event RegistryInitialized(owner: Address)
+    event LicenseIssued(license_id: u64, operator: Address, brand_name: string, region: string)
+    event LicenseTransferred(license_id: u64, from_: Address, to: Address)
+    event LicenseSuspended(license_id: u64)
+
     fn init(owner_addr: Address) {
         self.owner = owner_addr
         emit RegistryInitialized(owner_addr)
