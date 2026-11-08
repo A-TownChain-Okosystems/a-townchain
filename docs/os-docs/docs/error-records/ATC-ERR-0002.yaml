@@ -1,0 +1,86 @@
+# ATC Error Knowledge Record (ATC-STD-ERR-013, REQ-ER-130/131)
+error_id: ATC-ERR-0002
+title: "Undeklarierte CI-Dependency: Workflows fuehren Validatoren aus, ohne Abhaengigkeiten zu installieren"
+severity: P1
+category:
+  - governance
+  - cicd
+first_detected: "2026-09-08"
+detected_by: "CI-Log-Analyse (S-25-WARN im Naming-Governance-Lauf) — AUD-2026-0003 F-035/F-037, Issue #1 (atc-standards)"
+affected_repositories:
+  - atc-standards
+  - a-townchain-os
+  - atclang
+  - a-townchain-os-docs
+  - atc-shivacore
+  - a-townchain
+  - globus-os
+  - aurora-ai
+  - genesis-engine
+  - atc-sdk
+  - atc-node
+  - atc-contracts
+  - atc-wallet
+  - atc-explorer
+  - atc-indexer
+  - atc-mining
+  - atc-interop
+  - genesis-chronicles
+  - atc-oracle
+  - atc-storage
+  - atc-launchpad
+  - atc-marketplace
+  - atc-compute
+  - atc-vm
+  - atc-algorithm
+  - atc-zkp
+affected_components:
+  - .github/workflows/naming-governance.yml (atc-standards, 0x pip install)
+  - .github/workflows/governance-ci.yml (25 Repos, 0x pip install)
+root_cause:
+  type: "undeklarierte Dependency + gepruefter Fallback"
+  description: >
+    Der Naming-Governance-Workflow setzte implizit vorinstalliertes PyYAML auf
+    dem Runner voraus (CI-002-Verstoss). Stellt es fehl, lief S-25 im
+    "geprueften Fallback" (WARN) weiter — CI blieb gruen, obwohl eine
+    Kernpruefung (Frontmatter-YAML) faktisch nicht stattfand (CI-010:
+    Erfolg durch zufaellig guenstigen Runner-Zustand, F-035/F-037).
+    Gleiches Muster in 25 weiteren Repos: governance-ci.yml checkt
+    atc-standards aus und fuehrt deren Validatoren aus, ohne deren
+    Abhaengigkeiten zu installieren (heute unfaellig, weil
+    atc_repo_audit.py stdlib-only ist — Zufall, nicht Deklaration).
+error_pattern:
+  description: "Workflow/CI fuehrt Werkzeuge aus, deren externe Abhaengigkeiten weder deklariert noch installiert sind"
+  pattern_ref: ATC-ERR-PATTERN-010
+propagation_scan:
+  performed: true
+  dimensions: [".github/workflows/*.yml mit python3-Validatoren vs. pip-Install-Schritten"]
+  repositories_checked: 26
+  workflows_scanned: 27
+  occurrences_found: 26
+  repositories_detail:
+    atc-standards: "DIRECT — naming-governance.yml ohne pip install; ci.yml mit ad-hoc-Installation (CI-001-Verstoss)"
+    alle_25_weiteren: "SAME PATTERN — governance-ci.yml fuehrt ausgecheckte atc-standards-Validatoren ohne Installation aus"
+fix:
+  implemented: true
+  description: >
+    SCR-0054 (08.09.): ATC-STD-CI-001 (FAM-50, REQ-CI-001..010) normativ;
+    S-25-Fallback entfernt (fehlende Dependency = FAIL, klassifiziert
+    DEPENDENCY_MISSING); E-5-Regressionstest je Push/PR (stdlib-only);
+    requirements.txt mit Schranken (pyyaml>=6.0,<7.0). Workflow-Installation
+    = Owner-Aktion (GH013), Patch bereit:
+    atc-standards/docs/patches/SCR-0054_ci-dependency-hardening.md
+regression_test:
+  required: true
+  implemented: true
+  description: "test_ci_dependency_governance.py (E-5-Stage): T1 Deklaration, T2 Workflow-Installationspflicht, T3 Klassifikation, T4 Versionsschranken — FAILT vor Fix, PASS nach Fix"
+preventive_control:
+  required: true
+  implemented: true
+  description: "ATC-STD-CI-001 (REQ-CI-001..010, P0=CI-010) + E-5-Gate je Push/PR + DEPENDENCY_MISSING-Klassifikation (CI-007)"
+documentation_updated: true
+post_fix_scan:
+  performed: true
+  description: "Org-Scan 26 Repos / 27 Workflows; Nach-Verifikation der CI-Laeufe nach Owner-Patch ausstehend"
+status: OPEN
+next_step: "Owner-Anwendung der Workflow-Patches (GH013); danach E-5 PASS, CI gruen auf frischem Runner, Issue #1 verifiziert schliessen (verified + prevented), Status -> CLOSED"
