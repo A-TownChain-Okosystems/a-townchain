@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/A-TownChain-Okosystems/genesis-engine/blob/main/docs/architecture/genesis-function-catalog.schema.json",
+  "title": "Genesis Engine Function Catalog Schema",
+  "type": "object",
+  "required": [
+    "catalog_id",
+    "schema_version",
+    "repository",
+    "authority",
+    "status_vocabulary",
+    "reconciliation_key",
+    "rules",
+    "scope",
+    "functions"
+  ],
+  "properties": {
+    "catalog_id": {
+      "const": "GENESIS-ENGINE-FUNCTION-CATALOG"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "created_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "repository": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "engine_is_standalone",
+        "chronicles_dependency_allowed",
+        "canonical_implementation_repository",
+        "catalog_is_implementation_evidence",
+        "merge_or_release_authorization"
+      ],
+      "properties": {
+        "engine_is_standalone": {
+          "const": true
+        },
+        "chronicles_dependency_allowed": {
+          "const": false
+        },
+        "canonical_implementation_repository": {
+          "type": "string"
+        },
+        "catalog_is_implementation_evidence": {
+          "const": false
+        },
+        "merge_or_release_authorization": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "status_vocabulary": {
+      "type": "object"
+    },
+    "reconciliation_key": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "scope": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "scope",
+          "contract_count"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "contract_count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "functions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "api_name",
+          "domain",
+          "description",
+          "contract_status",
+          "implementation_status",
+          "source_binding",
+          "tests",
+          "dependencies",
+          "acceptance_criteria",
+          "verification",
+          "notes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^GEN-[A-Z0-9-]+-[0-9]{3}$"
+          },
+          "api_name": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "contract_status": {
+            "enum": [
+              "REQUIRED",
+              "PROPOSED",
+              "EXCLUDED"
+            ]
+          },
+          "implementation_status": {
+            "enum": [
+              "NOT_ASSESSED",
+              "MAPPED",
+              "IMPLEMENTED",
+              "BLOCKED",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "source_binding": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "acceptance_criteria": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "verification": {
+            "type": "object",
+            "required": [
+              "status",
+              "source_sha",
+              "workflow_run",
+              "job",
+              "step",
+              "exit_code",
+              "artifact"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "NOT_VERIFIED",
+                  "PASS",
+                  "FAIL",
+                  "BLOCKED",
+                  "RESIDUAL"
+                ]
+              },
+              "source_sha": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "workflow_run": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "job": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "step": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "exit_code": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "artifact": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
