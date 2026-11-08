@@ -122,11 +122,9 @@ fn check_stmt(fn_name: &str, stmt: &Stmt, decls: &Decls, report: &mut Report) {
                 check_expr(fn_name, v, decls, report);
             }
         }
-        Stmt::Return { value } => {
-            if let Some(v) = value {
-                check_expr(fn_name, v, decls, report);
-            }
-        }
+        Stmt::Return { value: Some(v) } => check_expr(fn_name, v, decls, report),
+        // `return` ohne Wert hat nichts zu pruefen.
+        Stmt::Return { value: None } => {}
         Stmt::Expr(e) => check_expr(fn_name, e, decls, report),
         Stmt::Assign { target, value, .. } => {
             check_expr(fn_name, target, decls, report);
