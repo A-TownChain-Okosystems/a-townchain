@@ -1,0 +1,187 @@
+# ATC Repository Registry (SSOT) — SCR-0080 (Owner-P0-02 Canonical Ownership + P1 Repository Inventory)
+# Current verified inventory (2026-09-17): 31 repositories in A-TownChain-Okosystems — davon 13 Blockchain-Komponenten ins Monorepo a-townchain migriert (SCR-0127, components/<name>, volle Historie via git subtree).
+# atc-indexer, atc-mining, atc-oracle, atc-storage, atc-interop - Exact-SHA-Gate bestanden, Repos via
+# GitHub archiviert) / 6 FREEZE (atc-node, atc-algorithm, atc-vm, atc-contracts, atc-sdk, atc-zkp -
+# aktive Nacharbeiten/upstream-Residual, kanonischer Standort bleibt a-townchain/components/*) /
+# 0 DELETE. Evidence: A-TownChain-Okosystems/a-townchain#64.
+# The registry reflects repository ownership/capability boundaries; historical audit documents retain their original dates and findings.
+# Layer-Taxonomie: DRAFT bis ATC-STD-LAYER-001 (F-096) — System-Layer, NICHT Blockchain-Protocol-Layer.
+schema_version: "1.0.0"
+generated: "2026-09-17"
+organization: A-TownChain-Okosystems
+count: 33
+layer_taxonomy_draft:
+  L0: language
+  L1: kernel
+  L2: ai
+  L3: blockchain
+  L4: operating_system
+  L5: services
+  L6: applications
+  L7: integration
+  note: 'a-townchain: blockchain_protocol.network_layer=L3, protocol_role=sovereign_chain (System-Layer != Layer-3-Protokoll)'
+
+capabilities:
+  verification_tooling:
+    canonical_repo: atc-toolchain
+    role: canonical
+    note: 'Owner-Benennung 06.10. — deterministischer Toolchain-, VM-Verification-, Gas-, ABI- und Exact-SHA-Evidence-Stack (atc-engineering #6-Kontext)'
+  developer_tooling:
+    canonical_repo: atc-ide
+    role: canonical
+    note: 'Owner-Benennung 06.10. — fachliche Standards via SCR nachzureichen (Profil-Vermerk)'
+  vm_specification:
+    canonical_repo: atc-vm
+    role: canonical
+    note: 'Owner-Benennung 06.10. — NICHT vm_runtime (bleibt kanonisch a-townchain/components/vm, SCR-0127); Namensähnlichkeit darf SSOT nicht kippen'
+  consensus_algorithm:
+    canonical_repo: atc-algorithm
+    role: canonical
+    note: 'Owner-Benennung 06.10.'
+  zero_knowledge_proofs:
+    canonical_repo: atc-zkp
+    role: canonical
+    note: 'Owner-Benennung 06.10.'
+  ecosystem_integration:
+    canonical_repo: a-townchain-ecosystem
+    role: canonical
+    note: 'Owner-Benennung 06.10.'
+  genesis_content_factory:
+    canonical_repo: genesis-franchise-factory
+    role: canonical
+    note: 'Owner-Benennung 06.10.'
+# bytecode_format: zurückgezogen bis SCR-0129-Approve — keine vorgezogene normative Registry-Änderung (Owner 06.10.); Umsetzungsequenz: Registry → Standard → Validator/CI
+  standards:
+    canonical_repo: atc-standards
+    role: canonical
+  engineering_governance:
+    canonical_repo: atc-engineering
+    role: canonical
+    note: 'Engineering Control Plane: baut/prueft/governort die Fleet; liest Standards aus atc-standards (einseitig), niemals umgekehrt.'
+  architecture_docs:
+    canonical_repo: a-townchain-os-docs
+    role: canonical
+  kernel:
+    canonical_repo: atc-shivacore
+    role: canonical
+  language:
+    canonical_repo: atclang
+    role: canonical
+  ai:
+    canonical_repo: aurora-ai
+    role: canonical
+  blockchain_orchestration:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Konsens-Implementierung liegt KANONISCH bei atc-algorithm (capability: consensus). a-townchain orchestriert nur — keine zweite Konsens-Implementierung (F-105).'
+  integration:
+    canonical_repo: a-townchain-os
+    role: canonical
+  vm_runtime:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/vm (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-vm: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  node_runtime:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/node (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-node: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  contracts:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/contracts (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-contracts: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  consensus:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/algorithm (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-algorithm: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  zkp:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/zkp (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-zkp: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  wallet:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/wallet (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-wallet: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  sdk:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/sdk (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-sdk: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  indexer:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/indexer (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-indexer: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  explorer:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/explorer (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-explorer: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  interoperability:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/interop (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-interop: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  oracle:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/oracle (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-oracle: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  mining_execution:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/mining (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-mining: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  storage:
+    canonical_repo: a-townchain
+    role: canonical
+    note: 'Monorepo-Migration 2026-09-17 (SCR-0127): kanonischer Standort ist a-townchain/components/storage (git subtree, volle Historie, a-townchain PR #22). Quellrepo atc-storage: Migration abgeschlossen, Stilllegung (Archivierung) als Owner-Aktion ausstehend.'
+  compute:
+    canonical_repo: atc-compute
+    role: canonical
+  marketplace:
+    canonical_repo: atc-marketplace
+    role: canonical
+  launchpad:
+    canonical_repo: atc-launchpad
+    role: canonical
+  os:
+    canonical_repo: globus-os
+    role: canonical
+  game_engine:
+    canonical_repo: genesis-engine
+    role: canonical
+  game:
+    canonical_repo: genesis-chronicles
+    role: canonical
+  agent_governance:
+    canonical_repo: .github
+    role: canonical
+
+repositories:
+  - {name: atc-engineering, tier: T0, profile: atc-engineering, id: ATC-REPO-ENG-001, domain: engineering_governance, layer: L7, criticality: C2, security_class: S2, maturity_class: C, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-standards, tier: T0, profile: atc-standards, id: ATC-REPO-GOV-001, domain: governance, layer: L7, criticality: C1, security_class: S3, maturity_class: A, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: a-townchain-os-docs, tier: T2, profile: a-townchain-os-docs, id: ATC-REPO-ARCH-001, domain: architecture_docs, layer: L7, criticality: C1, security_class: S3, maturity_class: A, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-shivacore, tier: T1, profile: atc-shivacore, id: ATC-REPO-KERN-001, domain: kernel, layer: L1, criticality: C1, security_class: S4, maturity_class: A, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atclang, tier: T1, profile: atclang, id: ATC-REPO-LANG-001, domain: language, layer: L0, criticality: C1, security_class: S4, maturity_class: A, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: aurora-ai, tier: T3, profile: aurora-ai, id: ATC-REPO-AI-001, domain: ai_platform, layer: L2, criticality: C1, security_class: S3, maturity_class: A, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: a-townchain, tier: T1, profile: a-townchain, id: ATC-REPO-CHAIN-001, domain: blockchain, layer: L3, criticality: C1, security_class: S4, maturity_class: A, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false, note: 'Blockchain-Monorepo seit 2026-09-17: 13 Komponenten unter components/ (SCR-0127, git subtree mit voller Historie)'}
+  - {name: a-townchain-os, tier: T2, profile: a-townchain-os, id: ATC-REPO-INT-001, domain: integration, layer: L7, criticality: C1, security_class: S3, maturity_class: A, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-vm, tier: T1, profile: atc-vm, id: ATC-REPO-VM-001, domain: runtime, layer: L5, criticality: C1, security_class: S4, maturity_class: B, canonical: false, status: frozen, migrated_to: 'a-townchain/components/vm', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-node, tier: T1, profile: atc-node, id: ATC-REPO-NODE-001, domain: node_runtime, layer: L3, criticality: C1, security_class: S4, maturity_class: B, canonical: false, status: frozen, migrated_to: 'a-townchain/components/node', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-contracts, tier: T1, profile: atc-contracts, id: ATC-REPO-CONTR-001, domain: contracts, layer: L5, criticality: C1, security_class: S4, maturity_class: B, canonical: false, status: frozen, migrated_to: 'a-townchain/components/contracts', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-algorithm, tier: T1, profile: atc-algorithm, id: ATC-REPO-CONS-001, domain: consensus, layer: L3, criticality: C1, security_class: S4, maturity_class: B, canonical: false, status: frozen, migrated_to: 'a-townchain/components/algorithm', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-zkp, tier: T1, profile: atc-zkp, id: ATC-REPO-ZKP-001, domain: zkp, layer: L3, criticality: C1, security_class: S4, maturity_class: B, canonical: false, status: frozen, migrated_to: 'a-townchain/components/zkp', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-wallet, tier: T1, profile: atc-wallet, id: ATC-REPO-WALL-001, domain: wallet, layer: L5, criticality: C1, security_class: S4, maturity_class: B, canonical: false, status: archived, migrated_to: 'a-townchain/components/wallet', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-sdk, tier: T3, profile: atc-sdk, id: ATC-REPO-SDK-001, domain: sdk, layer: L5, criticality: C2, security_class: S3, maturity_class: B, canonical: false, status: frozen, migrated_to: 'a-townchain/components/sdk', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-indexer, tier: T2, profile: atc-indexer, id: ATC-REPO-IDX-001, domain: indexing, layer: L5, criticality: C2, security_class: S3, maturity_class: B, canonical: false, status: archived, migrated_to: 'a-townchain/components/indexer', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-explorer, tier: T3, profile: atc-explorer, id: ATC-REPO-EXPL-001, domain: explorer, layer: L5, criticality: C3, security_class: S2, maturity_class: B, canonical: false, status: archived, migrated_to: 'a-townchain/components/explorer', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-interop, tier: T1, profile: atc-interop, id: ATC-REPO-INTOP-001, domain: interoperability, layer: L3, criticality: C1, security_class: S4, maturity_class: B, canonical: false, status: archived, migrated_to: 'a-townchain/components/interop', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-oracle, tier: T1, profile: atc-oracle, id: ATC-REPO-ORAC-001, domain: oracle, layer: L3, criticality: C1, security_class: S4, maturity_class: B, canonical: false, status: archived, migrated_to: 'a-townchain/components/oracle', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-mining, tier: T2, profile: atc-mining, id: ATC-REPO-MINE-001, domain: mining, layer: L3, criticality: C2, security_class: S4, maturity_class: B, canonical: false, status: archived, migrated_to: 'a-townchain/components/mining', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-storage, tier: T2, profile: atc-storage, id: ATC-REPO-STOR-001, domain: storage, layer: L5, criticality: C2, security_class: S4, maturity_class: B, canonical: false, status: archived, migrated_to: 'a-townchain/components/storage', evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-compute, tier: T2, profile: atc-compute, id: ATC-REPO-COMP-001, domain: compute, layer: L5, criticality: C2, security_class: S3, maturity_class: B, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-marketplace, tier: T3, profile: atc-marketplace, id: ATC-REPO-MKT-001, domain: marketplace, layer: L6, criticality: C2, security_class: S3, maturity_class: B, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-launchpad, tier: T3, profile: atc-launchpad, id: ATC-REPO-LP-001, domain: launchpad, layer: L6, criticality: C2, security_class: S3, maturity_class: B, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: globus-os, tier: T1, profile: globus-os, id: ATC-REPO-OS-001, domain: operating_system, layer: L4, criticality: C1, security_class: S4, maturity_class: C, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: genesis-engine, tier: T3, profile: genesis-engine, id: ATC-REPO-GEN-001, domain: game_engine, layer: L6, criticality: C3, security_class: S2, maturity_class: C, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: genesis-chronicles, tier: T3, profile: genesis-chronicles, id: ATC-REPO-GAME-001, domain: game, layer: L6, criticality: C3, security_class: S2, maturity_class: C, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: .github, tier: T0, profile: .github, id: ATC-REPO-HUB-001, domain: governance_hub, layer: L7, criticality: C1, security_class: S3, maturity_class: A, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: true}
+  - {name: atc-ide, tier: T3, profile: atc-ide, id: ATC-REPO-IDE-001, domain: developer_tools, layer: L6, criticality: C3, security_class: S2, maturity_class: C, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: atc-toolchain, tier: T3, profile: atc-toolchain, id: ATC-REPO-TOOL-001, domain: developer_tools, layer: L6, criticality: C3, security_class: S2, maturity_class: C, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: genesis-franchise-factory, tier: T3, profile: genesis-franchise-factory, id: ATC-REPO-GFF-001, domain: franchise_factory, layer: L6, criticality: C3, security_class: S2, maturity_class: C, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: a-townchain-ecosystem, tier: T3, profile: a-townchain-ecosystem, id: ATC-REPO-ECOSYS-001, domain: ecosystem, layer: L7, criticality: C1, security_class: S3, maturity_class: C, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
+  - {name: demo-repository, tier: T3, profile: demo-repository, id: ATC-REPO-DEMO-001, domain: demo, layer: L7, criticality: C3, security_class: S1, maturity_class: C, canonical: false, evidence: .atc/evidence/evidence.yaml, exempt: true}
