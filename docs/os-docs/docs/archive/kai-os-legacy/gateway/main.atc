@@ -1,0 +1,127 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — API Gateway Main
+// Sprint 3.0 | Gateway Layer | Chain-ID 9000
+// Migrated from: gateway/main.py
+// Wiki: Kap. 8
+// Port: 4000 — All middlewares active
+// ─────────────────────────────────────────────────────────────
+
+const GATEWAY_PORT: u16 = 4000
+const BACKEND_URL: String = "http://localhost:5000"
+const RATE_LIMIT_PER_MIN: u16 = 100
+const RATE_LIMIT_WINDOW: u16 = 60
+const API_VERSION: String = "1.0"
+
+struct RouteHandler {
+    path: String,
+    method: String,
+    requires_auth: bool,
+    requires_jwt: bool,
+    requires_signature: bool,
+}
+
+contract GatewayMain {
+    state router: GatewayRouter
+    state rate_limiter: RateLimiter
+    state running: bool
+    state started_at: u64
+
+    event RequestReceived(request_id: String, path: String, method: String)
+    event ResponseSent(request_id: String, status: u16, duration_ms: u32)
+    event RateLimitExceeded(ip: String, retry_after: u16)
+    event GatewayStarted(port: u16, backend: String)
+
+    fn init() {
+        self.router = GatewayRouter::new(BACKEND_URL)
+        self.rate_limiter = RateLimiter::new(RATE_LIMIT_PER_MIN, RATE_LIMIT_WINDOW)
+        self.running = false
+        self.started_at = 0
+    }
+
+    // ── Start gateway ───────────────────────────────
+    fn start() {
+        self.running = true
+        self.started_at = Time::now()
+        emit GatewayStarted(GATEWAY_PORT, BACKEND_URL)
+    }
+
+    // ── Before request (middleware chain) ───────────
+    fn before_request(ip: String, path: String, method: String) -> (bool, u16, String) {
+        let request_id = "req-" + Int::to_string(Time::now_ms())
+        emit RequestReceived(request_id, path, method)
+        // Rate limit check
+        let allowed = self.rate_limiter.check(ip)
+        if !allowed {
+            let retry = self.rate_limiter.retry_after(ip)
+            emit RateLimitExceeded(ip, retry)
+            return (false, 429, "Rate limit exceeded")
+        }
+        return (true, 200, request_id)
+    }
+
+    // ── Health endpoint ──────────────────────────────
+    fn health() -> (String, u16, u32, u32, u64) {
+        let status = "ok"
+        let block_height = self.router.last_block_height
+        let peer_count = self.router.peer_count
+        let tps = self.router.tps
+        let uptime = Time::now() - self.started_at
+        return (status, block_height, peer_count, tps, uptime)
+    }
+
+    // ── Forward request to backend ──────────────────
+    fn forward(path: String, method: String, body: String, auth_token: String) -> (u16, String) {
+        let url = BACKEND_URL + path
+        let resp = HTTP::request(method, url, body, auth_token)
+        return (resp.status, resp.body)
+    }
+
+    // ── Public routes (no auth) ─────────────────────
+    fn route_public(path: String, method: String) -> (u16, String) {
+        return self.forward(path, method, "", "")
+    }
+
+    // ── Authenticated routes ────────────────────────
+    fn route_authenticated(path: String, method: String, body: String, api_key: String) -> (u16, String) {
+        if !Auth::verify_api_key(api_key) {
+            return (401, "Invalid API key")
+        }
+        return self.forward(path, method, body, api_key)
+    }
+
+    // ── Admin routes (JWT) ──────────────────────────
+    fn route_admin(path: String, method: String, body: String, jwt_token: String) -> (u16, String) {
+        if !Auth::verify_jwt(jwt_token) {
+            return (403, "Invalid JWT")
+        }
+        return self.forward(path, method, body, jwt_token)
+    }
+
+    // ── Signed routes (signature verify) ─────────────
+    fn route_signed(path: String, method: String, body: String, api_key: String, signature: String) -> (u16, String) {
+        if !Auth::verify_api_key(api_key) {
+            return (401, "Invalid API key")
+        }
+        if !Auth::verify_signature(body, signature, api_key) {
+            return (401, "Invalid signature")
+        }
+        return self.forward(path, method, body, api_key)
+    }
+
+    // ── Stats ───────────────────────────────────────
+    fn stats() -> (u16, u16, u32, u64, bool) {
+        return (
+            self.router.last_block_height,
+            self.router.peer_count,
+            self.router.tps,
+            Time::now() - self.started_at,
+            self.running
+        )
+    }
+
+    // ── Stop gateway ────────────────────────────────
+    fn stop() {
+        self.running = false
+    }
+}
