@@ -1,0 +1,120 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ╔══════════════════════════════════════════════════════╗
+// ║  Franchise Registry — ATC-90 NFT Standard        ║
+// ║  ATCLang v0.2.0 | Franchise Factory v1.0           ║
+// ╚══════════════════════════════════════════════════════╝
+
+use ATC::Types::Address
+use ATC::Crypto::sha256
+
+enum FranchiseStatus {
+    PENDING,
+    ACTIVE,
+    SUSPENDED,
+    TERMINATED,
+}
+
+struct FranchiseLicense {
+    id:           u64,
+    owner:        Address,
+    brand_name:   string,
+    category:     string,
+    region:       string,
+    issued_at:    u64,
+    expires_at:   u64,
+    status:       FranchiseStatus,
+    revenue_share: u8,   // Prozent (0-100)
+    license_fee:  u128,  // in ATC-Wei
+    dna:          bytes32,
+}
+
+contract FranchiseRegistry {
+    state owner:        Address
+    state licenses:     Map<u64, FranchiseLicense>
+    state by_owner:     Map<Address, Vec<u64>>
+    state next_id:      u64   = 1
+    state total:        u64   = 0
+    state reg_fee:      u128  = 1_000_000_000_000_000_000_000  // 1000 ATC
+
+    fn init(owner_addr: Address) {
+        self.owner = owner_addr
+        emit RegistryInitialized(owner_addr)
+    }
+
+    fn register(
+        brand_name:    string,
+        category:      string,
+        region:        string,
+        revenue_share: u8,
+        duration_days: u64,
+    ) -> u64 {
+        require(brand_name.len() > 2, "Brand-Name zu kurz")
+        require(revenue_share <= 50, "Max 50% Revenue Share")
+        require(duration_days >= 365, "Min. 1 Jahr Lizenz")
+
+        let license_id: u64 = self.next_id
+        self.next_id = safe_add(self.next_id, 1)
+        self.total   = safe_add(self.total, 1)
+
+        let dna: bytes32 = sha256(to_string(caller)
+                                + brand_name
+                                + to_string(license_id)
+                                + to_string(now()))
+        let license: FranchiseLicense = FranchiseLicense {
+            id:            license_id,
+            owner:         caller,
+            brand_name:    brand_name,
+            category:      category,
+            region:        region,
+            issued_at:     now(),
+            expires_at:    safe_add(now(), duration_days * 86400),
+            status:        FranchiseStatus::ACTIVE,
+            revenue_share: revenue_share,
+            license_fee:   self.reg_fee,
+            dna:           dna,
+        }
+        self.licenses[license_id] = license
+        self.by_owner[caller].push(license_id)
+        emit LicenseIssued(license_id, caller, brand_name, region)
+        return license_id
+    }
+
+    fn transfer(license_id: u64, to: Address) -> bool {
+        require(self.licenses.contains(license_id), "Lizenz nicht gefunden")
+        let lic: FranchiseLicense = self.licenses[license_id]
+        require(lic.owner == caller, "Nur Eigentümer kann übertragen")
+        require(lic.status == FranchiseStatus::ACTIVE, "Nur aktive Lizenzen")
+        lic.owner = to
+        self.licenses[license_id] = lic
+        self.by_owner[to].push(license_id)
+        emit LicenseTransferred(license_id, caller, to)
+        return true
+    }
+
+    fn suspend(license_id: u64) {
+        require(caller == self.owner, "Nur Registry-Owner")
+        require(self.licenses.contains(license_id), "Lizenz nicht gefunden")
+        let lic: FranchiseLicense = self.licenses[license_id]
+        lic.status = FranchiseStatus::SUSPENDED
+        self.licenses[license_id] = lic
+        emit LicenseSuspended(license_id)
+    }
+
+    fn is_active(license_id: u64) -> bool {
+        if !self.licenses.contains(license_id) { return false }
+        let lic: FranchiseLicense = self.licenses[license_id]
+        return lic.status == FranchiseStatus::ACTIVE
+            && lic.expires_at > now()
+    }
+
+    fn get_license(id: u64) -> FranchiseLicense {
+        require(self.licenses.contains(id), "Nicht gefunden")
+        return self.licenses[id]
+    }
+
+    fn licenses_of(addr: Address) -> Vec<u64> {
+        return self.by_owner[addr]
+    }
+
+    fn total_licenses() -> u64 { return self.total }
+}
