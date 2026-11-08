@@ -1,7 +1,8 @@
 # Root-Workspace des a-townchain-Monorepos.
 # Kanonisch: components/, modules/, tooling/ und die Produkt-Apps.
 # Ausgeschlossen bleiben:
-#  - die sieben Unter-Workspaces (eigene Manifeste) und das Doku-Archiv
+#  - die sieben Unter-Workspaces (eigene Manifeste)
+#    (das Doku-Archiv enthaelt seit dem Manifest-Cleanup keine Crates mehr)
 #  - apps/-Spiegel bereits vorhandener components-Crates
 #  - modules/atc-blockchain/kernel und ecosystem/integration: durch FV-002
 #    blockiert (Kernel-Crate unvollstaendig, src enthaelt nur blockchain.rs)
@@ -44,10 +45,6 @@ exclude = [
     "apps/atc-sdk",
     "apps/atc-storage",
     "components/zkp",
-    "docs/os-docs/docs/archive/monorepo-full",
-    "docs/os-docs/docs/archive/repos-rescue",
-    "docs/os-docs/docs/archive/shiva-os",
-    "docs/os-docs/docs/monorepo-legacy/src-legacy",
     "ecosystem/integration",
     "kernel/globus-os",
     "kernel/kai-os",
