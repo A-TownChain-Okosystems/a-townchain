@@ -1,0 +1,163 @@
+{
+  "schema_version": "1.0.0",
+  "contract_id": "ATCE-RECONCILIATION-STATUS-CONSUMER-AUDIT-001",
+  "repository": "A-TownChain-Okosystems/atc-engineering",
+  "audit_status": "PARTIAL",
+  "audit_scope": "Bounded local reconciliation/catalog/interface-census/finding-lifecycle paths plus pinned inventory of 26 visible non-archived repositories, two search rounds, and recursive Git-tree inventories for all 13 repositories without code-search indexing.",
+  "normative_contract": "docs/architecture/reconciliation-status-contract.v1.json",
+  "consumers_and_producers": [
+    {
+      "path": "scripts/org_function_catalog.py",
+      "role": "producer",
+      "statuses": [
+        "DETECTED",
+        "RESIDUAL"
+      ],
+      "domain": "source inventory / catalog generation",
+      "rule": "DETECTED records discovery output only; it does not establish complete catalog coverage or VERIFIED status."
+    },
+    {
+      "path": ".github/workflows/org-function-catalog.yml",
+      "role": "consumer",
+      "statuses": [
+        "DETECTED",
+        "VERIFIED"
+      ],
+      "domain": "generated catalog validation",
+      "rule": "Schema validity and candidate-record validation do not promote candidates to CONFIRMED or VERIFIED."
+    },
+    {
+      "path": ".github/workflows/pinned-source-catalog-reconciliation.yml",
+      "role": "producer",
+      "statuses": [
+        "DETECTED",
+        "BLOCKED"
+      ],
+      "domain": "legacy reconciliation-report.json",
+      "rule": "Preserve the legacy report's own status and parser-coverage limitations. Do not promote its DETECTED output based on zero deltas or the independent report."
+    },
+    {
+      "path": "scripts/validate_bidirectional_reconciliation.py",
+      "role": "producer",
+      "statuses": [
+        "RECONCILED",
+        "BLOCKED"
+      ],
+      "domain": "independent bidirectional inventory reconciliation",
+      "rule": "RECONCILED is scoped to the two supplied inventories and expected-delta contract; the producer explicitly states it is not VERIFIED."
+    },
+    {
+      "path": "scripts/build_pr29_finding_remediation_ledger.py",
+      "role": "consumer",
+      "statuses": [
+        "RECONCILED",
+        "RESOLVED",
+        "UNRESOLVED"
+      ],
+      "domain": "baseline finding disposition ledger",
+      "rule": "The ledger requires independent RECONCILED plus zero blockers for its own resolution logic; RESOLVED does not imply merge approval or organization-wide VERIFIED status."
+    },
+    {
+      "path": ".github/workflows/source-catalog-reconciliation.yml",
+      "role": "consumer",
+      "statuses": [
+        "RECONCILED",
+        "VERIFIED",
+        "BLOCKED"
+      ],
+      "domain": "source-catalog report and interface-contract census",
+      "rule": "RECONCILED and VERIFIED counts are distinct. RECONCILED claims require reconciled contracts; VERIFIED claims require every contract to be VERIFIED. The current census is required to remain BLOCKED."
+    },
+    {
+      "path": "docs/architecture/source-catalog-reconciliation.v1.json",
+      "role": "report",
+      "statuses": [
+        "BLOCKED",
+        "OPEN"
+      ],
+      "domain": "legacy source-catalog reconciliation record",
+      "rule": "Unknown counts remain null and must not be treated as zero; the report preserves its explicit limitations."
+    },
+    {
+      "path": "schemas/source-catalog-reconciliation.schema.json",
+      "role": "schema",
+      "statuses": [
+        "BLOCKED",
+        "IN_PROGRESS",
+        "RECONCILED"
+      ],
+      "domain": "legacy source-catalog report schema",
+      "rule": "Schema acceptance validates shape only; it is not proof of source completeness or verification."
+    },
+    {
+      "path": "docs/architecture/ORG_FUNCTION_CATALOG_SPEC.md",
+      "role": "specification",
+      "statuses": [
+        "DETECTED",
+        "VERIFIED"
+      ],
+      "domain": "catalog lifecycle",
+      "rule": "VERIFIED requires exact-SHA checks and Run/Job/Step evidence; keep this lifecycle separate from legacy report statuses."
+    },
+    {
+      "path": "crates/atc-findings/src/lib.rs",
+      "role": "producer",
+      "statuses": [
+        "DETECTED",
+        "VERIFIED"
+      ],
+      "domain": "individual finding lifecycle",
+      "rule": "These values describe a finding's remediation lifecycle, not the status of reconciliation-report.json or the independent reconciliation gate. No implicit cross-domain mapping is allowed."
+    },
+    {
+      "path": "STATUS.md",
+      "role": "documentation",
+      "statuses": [
+        "DETECTED",
+        "VERIFIED"
+      ],
+      "domain": "individual finding lifecycle",
+      "rule": "The lifecycle is separate from report status semantics."
+    },
+    {
+      "path": "tests/test_bidirectional_reconciliation.py",
+      "role": "regression_test",
+      "statuses": [
+        "RECONCILED",
+        "BLOCKED"
+      ],
+      "domain": "independent reconciliation",
+      "rule": "Tests verify only the validator's defined reconciliation scope."
+    },
+    {
+      "path": "tests/test_reconciliation_status_contract.py",
+      "role": "regression_test",
+      "statuses": [
+        "DETECTED",
+        "RECONCILED",
+        "VERIFIED"
+      ],
+      "domain": "status contract",
+      "rule": "Negative tests reject implicit promotions, missing/invalid evidence, unknown statuses, incomplete organization scope, and commit-head mismatch."
+    }
+  ],
+  "universal_rules": {
+    "unknown_status": "BLOCK",
+    "missing_evidence": "BLOCK",
+    "status_renaming_or_mapping_as_promotion": "FORBIDDEN",
+    "single_workflow_as_organization_wide_proof": "FORBIDDEN",
+    "legacy_report_equivalent_to_independent_gate": false,
+    "finding_lifecycle_equivalent_to_report_status": false
+  },
+  "residuals": [
+    "Repository listing and main-branch SHA pinning are complete for all 26 non-archived repositories visible to the authenticated account; seven archived repositories remain outside active scope unless governance includes them.",
+    "Thirteen of the 26 active repositories are not indexed for code search. Their recursive Git trees were enumerated at pinned SHAs (all non-truncated), but candidate file contents are not all directly inspected.",
+    "Direct inspection of representative candidates found domain-separated catalog statuses, draft specs, local audit tools, governance workflows, and a VM execution-receipt gate. No inspected excerpt established a new consumer of the PR #29 reconciliation-report status contract, but absence of a consumer has not been proven.",
+    "The other 13 code-search-indexed repositories still require content-level source inspection at pinned SHAs; code-search results alone are insufficient to classify all readers/writers.",
+    "Complete exact-ref inspection and classification of all candidate workflows, scripts, schemas, report producers, status readers/writers, and generated consumers remains incomplete.",
+    "Consumer-specific negative regressions for every executable PR #29 status consumer and per-repository exact-SHA workflow/job/step/artifact evidence binding remain incomplete.",
+    "Audit closure remains blocked; status must stay PARTIAL / BLOCKED / NOT VERIFIED."
+  ],
+  "discovery_register": "docs/architecture/reconciliation-status-consumer-discovery.v1.json",
+  "repository_inventory": "Main SHAs pinned for all 26 visible non-archived repositories. Recursive Git Trees API returned non-truncated trees for all 13 not indexed for code search; this is path inventory, not content-level audit."
+}
