@@ -1,0 +1,10 @@
+[package]
+name = "atc-integration"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+description = "Deterministic ecosystem integration graph and readiness contracts."
+
+[dependencies]
+atc-core = { path = "../atc-core" }
