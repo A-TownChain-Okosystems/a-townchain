@@ -1,0 +1,12 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: repository
+family: REPOSITORY / GIT
+family_id: '200'
+file: standards/repository/ATC-STD-201.md
+mandate: ''
+registry_version: 1
+standard_id: ATC-STD-201
+status: approved
+title: Repository Structure Standard
+version: 1.0.1
