@@ -1,0 +1,16 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: governance
+family: GOVERNANCE / META
+family_id: '000'
+file: standards/governance/ATC-STD-003.md
+mandate: 'Owner-Direktive 11.09.: Governance selbst deterministisch machen; SCR-0090'
+registry_version: 1
+standard_id: ATC-STD-003
+status: approved
+title: Governance Determinism & Source-of-Truth Matrix Standard (SSOT-Matrix je Informationsklasse,
+  State-ID/Ein-Zahl-Regel mit Registry-SHA, README-Vollregeneration/CURRENT-STATE-only,
+  .github-Referenzpflicht, Autoritaetskaskade Registry>Evidence>Doku, ATC-STD-000-Bootstrap
+  mit Sunset, Slot-Prinzip, APPROVED!=IMPLEMENTED, Agent-Autoritaetsgrenzen 2-of-N,
+  State-Snapshot-Pflicht)
+version: 1.0.0
