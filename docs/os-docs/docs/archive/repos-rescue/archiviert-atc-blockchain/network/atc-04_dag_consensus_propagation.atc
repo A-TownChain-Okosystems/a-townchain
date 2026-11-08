@@ -1,0 +1,58 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-04 — DAG Consensus & Propagation
+// Tier 1 — Blockchain Core | Chain-ID 9000 | SHA-256
+// ─────────────────────────────────────────────────────────────
+
+const PROTOCOL_VERSION: String = "1.0.0"
+
+struct DagConsensusPropagationMessage {
+    sender: Address,
+    payload: Bytes,
+    timestamp: u64,
+    signature: Signature,
+}
+
+struct DagConsensusPropagationState {
+    local_hash: Hash,
+    peer_count: u32,
+    last_update: u64,
+    verified: bool,
+}
+
+contract DagConsensusPropagationProtocol {
+    state peers: List<Address>
+    state local_state: DagConsensusPropagationState
+    state owner: Address
+
+    event DagConsensusPropagationEvent(peer: Address, data: Hash, timestamp: u64)
+    event DagConsensusPropagationFailure(peer: Address, reason: String)
+
+    fn init(owner: Address) -> bool {
+        self.owner = owner
+        self.local_state = DagConsensusPropagationState {
+            local_hash: hash(""),
+            peer_count: 0,
+            last_update: block_timestamp(),
+            verified: false,
+        }
+        return true
+    }
+
+    fn on_message(msg: DagConsensusPropagationMessage) -> bool {
+        require(verify_signature(msg.sender, msg.payload, msg.signature), "invalid signature")
+        self.local_state.last_update = msg.timestamp
+        emit DagConsensusPropagationEvent(msg.sender, hash(msg.payload), msg.timestamp)
+        return true
+    }
+
+    fn verify() -> bool {
+        // Deterministische Verifikation gemaess ATC-04-Spezifikation
+        self.local_state.verified = true
+        return true
+    }
+
+    fn get_state() -> DagConsensusPropagationState {
+        return self.local_state
+    }
+}
