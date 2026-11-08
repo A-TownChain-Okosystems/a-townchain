@@ -1,0 +1,245 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-36 — Narrative Factory: Modulare Geschichtenverwaltung
+// GFF v2.0 — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct NarrativeFactory {
+    story_arcs: Map<Hash256, StoryArc>,
+    chapters: Map<Hash256, NarrativeChapter>,
+    cutscenes: Map<Hash256, Cutscene>,
+    decision_trees: Map<Hash256, DecisionTree>,
+    dynamic_narratives: Map<Hash256, DynamicNarrative>,
+    by_franchise: Map<Hash256, List<Hash256>>,
+}
+
+struct StoryArc {
+    id: Hash256,
+    franchise_id: Hash256,
+    title: String,
+    description: String,
+    arc_type: ArcType,
+    chapter_ids: List<Hash256>,
+    start_chapter: Hash256,
+    end_chapter: Hash256,
+    emotional_curve: List<Float32>,
+    themes: List<String>,
+    status: String,
+}
+
+enum ArcType { Main, Side, Character, Faction, World, Flashback, Epilogue }
+
+struct NarrativeChapter {
+    id: Hash256,
+    arc_id: Hash256,
+    number: UInt16,
+    title: String,
+    summary: String,
+    beats: List<StoryBeat>,
+    decision_point: Hash256,
+    estimated_playtime_min: UInt32,
+    characters: List<String>,
+    locations: List<String>,
+}
+
+struct StoryBeat {
+    id: Hash256,
+    description: String,
+    type: BeatType,
+    intensity: UInt8,
+    dialogue_refs: List<Hash256>,
+    cutscene_ref: Hash256,
+    quest_ref: Hash256,
+}
+
+enum BeatType { Setup, Inciting, Rising, Climax, Falling, Resolution, Twist, Foreshadow }
+
+struct Cutscene {
+    id: Hash256,
+    name: String,
+    duration_sec: UInt32,
+    camera_angles: List<String>,
+    characters: List<String>,
+    dialogue: List<CutsceneDialogue>,
+    music_track: String,
+    ambient: String,
+    skip_allowed: Bool,
+}
+
+struct CutsceneDialogue {
+    speaker: String,
+    text: String,
+    emotion: String,
+    duration_sec: UInt32,
+    voice_ref: String,
+}
+
+struct DecisionTree {
+    id: Hash256,
+    name: String,
+    root: Hash256,
+    nodes: Map<Hash256, DecisionNode>,
+    consequences: List<DecisionConsequence>,
+}
+
+struct DecisionNode {
+    id: Hash256,
+    prompt: String,
+    choices: List<DecisionChoice>,
+    conditions: List<String>,
+}
+
+struct DecisionChoice {
+    text: String,
+    next_node: Hash256,
+    requirements: List<String>,
+    consequences: List<String>,
+    faction_impact: Map<String, Int32>,
+}
+
+struct DecisionConsequence {
+    id: Hash256,
+    trigger: String,
+    effect: String,
+    scope: String,
+    magnitude: Int32,
+}
+
+struct DynamicNarrative {
+    id: Hash256,
+    name: String,
+    trigger_conditions: List<String>,
+    branches: Map<String, Hash256>,
+    active_branch: String,
+    player_history: List<String>,
+    adapt_to_player: Bool,
+}
+
+// Narrative Factory: Story-Arc erstellen
+pub fn create_story_arc(factory: NarrativeFactory, franchise_id: Hash256, title: String, desc: String, arc_type: ArcType) -> Hash256 {
+    let aid = Crypto::sha256(serialize(title, franchise_id, Chain::timestamp()))
+    factory.story_arcs[aid] = StoryArc {
+        id: aid, franchise_id: franchise_id, title: title, description: desc,
+        arc_type: arc_type, chapter_ids: [], start_chapter: Hash256::zero(),
+        end_chapter: Hash256::zero(), emotional_curve: [], themes: [],
+        status: "draft",
+    }
+    if not factory.by_franchise.contains(franchise_id) { factory.by_franchise[franchise_id] = [] }
+    factory.by_franchise[franchise_id].append(aid)
+    return aid
+}
+
+// Narrative Factory: Kapitel hinzufügen
+pub fn add_chapter(factory: NarrativeFactory, arc_id: Hash256, title: String, summary: String, playtime: UInt32) -> Hash256 {
+    require(factory.story_arcs.contains(arc_id), "Arc not found")
+    let cid = Crypto::sha256(serialize(title, arc_id, Chain::timestamp()))
+    factory.chapters[cid] = NarrativeChapter {
+        id: cid, arc_id: arc_id, number: factory.story_arcs[arc_id].chapter_ids.len() + 1,
+        title: title, summary: summary, beats: [], decision_point: Hash256::zero(),
+        estimated_playtime_min: playtime, characters: [], locations: [],
+    }
+    factory.story_arcs[arc_id].chapter_ids.append(cid)
+    if factory.story_arcs[arc_id].start_chapter == Hash256::zero() {
+        factory.story_arcs[arc_id].start_chapter = cid
+    }
+    factory.story_arcs[arc_id].end_chapter = cid
+    return cid
+}
+
+// Narrative Factory: Story-Beat hinzufügen
+pub fn add_beat(factory: NarrativeFactory, chapter_id: Hash256, desc: String, btype: BeatType, intensity: UInt8) -> Hash256 {
+    require(factory.chapters.contains(chapter_id), "Chapter not found")
+    let bid = Crypto::sha256(serialize(desc, chapter_id, Chain::timestamp()))
+    factory.chapters[chapter_id].beats.append(StoryBeat {
+        id: bid, description: desc, type: btype, intensity: intensity,
+        dialogue_refs: [], cutscene_ref: Hash256::zero(), quest_ref: Hash256::zero(),
+    })
+    return bid
+}
+
+// Narrative Factory: Cutscene erstellen
+pub fn create_cutscene(factory: NarrativeFactory, name: String, duration: UInt32, skip: Bool) -> Hash256 {
+    let csid = Crypto::sha256(serialize(name, Chain::timestamp()))
+    factory.cutscenes[csid] = Cutscene {
+        id: csid, name: name, duration_sec: duration,
+        camera_angles: [], characters: [], dialogue: [],
+        music_track: "", ambient: "", skip_allowed: skip,
+    }
+    return csid
+}
+
+// Narrative Factory: Cutscene-Dialog hinzufügen
+pub fn add_cutscene_dialogue(factory: NarrativeFactory, cutscene_id: Hash256, speaker: String, text: String, emotion: String, duration: UInt32) -> Bool {
+    require(factory.cutscenes.contains(cutscene_id), "Cutscene not found")
+    factory.cutscenes[cutscene_id].dialogue.append(CutsceneDialogue {
+        speaker: speaker, text: text, emotion: emotion,
+        duration_sec: duration, voice_ref: "",
+    })
+    factory.cutscenes[cutscene_id].characters.append(speaker)
+    return true
+}
+
+// Narrative Factory: Entscheidungsbaum erstellen
+pub fn create_decision_tree(factory: NarrativeFactory, name: String, root_prompt: String) -> Hash256 {
+    let tid = Crypto::sha256(serialize(name, Chain::timestamp()))
+    let root_id = Crypto::sha256(serialize("root", tid))
+    let nodes = {}
+    nodes[root_id] = DecisionNode {
+        id: root_id, prompt: root_prompt, choices: [], conditions: [],
+    }
+    factory.decision_trees[tid] = DecisionTree {
+        id: tid, name: name, root: root_id, nodes: nodes, consequences: [],
+    }
+    return tid
+}
+
+// Narrative Factory: Entscheidung hinzufügen
+pub fn add_decision_choice(factory: NarrativeFactory, tree_id: Hash256, node_id: Hash256, text: String, next_prompt: String, consequences: List<String>) -> Bool {
+    require(factory.decision_trees.contains(tree_id), "Tree not found")
+    let tree = factory.decision_trees[tree_id]
+    require(tree.nodes.contains(node_id), "Node not found")
+    let next_id = Crypto::sha256(serialize(text, node_id, Chain::timestamp()))
+    tree.nodes[next_id] = DecisionNode {
+        id: next_id, prompt: next_prompt, choices: [], conditions: [],
+    }
+    tree.nodes[node_id].choices.append(DecisionChoice {
+        text: text, next_node: next_id, requirements: [],
+        consequences: consequences, faction_impact: {},
+    })
+    return true
+}
+
+// Narrative Factory: Dynamische Erzählung erstellen
+pub fn create_dynamic_narrative(factory: NarrativeFactory, name: String, conditions: List<String>, adapt: Bool) -> Hash256 {
+    let nid = Crypto::sha256(serialize(name, Chain::timestamp()))
+    factory.dynamic_narratives[nid] = DynamicNarrative {
+        id: nid, name: name, trigger_conditions: conditions,
+        branches: {}, active_branch: "", player_history: [], adapt_to_player: adapt,
+    }
+    return nid
+}
+
+// Narrative Factory: Dynamischen Branch setzen
+pub fn set_dynamic_branch(factory: NarrativeFactory, narrative_id: Hash256, condition: String, branch_node: Hash256) -> Bool {
+    require(factory.dynamic_narratives.contains(narrative_id), "Narrative not found")
+    factory.dynamic_narratives[narrative_id].branches[condition] = branch_node
+    return true
+}
+
+// Narrative Factory: Spieler-Historie aktualisieren
+pub fn record_player_choice(factory: NarrativeFactory, narrative_id: Hash256, choice: String) -> Bool {
+    require(factory.dynamic_narratives.contains(narrative_id), "Narrative not found")
+    factory.dynamic_narratives[narrative_id].player_history.append(choice)
+    // Adapt: Branch basierend auf Historie wählen
+    let narrative = factory.dynamic_narratives[narrative_id]
+    if narrative.adapt_to_player {
+        for condition in narrative.trigger_conditions {
+            if narrative.player_history.contains(condition) and narrative.branches.contains(condition) {
+                narrative.active_branch = condition
+                break
+            }
+        }
+    }
+    return true
+}
