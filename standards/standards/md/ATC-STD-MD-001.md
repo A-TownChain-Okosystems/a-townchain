@@ -152,7 +152,7 @@ Datei nicht Code enthält.
 ## 10. Link-Standard (REQ-MD-010)
 
 Interne Dokumente MÜSSEN bevorzugt relativ verlinkt werden
-(`[Architecture](ARCHITECTURE.md)`) — damit bleiben Repositories portabel.
+(`[Architecture](../../../ARCHITECTURE.md)`) — damit bleiben Repositories portabel.
 
 ## 11. Cross-Reference-Standard (REQ-MD-011)
 
