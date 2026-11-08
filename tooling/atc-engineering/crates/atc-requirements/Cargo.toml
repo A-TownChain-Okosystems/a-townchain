@@ -1,0 +1,10 @@
+[package]
+name = "atc-requirements"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+description = "Deterministic target-software requirements discovery and completeness planning"
+
+[dependencies]
