@@ -1,0 +1,14 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: desc
+family: DESC
+family_id: PREFIX
+file: standards/desc/ATC-STD-DESC-001.md
+mandate: Owner-Entwurf 07.09. 21:42 — Pflichtstruktur, Metadatenmodell, Lifecycle-Mapping,
+  Quality Gates für alle ATC-Standards; SCR-0008; §9-Freigabe 07.09. 21:57 Sammelfreigabe,
+  APPROVED
+registry_version: 1
+standard_id: ATC-STD-DESC-001
+status: approved
+title: Standard Description Standard — Standard zur Beschreibung von Standards
+version: 1.0.0
