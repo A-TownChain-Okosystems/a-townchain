@@ -1,0 +1,218 @@
+# Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+name: KAI-OS Wiki Sync
+
+on:
+  # Manuell auslösbar (für sofortigen Sync)
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'Commit-Nachricht (optional)'
+        required: false
+        default: 'docs: KAI-OS Wiki automatisch synchronisiert'
+
+  # Täglich um 08:00 UTC als Backup-Sync
+  schedule:
+    - cron: '0 8 * * *'
+
+  # Bei Push auf main — wenn Wiki-Dateien geändert wurden
+  push:
+    branches: [main]
+    paths:
+      - 'docs/kai-os-wiki.md'
+      - 'docs/README.md'
+
+jobs:
+  sync-wiki:
+    name: Wiki Konsistenz-Check & Badge-Update
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 📥 Repository auschecken
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # für diff
+
+      - name: 🐍 Python Setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📊 Wiki-Statistiken ermitteln
+        id: wiki_stats
+        run: |
+          WIKI_FILE="docs/kai-os-wiki.md"
+          if [ ! -f "$WIKI_FILE" ]; then
+            echo "⚠️ Wiki-Datei nicht gefunden: $WIKI_FILE"
+            exit 1
+          fi
+          LINES=$(wc -l < "$WIKI_FILE")
+          CHAPTERS=$(grep -c '^# [0-9]' "$WIKI_FILE" || true)
+          SPRINTS=$(grep -c '^### Sprint' "$WIKI_FILE" || true)
+          L11_REFS=$(grep -c 'L11' "$WIKI_FILE" || true)
+          L12_REFS=$(grep -c 'L12' "$WIKI_FILE" || true)
+          VERSION=$(grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+-[a-z]*' "$WIKI_FILE" | head -1 || echo "v1.2.0-alpha")
+          echo "lines=$LINES"         >> $GITHUB_OUTPUT
+          echo "chapters=$CHAPTERS"   >> $GITHUB_OUTPUT
+          echo "sprints=$SPRINTS"     >> $GITHUB_OUTPUT
+          echo "l11_refs=$L11_REFS"   >> $GITHUB_OUTPUT
+          echo "l12_refs=$L12_REFS"   >> $GITHUB_OUTPUT
+          echo "version=$VERSION"     >> $GITHUB_OUTPUT
+          echo ""
+          echo "📋 Wiki-Stats:"
+          echo "   Version:  $VERSION"
+          echo "   Zeilen:   $LINES"
+          echo "   Kapitel:  $CHAPTERS"
+          echo "   Sprints:  $SPRINTS"
+          echo "   L11-Refs: $L11_REFS"
+          echo "   L12-Refs: $L12_REFS"
+
+      - name: 🔍 Layer-Vollständigkeit prüfen
+        run: |
+          python3 << 'PYEOF'
+          import re, sys
+          with open("docs/kai-os-wiki.md") as f:
+              content = f.read()
+          errors = []
+          # Alle 13 Layer müssen vorhanden sein
+          for i in range(13):
+              if not re.search(rf'nft://kai-os/layer/{i}/', content):
+                  errors.append(f"L{i}: KEINE NFT-URI gefunden")
+          # Pflicht-Kapitel
+          required = ["# 24.", "# 25.", "# 26.", "# 27."]
+          for kap in required:
+              if kap not in content:
+                  errors.append(f"Kapitel {kap} fehlt!")
+          # Security S1-S6 verlinkt?
+          for s in range(1, 7):
+              if f"Security Layer S{s}" not in content:
+                  errors.append(f"Security-Domäne S{s} nicht referenziert")
+          if errors:
+              print("❌ Konsistenz-Fehler:")
+              for e in errors:
+                  print(f"   • {e}")
+              sys.exit(1)
+          else:
+              print(f"✅ Konsistenz-Check bestanden: L0–L12 vollständig, Kap. 24–27 vorhanden, S1–S6 verlinkt")
+          PYEOF
+
+      - name: 📝 WIKI_STATUS.md aktualisieren
+        run: |
+          VERSION="${{ steps.wiki_stats.outputs.version }}"
+          LINES="${{ steps.wiki_stats.outputs.lines }}"
+          CHAPTERS="${{ steps.wiki_stats.outputs.chapters }}"
+          SPRINTS="${{ steps.wiki_stats.outputs.sprints }}"
+          DATE=$(date -u '+%Y-%m-%d %H:%M UTC')
+          cat > docs/WIKI_STATUS.md << EOF
+          # KAI-OS Wiki — Status
+
+          ![Version](https://img.shields.io/badge/version-${VERSION}-blue)
+          ![Zeilen](https://img.shields.io/badge/Zeilen-${LINES}-green)
+          ![Kapitel](https://img.shields.io/badge/Kapitel-${CHAPTERS}-orange)
+          ![Sprints](https://img.shields.io/badge/Sprints-${SPRINTS}/26-purple)
+          ![Layer](https://img.shields.io/badge/Layer-L0–L12-red)
+
+          ## Letzter Sync
+          **${DATE}**
+
+          ## Aktuelle Statistiken
+          | Kennzahl | Wert |
+          |---|---|
+          | Version | \`${VERSION}\` |
+          | Zeilen | ${LINES} |
+          | Kapitel | ${CHAPTERS} |
+          | Sprints | ${SPRINTS}/26 |
+          | L11-Refs | ${{ steps.wiki_stats.outputs.l11_refs }} |
+          | L12-Refs | ${{ steps.wiki_stats.outputs.l12_refs }} |
+          | Layer | L0–L12 (13 Layer) ✅ |
+          | Security | S1–S6 (6 Domänen) ✅ |
+
+          ## Layer-Übersicht
+          | Layer | Name | Status |
+          |---|---|---|
+          | L0 | Security | ✅ Kapitel 25 |
+          | L1 | Hardware | ✅ Kapitel 24 |
+          | L2 | Micro-Kernel | ✅ Kapitel 24 |
+          | L3 | KI-Modul | ✅ Kapitel 24 |
+          | L4 | Blockchain | ✅ Kapitel 4 |
+          | L5 | P2P | ✅ Kapitel 2 |
+          | L6 | Storage | ✅ Kapitel 2 |
+          | L7 | API & CLI | ✅ Kapitel 8 |
+          | L8 | Governance | ✅ Kapitel 19 |
+          | L9 | Agent | ✅ Kapitel 10 |
+          | L10 | dApp | ✅ Kapitel 5 |
+          | L11 | DeFi | ✅ Kapitel 26 |
+          | L12 | Gamification | ✅ Kapitel 27 |
+
+          ---
+          *Automatisch generiert von [KAI-OS Wiki Sync](.github/workflows/wiki-sync.yml)*
+          EOF
+          echo "✅ WIKI_STATUS.md aktualisiert"
+
+      - name: 🔗 Blockchain-Migrations-Mapping aktualisieren
+        run: |
+          cat > docs/MIGRATION_MAP.md << 'EOF'
+          # Blockchain/ → KAI-OS Wiki: Migrations-Mapping
+
+          > Automatisch generiert — zeigt welche Repo-Komponenten in welchen Wiki-Layer migrieren.
+
+          ## Migrations-Fahrplan
+
+          | Repo-Datei | Wiki-Ziel | Sprint | Status |
+          |---|---|---|---|
+          | `blockchain/consensus/` (Python PoW/PoS/PoH) | L4 Substrate GRANDPA/BABE (Rust) | Sprint 2.1 | 🔴 Geplant |
+          | `blockchain/contracts/` (Python ATC-8300/9000) | L11 Ink!-Contracts + L12 SoulBound | Sprint 2.5 | 🔴 Geplant |
+          | `blockchain/wallet/ecdsa.py` (secp256k1) | L0/S1 kai-crypto: Ed25519 + SR25519 | K-Sec 1 | 🔴 Geplant |
+          | `core/crypto/__init__.py` (leer) | L0/S1 Kyber-1024, BLS12-381, BLAKE2b | K-Sec 1 | 🔴 Geplant |
+          | `blockchain/nodes/` (Python P2P) | L5 libp2p: GossipSub, DHT, mDNS | Sprint 2.2 | 🔴 Geplant |
+          | `core/kernel.py` (Python EventBus) | L2 Rust Micro-Kernel (IPC, EDF) | Sprint 2.3 | 🔴 Geplant |
+          | `blockchain/contracts/shivamon/` | L12 SoulBoundNFT.ink + QuestEngine | Sprint 3.7 | 🔴 Geplant |
+
+          ## Alignment-Analyse
+
+          | Bereich | Alignment | Notiz |
+          |---|---|---|
+          | Konsensus (PoW/PoS/PoH) | ✅ Konzept | Python → Rust/Substrate |
+          | Smart Contracts (ATC-8300) | ✅ Konzept | Python → Ink!/WASM |
+          | Nodes (Full/Light/Validator) | ✅ Stark | Direkt zu L4/L5 |
+          | Wallet (ECDSA secp256k1) | ⚠️ Teilweise | secp256k1 → Ed25519 |
+          | Shivamon NFT | ✅ Sehr stark | Direkt zu L12 Soul-Bound |
+          | core/crypto/ | ❌ Leer | K-Sec 1 füllt dies |
+          | DeFi (AMM/Lending) | ❌ Neu | L11 komplett neu |
+
+          ---
+          *Letzte Aktualisierung: automatisch via GitHub Actions*
+          EOF
+          echo "✅ MIGRATION_MAP.md erstellt"
+
+      - name: 💾 Änderungen committen
+        run: |
+          git config user.name  "KAI-OS Wiki Bot"
+          git config user.email "wiki-bot@kai-os.dev"
+          git add docs/WIKI_STATUS.md docs/MIGRATION_MAP.md
+          # Nur committen wenn es Änderungen gibt
+          if git diff --staged --quiet; then
+            echo "✅ Keine Änderungen — kein Commit nötig"
+          else
+            MSG="${{ github.event.inputs.message }}"
+            if [ -z "$MSG" ]; then
+              MSG="docs(auto): Wiki-Status + Migrations-Map aktualisiert [$(date -u '+%Y-%m-%d')]"
+            fi
+            git commit -m "$MSG"
+            git push
+            echo "✅ Commit erfolgreich gepusht"
+          fi
+
+      - name: 📣 Zusammenfassung
+        run: |
+          echo "## ✅ KAI-OS Wiki Sync abgeschlossen" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Kennzahl | Wert |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | \`${{ steps.wiki_stats.outputs.version }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Zeilen | ${{ steps.wiki_stats.outputs.lines }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Kapitel | ${{ steps.wiki_stats.outputs.chapters }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Sprints | ${{ steps.wiki_stats.outputs.sprints }}/26 |" >> $GITHUB_STEP_SUMMARY
+          echo "| Layer | L0–L12 ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security | S1–S6 ✅ |" >> $GITHUB_STEP_SUMMARY
