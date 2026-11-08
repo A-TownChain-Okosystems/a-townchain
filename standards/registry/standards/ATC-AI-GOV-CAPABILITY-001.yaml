@@ -1,0 +1,14 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: ai-gov
+family: LEGACY-SERIES
+family_id: LEGACY
+file: standards/ai-gov/ATC-AI-GOV-CAPABILITY-001.md
+mandate: Owner-Entwurf 09.09.; 4 REQ-AGOV-CAP; SSOT ai/capabilities.yaml + agent.schema.yaml;
+  SCR-0062
+registry_version: 1
+standard_id: ATC-AI-GOV-CAPABILITY-001
+status: approved
+title: ATC Agent Governance — Capability & Authorization Model (explizite Berechtigungen,
+  Autorisierungskette, Owner-Gates fuer P0-Capabilities, Entzug/Suspendierung)
+version: 1.0.0
