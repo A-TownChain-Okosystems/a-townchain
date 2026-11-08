@@ -5,7 +5,7 @@
 Linux-gehostetes **Software-Tooling** rund um den ShivaCore-Kernel. Dies ist
 **KEIN Kernel-Code** und **KEINE Architektur-Aenderung** -- der Kernel selbst
 bleibt ausschliesslich bare-metal Rust no_std in
-[atc-shivacore](../a-townchain-os/src/modules/atc-shivacore).
+[atc-shivacore](../..).
 
 ## Wichtige Abgrenzung (Standing Instruction)
 
