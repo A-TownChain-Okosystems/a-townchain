@@ -40,6 +40,8 @@ pub struct Project {
     pub enums: BTreeMap<String, Vec<String>>,
     /// Importierte Namen (letztes Segment eines `use`-Pfads).
     pub imports: BTreeMap<String, Vec<String>>,
+    /// Top-Level-Funktionen (nicht in einem Vertrag) mit Quelldatei.
+    pub functions: BTreeMap<String, Vec<String>>,
     /// Dateien ohne parsebare Quelle.
     pub broken: Vec<(String, String)>,
     /// Top-Level-Items je Datei (fuer die Typnamens-Pruefung).
@@ -80,6 +82,13 @@ pub fn build(files: &[(String, Program)]) -> Project {
                         .or_default()
                         .push(path.clone());
                 }
+                Stmt::Fn(f) => {
+                    project
+                        .functions
+                        .entry(f.name.clone())
+                        .or_default()
+                        .push(path.clone());
+                }
                 Stmt::Use { path: use_path } => {
                     if let Some(last) = use_path.split("::").last() {
                         let last = last.trim();
@@ -104,8 +113,23 @@ const CANONICAL_TYPES: &[&str] = &[
     "Address", "Hash", "Bytes", "Signature", "PublicKey", "Timestamp", "Amount", "TokenId",
 ];
 
+/// Kanonische Host-Funktionen (Krypto, Umgebung). Sie werden nicht in ATCLang
+/// deklariert, sondern von der Runtime bereitgestellt; ein Import ist zulaessig.
+const CANONICAL_FUNCS: &[&str] = &[
+    "sha256", "keccak256", "blake2b", "msg_sender", "now", "self_address", "balance_of",
+    "ed25519_verify", "secp256k1_verify", "verify_signature", "hash_concat",
+];
+
 impl Project {
-    /// Ist der Typname projektweit bekannt?
+    /// Ist der Typname projektweit deklariert (ohne Importe)?
+    fn declared_type(&self, name: &str) -> bool {
+        CANONICAL_TYPES.contains(&name)
+            || self.structs.contains_key(name)
+            || self.enums.contains_key(name)
+            || self.contracts.contains_key(name)
+    }
+
+    /// Ist der Typname projektweit bekannt (deklariert oder importiert)?
     pub fn type_known(&self, name: &str) -> bool {
         let ty = ty_from_hint(&crate::ast::TypeHint {
             name: name.to_string(),
@@ -113,11 +137,16 @@ impl Project {
         if !matches!(ty, Ty::Named(_)) {
             return true; // Builtin, Liste, Map, Tupel
         }
-        CANONICAL_TYPES.contains(&name)
-            || self.structs.contains_key(name)
-            || self.enums.contains_key(name)
-            || self.imports.contains_key(name)
-            || self.contracts.contains_key(name)
+        self.declared_type(name) || self.imports.contains_key(name)
+    }
+
+    /// Ist ein importierbares Symbol bekannt (Typ, Top-Level-Funktion, Builtin)?
+    pub fn symbol_known(&self, name: &str) -> bool {
+        // Importe zaehlen hier bewusst nicht: sonst wuerde ein Tippfehler im
+        // `use`-Pfad sich selbst als bekannt bestaetigen.
+        self.functions.contains_key(name)
+            || CANONICAL_FUNCS.contains(&name)
+            || self.declared_type(name)
     }
 
     /// Projektweite Befunde.
@@ -169,9 +198,63 @@ impl Project {
             ));
         }
 
+        // 4. Importe muessen auf ein bekanntes Symbol zeigen.
+        for (path, items) in &self.items {
+            for stmt in items {
+                if let Stmt::Use { path: use_path } = stmt {
+                    let symbol = use_path.split("::").last().unwrap_or("").trim();
+                    if symbol.is_empty() {
+                        report.warnings.push(format!("{path}: leerer use-Pfad '{use_path}'"));
+                        continue;
+                    }
+                    let namespace = use_path
+                        .rsplit_once("::")
+                        .map(|(ns, _)| ns)
+                        .unwrap_or("");
+                    // ATCLang hat genau eine Wurzel-Namespace: ATC.
+                    if !namespace.is_empty() && namespace.split("::").next() != Some("ATC") {
+                        report.warnings.push(format!(
+                            "{path}: use {use_path}: Wurzel-Namespace muss 'ATC' sein"
+                        ));
+                    }
+                    if !self.symbol_known(symbol) {
+                        report.warnings.push(format!(
+                            "{path}: use {use_path}: Symbol '{symbol}' ist weder deklariert noch kanonisches Builtin (Namespace '{namespace}' wird nicht aufgeloest)"
+                        ));
+                        continue;
+                    }
+                    // Import, der eine lokale Deklaration derselben Datei verdeckt.
+                    let local = self
+                        .contracts
+                        .get(symbol)
+                        .map(|e| e.iter().any(|x| &x.path == path))
+                        .unwrap_or(false)
+                        || self
+                            .structs
+                            .get(symbol)
+                            .map(|v| v.iter().any(|x| x == path))
+                            .unwrap_or(false)
+                        || self
+                            .enums
+                            .get(symbol)
+                            .map(|v| v.iter().any(|x| x == path))
+                            .unwrap_or(false)
+                        || self
+                            .functions
+                            .get(symbol)
+                            .map(|v| v.iter().any(|x| x == path))
+                            .unwrap_or(false);
+                    if local {
+                        report.warnings.push(format!(
+                            "{path}: use {use_path} importiert '{symbol}', das dieselbe Datei bereits deklariert"
+                        ));
+                    }
+                }
+            }
+        }
+
         report
     }
-
 }
 
 /// Sammelt alle Typnamen, die eine Deklaration referenziert.
@@ -313,6 +396,76 @@ mod tests {
             .collect();
         assert_eq!(hits.len(), 1, "{:?}", r.warnings);
         assert!(hits[0].contains("3x"), "{:?}", hits);
+    }
+
+    #[test]
+    fn unbekanntes_importsymbol_wird_gemeldet() {
+        let project = index(&[(
+            "a.atc",
+            "use ATC::Types::Adress\ncontract T { state a: Adress }",
+        )]);
+        let r = project.check();
+        assert!(
+            r.warnings.iter().any(|w| w.contains("Symbol 'Adress'")),
+            "{:?}",
+            r.warnings
+        );
+    }
+
+    #[test]
+    fn fremde_wurzel_namespace_wird_gemeldet() {
+        let project = index(&[(
+            "a.atc",
+            "use EVM::Types::Address\ncontract T { state a: Address }",
+        )]);
+        let r = project.check();
+        assert!(
+            r.warnings.iter().any(|w| w.contains("Wurzel-Namespace")),
+            "{:?}",
+            r.warnings
+        );
+    }
+
+    #[test]
+    fn kanonische_importe_loesen_auf() {
+        let project = index(&[(
+            "a.atc",
+            "use ATC::Types::Address\nuse ATC::Crypto::sha256\ncontract T { state a: Address }",
+        )]);
+        let r = project.check();
+        assert!(
+            !r.warnings.iter().any(|w| w.contains("Symbol '")),
+            "{:?}",
+            r.warnings
+        );
+    }
+
+    #[test]
+    fn import_aus_anderer_datei_loest_auf() {
+        let project = index(&[
+            ("types.atc", "struct Verdict { ok: bool }"),
+            ("a.atc", "use ATC::Types::Verdict\ncontract T { fn f(v: Verdict) -> bool { return v.ok; } }"),
+        ]);
+        let r = project.check();
+        assert!(
+            !r.warnings.iter().any(|w| w.contains("Symbol '")),
+            "{:?}",
+            r.warnings
+        );
+    }
+
+    #[test]
+    fn import_der_eigene_deklaration_verdeckt_wird_gemeldet() {
+        let project = index(&[(
+            "a.atc",
+            "use ATC::Types::Address\nstruct Address { raw: u64 }",
+        )]);
+        let r = project.check();
+        assert!(
+            r.warnings.iter().any(|w| w.contains("bereits deklariert")),
+            "{:?}",
+            r.warnings
+        );
     }
 
     #[test]
