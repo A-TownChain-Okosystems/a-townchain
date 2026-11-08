@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-238",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #238: test(atc-node): avoid sampled-height race in multi-node E2E",
+  "context": "Pull request 238 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/238",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\n\n- Replace sequential sampled-height equality assertions with a comparison of the nodes' common finalized block ID.\n- Apply the same invariant after node recovery, where exact current heights are also sampled at different times.\n- Preserve the consensus safety assertion: nodes must agree on the block ID at their shared finalized height.\n\n## Exact-head verification — 2026-10-29\n\n- PR head: `b45dbb08f56f65be2d6e368b1a25c4c4115f90d0`.\n- [Blockchain Core Integration run #40561244832](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/40561244832): successful on this PR head.\n- The `atc-node` job `122390540960` passed; its log shows `persistent_two_node_consensus_path ... ok` (1 passed, 0 failed).\n- The same job also passed the related multi-node consensus, devnet, wallet/node process E2E tests and Clippy with `-D warnings`.\n- The exact-head workflow set returned success for Ecosystem Release Readiness, Repository Governance, Ecosystem Integration, ATC Test Suite, Determinism Gate, Security Assurance Pipeline, L1 Network E2E, Blockchain Core Integration, and CodeQL.\n\n## Verification boundary\n\nThis verifies the test patch on the exact PR head; it does not independently certify production consensus or release readiness. No production consensus code changed. Keep release authorization separate from CI status."
+}
