@@ -1,0 +1,98 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// A-TownChain Smart Contract Registry
+// Zentrales Contract-Management für alle deployed Contracts
+// Sprint 2.3 — Migrated from Python stub to ATCLang
+// ════════════════════════════════════════════════════════════════
+
+struct DeployLog {
+    address:   Address,
+    name:      String,
+    deployer:  Address,
+    timestamp: u64
+}
+
+struct ContractInfo {
+    address:   Address,
+    name:      String,
+    deployed:  u64,
+    active:    bool
+}
+
+contract ContractRegistry {
+
+    state contracts: Map<Address, ContractInfo>
+    state deploy_log: List<DeployLog>
+    state contract_count: u128
+    state owner: Address
+
+    event ContractDeployed(address: Address, name: String, deployer: Address)
+    event ContractActivated(address: Address)
+    event ContractDeactivated(address: Address)
+
+    fn init() {
+        self.contract_count = 0
+        self.owner = msg_sender()
+    }
+
+    // ── Contract deployen ─────────────────────────────
+    fn deploy(addr: Address, name: String) -> DeployLog {
+        let entry = ContractInfo {
+            address:  addr,
+            name:     name,
+            deployed: block_timestamp(),
+            active:   true
+        }
+        self.contracts[addr] = entry
+        self.contract_count += 1
+
+        let log = DeployLog {
+            address:   addr,
+            name:      name,
+            deployer:  msg_sender(),
+            timestamp: block_timestamp()
+        }
+        self.deploy_log.push(log)
+
+        emit ContractDeployed(addr, name, msg_sender())
+        return log
+    }
+
+    // ── Contract abrufen ──────────────────────────────
+    fn get(addr: Address) -> ContractInfo {
+        require(exists(self.contracts, addr), "Registry: Contract not found")
+        return self.contracts[addr]
+    }
+
+    // ── Contract aktivieren/deaktivieren ──────────────
+    fn activate(addr: Address) -> bool {
+        let info = self.contracts[addr]
+        info.active = true
+        self.contracts[addr] = info
+        emit ContractActivated(addr)
+        return true
+    }
+
+    fn deactivate(addr: Address) -> bool {
+        require(msg_sender() == self.owner, "Registry: Nur Owner")
+        let info = self.contracts[addr]
+        info.active = false
+        self.contracts[addr] = info
+        emit ContractDeactivated(addr)
+        return true
+    }
+
+    // ── Anzahl ────────────────────────────────────────
+    fn count() -> u128 {
+        return self.contract_count
+    }
+
+    // ── Alle Contracts ────────────────────────────────
+    fn list_all() -> List<ContractInfo> {
+        let result: List<ContractInfo> = []
+        for entry in self.contracts {
+            result.push(entry)
+        }
+        return result
+    }
+}
