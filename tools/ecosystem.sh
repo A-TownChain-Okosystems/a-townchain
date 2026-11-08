@@ -38,6 +38,16 @@ cleanup() {
 trap cleanup EXIT
 
 ok()   { printf '  \033[32m✓\033[0m %s\n' "$1"; }
+
+# Zeilen-RPC über bash-TCP (kein netcat nötig)
+rpc_line() {
+  local hostport="$1" cmd="$2"
+  exec 9<>"/dev/tcp/${hostport%:*}/${hostport#*:}" 2>/dev/null || { echo ""; return 1; }
+  printf '%s\n' "$cmd" >&9
+  local antwort; IFS= read -r -t 5 antwort <&9
+  exec 9<&-
+  printf '%s' "$antwort"
+}
 bad()  { printf '  \033[31m✗\033[0m %s\n' "$1"; FAIL=1; }
 info() { printf '  · %s\n' "$1"; }
 
@@ -193,6 +203,20 @@ PY
   [ -n "$bh" ] && [ "$bh" != "RPC error" ] && ok "Boot-Hash über RPC: ${bh:0:24}…" || bad "Boot-Hash nicht lesbar: $bh"
   local peers; peers=$("$BIN/atc_cli" --addr "$addr" peers 2>&1)
   [ "$peers" = "2" ] && ok "Peer-Tabelle über RPC: $peers" || bad "Peers unerwartet: $peers"
+
+  # Konsens-Schicht (SCR-0117): Runden finalisieren und Höhe wächst
+  local h0; h0=$(rpc_line "$addr" HEIGHT)
+  sleep 5
+  local h1; h1=$(rpc_line "$addr" HEIGHT)
+  if [[ "$h1" =~ ^[0-9]+$ ]] && [ "$h1" -gt "${h0:-0}" ]; then
+    ok "Konsens finalisiert Blöcke (Höhe ${h1:-?})"
+  else
+    bad "Kein Konsens-Fortschritt (Höhe ${h0:-?} -> ${h1:-?})"
+  fi
+  local cons; cons=$(rpc_line "$addr" CONSENSUS)
+  [[ "$cons" == *"quorum_power="* ]] && ok "Quorum-Status über RPC: ${cons:0:46}…" || bad "Konsens-Status fehlt: $cons"
+  local chash; chash=$(rpc_line "$addr" BEST_HASH)
+  [ -n "$chash" ] && [ "$chash" != "-" ] && ok "Finaler Block-Hash: ${chash:0:24}…" || bad "Kein finaler Block-Hash"
 
   # Sprach- und VM-Schicht
   local prog="ai/atclang/crates/atc-core/differential/corpus/arith_precedence.atc"
