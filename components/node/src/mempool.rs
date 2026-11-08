@@ -124,6 +124,109 @@ impl Mempool {
     }
 }
 
+
+/// Kettenweites Ledger fuer Transaktions-Nonces und Replay-Schutz.
+///
+/// SEC-P0-001: Blockproduktion und Block-Import pruefen jede Transaktion
+/// (Signatur, DID-Bindung, Chain-ID) und die Nonce-Ordnung, bevor ein Block
+/// angehaengt wird. Die Pruefung veraendert keinen Zustand; erst `commit_block`
+/// uebernimmt die Transaktionen nach erfolgreichem Anhang.
+#[derive(Debug, Clone, Default)]
+pub struct TxLedger {
+    expected_nonce: HashMap<String, u64>,
+    seen_ids: HashSet<[u8; 32]>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LedgerError {
+    EmptyBlock,
+    InvalidChainId,
+    InvalidSignature,
+    SenderNotBound,
+    DuplicateTransaction,
+    NonceGap { expected: u64 },
+    NonceTooLow { expected: u64 },
+}
+
+impl TxLedger {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn expected_nonce(&self, sender: &str) -> Option<u64> {
+        self.expected_nonce.get(sender).copied()
+    }
+
+    pub fn contains(&self, id: &[u8; 32]) -> bool {
+        self.seen_ids.contains(id)
+    }
+
+    /// Prueft eine vollstaendige Tx-Folge gegen den Ledger-Zustand.
+    /// Rein lesend: bei Fehler bleibt der Ledger unveraendert.
+    pub fn check_block(&self, txs: &[TxEnvelope]) -> Result<Vec<[u8; 32]>, LedgerError> {
+        if txs.is_empty() {
+            return Err(LedgerError::EmptyBlock);
+        }
+        let mut nonces = self.expected_nonce.clone();
+        let mut ids = self.seen_ids.clone();
+        let mut out = Vec::with_capacity(txs.len());
+
+        for env in txs {
+            let id = env.tx.id().map_err(|_| LedgerError::InvalidChainId)?;
+            if ids.contains(&id) {
+                return Err(LedgerError::DuplicateTransaction);
+            }
+            verify_envelope(env).map_err(|e| match e {
+                MempoolError::SenderNotBound => LedgerError::SenderNotBound,
+                MempoolError::InvalidChainId => LedgerError::InvalidChainId,
+                _ => LedgerError::InvalidSignature,
+            })?;
+            let expected = *nonces.get(&env.tx.sender_did).unwrap_or(&env.tx.nonce);
+            if env.tx.nonce < expected {
+                return Err(LedgerError::NonceTooLow { expected });
+            }
+            if env.tx.nonce > expected {
+                return Err(LedgerError::NonceGap { expected });
+            }
+            nonces.insert(env.tx.sender_did.clone(), expected.saturating_add(1));
+            ids.insert(id);
+            out.push(id);
+        }
+        Ok(out)
+    }
+
+    /// Uebernimmt die Transaktionen eines angehaengten Blocks.
+    pub fn commit_block(&mut self, txs: &[TxEnvelope]) -> Result<Vec<[u8; 32]>, LedgerError> {
+        let ids = self.check_block(txs)?;
+        for env in txs {
+            let expected = *self.expected_nonce.get(&env.tx.sender_did).unwrap_or(&env.tx.nonce);
+            self.expected_nonce
+                .insert(env.tx.sender_did.clone(), expected.saturating_add(1));
+        }
+        for id in &ids {
+            self.seen_ids.insert(*id);
+        }
+        Ok(ids)
+    }
+
+    /// Nach externem Block-Import: Nonce-Zaehler eines Senders nachziehen.
+    pub fn advance_nonce(&mut self, sender: &str, next_nonce: u64) {
+        self.expected_nonce.insert(sender.to_string(), next_nonce);
+    }
+}
+
+/// Gemeinsame Transaktions-Pruefung fuer Mempool und Ledger:
+/// Signatur und DID-Bindung ueber die kanonische secp256k1-Transaktion.
+pub fn verify_envelope(env: &TxEnvelope) -> Result<(), MempoolError> {
+    env.tx
+        .verify_bound(&env.public_key, &env.signature)
+        .map_err(|e| match e {
+            atc_wallet::tx::TxError::SenderNotBound => MempoolError::SenderNotBound,
+            atc_wallet::tx::TxError::InvalidChainId => MempoolError::InvalidChainId,
+            _ => MempoolError::InvalidSignature,
+        })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
