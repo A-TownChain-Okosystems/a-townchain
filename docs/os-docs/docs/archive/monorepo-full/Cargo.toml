@@ -1,0 +1,55 @@
+# Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+#
+# A-TownChain-OS — Unified Cargo Workspace (Laufzeit-Verschmelzung, 04.09.2026)
+#
+# EIN Build-System für alle Rust-Crates des Monorepos (vorher: 21 getrennte
+# Builds ohne Workspace — die Module waren Build-Inseln).
+#
+# Kern-Crate: src/modules/atc-shivacore/kernel (ShivaCore Rust-Kernel, K29,
+# 674/674 Tests, Chain-ID 658467) — benötigt Rust NIGHTLY (#![feature]),
+# empfohlen: nightly-2026-08-04 (siehe kernel/rust-toolchain-Hinweis).
+# Alle anderen Crates: Stable-kompatibel.
+#
+# Gemischte Module (Python/TS-Anteile) leben parallel: atc-blockchain
+# (setup.py + package.json), atc-vm (Python) u.a. — Cargo deckt nur den
+# Rust-Anteil ab.
+
+[workspace]
+resolver = "2"
+members = [
+    "src/modules/atc-assets",
+    "src/modules/atc-aurora-agents",
+    "src/modules/atc-aurora-core",
+    "src/modules/atc-aurora-memory",
+    "src/modules/atc-bootloader",
+    "src/modules/atc-bridge",
+    "src/modules/atc-cli",
+    "src/modules/atc-dns",
+    "src/modules/atc-drivers",
+    "src/modules/atc-game",
+    "src/modules/atc-globus-shell",
+    "src/modules/atc-governance",
+    "src/modules/atc-linux-edition",
+    "src/modules/atc-security",
+    "src/modules/atc-shivacore/kernel",
+    "src/modules/atc-stdlib",
+    "src/modules/atc-wallet",
+    "src/modules/atc-windows-edition",
+    "src/modules/atc-zkp",
+]
+exclude = [
+    # Legacy-Parallel-Kernel (superseded durch ShivaCore K29): Code referenziert
+    # eine aeltere Modulstruktur und ist nicht buildfaehig — bleibt als Referenz.
+    "src/modules/atc-kernel",
+    # blockchain.rs ist identisches Duplikat des getesteten K29-Kernel-Moduls
+    # (src/modules/atc-shivacore/kernel/src/blockchain.rs) und referenziert
+    # Kernel-interne Module — Legacy-Kopie, kein eigener Build.
+    "src/modules/atc-blockchain/kernel",
+]
+
+# Kernel separat bauen (Nightly): cargo +nightly-2026-08-04 test -p shivacore
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+authors = ["Michael Wroblewski / ShivaCore / A-TownChain-Okosystems"]
+license = "All Rights Reserved"
