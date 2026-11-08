@@ -1,0 +1,95 @@
+{
+  "_comment": "A-TownChain OS Mainnet Genesis v3.2.1 \u2014 generiert 2026-06-14",
+  "chain_id": 9000,
+  "chain_name": "A-TownChain Mainnet",
+  "genesis_time": "2026-06-14T12:12:41Z",
+  "version": "3.2.1",
+  "status": "GENESIS_READY",
+  "consensus": "hybrid-pow-pos",
+  "block_time_ms": 6000,
+  "gas_limit": 10000000,
+  "difficulty": 1000,
+  "token": {
+    "symbol": "ATC",
+    "decimals": 8,
+    "total_supply": 2100000000000000,
+    "total_supply_human": "21,000,000 ATC"
+  },
+  "genesis_wallet": {
+    "address": "ATCf9327118a7dfb30f72ba6aa82e1186078c42232884",
+    "public_key": "44c87e482de99b8b622afea4e8469a6eeba0407dc72cc97d156ac92109606a26",
+    "created_at": "2026-06-14T12:12:41Z",
+    "NOTE": "Private Key in PRIVATE_KEYS.txt \u2014 NIEMALS committen!"
+  },
+  "initial_distribution": {
+    "genesis_wallet": 2100000000000000,
+    "founder": 315000000000000,
+    "team": 210000000000000,
+    "community_reserve": 1050000000000000,
+    "validator_rewards": 210000000000000,
+    "reserve_pool": 315000000000000,
+    "_note": "1 ATC = 100,000,000 atoms"
+  },
+  "validators": [
+    {
+      "index": 0,
+      "address": "ATC6831e22d0ea67250bca887fbad133bb1fe254a582f",
+      "node_id": "334753d0b0a0ddacef3f03018e6d21c2",
+      "public_key": "56a8cc77cb0820b31557fc7250b2248aa6c06f94c0b8e9b59ac58c36ab7ea02f"
+    },
+    {
+      "index": 1,
+      "address": "ATCc53eb191b010ee991ffe363a15676a4c80dd200371",
+      "node_id": "b162ee498fff23e38bb7f58dac029ca8",
+      "public_key": "dee5b06c3e0af1e5c456813d038b9eb95995fb0f27b6640538c815153e1d2fcd"
+    },
+    {
+      "index": 2,
+      "address": "ATC8b432a4514ad7f9f196084b776cd67d1d258bf5d1b",
+      "node_id": "2078096d4169c94eb45e813a312e1ba2",
+      "public_key": "633dce5a2159e8a5c0d32794c6b6cc98a428e6397bbb564f3acded982cad1bcf"
+    },
+    {
+      "index": 3,
+      "address": "ATCcda0d85e8dc023312db92cf2a60f003fb20f9c4b07",
+      "node_id": "8fee65a71c98acc23747093b219d2083",
+      "public_key": "c35ff008db8b421c8383a519cc73209f0b470d0d3b6f1c670879b503b56d1daa"
+    },
+    {
+      "index": 4,
+      "address": "ATCc613387a963a90d78369b296116e9f310b4ef51687",
+      "node_id": "b1196e53fba080f687b44d1c368ae7f4",
+      "public_key": "9d66bf71a6d32f9c2e76c28d2f6ff225df626720c149b36de9ba7718a365ce2d"
+    }
+  ],
+  "tokenomics": {
+    "staking_reward_annual_pct": 8,
+    "block_reward_atc": 2,
+    "gas_base_fee_atc": 0.001,
+    "validator_bond_atc": 10000,
+    "min_stake_atc": 100
+  },
+  "network": {
+    "bootstrap_nodes": [
+      "BOOTSTRAP_IP_PLACEHOLDER:9000"
+    ],
+    "rpc_endpoint": "rpc.atcchain.io:9100",
+    "api_endpoint": "api.atcchain.io:4000",
+    "explorer_endpoint": "explorer.atcchain.io",
+    "p2p_port": 9000,
+    "rpc_port": 9100,
+    "api_port": 4000
+  },
+  "mainnet_checklist": {
+    "genesis_wallet_generated": true,
+    "validators_generated": true,
+    "genesis_json_complete": true,
+    "bootstrap_ip_set": false,
+    "ssl_certs_installed": false,
+    "domain_configured": false,
+    "security_audit_completed": false,
+    "tokenomics_finalized": true,
+    "chain_id_finalized": true,
+    "validator_bonds_funded": false
+  }
+}
