@@ -1,0 +1,46 @@
+name: Docs Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install documentation validators
+        run: python3 -m pip install --disable-pip-version-check pyyaml
+      - name: Validate YAML and Markdown inventory
+        run: |
+          python3 - <<'PY'
+          import glob
+          from pathlib import Path
+          import yaml
+
+          yaml_files = 0
+          for name in glob.glob('**/*.yaml', recursive=True) + glob.glob('**/*.yml', recursive=True):
+              if any(x in name for x in ('archive/', 'repos-rescue/', 'monorepo-full/')):
+                  continue
+              with open(name, encoding='utf-8') as f:
+                  yaml.safe_load(f)
+              yaml_files += 1
+
+          md_files = list(Path('.').rglob('*.md'))
+          assert md_files, 'no Markdown documentation found'
+          for path in md_files:
+              assert path.read_text(encoding='utf-8').strip(), f'empty Markdown file: {path}'
+
+          status = Path('REALITY_STATUS.md')
+          if status.exists():
+              assert len(status.read_text(encoding='utf-8').splitlines()) > 500, 'REALITY_STATUS.md unexpectedly short'
+
+          print(f'Docs Gate PASS: {yaml_files} YAML files and {len(md_files)} Markdown files validated')
+          PY
