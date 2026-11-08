@@ -1,0 +1,13 @@
+[package]
+name = "atc_drivers"
+version = "0.1.0"
+edition = "2021"
+description = "Hardware-Treiber — USB, GPU, Audio, SATA/NVMe, HID, Network"
+authors = ["Michael Wroblewski"]
+license = "Apache-2.0"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+globus-diagnostics = { path = "../../system/diagnostics" }
