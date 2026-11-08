@@ -1,0 +1,6 @@
+lifecycle:
+  stage: production
+  entered: "2026-09-07"
+  history:
+    - {stage: experimental, date: "2026-09-06"}
+    - {stage: production, date: "2026-09-07"}
