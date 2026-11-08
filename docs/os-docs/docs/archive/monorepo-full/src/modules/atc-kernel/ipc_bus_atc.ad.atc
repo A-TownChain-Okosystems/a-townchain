@@ -1,0 +1,266 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-01 — EventBus vs IPCBus: Entscheidung + Implementation
+// Sprint 2.4 — Issue #77
+// Entscheidung: HYBRID — EventBus für In-Process, IPCBus für Cross-Process
+// Begründung: EventBus ist schnell (<0.1ms) für Kernel-Interne Kommunikation,
+//             IPCBus ist nötig für isolierte Prozesse (Sandboxing, Crash-Isolation)
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+// ═══════════════════════════════════════════════════════
+// EventBus — In-Process, synchron, <0.1ms Latenz
+// ═══════════════════════════════════════════════════════
+
+struct EventBus {
+    handlers: Map<String, List<EventHandler>>,
+    history: List<Event>,
+    max_history: UInt16,
+    enabled: Bool,
+}
+
+struct EventHandler {
+    id: Hash256,
+    event_type: String,
+    callback: fn(Event) -> Any,
+    priority: UInt8,
+    active: Bool,
+}
+
+struct Event {
+    type: String,
+    source: String,
+    data: Map<String, Any>,
+    timestamp: UInt64,
+    seq: UInt64,
+}
+
+// EventBus: Subscribe
+pub fn subscribe(bus: EventBus, event_type: String, handler: fn(Event) -> Any, priority: UInt8) -> Hash256 {
+    let handler_id = Crypto::sha256(serialize(event_type, Chain::timestamp(), bus.handlers.len()))
+    let h = EventHandler {
+        id: handler_id,
+        event_type: event_type,
+        callback: handler,
+        priority: priority,
+        active: true,
+    }
+    if not bus.handlers.contains(event_type) {
+        bus.handlers[event_type] = []
+    }
+    bus.handlers[event_type].append(h)
+    // Sort by priority (lower = higher priority)
+    bus.handlers[event_type] = bus.handlers[event_type].sort(fn a, b => a.priority < b.priority)
+    return handler_id
+}
+
+// EventBus: Unsubscribe
+pub fn unsubscribe(bus: EventBus, handler_id: Hash256) -> Bool {
+    for event_type in bus.handlers.keys() {
+        bus.handlers[event_type] = bus.handlers[event_type].filter(fn h => h.id != handler_id)
+    }
+    return true
+}
+
+// EventBus: Publish (synchron, blocking)
+pub fn publish(bus: EventBus, event_type: String, source: String, data: Map<String, Any>) -> Bool {
+    if not bus.enabled {
+        return false
+    }
+    let event = Event {
+        type: event_type,
+        source: source,
+        data: data,
+        timestamp: Chain::timestamp(),
+        seq: bus.history.len(),
+    }
+
+    // History
+    bus.history.append(event)
+    if bus.history.len() > bus.max_history {
+        bus.history.pop(0)
+    }
+
+    // Handlers aufrufen (nach Priorität)
+    if bus.handlers.contains(event_type) {
+        for handler in bus.handlers[event_type] {
+            if handler.active {
+                handler.callback(event)
+            }
+        }
+    }
+    return true
+}
+
+// EventBus: Once (einmaliger Handler)
+pub fn subscribe_once(bus: EventBus, event_type: String, handler: fn(Event) -> Any) -> Hash256 {
+    let wrapper = fn(event: Event) -> Any {
+        let result = handler(event)
+        unsubscribe(bus, get_current_handler_id())
+        return result
+    }
+    return subscribe(bus, event_type, wrapper, 0)
+}
+
+// ═══════════════════════════════════════════════════════
+// IPCBus — Cross-Process, asynchron, Shared Memory / Sockets
+// ═══════════════════════════════════════════════════════
+
+struct IPCBus {
+    channels: Map<String, IPCChannel>,
+    processes: Map<Hash256, IPCProcess>,
+    next_port: UInt16,
+    timeout_ms: UInt32,
+    max_retries: UInt8,
+}
+
+struct IPCChannel {
+    name: String,
+    writer_pid: Hash256,
+    reader_pid: Hash256,
+    queue: List<IPCMessage>,
+    max_queue: UInt32,
+    port: UInt16,
+}
+
+struct IPCProcess {
+    pid: Hash256,
+    name: String,
+    channels: List<String>,
+    alive: Bool,
+    last_heartbeat: UInt64,
+}
+
+struct IPCMessage {
+    id: Hash256,
+    channel: String,
+    from: Hash256,
+    to: Hash256,
+    data: Bytes,
+    timestamp: UInt64,
+    delivered: Bool,
+    ack: Bool,
+}
+
+// IPCBus: Prozess registrieren
+pub fn register_process(bus: IPCBus, name: String) -> Hash256 {
+    let pid = Crypto::sha256(serialize(name, Chain::timestamp(), bus.processes.len()))
+    bus.processes[pid] = IPCProcess {
+        pid: pid,
+        name: name,
+        channels: [],
+        alive: true,
+        last_heartbeat: Chain::timestamp(),
+    }
+    emit ProcessRegistered(pid, name)
+    return pid
+}
+
+// IPCBus: Channel erstellen
+pub fn create_channel(bus: IPCBus, name: String, writer: Hash256, reader: Hash256) -> IPCChannel {
+    let channel = IPCChannel {
+        name: name,
+        writer_pid: writer,
+        reader_pid: reader,
+        queue: [],
+        max_queue: 1000,
+        port: bus.next_port,
+    }
+    bus.channels[name] = channel
+    bus.next_port = bus.next_port + 1
+    if bus.processes.contains(writer) {
+        bus.processes[writer].channels.append(name)
+    }
+    if bus.processes.contains(reader) {
+        bus.processes[reader].channels.append(name)
+    }
+    emit ChannelCreated(name, writer, reader)
+    return channel
+}
+
+// IPCBus: Send (asynchron, non-blocking)
+pub fn ipc_send(bus: IPCBus, channel_name: String, from: Hash256, data: Bytes) -> Hash256 {
+    require(bus.channels.contains(channel_name), "Channel not found")
+    let channel = bus.channels[channel_name]
+    require(from == channel.writer_pid, "Not authorized writer")
+
+    let msg = IPCMessage {
+        id: Crypto::sha256(serialize(channel_name, from, data, Chain::timestamp())),
+        channel: channel_name,
+        from: from,
+        to: channel.reader_pid,
+        data: data,
+        timestamp: Chain::timestamp(),
+        delivered: false,
+        ack: false,
+    }
+
+    if channel.queue.len() >= channel.max_queue {
+        channel.queue.pop(0)  // Drop oldest
+    }
+    channel.queue.append(msg)
+    emit IPCMessageSent(msg.id, channel_name, from)
+    return msg.id
+}
+
+// IPCBus: Recv (asynchron, non-blocking)
+pub fn ipc_recv(bus: IPCBus, channel_name: String, reader: Hash256) -> IPCMessage {
+    require(bus.channels.contains(channel_name), "Channel not found")
+    let channel = bus.channels[channel_name]
+    require(reader == channel.reader_pid, "Not authorized reader")
+
+    if channel.queue.len() == 0 {
+        return nil  // Keine Nachricht
+    }
+
+    let msg = channel.queue.pop(0)
+    msg.delivered = true
+    msg.ack = true
+    emit IPCMessageDelivered(msg.id, channel_name, reader)
+    return msg
+}
+
+// IPCBus: Request-Response Pattern
+pub fn ipc_request(bus: IPCBus, channel: String, from: Hash256, data: Bytes, timeout_ms: UInt32) -> Bytes {
+    let msg_id = ipc_send(bus, channel, from, data)
+
+    let start = Chain::timestamp_ms()
+    while Chain::timestamp_ms() - start < timeout_ms {
+        let response = ipc_recv(bus, channel + ":response", from)
+        if response != nil and response.id == msg_id {
+            return response.data
+        }
+        Chain::sleep(1)
+    }
+    return nil  // Timeout
+}
+
+// IPCBus: Heartbeat
+pub fn heartbeat(bus: IPCBus, pid: Hash256) -> Bool {
+    if not bus.processes.contains(pid) {
+        return false
+    }
+    bus.processes[pid].last_heartbeat = Chain::timestamp()
+    return true
+}
+
+// IPCBus: Dead Processes aufräumen
+pub fn cleanup_dead_processes(bus: IPCBus, timeout_s: UInt32) -> UInt16 {
+    let now = Chain::timestamp()
+    let cleaned = 0
+    for pid in bus.processes.keys() {
+        let p = bus.processes[pid]
+        if now - p.last_heartbeat > timeout_s {
+            p.alive = false
+            cleaned = cleaned + 1
+            emit ProcessDied(pid, p.name)
+        }
+    }
+    return cleaned
+}
+
+event ProcessRegistered(pid: Hash256, name: String)
+event ChannelCreated(name: String, writer: Hash256, reader: Hash256)
+event IPCMessageSent(id: Hash256, channel: String, from: Hash256)
+event IPCMessageDelivered(id: Hash256, channel: String, to: Hash256)
+event ProcessDied(pid: Hash256, name: String)
