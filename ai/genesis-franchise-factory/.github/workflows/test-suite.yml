@@ -1,0 +1,22 @@
+name: ATC Test Suite (GFF Quality Gates)
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - name: Dev-Dependencies
+        run: pip install -e ".[dev]"
+      - name: Spec-Gate (AD-20..43 Vollstaendigkeit + Plattform-Trennung)
+        run: python tools/validate_specs.py
+      - name: Ruff (Lint)
+        run: ruff check gff tests tools
+      - name: Pytest (33 Tests)
+        run: pytest -q
