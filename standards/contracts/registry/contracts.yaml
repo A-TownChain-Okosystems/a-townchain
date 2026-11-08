@@ -1,0 +1,55 @@
+# Contract Registry — ATC-STD-SC-002/019 · SSOT aller Smart Contracts
+# Schema je Eintrag: contract_id, name, category (SC-XXX), repository,
+# version, status, network, chain_id, language, runtime, owner,
+# upgradeable, verified, audited, source_repository, contract_path.
+contracts:
+  - contract_id: ATC-SC-TOKEN-001
+    name: "ATC-001 Genesis Token"
+    category: SC-TOKEN
+    repository: a-townchain-os
+    version: "2.1.0"
+    status: development          # in-repo Implementierung, nicht deployed
+    network: null
+    language: python
+    runtime: atc-vm              # ATC-eigene Runtime (kein EVM)
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain-os
+    contract_path: src/contracts/atc001_genesis.py
+    note: "Genesis-Token-Standard (Owner-Memory: ATC-001); SC-Gate-Status: SC-G0 offen"
+
+  - contract_id: ATC-SC-TOKEN-002
+    name: "ATC-8300 Fungible Token"
+    category: SC-TOKEN
+    repository: a-townchain-os
+    version: "2.1.0"
+    status: development
+    network: null
+    language: python
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain-os
+    contract_path: src/contracts/atc8300_token.py
+    note: "ERC-20-artiger ATC-Token-Standard; SC-Gate-Status: SC-G0 offen"
+
+  - contract_id: ATC-SC-TOKEN-003
+    name: "ATC-9900 Governance/DAO Token"
+    category: SC-GOV
+    repository: a-townchain-os
+    version: "2.1.0"
+    status: development
+    network: null
+    language: python
+    runtime: atc-vm
+    owner: ATC-Governance
+    upgradeable: false
+    verified: false
+    audited: false
+    source_repository: A-TownChain-Okosystems/a-townchain-os
+    contract_path: src/contracts/atc9900_governance.py
+    note: "Governance/DAO-Standard; Verzahnung ATC-STD-SC-014 nach Freigabe"
