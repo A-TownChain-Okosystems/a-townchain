@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-228",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #228: fix(ci): fail closed on missing canonical test entry point",
+  "context": "Pull request 228 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/228",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Scope\n\nAdd a pre-build test-entrypoint gate to the catalog-driven ecosystem build loop.\n\n## Behavior\n\n- For `npm-build`, inspect the checked-out canonical repository's `package.json` before the build job starts.\n- Missing, invalid, or empty `scripts.test` yields explicit `BLOCKED` evidence and prevents the build job from running.\n- A successful preflight records the canonical source SHA; the build job checks out that exact SHA, avoiding a preflight/build revision race.\n- Runs `npm test` before `npm run build` on that same exact source revision.\n- Does not substitute lint or build success for functional tests; no auto-merge or release behavior added.\n\n## Verification — 2026-10-29\n\n- Exact controller PR head: `1c09f5721bb46032a51684c37c13c5f68c872bf8`.\n- Actions run [#40951238814](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/40951238814) completed successfully.\n- Catalog audit and planning passed.\n- Test-entrypoint preflight passed against canonical `atc-ide` main.\n- Canonical source commit: `e078d98a3201b53aa931f9413a8e3000441ee784`.\n- Build job passed; its log records six tests passed, zero failed, and a successful Vite production build.\n- Evidence artifacts: `ecosystem-test-entrypoint-preflight-atc-ide-40951238814` and `ecosystem-build-evidence-atc-ide-40951238814`.\n\nStatus: `CI_VERIFIED` for this exact workflow run and source revision. The PR is open and ready for review; it has not been merged or released."
+}
