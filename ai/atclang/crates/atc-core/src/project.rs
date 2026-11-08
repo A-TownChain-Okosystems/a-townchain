@@ -101,6 +101,30 @@ pub fn build(files: &[(String, Program)]) -> Project {
                         }
                     }
                 }
+                Stmt::UseGroup { names, .. } => {
+                    for name in names {
+                        project
+                            .imports
+                            .entry(name.clone())
+                            .or_default()
+                            .push(path.clone());
+                    }
+                }
+                Stmt::Import { source, alias } => {
+                    // Ein Dateiimport bringt seinen Alias in den Namensraum;
+                    // ohne Alias gilt der Dateistamm ("std/crypto.atc" -> "crypto").
+                    let name = alias.clone().unwrap_or_else(|| {
+                        source
+                            .rsplit('/')
+                            .next()
+                            .unwrap_or(source)
+                            .trim_end_matches(".atc")
+                            .to_string()
+                    });
+                    if !name.is_empty() {
+                        project.imports.entry(name).or_default().push(path.clone());
+                    }
+                }
                 _ => {}
             }
         }
@@ -201,25 +225,47 @@ impl Project {
         // 4. Importe muessen auf ein bekanntes Symbol zeigen.
         for (path, items) in &self.items {
             for stmt in items {
-                if let Stmt::Use { path: use_path } = stmt {
-                    let symbol = use_path.split("::").last().unwrap_or("").trim();
-                    if symbol.is_empty() {
-                        report.warnings.push(format!("{path}: leerer use-Pfad '{use_path}'"));
-                        continue;
+                // Einzel- und Gruppenimport pruefen dieselbe Regel: der Pfad
+                // beginnt bei der Wurzel ATC, und jedes eingefuehrte Symbol
+                // muss deklariert oder kanonisches Builtin sein.
+                let (namespace, symbols, written): (String, Vec<String>, String) = match stmt {
+                    Stmt::Use { path: use_path } => {
+                        let symbol = use_path.split("::").last().unwrap_or("").trim();
+                        if symbol.is_empty() {
+                            let warning = format!("{path}: leerer use-Pfad '{use_path}'");
+                            report.warnings.push(warning);
+                            continue;
+                        }
+                        (
+                            use_path
+                                .rsplit_once("::")
+                                .map(|(ns, _)| ns)
+                                .unwrap_or("")
+                                .to_string(),
+                            vec![symbol.to_string()],
+                            use_path.clone(),
+                        )
                     }
-                    let namespace = use_path
-                        .rsplit_once("::")
-                        .map(|(ns, _)| ns)
-                        .unwrap_or("");
-                    // ATCLang hat genau eine Wurzel-Namespace: ATC.
-                    if !namespace.is_empty() && namespace.split("::").next() != Some("ATC") {
-                        report.warnings.push(format!(
-                            "{path}: use {use_path}: Wurzel-Namespace muss 'ATC' sein"
-                        ));
-                    }
+                    Stmt::UseGroup {
+                        path: group_path,
+                        names,
+                    } => (
+                        group_path.trim().to_string(),
+                        names.clone(),
+                        format!("{group_path}::{{{}}}", names.join(", ")),
+                    ),
+                    _ => continue,
+                };
+                // ATCLang hat genau eine Wurzel-Namespace: ATC.
+                if !namespace.is_empty() && namespace.split("::").next() != Some("ATC") {
+                    report.warnings.push(format!(
+                        "{path}: use {written}: Wurzel-Namespace muss 'ATC' sein"
+                    ));
+                }
+                for symbol in &symbols {
                     if !self.symbol_known(symbol) {
                         report.warnings.push(format!(
-                            "{path}: use {use_path}: Symbol '{symbol}' ist weder deklariert noch kanonisches Builtin (Namespace '{namespace}' wird nicht aufgeloest)"
+                            "{path}: use {written}: Symbol '{symbol}' ist weder deklariert noch kanonisches Builtin (Namespace '{namespace}' wird nicht aufgeloest)"
                         ));
                         continue;
                     }
@@ -246,13 +292,12 @@ impl Project {
                             .unwrap_or(false);
                     if local {
                         report.warnings.push(format!(
-                            "{path}: use {use_path} importiert '{symbol}', das dieselbe Datei bereits deklariert"
+                            "{path}: use {written} importiert '{symbol}', das dieselbe Datei bereits deklariert"
                         ));
                     }
                 }
             }
         }
-
         report
     }
 }
@@ -480,5 +525,45 @@ mod tests {
             "{:?}",
             r.warnings
         );
+    }
+
+    #[test]
+    fn gruppenimport_bringt_jeden_namen_in_den_namensraum() {
+        let project = index(&[
+            ("a.atc", "struct Socket { a: u64 }"),
+            ("b.atc", "use ATC::Net::{Socket}"),
+        ]);
+        assert!(project.imports.contains_key("Socket"));
+        let r = project.check();
+        assert!(
+            !r.warnings.iter().any(|w| w.contains("Socket")),
+            "{:?}",
+            r.warnings
+        );
+    }
+
+    #[test]
+    fn gruppenimport_meldet_fremden_wurzel_namespace() {
+        let project = index(&[("a.atc", "use FOO::Bar::{Socket}")]);
+        let r = project.check();
+        assert!(
+            r.warnings
+                .iter()
+                .any(|w| w.contains("Wurzel-Namespace muss 'ATC' sein")),
+            "{:?}",
+            r.warnings
+        );
+    }
+
+    #[test]
+    fn dateiimport_alias_wird_importname() {
+        let project = index(&[("a.atc", "import \"std/crypto.atc\" as Crypto")]);
+        assert!(project.imports.contains_key("Crypto"));
+    }
+
+    #[test]
+    fn dateiimport_ohne_alias_nutzt_dateistamm() {
+        let project = index(&[("a.atc", "import \"std/crypto.atc\"")]);
+        assert!(project.imports.contains_key("crypto"));
     }
 }
