@@ -1,0 +1,12 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: license
+family: LICENSE
+family_id: PREFIX
+file: standards/license/ATC-STD-LICENSE-006.md
+mandate: Owner-Direktive 08.09. ATC-LICENSE-System (SCR-0037, §9-Freigabe 03:55 UTC+2)
+registry_version: 1
+standard_id: ATC-STD-LICENSE-006
+status: approved
+title: License Compliance Standard
+version: 1.0.0
