@@ -5,9 +5,26 @@ use crate::bootstrap::Genesis;
 use crate::did::DidRegistry;
 use crate::peers::PeerTable;
 use std::io::{BufRead, BufReader, Read, Write};
+use std::sync::{Arc, Mutex};
 use std::net::{TcpListener, TcpStream};
 
 const MAX_RPC_REQUEST_BYTES: usize = 8 * 1024;
+
+/// Laufender Konsens-Zustand (SCR-0117), vom Node-Treiber aktualisiert.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct ConsensusStatus {
+    /// Zuletzt finalisierte Blockhoehe.
+    pub height: u64,
+    /// Anzahl erfolgreicher Runden.
+    pub finalized_rounds: u64,
+    pub validators: usize,
+    /// Benoetigte Voting-Power fuer 2/3-Quorum.
+    pub quorum_power: u64,
+    /// Stimmen der letzten finalisierten Runde.
+    pub last_voters: usize,
+    /// Hash des letzten finalisierten Blocks (hex).
+    pub last_hash: String,
+}
 
 pub struct DevnetRpc {
     pub chain_id: String,
@@ -15,6 +32,8 @@ pub struct DevnetRpc {
     pub peer_count: usize,
     /// DID-Registry (SEC-P0-004) — lesbar ueber `DID <did>`.
     pub registry: DidRegistry,
+    /// Konsens-Status, geteilt mit dem Runden-Treiber.
+    pub consensus: Arc<Mutex<ConsensusStatus>>,
 }
 
 impl DevnetRpc {
@@ -24,7 +43,21 @@ impl DevnetRpc {
             boot_hash: genesis.boot_hash(),
             peer_count: peers.len(),
             registry: DidRegistry::new(),
+            consensus: Arc::new(Mutex::new(ConsensusStatus::default())),
         }
+    }
+
+    /// Konsens-Status anbinden (geteilter Zustand mit dem Runden-Treiber).
+    pub fn with_consensus(mut self, status: Arc<Mutex<ConsensusStatus>>) -> Self {
+        self.consensus = status;
+        self
+    }
+
+    fn consensus_snapshot(&self) -> ConsensusStatus {
+        self.consensus
+            .lock()
+            .map(|s| s.clone())
+            .unwrap_or_default()
     }
 
     /// Registry anbinden (Persistenz + Aufloesung ueber RPC).
@@ -57,6 +90,23 @@ impl DevnetRpc {
             "PING" => "PONG".to_string(),
             "DID_COUNT" => self.registry.len().to_string(),
             "DID_EPOCH" => self.registry.epoch().to_string(),
+            "HEIGHT" => self.consensus_snapshot().height.to_string(),
+            "BEST_HASH" => {
+                let h = self.consensus_snapshot().last_hash;
+                if h.is_empty() { "-".to_string() } else { h }
+            }
+            "CONSENSUS" => {
+                let c = self.consensus_snapshot();
+                format!(
+                    "height={} finalized_rounds={} validators={} quorum_power={} last_voters={} last_hash={}",
+                    c.height,
+                    c.finalized_rounds,
+                    c.validators,
+                    c.quorum_power,
+                    c.last_voters,
+                    if c.last_hash.is_empty() { "-" } else { &c.last_hash }
+                )
+            }
             other => format!("ERR: unbekannter Befehl {}", other),
         }
     }
@@ -120,6 +170,14 @@ impl DevnetRpc {
             "peers" => self.peer_count.to_string(),
             "ping" => "pong".to_string(),
             "did_count" => self.registry.len().to_string(),
+            "height" => self.consensus_snapshot().height.to_string(),
+            "consensus" => {
+                let c = self.consensus_snapshot();
+                format!(
+                    "height={} rounds={} validators={} quorum={}",
+                    c.height, c.finalized_rounds, c.validators, c.quorum_power
+                )
+            }
             "did_epoch" => self.registry.epoch().to_string(),
             _ => return format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"error\":{{\"code\":-32601,\"message\":\"method not found\"}}}}", id),
         };
@@ -153,6 +211,33 @@ mod tests {
         assert_eq!(rpc.answer("PEERS"), "2");
         assert_eq!(rpc.answer("PING"), "PONG");
         assert!(!rpc.answer("BOOT_HASH").is_empty());
+    }
+
+    #[test]
+    fn konsens_status_ueber_rpc() {
+        use std::sync::{Arc, Mutex};
+        let genesis = Genesis::devnet();
+        let peers = PeerTable::new();
+        let status = Arc::new(Mutex::new(ConsensusStatus {
+            height: 7,
+            finalized_rounds: 7,
+            validators: 3,
+            quorum_power: 2,
+            last_voters: 3,
+            last_hash: "ab12".to_string(),
+        }));
+        let rpc = DevnetRpc::from_state(&genesis, &peers).with_consensus(Arc::clone(&status));
+        assert_eq!(rpc.answer("HEIGHT"), "7");
+        assert_eq!(rpc.answer("BEST_HASH"), "ab12");
+        let antwort = rpc.answer("CONSENSUS");
+        assert!(antwort.contains("height=7"), "unerwartet: {antwort}");
+        assert!(antwort.contains("quorum_power=2"), "unerwartet: {antwort}");
+        assert!(antwort.contains("last_hash=ab12"), "unerwartet: {antwort}");
+        assert!(rpc.answer_json("{\"jsonrpc\":\"2.0\",\"method\":\"height\",\"id\":1}").contains("\"7\""));
+
+        // Treiber aktualisiert den Stand, RPC liest ihn sofort.
+        status.lock().unwrap().height = 9;
+        assert_eq!(rpc.answer("HEIGHT"), "9");
     }
 
     #[test]
