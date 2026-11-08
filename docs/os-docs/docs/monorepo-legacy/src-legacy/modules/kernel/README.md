@@ -1,6 +1,6 @@
 # kernel — L2: ShivaOS Microkernel — IPC Bus, ATCFS, Consensus, Net
 
-Part of [A-TownChain OS Monorepo](../../../../README.md)
+Part of [A-TownChain OS Monorepo](../../../../../../../README.md)
 
 ## Inhalt
 
