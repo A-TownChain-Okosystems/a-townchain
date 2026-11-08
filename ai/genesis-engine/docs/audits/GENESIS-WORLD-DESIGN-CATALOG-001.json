@@ -1,0 +1,2548 @@
+{
+  "schema_version": "1.1.0",
+  "document_id": "GENESIS-WORLD-DESIGN-CATALOG-001",
+  "status": "PARTIAL",
+  "complete": false,
+  "repository": "A-TownChain-Okosystems/genesis-engine",
+  "audit_base_commit": "8b7100e8a88f3c9bb6e24ddda31706902f125bb5",
+  "issue": "https://github.com/A-TownChain-Okosystems/genesis-engine/issues/37",
+  "policy": {
+    "standalone_first_ecosystem_second": true,
+    "external_engine_required": false,
+    "ssot_rule": "Reuse canonical Genesis modules for world, renderer, assets, physics, editor, runtime and build. Do not introduce parallel implementations.",
+    "evidence_rule": "Do not mark functionality VERIFIED without source-level mapping and reproducible tests or runtime evidence. CI green alone is insufficient."
+  },
+  "existing_evidence": [
+    {
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471",
+      "symbols": [
+        "WorldBounds",
+        "WorldChunkId",
+        "ChunkState",
+        "WorldChunk",
+        "ChunkTransition",
+        "WorldStreamer::add_chunk",
+        "WorldStreamer::update",
+        "WorldStreamer::plan_transitions",
+        "WorldStreamer::complete_load",
+        "WorldStreamer::cancel_load"
+      ],
+      "responsibility": "Bounds checks and distance calculations; chunk registry; deterministic nearest-first selection; asset-presence gate; chunk loading state transitions.",
+      "status": "IMPLEMENTED",
+      "evidence_limit": "Does not prove terrain generation, biome simulation, persistence, editor UI, collision integration, mesh generation or rendered pixels."
+    }
+  ],
+  "component_contracts": [
+    {
+      "id": "WORLD-001",
+      "component": "World coordinates and bounds",
+      "canonical_path": "modules/atc-genesis-world/src/lib.rs",
+      "responsibility": "Validated world/chunk coordinate model; stable IDs; finite numeric inputs; explicit coordinate units and origin policy.",
+      "dependencies": [
+        "atc-genesis-platform"
+      ],
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Reject NaN/infinity bounds and query positions",
+        "Document coordinate handedness, units and origin/rebase policy",
+        "Property tests for boundaries and distance calculations"
+      ]
+    },
+    {
+      "id": "WORLD-002",
+      "component": "Chunk lifecycle and streaming",
+      "canonical_path": "modules/atc-genesis-world/src/lib.rs",
+      "responsibility": "Deterministic chunk selection, budgeted load/unload, cancellation, stale completion handling and asset availability.",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Audit transition invariants and race/stale completion behavior",
+        "Clarify update vs plan_transitions semantics",
+        "Stress tests for large worlds and bounded work",
+        "Persistence and failure/retry policy"
+      ]
+    },
+    {
+      "id": "WORLD-003",
+      "component": "Terrain data and procedural generation",
+      "canonical_path": "modules/atc-genesis-world/",
+      "responsibility": "Versioned terrain representation; seeded heightfields; deterministic noise composition; erosion as an optional explicit pass.",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "status": "BLOCKED",
+      "missing_evidence": [
+        "Canonical symbols and file ownership not yet inventoried",
+        "Seed/algorithm/version contract",
+        "Numerical bounds and deterministic cross-platform tests",
+        "Memory and generation-time budgets"
+      ]
+    },
+    {
+      "id": "WORLD-004",
+      "component": "Terrain mesh and LOD",
+      "canonical_path": "modules/atc-genesis-world/",
+      "responsibility": "Convert terrain data into renderer-ready mesh assets; LOD selection, stitching and seam prevention.",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "status": "BLOCKED",
+      "missing_evidence": [
+        "Mesh schema and winding/normals contract",
+        "LOD selection and crack-free transitions",
+        "End-to-end mesh-to-render evidence",
+        "Regression scenes and performance measurements"
+      ]
+    },
+    {
+      "id": "WORLD-005",
+      "component": "Biome and climate model",
+      "canonical_path": "modules/atc-genesis-world/",
+      "responsibility": "Deterministic biome classification from configured climate/elevation/moisture fields; versioned rules and material mapping.",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-assets"
+      ],
+      "status": "BLOCKED",
+      "missing_evidence": [
+        "Data model and rules schema",
+        "Seeded reproducibility tests",
+        "Biome boundary and blending policy",
+        "No dependency on remote generation services"
+      ]
+    },
+    {
+      "id": "WORLD-006",
+      "component": "Vegetation and object distribution",
+      "canonical_path": "modules/atc-genesis-world/",
+      "responsibility": "Seeded placement, density masks, slope/elevation constraints, stable IDs and chunk-boundary consistency.",
+      "dependencies": [
+        "WORLD-003",
+        "WORLD-005",
+        "atc-genesis-assets",
+        "atc-genesis-renderer",
+        "atc-genesis-physics"
+      ],
+      "status": "BLOCKED",
+      "missing_evidence": [
+        "Placement algorithm and stable seed derivation",
+        "Cross-chunk duplicate/omission tests",
+        "Collision and render instance integration",
+        "Deterministic density and budget limits"
+      ]
+    },
+    {
+      "id": "WORLD-007",
+      "component": "World editor tools",
+      "canonical_path": "modules/atc-genesis-editor/src/lib.rs",
+      "responsibility": "Terrain sculpt/flatten/smooth, paint, place/delete, grid/free placement, selection and undo/redo through canonical editor document.",
+      "dependencies": [
+        "atc-genesis-editor",
+        "atc-genesis-world",
+        "atc-genesis-assets"
+      ],
+      "status": "BLOCKED",
+      "missing_evidence": [
+        "Inspect full editor module and UI wiring",
+        "Transactional edit model and undo/redo for terrain data",
+        "Save/load compatibility and migration tests",
+        "Evidence of interactive editor UI"
+      ]
+    },
+    {
+      "id": "WORLD-008",
+      "component": "Buildings, roads and authored levels",
+      "canonical_path": "modules/atc-genesis-world/",
+      "responsibility": "Composable world objects, placement constraints, roads/path splines, building modules and region/streaming ownership.",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-editor",
+        "atc-genesis-physics"
+      ],
+      "status": "BLOCKED",
+      "missing_evidence": [
+        "Determine existing prefab/scene contracts before adding types",
+        "Road geometry and junction validation",
+        "Placement/collision rules",
+        "World serialization and migration"
+      ]
+    },
+    {
+      "id": "WORLD-009",
+      "component": "Water and environmental surfaces",
+      "canonical_path": "modules/atc-genesis-world/",
+      "responsibility": "Water bodies, terrain intersection policy, shoreline metadata and renderer-independent water data.",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-physics"
+      ],
+      "status": "BLOCKED",
+      "missing_evidence": [
+        "Data and simulation scope",
+        "Terrain/water boundary policy",
+        "Rendering and collision tests",
+        "Performance budgets"
+      ]
+    },
+    {
+      "id": "WORLD-010",
+      "component": "Persistence and reproducible artifacts",
+      "canonical_path": "modules/atc-genesis-world/",
+      "responsibility": "Versioned world manifests, deterministic regeneration metadata, asset references, integrity hashes and migration policy.",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "status": "BLOCKED",
+      "missing_evidence": [
+        "World serialization format and schema versioning",
+        "Cryptographic hash choice for integrity evidence",
+        "Round-trip and corruption tests",
+        "Reproducible artifact evidence"
+      ]
+    },
+    {
+      "id": "WORLD-011",
+      "component": "Runtime integration and budgets",
+      "canonical_path": "modules/atc-genesis-runtime/",
+      "responsibility": "Schedule generation and streaming within explicit CPU/memory budgets; avoid blocking frame-critical execution.",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-004",
+        "atc-genesis-runtime",
+        "atc-genesis-platform"
+      ],
+      "status": "BLOCKED",
+      "missing_evidence": [
+        "Inspect runtime scheduling and ownership",
+        "Cancellation/backpressure behavior",
+        "Frame-time and memory benchmarks",
+        "Failure propagation and observability"
+      ]
+    },
+    {
+      "id": "WORLD-012",
+      "component": "Physics and collision integration",
+      "canonical_path": "modules/atc-genesis-physics/",
+      "responsibility": "Terrain collision representation and lifecycle synchronization with world chunks and authored objects.",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-003",
+        "atc-genesis-physics"
+      ],
+      "status": "BLOCKED",
+      "missing_evidence": [
+        "Inspect canonical physics interfaces",
+        "Collision cooking/build contract",
+        "Load/unload synchronization tests",
+        "Correctness and performance benchmarks"
+      ]
+    },
+    {
+      "id": "WORLD-013",
+      "component": "Quality gates and evidence",
+      "canonical_path": "modules/atc-genesis-world/",
+      "responsibility": "Unit/property/regression tests; deterministic seed fixtures; performance budgets; exact build/test artifact evidence.",
+      "dependencies": [
+        "WORLD-001",
+        "WORLD-002",
+        "WORLD-003",
+        "WORLD-004",
+        "WORLD-005",
+        "WORLD-010"
+      ],
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Complete source-to-test map",
+        "Execute tests against exact candidate SHA",
+        "Record run/job/step/exit code and artifact digests",
+        "Rendered-output evidence for full integration"
+      ]
+    }
+  ],
+  "dependency_edges": [
+    {
+      "from": "WORLD-001",
+      "to": "WORLD-002",
+      "reason": "Chunk identity/bounds govern streaming"
+    },
+    {
+      "from": "WORLD-001",
+      "to": "WORLD-003",
+      "reason": "Terrain generation operates in validated world coordinates"
+    },
+    {
+      "from": "WORLD-003",
+      "to": "WORLD-004",
+      "reason": "Terrain data produces renderer-ready mesh/LOD"
+    },
+    {
+      "from": "WORLD-003",
+      "to": "WORLD-005",
+      "reason": "Biome rules use terrain/climate fields"
+    },
+    {
+      "from": "WORLD-005",
+      "to": "WORLD-006",
+      "reason": "Biome and density masks constrain vegetation"
+    },
+    {
+      "from": "WORLD-002",
+      "to": "WORLD-011",
+      "reason": "Runtime schedules chunk lifecycle and generation"
+    },
+    {
+      "from": "WORLD-002",
+      "to": "WORLD-012",
+      "reason": "Chunk lifecycle controls collider activation/removal"
+    },
+    {
+      "from": "WORLD-003",
+      "to": "WORLD-010",
+      "reason": "Terrain parameters and seed/version must be persisted"
+    },
+    {
+      "from": "WORLD-004",
+      "to": "WORLD-013",
+      "reason": "Mesh/LOD require render regression evidence"
+    },
+    {
+      "from": "WORLD-007",
+      "to": "WORLD-008",
+      "reason": "Editor tools author buildings, roads and objects"
+    },
+    {
+      "from": "WORLD-010",
+      "to": "WORLD-013",
+      "reason": "Artifacts need integrity and reproducibility checks"
+    }
+  ],
+  "workspace_scope": [
+    "modules/atc-genesis-world",
+    "modules/atc-genesis-renderer",
+    "modules/atc-genesis-assets",
+    "modules/atc-genesis-editor",
+    "modules/atc-genesis-physics",
+    "modules/atc-genesis-runtime",
+    "modules/atc-genesis-platform",
+    "modules/atc-genesis-build"
+  ],
+  "gate_status": {
+    "source_inventory": "PARTIAL_SCOPED_SYMBOL_AND_TEST_MAP",
+    "design_contracts": "DRAFT",
+    "implementation": "NOT_STARTED_BY_THIS_CHANGE",
+    "tests": "NOT_RUN",
+    "ci": "NOT_VERIFIED",
+    "end_to_end_world_render": "NOT_VERIFIED",
+    "complete": false
+  },
+  "next_actions": [
+    "Inspect renderer submodules and all existing world/editor/physics tests and call sites, including exact paths and blob SHAs.",
+    "Audit WorldBounds finite-number validation, WorldStreamer state invariants and WorldPhysicsBridge chunk synchronization.",
+    "Add terrain/biome/vegetation contracts only after confirming no existing canonical symbol owns that responsibility.",
+    "Implement deterministic terrain data/seed/version contracts and tests in a separate implementation PR.",
+    "Build a real native pixel-output path and prove terrain mesh → resource binding → render graph → backend → image with an artifact hash.",
+    "Run cargo fmt/check/test on the exact candidate SHA and capture run/job/step/exit code/logs before changing any status to VERIFIED."
+  ],
+  "audit_note": "Expanded source-to-symbol and test inventory from fetched canonical module files. This is a scoped World Design catalog, not a claim that every symbol in the entire repository has been enumerated; UI/render output and executed test evidence remain unverified.",
+  "source_inventory": [
+    {
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471",
+      "lines": 250,
+      "symbols": [
+        [
+          "WorldBounds",
+          "World-space bounds and distance calculations",
+          "WORLD-001",
+          "PARTIAL",
+          "Finite/NaN/infinity validation; coordinate handedness and units; boundary property tests"
+        ],
+        [
+          "WorldChunkId",
+          "Chunk identity",
+          "WORLD-001",
+          "PARTIAL",
+          "Stable coordinate-derived identity and serialization compatibility"
+        ],
+        [
+          "ChunkState",
+          "Chunk lifecycle states",
+          "WORLD-002",
+          "PARTIAL",
+          "Transition table/invariant coverage; failure/retry states"
+        ],
+        [
+          "WorldChunk",
+          "Chunk metadata and asset references",
+          "WORLD-002",
+          "PARTIAL",
+          "Persistence schema; generated terrain payload and resource budgets"
+        ],
+        [
+          "ChunkTransition",
+          "Planned load/unload actions",
+          "WORLD-002",
+          "PARTIAL",
+          "Stale plan handling; deterministic ordering under equal distances"
+        ],
+        [
+          "WorldStreamer::add_chunk",
+          "Registers a chunk in the streamer",
+          "WORLD-002",
+          "IMPLEMENTED",
+          "Duplicate IDs and invalid metadata tests"
+        ],
+        [
+          "WorldStreamer::update",
+          "Updates streamer planning state",
+          "WORLD-002",
+          "PARTIAL",
+          "Explicitly define update/planning side effects and work budgets"
+        ],
+        [
+          "WorldStreamer::plan_transitions",
+          "Plans deterministic nearest-first transitions and asset gates",
+          "WORLD-002",
+          "PARTIAL",
+          "Concurrency, stale completions, large-world stress tests"
+        ],
+        [
+          "WorldStreamer::complete_load",
+          "Completes a loading transition",
+          "WORLD-002",
+          "PARTIAL",
+          "Reject unexpected/stale completion; failure paths"
+        ],
+        [
+          "WorldStreamer::cancel_load",
+          "Returns a loading chunk to unloaded state",
+          "WORLD-002",
+          "IMPLEMENTED",
+          "Cancellation race and repeated cancellation tests"
+        ]
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-renderer/src/lib.rs",
+      "blob_sha": "484e01007f26364ad80067f255e611e31b42be94",
+      "lines": 183,
+      "symbols": [
+        [
+          "Camera",
+          "Camera and visibility/culling parameters",
+          "WORLD-004",
+          "PARTIAL",
+          "Projection/viewport and frustum coverage; integration with real raster output"
+        ],
+        [
+          "DrawCommand",
+          "Renderer draw command contract",
+          "WORLD-004",
+          "PARTIAL",
+          "Terrain vertex/index format, material and texture binding contract"
+        ],
+        [
+          "RenderGraph",
+          "Builds ordered render work",
+          "WORLD-004",
+          "PARTIAL",
+          "Real backend execution, resource hazards and output-image evidence"
+        ],
+        [
+          "NullRenderer",
+          "Null/test renderer implementation",
+          "WORLD-004",
+          "IMPLEMENTED",
+          "Must not be confused with a pixel-producing renderer"
+        ]
+      ],
+      "modules": [
+        "animation",
+        "backend",
+        "batching",
+        "ecs",
+        "render_item",
+        "resources"
+      ],
+      "tests": [
+        "graph_orders_entities",
+        "camera_culls_behind",
+        "world_builds_render_graph"
+      ],
+      "test_status": "SOURCE_TESTS_PRESENT_NOT_EXECUTED"
+    },
+    {
+      "path": "modules/atc-genesis-renderer/src/backend.rs",
+      "blob_sha": "c5bd15099195c933756b734583307941e372a0fc",
+      "symbols": [
+        [
+          "GraphicsBackend",
+          "Backend capability/identity enum",
+          "WORLD-004",
+          "PARTIAL",
+          "Vulkan/Metal/DX12/OpenGL/WebGPU entries do not by themselves prove concrete backend implementations"
+        ],
+        [
+          "RenderBackend",
+          "Backend interface",
+          "WORLD-004",
+          "PARTIAL",
+          "Concrete backend implementations and error/resource lifecycle evidence"
+        ],
+        [
+          "NullBackend",
+          "No-op backend",
+          "WORLD-004",
+          "IMPLEMENTED",
+          "No pixel output; use only for tests/headless behavior"
+        ],
+        [
+          "CommandBufferBackend",
+          "Command-buffer-like backend",
+          "WORLD-004",
+          "PARTIAL",
+          "Reports Null identity; audit capability claims, execution semantics and output path"
+        ]
+      ],
+      "test_status": "NOT_AUDITED_IN_THIS_CATALOG"
+    },
+    {
+      "path": "modules/atc-genesis-renderer/src/resources.rs",
+      "blob_sha": "f5d15663b4dbc34daca6ae7aceef993182a50b18",
+      "symbols": [
+        [
+          "Mesh/material/texture handle and binding types",
+          "Resource identity and entity resource bindings",
+          "WORLD-004",
+          "PARTIAL",
+          "Asset lifetime, missing-resource errors, texture/material propagation into draw commands"
+        ]
+      ],
+      "test_status": "NOT_AUDITED_IN_THIS_CATALOG"
+    },
+    {
+      "path": "modules/atc-genesis-renderer/src/render_item.rs",
+      "blob_sha": "05ace2c83e2c98e8c06134beb8e76be484b80eb3",
+      "symbols": [
+        [
+          "Render item builder",
+          "Builds render items from world transforms and resource bindings",
+          "WORLD-004",
+          "PARTIAL",
+          "Texture and instance group propagation; terrain mesh data path to backend"
+        ]
+      ],
+      "test_status": "NOT_AUDITED_IN_THIS_CATALOG"
+    },
+    {
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5",
+      "lines": 354,
+      "symbols": [
+        [
+          "AssetRecord",
+          "In-memory asset record",
+          "WORLD-010",
+          "IMPLEMENTED",
+          "Persistent store and schema migration not shown"
+        ],
+        [
+          "InMemoryAssetStore",
+          "In-memory asset storage and resolver",
+          "WORLD-002",
+          "IMPLEMENTED",
+          "Disk persistence, cache eviction and concurrent access"
+        ],
+        [
+          "ImportRecord",
+          "Asset import metadata",
+          "WORLD-010",
+          "IMPLEMENTED",
+          "Importer coverage and source provenance validation"
+        ],
+        [
+          "AssetPipeline",
+          "Asset registration/dependency pipeline",
+          "WORLD-010",
+          "PARTIAL",
+          "End-to-end world asset cooking and reproducibility"
+        ],
+        [
+          "MeshAsset",
+          "Mesh payload and validation",
+          "WORLD-004",
+          "PARTIAL",
+          "Terrain topology, normals/tangents, LOD and format compatibility"
+        ],
+        [
+          "MaterialAsset",
+          "Material data",
+          "WORLD-004",
+          "PARTIAL",
+          "Shader/material execution in a pixel-producing backend"
+        ],
+        [
+          "TextureAsset",
+          "Texture payload",
+          "WORLD-004",
+          "PARTIAL",
+          "Texture decoding/import and renderer sampling"
+        ],
+        [
+          "stable_asset_id",
+          "Stable asset ID derivation",
+          "WORLD-010",
+          "IMPLEMENTED",
+          "Collision policy and compatibility/version guarantees"
+        ],
+        [
+          "fnv1a64",
+          "Non-cryptographic FNV-1a hash",
+          "WORLD-010",
+          "IMPLEMENTED",
+          "Do not use as cryptographic integrity/authenticity evidence; select cryptographic digest for artifacts"
+        ]
+      ],
+      "tests": [
+        "import_cook_hash",
+        "dependency_graph_is_transitive_and_deterministic",
+        "missing_dependency_is_rejected",
+        "dependency_cycle_is_rejected",
+        "mesh_validates",
+        "invalid_mesh_index_count_is_rejected",
+        "texture_validates",
+        "stable_id_is_deterministic",
+        "store_implements_world_resolver"
+      ],
+      "test_status": "SOURCE_TESTS_PRESENT_NOT_EXECUTED"
+    },
+    {
+      "path": "modules/atc-genesis-editor/src/lib.rs",
+      "blob_sha": "f735195d889b90b77778955068dcf8914d1bef74",
+      "lines": 202,
+      "symbols": [
+        [
+          "SceneNode",
+          "Scene hierarchy node and transform data",
+          "WORLD-007",
+          "IMPLEMENTED",
+          "Parent/cycle validation and world-object-specific schema"
+        ],
+        [
+          "SceneDocument",
+          "Scene document edits, undo and serialization",
+          "WORLD-007",
+          "PARTIAL",
+          "Visual UI not proven; terrain-edit transactions, migrations and durable storage"
+        ],
+        [
+          "parse",
+          "Scene serialization parser",
+          "WORLD-007",
+          "PARTIAL",
+          "Malformed input/fuzz tests and version migration"
+        ],
+        [
+          "escape/unescape",
+          "Serialization escaping helpers",
+          "WORLD-007",
+          "PARTIAL",
+          "Unicode and malformed escape tests"
+        ]
+      ],
+      "tests": [
+        "scene_roundtrip",
+        "scene_applies_to_ecs"
+      ],
+      "test_status": "SOURCE_TESTS_PRESENT_NOT_EXECUTED"
+    },
+    {
+      "path": "modules/atc-genesis-platform/src/lib.rs",
+      "blob_sha": "53aea87706fea8a30967475dd670a09581e80bd4",
+      "lines": 98,
+      "symbols": [
+        [
+          "AssetId/EntityId/FrameId",
+          "Shared typed identifiers",
+          "WORLD-001",
+          "IMPLEMENTED",
+          "Serialization and cross-module stable-ID guarantees"
+        ],
+        [
+          "Transform",
+          "Shared transform contract",
+          "WORLD-001",
+          "IMPLEMENTED",
+          "Coordinate convention, scale edge cases and hierarchy composition tests"
+        ],
+        [
+          "AssetStore",
+          "Canonical asset storage trait",
+          "WORLD-010",
+          "IMPLEMENTED",
+          "Persistent implementation and corruption semantics"
+        ],
+        [
+          "WorldAssetResolver",
+          "World-to-asset resolution contract",
+          "WORLD-002",
+          "IMPLEMENTED",
+          "Availability vs load-ready semantics and error propagation"
+        ],
+        [
+          "Renderer",
+          "Canonical renderer interface",
+          "WORLD-004",
+          "IMPLEMENTED",
+          "Proof of concrete pixel-producing implementation"
+        ],
+        [
+          "PhysicsWorld",
+          "Canonical physics interface",
+          "WORLD-012",
+          "IMPLEMENTED",
+          "Terrain collider lifecycle and synchronization contract"
+        ],
+        [
+          "PlatformServices",
+          "Platform service aggregation",
+          "WORLD-011",
+          "PARTIAL",
+          "World-generation scheduler and memory-budget services not shown"
+        ]
+      ]
+    },
+    {
+      "path": "modules/atc-genesis-build/src/lib.rs",
+      "blob_sha": "c8ca893727f292f0ae397dcb35549dabdb68e710",
+      "lines": 161,
+      "symbols": [
+        [
+          "BuildProfile",
+          "Build configuration",
+          "WORLD-010",
+          "IMPLEMENTED",
+          "World generation version/seed manifest integration"
+        ],
+        [
+          "PackageManifest",
+          "Package metadata and manifest",
+          "WORLD-010",
+          "PARTIAL",
+          "World-specific schema and deterministic generation provenance"
+        ],
+        [
+          "Artifact",
+          "Build artifact metadata",
+          "WORLD-010",
+          "PARTIAL",
+          "Cryptographic digest and reproducible world artifact proof"
+        ],
+        [
+          "checksum",
+          "Artifact checksum helper (FNV-1a family per prior inspection)",
+          "WORLD-010",
+          "PARTIAL",
+          "Replace or complement with cryptographic hash for integrity evidence"
+        ],
+        [
+          "collect_files/build_artifacts",
+          "Package collection and artifact creation",
+          "WORLD-010",
+          "IMPLEMENTED",
+          "World-specific round-trip, path safety and reproducibility tests"
+        ],
+        [
+          "manifest_json",
+          "Manifest serialization",
+          "WORLD-010",
+          "IMPLEMENTED",
+          "Schema version/migration and strict parser"
+        ]
+      ],
+      "tests": [
+        "manifest_is_deterministic",
+        "unsafe_paths_rejected"
+      ],
+      "test_status": "SOURCE_TESTS_PRESENT_NOT_EXECUTED"
+    },
+    {
+      "path": "modules/atc-genesis-runtime/src/lib.rs",
+      "blob_sha": "9ffa6dc6f46b1db61a7cc272b291be1163587d10",
+      "lines": 505,
+      "symbols": [
+        [
+          "GenesisRuntime",
+          "Coordinates ECS, physics, gameplay, networking, animation and world streaming",
+          "WORLD-011",
+          "PARTIAL",
+          "World-generation scheduling/backpressure, streaming failure and frame-budget evidence"
+        ],
+        [
+          "StepSummary",
+          "Runtime step result",
+          "WORLD-011",
+          "IMPLEMENTED",
+          "World generation/streaming timing and memory telemetry not established"
+        ],
+        [
+          "test_add_and_stream_chunks",
+          "Runtime integration test",
+          "WORLD-002",
+          "IMPLEMENTED",
+          "Test exists in source; execution against candidate SHA not recorded"
+        ]
+      ],
+      "tests": [
+        "test_initialization",
+        "test_step_advances_frame_and_tick",
+        "test_add_and_stream_chunks",
+        "test_publish_and_receive_network_state",
+        "test_receive_network_packet_fails_on_garbage",
+        "test_custom_audio_and_network"
+      ],
+      "test_status": "SOURCE_TESTS_PRESENT_NOT_EXECUTED"
+    },
+    {
+      "path": "modules/atc-genesis-physics/src/lib.rs",
+      "blob_sha": "c8181b4eec89ab82410105a5920a4330787fcfea",
+      "lines": 338,
+      "symbols": [
+        [
+          "RigidBody",
+          "Rigid-body data and state",
+          "WORLD-012",
+          "IMPLEMENTED",
+          "Terrain-specific collider representation and scale stress tests"
+        ],
+        [
+          "PhysicsConfig",
+          "Physics stepping configuration",
+          "WORLD-012",
+          "IMPLEMENTED",
+          "World-size and terrain collision budgets"
+        ],
+        [
+          "PhysicsSimulation",
+          "Physics step and collision processing",
+          "WORLD-012",
+          "PARTIAL",
+          "Large terrain broadphase, contact correctness and performance"
+        ],
+        [
+          "WorldPhysicsBridge",
+          "Bridges ECS/world chunk state to physics",
+          "WORLD-012",
+          "PARTIAL",
+          "Terrain mesh/collider cooking and unload synchronization"
+        ]
+      ],
+      "tests": [
+        "fixed_step_applies_gravity",
+        "floor_stops_body",
+        "static_collider_prevents_penetration",
+        "sync_updates_ecs",
+        "loaded_chunks_create_deterministic_colliders"
+      ],
+      "test_status": "SOURCE_TESTS_PRESENT_NOT_EXECUTED"
+    },
+    {
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f",
+      "lines": 1113,
+      "symbols": [
+        [
+          "World",
+          "Canonical ECS world and entity/component storage",
+          "WORLD-007",
+          "IMPLEMENTED",
+          "Terrain/biome/vegetation component schemas and save/load"
+        ],
+        [
+          "SystemSchedule/SystemExecutor",
+          "System dependency scheduling and execution",
+          "WORLD-011",
+          "IMPLEMENTED",
+          "World-generation budget, async cancellation and deterministic worker execution"
+        ],
+        [
+          "TransformRenderPipeline",
+          "Transform propagation to render pipeline",
+          "WORLD-004",
+          "PARTIAL",
+          "Terrain entities and streaming visibility/render output integration"
+        ],
+        [
+          "WorldEcsBridge",
+          "Chunk streaming/ECS bridge",
+          "WORLD-002",
+          "PARTIAL",
+          "Lifecycle consistency for entities when chunks unload/reload"
+        ]
+      ],
+      "tests": [
+        "change_tracking_works",
+        "lifecycle_events_are_ordered",
+        "executor_runs_in_dependency_order",
+        "hierarchy_resolves",
+        "query3_returns_only_entities_with_all_components",
+        "query_with_filters_deterministically",
+        "access_contracts_detect_conflicts",
+        "parallel_batches_are_deterministic_and_dependency_safe"
+      ],
+      "test_status": "SOURCE_TESTS_PRESENT_NOT_EXECUTED"
+    },
+    {
+      "path": "modules/atc-genesis-gameplay/src/lib.rs",
+      "blob_sha": "0d469a65f73f9879868fd793c04f839995172312",
+      "lines": 157,
+      "symbols": [
+        [
+          "MovementConfig",
+          "Gameplay movement constraints",
+          "WORLD-008",
+          "IMPLEMENTED",
+          "World traversal/path navigation contracts"
+        ],
+        [
+          "GameplayRuntime",
+          "Deterministic gameplay command processing",
+          "WORLD-008",
+          "PARTIAL",
+          "World interaction, placement and editor/gameplay separation"
+        ]
+      ],
+      "tests": [
+        "keyboard_moves_entity_deterministically",
+        "axis_is_clamped",
+        "diagonal_movement_preserves_max_speed"
+      ],
+      "test_status": "SOURCE_TESTS_PRESENT_NOT_EXECUTED"
+    }
+  ],
+  "function_catalog": [
+    {
+      "id": "FN-001",
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "symbol": "WorldBounds",
+      "responsibility": "World-space bounds and distance calculations",
+      "dependencies": [
+        "atc-genesis-platform"
+      ],
+      "component": "WORLD-001",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Finite/NaN/infinity validation",
+        "coordinate handedness and units",
+        "boundary property tests"
+      ],
+      "source_blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471"
+    },
+    {
+      "id": "FN-002",
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "symbol": "WorldChunkId",
+      "responsibility": "Chunk identity",
+      "dependencies": [
+        "atc-genesis-platform"
+      ],
+      "component": "WORLD-001",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Stable coordinate-derived identity and serialization compatibility"
+      ],
+      "source_blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471"
+    },
+    {
+      "id": "FN-003",
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "symbol": "ChunkState",
+      "responsibility": "Chunk lifecycle states",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Transition table/invariant coverage",
+        "failure/retry states"
+      ],
+      "source_blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471"
+    },
+    {
+      "id": "FN-004",
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "symbol": "WorldChunk",
+      "responsibility": "Chunk metadata and asset references",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Persistence schema",
+        "generated terrain payload and resource budgets"
+      ],
+      "source_blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471"
+    },
+    {
+      "id": "FN-005",
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "symbol": "ChunkTransition",
+      "responsibility": "Planned load/unload actions",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Stale plan handling",
+        "deterministic ordering under equal distances"
+      ],
+      "source_blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471"
+    },
+    {
+      "id": "FN-006",
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "symbol": "WorldStreamer::add_chunk",
+      "responsibility": "Registers a chunk in the streamer",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Duplicate IDs and invalid metadata tests"
+      ],
+      "source_blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471"
+    },
+    {
+      "id": "FN-007",
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "symbol": "WorldStreamer::update",
+      "responsibility": "Updates streamer planning state",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Explicitly define update/planning side effects and work budgets"
+      ],
+      "source_blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471"
+    },
+    {
+      "id": "FN-008",
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "symbol": "WorldStreamer::plan_transitions",
+      "responsibility": "Plans deterministic nearest-first transitions and asset gates",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Concurrency, stale completions, large-world stress tests"
+      ],
+      "source_blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471"
+    },
+    {
+      "id": "FN-009",
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "symbol": "WorldStreamer::complete_load",
+      "responsibility": "Completes a loading transition",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Reject unexpected/stale completion",
+        "failure paths"
+      ],
+      "source_blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471"
+    },
+    {
+      "id": "FN-010",
+      "path": "modules/atc-genesis-world/src/lib.rs",
+      "symbol": "WorldStreamer::cancel_load",
+      "responsibility": "Returns a loading chunk to unloaded state",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Cancellation race and repeated cancellation tests"
+      ],
+      "source_blob_sha": "9f489088581dc8ea773200b9524475d26d7f7471"
+    },
+    {
+      "id": "FN-011",
+      "path": "modules/atc-genesis-renderer/src/lib.rs",
+      "symbol": "Camera",
+      "responsibility": "Camera and visibility/culling parameters",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Projection/viewport and frustum coverage",
+        "integration with real raster output"
+      ],
+      "source_blob_sha": "484e01007f26364ad80067f255e611e31b42be94"
+    },
+    {
+      "id": "FN-012",
+      "path": "modules/atc-genesis-renderer/src/lib.rs",
+      "symbol": "DrawCommand",
+      "responsibility": "Renderer draw command contract",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Terrain vertex/index format, material and texture binding contract"
+      ],
+      "source_blob_sha": "484e01007f26364ad80067f255e611e31b42be94"
+    },
+    {
+      "id": "FN-013",
+      "path": "modules/atc-genesis-renderer/src/lib.rs",
+      "symbol": "RenderGraph",
+      "responsibility": "Builds ordered render work",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Real backend execution, resource hazards and output-image evidence"
+      ],
+      "source_blob_sha": "484e01007f26364ad80067f255e611e31b42be94"
+    },
+    {
+      "id": "FN-014",
+      "path": "modules/atc-genesis-renderer/src/lib.rs",
+      "symbol": "NullRenderer",
+      "responsibility": "Null/test renderer implementation",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Must not be confused with a pixel-producing renderer"
+      ],
+      "source_blob_sha": "484e01007f26364ad80067f255e611e31b42be94"
+    },
+    {
+      "id": "TEST-001",
+      "path": "modules/atc-genesis-renderer/src/lib.rs",
+      "symbol": "graph_orders_entities",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "484e01007f26364ad80067f255e611e31b42be94"
+    },
+    {
+      "id": "TEST-002",
+      "path": "modules/atc-genesis-renderer/src/lib.rs",
+      "symbol": "camera_culls_behind",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "484e01007f26364ad80067f255e611e31b42be94"
+    },
+    {
+      "id": "TEST-003",
+      "path": "modules/atc-genesis-renderer/src/lib.rs",
+      "symbol": "world_builds_render_graph",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "484e01007f26364ad80067f255e611e31b42be94"
+    },
+    {
+      "id": "FN-018",
+      "path": "modules/atc-genesis-renderer/src/backend.rs",
+      "symbol": "GraphicsBackend",
+      "responsibility": "Backend capability/identity enum",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Vulkan/Metal/DX12/OpenGL/WebGPU entries do not by themselves prove concrete backend implementations"
+      ],
+      "source_blob_sha": "c5bd15099195c933756b734583307941e372a0fc"
+    },
+    {
+      "id": "FN-019",
+      "path": "modules/atc-genesis-renderer/src/backend.rs",
+      "symbol": "RenderBackend",
+      "responsibility": "Backend interface",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Concrete backend implementations and error/resource lifecycle evidence"
+      ],
+      "source_blob_sha": "c5bd15099195c933756b734583307941e372a0fc"
+    },
+    {
+      "id": "FN-020",
+      "path": "modules/atc-genesis-renderer/src/backend.rs",
+      "symbol": "NullBackend",
+      "responsibility": "No-op backend",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "No pixel output",
+        "use only for tests/headless behavior"
+      ],
+      "source_blob_sha": "c5bd15099195c933756b734583307941e372a0fc"
+    },
+    {
+      "id": "FN-021",
+      "path": "modules/atc-genesis-renderer/src/backend.rs",
+      "symbol": "CommandBufferBackend",
+      "responsibility": "Command-buffer-like backend",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Reports Null identity",
+        "audit capability claims, execution semantics and output path"
+      ],
+      "source_blob_sha": "c5bd15099195c933756b734583307941e372a0fc"
+    },
+    {
+      "id": "FN-022",
+      "path": "modules/atc-genesis-renderer/src/resources.rs",
+      "symbol": "Mesh/material/texture handle and binding types",
+      "responsibility": "Resource identity and entity resource bindings",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Asset lifetime, missing-resource errors, texture/material propagation into draw commands"
+      ],
+      "source_blob_sha": "f5d15663b4dbc34daca6ae7aceef993182a50b18"
+    },
+    {
+      "id": "FN-023",
+      "path": "modules/atc-genesis-renderer/src/render_item.rs",
+      "symbol": "Render item builder",
+      "responsibility": "Builds render items from world transforms and resource bindings",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Texture and instance group propagation",
+        "terrain mesh data path to backend"
+      ],
+      "source_blob_sha": "05ace2c83e2c98e8c06134beb8e76be484b80eb3"
+    },
+    {
+      "id": "FN-024",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "AssetRecord",
+      "responsibility": "In-memory asset record",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Persistent store and schema migration not shown"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "FN-025",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "InMemoryAssetStore",
+      "responsibility": "In-memory asset storage and resolver",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Disk persistence, cache eviction and concurrent access"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "FN-026",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "ImportRecord",
+      "responsibility": "Asset import metadata",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Importer coverage and source provenance validation"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "FN-027",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "AssetPipeline",
+      "responsibility": "Asset registration/dependency pipeline",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "End-to-end world asset cooking and reproducibility"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "FN-028",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "MeshAsset",
+      "responsibility": "Mesh payload and validation",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Terrain topology, normals/tangents, LOD and format compatibility"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "FN-029",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "MaterialAsset",
+      "responsibility": "Material data",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Shader/material execution in a pixel-producing backend"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "FN-030",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "TextureAsset",
+      "responsibility": "Texture payload",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Texture decoding/import and renderer sampling"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "FN-031",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "stable_asset_id",
+      "responsibility": "Stable asset ID derivation",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Collision policy and compatibility/version guarantees"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "FN-032",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "fnv1a64",
+      "responsibility": "Non-cryptographic FNV-1a hash",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Do not use as cryptographic integrity/authenticity evidence",
+        "select cryptographic digest for artifacts"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "TEST-004",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "import_cook_hash",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "TEST-005",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "dependency_graph_is_transitive_and_deterministic",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "TEST-006",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "missing_dependency_is_rejected",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "TEST-007",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "dependency_cycle_is_rejected",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "TEST-008",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "mesh_validates",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "TEST-009",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "invalid_mesh_index_count_is_rejected",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "TEST-010",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "texture_validates",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "TEST-011",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "stable_id_is_deterministic",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "TEST-012",
+      "path": "modules/atc-genesis-assets/src/lib.rs",
+      "symbol": "store_implements_world_resolver",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "8c10432c2e937e4519dc39a1abdd6cb8642889a5"
+    },
+    {
+      "id": "FN-042",
+      "path": "modules/atc-genesis-editor/src/lib.rs",
+      "symbol": "SceneNode",
+      "responsibility": "Scene hierarchy node and transform data",
+      "dependencies": [
+        "atc-genesis-editor",
+        "atc-genesis-world",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-007",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Parent/cycle validation and world-object-specific schema"
+      ],
+      "source_blob_sha": "f735195d889b90b77778955068dcf8914d1bef74"
+    },
+    {
+      "id": "FN-043",
+      "path": "modules/atc-genesis-editor/src/lib.rs",
+      "symbol": "SceneDocument",
+      "responsibility": "Scene document edits, undo and serialization",
+      "dependencies": [
+        "atc-genesis-editor",
+        "atc-genesis-world",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-007",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Visual UI not proven",
+        "terrain-edit transactions, migrations and durable storage"
+      ],
+      "source_blob_sha": "f735195d889b90b77778955068dcf8914d1bef74"
+    },
+    {
+      "id": "FN-044",
+      "path": "modules/atc-genesis-editor/src/lib.rs",
+      "symbol": "parse",
+      "responsibility": "Scene serialization parser",
+      "dependencies": [
+        "atc-genesis-editor",
+        "atc-genesis-world",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-007",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Malformed input/fuzz tests and version migration"
+      ],
+      "source_blob_sha": "f735195d889b90b77778955068dcf8914d1bef74"
+    },
+    {
+      "id": "FN-045",
+      "path": "modules/atc-genesis-editor/src/lib.rs",
+      "symbol": "escape/unescape",
+      "responsibility": "Serialization escaping helpers",
+      "dependencies": [
+        "atc-genesis-editor",
+        "atc-genesis-world",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-007",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Unicode and malformed escape tests"
+      ],
+      "source_blob_sha": "f735195d889b90b77778955068dcf8914d1bef74"
+    },
+    {
+      "id": "TEST-013",
+      "path": "modules/atc-genesis-editor/src/lib.rs",
+      "symbol": "scene_roundtrip",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "f735195d889b90b77778955068dcf8914d1bef74"
+    },
+    {
+      "id": "TEST-014",
+      "path": "modules/atc-genesis-editor/src/lib.rs",
+      "symbol": "scene_applies_to_ecs",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "f735195d889b90b77778955068dcf8914d1bef74"
+    },
+    {
+      "id": "FN-048",
+      "path": "modules/atc-genesis-platform/src/lib.rs",
+      "symbol": "AssetId/EntityId/FrameId",
+      "responsibility": "Shared typed identifiers",
+      "dependencies": [
+        "atc-genesis-platform"
+      ],
+      "component": "WORLD-001",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Serialization and cross-module stable-ID guarantees"
+      ],
+      "source_blob_sha": "53aea87706fea8a30967475dd670a09581e80bd4"
+    },
+    {
+      "id": "FN-049",
+      "path": "modules/atc-genesis-platform/src/lib.rs",
+      "symbol": "Transform",
+      "responsibility": "Shared transform contract",
+      "dependencies": [
+        "atc-genesis-platform"
+      ],
+      "component": "WORLD-001",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Coordinate convention, scale edge cases and hierarchy composition tests"
+      ],
+      "source_blob_sha": "53aea87706fea8a30967475dd670a09581e80bd4"
+    },
+    {
+      "id": "FN-050",
+      "path": "modules/atc-genesis-platform/src/lib.rs",
+      "symbol": "AssetStore",
+      "responsibility": "Canonical asset storage trait",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Persistent implementation and corruption semantics"
+      ],
+      "source_blob_sha": "53aea87706fea8a30967475dd670a09581e80bd4"
+    },
+    {
+      "id": "FN-051",
+      "path": "modules/atc-genesis-platform/src/lib.rs",
+      "symbol": "WorldAssetResolver",
+      "responsibility": "World-to-asset resolution contract",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Availability vs load-ready semantics and error propagation"
+      ],
+      "source_blob_sha": "53aea87706fea8a30967475dd670a09581e80bd4"
+    },
+    {
+      "id": "FN-052",
+      "path": "modules/atc-genesis-platform/src/lib.rs",
+      "symbol": "Renderer",
+      "responsibility": "Canonical renderer interface",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Proof of concrete pixel-producing implementation"
+      ],
+      "source_blob_sha": "53aea87706fea8a30967475dd670a09581e80bd4"
+    },
+    {
+      "id": "FN-053",
+      "path": "modules/atc-genesis-platform/src/lib.rs",
+      "symbol": "PhysicsWorld",
+      "responsibility": "Canonical physics interface",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-003",
+        "atc-genesis-physics"
+      ],
+      "component": "WORLD-012",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Terrain collider lifecycle and synchronization contract"
+      ],
+      "source_blob_sha": "53aea87706fea8a30967475dd670a09581e80bd4"
+    },
+    {
+      "id": "FN-054",
+      "path": "modules/atc-genesis-platform/src/lib.rs",
+      "symbol": "PlatformServices",
+      "responsibility": "Platform service aggregation",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-004",
+        "atc-genesis-runtime",
+        "atc-genesis-platform"
+      ],
+      "component": "WORLD-011",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "World-generation scheduler and memory-budget services not shown"
+      ],
+      "source_blob_sha": "53aea87706fea8a30967475dd670a09581e80bd4"
+    },
+    {
+      "id": "FN-055",
+      "path": "modules/atc-genesis-build/src/lib.rs",
+      "symbol": "BuildProfile",
+      "responsibility": "Build configuration",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "World generation version/seed manifest integration"
+      ],
+      "source_blob_sha": "c8ca893727f292f0ae397dcb35549dabdb68e710"
+    },
+    {
+      "id": "FN-056",
+      "path": "modules/atc-genesis-build/src/lib.rs",
+      "symbol": "PackageManifest",
+      "responsibility": "Package metadata and manifest",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "World-specific schema and deterministic generation provenance"
+      ],
+      "source_blob_sha": "c8ca893727f292f0ae397dcb35549dabdb68e710"
+    },
+    {
+      "id": "FN-057",
+      "path": "modules/atc-genesis-build/src/lib.rs",
+      "symbol": "Artifact",
+      "responsibility": "Build artifact metadata",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Cryptographic digest and reproducible world artifact proof"
+      ],
+      "source_blob_sha": "c8ca893727f292f0ae397dcb35549dabdb68e710"
+    },
+    {
+      "id": "FN-058",
+      "path": "modules/atc-genesis-build/src/lib.rs",
+      "symbol": "checksum",
+      "responsibility": "Artifact checksum helper (FNV-1a family per prior inspection)",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Replace or complement with cryptographic hash for integrity evidence"
+      ],
+      "source_blob_sha": "c8ca893727f292f0ae397dcb35549dabdb68e710"
+    },
+    {
+      "id": "FN-059",
+      "path": "modules/atc-genesis-build/src/lib.rs",
+      "symbol": "collect_files/build_artifacts",
+      "responsibility": "Package collection and artifact creation",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "World-specific round-trip, path safety and reproducibility tests"
+      ],
+      "source_blob_sha": "c8ca893727f292f0ae397dcb35549dabdb68e710"
+    },
+    {
+      "id": "FN-060",
+      "path": "modules/atc-genesis-build/src/lib.rs",
+      "symbol": "manifest_json",
+      "responsibility": "Manifest serialization",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-build"
+      ],
+      "component": "WORLD-010",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Schema version/migration and strict parser"
+      ],
+      "source_blob_sha": "c8ca893727f292f0ae397dcb35549dabdb68e710"
+    },
+    {
+      "id": "TEST-015",
+      "path": "modules/atc-genesis-build/src/lib.rs",
+      "symbol": "manifest_is_deterministic",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "c8ca893727f292f0ae397dcb35549dabdb68e710"
+    },
+    {
+      "id": "TEST-016",
+      "path": "modules/atc-genesis-build/src/lib.rs",
+      "symbol": "unsafe_paths_rejected",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "c8ca893727f292f0ae397dcb35549dabdb68e710"
+    },
+    {
+      "id": "FN-063",
+      "path": "modules/atc-genesis-runtime/src/lib.rs",
+      "symbol": "GenesisRuntime",
+      "responsibility": "Coordinates ECS, physics, gameplay, networking, animation and world streaming",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-004",
+        "atc-genesis-runtime",
+        "atc-genesis-platform"
+      ],
+      "component": "WORLD-011",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "World-generation scheduling/backpressure, streaming failure and frame-budget evidence"
+      ],
+      "source_blob_sha": "9ffa6dc6f46b1db61a7cc272b291be1163587d10"
+    },
+    {
+      "id": "FN-064",
+      "path": "modules/atc-genesis-runtime/src/lib.rs",
+      "symbol": "StepSummary",
+      "responsibility": "Runtime step result",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-004",
+        "atc-genesis-runtime",
+        "atc-genesis-platform"
+      ],
+      "component": "WORLD-011",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "World generation/streaming timing and memory telemetry not established"
+      ],
+      "source_blob_sha": "9ffa6dc6f46b1db61a7cc272b291be1163587d10"
+    },
+    {
+      "id": "FN-065",
+      "path": "modules/atc-genesis-runtime/src/lib.rs",
+      "symbol": "test_add_and_stream_chunks",
+      "responsibility": "Runtime integration test",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Test exists in source",
+        "execution against candidate SHA not recorded"
+      ],
+      "source_blob_sha": "9ffa6dc6f46b1db61a7cc272b291be1163587d10"
+    },
+    {
+      "id": "TEST-017",
+      "path": "modules/atc-genesis-runtime/src/lib.rs",
+      "symbol": "test_initialization",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "9ffa6dc6f46b1db61a7cc272b291be1163587d10"
+    },
+    {
+      "id": "TEST-018",
+      "path": "modules/atc-genesis-runtime/src/lib.rs",
+      "symbol": "test_step_advances_frame_and_tick",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "9ffa6dc6f46b1db61a7cc272b291be1163587d10"
+    },
+    {
+      "id": "TEST-019",
+      "path": "modules/atc-genesis-runtime/src/lib.rs",
+      "symbol": "test_add_and_stream_chunks",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "9ffa6dc6f46b1db61a7cc272b291be1163587d10"
+    },
+    {
+      "id": "TEST-020",
+      "path": "modules/atc-genesis-runtime/src/lib.rs",
+      "symbol": "test_publish_and_receive_network_state",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "9ffa6dc6f46b1db61a7cc272b291be1163587d10"
+    },
+    {
+      "id": "TEST-021",
+      "path": "modules/atc-genesis-runtime/src/lib.rs",
+      "symbol": "test_receive_network_packet_fails_on_garbage",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "9ffa6dc6f46b1db61a7cc272b291be1163587d10"
+    },
+    {
+      "id": "TEST-022",
+      "path": "modules/atc-genesis-runtime/src/lib.rs",
+      "symbol": "test_custom_audio_and_network",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "9ffa6dc6f46b1db61a7cc272b291be1163587d10"
+    },
+    {
+      "id": "FN-072",
+      "path": "modules/atc-genesis-physics/src/lib.rs",
+      "symbol": "RigidBody",
+      "responsibility": "Rigid-body data and state",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-003",
+        "atc-genesis-physics"
+      ],
+      "component": "WORLD-012",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Terrain-specific collider representation and scale stress tests"
+      ],
+      "source_blob_sha": "c8181b4eec89ab82410105a5920a4330787fcfea"
+    },
+    {
+      "id": "FN-073",
+      "path": "modules/atc-genesis-physics/src/lib.rs",
+      "symbol": "PhysicsConfig",
+      "responsibility": "Physics stepping configuration",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-003",
+        "atc-genesis-physics"
+      ],
+      "component": "WORLD-012",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "World-size and terrain collision budgets"
+      ],
+      "source_blob_sha": "c8181b4eec89ab82410105a5920a4330787fcfea"
+    },
+    {
+      "id": "FN-074",
+      "path": "modules/atc-genesis-physics/src/lib.rs",
+      "symbol": "PhysicsSimulation",
+      "responsibility": "Physics step and collision processing",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-003",
+        "atc-genesis-physics"
+      ],
+      "component": "WORLD-012",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Large terrain broadphase, contact correctness and performance"
+      ],
+      "source_blob_sha": "c8181b4eec89ab82410105a5920a4330787fcfea"
+    },
+    {
+      "id": "FN-075",
+      "path": "modules/atc-genesis-physics/src/lib.rs",
+      "symbol": "WorldPhysicsBridge",
+      "responsibility": "Bridges ECS/world chunk state to physics",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-003",
+        "atc-genesis-physics"
+      ],
+      "component": "WORLD-012",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Terrain mesh/collider cooking and unload synchronization"
+      ],
+      "source_blob_sha": "c8181b4eec89ab82410105a5920a4330787fcfea"
+    },
+    {
+      "id": "TEST-023",
+      "path": "modules/atc-genesis-physics/src/lib.rs",
+      "symbol": "fixed_step_applies_gravity",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "c8181b4eec89ab82410105a5920a4330787fcfea"
+    },
+    {
+      "id": "TEST-024",
+      "path": "modules/atc-genesis-physics/src/lib.rs",
+      "symbol": "floor_stops_body",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "c8181b4eec89ab82410105a5920a4330787fcfea"
+    },
+    {
+      "id": "TEST-025",
+      "path": "modules/atc-genesis-physics/src/lib.rs",
+      "symbol": "static_collider_prevents_penetration",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "c8181b4eec89ab82410105a5920a4330787fcfea"
+    },
+    {
+      "id": "TEST-026",
+      "path": "modules/atc-genesis-physics/src/lib.rs",
+      "symbol": "sync_updates_ecs",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "c8181b4eec89ab82410105a5920a4330787fcfea"
+    },
+    {
+      "id": "TEST-027",
+      "path": "modules/atc-genesis-physics/src/lib.rs",
+      "symbol": "loaded_chunks_create_deterministic_colliders",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "c8181b4eec89ab82410105a5920a4330787fcfea"
+    },
+    {
+      "id": "FN-081",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "World",
+      "responsibility": "Canonical ECS world and entity/component storage",
+      "dependencies": [
+        "atc-genesis-editor",
+        "atc-genesis-world",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-007",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Terrain/biome/vegetation component schemas and save/load"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "FN-082",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "SystemSchedule/SystemExecutor",
+      "responsibility": "System dependency scheduling and execution",
+      "dependencies": [
+        "WORLD-002",
+        "WORLD-004",
+        "atc-genesis-runtime",
+        "atc-genesis-platform"
+      ],
+      "component": "WORLD-011",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "World-generation budget, async cancellation and deterministic worker execution"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "FN-083",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "TransformRenderPipeline",
+      "responsibility": "Transform propagation to render pipeline",
+      "dependencies": [
+        "WORLD-003",
+        "atc-genesis-renderer",
+        "atc-genesis-assets"
+      ],
+      "component": "WORLD-004",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Terrain entities and streaming visibility/render output integration"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "FN-084",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "WorldEcsBridge",
+      "responsibility": "Chunk streaming/ECS bridge",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-platform::WorldAssetResolver",
+        "atc-genesis-assets",
+        "atc-genesis-runtime"
+      ],
+      "component": "WORLD-002",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "Lifecycle consistency for entities when chunks unload/reload"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "TEST-028",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "change_tracking_works",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "TEST-029",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "lifecycle_events_are_ordered",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "TEST-030",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "executor_runs_in_dependency_order",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "TEST-031",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "hierarchy_resolves",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "TEST-032",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "query3_returns_only_entities_with_all_components",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "TEST-033",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "query_with_filters_deterministically",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "TEST-034",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "access_contracts_detect_conflicts",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "TEST-035",
+      "path": "modules/atc-genesis-ecs/src/lib.rs",
+      "symbol": "parallel_batches_are_deterministic_and_dependency_safe",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "e5227050fb472819fd670e4eb44a333d07a3479f"
+    },
+    {
+      "id": "FN-093",
+      "path": "modules/atc-genesis-gameplay/src/lib.rs",
+      "symbol": "MovementConfig",
+      "responsibility": "Gameplay movement constraints",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-editor",
+        "atc-genesis-physics"
+      ],
+      "component": "WORLD-008",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "World traversal/path navigation contracts"
+      ],
+      "source_blob_sha": "0d469a65f73f9879868fd793c04f839995172312"
+    },
+    {
+      "id": "FN-094",
+      "path": "modules/atc-genesis-gameplay/src/lib.rs",
+      "symbol": "GameplayRuntime",
+      "responsibility": "Deterministic gameplay command processing",
+      "dependencies": [
+        "WORLD-001",
+        "atc-genesis-assets",
+        "atc-genesis-editor",
+        "atc-genesis-physics"
+      ],
+      "component": "WORLD-008",
+      "status": "PARTIAL",
+      "missing_evidence": [
+        "World interaction, placement and editor/gameplay separation"
+      ],
+      "source_blob_sha": "0d469a65f73f9879868fd793c04f839995172312"
+    },
+    {
+      "id": "TEST-036",
+      "path": "modules/atc-genesis-gameplay/src/lib.rs",
+      "symbol": "keyboard_moves_entity_deterministically",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "0d469a65f73f9879868fd793c04f839995172312"
+    },
+    {
+      "id": "TEST-037",
+      "path": "modules/atc-genesis-gameplay/src/lib.rs",
+      "symbol": "axis_is_clamped",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "0d469a65f73f9879868fd793c04f839995172312"
+    },
+    {
+      "id": "TEST-038",
+      "path": "modules/atc-genesis-gameplay/src/lib.rs",
+      "symbol": "diagonal_movement_preserves_max_speed",
+      "responsibility": "Existing in-source regression test; presence is not evidence that it ran on this candidate",
+      "dependencies": [],
+      "component": "WORLD-013",
+      "status": "IMPLEMENTED",
+      "missing_evidence": [
+        "Execute against exact candidate commit",
+        "Record run/job/step/exit code and logs",
+        "Record relevant artifact hashes"
+      ],
+      "source_blob_sha": "0d469a65f73f9879868fd793c04f839995172312"
+    }
+  ],
+  "test_inventory_summary": {
+    "source_files_examined": 13,
+    "in_source_test_names": 38,
+    "test_status": "PRESENT_IN_SOURCE_NOT_EXECUTED",
+    "important_limit": "Test function presence is not a test result. No build/test/CI run was executed for this catalog update.",
+    "uninspected_areas": [
+      "All workspace modules outside scoped world/editor/render/assets/physics/runtime/build/platform/ECS/gameplay files",
+      "Renderer submodule full inventory beyond previously inspected backend/resources/render_item",
+      "Editor UI and application wiring",
+      "Platform-specific renderer implementation",
+      "Terrain-specific unit/integration/performance fixtures"
+    ]
+  }
+}
