@@ -1,0 +1,48 @@
+// ============================================================================
+// Module: ecs_core
+// Description: ECS core
+// ATC-Standard: ATC-90
+// Sprint: 3.2
+// Language: ATCLang v0.3
+// Created: 2026-08-08
+// Agent: Aurora (MasterBrain · Base44)
+// ============================================================================
+
+module ecs_core {
+
+// Primary struct
+struct ECS {
+    id: UInt64,
+    name: String,
+    active: Bool,
+    created_at: UInt64,
+    updated_at: UInt64,
+}
+
+// Initialize module
+fn init() -> Bool {
+    return true
+}
+
+// Get status
+fn status() -> String {
+    return "ecs_core ready"
+}
+
+// Create entity
+fn create_entity() -> UInt64 {
+    // TODO: Implement
+    return UInt64:default()
+}
+// Add component
+fn add_component(entity: UInt64, comp: String) -> Bool {
+    // TODO: Implement
+    return Bool:default()
+}
+// Remove entity
+fn remove_entity(id: UInt64) -> Bool {
+    // TODO: Implement
+    return Bool:default()
+}
+
+} // module ecs_core
