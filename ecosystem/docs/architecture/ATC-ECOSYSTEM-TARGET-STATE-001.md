@@ -161,7 +161,7 @@ Der Soll-Zustand darf erst als katalogseitig vollständig bezeichnet werden, wen
 
 ### Referenzen
 
-- [Ökosystem-README](../../README.md)
+- [Ökosystem-README](../../../README.md)
 - [Layer-Architektur](ATC-ECOSYSTEM-LAYER-ARCHITECTURE-001.md)
 - [Komponenten-/Funktionskatalog (JSON)](ATC-COMPONENT-FUNCTION-CATALOG-001.json)
 - [Abhängigkeitsgraph (JSON)](ATC-DEPENDENCY-GRAPH-001.json)
