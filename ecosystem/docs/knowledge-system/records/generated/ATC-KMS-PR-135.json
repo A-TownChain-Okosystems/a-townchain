@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-135",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #135: feat(arch): Complete layer architecture (L0-L10 + X1-X8) for the ecosystem",
+  "context": "Pull request 135 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/135",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\n\nImplements the owner's full layer architecture specification for the A-TownChain ecosystem:\n\n- **11 main layers (L0-L10):** Hardware → Boot/Firmware → ShivaCore Kernel → GlobusOS → Desktop/UI → Blockchain → ATC-VM/Contracts → Developer Platform/ATCLang → Aurora AI → Applications → Integration/Deployment\n- **8 cross-cutting layers (X1-X8):** Security & Trust, Identity/Access, Protocol, Data/Storage, Standards/Governance, Testing/Verification, Observability, Build/Supply Chain\n- **51 sub-layers** with unique IDs across all layers\n- **30 catalog components remapped** from the old flat L0-L7 scheme (which had different semantics) to the new 11+8 layer architecture\n- **4 installation models (A-D)** with fail-closed kernel-layer restrictions (L0-L4 components cannot claim Windows/Linux host-app models)\n- **Catalog hierarchy levels 0-7** (Haupt-Layer → Sub-Layer → Komponente → Subkomponente → Funktionsvertrag → Schnittstellenvertrag → Implementierung → Verifikation)\n- **Binding status values** (MAPPED/IMPLEMENTED/VERIFIED/RESIDUAL/UNRESOLVED/BLOCKED/EXCLUDED) with the fail-closed rule that source code existence alone does NOT qualify for VERIFIED\n- **10 validation rules** (VAL-LR-001 through VAL-LR-010), enforced by a new fail-closed validator\n\n## New files\n\n- `docs/architecture/layers/ATC-LAYER-REGISTRY-001.yaml` — canonical layer registry (SSOT)\n- `docs/architecture/layers/ATC-LAYER-MAPPING-001.yaml` — component-to-layer mapping (30 components, old→new migration traceable)\n- `docs/architecture/ATC-ECOSYSTEM-LAYER-ARCHITECTURE-001.md` — architecture specification document\n- `tools/validate_layer_registry.py` — fail-closed validator (13/13 checks pass)\n\n## Key architectural decisions\n\n1. **Spec components (COMP-SHIVA-SPEC, COMP-VM-SPEC, COMP-ALGO-SPEC) assigned to X5** (Standards & Governance) rather than their implementation layers, because specifications are normative standards, not implementations.\n2. **COMP-COMPUTE assigned to L0** (Hardware & Compute) with a cross-reference to L8 (Aurora AI) because it covers hardware compute abstraction including AI accelerators.\n3. **COMP-ZKP assigned to X1** (Security & Trust) rather than L5/L6 because zero-knowledge proofs are a cross-cutting security primitive.\n4. **COMP-OS-INTEGRATION assigned to L10** (Integration & Deployment) because the OS integration matrix is a deployment/integration artifact.\n5. **Kernel layers (L0-L4) restricted from host-app models** per the fail-closed rule: a kernel subsystem is not a Windows/Linux application.\n\n## Validation\n\n- `python3 tools/validate_layer_registry.py` → 13/13 checks pass, 0 errors, 0 warnings\n- `pytest tools/tests/` → 32/32 pass\n- YAML parses cleanly for both new files\n- All 30 catalog components mapped with no orphans and no extras\n\n## Next steps (from the spec's implementation sequence)\n\n1. ✅ Layer registry created\n2. ✅ Existing catalog mapped\n3. ⬜ Gap analysis (L1 Drivers, L4 Desktop/UI, X2 Identity, X3 Protocol, X7 Observability, X8 Build have no primary components yet)\n4. ⬜ SSOT and evidence linkage (ongoing via functional verification)\n5. ⬜ Dependency graph with explicit edges\n6. ✅ Drift and completeness checks (validator created)\n\n## Notes\n\n- The old flat `layer` field in the catalog (L0-L7 with different semantics) is superseded by this mapping. Migration traceability preserved via `old_layer` field.\n- The numbering is a logical architecture model, NOT a claim that all layers are implemented or verified.\n- Security, governance, and cross-cutting services MUST span multiple layers rather than being exclusively above or below the main chain.\n\nAgent-ID: aurora-base44-superagent-6a1d37209d7f46ac065d39c5\nTask-ID: ECOSYSTEM-LAYER-ARCH-001\nAI-Role: repo-agent"
+}
