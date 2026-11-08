@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-108",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #108: governance: audit organization-wide Git tags and define release policy",
+  "context": "Pull request 108 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/108",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Scope\nAudit Git tag refs across all 33 organization repositories and add a machine-readable report plus a proposed tag/release policy.\n\n## Findings\n- 33 repositories inspected: 26 not archived, 7 archived.\n- Only two Git tags found: `a-townchain-os:v1.0.0` and `atc-standards:v1.1.0`.\n- 31 repositories currently have no Git tags.\n- The `a-townchain-os:v2.0.0` release remains a draft and no corresponding tag ref was returned.\n- Existing tags were not moved/deleted; no new release tags were created because this audit did not establish exact-SHA release acceptance evidence for the untagged repositories.\n\n## Files\n- `docs/governance/ATC-ORG-GIT-TAG-AUDIT-001.json`\n- `docs/governance/ATC-ORG-GIT-TAG-POLICY-001.md`\n\n## Validation\nThe JSON was fetched again from the audit branch and parsed successfully: 33 repositories, 2 tag refs, 31 repositories without tags. Policy is a proposal until review/merge. No release tags or releases were published."
+}
