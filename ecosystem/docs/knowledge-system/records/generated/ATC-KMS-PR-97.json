@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-97",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #97: ci: add security assurance pipeline",
+  "context": "Pull request 97 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/97",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Scope\n\nAdds one centralized security-assurance control-plane workflow for the ecosystem.\n\n### Implemented\n- deterministic Cargo metadata/dependency-graph evidence\n- explicit Cargo.lock and toolchain reproducibility residual reporting\n- unsafe/TCB inventory artifact\n- dependency inventory / SBOM evidence artifact\n- conditional cargo-fuzz harness smoke verification\n- conditional Miri verification for explicitly configured packages\n- final assurance classification without converting green CI into VERIFIED\n- fail-closed PR execution-SHA binding to `github.event.pull_request.head.sha`\n\n### Architecture boundary\nThis remains ecosystem-level CI/evidence/control-plane functionality. It does not replace component repositories as implementation SSOTs and does not weaken existing gates.\n\n### Evidence\nImplementation SHA: `f3df78ee212d3fecebfab8ea5d6f7ff9fe9d5fa1`\n\nBase SHA: `d20d9fb7760684a18c64b31a25e1cb7fa2faeed5`\n\nExactly one commit, one file, one scope.\n\n### Exact-SHA correction\nThe first PR execution proved that GitHub's `pull_request` checkout default used the synthetic merge ref (`a86771568dd3c499ffd7a01b5fe9573fe2e71ca4`) rather than the PR head. The workflow has now been squashed back to a single commit and explicitly checks out and asserts the PR head SHA. The earlier run remains valid evidence of the binding defect, not evidence for the corrected implementation."
+}
