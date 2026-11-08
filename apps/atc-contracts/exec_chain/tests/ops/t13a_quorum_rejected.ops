@@ -1,0 +1,16 @@
+# t13a — portiert aus test_governance_contract.py::test_finalize_quorum_rejected:
+# Votes 100k < Quorum (21M*10/100 = 2.1M) -> REJECTED (Flag 0).
+# Operanden-Reihenfolge: Swap stellt (votes, needed) fuer Lt bereit.
+Load 0
+Push 10
+Mul
+Push 100
+Div
+Load 1
+Swap
+Lt
+JumpIfNotZero 11
+Push 1
+Halt
+Push 0
+Halt
