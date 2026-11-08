@@ -1,0 +1,13 @@
+[package]
+name = "atc-windows-edition"
+version = "0.1.0"
+edition = "2021"
+description = "Windows-native Desktop-Client fuer das A-TownChain-Oekosystem (Rust, std, egui GUI)"
+
+[[bin]]
+name = "atc-windows-edition"
+path = "src/main.rs"
+
+[dependencies]
+eframe = "0.27"
+egui = "0.27"
