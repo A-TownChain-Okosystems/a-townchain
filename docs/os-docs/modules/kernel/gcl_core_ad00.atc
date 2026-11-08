@@ -1,0 +1,269 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-00 — Genesis Communication Layer (GCL) Core
+// Zentraler Kommunikationskern — Koordiniert alle 13 Busse
+// Sprint 2.4 — Genesis Engine
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+// ── GCL Core ─────────────────────────────────────────
+struct GCLCore {
+    // Bus-Referenzen
+    event_bus: EventBus,
+    command_bus: CommandBus,
+    query_bus: QueryBus,
+    message_bus: MessageBus,
+    asset_bus: AssetBus,
+    render_bus: RenderBus,
+    physics_bus: PhysicsBus,
+    audio_bus: AudioBus,
+    input_bus: InputBus,
+    ipc_bus: IPCBus,
+    network_bus: NetworkBus,
+    plugin_bus: PluginBus,
+    ai_bus: AIBus,
+    telemetry_bus: TelemetryBus,
+
+    // Core State
+    initialized: Bool,
+    running: Bool,
+    frame_count: UInt64,
+    target_fps: UInt16,
+    vsync: Bool,
+
+    // Pipeline
+    pipeline: List<GCLStage>,
+    current_stage: UInt8,
+}
+
+// GCL Pipeline Stages (in order per frame)
+struct GCLStage {
+    name: String,
+    bus: String,
+    enabled: Bool,
+    target_ms: Float32,
+    last_ms: Float32,
+}
+
+enum GCLPipelineStage {
+    Input,          // 1. Input erfassen
+    AI,             // 2. KI-Entscheidungen
+    Physics,        // 3. Physik-Simulation
+    GameLogic,      // 4. Spiellogik (EventBus)
+    Animation,      // 5. Animation updaten
+    Audio,          // 6. Audio updaten
+    Render,         // 7. Render-Commands enqueue
+    Telemetry,      // 8. Telemetry sample
+    Present,        // 9. Frame präsentieren
+}
+
+// GCL: Initialisieren
+pub fn init_gcl() -> GCLCore {
+    let core = GCLCore {
+        event_bus: EventBus{},
+        command_bus: CommandBus{},
+        query_bus: QueryBus{},
+        message_bus: MessageBus{},
+        asset_bus: AssetBus{},
+        render_bus: RenderBus{},
+        physics_bus: PhysicsBus{},
+        audio_bus: AudioBus{},
+        input_bus: InputBus{},
+        ipc_bus: IPCBus{},
+        network_bus: NetworkBus{},
+        plugin_bus: PluginBus{},
+        ai_bus: AIBus{},
+        telemetry_bus: TelemetryBus{},
+        initialized: true,
+        running: false,
+        frame_count: 0,
+        target_fps: 60,
+        vsync: true,
+        pipeline: [
+            GCLStage { name: "Input",      bus: "input_bus",     enabled: true, target_ms: 1.0,  last_ms: 0.0 },
+            GCLStage { name: "AI",         bus: "ai_bus",        enabled: true, target_ms: 5.0,  last_ms: 0.0 },
+            GCLStage { name: "Physics",    bus: "physics_bus",   enabled: true, target_ms: 8.0,  last_ms: 0.0 },
+            GCLStage { name: "GameLogic",  bus: "event_bus",     enabled: true, target_ms: 3.0,  last_ms: 0.0 },
+            GCLStage { name: "Animation",  bus: "event_bus",     enabled: true, target_ms: 2.0,  last_ms: 0.0 },
+            GCLStage { name: "Audio",      bus: "audio_bus",     enabled: true, target_ms: 1.0,  last_ms: 0.0 },
+            GCLStage { name: "Render",     bus: "render_bus",    enabled: true, target_ms: 10.0, last_ms: 0.0 },
+            GCLStage { name: "Telemetry",  bus: "telemetry_bus", enabled: true, target_ms: 0.5,  last_ms: 0.0 },
+            GCLStage { name: "Present",    bus: "render_bus",    enabled: true, target_ms: 1.0,  last_ms: 0.0 },
+        ],
+        current_stage: 0,
+    }
+    emit GCLInitialized()
+    return core
+}
+
+// GCL: Frame ausführen (Main Loop)
+pub fn gcl_frame(core: GCLCore, dt: Float32) -> Bool {
+    if not core.running { return false }
+
+    // 1. Input
+    end_input_frame(core.input_bus)
+
+    // 2. AI
+    update_all_agents(core.ai_bus, dt)
+
+    // 3. Physics
+    step(core.physics_bus, dt)
+
+    // 4. GameLogic (EventBus)
+    // (EventBus ist synchron — Events werden bei publish direkt verarbeitet)
+
+    // 5. MessageBus (async verarbeiten)
+    process_all(core.message_bus)
+
+    // 6. Audio
+    // (Audio-Bus ist event-getrieben)
+
+    // 7. Render
+    end_frame(core.render_bus)
+
+    // 8. Telemetry
+    let sample = TelemetrySample{
+        fps: core.target_fps,
+        cpu_usage: 0.0,
+        gpu_usage: 0.0,
+        ram_used_mb: 0,
+        vram_used_mb: 0,
+        ram_total_mb: 0,
+        vram_total_mb: 0,
+        draw_calls: 0,
+        triangles: 0,
+        network_ping_ms: 0,
+        asset_load_ms: 0,
+        physics_ms: 0.0,
+        render_ms: 0.0,
+        audio_ms: 0.0,
+        ai_ms: 0.0,
+        script_ms: 0.0,
+    }
+    sample(core.telemetry_bus, sample)
+
+    // 9. Network
+    send_heartbeat(core.network_bus)
+    retry_timeouts(core.network_bus)
+
+    // 10. Plugin hooks
+    fire_hook(core.plugin_bus, "on_frame_end", nil)
+
+    core.frame_count = core.frame_count + 1
+    return true
+}
+
+// GCL: Start
+pub fn start_gcl(core: GCLCore) -> Bool {
+    core.running = true
+    emit GCLStarted()
+    return true
+}
+
+// GCL: Stop
+pub fn stop_gcl(core: GCLCore) -> Bool {
+    core.running = false
+    emit GCLStopped()
+    return true
+}
+
+// GCL: Shutdown
+pub fn shutdown_gcl(core: GCLCore) -> Bool {
+    stop_gcl(core)
+    stop_all(core.audio_bus)
+    stop_all_sources(core.physics_bus)
+    clear_cache(core.query_bus)
+    emit GCLShutdown()
+    return true
+}
+
+// GCL: Bus abrufen (für Module)
+pub fn get_bus<T>(core: GCLCore, bus_name: String) -> T {
+    match bus_name {
+        "event_bus" => return core.event_bus,
+        "command_bus" => return core.command_bus,
+        "query_bus" => return core.query_bus,
+        "message_bus" => return core.message_bus,
+        "asset_bus" => return core.asset_bus,
+        "render_bus" => return core.render_bus,
+        "physics_bus" => return core.physics_bus,
+        "audio_bus" => return core.audio_bus,
+        "input_bus" => return core.input_bus,
+        "ipc_bus" => return core.ipc_bus,
+        "network_bus" => return core.network_bus,
+        "plugin_bus" => return core.plugin_bus,
+        "ai_bus" => return core.ai_bus,
+        "telemetry_bus" => return core.telemetry_bus,
+        _ => return nil,
+    }
+}
+
+// GCL: Pipeline-Stage aktivieren/deaktivieren
+pub fn set_stage_enabled(core: GCLCore, stage_name: String, enabled: Bool) -> Bool {
+    for stage in core.pipeline {
+        if stage.name == stage_name {
+            stage.enabled = enabled
+            return true
+        }
+    }
+    return false
+}
+
+// GCL: Pipeline-Statistiken
+pub fn pipeline_stats(core: GCLCore) -> List<PipelineStat> {
+    let stats = []
+    for stage in core.pipeline {
+        stats.append(PipelineStat {
+            name: stage.name,
+            enabled: stage.enabled,
+            target_ms: stage.target_ms,
+            last_ms: stage.last_ms,
+            over_budget: stage.last_ms > stage.target_ms,
+        })
+    }
+    return stats
+}
+
+struct PipelineStat {
+    name: String,
+    enabled: Bool,
+    target_ms: Float32,
+    last_ms: Float32,
+    over_budget: Bool,
+}
+
+// Type stubs for bus references
+type EventBus = Any
+type CommandBus = Any
+type QueryBus = Any
+type MessageBus = Any
+type AssetBus = Any
+type RenderBus = Any
+type PhysicsBus = Any
+type AudioBus = Any
+type InputBus = Any
+type IPCBus = Any
+type NetworkBus = Any
+type PluginBus = Any
+type AIBus = Any
+type TelemetryBus = Any
+type TelemetrySample = Any
+
+// External function stubs (referenced from other bus modules)
+pub fn end_input_frame(bus: Any) -> Bool { return true }
+pub fn update_all_agents(bus: Any, dt: Float32) -> Bool { return true }
+pub fn step(bus: Any, dt: Float32) -> Bool { return true }
+pub fn process_all(bus: Any) -> UInt16 { return 0 }
+pub fn end_frame(bus: Any) -> Bool { return true }
+pub fn sample(bus: Any, data: Any) -> Bool { return true }
+pub fn send_heartbeat(bus: Any) -> Bool { return true }
+pub fn retry_timeouts(bus: Any) -> UInt16 { return 0 }
+pub fn fire_hook(bus: Any, name: String, data: Any) -> List<Any> { return [] }
+pub fn stop_all(bus: Any) -> Bool { return true }
+pub fn stop_all_sources(bus: Any) -> Bool { return true }
+pub fn clear_cache(bus: Any) -> Bool { return true }
+
+event GCLInitialized()
+event GCLStarted()
+event GCLStopped()
+event GCLShutdown()
