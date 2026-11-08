@@ -1,0 +1,12 @@
+# Enterprise ownership boundary
+* @A-TownChain-Okosystems
+
+# Security and supply-chain controls
+/.github/ @A-TownChain-Okosystems
+/SECURITY.md @A-TownChain-Okosystems
+/Cargo.toml @A-TownChain-Okosystems
+/Cargo.lock @A-TownChain-Okosystems
+
+# Runtime/networking are security-sensitive execution paths
+/modules/atc-genesis-runtime/ @A-TownChain-Okosystems
+/modules/atc-genesis-network/ @A-TownChain-Okosystems
