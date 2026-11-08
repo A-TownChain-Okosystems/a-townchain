@@ -1,0 +1,21 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: atc-shivacore
+  classification: INFRA
+  maturity: R3
+  status: development
+project:
+  organization: A-TownChain-Okosystems
+  domain: kernel-tooling
+  component: kernel-tooling
+language:
+  primary: rust
+license:
+  type: Apache-2.0 (SPDX)
+security:
+  criticality: high
+api:
+  stability: experimental
+protocol:
+  compatibility: required
