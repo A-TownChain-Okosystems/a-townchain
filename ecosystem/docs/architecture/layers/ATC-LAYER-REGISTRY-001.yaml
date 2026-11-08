@@ -1,0 +1,652 @@
+# ATC-LAYER-REGISTRY-001 — Canonical Layer Registry for the A-TownChain Ecosystem
+# SSOT: a-townchain-ecosystem repo (this file)
+# Scope: Hierarchical layer and sub-layer structure for the entire ecosystem.
+# Status: DRAFT (owner review pending)
+# Version: 0.1.0
+# Date: 2026-10-15
+#
+# This registry defines the canonical architectural layers (L0-L10) and
+# cross-cutting layers (X1-X8) for the A-TownChain ecosystem. Every component
+# in the component-function catalog MUST reference exactly one primary layer
+# and MAY reference additional cross-cutting layers.
+#
+# STATUS VALUES (normative, fail-closed):
+#   MAPPED       - Entry is assigned to a source or contract.
+#   IMPLEMENTED  - Implementation is proven by concrete sources.
+#   VERIFIED     - Defined verification criteria are met with traceable evidence.
+#   RESIDUAL     - Open gaps or incomplete requirements exist.
+#   UNRESOLVED   - Assignment or meaning is not yet clarified.
+#   BLOCKED      - Verification or implementation is blocked by a specific obstacle.
+#   EXCLUDED     - Deliberately excluded, with documented justification.
+#
+# IMPORTANT: Source code existence alone does NOT qualify for VERIFIED.
+
+schema_id: ATC-LAYER-REGISTRY-001
+schema_version: "0.4.0"
+generated: "2026-10-15"
+authority: "A-TownChain-Okosystems/a-townchain-ecosystem"
+status: DRAFT
+
+# ---------------------------------------------------------------------------
+# Evidence policy (inherited from catalog, extended for layers)
+# ---------------------------------------------------------------------------
+evidence_policy:
+  source_mapped_not_verified: >
+    A component or function may be mapped to a source file without claiming
+    it is functionally verified. The status MAPPED is the minimum state;
+    VERIFIED requires test evidence, CI runs, and artifact hashes bound to
+    the exact commit SHA.
+  layer_claim_requires_evidence: >
+    Claiming a layer assignment (e.g., "this is L2 kernel code") requires
+    evidence that the code actually runs in that layer's context (e.g.,
+    kernel-mode execution, ring-0 privileges, TEE boundary). A source file
+    in a kernel directory is not automatically kernel code.
+  installation_variant_required: >
+    Every component must declare which installation models (A/B/C/D) it
+    supports. A kernel subsystem is NOT automatically a Windows or Linux
+    application. Failure to declare is fail-closed.
+
+# ---------------------------------------------------------------------------
+# MAIN LAYERS (L0-L10)
+# Each layer describes one responsibility. Components have exactly one
+# primary layer assignment.
+# ---------------------------------------------------------------------------
+layers:
+  - id: L0
+    architecture_id: "ATC-LAYER-L0-HARDWARE-COMPUTE"
+    name: "Hardware & Compute"
+    responsibility: >
+      Physical compute resources, hardware detection, hardware capabilities,
+      and secure provision of CPU, GPU, NPU, memory, and security resources
+      for ShivaCore, GlobusOS, A-TownChain, and Aurora AI. L0 describes the
+      hardware base. Firmware, boot processes, driver management, and
+      hardware abstraction belong to L1 as higher-level responsibilities.
+    principle: >
+      L0 provides capabilities but grants no permissions. Control of device
+      access, DMA, memory isolation, and privileged operations must be
+      governed by the responsible kernel, HAL, and security contracts.
+    sub_layers:
+      - id: L0.1
+        name: "CPU"
+        description: "x86-64, ARM64, cores, SIMD, virtualization"
+      - id: L0.2
+        name: "GPU"
+        description: "Graphics, parallel compute, VRAM, acceleration"
+      - id: L0.3
+        name: "NPU & AI Accelerators"
+        description: "Inference, matrix compute, AI acceleration"
+      - id: L0.4
+        name: "Memory"
+        description: "RAM, VRAM, cache, NUMA, ECC"
+      - id: L0.5
+        name: "Storage"
+        description: "NVMe, SSD, HDD, flash, persistent media"
+      - id: L0.6
+        name: "Security Hardware"
+        description: "TPM, TEE, hardware cryptography, secure elements"
+      - id: L0.7
+        name: "Connectivity & I/O"
+        description: "PCIe, USB, Ethernet, Wi-Fi, DMA, IOMMU"
+      - id: L0.8
+        name: "Power & Thermal"
+        description: "Energy, temperature, power limits, sensors"
+      - id: L0.9
+        name: "Hardware Identity & Capability Discovery"
+        description: >
+          Hardware identity, device capabilities, resource inventory, and
+          capability metadata as the foundation for all higher system layers.
+    components:
+      - COMP-COMPUTE
+    function_catalog: docs/architecture/layers/ATC-L0-FUNCTION-CATALOG-001.yaml
+    ssot_note: >
+      Hardware is described by its interface contracts, not by source code.
+      The canonical source for hardware interface specifications is the
+      driver/HAL layer (L1).
+  - id: L1
+    architecture_id: "ATC-LAYER-L1-BOOT-FIRMWARE-HAL"
+    name: "Boot, Firmware & Hardware Abstraction"
+    responsibility: >
+      Platform initialization, boot chain of trust, firmware/hardware
+      detection, standardized hardware contracts, and secure kernel
+      handoff between platform and ShivaCore. L1 does not replace the
+      kernel and does not implement a second driver or kernel SSOT.
+      Signature verification, measured boot, and policy enforcement
+      must be modeled as separate functions: measurement alone proves
+      no trust. Firmware tables and addresses are untrusted inputs
+      requiring validation before use.
+    sub_layers:
+      - id: L1.1
+        name: "Boot Manager"
+        description: "Boot-Auswahl, Startsequenz, Fehlerbehandlung"
+      - id: L1.2
+        name: "Secure Boot & Trust Chain"
+        description: "Signaturpruefung, Vertrauensanker, Integritaetskontrolle"
+      - id: L1.3
+        name: "Firmware Interface"
+        description: "UEFI, Boot Services, Runtime Services"
+      - id: L1.4
+        name: "Platform Discovery"
+        description: "ACPI, PCIe/ECAM, Firmwaretabellen, Geraeteinventar"
+      - id: L1.5
+        name: "Hardware Abstraction Layer (HAL)"
+        description: "Gemeinsame Hardwarevertraege und Architekturadapter"
+      - id: L1.6
+        name: "Bus & Device Interface"
+        description: "Geraetebusse, MMIO, Interrupts, DMA-/IOMMU-Ressourcen"
+      - id: L1.7
+        name: "Boot Storage & Loading"
+        description: "Boot-Medien, Kernel-Image, Initramfs, Laden und Pruefen"
+      - id: L1.8
+        name: "Platform Diagnostics"
+        description: "Boot-Protokoll, Fehlercodes, Hardware-/Firmwarediagnose"
+      - id: L1.9
+        name: "Kernel Handoff & Platform Contract"
+        description: "CPU-Zustand, Memory Map, Bootparameter, kontrollierte Kernel-Initialisierung"
+    components: []
+    function_catalog: docs/architecture/layers/ATC-L1-FUNCTION-CATALOG-001.yaml
+    ssot_note: >
+      Implementations live in globus-os (atc-bootloader, ShivaCore kernel
+      platform modules). This registry is the control, mapping, and evidence
+      layer, not a second implementation SSOT. Host adapters for Windows/
+      Linux are catalogued separately from the native GlobusOS boot chain.
+  - id: L2
+    architecture_id: "ATC-LAYER-L2-SHIVACORE-KERNEL"
+    name: "ShivaCore Kernel & Trusted Computing Base"
+    responsibility: >
+      Rust no_std capability microkernel with minimal TCB. Security
+      model: least privilege, no ambient authority, isolation by
+      default, explicit IPC, fail-closed. Outside the kernel:
+      A-TownChain-Node, ATC-VM, GlobusOS services, drivers, and
+      Aurora AI unless a strictly privileged kernel task requires
+      inclusion. The ecosystem repo is catalog, architecture
+      mapping, and evidence layer, not a second kernel
+      implementation.
+    sub_layers:
+      - id: L2.1
+        name: "Kernel Core"
+      - id: L2.10
+        name: "Faults & Recovery"
+      - id: L2.11
+        name: "Identity & Secure Services"
+      - id: L2.12
+        name: "Audit & Verification Hooks"
+      - id: L2.2
+        name: "Capability Security"
+      - id: L2.3
+        name: "Memory Management"
+      - id: L2.4
+        name: "Scheduling & Execution"
+      - id: L2.5
+        name: "IPC & Communication"
+      - id: L2.6
+        name: "Interrupts & Timers"
+      - id: L2.7
+        name: "Architecture & CPU"
+      - id: L2.8
+        name: "Device & DMA Isolation"
+      - id: L2.9
+        name: "Trusted Computing Base"
+    components:
+      - COMP-SHIVA
+    function_catalog: docs/architecture/layers/ATC-L2-FUNCTION-CATALOG-001.yaml
+    ssot_note: >
+      Kernel SSOT: globus-os/modules/atc-shivacore/kernel/. Implementation
+      inventory and evidence bound per contract at exact commits.
+  - id: L3
+    name: "GlobusOS Operating System"
+    responsibility: >
+      System services, filesystem, networking, processes, and device
+      management. This is the userspace operating system that provides
+      the platform for all applications.
+    sub_layers:
+      - id: L3.1
+        name: "System Services"
+        description: "Init system, service manager, daemon supervision, lifecycle"
+      - id: L3.2
+        name: "Filesystem"
+        description: "VFS, persistent storage, journaling, mount management"
+      - id: L3.3
+        name: "Networking"
+        description: "TCP/IP stack, sockets, DNS, network configuration"
+      - id: L3.4
+        name: "Process & Device Management"
+        description: "Process lifecycle, device hotplug, resource limits, cgroups"
+      - id: L3.5
+        name: "System APIs"
+        description: "POSIX-like syscalls, system call interface, ABI stability"
+    components:
+      - COMP-GLOBUS
+    ssot_note: >
+      Canonical: A-TownChain-Okosystems/globus-os
+
+  - id: L4
+    name: "Desktop, Window Manager & UI"
+    responsibility: >
+      Shell, compositor, window management, launcher, settings, and
+      accessibility. This layer provides the user-facing desktop experience.
+    sub_layers:
+      - id: L4.1
+        name: "Shell & Launcher"
+        description: "Desktop shell, application launcher, taskbar, system tray"
+      - id: L4.2
+        name: "Compositor & Display"
+        description: "Wayland/X11 compositor, rendering pipeline, display management"
+      - id: L4.3
+        name: "Window Management"
+        description: "Window placement, focus, tiling, virtual desktops"
+      - id: L4.4
+        name: "Settings & Accessibility"
+        description: "System settings, input methods, screen readers, accessibility"
+    components: []
+    ssot_note: >
+      Desktop components live in the GlobusOS repo under
+      modules/atc-globus-desktop/. Currently UNANALYZED — no verified
+      implementations.
+
+  - id: L5
+    name: "A-TownChain Blockchain"
+    responsibility: >
+      Blockchain node, consensus, networking, transactions, ledger,
+      and ATC token standards. This is the core blockchain infrastructure.
+    sub_layers:
+      - id: L5.1
+        name: "Node Runtime"
+        description: "Full/light node, peer-to-peer networking, node discovery, sync"
+      - id: L5.2
+        name: "Consensus"
+        description: "PoH/PoW/PoS hybrid consensus, finality, fork choice, validator management"
+      - id: L5.3
+        name: "Transactions & Ledger"
+        description: "Transaction pool, block production, ledger state, state transitions"
+      - id: L5.4
+        name: "ATC Token Standards"
+        description: "ATC-001 (Genesis), ATC-8300 (ERC-20 style), ATC-9900 (Governance/DAO)"
+      - id: L5.5
+        name: "Network Layer"
+        description: "Gossip, RPC endpoints, peer authentication, network sharding (ATC-07)"
+    components:
+      - COMP-CHAIN
+      - COMP-ALGO
+      - COMP-NODE
+    ssot_note: >
+      Blockchain Core: A-TownChain-Okosystems/a-townchain-os
+      Consensus/Algorithms: a-townchain-os/components/algorithm
+      (Also COMP-CHAIN-MONO in the a-townchain monorepo mirror.)
+
+  - id: L6
+    name: "ATC-VM & Smart Contracts"
+    responsibility: >
+      Virtual machine bytecode execution, gas metering, state management,
+      storage, and contract APIs. This layer provides the sandboxed
+      execution environment for smart contracts.
+    sub_layers:
+      - id: L6.1
+        name: "Bytecode & Execution"
+        description: "ATC-VM instruction set, bytecode interpreter/JIT, gas metering"
+      - id: L6.2
+        name: "Contract State & Storage"
+        description: "Contract storage model, state transitions, key-value store"
+      - id: L6.3
+        name: "Contract APIs"
+        description: "Host functions, ABI, contract interface, deployment lifecycle"
+      - id: L6.4
+        name: "Contract Registry"
+        description: "Deployed contract addresses, metadata, upgrade management"
+    components:
+      - COMP-VM
+      - COMP-CONTRACTS
+    ssot_note: >
+      ATC-VM: a-townchain-os/components/vm
+      Contracts & Registry: a-townchain-os / atc-contracts repo
+
+  - id: L7
+    name: "Developer Platform & ATCLang"
+    responsibility: >
+      Compiler, lexer, parser, semantics, SDK, CLI, and toolchain.
+      This layer provides the programming model and developer experience
+      for building on A-TownChain.
+    sub_layers:
+      - id: L7.1
+        name: "ATCLang Compiler"
+        description: "Lexer, parser, type checker, IR, code generation, ATCA artifacts"
+      - id: L7.2
+        name: "SDK & Libraries"
+        description: "Client SDK, standard library, type definitions, package management"
+      - id: L7.3
+        name: "CLI & Developer Tools"
+        description: "Command-line tools, project scaffolding, deployment scripts"
+      - id: L7.4
+        name: "IDE & Editor Support"
+        description: "Language server, syntax highlighting, debugging, IDE integration"
+    components:
+      - COMP-LANG
+      - COMP-TOOLCHAIN
+      - COMP-SDK
+      - COMP-IDE
+    ssot_note: >
+      ATCLang: A-TownChain-Okosystems/atclang (Rust core)
+      Toolchain: A-TownChain-Okosystems/atc-toolchain
+      SDK: A-TownChain-Okosystems/atc-sdk
+      IDE: A-TownChain-Okosystems/atc-ide
+
+  - id: L8
+    name: "Aurora AI Platform"
+    responsibility: >
+      Control plane, agent platform, runtime, intelligence fabric, and
+      AI models. This layer provides AI capabilities for the ecosystem.
+    sub_layers:
+      - id: L8.1
+        name: "Control Plane"
+        description: "Agent lifecycle, swarm orchestration, resource allocation, scheduling"
+      - id: L8.2
+        name: "Agent Platform & Runtime"
+        description: "Agent execution, memory, tools, perception-action loops"
+      - id: L8.3
+        name: "Intelligence Fabric"
+        description: "Model serving, inference, fine-tuning, model registry"
+      - id: L8.4
+        name: "Neural Communication (Synapse)"
+        description: "Agent-to-agent messaging, neural protocol, discovery, coalition"
+    components:
+      - COMP-AURORA
+    ssot_note: >
+      Canonical: A-TownChain-Okosystems/aurora-ai
+      Unassigned parts must be marked UNRESOLVED, not invented.
+
+  - id: L9
+    name: "Applications & Ecosystem Services"
+    responsibility: >
+      Wallet, dApps, explorer, governance apps, and system/AI applications.
+      This layer contains user-facing applications built on the platform.
+    sub_layers:
+      - id: L9.1
+        name: "Wallet & Payments"
+        description: "ATC wallet, transaction signing, key management UI, payments"
+      - id: L9.2
+        name: "dApps & Explorer"
+        description: "Decentralized applications, blockchain explorer, dashboards"
+      - id: L9.3
+        name: "Governance & DAO Applications"
+        description: "Voting interfaces, proposal management, treasury dashboards"
+      - id: L9.4
+        name: "GameFi & Entertainment"
+        description: "Genesis Engine, Genesis Chronicles, marketplace, game integrations"
+      - id: L9.5
+        name: "System Applications"
+        description: "System monitors, configuration tools, AI-powered system apps"
+    components:
+      - COMP-GENESIS
+      - COMP-CHRONICLES
+      - COMP-GFF
+      - COMP-MARKET
+      - COMP-DEMO
+    ssot_note: >
+      Genesis Engine: A-TownChain-Okosystems/genesis-engine
+      Genesis Chronicles: A-TownChain-Okosystems/genesis-chronicles
+      Genesis Franchise Factory: A-TownChain-Okosystems/genesis-franchise-factory
+      Marketplace: A-TownChain-Okosystems/atc-marketplace
+      Demo: A-TownChain-Okosystems/demo-repository
+
+  - id: L10
+    name: "Integration, Deployment & Operations"
+    responsibility: >
+      Installer, updates, package management, configuration, and
+      observability. This layer covers how the system is deployed,
+      updated, and operated.
+    sub_layers:
+      - id: L10.1
+        name: "Installer & Bootstrapping"
+        description: "System installer, image builder, network boot, initial configuration"
+      - id: L10.2
+        name: "Updates & Package Management"
+        description: "System updates, package manager, dependency resolution, rollback"
+      - id: L10.3
+        name: "Configuration Management"
+        description: "Declarative configuration, secrets management, environment setup"
+      - id: L10.4
+        name: "Observability & Operations"
+        description: "Logging, metrics, traces, health checks, alerting, recovery"
+    components:
+      - COMP-LAUNCHPAD
+      - COMP-OS-INTEGRATION
+    ssot_note: >
+      Launchpad: A-TownChain-Okosystems/atc-launchpad
+      OS Integration: A-TownChain-Okosystems/a-townchain-os/docs/architecture/OS-INTEGRATION-MATRIX.md
+
+# ---------------------------------------------------------------------------
+# CROSS-CUTTING LAYERS (X1-X8)
+# These layers span multiple architecture layers. Components MAY reference
+# additional cross-cutting layers via the `cross_cutting_layers` field.
+# ---------------------------------------------------------------------------
+cross_cutting_layers:
+  - id: X1
+    name: "Security & Trust"
+    responsibility: >
+      Identities, cryptography, key management, secure boot, TEE/TPM,
+      sandboxing, threat models, security policies, and security audits.
+    sub_layers:
+      - X1.1: "Cryptography & Key Management (ECDSA, secp256k1, RFC 6979)"
+      - X1.2: "Zero-Knowledge Proofs (ATC-ZKP)"
+      - X1.3: "Secure Boot & Attestation"
+      - X1.4: "Threat Models & Security Audits"
+    components:
+      - COMP-ZKP
+
+  - id: X2
+    name: "Identity, Access & Capability"
+    responsibility: >
+      Users, services, agents, roles, capability tokens, authorization,
+      delegation, and least-privilege principle.
+    sub_layers:
+      - X2.1: "Identity Management (users, services, agents)"
+      - X2.2: "Capability Tokens & Delegation"
+      - X2.3: "Authorization & Access Control"
+    components: []
+
+  - id: X3
+    name: "Protocol & Interoperability"
+    responsibility: >
+      Inter-process communication, APIs, network protocols, IPC, RPC,
+      data formats, cross-chain messaging, and bridge security contracts.
+    sub_layers:
+      - X3.1: "IPC & RPC Protocols"
+      - X3.2: "Cross-Chain Messaging & Bridges"
+      - X3.3: "Data Formats & Serialization"
+    components: []
+
+  - id: X4
+    name: "Data, State & Storage"
+    responsibility: >
+      Persistence, ledger state, configurations, data migration, backups,
+      encryption, schema versioning, and data integrity.
+    sub_layers:
+      - X4.1: "Persistent Storage & Ledger State"
+      - X4.2: "Configuration & Secrets"
+      - X4.3: "Data Migration & Integrity"
+    components:
+      - COMP-STORAGE
+
+  - id: X5
+    name: "Standards, Governance & Policy"
+    responsibility: >
+      Normative specifications, protocol versions, change processes,
+      compatibility, approvals, and responsibilities.
+    sub_layers:
+      - X5.1: "Normative Standards (atc-standards registry)"
+      - X5.2: "Governance Processes (SCR, AD, DEC)"
+      - X5.3: "Policy & Compliance"
+    components:
+      - COMP-STANDARDS
+      - COMP-ECOSYSTEM
+      - COMP-ORG-GOV
+      - COMP-SHIVA-SPEC
+      - COMP-VM-SPEC
+      - COMP-ALGO-SPEC
+      - COMP-DOCS
+
+  - id: X6
+    name: "Testing, Verification & Evidence"
+    responsibility: >
+      Unit, integration, system, and security testing, conformance checks,
+      CI, artifact hashes, exact commits, and traceable verification evidence.
+    sub_layers:
+      - X6.1: "Unit & Integration Testing"
+      - X6.2: "Conformance & Compliance Testing"
+      - X6.3: "CI/CD & Evidence Pipeline"
+    components:
+      - COMP-ATC-ENG
+
+  - id: X7
+    name: "Observability & Reliability"
+    responsibility: >
+      Logs, metrics, traces, diagnostics, health checks, recovery,
+      performance, and availability evidence.
+    sub_layers:
+      - X7.1: "Logging & Diagnostics"
+      - X7.2: "Metrics & Health Checks"
+      - X7.3: "Recovery & Reliability"
+    components: []
+
+  - id: X8
+    name: "Build, Release & Supply Chain"
+    responsibility: >
+      Reproducible builds, dependencies, SBOM, signatures, release
+      artifacts, update verification, and provenance.
+    sub_layers:
+      - X8.1: "Reproducible Builds & SBOM"
+      - X8.2: "Release Management & Signing"
+      - X8.3: "Dependency Management & Provenance"
+    components: []
+
+# ---------------------------------------------------------------------------
+# INSTALLATION MODELS
+# ---------------------------------------------------------------------------
+installation_models:
+  - id: "A"
+    name: "Native System"
+    description: >
+      Hardware → Boot → ShivaCore → GlobusOS → Desktop → A-TownChain → Aurora AI.
+      Full native stack from bare metal to applications.
+    applies_to: [L0, L1, L2, L3, L4, L5, L6, L7, L8, L9, L10]
+
+  - id: "B"
+    name: "Windows Application"
+    description: >
+      A-TownChain components as native Windows applications with host-OS
+      abstraction, process isolation, and compatible runtime components.
+    applies_to: [L5, L6, L7, L8, L9]
+    note: >
+      Kernel subsystems (L0-L4) are NOT Windows applications. Only L5+
+      components can run as Windows applications via host-OS abstraction.
+
+  - id: "C"
+    name: "Linux Application"
+    description: >
+      Linux host adapters, process and filesystem integration, and
+      supported runtime components.
+    applies_to: [L5, L6, L7, L8, L9]
+    note: >
+      Kernel subsystems (L0-L4) are NOT Linux applications. Only L5+
+      components can run as Linux applications via host-OS abstraction.
+
+  - id: "D"
+    name: "Development & Test Environment"
+    description: >
+      Cross-compilation, emulators, virtual machines, local nodes,
+      test networks, and CI environments.
+    applies_to: [L0, L1, L2, L3, L4, L5, L6, L7, L8, L9, L10]
+
+# ---------------------------------------------------------------------------
+# CATALOG HIERARCHY (Ebenen der Katalog-Einträge)
+# This is the catalog hierarchy for component and function entries,
+# NOT additional operating system layers.
+# ---------------------------------------------------------------------------
+catalog_hierarchy:
+  - level: 0
+    name: "Haupt-Layer"
+    example: "Hardware & Compute"
+    id_format: "L{n}"
+  - level: 1
+    name: "Sub-Layer"
+    example: "GPU Compute"
+    id_format: "L{n}.{m}"
+  - level: 2
+    name: "Komponente"
+    example: "GPU Driver Manager"
+    id_format: "COMP-{NAME}"
+  - level: 3
+    name: "Subkomponente"
+    example: "Device Discovery"
+    id_format: "COMP-{NAME}-{SUB}"
+  - level: 4
+    name: "Funktionsvertrag"
+    example: "discover_devices()"
+    id_format: "FN-{COMP}-{n}"
+  - level: 5
+    name: "Schnittstellenvertrag"
+    example: "Inputs, Outputs, Errors, Permissions"
+    id_format: "IF-{FN}-{n}"
+  - level: 6
+    name: "Implementierung"
+    example: "Exact repository path and symbol"
+    id_format: "IMPL-{n}"
+  - level: 7
+    name: "Verifikation"
+    example: "Tests, Workflow, Run/Job/Step, Exit-Code, Artifacts"
+    id_format: "VER-{n}"
+
+# ---------------------------------------------------------------------------
+# VALIDATION RULES (fail-closed)
+# ---------------------------------------------------------------------------
+validation_rules:
+  - id: VAL-LR-001
+    rule: "Every component MUST have exactly one primary layer assignment."
+    severity: FAIL
+  - id: VAL-LR-002
+    rule: "Every component MUST reference a valid layer ID from this registry."
+    severity: FAIL
+  - id: VAL-LR-003
+    rule: "Every sub-layer MUST have a unique ID within its parent layer."
+    severity: FAIL
+  - id: VAL-LR-004
+    rule: "Every component MUST declare supported installation models."
+    severity: FAIL
+  - id: VAL-LR-005
+    rule: "Components assigned to L0-L4 MUST NOT claim Windows/Linux installation models."
+    severity: FAIL
+  - id: VAL-LR-006
+    rule: "Every MAPPED/IMPLEMENTED/VERIFIED claim MUST have SSOT (repo, path, symbol, SHA)."
+    severity: FAIL
+  - id: VAL-LR-007
+    rule: "Every VERIFIED claim MUST have evidence (tests, CI, hashes) bound to exact commit SHA."
+    severity: FAIL
+  - id: VAL-LR-008
+    rule: "Source code existence alone does NOT qualify for VERIFIED status."
+    severity: FAIL
+  - id: VAL-LR-009
+    rule: "Every UNRESOLVED or BLOCKED entry MUST have a documented reason."
+    severity: FAIL
+  - id: VAL-LR-010
+    rule: "No duplicate implementations: one canonical SSOT per component."
+    severity: FAIL
+
+# ---------------------------------------------------------------------------
+# SSOT ASSIGNMENTS (canonical sources)
+# ---------------------------------------------------------------------------
+ssot_assignments:
+  - area: "Blockchain Core"
+    canonical_source: "A-TownChain-Okosystems/a-townchain-os"
+  - area: "ATC-VM"
+    canonical_source: "a-townchain-os/components/vm"
+  - area: "Consensus & Algorithms"
+    canonical_source: "a-townchain-os/components/algorithm"
+  - area: "ShivaCore Kernel"
+    canonical_source: "globus-os/modules/atc-shivacore/kernel/"
+  - area: "ATCLang"
+    canonical_source: "A-TownChain-Okosystems/atclang"
+  - area: "Aurora AI"
+    canonical_source: "A-TownChain-Okosystems/aurora-ai"
+  - area: "Normative Standards"
+    canonical_source: "A-TownChain-Okosystems/atc-standards"
+  - area: "Ecosystem Catalog & Compliance"
+    canonical_source: "A-TownChain-Okosystems/a-townchain-ecosystem"
