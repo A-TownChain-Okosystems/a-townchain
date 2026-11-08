@@ -724,28 +724,6 @@ impl Parser {
     }
 
     /// Bezeichner, der auch Schluesselwoerter akzeptiert (Namen wie `capability`).
-    fn ident_like(&mut self, what: &str) -> Result<String, ParseError> {
-        let text = match self.cur() {
-            Token::Ident(name) => Some(name),
-            Token::Capability => Some("capability".to_string()),
-            Token::State => Some("state".to_string()),
-            Token::Function => Some("function".to_string()),
-            Token::Policy => Some("policy".to_string()),
-            Token::Require => Some("require".to_string()),
-            _ => None,
-        };
-        match text {
-            Some(text) => {
-                self.pos += 1;
-                Ok(text)
-            }
-            None => Err(ParseError {
-                message: format!("{} erwartet, fand {:?}", what, self.cur()),
-            }),
-        }
-    }
-
-    /// Textfenster um die aktuelle Position fuer Fehlermeldungen.
     fn context_window(&self) -> String {
         let from = self.pos.saturating_sub(4);
         let to = (self.pos + 3).min(self.toks.len());
