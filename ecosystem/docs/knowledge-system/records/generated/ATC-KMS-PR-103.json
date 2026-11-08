@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-PR-103",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #103: docs(architecture): define decentralized AI OS architecture",
+  "context": "Pull request 103 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/103",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-218"
+    }
+  ],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n\nExtends the system-level KAI-OS architecture in `docs/DECENTRALIZED_AI_OS_ARCHITECTURE.md` with a source-backed reconciliation of the integrated AI + OS + blockchain target. This is a documentation-only change and does not assert production readiness.\n\n## Added\n\n- Canonical SSOT ownership and authority boundaries for ShivaCore, GlobusOS, Aurora AI, A-TownChain, ATC-VM, atc-wallet, atc-standards, a-townchain-os and a-townchain-ecosystem.\n- Explicit proposal/verification status for local GPU/NPU/TPU acceleration, TPM/TEE/Secure Boot, ZK-ML, federated learning and agentic micropayments.\n- Exact-SHA implementation/CI evidence matrix, E2E acceptance chain and negative tests for authorization, isolation, payments, proof validation, federation, hardware/backend mismatch and missing evidence.\n- Open decisions linked to Aurora Issues #51/#52, GlobusOS PRs #98/#99 and existing architecture/catalog work.\n\n## SSOT / Governance\n\n- Preserves **Standalone First, Ecosystem Second** and **Catalog First, Implementation Second**.\n- No duplicate implementation, component catalog or normative standard is introduced.\n- `atc-standards` remains the normative standards SSOT.\n- This PR does not authorize the separate L0–L10/X1–X8 to L0–L9/X0–X36 registry migration tracked by PR #218.\n- Unverified claims remain `BLOCKED`, `UNRESOLVED`, `RESIDUAL` or `NOT VERIFIED`.\n\n## Current-head CI (rechecked 2026-10-21)\n\nFor head `673b27f47d1841b2b4f92539939508e5a58883b0`, all eight retrieved workflow runs now report `completed / success`:\n\n- [Ecosystem Integration #39637594781](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39637594781)\n- [Ecosystem Release Readiness #39637594791](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39637594791)\n- [ATC Test Suite #39637594840](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39637594840)\n- [Blockchain Core Integration #39637594780](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39637594780)\n- [Security Assurance #39637594801](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39637594801)\n- [Determinism Gate #39637594874](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39637594874)\n- [CodeQL #39637594806](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39637594806)\n- [Repository Governance #39637594818](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39637594818)\n\nThe prior failed run #37852262191 is retained in the architecture document as a **historical** failure, not as the result for this head. Current-head CI success validates these workflows for the documentation branch; it does not verify the system-wide implementation or E2E claims.\n\n## Branch-history / merge caution\n\nThe current comparison reports this branch as 2 commits ahead and 871 behind `main` (diverged history; merge base `6fecb09a507fcb2400fc8a97bcdef156374ce00e`). The comparison reports only `docs/DECENTRALIZED_AI_OS_ARCHITECTURE.md` as changed and GitHub currently reports the PR as mergeable, but the old base history has not been rewritten or rebased. Do not perform an automatic rebase/merge of the 871-commit divergence without a separate reviewed history-reconciliation plan.\n\n## Remaining acceptance gates\n\n- Exact-source implementation, kernel boot, negative isolation, Aurora authorization path, ZK-ML, federated learning and payment E2E evidence remain distinct from documentation CI.\n- Do not merge or claim full system verification until architecture review and the remaining canonical implementation/evidence gaps are resolved."
+}
