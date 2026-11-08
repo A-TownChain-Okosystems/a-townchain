@@ -1,0 +1,12 @@
+// ATCLang v0.3 — atc-sdk :: Type Definitions
+// Block, Tx, Header, Node, Contract, Event
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module types {
+    // Public API — TBD
+    
+    fn init() {
+        // Initialization — TBD
+    }
+}
