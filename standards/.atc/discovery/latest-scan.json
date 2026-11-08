@@ -1,0 +1,4473 @@
+{
+  "scan_id": "DISC-2026-09-14-003",
+  "repository": "atc-standards",
+  "baseline_commit": "9f4bc2114cd0eefa756a3f2e5592dd94cdf6f07c",
+  "current_commit": "896b8cc48450a82d5fb1d8238f8037ecf3781911",
+  "scanned_at": "2026-09-14 10:12",
+  "standard": "ATC-STD-REPO-DISCOVERY-001..010 (SCR-0046)",
+  "totals": {
+    "files": 1982,
+    "by_class": {
+      "automation": 34,
+      "configuration": 45,
+      "data": 18,
+      "documentation": 270,
+      "documentation/priority": 28,
+      "governance-registry": 553,
+      "other": 4,
+      "smart-contract": 8,
+      "standards": 1005,
+      "template": 17
+    }
+  },
+  "new_content": 1256,
+  "modified_content": 455,
+  "deleted_content": 0,
+  "changes": {
+    "NEW": [
+      ".atc/discovery/baseline.json",
+      ".atc/discovery/latest-scan.json",
+      ".atc/evidence/evidence.yaml",
+      ".atc/standards.yaml",
+      "FILE_REGISTER.md",
+      "approval/APPROVAL-DECISION-2026-09-11-000-v1.3.0.md",
+      "approval/APPROVAL-DECISION-2026-09-11-001-Legacy-Restaurierung-25.md",
+      "approval/APPROVAL-DECISION-2026-09-11.md",
+      "audits/AUD-2026-0004.md",
+      "audits/AUD-2026-0005-ORG-LIVE-AUDIT.md",
+      "audits/META-SWEEP-2026-09-08.md",
+      "audits/META-SWEEP-2026-09-08.txt",
+      "audits/PRIOR-ART-2026-09-11.md",
+      "audits/file-admission/2026-09-11-atc-standards.md",
+      "change-requests/SCR-0046.md",
+      "change-requests/SCR-0047.md",
+      "change-requests/SCR-0048.md",
+      "change-requests/SCR-0049.md",
+      "change-requests/SCR-0050.md",
+      "change-requests/SCR-0051.md",
+      "change-requests/SCR-0052.md",
+      "change-requests/SCR-0053.md",
+      "change-requests/SCR-0054.md",
+      "change-requests/SCR-0055.md",
+      "change-requests/SCR-0056.md",
+      "change-requests/SCR-0057.md",
+      "change-requests/SCR-0058.md",
+      "change-requests/SCR-0059.md",
+      "change-requests/SCR-0060.md",
+      "change-requests/SCR-0061.md",
+      "change-requests/SCR-0062.md",
+      "change-requests/SCR-0063.md",
+      "change-requests/SCR-0064.md",
+      "change-requests/SCR-0065.md",
+      "change-requests/SCR-0066.md",
+      "change-requests/SCR-0067.md",
+      "change-requests/SCR-0068.md",
+      "change-requests/SCR-0069.md",
+      "change-requests/SCR-007-627.md",
+      "change-requests/SCR-0070.md",
+      "change-requests/SCR-0071.md",
+      "change-requests/SCR-0072.md",
+      "change-requests/SCR-0074.md",
+      "change-requests/SCR-0075.md",
+      "change-requests/SCR-0076.md",
+      "change-requests/SCR-0077.md",
+      "change-requests/SCR-0078.md",
+      "change-requests/SCR-0079.md",
+      "change-requests/SCR-0080.md",
+      "change-requests/SCR-0081.md",
+      "change-requests/SCR-0082.md",
+      "change-requests/SCR-0083.md",
+      "change-requests/SCR-0084.md",
+      "change-requests/SCR-0086.md",
+      "change-requests/SCR-0087.md",
+      "change-requests/SCR-0088.md",
+      "change-requests/SCR-0089.md",
+      "change-requests/SCR-0090.md",
+      "change-requests/SCR-0091.md",
+      "change-requests/SCR-0092.md",
+      "change-requests/SCR-0116.md",
+      "change-requests/SCR-0117.md",
+      "change-requests/SCR-0118.md",
+      "change-requests/SCR-0119.md",
+      "change-requests/SCR-0120.md",
+      "change-requests/SCR-0121.md",
+      "change-requests/SCR-0122.md",
+      "change-requests/SCR-0123.md",
+      "docs/CODE-QUALITY-MATRIX.md",
+      "docs/architecture/ATC-STANDARDS-LIBRARY-ARCHITECTURE.md",
+      "docs/compliance/COMPLIANCE-MATRIX-2026-09-10.md",
+      "docs/compliance/COMPLIANCE-MATRIX-2026-09-10b.md",
+      "docs/compliance/MASTER-BACKLOG-2026-09-10.md",
+      "docs/compliance/MATRIX-DATA-2026-09-10b.json",
+      "docs/compliance/ORG-COMPLIANCE-SCAN-2026-09-10.json",
+      "docs/compliance/ORG-COMPLIANCE-SCAN-2026-09-10.md",
+      "docs/patches/F-049_GATE_WIRING_2026-09-09.md",
+      "docs/patches/OWNER_WORKFLOW_PATCH_2026-09-08.md",
+      "docs/patches/SCR-0051_naming-governance.md",
+      "docs/patches/SCR-0052_ci-registry-driven.md",
+      "docs/patches/SCR-0054_ci-dependency-hardening.md",
+      "evidence/README.md",
+      "governance/ATC-STD-000.metadata.yaml",
+      "governance/ATC-STD-002.md",
+      "governance/ATC-STD-002.metadata.yaml",
+      "governance/authority/authority-matrix.yaml",
+      "governance/constitution/ATC-GOV-001.md",
+      "governance/constitution/ATC-GOV-001.metadata.yaml",
+      "governance/decision-rights/github-rulesets.md",
+      "governance/decision-rights/governance-gates.yaml",
+      "governance/repository-governance/profiles.yaml",
+      "legal/imprint/README.md",
+      "legal/imprint/provider.record.yaml",
+      "profiles/.github.yaml",
+      "profiles/a-townchain-os-docs.yaml",
+      "profiles/a-townchain-os.yaml",
+      "profiles/a-townchain.yaml",
+      "profiles/atc-algorithm.yaml",
+      "profiles/atc-compute.yaml",
+      "profiles/atc-contracts.yaml",
+      "profiles/atc-explorer.yaml",
+      "profiles/atc-ide.yaml",
+      "profiles/atc-indexer.yaml",
+      "profiles/atc-interop.yaml",
+      "profiles/atc-launchpad.yaml",
+      "profiles/atc-marketplace.yaml",
+      "profiles/atc-mining.yaml",
+      "profiles/atc-node.yaml",
+      "profiles/atc-oracle.yaml",
+      "profiles/atc-sdk.yaml",
+      "profiles/atc-shivacore.yaml",
+      "profiles/atc-standards.yaml",
+      "profiles/atc-storage.yaml",
+      "profiles/atc-vm.yaml",
+      "profiles/atc-wallet.yaml",
+      "profiles/atc-zkp.yaml",
+      "profiles/atclang.yaml",
+      "profiles/aurora-ai.yaml",
+      "profiles/demo-repository.yaml",
+      "profiles/genesis-chronicles.yaml",
+      "profiles/genesis-engine.yaml",
+      "profiles/genesis-franchise-factory.yaml",
+      "profiles/globus-os.yaml",
+      "registry/allocation/allocation-status.yaml",
+      "registry/allocation/capacity-matrix.yaml",
+      "registry/allocation/conflicts.yaml",
+      "registry/allocation/reservations.yaml",
+      "registry/code-quality-matrix.yaml",
+      "registry/compliance_state.yaml",
+      "registry/families/FAMILY-000.yaml",
+      "registry/families/FAMILY-100.yaml",
+      "registry/families/FAMILY-200.yaml",
+      "registry/families/FAMILY-300.yaml",
+      "registry/families/FAMILY-400.yaml",
+      "registry/families/FAMILY-500.yaml",
+      "registry/families/FAMILY-600.yaml",
+      "registry/families/FAMILY-700.yaml",
+      "registry/families/FAMILY-800.yaml",
+      "registry/families/FAMILY-900.yaml",
+      "registry/improvements.yaml",
+      "registry/maintenance-conformance.yaml",
+      "registry/maintenance-requirements.yaml",
+      "registry/maintenance/readiness/a-townchain-os.yaml",
+      "registry/maintenance/readiness/atc-standards.yaml",
+      "registry/standards/ATC-AAS-001.yaml",
+      "registry/standards/ATC-AAS-002.yaml",
+      "registry/standards/ATC-AAS-003.yaml",
+      "registry/standards/ATC-AAS-004.yaml",
+      "registry/standards/ATC-AAS-005.yaml",
+      "registry/standards/ATC-AAS-006.yaml",
+      "registry/standards/ATC-AAS-007.yaml",
+      "registry/standards/ATC-AAS-008.yaml",
+      "registry/standards/ATC-AAS-009.yaml",
+      "registry/standards/ATC-AAS-010.yaml",
+      "registry/standards/ATC-AAS-011.yaml",
+      "registry/standards/ATC-AAS-012.yaml",
+      "registry/standards/ATC-AAS-013.yaml",
+      "registry/standards/ATC-AAS-014.yaml",
+      "registry/standards/ATC-AAS-015.yaml",
+      "registry/standards/ATC-AAS-016.yaml",
+      "registry/standards/ATC-AAS-017.yaml",
+      "registry/standards/ATC-AAS-018.yaml",
+      "registry/standards/ATC-AAS-019.yaml",
+      "registry/standards/ATC-AAS-020.yaml",
+      "registry/standards/ATC-AAS-021.yaml",
+      "registry/standards/ATC-AAS-022.yaml",
+      "registry/standards/ATC-AAS-023.yaml",
+      "registry/standards/ATC-AAS-024.yaml",
+      "registry/standards/ATC-AAS-025.yaml",
+      "registry/standards/ATC-AI-GOV-001.yaml",
+      "registry/standards/ATC-AI-GOV-ACCESS-001.yaml",
+      "registry/standards/ATC-AI-GOV-AGENTS-001.yaml",
+      "registry/standards/ATC-AI-GOV-AUDIT-001.yaml",
+      "registry/standards/ATC-AI-GOV-CAPABILITY-001.yaml",
+      "registry/standards/ATC-AI-GOV-CHANGE-001.yaml",
+      "registry/standards/ATC-AI-GOV-CHECK-001.yaml",
+      "registry/standards/ATC-AI-GOV-FINDING-001.yaml",
+      "registry/standards/ATC-AI-GOV-HANDOFF-001.yaml",
+      "registry/standards/ATC-AI-GOV-INCIDENT-001.yaml",
+      "registry/standards/ATC-AI-GOV-MANIFEST-001.yaml",
+      "registry/standards/ATC-AI-GOV-POLICY-001.yaml",
+      "registry/standards/ATC-ARCH-001.yaml",
+      "registry/standards/ATC-ENT-001.yaml",
+      "registry/standards/ATC-ENT-002.yaml",
+      "registry/standards/ATC-ENT-003.yaml",
+      "registry/standards/ATC-ENT-004.yaml",
+      "registry/standards/ATC-ENT-005.yaml",
+      "registry/standards/ATC-ENT-006.yaml",
+      "registry/standards/ATC-ENT-007.yaml",
+      "registry/standards/ATC-ENT-008.yaml",
+      "registry/standards/ATC-ENT-009.yaml",
+      "registry/standards/ATC-ENT-010.yaml",
+      "registry/standards/ATC-ENT-011.yaml",
+      "registry/standards/ATC-ENT-012.yaml",
+      "registry/standards/ATC-ENT-013.yaml",
+      "registry/standards/ATC-ENT-014.yaml",
+      "registry/standards/ATC-ENT-015.yaml",
+      "registry/standards/ATC-GATE-SEC-001.yaml",
+      "registry/standards/ATC-GOV-001.yaml",
+      "registry/standards/ATC-ORG-BASELINE-001.yaml",
+      "registry/standards/ATC-STD-000.yaml",
+      "registry/standards/ATC-STD-001.yaml",
+      "registry/standards/ATC-STD-002.yaml",
+      "registry/standards/ATC-STD-003.yaml",
+      "registry/standards/ATC-STD-006.yaml",
+      "registry/standards/ATC-STD-008.yaml",
+      "registry/standards/ATC-STD-012.yaml",
+      "registry/standards/ATC-STD-013.yaml",
+      "registry/standards/ATC-STD-015.yaml",
+      "registry/standards/ATC-STD-016.yaml",
+      "registry/standards/ATC-STD-017.yaml",
+      "registry/standards/ATC-STD-018.yaml",
+      "registry/standards/ATC-STD-019.yaml",
+      "registry/standards/ATC-STD-020.yaml",
+      "registry/standards/ATC-STD-021.yaml",
+      "registry/standards/ATC-STD-022.yaml",
+      "registry/standards/ATC-STD-023.yaml",
+      "registry/standards/ATC-STD-024.yaml",
+      "registry/standards/ATC-STD-025.yaml",
+      "registry/standards/ATC-STD-026.yaml",
+      "registry/standards/ATC-STD-027.yaml",
+      "registry/standards/ATC-STD-028.yaml",
+      "registry/standards/ATC-STD-029.yaml",
+      "registry/standards/ATC-STD-030.yaml",
+      "registry/standards/ATC-STD-031.yaml",
+      "registry/standards/ATC-STD-032.yaml",
+      "registry/standards/ATC-STD-033.yaml",
+      "registry/standards/ATC-STD-034.yaml",
+      "registry/standards/ATC-STD-035.yaml",
+      "registry/standards/ATC-STD-036.yaml",
+      "registry/standards/ATC-STD-037.yaml",
+      "registry/standards/ATC-STD-038.yaml",
+      "registry/standards/ATC-STD-039.yaml",
+      "registry/standards/ATC-STD-040.yaml",
+      "registry/standards/ATC-STD-041.yaml",
+      "registry/standards/ATC-STD-042.yaml",
+      "registry/standards/ATC-STD-043.yaml",
+      "registry/standards/ATC-STD-045.yaml",
+      "registry/standards/ATC-STD-048.yaml",
+      "registry/standards/ATC-STD-050.yaml",
+      "registry/standards/ATC-STD-051.yaml",
+      "registry/standards/ATC-STD-052.yaml",
+      "registry/standards/ATC-STD-062.yaml",
+      "registry/standards/ATC-STD-063.yaml",
+      "registry/standards/ATC-STD-064.yaml",
+      "registry/standards/ATC-STD-066.yaml",
+      "registry/standards/ATC-STD-067.yaml",
+      "registry/standards/ATC-STD-069.yaml",
+      "registry/standards/ATC-STD-070.yaml",
+      "registry/standards/ATC-STD-072.yaml",
+      "registry/standards/ATC-STD-081.yaml",
+      "registry/standards/ATC-STD-082.yaml",
+      "registry/standards/ATC-STD-085.yaml",
+      "registry/standards/ATC-STD-087.yaml",
+      "registry/standards/ATC-STD-088.yaml",
+      "registry/standards/ATC-STD-089.yaml",
+      "registry/standards/ATC-STD-090.yaml",
+      "registry/standards/ATC-STD-091.yaml",
+      "registry/standards/ATC-STD-093.yaml",
+      "registry/standards/ATC-STD-094.yaml",
+      "registry/standards/ATC-STD-095.yaml",
+      "registry/standards/ATC-STD-100.yaml",
+      "registry/standards/ATC-STD-101.yaml",
+      "registry/standards/ATC-STD-103.yaml",
+      "registry/standards/ATC-STD-104.yaml",
+      "registry/standards/ATC-STD-105.yaml",
+      "registry/standards/ATC-STD-107.yaml",
+      "registry/standards/ATC-STD-114.yaml",
+      "registry/standards/ATC-STD-129.yaml",
+      "registry/standards/ATC-STD-130.yaml",
+      "registry/standards/ATC-STD-140.yaml",
+      "registry/standards/ATC-STD-141.yaml",
+      "registry/standards/ATC-STD-142.yaml",
+      "registry/standards/ATC-STD-143.yaml",
+      "registry/standards/ATC-STD-144.yaml",
+      "registry/standards/ATC-STD-146.yaml",
+      "registry/standards/ATC-STD-147.yaml",
+      "registry/standards/ATC-STD-148.yaml",
+      "registry/standards/ATC-STD-149.yaml",
+      "registry/standards/ATC-STD-160.yaml",
+      "registry/standards/ATC-STD-161.yaml",
+      "registry/standards/ATC-STD-163.yaml",
+      "registry/standards/ATC-STD-164.yaml",
+      "registry/standards/ATC-STD-169.yaml",
+      "registry/standards/ATC-STD-170.yaml",
+      "registry/standards/ATC-STD-171.yaml",
+      "registry/standards/ATC-STD-172.yaml",
+      "registry/standards/ATC-STD-174.yaml",
+      "registry/standards/ATC-STD-180.yaml",
+      "registry/standards/ATC-STD-181.yaml",
+      "registry/standards/ATC-STD-182.yaml",
+      "registry/standards/ATC-STD-183.yaml",
+      "registry/standards/ATC-STD-184.yaml",
+      "registry/standards/ATC-STD-185.yaml",
+      "registry/standards/ATC-STD-186.yaml",
+      "registry/standards/ATC-STD-187.yaml",
+      "registry/standards/ATC-STD-188.yaml",
+      "registry/standards/ATC-STD-189.yaml",
+      "registry/standards/ATC-STD-190.yaml",
+      "registry/standards/ATC-STD-191.yaml",
+      "registry/standards/ATC-STD-192.yaml",
+      "registry/standards/ATC-STD-193.yaml",
+      "registry/standards/ATC-STD-194.yaml",
+      "registry/standards/ATC-STD-195.yaml",
+      "registry/standards/ATC-STD-196.yaml",
+      "registry/standards/ATC-STD-197.yaml",
+      "registry/standards/ATC-STD-200.yaml",
+      "registry/standards/ATC-STD-201.yaml",
+      "registry/standards/ATC-STD-202.yaml",
+      "registry/standards/ATC-STD-203.yaml",
+      "registry/standards/ATC-STD-204.yaml",
+      "registry/standards/ATC-STD-205.yaml",
+      "registry/standards/ATC-STD-206.yaml",
+      "registry/standards/ATC-STD-207.yaml",
+      "registry/standards/ATC-STD-208.yaml",
+      "registry/standards/ATC-STD-209.yaml",
+      "registry/standards/ATC-STD-210.yaml",
+      "registry/standards/ATC-STD-212.yaml",
+      "registry/standards/ATC-STD-213.yaml",
+      "registry/standards/ATC-STD-214.yaml",
+      "registry/standards/ATC-STD-215.yaml",
+      "registry/standards/ATC-STD-220.yaml",
+      "registry/standards/ATC-STD-240.yaml",
+      "registry/standards/ATC-STD-241.yaml",
+      "registry/standards/ATC-STD-242.yaml",
+      "registry/standards/ATC-STD-243.yaml",
+      "registry/standards/ATC-STD-244.yaml",
+      "registry/standards/ATC-STD-245.yaml",
+      "registry/standards/ATC-STD-246.yaml",
+      "registry/standards/ATC-STD-247.yaml",
+      "registry/standards/ATC-STD-248.yaml",
+      "registry/standards/ATC-STD-249.yaml",
+      "registry/standards/ATC-STD-270.yaml",
+      "registry/standards/ATC-STD-271.yaml",
+      "registry/standards/ATC-STD-272.yaml",
+      "registry/standards/ATC-STD-273.yaml",
+      "registry/standards/ATC-STD-274.yaml",
+      "registry/standards/ATC-STD-275.yaml",
+      "registry/standards/ATC-STD-276.yaml",
+      "registry/standards/ATC-STD-280.yaml",
+      "registry/standards/ATC-STD-282.yaml",
+      "registry/standards/ATC-STD-283.yaml",
+      "registry/standards/ATC-STD-284.yaml",
+      "registry/standards/ATC-STD-285.yaml",
+      "registry/standards/ATC-STD-286.yaml",
+      "registry/standards/ATC-STD-300.yaml",
+      "registry/standards/ATC-STD-301.yaml",
+      "registry/standards/ATC-STD-302.yaml",
+      "registry/standards/ATC-STD-303.yaml",
+      "registry/standards/ATC-STD-304.yaml",
+      "registry/standards/ATC-STD-306.yaml",
+      "registry/standards/ATC-STD-307.yaml",
+      "registry/standards/ATC-STD-308.yaml",
+      "registry/standards/ATC-STD-309.yaml",
+      "registry/standards/ATC-STD-311.yaml",
+      "registry/standards/ATC-STD-312.yaml",
+      "registry/standards/ATC-STD-314.yaml",
+      "registry/standards/ATC-STD-340.yaml",
+      "registry/standards/ATC-STD-341.yaml",
+      "registry/standards/ATC-STD-342.yaml",
+      "registry/standards/ATC-STD-343.yaml",
+      "registry/standards/ATC-STD-344.yaml",
+      "registry/standards/ATC-STD-345.yaml",
+      "registry/standards/ATC-STD-346.yaml",
+      "registry/standards/ATC-STD-347.yaml",
+      "registry/standards/ATC-STD-348.yaml",
+      "registry/standards/ATC-STD-349.yaml",
+      "registry/standards/ATC-STD-350.yaml",
+      "registry/standards/ATC-STD-360.yaml",
+      "registry/standards/ATC-STD-361.yaml",
+      "registry/standards/ATC-STD-362.yaml",
+      "registry/standards/ATC-STD-363.yaml",
+      "registry/standards/ATC-STD-364.yaml",
+      "registry/standards/ATC-STD-365.yaml",
+      "registry/standards/ATC-STD-366.yaml",
+      "registry/standards/ATC-STD-367.yaml",
+      "registry/standards/ATC-STD-368.yaml",
+      "registry/standards/ATC-STD-380.yaml",
+      "registry/standards/ATC-STD-381.yaml",
+      "registry/standards/ATC-STD-382.yaml",
+      "registry/standards/ATC-STD-383.yaml",
+      "registry/standards/ATC-STD-384.yaml",
+      "registry/standards/ATC-STD-385.yaml",
+      "registry/standards/ATC-STD-386.yaml",
+      "registry/standards/ATC-STD-387.yaml",
+      "registry/standards/ATC-STD-388.yaml",
+      "registry/standards/ATC-STD-389.yaml",
+      "registry/standards/ATC-STD-400.yaml",
+      "registry/standards/ATC-STD-401.yaml",
+      "registry/standards/ATC-STD-402.yaml",
+      "registry/standards/ATC-STD-403.yaml",
+      "registry/standards/ATC-STD-404.yaml",
+      "registry/standards/ATC-STD-405.yaml",
+      "registry/standards/ATC-STD-406.yaml",
+      "registry/standards/ATC-STD-407.yaml",
+      "registry/standards/ATC-STD-408.yaml",
+      "registry/standards/ATC-STD-409.yaml",
+      "registry/standards/ATC-STD-420.yaml",
+      "registry/standards/ATC-STD-421.yaml",
+      "registry/standards/ATC-STD-422.yaml",
+      "registry/standards/ATC-STD-423.yaml",
+      "registry/standards/ATC-STD-424.yaml",
+      "registry/standards/ATC-STD-425.yaml",
+      "registry/standards/ATC-STD-426.yaml",
+      "registry/standards/ATC-STD-427.yaml",
+      "registry/standards/ATC-STD-428.yaml",
+      "registry/standards/ATC-STD-429.yaml",
+      "registry/standards/ATC-STD-430.yaml",
+      "registry/standards/ATC-STD-431.yaml",
+      "registry/standards/ATC-STD-432.yaml",
+      "registry/standards/ATC-STD-433.yaml",
+      "registry/standards/ATC-STD-434.yaml",
+      "registry/standards/ATC-STD-440.yaml",
+      "registry/standards/ATC-STD-441.yaml",
+      "registry/standards/ATC-STD-442.yaml",
+      "registry/standards/ATC-STD-443.yaml",
+      "registry/standards/ATC-STD-444.yaml",
+      "registry/standards/ATC-STD-445.yaml",
+      "registry/standards/ATC-STD-447.yaml",
+      "registry/standards/ATC-STD-448.yaml",
+      "registry/standards/ATC-STD-449.yaml",
+      "registry/standards/ATC-STD-450.yaml",
+      "registry/standards/ATC-STD-460.yaml",
+      "registry/standards/ATC-STD-461.yaml",
+      "registry/standards/ATC-STD-462.yaml",
+      "registry/standards/ATC-STD-463.yaml",
+      "registry/standards/ATC-STD-466.yaml",
+      "registry/standards/ATC-STD-467.yaml",
+      "registry/standards/ATC-STD-468.yaml",
+      "registry/standards/ATC-STD-469.yaml",
+      "registry/standards/ATC-STD-480.yaml",
+      "registry/standards/ATC-STD-481.yaml",
+      "registry/standards/ATC-STD-482.yaml",
+      "registry/standards/ATC-STD-483.yaml",
+      "registry/standards/ATC-STD-484.yaml",
+      "registry/standards/ATC-STD-485.yaml",
+      "registry/standards/ATC-STD-486.yaml",
+      "registry/standards/ATC-STD-488.yaml",
+      "registry/standards/ATC-STD-500.yaml",
+      "registry/standards/ATC-STD-501.yaml",
+      "registry/standards/ATC-STD-502.yaml",
+      "registry/standards/ATC-STD-504.yaml",
+      "registry/standards/ATC-STD-505.yaml",
+      "registry/standards/ATC-STD-507.yaml",
+      "registry/standards/ATC-STD-508.yaml",
+      "registry/standards/ATC-STD-509.yaml",
+      "registry/standards/ATC-STD-540.yaml",
+      "registry/standards/ATC-STD-541.yaml",
+      "registry/standards/ATC-STD-542.yaml",
+      "registry/standards/ATC-STD-543.yaml",
+      "registry/standards/ATC-STD-544.yaml",
+      "registry/standards/ATC-STD-545.yaml",
+      "registry/standards/ATC-STD-546.yaml",
+      "registry/standards/ATC-STD-560.yaml",
+      "registry/standards/ATC-STD-561.yaml",
+      "registry/standards/ATC-STD-562.yaml",
+      "registry/standards/ATC-STD-566.yaml",
+      "registry/standards/ATC-STD-580.yaml",
+      "registry/standards/ATC-STD-581.yaml",
+      "registry/standards/ATC-STD-582.yaml",
+      "registry/standards/ATC-STD-583.yaml",
+      "registry/standards/ATC-STD-584.yaml",
+      "registry/standards/ATC-STD-585.yaml",
+      "registry/standards/ATC-STD-586.yaml",
+      "registry/standards/ATC-STD-587.yaml",
+      "registry/standards/ATC-STD-600.yaml",
+      "registry/standards/ATC-STD-601.yaml",
+      "registry/standards/ATC-STD-602.yaml",
+      "registry/standards/ATC-STD-603.yaml",
+      "registry/standards/ATC-STD-604.yaml",
+      "registry/standards/ATC-STD-605.yaml",
+      "registry/standards/ATC-STD-606.yaml",
+      "registry/standards/ATC-STD-607.yaml",
+      "registry/standards/ATC-STD-620.yaml",
+      "registry/standards/ATC-STD-623.yaml",
+      "registry/standards/ATC-STD-624.yaml",
+      "registry/standards/ATC-STD-625.yaml",
+      "registry/standards/ATC-STD-626.yaml",
+      "registry/standards/ATC-STD-627.yaml",
+      "registry/standards/ATC-STD-640.yaml",
+      "registry/standards/ATC-STD-641.yaml",
+      "registry/standards/ATC-STD-643.yaml",
+      "registry/standards/ATC-STD-646.yaml",
+      "registry/standards/ATC-STD-660.yaml",
+      "registry/standards/ATC-STD-662.yaml",
+      "registry/standards/ATC-STD-664.yaml",
+      "registry/standards/ATC-STD-665.yaml",
+      "registry/standards/ATC-STD-666.yaml",
+      "registry/standards/ATC-STD-667.yaml",
+      "registry/standards/ATC-STD-680.yaml",
+      "registry/standards/ATC-STD-681.yaml",
+      "registry/standards/ATC-STD-682.yaml",
+      "registry/standards/ATC-STD-683.yaml",
+      "registry/standards/ATC-STD-684.yaml",
+      "registry/standards/ATC-STD-685.yaml",
+      "registry/standards/ATC-STD-686.yaml",
+      "registry/standards/ATC-STD-700.yaml",
+      "registry/standards/ATC-STD-701.yaml",
+      "registry/standards/ATC-STD-702.yaml",
+      "registry/standards/ATC-STD-703.yaml",
+      "registry/standards/ATC-STD-704.yaml",
+      "registry/standards/ATC-STD-705.yaml",
+      "registry/standards/ATC-STD-706.yaml",
+      "registry/standards/ATC-STD-999.yaml",
+      "registry/standards/ATC-STD-AI-DECISION-001.yaml",
+      "registry/standards/ATC-STD-AI-DEV-001.yaml",
+      "registry/standards/ATC-STD-AI-DEV-002.yaml",
+      "registry/standards/ATC-STD-AI-DEV-003.yaml",
+      "registry/standards/ATC-STD-AI-DEV-004.yaml",
+      "registry/standards/ATC-STD-AI-DEV-005.yaml",
+      "registry/standards/ATC-STD-AI-DEV-006.yaml",
+      "registry/standards/ATC-STD-AI-DEV-007.yaml",
+      "registry/standards/ATC-STD-AI-DEV-008.yaml",
+      "registry/standards/ATC-STD-AI-DEV-009.yaml",
+      "registry/standards/ATC-STD-AI-DEV-010.yaml",
+      "registry/standards/ATC-STD-AI-DEV-011.yaml",
+      "registry/standards/ATC-STD-AI-DEV-012.yaml",
+      "registry/standards/ATC-STD-AOS-001.yaml",
+      "registry/standards/ATC-STD-AUDIT-001.yaml",
+      "registry/standards/ATC-STD-BUG-001.yaml",
+      "registry/standards/ATC-STD-BUG-002.yaml",
+      "registry/standards/ATC-STD-BUG-003.yaml",
+      "registry/standards/ATC-STD-BUG-004.yaml",
+      "registry/standards/ATC-STD-BUG-005.yaml",
+      "registry/standards/ATC-STD-CHANGE-001.yaml",
+      "registry/standards/ATC-STD-CI-001.yaml",
+      "registry/standards/ATC-STD-COMPAT-001.yaml",
+      "registry/standards/ATC-STD-DESC-001.yaml",
+      "registry/standards/ATC-STD-ENG-001.yaml",
+      "registry/standards/ATC-STD-ERR-000.yaml",
+      "registry/standards/ATC-STD-ERR-001.yaml",
+      "registry/standards/ATC-STD-ERR-002.yaml",
+      "registry/standards/ATC-STD-ERR-003.yaml",
+      "registry/standards/ATC-STD-ERR-004.yaml",
+      "registry/standards/ATC-STD-ERR-005.yaml",
+      "registry/standards/ATC-STD-ERR-006.yaml",
+      "registry/standards/ATC-STD-ERR-007.yaml",
+      "registry/standards/ATC-STD-ERR-008.yaml",
+      "registry/standards/ATC-STD-ERR-009.yaml",
+      "registry/standards/ATC-STD-ERR-010.yaml",
+      "registry/standards/ATC-STD-ERR-011.yaml",
+      "registry/standards/ATC-STD-ERR-012.yaml",
+      "registry/standards/ATC-STD-ERR-013.yaml",
+      "registry/standards/ATC-STD-ERR-014.yaml",
+      "registry/standards/ATC-STD-ERR-015.yaml",
+      "registry/standards/ATC-STD-FRAMEWORK-001.yaml",
+      "registry/standards/ATC-STD-IMPLEMENTATION-001.yaml",
+      "registry/standards/ATC-STD-IMPROVEMENT-001.yaml",
+      "registry/standards/ATC-STD-LEGAL-002.yaml",
+      "registry/standards/ATC-STD-LICENSE-001.yaml",
+      "registry/standards/ATC-STD-LICENSE-002.yaml",
+      "registry/standards/ATC-STD-LICENSE-003.yaml",
+      "registry/standards/ATC-STD-LICENSE-004.yaml",
+      "registry/standards/ATC-STD-LICENSE-005.yaml",
+      "registry/standards/ATC-STD-LICENSE-006.yaml",
+      "registry/standards/ATC-STD-LICENSE-007.yaml",
+      "registry/standards/ATC-STD-LICENSE-008.yaml",
+      "registry/standards/ATC-STD-LICENSE-009.yaml",
+      "registry/standards/ATC-STD-MAINT-000.yaml",
+      "registry/standards/ATC-STD-MAINT-001.yaml",
+      "registry/standards/ATC-STD-MAINT-002.yaml",
+      "registry/standards/ATC-STD-MAINT-003.yaml",
+      "registry/standards/ATC-STD-MAINT-004.yaml",
+      "registry/standards/ATC-STD-MAINT-005.yaml",
+      "registry/standards/ATC-STD-MAINT-006.yaml",
+      "registry/standards/ATC-STD-MAINT-007.yaml",
+      "registry/standards/ATC-STD-MAINT-008.yaml",
+      "registry/standards/ATC-STD-MAINT-009.yaml",
+      "registry/standards/ATC-STD-MAINT-010.yaml",
+      "registry/standards/ATC-STD-MAINT-011.yaml",
+      "registry/standards/ATC-STD-MAINT-012.yaml",
+      "registry/standards/ATC-STD-MAINT-013.yaml",
+      "registry/standards/ATC-STD-MAINT-014.yaml",
+      "registry/standards/ATC-STD-MAINT-015.yaml",
+      "registry/standards/ATC-STD-MAINT-016.yaml",
+      "registry/standards/ATC-STD-MAINT-017.yaml",
+      "registry/standards/ATC-STD-MAINT-018.yaml",
+      "registry/standards/ATC-STD-MAINT-019.yaml",
+      "registry/standards/ATC-STD-MAINT-020.yaml",
+      "registry/standards/ATC-STD-MAINT-021.yaml",
+      "registry/standards/ATC-STD-MAINT-022.yaml",
+      "registry/standards/ATC-STD-MAINT-023.yaml",
+      "registry/standards/ATC-STD-MAINT-024.yaml",
+      "registry/standards/ATC-STD-MD-001.yaml",
+      "registry/standards/ATC-STD-MILESTONE-001.yaml",
+      "registry/standards/ATC-STD-NET-001.yaml",
+      "registry/standards/ATC-STD-NET-002.yaml",
+      "registry/standards/ATC-STD-NET-003.yaml",
+      "registry/standards/ATC-STD-NET-004.yaml",
+      "registry/standards/ATC-STD-NET-005.yaml",
+      "registry/standards/ATC-STD-NET-006.yaml",
+      "registry/standards/ATC-STD-NET-007.yaml",
+      "registry/standards/ATC-STD-NET-008.yaml",
+      "registry/standards/ATC-STD-NET-009.yaml",
+      "registry/standards/ATC-STD-PROTOCOL-001.yaml",
+      "registry/standards/ATC-STD-PROTOCOL-002.yaml",
+      "registry/standards/ATC-STD-PROTOCOL-003.yaml",
+      "registry/standards/ATC-STD-README-001.yaml",
+      "registry/standards/ATC-STD-REGISTRY-001.yaml",
+      "registry/standards/ATC-STD-REPO-AUDIT-001.yaml",
+      "registry/standards/ATC-STD-REPO-AUDIT-002.yaml",
+      "registry/standards/ATC-STD-REPO-AUDIT-003.yaml",
+      "registry/standards/ATC-STD-REPO-DISCOVERY-001.yaml",
+      "registry/standards/ATC-STD-REPO-DISCOVERY-002.yaml",
+      "registry/standards/ATC-STD-REPO-DISCOVERY-003.yaml",
+      "registry/standards/ATC-STD-REPO-DISCOVERY-004.yaml",
+      "registry/standards/ATC-STD-REPO-DISCOVERY-005.yaml",
+      "registry/standards/ATC-STD-REPO-DISCOVERY-006.yaml",
+      "registry/standards/ATC-STD-REPO-DISCOVERY-007.yaml",
+      "registry/standards/ATC-STD-REPO-DISCOVERY-008.yaml",
+      "registry/standards/ATC-STD-REPO-DISCOVERY-009.yaml",
+      "registry/standards/ATC-STD-REPO-DISCOVERY-010.yaml",
+      "registry/standards/ATC-STD-REPO-MAINT-001.yaml",
+      "registry/standards/ATC-STD-SC-001.yaml",
+      "registry/standards/ATC-STD-SC-002.yaml",
+      "registry/standards/ATC-STD-SC-003.yaml",
+      "registry/standards/ATC-STD-SC-004.yaml",
+      "registry/standards/ATC-STD-SC-005.yaml",
+      "registry/standards/ATC-STD-SC-006.yaml",
+      "registry/standards/ATC-STD-SC-007.yaml",
+      "registry/standards/ATC-STD-SC-008.yaml",
+      "registry/standards/ATC-STD-SC-009.yaml",
+      "registry/standards/ATC-STD-SC-010.yaml",
+      "registry/standards/ATC-STD-SC-011.yaml",
+      "registry/standards/ATC-STD-SC-012.yaml",
+      "registry/standards/ATC-STD-SC-013.yaml",
+      "registry/standards/ATC-STD-SC-014.yaml",
+      "registry/standards/ATC-STD-SC-015.yaml",
+      "registry/standards/ATC-STD-SC-016.yaml",
+      "registry/standards/ATC-STD-SC-017.yaml",
+      "registry/standards/ATC-STD-SC-018.yaml",
+      "registry/standards/ATC-STD-SC-019.yaml",
+      "registry/standards/ATC-STD-SC-020.yaml",
+      "registry/standards/ATC-STD-STDDEV-001.yaml",
+      "registry/standards/ATC-STD-TAXONOMY-001.yaml",
+      "registry/standards/ATC-STD-TUD-001.yaml",
+      "registry/standards/ATC-STD-UPDATE-001.yaml",
+      "registry/standards/ATC-STD-V2S-000.yaml",
+      "registry/standards/ATC-STD-VERSION-001.yaml",
+      "registry/standards/ATC-STD-ZKP-001.yaml",
+      "registry/standards/ATC-STD-ZKP-002.yaml",
+      "registry/standards/ATC-STD-ZKP-003.yaml",
+      "registry/standards/ATC-STD-ZKP-004.yaml",
+      "registry/standards/ATC-STD-ZKP-005.yaml",
+      "registry/standards/ATC-STD-ZKP-006.yaml",
+      "registry/standards/ATC-STD-ZKP-007.yaml",
+      "registry/standards/ATC-STD-ZKP-008.yaml",
+      "registry/standards/ATC-STD-ZKP-009.yaml",
+      "registry/standards/ATC-STD-ZKP-010.yaml",
+      "registry/technology-registry.yaml",
+      "schemas/maintenance/maintenance-evidence.schema.json",
+      "schemas/maintenance/maintenance-readiness.schema.json",
+      "schemas/maintenance/maintenance-record.schema.json",
+      "standards/aas/ATC-AAS-001.metadata.yaml",
+      "standards/aas/ATC-AAS-002.metadata.yaml",
+      "standards/aas/ATC-AAS-003.metadata.yaml",
+      "standards/aas/ATC-AAS-004.metadata.yaml",
+      "standards/aas/ATC-AAS-005.metadata.yaml",
+      "standards/aas/ATC-AAS-006.metadata.yaml",
+      "standards/aas/ATC-AAS-007.metadata.yaml",
+      "standards/aas/ATC-AAS-008.metadata.yaml",
+      "standards/aas/ATC-AAS-009.metadata.yaml",
+      "standards/aas/ATC-AAS-010.metadata.yaml",
+      "standards/aas/ATC-AAS-011.metadata.yaml",
+      "standards/aas/ATC-AAS-012.metadata.yaml",
+      "standards/aas/ATC-AAS-013.metadata.yaml",
+      "standards/aas/ATC-AAS-014.metadata.yaml",
+      "standards/aas/ATC-AAS-015.metadata.yaml",
+      "standards/aas/ATC-AAS-016.metadata.yaml",
+      "standards/aas/ATC-AAS-017.metadata.yaml",
+      "standards/aas/ATC-AAS-018.metadata.yaml",
+      "standards/aas/ATC-AAS-019.metadata.yaml",
+      "standards/aas/ATC-AAS-020.metadata.yaml",
+      "standards/aas/ATC-AAS-021.metadata.yaml",
+      "standards/aas/ATC-AAS-022.metadata.yaml",
+      "standards/aas/ATC-AAS-023.metadata.yaml",
+      "standards/aas/ATC-AAS-024.metadata.yaml",
+      "standards/aas/ATC-AAS-025.metadata.yaml",
+      "standards/agent-operating/ATC-STD-AOS-001.metadata.yaml",
+      "standards/ai-decision/ATC-STD-AI-DECISION-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-001.md",
+      "standards/ai-gov/ATC-AI-GOV-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-ACCESS-001.md",
+      "standards/ai-gov/ATC-AI-GOV-ACCESS-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-AGENTS-001.md",
+      "standards/ai-gov/ATC-AI-GOV-AGENTS-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-AUDIT-001.md",
+      "standards/ai-gov/ATC-AI-GOV-AUDIT-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-CAPABILITY-001.md",
+      "standards/ai-gov/ATC-AI-GOV-CAPABILITY-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-CHANGE-001.md",
+      "standards/ai-gov/ATC-AI-GOV-CHANGE-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-CHECK-001.md",
+      "standards/ai-gov/ATC-AI-GOV-CHECK-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-FINDING-001.md",
+      "standards/ai-gov/ATC-AI-GOV-FINDING-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-HANDOFF-001.md",
+      "standards/ai-gov/ATC-AI-GOV-HANDOFF-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-INCIDENT-001.md",
+      "standards/ai-gov/ATC-AI-GOV-INCIDENT-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-MANIFEST-001.md",
+      "standards/ai-gov/ATC-AI-GOV-MANIFEST-001.metadata.yaml",
+      "standards/ai-gov/ATC-AI-GOV-POLICY-001.md",
+      "standards/ai-gov/ATC-AI-GOV-POLICY-001.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-001.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-002.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-003.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-004.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-005.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-006.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-007.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-008.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-009.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-010.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-011.metadata.yaml",
+      "standards/ai/ATC-STD-AI-DEV-012.metadata.yaml",
+      "standards/applications/ATC-STD-400.metadata.yaml",
+      "standards/applications/ATC-STD-401.metadata.yaml",
+      "standards/applications/ATC-STD-402.metadata.yaml",
+      "standards/applications/ATC-STD-403.metadata.yaml",
+      "standards/applications/ATC-STD-404.metadata.yaml",
+      "standards/applications/ATC-STD-405.metadata.yaml",
+      "standards/applications/ATC-STD-406.metadata.yaml",
+      "standards/applications/ATC-STD-407.metadata.yaml",
+      "standards/applications/ATC-STD-408.metadata.yaml",
+      "standards/applications/ATC-STD-409.metadata.yaml",
+      "standards/applications/ATC-STD-420.metadata.yaml",
+      "standards/applications/ATC-STD-421.metadata.yaml",
+      "standards/applications/ATC-STD-422.metadata.yaml",
+      "standards/applications/ATC-STD-423.metadata.yaml",
+      "standards/applications/ATC-STD-424.metadata.yaml",
+      "standards/applications/ATC-STD-425.metadata.yaml",
+      "standards/applications/ATC-STD-426.metadata.yaml",
+      "standards/applications/ATC-STD-427.metadata.yaml",
+      "standards/applications/ATC-STD-428.metadata.yaml",
+      "standards/applications/ATC-STD-429.metadata.yaml",
+      "standards/applications/ATC-STD-430.metadata.yaml",
+      "standards/applications/ATC-STD-431.metadata.yaml",
+      "standards/applications/ATC-STD-432.metadata.yaml",
+      "standards/applications/ATC-STD-433.metadata.yaml",
+      "standards/applications/ATC-STD-434.metadata.yaml",
+      "standards/applications/ATC-STD-580.metadata.yaml",
+      "standards/applications/ATC-STD-581.metadata.yaml",
+      "standards/applications/ATC-STD-582.metadata.yaml",
+      "standards/applications/ATC-STD-583.metadata.yaml",
+      "standards/applications/ATC-STD-584.metadata.yaml",
+      "standards/applications/ATC-STD-585.metadata.yaml",
+      "standards/applications/ATC-STD-586.metadata.yaml",
+      "standards/applications/ATC-STD-587.metadata.yaml",
+      "standards/architecture/ATC-ARCH-001.md",
+      "standards/architecture/ATC-ARCH-001.metadata.yaml",
+      "standards/architecture/ATC-STD-100.metadata.yaml",
+      "standards/audit/ATC-STD-640.metadata.yaml",
+      "standards/audit/ATC-STD-641.metadata.yaml",
+      "standards/audit/ATC-STD-643.metadata.yaml",
+      "standards/audit/ATC-STD-646.metadata.yaml",
+      "standards/audit/ATC-STD-AUDIT-001.metadata.yaml",
+      "standards/blockchain/ATC-STD-180.metadata.yaml",
+      "standards/blockchain/ATC-STD-181.metadata.yaml",
+      "standards/blockchain/ATC-STD-182.metadata.yaml",
+      "standards/blockchain/ATC-STD-183.metadata.yaml",
+      "standards/blockchain/ATC-STD-184.metadata.yaml",
+      "standards/blockchain/ATC-STD-185.metadata.yaml",
+      "standards/blockchain/ATC-STD-186.metadata.yaml",
+      "standards/blockchain/ATC-STD-187.metadata.yaml",
+      "standards/blockchain/ATC-STD-188.metadata.yaml",
+      "standards/blockchain/ATC-STD-189.metadata.yaml",
+      "standards/blockchain/ATC-STD-190.metadata.yaml",
+      "standards/blockchain/ATC-STD-191.metadata.yaml",
+      "standards/blockchain/ATC-STD-192.metadata.yaml",
+      "standards/blockchain/ATC-STD-193.metadata.yaml",
+      "standards/blockchain/ATC-STD-194.metadata.yaml",
+      "standards/blockchain/ATC-STD-195.metadata.yaml",
+      "standards/blockchain/ATC-STD-196.metadata.yaml",
+      "standards/blockchain/ATC-STD-197.metadata.yaml",
+      "standards/blockchain/ATC-STD-200.metadata.yaml",
+      "standards/blockchain/ATC-STD-205.metadata.yaml",
+      "standards/blockchain/ATC-STD-206.metadata.yaml",
+      "standards/blockchain/ATC-STD-207.metadata.yaml",
+      "standards/blockchain/ATC-STD-208.metadata.yaml",
+      "standards/blockchain/ATC-STD-209.metadata.yaml",
+      "standards/blockchain/ATC-STD-210.metadata.yaml",
+      "standards/blockchain/ATC-STD-212.metadata.yaml",
+      "standards/blockchain/ATC-STD-213.metadata.yaml",
+      "standards/blockchain/ATC-STD-214.metadata.yaml",
+      "standards/blockchain/ATC-STD-215.metadata.yaml",
+      "standards/blockchain/ATC-STD-240.metadata.yaml",
+      "standards/blockchain/ATC-STD-241.metadata.yaml",
+      "standards/blockchain/ATC-STD-242.metadata.yaml",
+      "standards/blockchain/ATC-STD-243.metadata.yaml",
+      "standards/blockchain/ATC-STD-244.metadata.yaml",
+      "standards/blockchain/ATC-STD-245.metadata.yaml",
+      "standards/blockchain/ATC-STD-246.metadata.yaml",
+      "standards/blockchain/ATC-STD-247.metadata.yaml",
+      "standards/blockchain/ATC-STD-248.metadata.yaml",
+      "standards/blockchain/ATC-STD-249.metadata.yaml",
+      "standards/blockchain/ATC-STD-270.metadata.yaml",
+      "standards/blockchain/ATC-STD-271.metadata.yaml",
+      "standards/blockchain/ATC-STD-272.metadata.yaml",
+      "standards/blockchain/ATC-STD-273.metadata.yaml",
+      "standards/blockchain/ATC-STD-274.metadata.yaml",
+      "standards/blockchain/ATC-STD-275.metadata.yaml",
+      "standards/blockchain/ATC-STD-276.metadata.yaml",
+      "standards/blockchain/ATC-STD-340.metadata.yaml",
+      "standards/blockchain/ATC-STD-341.metadata.yaml",
+      "standards/blockchain/ATC-STD-342.metadata.yaml",
+      "standards/blockchain/ATC-STD-343.metadata.yaml",
+      "standards/blockchain/ATC-STD-344.metadata.yaml",
+      "standards/blockchain/ATC-STD-345.metadata.yaml",
+      "standards/blockchain/ATC-STD-346.metadata.yaml",
+      "standards/blockchain/ATC-STD-347.metadata.yaml",
+      "standards/blockchain/ATC-STD-348.metadata.yaml",
+      "standards/blockchain/ATC-STD-349.metadata.yaml",
+      "standards/blockchain/ATC-STD-350.metadata.yaml",
+      "standards/blockchain/ATC-STD-360.metadata.yaml",
+      "standards/blockchain/ATC-STD-361.metadata.yaml",
+      "standards/blockchain/ATC-STD-362.metadata.yaml",
+      "standards/blockchain/ATC-STD-363.metadata.yaml",
+      "standards/blockchain/ATC-STD-364.metadata.yaml",
+      "standards/blockchain/ATC-STD-365.metadata.yaml",
+      "standards/blockchain/ATC-STD-366.metadata.yaml",
+      "standards/blockchain/ATC-STD-367.metadata.yaml",
+      "standards/blockchain/ATC-STD-368.metadata.yaml",
+      "standards/blockchain/ATC-STD-380.metadata.yaml",
+      "standards/blockchain/ATC-STD-381.metadata.yaml",
+      "standards/blockchain/ATC-STD-382.metadata.yaml",
+      "standards/blockchain/ATC-STD-383.metadata.yaml",
+      "standards/blockchain/ATC-STD-384.metadata.yaml",
+      "standards/blockchain/ATC-STD-385.metadata.yaml",
+      "standards/blockchain/ATC-STD-386.metadata.yaml",
+      "standards/blockchain/ATC-STD-387.metadata.yaml",
+      "standards/blockchain/ATC-STD-388.metadata.yaml",
+      "standards/blockchain/ATC-STD-389.metadata.yaml",
+      "standards/bug/ATC-STD-129.metadata.yaml",
+      "standards/bug/ATC-STD-130.metadata.yaml",
+      "standards/bug/ATC-STD-BUG-001.metadata.yaml",
+      "standards/bug/ATC-STD-BUG-002.metadata.yaml",
+      "standards/bug/ATC-STD-BUG-003.metadata.yaml",
+      "standards/bug/ATC-STD-BUG-004.metadata.yaml",
+      "standards/bug/ATC-STD-BUG-005.metadata.yaml",
+      "standards/cicd/ATC-STD-CI-001.md",
+      "standards/cicd/ATC-STD-CI-001.metadata.yaml",
+      "standards/compat/ATC-STD-COMPAT-001.metadata.yaml",
+      "standards/desc/ATC-STD-DESC-001.metadata.yaml",
+      "standards/development/ATC-STD-081.metadata.yaml",
+      "standards/development/ATC-STD-082.metadata.yaml",
+      "standards/development/ATC-STD-085.metadata.yaml",
+      "standards/development/ATC-STD-087.metadata.yaml",
+      "standards/development/ATC-STD-088.metadata.yaml",
+      "standards/development/ATC-STD-089.metadata.yaml",
+      "standards/development/ATC-STD-090.metadata.yaml",
+      "standards/development/ATC-STD-091.metadata.yaml",
+      "standards/development/ATC-STD-093.metadata.yaml",
+      "standards/development/ATC-STD-094.metadata.yaml",
+      "standards/development/ATC-STD-095.metadata.yaml",
+      "standards/development/ATC-STD-140.metadata.yaml",
+      "standards/development/ATC-STD-141.metadata.yaml",
+      "standards/development/ATC-STD-142.metadata.yaml",
+      "standards/development/ATC-STD-143.metadata.yaml",
+      "standards/development/ATC-STD-144.metadata.yaml",
+      "standards/development/ATC-STD-146.metadata.yaml",
+      "standards/development/ATC-STD-147.metadata.yaml",
+      "standards/development/ATC-STD-148.metadata.yaml",
+      "standards/development/ATC-STD-149.metadata.yaml",
+      "standards/development/ATC-STD-300.metadata.yaml",
+      "standards/development/ATC-STD-440.metadata.yaml",
+      "standards/development/ATC-STD-441.metadata.yaml",
+      "standards/development/ATC-STD-442.metadata.yaml",
+      "standards/development/ATC-STD-443.metadata.yaml",
+      "standards/development/ATC-STD-444.metadata.yaml",
+      "standards/development/ATC-STD-445.metadata.yaml",
+      "standards/development/ATC-STD-447.metadata.yaml",
+      "standards/development/ATC-STD-448.metadata.yaml",
+      "standards/development/ATC-STD-449.metadata.yaml",
+      "standards/development/ATC-STD-450.metadata.yaml",
+      "standards/development/ATC-STD-460.metadata.yaml",
+      "standards/development/ATC-STD-461.metadata.yaml",
+      "standards/development/ATC-STD-462.metadata.yaml",
+      "standards/development/ATC-STD-463.metadata.yaml",
+      "standards/development/ATC-STD-466.metadata.yaml",
+      "standards/development/ATC-STD-467.metadata.yaml",
+      "standards/development/ATC-STD-468.metadata.yaml",
+      "standards/development/ATC-STD-469.metadata.yaml",
+      "standards/development/ATC-STD-540.metadata.yaml",
+      "standards/development/ATC-STD-541.metadata.yaml",
+      "standards/development/ATC-STD-542.metadata.yaml",
+      "standards/development/ATC-STD-543.metadata.yaml",
+      "standards/development/ATC-STD-544.metadata.yaml",
+      "standards/development/ATC-STD-545.metadata.yaml",
+      "standards/development/ATC-STD-546.metadata.yaml",
+      "standards/development/ATC-STD-560.metadata.yaml",
+      "standards/development/ATC-STD-561.metadata.yaml",
+      "standards/development/ATC-STD-562.metadata.yaml",
+      "standards/development/ATC-STD-566.metadata.yaml",
+      "standards/development/ATC-STD-620.metadata.yaml",
+      "standards/development/ATC-STD-623.metadata.yaml",
+      "standards/development/ATC-STD-624.metadata.yaml",
+      "standards/development/ATC-STD-625.metadata.yaml",
+      "standards/development/ATC-STD-626.metadata.yaml",
+      "standards/development/ATC-STD-627.metadata.yaml",
+      "standards/eng/ATC-STD-ENG-001.md",
+      "standards/eng/ATC-STD-ENG-001.metadata.yaml",
+      "standards/enterprise/ATC-ENT-001.metadata.yaml",
+      "standards/enterprise/ATC-ENT-002.metadata.yaml",
+      "standards/enterprise/ATC-ENT-003.metadata.yaml",
+      "standards/enterprise/ATC-ENT-004.metadata.yaml",
+      "standards/enterprise/ATC-ENT-005.metadata.yaml",
+      "standards/enterprise/ATC-ENT-006.metadata.yaml",
+      "standards/enterprise/ATC-ENT-007.metadata.yaml",
+      "standards/enterprise/ATC-ENT-008.metadata.yaml",
+      "standards/enterprise/ATC-ENT-009.metadata.yaml",
+      "standards/enterprise/ATC-ENT-010.metadata.yaml",
+      "standards/enterprise/ATC-ENT-011.metadata.yaml",
+      "standards/enterprise/ATC-ENT-012.metadata.yaml",
+      "standards/enterprise/ATC-ENT-013.metadata.yaml",
+      "standards/enterprise/ATC-ENT-014.metadata.yaml",
+      "standards/enterprise/ATC-ENT-015.metadata.yaml",
+      "standards/enterprise/ATC-GATE-SEC-001.md",
+      "standards/enterprise/ATC-GATE-SEC-001.metadata.yaml",
+      "standards/enterprise/ATC-ORG-BASELINE-001.md",
+      "standards/enterprise/ATC-ORG-BASELINE-001.metadata.yaml",
+      "standards/enterprise/ATC-STD-001.metadata.yaml",
+      "standards/enterprise/ATC-STD-006.metadata.yaml",
+      "standards/enterprise/ATC-STD-008.metadata.yaml",
+      "standards/enterprise/ATC-STD-012.metadata.yaml",
+      "standards/enterprise/ATC-STD-013.metadata.yaml",
+      "standards/enterprise/ATC-STD-015.metadata.yaml",
+      "standards/enterprise/ATC-STD-016.md",
+      "standards/enterprise/ATC-STD-016.metadata.yaml",
+      "standards/enterprise/ATC-STD-017.md",
+      "standards/enterprise/ATC-STD-017.metadata.yaml",
+      "standards/enterprise/ATC-STD-018.md",
+      "standards/enterprise/ATC-STD-018.metadata.yaml",
+      "standards/enterprise/ATC-STD-019.md",
+      "standards/enterprise/ATC-STD-019.metadata.yaml",
+      "standards/enterprise/ATC-STD-020.md",
+      "standards/enterprise/ATC-STD-020.metadata.yaml",
+      "standards/enterprise/ATC-STD-021.md",
+      "standards/enterprise/ATC-STD-021.metadata.yaml",
+      "standards/enterprise/ATC-STD-022.md",
+      "standards/enterprise/ATC-STD-022.metadata.yaml",
+      "standards/enterprise/ATC-STD-023.md",
+      "standards/enterprise/ATC-STD-023.metadata.yaml",
+      "standards/enterprise/ATC-STD-024.md",
+      "standards/enterprise/ATC-STD-024.metadata.yaml",
+      "standards/enterprise/ATC-STD-026.md",
+      "standards/enterprise/ATC-STD-026.metadata.yaml",
+      "standards/enterprise/ATC-STD-028.md",
+      "standards/enterprise/ATC-STD-028.metadata.yaml",
+      "standards/enterprise/ATC-STD-029.md",
+      "standards/enterprise/ATC-STD-029.metadata.yaml",
+      "standards/enterprise/ATC-STD-030.md",
+      "standards/enterprise/ATC-STD-030.metadata.yaml",
+      "standards/enterprise/ATC-STD-031.md",
+      "standards/enterprise/ATC-STD-031.metadata.yaml",
+      "standards/enterprise/ATC-STD-032.md",
+      "standards/enterprise/ATC-STD-032.metadata.yaml",
+      "standards/enterprise/ATC-STD-033.md",
+      "standards/enterprise/ATC-STD-033.metadata.yaml",
+      "standards/enterprise/ATC-STD-034.md",
+      "standards/enterprise/ATC-STD-034.metadata.yaml",
+      "standards/enterprise/ATC-STD-035.md",
+      "standards/enterprise/ATC-STD-035.metadata.yaml",
+      "standards/enterprise/ATC-STD-036.md",
+      "standards/enterprise/ATC-STD-036.metadata.yaml",
+      "standards/enterprise/ATC-STD-037.md",
+      "standards/enterprise/ATC-STD-037.metadata.yaml",
+      "standards/enterprise/ATC-STD-038.md",
+      "standards/enterprise/ATC-STD-038.metadata.yaml",
+      "standards/enterprise/ATC-STD-039.md",
+      "standards/enterprise/ATC-STD-039.metadata.yaml",
+      "standards/enterprise/ATC-STD-041.md",
+      "standards/enterprise/ATC-STD-041.metadata.yaml",
+      "standards/enterprise/ATC-STD-043.md",
+      "standards/enterprise/ATC-STD-043.metadata.yaml",
+      "standards/enterprise/ATC-STD-700.metadata.yaml",
+      "standards/enterprise/ATC-STD-701.metadata.yaml",
+      "standards/enterprise/ATC-STD-702.metadata.yaml",
+      "standards/enterprise/ATC-STD-703.metadata.yaml",
+      "standards/enterprise/ATC-STD-704.metadata.yaml",
+      "standards/enterprise/ATC-STD-705.metadata.yaml",
+      "standards/enterprise/ATC-STD-706.metadata.yaml",
+      "standards/err/ATC-STD-ERR-000.metadata.yaml",
+      "standards/err/ATC-STD-ERR-001.metadata.yaml",
+      "standards/err/ATC-STD-ERR-002.metadata.yaml",
+      "standards/err/ATC-STD-ERR-003.metadata.yaml",
+      "standards/err/ATC-STD-ERR-004.metadata.yaml",
+      "standards/err/ATC-STD-ERR-005.metadata.yaml",
+      "standards/err/ATC-STD-ERR-006.metadata.yaml",
+      "standards/err/ATC-STD-ERR-007.metadata.yaml",
+      "standards/err/ATC-STD-ERR-008.metadata.yaml",
+      "standards/err/ATC-STD-ERR-009.metadata.yaml",
+      "standards/err/ATC-STD-ERR-010.metadata.yaml",
+      "standards/err/ATC-STD-ERR-011.metadata.yaml",
+      "standards/err/ATC-STD-ERR-012.metadata.yaml",
+      "standards/err/ATC-STD-ERR-013.metadata.yaml",
+      "standards/err/ATC-STD-ERR-014.metadata.yaml",
+      "standards/err/ATC-STD-ERR-015.metadata.yaml",
+      "standards/framework/ATC-STD-FRAMEWORK-001.metadata.yaml",
+      "standards/governance-core/ATC-STD-CHANGE-001.metadata.yaml",
+      "standards/governance-core/ATC-STD-REGISTRY-001.metadata.yaml",
+      "standards/governance-core/ATC-STD-STDDEV-001.metadata.yaml",
+      "standards/governance/ATC-STD-003.md",
+      "standards/governance/ATC-STD-003.metadata.yaml",
+      "standards/governance/ATC-STD-025.metadata.yaml",
+      "standards/governance/ATC-STD-027.metadata.yaml",
+      "standards/governance/ATC-STD-680.metadata.yaml",
+      "standards/governance/ATC-STD-681.metadata.yaml",
+      "standards/governance/ATC-STD-682.metadata.yaml",
+      "standards/governance/ATC-STD-683.metadata.yaml",
+      "standards/governance/ATC-STD-684.metadata.yaml",
+      "standards/governance/ATC-STD-685.metadata.yaml",
+      "standards/governance/ATC-STD-686.metadata.yaml",
+      "standards/implementation/ATC-STD-IMPLEMENTATION-001.metadata.yaml",
+      "standards/improvement/ATC-STD-IMPROVEMENT-001.md",
+      "standards/improvement/ATC-STD-IMPROVEMENT-001.metadata.yaml",
+      "standards/infrastructure/ATC-STD-160.metadata.yaml",
+      "standards/infrastructure/ATC-STD-161.metadata.yaml",
+      "standards/infrastructure/ATC-STD-163.metadata.yaml",
+      "standards/infrastructure/ATC-STD-164.metadata.yaml",
+      "standards/infrastructure/ATC-STD-169.metadata.yaml",
+      "standards/infrastructure/ATC-STD-170.metadata.yaml",
+      "standards/infrastructure/ATC-STD-171.metadata.yaml",
+      "standards/infrastructure/ATC-STD-172.metadata.yaml",
+      "standards/infrastructure/ATC-STD-174.metadata.yaml",
+      "standards/infrastructure/ATC-STD-480.metadata.yaml",
+      "standards/infrastructure/ATC-STD-481.metadata.yaml",
+      "standards/infrastructure/ATC-STD-482.metadata.yaml",
+      "standards/infrastructure/ATC-STD-483.metadata.yaml",
+      "standards/infrastructure/ATC-STD-484.metadata.yaml",
+      "standards/infrastructure/ATC-STD-485.metadata.yaml",
+      "standards/infrastructure/ATC-STD-486.metadata.yaml",
+      "standards/infrastructure/ATC-STD-488.metadata.yaml",
+      "standards/legal/ATC-STD-LEGAL-002.md",
+      "standards/legal/ATC-STD-LEGAL-002.metadata.yaml",
+      "standards/license/ATC-STD-LICENSE-001.metadata.yaml",
+      "standards/license/ATC-STD-LICENSE-002.metadata.yaml",
+      "standards/license/ATC-STD-LICENSE-003.metadata.yaml",
+      "standards/license/ATC-STD-LICENSE-004.metadata.yaml",
+      "standards/license/ATC-STD-LICENSE-005.metadata.yaml",
+      "standards/license/ATC-STD-LICENSE-006.metadata.yaml",
+      "standards/license/ATC-STD-LICENSE-007.metadata.yaml",
+      "standards/license/ATC-STD-LICENSE-008.metadata.yaml",
+      "standards/license/ATC-STD-LICENSE-009.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-000.md",
+      "standards/maintenance/ATC-STD-MAINT-000.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-001.md",
+      "standards/maintenance/ATC-STD-MAINT-001.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-002.md",
+      "standards/maintenance/ATC-STD-MAINT-002.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-003.md",
+      "standards/maintenance/ATC-STD-MAINT-003.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-004.md",
+      "standards/maintenance/ATC-STD-MAINT-004.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-005.md",
+      "standards/maintenance/ATC-STD-MAINT-005.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-006.md",
+      "standards/maintenance/ATC-STD-MAINT-006.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-007.md",
+      "standards/maintenance/ATC-STD-MAINT-007.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-008.md",
+      "standards/maintenance/ATC-STD-MAINT-008.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-009.md",
+      "standards/maintenance/ATC-STD-MAINT-009.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-010.md",
+      "standards/maintenance/ATC-STD-MAINT-010.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-011.md",
+      "standards/maintenance/ATC-STD-MAINT-011.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-012.md",
+      "standards/maintenance/ATC-STD-MAINT-012.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-013.md",
+      "standards/maintenance/ATC-STD-MAINT-013.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-014.md",
+      "standards/maintenance/ATC-STD-MAINT-014.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-015.md",
+      "standards/maintenance/ATC-STD-MAINT-015.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-016.md",
+      "standards/maintenance/ATC-STD-MAINT-016.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-017.md",
+      "standards/maintenance/ATC-STD-MAINT-017.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-018.md",
+      "standards/maintenance/ATC-STD-MAINT-018.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-019.md",
+      "standards/maintenance/ATC-STD-MAINT-019.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-020.md",
+      "standards/maintenance/ATC-STD-MAINT-020.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-021.md",
+      "standards/maintenance/ATC-STD-MAINT-021.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-022.md",
+      "standards/maintenance/ATC-STD-MAINT-022.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-023.md",
+      "standards/maintenance/ATC-STD-MAINT-023.metadata.yaml",
+      "standards/maintenance/ATC-STD-MAINT-024.md",
+      "standards/maintenance/ATC-STD-MAINT-024.metadata.yaml",
+      "standards/maintenance/INDEX.md",
+      "standards/master-audit/ATC-STD-999.metadata.yaml",
+      "standards/md/ATC-STD-062.metadata.yaml",
+      "standards/md/ATC-STD-063.metadata.yaml",
+      "standards/md/ATC-STD-064.metadata.yaml",
+      "standards/md/ATC-STD-066.metadata.yaml",
+      "standards/md/ATC-STD-067.metadata.yaml",
+      "standards/md/ATC-STD-069.metadata.yaml",
+      "standards/md/ATC-STD-070.metadata.yaml",
+      "standards/md/ATC-STD-072.metadata.yaml",
+      "standards/md/ATC-STD-MD-001.metadata.yaml",
+      "standards/milestone/ATC-STD-MILESTONE-001.metadata.yaml",
+      "standards/net/ATC-STD-NET-001.metadata.yaml",
+      "standards/net/ATC-STD-NET-002.metadata.yaml",
+      "standards/net/ATC-STD-NET-003.metadata.yaml",
+      "standards/net/ATC-STD-NET-004.metadata.yaml",
+      "standards/net/ATC-STD-NET-005.metadata.yaml",
+      "standards/net/ATC-STD-NET-006.metadata.yaml",
+      "standards/net/ATC-STD-NET-007.metadata.yaml",
+      "standards/net/ATC-STD-NET-008.metadata.yaml",
+      "standards/net/ATC-STD-NET-009.md",
+      "standards/net/ATC-STD-NET-009.metadata.yaml",
+      "standards/os/ATC-STD-600.metadata.yaml",
+      "standards/os/ATC-STD-601.metadata.yaml",
+      "standards/os/ATC-STD-602.metadata.yaml",
+      "standards/os/ATC-STD-603.metadata.yaml",
+      "standards/os/ATC-STD-604.metadata.yaml",
+      "standards/os/ATC-STD-605.metadata.yaml",
+      "standards/os/ATC-STD-606.metadata.yaml",
+      "standards/os/ATC-STD-607.metadata.yaml",
+      "standards/protocol/ATC-STD-PROTOCOL-001.metadata.yaml",
+      "standards/protocol/ATC-STD-PROTOCOL-002.metadata.yaml",
+      "standards/protocol/ATC-STD-PROTOCOL-003.metadata.yaml",
+      "standards/readme/ATC-STD-README-001.metadata.yaml",
+      "standards/repo-audit/ATC-STD-REPO-AUDIT-001.metadata.yaml",
+      "standards/repo-audit/ATC-STD-REPO-AUDIT-002.metadata.yaml",
+      "standards/repo-audit/ATC-STD-REPO-AUDIT-003.metadata.yaml",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-001.md",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-001.metadata.yaml",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-002.md",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-002.metadata.yaml",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-003.md",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-003.metadata.yaml",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-004.md",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-004.metadata.yaml",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-005.md",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-005.metadata.yaml",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-006.md",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-006.metadata.yaml",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-007.md",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-007.metadata.yaml",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-008.md",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-008.metadata.yaml",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-009.md",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-009.metadata.yaml",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-010.md",
+      "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-010.metadata.yaml",
+      "standards/repo-maint/ATC-STD-REPO-MAINT-001.metadata.yaml",
+      "standards/repository/ATC-STD-040.metadata.yaml",
+      "standards/repository/ATC-STD-042.metadata.yaml",
+      "standards/repository/ATC-STD-045.metadata.yaml",
+      "standards/repository/ATC-STD-048.metadata.yaml",
+      "standards/repository/ATC-STD-050.metadata.yaml",
+      "standards/repository/ATC-STD-051.metadata.yaml",
+      "standards/repository/ATC-STD-052.metadata.yaml",
+      "standards/repository/ATC-STD-101.metadata.yaml",
+      "standards/repository/ATC-STD-103.metadata.yaml",
+      "standards/repository/ATC-STD-104.metadata.yaml",
+      "standards/repository/ATC-STD-105.metadata.yaml",
+      "standards/repository/ATC-STD-107.metadata.yaml",
+      "standards/repository/ATC-STD-114.metadata.yaml",
+      "standards/repository/ATC-STD-201.metadata.yaml",
+      "standards/repository/ATC-STD-202.metadata.yaml",
+      "standards/repository/ATC-STD-203.metadata.yaml",
+      "standards/repository/ATC-STD-204.metadata.yaml",
+      "standards/repository/ATC-STD-220.md",
+      "standards/repository/ATC-STD-220.metadata.yaml",
+      "standards/repository/ATC-STD-660.metadata.yaml",
+      "standards/repository/ATC-STD-662.metadata.yaml",
+      "standards/repository/ATC-STD-664.metadata.yaml",
+      "standards/repository/ATC-STD-665.metadata.yaml",
+      "standards/repository/ATC-STD-666.metadata.yaml",
+      "standards/repository/ATC-STD-667.metadata.yaml",
+      "standards/sc/ATC-STD-SC-001.metadata.yaml",
+      "standards/sc/ATC-STD-SC-002.metadata.yaml",
+      "standards/sc/ATC-STD-SC-003.metadata.yaml",
+      "standards/sc/ATC-STD-SC-004.metadata.yaml",
+      "standards/sc/ATC-STD-SC-005.metadata.yaml",
+      "standards/sc/ATC-STD-SC-006.metadata.yaml",
+      "standards/sc/ATC-STD-SC-007.metadata.yaml",
+      "standards/sc/ATC-STD-SC-008.metadata.yaml",
+      "standards/sc/ATC-STD-SC-009.metadata.yaml",
+      "standards/sc/ATC-STD-SC-010.metadata.yaml",
+      "standards/sc/ATC-STD-SC-011.metadata.yaml",
+      "standards/sc/ATC-STD-SC-012.metadata.yaml",
+      "standards/sc/ATC-STD-SC-013.metadata.yaml",
+      "standards/sc/ATC-STD-SC-014.metadata.yaml",
+      "standards/sc/ATC-STD-SC-015.metadata.yaml",
+      "standards/sc/ATC-STD-SC-016.metadata.yaml",
+      "standards/sc/ATC-STD-SC-017.metadata.yaml",
+      "standards/sc/ATC-STD-SC-018.metadata.yaml",
+      "standards/sc/ATC-STD-SC-019.metadata.yaml",
+      "standards/sc/ATC-STD-SC-020.metadata.yaml",
+      "standards/security/ATC-STD-280.metadata.yaml",
+      "standards/security/ATC-STD-282.metadata.yaml",
+      "standards/security/ATC-STD-283.metadata.yaml",
+      "standards/security/ATC-STD-284.metadata.yaml",
+      "standards/security/ATC-STD-285.metadata.yaml",
+      "standards/security/ATC-STD-286.metadata.yaml",
+      "standards/security/ATC-STD-301.metadata.yaml",
+      "standards/security/ATC-STD-302.metadata.yaml",
+      "standards/security/ATC-STD-303.metadata.yaml",
+      "standards/security/ATC-STD-304.metadata.yaml",
+      "standards/security/ATC-STD-306.metadata.yaml",
+      "standards/security/ATC-STD-307.metadata.yaml",
+      "standards/security/ATC-STD-308.metadata.yaml",
+      "standards/security/ATC-STD-309.metadata.yaml",
+      "standards/security/ATC-STD-311.metadata.yaml",
+      "standards/security/ATC-STD-312.metadata.yaml",
+      "standards/security/ATC-STD-314.metadata.yaml",
+      "standards/security/ATC-STD-500.metadata.yaml",
+      "standards/security/ATC-STD-501.metadata.yaml",
+      "standards/security/ATC-STD-502.metadata.yaml",
+      "standards/security/ATC-STD-504.metadata.yaml",
+      "standards/security/ATC-STD-505.metadata.yaml",
+      "standards/security/ATC-STD-507.metadata.yaml",
+      "standards/security/ATC-STD-508.metadata.yaml",
+      "standards/security/ATC-STD-509.metadata.yaml",
+      "standards/taxonomy/ATC-STD-TAXONOMY-001.metadata.yaml",
+      "standards/technology-uniqueness/ATC-STD-TUD-001.md",
+      "standards/technology-uniqueness/ATC-STD-TUD-001.metadata.yaml",
+      "standards/update/ATC-STD-UPDATE-001.metadata.yaml",
+      "standards/v2s/ATC-STD-V2S-000.metadata.yaml",
+      "standards/version/ATC-STD-VERSION-001.metadata.yaml",
+      "standards/zkp/ATC-STD-ZKP-001.metadata.yaml",
+      "standards/zkp/ATC-STD-ZKP-002.metadata.yaml",
+      "standards/zkp/ATC-STD-ZKP-003.metadata.yaml",
+      "standards/zkp/ATC-STD-ZKP-004.metadata.yaml",
+      "standards/zkp/ATC-STD-ZKP-005.metadata.yaml",
+      "standards/zkp/ATC-STD-ZKP-006.metadata.yaml",
+      "standards/zkp/ATC-STD-ZKP-007.metadata.yaml",
+      "standards/zkp/ATC-STD-ZKP-008.metadata.yaml",
+      "standards/zkp/ATC-STD-ZKP-009.metadata.yaml",
+      "standards/zkp/ATC-STD-ZKP-010.metadata.yaml",
+      "tools/allocation-validator/atc_allocation_validator.py",
+      "tools/atc-std-validator/meta_data_audit.py",
+      "tools/atc-std-validator/meta_sweep.py",
+      "tools/atc-std-validator/tests/test_ci_dependency_governance.py",
+      "tools/code_quality_matrix.py",
+      "tools/compliance/matrix_collect.py",
+      "tools/consistency/check_cross_registry.py",
+      "tools/consistency/version_gate.py",
+      "tools/discovery/scan.py",
+      "tools/file_admission/file_admission.py",
+      "tools/gen_views/README.template.md",
+      "tools/gen_views/gen_implementation_matrix.py",
+      "tools/gen_views/gen_metadata.py",
+      "tools/gen_views/gen_registry_records.py",
+      "tools/maintenance/gen_maintenance_conformance.py",
+      "tools/maintenance/validate_maintenance_readiness.py",
+      "tools/repo_registry_check.py",
+      "tools/technology-uniqueness/validate_technology_registry.py"
+    ],
+    "MODIFIED": [
+      ".atc/repository.yaml",
+      "AGENTS.md",
+      "AGENT_MANIFEST.md",
+      "CHANGELOG.md",
+      "INDEX.md",
+      "README.md",
+      "SECURITY.md",
+      "STATUS.md",
+      "atc/ATC-LIC-SMART_CONTRACT_LICENSE.md",
+      "ats/ATS-LIC-SYSTEM_HARDWARE_LICENSE.md",
+      "governance/ATC-STD-000.md",
+      "licensing/ATVM_LICENSE_GATE_SPEC.md",
+      "licensing/IP_LICENSE_DASHBOARD_SPEC.md",
+      "licensing/SMART_CONTRACT_RICHTLINIE.md",
+      "registry/STANDARDS_REGISTRY.md",
+      "registry/categories.yaml",
+      "registry/dependencies.yaml",
+      "registry/findings.yaml",
+      "registry/framework.yaml",
+      "registry/registry.lock",
+      "registry/repositories.yaml",
+      "registry/standard-implementation.yaml",
+      "registry/standards.yaml",
+      "registry/taxonomy.yaml",
+      "registry/versions.yaml",
+      "requirements.txt",
+      "schemas/naming-conventions.schema.json",
+      "schemas/standard.schema.yaml",
+      "standards/aas/ATC-AAS-001.md",
+      "standards/aas/ATC-AAS-002.md",
+      "standards/aas/ATC-AAS-003.md",
+      "standards/aas/ATC-AAS-004.md",
+      "standards/aas/ATC-AAS-005.md",
+      "standards/aas/ATC-AAS-006.md",
+      "standards/aas/ATC-AAS-007.md",
+      "standards/aas/ATC-AAS-008.md",
+      "standards/aas/ATC-AAS-009.md",
+      "standards/aas/ATC-AAS-010.md",
+      "standards/aas/ATC-AAS-011.md",
+      "standards/aas/ATC-AAS-012.md",
+      "standards/aas/ATC-AAS-013.md",
+      "standards/aas/ATC-AAS-014.md",
+      "standards/aas/ATC-AAS-015.md",
+      "standards/aas/ATC-AAS-016.md",
+      "standards/aas/ATC-AAS-017.md",
+      "standards/aas/ATC-AAS-018.md",
+      "standards/aas/ATC-AAS-019.md",
+      "standards/aas/ATC-AAS-020.md",
+      "standards/aas/ATC-AAS-021.md",
+      "standards/aas/ATC-AAS-022.md",
+      "standards/aas/ATC-AAS-023.md",
+      "standards/aas/ATC-AAS-024.md",
+      "standards/aas/ATC-AAS-025.md",
+      "standards/agent-operating/ATC-STD-AOS-001.md",
+      "standards/ai-decision/ATC-STD-AI-DECISION-001.md",
+      "standards/ai/ATC-STD-AI-DEV-001.md",
+      "standards/ai/ATC-STD-AI-DEV-002.md",
+      "standards/ai/ATC-STD-AI-DEV-003.md",
+      "standards/ai/ATC-STD-AI-DEV-004.md",
+      "standards/ai/ATC-STD-AI-DEV-005.md",
+      "standards/ai/ATC-STD-AI-DEV-006.md",
+      "standards/ai/ATC-STD-AI-DEV-007.md",
+      "standards/ai/ATC-STD-AI-DEV-008.md",
+      "standards/ai/ATC-STD-AI-DEV-009.md",
+      "standards/ai/ATC-STD-AI-DEV-010.md",
+      "standards/ai/ATC-STD-AI-DEV-011.md",
+      "standards/ai/ATC-STD-AI-DEV-012.md",
+      "standards/applications/ATC-STD-400.md",
+      "standards/applications/ATC-STD-401.md",
+      "standards/applications/ATC-STD-402.md",
+      "standards/applications/ATC-STD-403.md",
+      "standards/applications/ATC-STD-404.md",
+      "standards/applications/ATC-STD-405.md",
+      "standards/applications/ATC-STD-406.md",
+      "standards/applications/ATC-STD-407.md",
+      "standards/applications/ATC-STD-408.md",
+      "standards/applications/ATC-STD-409.md",
+      "standards/applications/ATC-STD-420.md",
+      "standards/applications/ATC-STD-421.md",
+      "standards/applications/ATC-STD-422.md",
+      "standards/applications/ATC-STD-423.md",
+      "standards/applications/ATC-STD-424.md",
+      "standards/applications/ATC-STD-425.md",
+      "standards/applications/ATC-STD-426.md",
+      "standards/applications/ATC-STD-427.md",
+      "standards/applications/ATC-STD-428.md",
+      "standards/applications/ATC-STD-429.md",
+      "standards/applications/ATC-STD-430.md",
+      "standards/applications/ATC-STD-431.md",
+      "standards/applications/ATC-STD-432.md",
+      "standards/applications/ATC-STD-433.md",
+      "standards/applications/ATC-STD-434.md",
+      "standards/applications/ATC-STD-580.md",
+      "standards/applications/ATC-STD-581.md",
+      "standards/applications/ATC-STD-582.md",
+      "standards/applications/ATC-STD-583.md",
+      "standards/applications/ATC-STD-584.md",
+      "standards/applications/ATC-STD-585.md",
+      "standards/applications/ATC-STD-586.md",
+      "standards/applications/ATC-STD-587.md",
+      "standards/architecture/ATC-STD-100.md",
+      "standards/audit/ATC-STD-640.md",
+      "standards/audit/ATC-STD-641.md",
+      "standards/audit/ATC-STD-643.md",
+      "standards/audit/ATC-STD-646.md",
+      "standards/audit/ATC-STD-AUDIT-001.md",
+      "standards/blockchain/ATC-STD-180.md",
+      "standards/blockchain/ATC-STD-181.md",
+      "standards/blockchain/ATC-STD-182.md",
+      "standards/blockchain/ATC-STD-183.md",
+      "standards/blockchain/ATC-STD-184.md",
+      "standards/blockchain/ATC-STD-185.md",
+      "standards/blockchain/ATC-STD-186.md",
+      "standards/blockchain/ATC-STD-187.md",
+      "standards/blockchain/ATC-STD-188.md",
+      "standards/blockchain/ATC-STD-189.md",
+      "standards/blockchain/ATC-STD-190.md",
+      "standards/blockchain/ATC-STD-191.md",
+      "standards/blockchain/ATC-STD-192.md",
+      "standards/blockchain/ATC-STD-193.md",
+      "standards/blockchain/ATC-STD-194.md",
+      "standards/blockchain/ATC-STD-195.md",
+      "standards/blockchain/ATC-STD-196.md",
+      "standards/blockchain/ATC-STD-197.md",
+      "standards/blockchain/ATC-STD-200.md",
+      "standards/blockchain/ATC-STD-205.md",
+      "standards/blockchain/ATC-STD-206.md",
+      "standards/blockchain/ATC-STD-207.md",
+      "standards/blockchain/ATC-STD-208.md",
+      "standards/blockchain/ATC-STD-209.md",
+      "standards/blockchain/ATC-STD-210.md",
+      "standards/blockchain/ATC-STD-212.md",
+      "standards/blockchain/ATC-STD-213.md",
+      "standards/blockchain/ATC-STD-214.md",
+      "standards/blockchain/ATC-STD-215.md",
+      "standards/blockchain/ATC-STD-240.md",
+      "standards/blockchain/ATC-STD-241.md",
+      "standards/blockchain/ATC-STD-242.md",
+      "standards/blockchain/ATC-STD-243.md",
+      "standards/blockchain/ATC-STD-244.md",
+      "standards/blockchain/ATC-STD-245.md",
+      "standards/blockchain/ATC-STD-246.md",
+      "standards/blockchain/ATC-STD-247.md",
+      "standards/blockchain/ATC-STD-248.md",
+      "standards/blockchain/ATC-STD-249.md",
+      "standards/blockchain/ATC-STD-270.md",
+      "standards/blockchain/ATC-STD-271.md",
+      "standards/blockchain/ATC-STD-272.md",
+      "standards/blockchain/ATC-STD-273.md",
+      "standards/blockchain/ATC-STD-274.md",
+      "standards/blockchain/ATC-STD-275.md",
+      "standards/blockchain/ATC-STD-276.md",
+      "standards/blockchain/ATC-STD-340.md",
+      "standards/blockchain/ATC-STD-341.md",
+      "standards/blockchain/ATC-STD-342.md",
+      "standards/blockchain/ATC-STD-343.md",
+      "standards/blockchain/ATC-STD-344.md",
+      "standards/blockchain/ATC-STD-345.md",
+      "standards/blockchain/ATC-STD-346.md",
+      "standards/blockchain/ATC-STD-347.md",
+      "standards/blockchain/ATC-STD-348.md",
+      "standards/blockchain/ATC-STD-349.md",
+      "standards/blockchain/ATC-STD-350.md",
+      "standards/blockchain/ATC-STD-360.md",
+      "standards/blockchain/ATC-STD-361.md",
+      "standards/blockchain/ATC-STD-362.md",
+      "standards/blockchain/ATC-STD-363.md",
+      "standards/blockchain/ATC-STD-364.md",
+      "standards/blockchain/ATC-STD-365.md",
+      "standards/blockchain/ATC-STD-366.md",
+      "standards/blockchain/ATC-STD-367.md",
+      "standards/blockchain/ATC-STD-368.md",
+      "standards/blockchain/ATC-STD-380.md",
+      "standards/blockchain/ATC-STD-381.md",
+      "standards/blockchain/ATC-STD-382.md",
+      "standards/blockchain/ATC-STD-383.md",
+      "standards/blockchain/ATC-STD-384.md",
+      "standards/blockchain/ATC-STD-385.md",
+      "standards/blockchain/ATC-STD-386.md",
+      "standards/blockchain/ATC-STD-387.md",
+      "standards/blockchain/ATC-STD-388.md",
+      "standards/blockchain/ATC-STD-389.md",
+      "standards/bug/ATC-STD-129.md",
+      "standards/bug/ATC-STD-130.md",
+      "standards/bug/ATC-STD-BUG-001.md",
+      "standards/bug/ATC-STD-BUG-002.md",
+      "standards/bug/ATC-STD-BUG-003.md",
+      "standards/bug/ATC-STD-BUG-004.md",
+      "standards/bug/ATC-STD-BUG-005.md",
+      "standards/compat/ATC-STD-COMPAT-001.md",
+      "standards/desc/ATC-STD-DESC-001.md",
+      "standards/development/ATC-STD-081.md",
+      "standards/development/ATC-STD-082.md",
+      "standards/development/ATC-STD-085.md",
+      "standards/development/ATC-STD-087.md",
+      "standards/development/ATC-STD-088.md",
+      "standards/development/ATC-STD-089.md",
+      "standards/development/ATC-STD-090.md",
+      "standards/development/ATC-STD-091.md",
+      "standards/development/ATC-STD-093.md",
+      "standards/development/ATC-STD-094.md",
+      "standards/development/ATC-STD-095.md",
+      "standards/development/ATC-STD-140.md",
+      "standards/development/ATC-STD-141.md",
+      "standards/development/ATC-STD-142.md",
+      "standards/development/ATC-STD-143.md",
+      "standards/development/ATC-STD-144.md",
+      "standards/development/ATC-STD-146.md",
+      "standards/development/ATC-STD-147.md",
+      "standards/development/ATC-STD-148.md",
+      "standards/development/ATC-STD-149.md",
+      "standards/development/ATC-STD-300.md",
+      "standards/development/ATC-STD-440.md",
+      "standards/development/ATC-STD-441.md",
+      "standards/development/ATC-STD-442.md",
+      "standards/development/ATC-STD-443.md",
+      "standards/development/ATC-STD-444.md",
+      "standards/development/ATC-STD-445.md",
+      "standards/development/ATC-STD-447.md",
+      "standards/development/ATC-STD-448.md",
+      "standards/development/ATC-STD-449.md",
+      "standards/development/ATC-STD-450.md",
+      "standards/development/ATC-STD-460.md",
+      "standards/development/ATC-STD-461.md",
+      "standards/development/ATC-STD-462.md",
+      "standards/development/ATC-STD-463.md",
+      "standards/development/ATC-STD-466.md",
+      "standards/development/ATC-STD-467.md",
+      "standards/development/ATC-STD-468.md",
+      "standards/development/ATC-STD-469.md",
+      "standards/development/ATC-STD-540.md",
+      "standards/development/ATC-STD-541.md",
+      "standards/development/ATC-STD-542.md",
+      "standards/development/ATC-STD-543.md",
+      "standards/development/ATC-STD-544.md",
+      "standards/development/ATC-STD-545.md",
+      "standards/development/ATC-STD-546.md",
+      "standards/development/ATC-STD-560.md",
+      "standards/development/ATC-STD-561.md",
+      "standards/development/ATC-STD-562.md",
+      "standards/development/ATC-STD-566.md",
+      "standards/development/ATC-STD-620.md",
+      "standards/development/ATC-STD-623.md",
+      "standards/development/ATC-STD-624.md",
+      "standards/development/ATC-STD-625.md",
+      "standards/development/ATC-STD-626.md",
+      "standards/development/ATC-STD-627.md",
+      "standards/enterprise/ATC-ENT-001.md",
+      "standards/enterprise/ATC-ENT-002.md",
+      "standards/enterprise/ATC-ENT-003.md",
+      "standards/enterprise/ATC-ENT-004.md",
+      "standards/enterprise/ATC-ENT-005.md",
+      "standards/enterprise/ATC-ENT-006.md",
+      "standards/enterprise/ATC-ENT-007.md",
+      "standards/enterprise/ATC-ENT-008.md",
+      "standards/enterprise/ATC-ENT-009.md",
+      "standards/enterprise/ATC-ENT-010.md",
+      "standards/enterprise/ATC-ENT-011.md",
+      "standards/enterprise/ATC-ENT-012.md",
+      "standards/enterprise/ATC-ENT-013.md",
+      "standards/enterprise/ATC-ENT-014.md",
+      "standards/enterprise/ATC-ENT-015.md",
+      "standards/enterprise/ATC-STD-001.md",
+      "standards/enterprise/ATC-STD-006.md",
+      "standards/enterprise/ATC-STD-008.md",
+      "standards/enterprise/ATC-STD-012.md",
+      "standards/enterprise/ATC-STD-013.md",
+      "standards/enterprise/ATC-STD-015.md",
+      "standards/enterprise/ATC-STD-700.md",
+      "standards/enterprise/ATC-STD-701.md",
+      "standards/enterprise/ATC-STD-702.md",
+      "standards/enterprise/ATC-STD-703.md",
+      "standards/enterprise/ATC-STD-704.md",
+      "standards/enterprise/ATC-STD-705.md",
+      "standards/enterprise/ATC-STD-706.md",
+      "standards/err/ATC-STD-ERR-000.md",
+      "standards/err/ATC-STD-ERR-001.md",
+      "standards/err/ATC-STD-ERR-002.md",
+      "standards/err/ATC-STD-ERR-003.md",
+      "standards/err/ATC-STD-ERR-004.md",
+      "standards/err/ATC-STD-ERR-005.md",
+      "standards/err/ATC-STD-ERR-006.md",
+      "standards/err/ATC-STD-ERR-007.md",
+      "standards/err/ATC-STD-ERR-008.md",
+      "standards/err/ATC-STD-ERR-009.md",
+      "standards/err/ATC-STD-ERR-010.md",
+      "standards/err/ATC-STD-ERR-011.md",
+      "standards/err/ATC-STD-ERR-012.md",
+      "standards/err/ATC-STD-ERR-013.md",
+      "standards/err/ATC-STD-ERR-014.md",
+      "standards/err/ATC-STD-ERR-015.md",
+      "standards/framework/ATC-STD-FRAMEWORK-001.md",
+      "standards/governance-core/ATC-STD-CHANGE-001.md",
+      "standards/governance-core/ATC-STD-REGISTRY-001.md",
+      "standards/governance-core/ATC-STD-STDDEV-001.md",
+      "standards/governance/ATC-STD-025.md",
+      "standards/governance/ATC-STD-027.md",
+      "standards/governance/ATC-STD-680.md",
+      "standards/governance/ATC-STD-681.md",
+      "standards/governance/ATC-STD-682.md",
+      "standards/governance/ATC-STD-683.md",
+      "standards/governance/ATC-STD-684.md",
+      "standards/governance/ATC-STD-685.md",
+      "standards/governance/ATC-STD-686.md",
+      "standards/implementation/ATC-STD-IMPLEMENTATION-001.md",
+      "standards/infrastructure/ATC-STD-160.md",
+      "standards/infrastructure/ATC-STD-161.md",
+      "standards/infrastructure/ATC-STD-163.md",
+      "standards/infrastructure/ATC-STD-164.md",
+      "standards/infrastructure/ATC-STD-169.md",
+      "standards/infrastructure/ATC-STD-170.md",
+      "standards/infrastructure/ATC-STD-171.md",
+      "standards/infrastructure/ATC-STD-172.md",
+      "standards/infrastructure/ATC-STD-174.md",
+      "standards/infrastructure/ATC-STD-480.md",
+      "standards/infrastructure/ATC-STD-481.md",
+      "standards/infrastructure/ATC-STD-482.md",
+      "standards/infrastructure/ATC-STD-483.md",
+      "standards/infrastructure/ATC-STD-484.md",
+      "standards/infrastructure/ATC-STD-485.md",
+      "standards/infrastructure/ATC-STD-486.md",
+      "standards/infrastructure/ATC-STD-488.md",
+      "standards/license/ATC-STD-LICENSE-001.md",
+      "standards/license/ATC-STD-LICENSE-002.md",
+      "standards/license/ATC-STD-LICENSE-003.md",
+      "standards/license/ATC-STD-LICENSE-004.md",
+      "standards/license/ATC-STD-LICENSE-005.md",
+      "standards/license/ATC-STD-LICENSE-006.md",
+      "standards/license/ATC-STD-LICENSE-007.md",
+      "standards/license/ATC-STD-LICENSE-008.md",
+      "standards/license/ATC-STD-LICENSE-009.md",
+      "standards/master-audit/ATC-STD-999.md",
+      "standards/md/ATC-STD-062.md",
+      "standards/md/ATC-STD-063.md",
+      "standards/md/ATC-STD-064.md",
+      "standards/md/ATC-STD-066.md",
+      "standards/md/ATC-STD-067.md",
+      "standards/md/ATC-STD-069.md",
+      "standards/md/ATC-STD-070.md",
+      "standards/md/ATC-STD-072.md",
+      "standards/md/ATC-STD-MD-001.md",
+      "standards/milestone/ATC-STD-MILESTONE-001.md",
+      "standards/net/ATC-STD-NET-001.md",
+      "standards/net/ATC-STD-NET-002.md",
+      "standards/net/ATC-STD-NET-003.md",
+      "standards/net/ATC-STD-NET-004.md",
+      "standards/net/ATC-STD-NET-005.md",
+      "standards/net/ATC-STD-NET-006.md",
+      "standards/net/ATC-STD-NET-007.md",
+      "standards/net/ATC-STD-NET-008.md",
+      "standards/os/ATC-STD-600.md",
+      "standards/os/ATC-STD-601.md",
+      "standards/os/ATC-STD-602.md",
+      "standards/os/ATC-STD-603.md",
+      "standards/os/ATC-STD-604.md",
+      "standards/os/ATC-STD-605.md",
+      "standards/os/ATC-STD-606.md",
+      "standards/os/ATC-STD-607.md",
+      "standards/protocol/ATC-STD-PROTOCOL-001.md",
+      "standards/protocol/ATC-STD-PROTOCOL-002.md",
+      "standards/protocol/ATC-STD-PROTOCOL-003.md",
+      "standards/readme/ATC-STD-README-001.md",
+      "standards/repo-audit/ATC-STD-REPO-AUDIT-001.md",
+      "standards/repo-audit/ATC-STD-REPO-AUDIT-002.md",
+      "standards/repo-audit/ATC-STD-REPO-AUDIT-003.md",
+      "standards/repo-maint/ATC-STD-REPO-MAINT-001.md",
+      "standards/repository/ATC-STD-040.md",
+      "standards/repository/ATC-STD-042.md",
+      "standards/repository/ATC-STD-045.md",
+      "standards/repository/ATC-STD-048.md",
+      "standards/repository/ATC-STD-050.md",
+      "standards/repository/ATC-STD-051.md",
+      "standards/repository/ATC-STD-052.md",
+      "standards/repository/ATC-STD-101.md",
+      "standards/repository/ATC-STD-103.md",
+      "standards/repository/ATC-STD-104.md",
+      "standards/repository/ATC-STD-105.md",
+      "standards/repository/ATC-STD-107.md",
+      "standards/repository/ATC-STD-114.md",
+      "standards/repository/ATC-STD-201.md",
+      "standards/repository/ATC-STD-202.md",
+      "standards/repository/ATC-STD-203.md",
+      "standards/repository/ATC-STD-204.md",
+      "standards/repository/ATC-STD-660.md",
+      "standards/repository/ATC-STD-662.md",
+      "standards/repository/ATC-STD-664.md",
+      "standards/repository/ATC-STD-665.md",
+      "standards/repository/ATC-STD-666.md",
+      "standards/repository/ATC-STD-667.md",
+      "standards/sc/ATC-STD-SC-001.md",
+      "standards/sc/ATC-STD-SC-002.md",
+      "standards/sc/ATC-STD-SC-003.md",
+      "standards/sc/ATC-STD-SC-004.md",
+      "standards/sc/ATC-STD-SC-005.md",
+      "standards/sc/ATC-STD-SC-006.md",
+      "standards/sc/ATC-STD-SC-007.md",
+      "standards/sc/ATC-STD-SC-008.md",
+      "standards/sc/ATC-STD-SC-009.md",
+      "standards/sc/ATC-STD-SC-010.md",
+      "standards/sc/ATC-STD-SC-011.md",
+      "standards/sc/ATC-STD-SC-012.md",
+      "standards/sc/ATC-STD-SC-013.md",
+      "standards/sc/ATC-STD-SC-014.md",
+      "standards/sc/ATC-STD-SC-015.md",
+      "standards/sc/ATC-STD-SC-016.md",
+      "standards/sc/ATC-STD-SC-017.md",
+      "standards/sc/ATC-STD-SC-018.md",
+      "standards/sc/ATC-STD-SC-019.md",
+      "standards/sc/ATC-STD-SC-020.md",
+      "standards/security/ATC-STD-280.md",
+      "standards/security/ATC-STD-282.md",
+      "standards/security/ATC-STD-283.md",
+      "standards/security/ATC-STD-284.md",
+      "standards/security/ATC-STD-285.md",
+      "standards/security/ATC-STD-286.md",
+      "standards/security/ATC-STD-301.md",
+      "standards/security/ATC-STD-302.md",
+      "standards/security/ATC-STD-303.md",
+      "standards/security/ATC-STD-304.md",
+      "standards/security/ATC-STD-306.md",
+      "standards/security/ATC-STD-307.md",
+      "standards/security/ATC-STD-308.md",
+      "standards/security/ATC-STD-309.md",
+      "standards/security/ATC-STD-311.md",
+      "standards/security/ATC-STD-312.md",
+      "standards/security/ATC-STD-314.md",
+      "standards/security/ATC-STD-500.md",
+      "standards/security/ATC-STD-501.md",
+      "standards/security/ATC-STD-502.md",
+      "standards/security/ATC-STD-504.md",
+      "standards/security/ATC-STD-505.md",
+      "standards/security/ATC-STD-507.md",
+      "standards/security/ATC-STD-508.md",
+      "standards/security/ATC-STD-509.md",
+      "standards/taxonomy/ATC-STD-TAXONOMY-001.md",
+      "standards/update/ATC-STD-UPDATE-001.md",
+      "standards/v2s/ATC-STD-V2S-000.md",
+      "standards/version/ATC-STD-VERSION-001.md",
+      "standards/zkp/ATC-STD-ZKP-001.md",
+      "standards/zkp/ATC-STD-ZKP-002.md",
+      "standards/zkp/ATC-STD-ZKP-003.md",
+      "standards/zkp/ATC-STD-ZKP-004.md",
+      "standards/zkp/ATC-STD-ZKP-005.md",
+      "standards/zkp/ATC-STD-ZKP-006.md",
+      "standards/zkp/ATC-STD-ZKP-007.md",
+      "standards/zkp/ATC-STD-ZKP-008.md",
+      "standards/zkp/ATC-STD-ZKP-009.md",
+      "standards/zkp/ATC-STD-ZKP-010.md",
+      "tools/atc-md-validator/check_md.py",
+      "tools/atc-repo-audit/atc_repo_audit.py",
+      "tools/atc-std-validator/atc_std_validator.py",
+      "tools/atc-std-validator/check_agent_manifest.py",
+      "tools/atc-std-validator/validate_all.py",
+      "tools/gen_views/generate_views.py",
+      "tools/taxonomy/gen_taxonomy.py"
+    ],
+    "DELETED": []
+  },
+  "standard_candidates": [
+    {
+      "file": "approval/APPROVAL-DECISION-2026-09-11.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "audits/AUD-2026-0005-ORG-LIVE-AUDIT.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "audits/file-admission/2026-09-11-atc-standards.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0049.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0054.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0056.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0057.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0058.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0061.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0062.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0065.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0066.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0067.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0068.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0069.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0071.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0074.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0075.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0076.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0080.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0087.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0088.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0090.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0092.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0120.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "change-requests/SCR-0123.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "docs/architecture/ATC-STANDARDS-LIBRARY-ARCHITECTURE.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "docs/compliance/ORG-COMPLIANCE-SCAN-2026-09-10.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "evidence/README.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "governance/ATC-STD-002.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "governance/constitution/ATC-GOV-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "governance/decision-rights/github-rulesets.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-ACCESS-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-AGENTS-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-AUDIT-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-CHANGE-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-CHECK-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-FINDING-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-HANDOFF-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-INCIDENT-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-MANIFEST-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-gov/ATC-AI-GOV-POLICY-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/architecture/ATC-ARCH-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/cicd/ATC-STD-CI-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/eng/ATC-STD-ENG-001.md",
+      "signals": 6,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-GATE-SEC-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ORG-BASELINE-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-016.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-017.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-018.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-019.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-020.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-021.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-022.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-023.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-024.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-026.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-028.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-029.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-030.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-031.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-032.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-033.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-034.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-035.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-036.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-037.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-038.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-039.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-041.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-043.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance/ATC-STD-003.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/improvement/ATC-STD-IMPROVEMENT-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/legal/ATC-STD-LEGAL-002.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-000.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-002.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-003.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-004.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-005.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-006.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-007.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-008.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-009.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-010.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-011.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-012.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-013.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-014.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-015.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-016.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-017.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-018.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-019.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-020.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-021.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-022.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-023.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/maintenance/ATC-STD-MAINT-024.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/net/ATC-STD-NET-009.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-002.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-003.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-004.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-005.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-006.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-007.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-008.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-009.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-discovery/ATC-STD-REPO-DISCOVERY-010.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-220.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/technology-uniqueness/ATC-STD-TUD-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "AGENTS.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "AGENT_MANIFEST.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "CHANGELOG.md",
+      "signals": 6,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "INDEX.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "STATUS.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "ats/ATS-LIC-SYSTEM_HARDWARE_LICENSE.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "governance/ATC-STD-000.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-002.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-003.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-004.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-005.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-006.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-007.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-008.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-009.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-010.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-011.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-012.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-013.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-014.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-015.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-016.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-017.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-018.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-019.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-020.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-021.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-022.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-023.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-024.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/aas/ATC-AAS-025.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/agent-operating/ATC-STD-AOS-001.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai-decision/ATC-STD-AI-DECISION-001.md",
+      "signals": 5,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-001.md",
+      "signals": 5,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-002.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-003.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-004.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-005.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-006.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-007.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-008.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-009.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-010.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-011.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/ai/ATC-STD-AI-DEV-012.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-400.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-401.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-402.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-403.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-404.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-405.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-406.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-407.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-408.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-409.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-420.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-421.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-422.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-423.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-424.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-425.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-426.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-427.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-428.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-429.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-430.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-431.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-432.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-433.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-434.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-580.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-581.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-582.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-583.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-584.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-585.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-586.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/applications/ATC-STD-587.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/architecture/ATC-STD-100.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/audit/ATC-STD-640.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/audit/ATC-STD-641.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/audit/ATC-STD-643.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/audit/ATC-STD-646.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/audit/ATC-STD-AUDIT-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-180.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-181.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-182.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-183.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-184.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-185.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-186.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-187.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-188.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-189.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-190.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-191.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-192.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-193.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-194.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-195.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-196.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-197.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-200.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-205.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-206.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-207.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-208.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-209.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-210.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-212.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-213.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-214.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-215.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-240.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-241.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-242.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-243.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-244.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-245.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-246.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-247.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-248.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-249.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-270.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-271.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-272.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-273.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-274.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-275.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-276.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-340.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-341.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-342.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-343.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-344.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-345.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-346.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-347.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-348.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-349.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-350.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-360.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-361.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-362.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-363.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-364.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-365.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-366.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-367.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-368.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-380.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-381.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-382.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-383.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-384.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-385.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-386.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-387.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-388.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/blockchain/ATC-STD-389.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/bug/ATC-STD-129.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/bug/ATC-STD-130.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/bug/ATC-STD-BUG-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/bug/ATC-STD-BUG-002.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/bug/ATC-STD-BUG-003.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/bug/ATC-STD-BUG-004.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/bug/ATC-STD-BUG-005.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/compat/ATC-STD-COMPAT-001.md",
+      "signals": 5,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/desc/ATC-STD-DESC-001.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-081.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-082.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-085.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-087.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-088.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-089.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-090.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-091.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-093.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-094.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-095.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-140.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-141.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-142.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-143.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-144.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-146.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-147.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-148.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-149.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-300.md",
+      "signals": 5,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-440.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-441.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-442.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-443.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-444.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-445.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-447.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-448.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-449.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-450.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-460.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-461.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-462.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-463.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-466.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-467.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-468.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-469.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-540.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-541.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-542.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-543.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-544.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-545.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-546.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-560.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-561.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-562.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-566.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-620.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-623.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-624.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-625.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-626.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/development/ATC-STD-627.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-002.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-003.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-004.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-005.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-006.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-007.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-008.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-009.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-010.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-011.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-012.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-013.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-014.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-ENT-015.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-006.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-008.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-012.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-013.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-015.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-700.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-701.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-702.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-703.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-704.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-705.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/enterprise/ATC-STD-706.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-000.md",
+      "signals": 5,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-002.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-003.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-004.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-005.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-006.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-007.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-008.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-009.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-010.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-011.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-012.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-013.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-014.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/err/ATC-STD-ERR-015.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/framework/ATC-STD-FRAMEWORK-001.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance-core/ATC-STD-CHANGE-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance-core/ATC-STD-REGISTRY-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance-core/ATC-STD-STDDEV-001.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance/ATC-STD-025.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance/ATC-STD-027.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance/ATC-STD-680.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance/ATC-STD-681.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance/ATC-STD-682.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance/ATC-STD-683.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance/ATC-STD-684.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance/ATC-STD-685.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/governance/ATC-STD-686.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/implementation/ATC-STD-IMPLEMENTATION-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-160.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-161.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-163.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-164.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-169.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-170.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-171.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-172.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-174.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-480.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-481.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-482.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-483.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-484.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-485.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-486.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/infrastructure/ATC-STD-488.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/license/ATC-STD-LICENSE-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/license/ATC-STD-LICENSE-002.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/license/ATC-STD-LICENSE-003.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/license/ATC-STD-LICENSE-004.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/license/ATC-STD-LICENSE-005.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/license/ATC-STD-LICENSE-006.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/license/ATC-STD-LICENSE-007.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/license/ATC-STD-LICENSE-008.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/license/ATC-STD-LICENSE-009.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/master-audit/ATC-STD-999.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/md/ATC-STD-062.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/md/ATC-STD-063.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/md/ATC-STD-064.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/md/ATC-STD-066.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/md/ATC-STD-067.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/md/ATC-STD-069.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/md/ATC-STD-070.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/md/ATC-STD-072.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/md/ATC-STD-MD-001.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/milestone/ATC-STD-MILESTONE-001.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/net/ATC-STD-NET-001.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/net/ATC-STD-NET-002.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/net/ATC-STD-NET-003.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/net/ATC-STD-NET-004.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/net/ATC-STD-NET-005.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/net/ATC-STD-NET-006.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/net/ATC-STD-NET-007.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/net/ATC-STD-NET-008.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/os/ATC-STD-600.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/os/ATC-STD-601.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/os/ATC-STD-602.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/os/ATC-STD-603.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/os/ATC-STD-604.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/os/ATC-STD-605.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/os/ATC-STD-606.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/os/ATC-STD-607.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/protocol/ATC-STD-PROTOCOL-001.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/protocol/ATC-STD-PROTOCOL-002.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/protocol/ATC-STD-PROTOCOL-003.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/readme/ATC-STD-README-001.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-audit/ATC-STD-REPO-AUDIT-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-audit/ATC-STD-REPO-AUDIT-002.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-audit/ATC-STD-REPO-AUDIT-003.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repo-maint/ATC-STD-REPO-MAINT-001.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-040.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-042.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-045.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-048.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-050.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-051.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-052.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-101.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-103.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-104.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-105.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-107.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-114.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-201.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-202.md",
+      "signals": 5,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-203.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-204.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-660.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-662.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-664.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-665.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-666.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/repository/ATC-STD-667.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-002.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-003.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-004.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-005.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-006.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-007.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-008.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-009.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-010.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-011.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-012.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-013.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-014.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-015.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-016.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-017.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-018.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-019.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/sc/ATC-STD-SC-020.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-280.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-282.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-283.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-284.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-285.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-286.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-301.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-302.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-303.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-304.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-306.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-307.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-308.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-309.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-311.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-312.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-314.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-500.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-501.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-502.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-504.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-505.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-507.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-508.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/security/ATC-STD-509.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/taxonomy/ATC-STD-TAXONOMY-001.md",
+      "signals": 3,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/update/ATC-STD-UPDATE-001.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/v2s/ATC-STD-V2S-000.md",
+      "signals": 4,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/version/ATC-STD-VERSION-001.md",
+      "signals": 5,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/zkp/ATC-STD-ZKP-001.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/zkp/ATC-STD-ZKP-002.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/zkp/ATC-STD-ZKP-003.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/zkp/ATC-STD-ZKP-004.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/zkp/ATC-STD-ZKP-005.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/zkp/ATC-STD-ZKP-006.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/zkp/ATC-STD-ZKP-007.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/zkp/ATC-STD-ZKP-008.md",
+      "signals": 2,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/zkp/ATC-STD-ZKP-009.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    },
+    {
+      "file": "standards/zkp/ATC-STD-ZKP-010.md",
+      "signals": 1,
+      "status": "DISCOVERED"
+    }
+  ],
+  "security_review_required": false,
+  "documentation_required": true,
+  "cross_repository_review": true,
+  "invariants": {
+    "INV-001_erkannt": true,
+    "INV-002_klassifiziert": true,
+    "INV-003_kandidaten_geprueft": true,
+    "INV-004_duplikat_geprueft": "deferred (RD-004-Ausbaustufe)",
+    "INV-005_cross_repo_geprueft": "deferred (RD-005-Ausbaustufe)",
+    "INV-006_doku_geprueft": "deferred (RD-009-Ausbaustufe)",
+    "INV-007_test_geprueft": "deferred",
+    "INV-008_security_review": "klassifiziert, Review deferred",
+    "INV-009_revisionssicher": true,
+    "INV-010_vollstaendigkeit": false
+  },
+  "checks": {
+    "S1_bestand": true,
+    "S2_git_diff": true,
+    "S3_neue_inhalte": true,
+    "S4_klassifikation": true,
+    "S6_standardsrelevanz": true,
+    "S7_risiko": false,
+    "S8_doku_bedarf": false,
+    "S9_cross_repo": false,
+    "S10_massnahmen": false
+  },
+  "scan_result": "PARTIAL — INV-010: Pruefung unvollstaendig (Ausbaustufen offen)"
+}
