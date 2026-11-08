@@ -1,0 +1,186 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-45 — ShivaOS UI Renderer
+// Sprint 3.0 | UI Layer | Chain-ID 9000
+// Migrated from: shivaos/ui/renderer.py (104 lines)
+// Terminal-based UI: panels, text boxes, progress bars, dashboard
+// ─────────────────────────────────────────────────────────────
+
+enum UIColor { Default, Red, Green, Yellow, Blue, Magenta, Cyan, White }
+enum ComponentType { TextBox, Panel, ProgressBar, Separator, Spacer }
+
+struct UIComponent {
+    comp_type: ComponentType,
+    text: String,
+    color: UIColor,
+    width: u8,
+    height: u8,
+    value: u32,
+    max_value: u32,
+    children: List<String>,
+    border: bool,
+}
+
+struct Screen {
+    width: u8,
+    height: u8,
+    components: List<UIComponent>,
+    cursor_x: u8,
+    cursor_y: u8,
+    bg_color: UIColor,
+    fg_color: UIColor,
+}
+
+contract ShivaOSRenderer {
+    state screen: Screen
+    state frame_count: u64
+    state render_count: u64
+    state last_render: u64
+    state owner: Address
+
+    event FrameRendered(frame_id: u64)
+    event DashboardUpdated(height: u64, peers: u16, balance: u128)
+
+    fn init() {
+        self.screen = Screen {
+            width: 80,
+            height: 24,
+            components: [],
+            cursor_x: 0,
+            cursor_y: 0,
+            bg_color: UIColor::Default,
+            fg_color: UIColor::White,
+        }
+        self.frame_count = 0
+        self.render_count = 0
+        self.last_render = 0
+        self.owner = msg_sender()
+    }
+
+    fn clear() {
+        self.screen.components = []
+    }
+
+    fn add_text(text: String, color: UIColor) -> bool {
+        let comp = UIComponent {
+            comp_type: ComponentType::TextBox,
+            text: text,
+            color: color,
+            width: self.screen.width,
+            height: 1,
+            value: 0,
+            max_value: 0,
+            children: [],
+            border: false,
+        }
+        self.screen.components.push(comp)
+        return true
+    }
+
+    fn add_panel(title: String, children: List<String>) -> bool {
+        let comp = UIComponent {
+            comp_type: ComponentType::Panel,
+            text: title,
+            color: UIColor::Cyan,
+            width: self.screen.width,
+            height: children.len() + 2,
+            value: 0,
+            max_value: 0,
+            children: children,
+            border: true,
+        }
+        self.screen.components.push(comp)
+        return true
+    }
+
+    fn add_progress_bar(label: String, value: u32, max_val: u32) -> bool {
+        let comp = UIComponent {
+            comp_type: ComponentType::ProgressBar,
+            text: label,
+            color: UIColor::Green,
+            width: self.screen.width,
+            height: 1,
+            value: value,
+            max_value: max_val,
+            children: [],
+            border: false,
+        }
+        self.screen.components.push(comp)
+        return true
+    }
+
+    fn add_separator() -> bool {
+        let comp = UIComponent {
+            comp_type: ComponentType::Separator,
+            text: "",
+            color: UIColor::Default,
+            width: self.screen.width,
+            height: 1,
+            value: 0,
+            max_value: 0,
+            children: [],
+            border: false,
+        }
+        self.screen.components.push(comp)
+        return true
+    }
+
+    fn render_frame() -> String {
+        self.frame_count += 1
+        self.render_count += 1
+        self.last_render = Time::now()
+
+        let output = ""
+        let i: u16 = 0
+        while i < self.screen.components.len() {
+            let comp = self.screen.components[i]
+            if comp.comp_type == ComponentType::TextBox {
+                output = output + comp.text + "\n"
+            } else if comp.comp_type == ComponentType::Panel {
+                output = output + "┌─ " + comp.text + " ─" + repeat("─", comp.width - comp.text.len() - 4) + "┐\n"
+                let j: u16 = 0
+                while j < comp.children.len() {
+                    output = output + "│ " + comp.children[j] + "\n"
+                    j += 1
+                }
+                output = output + "└" + repeat("─", comp.width - 2) + "┘\n"
+            } else if comp.comp_type == ComponentType::ProgressBar {
+                let pct: u32 = 0
+                if comp.max_value > 0 {
+                    pct = comp.value * 100 / comp.max_value
+                }
+                output = output + comp.text + " [" + bar_str(pct) + "] " + Int::to_string(pct) + "%\n"
+            } else if comp.comp_type == ComponentType::Separator {
+                output = output + repeat("─", self.screen.width) + "\n"
+            }
+            i += 1
+        }
+        emit FrameRendered(self.frame_count)
+        return output
+    }
+
+    fn dashboard(chain_height: u64, peer_count: u16, balance: u128, shivamon_count: u32) -> String {
+        self.clear()
+        self.add_text("╔═══ KAI-OS ShivaOS Dashboard ═══╗", UIColor::Cyan)
+        self.add_separator()
+        self.add_panel("Blockchain", [
+            "Height: " + Int::to_string(chain_height),
+            "Peers: " + Int::to_string(peer_count)
+        ])
+        self.add_panel("Wallet", [
+            "Balance: " + Int::to_string(balance) + " ATC"
+        ])
+        self.add_panel("Assets", [
+            "Shivamon: " + Int::to_string(shivamon_count)
+        ])
+        self.add_progress_bar("Sync", 85, 100)
+        self.add_separator()
+        self.add_text("© A-TownChain OS v1.0.0", UIColor::Default)
+        emit DashboardUpdated(chain_height, peer_count, balance)
+        return self.render_frame()
+    }
+
+    fn get_stats() -> (u64, u64, u8, u8) {
+        return (self.frame_count, self.render_count, self.screen.width, self.screen.height)
+    }
+}
