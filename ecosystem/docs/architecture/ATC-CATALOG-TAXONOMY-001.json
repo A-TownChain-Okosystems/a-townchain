@@ -1,0 +1,559 @@
+{
+  "schema_id": "ATC-CATALOG-TAXONOMY-001",
+  "schema_version": "1.0.0",
+  "status": "PROPOSED_NOT_SOURCE_VERIFIED",
+  "authority": {
+    "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+    "role": "catalog classification metadata only; not an implementation or normative protocol registry",
+    "canonical_implementation_rule": "Taxonomy entries do not change canonical repository ownership or implementation SSOT."
+  },
+  "hierarchy": [
+    {
+      "field": "category_id",
+      "meaning": "Top-level technical or product domain"
+    },
+    {
+      "field": "family_id",
+      "meaning": "Responsibility family within a category"
+    },
+    {
+      "field": "class_id",
+      "meaning": "Technical artifact, contract, or symbol type"
+    },
+    {
+      "field": "component_id",
+      "meaning": "Existing stable component ID from ATC-COMPONENT-FUNCTION-CATALOG-001"
+    },
+    {
+      "field": "function_id",
+      "meaning": "Existing stable function ID from ATC-COMPONENT-FUNCTION-CATALOG-001"
+    },
+    {
+      "field": "interface_id",
+      "meaning": "Existing stable interface ID from the canonical catalog"
+    },
+    {
+      "field": "layer_id",
+      "meaning": "Existing architecture layer identifier (L1-L10); separate from taxonomy"
+    },
+    {
+      "field": "sublayer_id",
+      "meaning": "Existing architecture sublayer identifier (X1-X36); separate from taxonomy"
+    }
+  ],
+  "categories": [
+    {
+      "id": "CAT-KERNEL",
+      "description": "Kernel and trusted computing base"
+    },
+    {
+      "id": "CAT-OS",
+      "description": "Operating system, userspace and installation"
+    },
+    {
+      "id": "CAT-IDENTITY",
+      "description": "Identity, authentication, accounts and sessions"
+    },
+    {
+      "id": "CAT-SECURITY",
+      "description": "Authorization, cryptography, sandboxing and audit"
+    },
+    {
+      "id": "CAT-BLOCKCHAIN",
+      "description": "L1 chain, transactions, consensus, node and state"
+    },
+    {
+      "id": "CAT-VM",
+      "description": "Smart-contract and deterministic execution runtime"
+    },
+    {
+      "id": "CAT-WALLET",
+      "description": "Wallet interfaces, addresses, signing and transaction review"
+    },
+    {
+      "id": "CAT-INTEROP",
+      "description": "RPC, SDK and cross-chain interoperability"
+    },
+    {
+      "id": "CAT-AI",
+      "description": "Aurora AI control plane, agents and model integration"
+    },
+    {
+      "id": "CAT-DATA",
+      "description": "Persistence, indexing, events and schemas"
+    },
+    {
+      "id": "CAT-UX",
+      "description": "Desktop and application user experience"
+    },
+    {
+      "id": "CAT-DEVTOOLS",
+      "description": "Build, test, CI, diagnostics and release tooling"
+    },
+    {
+      "id": "CAT-GOVERNANCE",
+      "description": "Standards, catalog, compliance and evidence"
+    }
+  ],
+  "families": [
+    {
+      "id": "FAM-KERNEL-CORE",
+      "category_id": "CAT-KERNEL",
+      "description": "Kernel core and scheduling"
+    },
+    {
+      "id": "FAM-CAPABILITY",
+      "category_id": "CAT-KERNEL",
+      "description": "Capability-based authority and resource access"
+    },
+    {
+      "id": "FAM-BOOT",
+      "category_id": "CAT-KERNEL",
+      "description": "Boot, secure boot and early initialization"
+    },
+    {
+      "id": "FAM-HARDWARE-ABSTRACTION",
+      "category_id": "CAT-KERNEL",
+      "description": "Hardware abstraction and platform discovery"
+    },
+    {
+      "id": "FAM-DESKTOP-SHELL",
+      "category_id": "CAT-OS",
+      "description": "Desktop shell, launcher and taskbar"
+    },
+    {
+      "id": "FAM-WINDOW-MANAGER",
+      "category_id": "CAT-OS",
+      "description": "Window lifecycle, placement and focus"
+    },
+    {
+      "id": "FAM-SYSTEM-CONTROL",
+      "category_id": "CAT-OS",
+      "description": "System settings, control panels and device controls"
+    },
+    {
+      "id": "FAM-INSTALL-DISTRIBUTION",
+      "category_id": "CAT-OS",
+      "description": "Native installation, update and distribution"
+    },
+    {
+      "id": "FAM-IPC",
+      "category_id": "CAT-OS",
+      "description": "Inter-process communication and service boundaries"
+    },
+    {
+      "id": "FAM-IDENTITY",
+      "category_id": "CAT-IDENTITY",
+      "description": "Identity records and identity-provider integration"
+    },
+    {
+      "id": "FAM-AUTHENTICATION",
+      "category_id": "CAT-IDENTITY",
+      "description": "Login and credential verification"
+    },
+    {
+      "id": "FAM-SESSION",
+      "category_id": "CAT-IDENTITY",
+      "description": "Session lifecycle and logout"
+    },
+    {
+      "id": "FAM-ACCOUNT",
+      "category_id": "CAT-IDENTITY",
+      "description": "Account lifecycle and account state"
+    },
+    {
+      "id": "FAM-AUTHORIZATION",
+      "category_id": "CAT-SECURITY",
+      "description": "Policy evaluation and permission enforcement"
+    },
+    {
+      "id": "FAM-CRYPTOGRAPHY",
+      "category_id": "CAT-SECURITY",
+      "description": "Cryptographic primitives and protocol use"
+    },
+    {
+      "id": "FAM-KEY-MANAGEMENT",
+      "category_id": "CAT-SECURITY",
+      "description": "Key custody, provider and lifecycle contracts"
+    },
+    {
+      "id": "FAM-SANDBOX",
+      "category_id": "CAT-SECURITY",
+      "description": "Isolation and resource confinement"
+    },
+    {
+      "id": "FAM-AUDIT",
+      "category_id": "CAT-SECURITY",
+      "description": "Security audit events and evidence"
+    },
+    {
+      "id": "FAM-TRANSACTION",
+      "category_id": "CAT-BLOCKCHAIN",
+      "description": "Transaction validation and processing"
+    },
+    {
+      "id": "FAM-CONSENSUS",
+      "category_id": "CAT-BLOCKCHAIN",
+      "description": "Consensus algorithms and validator rules"
+    },
+    {
+      "id": "FAM-FINALITY",
+      "category_id": "CAT-BLOCKCHAIN",
+      "description": "Finality proofs and confirmation guarantees"
+    },
+    {
+      "id": "FAM-NODE",
+      "category_id": "CAT-BLOCKCHAIN",
+      "description": "Node lifecycle, networking and synchronization"
+    },
+    {
+      "id": "FAM-STORAGE",
+      "category_id": "CAT-BLOCKCHAIN",
+      "description": "Canonical chain state and persistence"
+    },
+    {
+      "id": "FAM-GENESIS",
+      "category_id": "CAT-BLOCKCHAIN",
+      "description": "Genesis configuration and bootstrap"
+    },
+    {
+      "id": "FAM-BYTECODE",
+      "category_id": "CAT-VM",
+      "description": "Bytecode encoding and validation"
+    },
+    {
+      "id": "FAM-INTERPRETER",
+      "category_id": "CAT-VM",
+      "description": "Instruction dispatch and execution"
+    },
+    {
+      "id": "FAM-GAS-RESOURCE",
+      "category_id": "CAT-VM",
+      "description": "Gas, operation and memory limits"
+    },
+    {
+      "id": "FAM-CONTRACT-STORAGE",
+      "category_id": "CAT-VM",
+      "description": "Contract storage and state access"
+    },
+    {
+      "id": "FAM-ADDRESS",
+      "category_id": "CAT-WALLET",
+      "description": "Address encoding and validation"
+    },
+    {
+      "id": "FAM-SIGNING",
+      "category_id": "CAT-WALLET",
+      "description": "Canonical transaction signing"
+    },
+    {
+      "id": "FAM-KEY-INTERFACE",
+      "category_id": "CAT-WALLET",
+      "description": "Wallet key-provider interfaces"
+    },
+    {
+      "id": "FAM-TX-PREVIEW",
+      "category_id": "CAT-WALLET",
+      "description": "Transaction review and approval display"
+    },
+    {
+      "id": "FAM-RPC",
+      "category_id": "CAT-INTEROP",
+      "description": "Remote procedure call contracts"
+    },
+    {
+      "id": "FAM-SDK",
+      "category_id": "CAT-INTEROP",
+      "description": "Client SDK interfaces"
+    },
+    {
+      "id": "FAM-CROSS-CHAIN",
+      "category_id": "CAT-INTEROP",
+      "description": "Cross-chain messages, proofs and replay protection"
+    },
+    {
+      "id": "FAM-PROVIDER-ADAPTER",
+      "category_id": "CAT-INTEROP",
+      "description": "Provider and backend adapters"
+    },
+    {
+      "id": "FAM-CONTROL-PLANE",
+      "category_id": "CAT-AI",
+      "description": "Intent, planning, routing and policy control"
+    },
+    {
+      "id": "FAM-AGENT",
+      "category_id": "CAT-AI",
+      "description": "Agent lifecycle, tools and coordination"
+    },
+    {
+      "id": "FAM-MODEL-ADAPTER",
+      "category_id": "CAT-AI",
+      "description": "Local and external model interfaces"
+    },
+    {
+      "id": "FAM-MEMORY",
+      "category_id": "CAT-AI",
+      "description": "Agent memory and state management"
+    },
+    {
+      "id": "FAM-APPROVAL",
+      "category_id": "CAT-AI",
+      "description": "Human approval and capability-gated actions"
+    },
+    {
+      "id": "FAM-DATABASE",
+      "category_id": "CAT-DATA",
+      "description": "Database access and persistence"
+    },
+    {
+      "id": "FAM-INDEXER",
+      "category_id": "CAT-DATA",
+      "description": "Indexing and query projections"
+    },
+    {
+      "id": "FAM-EVENT-PIPELINE",
+      "category_id": "CAT-DATA",
+      "description": "Event delivery and processing"
+    },
+    {
+      "id": "FAM-SCHEMA-FORMAT",
+      "category_id": "CAT-DATA",
+      "description": "Schemas, serialization and artifact formats"
+    },
+    {
+      "id": "FAM-NAVIGATION",
+      "category_id": "CAT-UX",
+      "description": "Navigation and application structure"
+    },
+    {
+      "id": "FAM-CONTEXT-MENU",
+      "category_id": "CAT-UX",
+      "description": "Context menu commands and policy"
+    },
+    {
+      "id": "FAM-SETTINGS",
+      "category_id": "CAT-UX",
+      "description": "Settings surfaces and preferences"
+    },
+    {
+      "id": "FAM-ACCESSIBILITY",
+      "category_id": "CAT-UX",
+      "description": "Accessibility behavior and semantics"
+    },
+    {
+      "id": "FAM-DESIGN-SYSTEM",
+      "category_id": "CAT-UX",
+      "description": "Reusable visual and interaction primitives"
+    },
+    {
+      "id": "FAM-BUILD",
+      "category_id": "CAT-DEVTOOLS",
+      "description": "Build and packaging"
+    },
+    {
+      "id": "FAM-TEST",
+      "category_id": "CAT-DEVTOOLS",
+      "description": "Unit, integration, conformance and regression tests"
+    },
+    {
+      "id": "FAM-CI",
+      "category_id": "CAT-DEVTOOLS",
+      "description": "Continuous integration and required checks"
+    },
+    {
+      "id": "FAM-OBSERVABILITY",
+      "category_id": "CAT-DEVTOOLS",
+      "description": "Logs, metrics, traces and diagnostics"
+    },
+    {
+      "id": "FAM-RELEASE",
+      "category_id": "CAT-DEVTOOLS",
+      "description": "Release provenance and artifact publishing"
+    },
+    {
+      "id": "FAM-STANDARDS",
+      "category_id": "CAT-GOVERNANCE",
+      "description": "Normative standards and conformance references"
+    },
+    {
+      "id": "FAM-CATALOG",
+      "category_id": "CAT-GOVERNANCE",
+      "description": "Component, function and interface inventory"
+    },
+    {
+      "id": "FAM-COMPLIANCE",
+      "category_id": "CAT-GOVERNANCE",
+      "description": "Policy and compliance reconciliation"
+    },
+    {
+      "id": "FAM-EVIDENCE",
+      "category_id": "CAT-GOVERNANCE",
+      "description": "Exact-SHA verification and evidence provenance"
+    }
+  ],
+  "classes": [
+    {
+      "id": "CLS-UI-COMPONENT",
+      "description": "Reusable UI implementation component"
+    },
+    {
+      "id": "CLS-UI-PATTERN",
+      "description": "Composite UI interaction or layout pattern"
+    },
+    {
+      "id": "CLS-CLI-COMMAND",
+      "description": "Command-line command or subcommand"
+    },
+    {
+      "id": "CLS-SYSCALL",
+      "description": "Kernel syscall or controlled entrypoint"
+    },
+    {
+      "id": "CLS-KERNEL-SUBSYSTEM",
+      "description": "Kernel subsystem"
+    },
+    {
+      "id": "CLS-OS-SERVICE",
+      "description": "Operating-system userspace service"
+    },
+    {
+      "id": "CLS-DAEMON",
+      "description": "Long-running background process"
+    },
+    {
+      "id": "CLS-LIBRARY",
+      "description": "Reusable source library or package"
+    },
+    {
+      "id": "CLS-API-ENDPOINT",
+      "description": "HTTP or application API endpoint"
+    },
+    {
+      "id": "CLS-IPC-CONTRACT",
+      "description": "Inter-process message or capability contract"
+    },
+    {
+      "id": "CLS-RPC-METHOD",
+      "description": "RPC method"
+    },
+    {
+      "id": "CLS-EVENT",
+      "description": "Event type or event handler contract"
+    },
+    {
+      "id": "CLS-DATA-MODEL",
+      "description": "Structured in-memory or persisted data model"
+    },
+    {
+      "id": "CLS-DATA-FORMAT",
+      "description": "Wire, file or artifact format"
+    },
+    {
+      "id": "CLS-PROTOCOL",
+      "description": "Normative or implementation protocol"
+    },
+    {
+      "id": "CLS-ALGORITHM",
+      "description": "Algorithmic procedure"
+    },
+    {
+      "id": "CLS-CRYPTO-PRIMITIVE",
+      "description": "Cryptographic primitive or scheme"
+    },
+    {
+      "id": "CLS-VM-OPCODE",
+      "description": "Virtual-machine instruction/opcode"
+    },
+    {
+      "id": "CLS-VM-RUNTIME",
+      "description": "Virtual-machine runtime surface"
+    },
+    {
+      "id": "CLS-SDK-API",
+      "description": "Public SDK API"
+    },
+    {
+      "id": "CLS-AGENT-TOOL",
+      "description": "Tool callable by an AI agent"
+    },
+    {
+      "id": "CLS-MODEL-ADAPTER",
+      "description": "Adapter to a model provider or runtime"
+    },
+    {
+      "id": "CLS-POLICY",
+      "description": "Policy rule or policy evaluation contract"
+    },
+    {
+      "id": "CLS-PERMISSION",
+      "description": "Permission, capability or authorization scope"
+    },
+    {
+      "id": "CLS-CONFIGURATION",
+      "description": "Configuration schema or setting"
+    },
+    {
+      "id": "CLS-TEST-CONTRACT",
+      "description": "Test, fixture or conformance contract; not runtime inventory"
+    },
+    {
+      "id": "CLS-BUILD-ARTIFACT",
+      "description": "Build output or packaged artifact"
+    },
+    {
+      "id": "CLS-DOCUMENTATION",
+      "description": "Documentation-only entry"
+    },
+    {
+      "id": "CLS-GENERATED-ARTIFACT",
+      "description": "Generated output; classify separately from handwritten runtime source"
+    }
+  ],
+  "classification_contract": {
+    "classification_status_values": [
+      "MAPPED",
+      "EXCLUDED",
+      "UNRESOLVED"
+    ],
+    "implementation_status_values": [
+      "IMPLEMENTED",
+      "RESIDUAL",
+      "BLOCKED"
+    ],
+    "verification_status_values": [
+      "NOT_VERIFIED",
+      "VERIFIED"
+    ],
+    "required_source_evidence": [
+      "canonical_repository",
+      "source_sha",
+      "source_path",
+      "symbol_kind",
+      "symbol_or_entrypoint",
+      "source_file_sha256"
+    ],
+    "rules": [
+      "Preserve all existing component_id, function_id and interface_id values.",
+      "Do not infer a source mapping from a display name or repository name alone.",
+      "Do not conflate category/family/class with architecture layer, sublayer, canonical ownership, implementation status or verification status.",
+      "Allow multiple taxonomy labels only through explicit references; every record must retain one canonical implementation owner.",
+      "Classify tests, documentation and generated artifacts explicitly; do not count them as runtime functions.",
+      "Keep unresolved mappings UNRESOLVED and implementation/verification states conservative until exact-SHA evidence is reviewed.",
+      "The ecosystem repository remains the catalog, integration, compliance and evidence control plane; it is not an alternate implementation SSOT.",
+      "ATC-VM remains a-townchain/components/vm; ShivaCore kernel remains globus-os/modules/atc-shivacore/kernel; wallet signing/key operations use canonical atc-wallet interfaces.",
+      "ATCB versus ATC1 and unresolved consensus/finality decisions remain BLOCKED until normative evidence resolves them.",
+      "Validators must fail closed on duplicate IDs, dangling category/family/class references, invalid parent relationships and missing required source evidence for MAPPED records."
+    ]
+  },
+  "catalog_integration": {
+    "canonical_catalog": "docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.json",
+    "integration_status": "TAXONOMY_REGISTER_ADDED_CATALOG_BINDINGS_NOT_YET_RECONCILED",
+    "next_steps": [
+      "Add validated category_id/family_id/class_id references to existing catalog component/function/interface records without replacing their IDs.",
+      "Implement taxonomy validation and regression tests.",
+      "Reconcile all active repositories against the exact-HEAD symbol census and classify missing contracts.",
+      "Record exact workflow run/job/step/exit code/log or artifact evidence before marking any mapping VERIFIED."
+    ]
+  }
+}
