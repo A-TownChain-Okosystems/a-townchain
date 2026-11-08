@@ -1,0 +1,15 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: ai-gov
+family: LEGACY-SERIES
+family_id: LEGACY
+file: standards/ai-gov/ATC-AI-GOV-001.md
+mandate: Owner-Architektur-Freeze 09.09. ('ATC-AI-GOV v1.0 Produktionsarchitektur
+  einfrieren'); 7 REQ-AIGOV; Umbrella ueber 10 Sub-Standards; SCR-0062
+registry_version: 1
+standard_id: ATC-AI-GOV-001
+status: approved
+title: 'ATC Agent Governance Framework v1.0 — Produktionsarchitektur (18-stufige Governance-Kette,
+  4 Kontrollprinzipien: Fail Closed / Evidence First / Persistent Findings / No Self-Certification,
+  Severity-Modell mit Repository-Status-Berechnung, Zuständigkeits-Trennung, 7-Phasen-Roadmap)'
+version: 1.0.0
