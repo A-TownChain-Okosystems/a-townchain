@@ -1,0 +1,39 @@
+{
+  "id": "ATC-KMS-PR-241",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #241: docs(architecture): align ATC-SMM with ShivaCore memory contracts",
+  "context": "Pull request 241 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/241",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-108"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-108"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-108"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-241"
+    }
+  ],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n\nRevises the ATC-SMM architecture draft to inherit existing ShivaCore contracts rather than inventing a parallel memory API or kernel model.\n\n## Authority and SSOT\n\n- `atc-shivacore` is the ShivaCore kernel architecture/specification authority.\n- Canonical active implementation remains `globus-os/modules/atc-shivacore/kernel/`.\n- `a-townchain-ecosystem` owns cross-repository mapping and integration evidence.\n- `atc-standards` retains ecosystem-wide standards registry and governance.\n- No second kernel, allocator, syscall ABI or memory implementation is introduced.\n\n## ShivaCore contracts reconciled\n\nInspected at `atc-shivacore` baseline `3b56253b39bdc6cbf719ed9a2a21461d73b8fc34`:\n\n- `SHIVA-KERNEL-REUSE-001` — OS-neutral kernel/TCB boundary.\n- `SHIVA-HAL-001` — architecture-specific page-table, CPU and synchronization mechanisms remain behind HAL.\n- `SHIVA-ABI-001` — explicit capabilities, pointer/length validation, no ambient authority, versioned ABI.\n- `SHIVA-BOOT-001` — boot handoff and kernel initialization boundary.\n- `SC-001-BOOT_MEMORY.md` (FROZEN) — BootInfo, physical memory classification, Untyped/Retype, 4 KiB frames, Initial Task.\n- `SC-005-CAPABILITY_SYSTEM.md` (FROZEN) — typed object rights, monotonic derivation and revocation.\n- `SC-007-ADDRESSSPACE_MEMORY.md` (FROZEN) — AddressSpace MAP + Frame GRANT, mapping-right subset, W^X, kernel-owned page tables, synchronous unmap/TLB semantics.\n- `SHIVA-GLOBUS-INTEGRATION-001` (DRAFT) — ShivaCore mechanism boundary vs GlobusOS service policy.\n\n## Corrections made\n\n1. Clarifies ShivaCore specification authority vs GlobusOS implementation SSOT.\n2. Replaces generic physical-frame allocator language with SC-001 Untyped/Retype authority and SC-007 mapping semantics.\n3. Removes the invented generic `MemoryRights` model; distinguishes Frame rights from AddressSpace rights.\n4. Makes W^X an inherited frozen SC-007 policy; ATC-SMM cannot create runtime exceptions.\n5. Records the `memory_manager.rs` generic `READ|WRITE|EXEC|DELEGATE` capability as a spec-conformance residual, without claiming this proves executable hardware mappings.\n6. Records `UserspaceBump` and the current kernel-heap bridge as interim behavior, not conformant process mapping.\n7. Records the `globus-memory` paging/frame modules as models/abstractions, not a second hardware authority.\n8. Records the SC-001 vs SHIVA-BOOT boot-contract discrepancy: SC-001 defines Limine B0–B5 and explicitly says L0–L10 is not real hardware boot evidence. Owner/versioned resolution remains required.\n9. Reuses existing `FN-KERNEL-001` and `FN-VMM-001`; no duplicate delivery IDs.\n10. Refines PR #89/#108 descriptions based on inspected metadata and patch content.\n\n## Evidence and limits\n\n- ShivaCore specification baseline and individual blob SHAs are recorded in the document.\n- GlobusOS `memory_manager.rs` inspected at blob `6d1d8ec948b3d3d0d683e1a0e92d9c77ee2fbfaa`.\n- PR #89 remains Draft; remote TLB shootdown/SMP integration remain residuals.\n- PR #108 is non-draft; its current patch changes the memory-manager compile-time assertion, not the broad capability rights.\n- This PR changes documentation only. No kernel implementation, frozen ShivaCore spec, runtime behavior or standards registry was modified.\n- No tests, CI, boot, E2E or production-readiness claim is made by this documentation update. Empty status-check response is not a pass.\n- ATC-SMM remains DRAFT pending owner review. No standard ID allocated and no normative approval claimed.\n\n## Review required\n\n1. ShivaCore owner review of inherited SC-001/SC-005/SC-007 constraints and the boot-contract discrepancy.\n2. Confirm the `memory_manager.rs` interim path and the intended migration/conformance plan.\n3. Confirm PR #89 exact-head TLB/SMP evidence and coordinate with PR #108.\n4. Approve any future normative change through the ShivaCore SC-DEC/SC-ARCH process and the applicable standards registry workflow.\n\n## Kernel memory conformance audit (2026-11-02)\n\nRead-only source audit added to the architecture draft (MEM-09 through MEM-18). No kernel code was modified.\n\nKey blockers:\n- Current boot source uses bootloader_api, while frozen SC-001 defines Limine B0-B5 and explicitly says L0-L10 is not real device boot evidence.\n- BootInfo frame allocator does not implement SC-001 Untyped/Retype ownership or reclaim.\n- Kernel heap mapping sets PRESENT|WRITABLE without NO_EXECUTE: W^X review is HIGH priority.\n- MemorySubsystem, ProcessManager and VFS construct independent CapabilityTable instances.\n- Capability implementation is a flat PID-indexed table with generic 8-bit rights, not frozen SC-005 CSpace/CNode and typed object-right model.\n- VMM contains hardware page-table mutation code, but real-boot wiring is not established; mapping APIs are not capability-gated and unmap/reclaim does not complete SC-007 TLB shootdown.\n- Page-fault IDT handler logs and returns; SC-007 suspend/endpoint-notification/resume protocol is not implemented in that path.\n- PR #89 exact head has a failed rust check and cancelled BIOS/UEFI smoke checks. PR #108 exact head has a failed rust check.\n- PR #241 exact head checks are currently queued/in progress; no CI pass is claimed.\n\nDisposition: kernel memory implementation remains BLOCKED for SC-001/SC-005/SC-007 conformance. Reuse FN-KERNEL-001 and FN-VMM-001. No duplicate allocator, capability table, VMM or fault subsystem is authorized."
+}
