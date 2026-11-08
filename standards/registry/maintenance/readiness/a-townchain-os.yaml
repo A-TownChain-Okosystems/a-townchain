@@ -1,0 +1,55 @@
+# ATC-STD-MAINT-000 Par.7.2 — Maintenance Readiness Record (SCR-0123, Welle 1)
+# Komponente: a-townchain-os (KAI-OS, Flagship-OS) | Release: v2.0.0
+# Klassifikation: M2 Security (Systemkomponente mit Security-Anspruch).
+# Ehrlichheitsprinzip: Luecken werden benannt. result=FAIL = BLOCK, kein Pipeline-Fehler.
+maintenance_readiness:
+  maintenance_owner:
+    state: complete
+    ref: "ShivaCoreDev + Org A-TownChain-Okosystems; KAI-OS-Wiki als Betreiber-Doku"
+  maintenance_documentation:
+    state: complete
+    ref: "KAI-OS-Wiki + ARCHITECTURE.md + README/STATUS (Repository-Governance 201/202/203 CONFORM, Org-Audit 14.09.)"
+  dependency_inventory:
+    state: complete
+    ref: "Cargo.lock je Workspace-Member; cargo-audit-CI-Gate aktiv (P2-Rollout 13.09., 0 RustSec-Fundings)"
+  security_process:
+    state: incomplete
+    ref: "CodeQL + cargo-audit gruen; F-ORG-002 dependency-review org-weit ROT (Org-Setting, Owner-Aktion)"
+  test_suite:
+    state: complete
+    ref: "KAI-OS Release Pipeline (Windows x64) + 33 pytest-Tests gruen auf main (Merge 81b3331/5d980cf, 14.09.)"
+  rollback_strategy:
+    state: incomplete
+    ref: "A/B-Update-Architektur geplant (ATC-DOC-ARC-GLOB-002), nicht implementiert; kein getesteter Rollback (MAINT-018 Par.4)"
+  compatibility_strategy:
+    state: incomplete
+    ref: "Windows x64 alleiniger Build; keine dokumentierte Kompatibilitaets-Matrix fuer zukuenftige Update-Pfade (ATC-STD-COMPAT-001)"
+  monitoring:
+    state: incomplete
+    ref: "Lokale Observability laut GlobusOS-Zielarchitektur P0-geplant (ATC-DOC-ARC-GLOB-002), nicht implementiert"
+  evidence_collection:
+    state: complete
+    ref: "evidence.yaml + SCR-0086-Evidence-Commits der Test-Suiten + Release-Pipeline-Artefakte (MAINT-019-Schema)"
+  lifecycle_status:
+    state: complete
+    ref: "operational; GitHub Release v2.0.0 (Org-Audit 14.09., Releases 2/30)"
+critical_maintenance:
+  independent_validation:
+    state: incomplete
+    ref: "SoD fuer M2 gefordert (MAINT-000 Par.3); Validator-Rollen noch nicht getrennt besetzt (AI-Agent Stufe 2 + Owner)"
+  security_review:
+    state: incomplete
+    ref: "Security-Audit-Runde cargo-audit 0.0 Fundings (13.09.); keine unabhaengige Security-Review fuer v2.0.0 dokumentiert"
+  rollback_test:
+    state: incomplete
+    ref: "Kein Rollback-Test durchgefuehrt (A/B-Update-Mechanismus nicht implementiert)"
+  incident_record:
+    state: incomplete
+    ref: "Kein Incident-Record-Verfahren in Betrieb (MAINT-015 spezifiziert, nicht implementiert)"
+  audit_evidence:
+    state: complete
+    ref: "Org-Audit 14.09. (30/30 Repos) + ATC-ORG-AUDIT-002 + AUD-2026-0001/0002"
+result: FAIL
+# BLOCK: naechstes Release gesperrt bis (1) F-ORG-002 (Owner), (2) Rollback
+# getestet (MAINT-018), (3) Monitoring implementiert, (4) M2-SoD/Rollen getrennt
+# besetzt (MAINT-000 Par.3, ACCESS-001) — dann critical_maintenance complete.
