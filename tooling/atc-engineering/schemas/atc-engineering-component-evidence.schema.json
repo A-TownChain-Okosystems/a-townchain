@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/A-TownChain-Okosystems/atc-engineering/blob/main/schemas/atc-engineering-component-evidence.schema.json",
+  "title": "ATC Engineering Component Candidate Evidence",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "repository",
+    "observed_commit_sha",
+    "status",
+    "decision_rule",
+    "candidates",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "repository": {
+      "const": "A-TownChain-Okosystems/atc-engineering"
+    },
+    "observed_commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "status": {
+      "enum": [
+        "DETECTED",
+        "RESIDUAL",
+        "BLOCKED"
+      ]
+    },
+    "decision_rule": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidates": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "object",
+        "required": [
+          "component_id",
+          "name",
+          "status",
+          "decision",
+          "rationale",
+          "evidence"
+        ],
+        "properties": {
+          "component_id": {
+            "type": "string",
+            "pattern": "^ATCE-COMP-[0-9]{3}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "PARTIAL_SOURCE_SUPPORT",
+              "RESIDUAL_UNCONFIRMED",
+              "NOT_SUPPORTED_BY_CURRENT_SOURCE"
+            ]
+          },
+          "decision": {
+            "enum": [
+              "REVIEW_REQUIRED",
+              "DEFER",
+              "REJECT_CANDIDATE_PENDING_GOVERNANCE"
+            ]
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "blob_sha",
+                "symbols"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "blob_sha": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "symbols": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "additionalProperties": false
+}
