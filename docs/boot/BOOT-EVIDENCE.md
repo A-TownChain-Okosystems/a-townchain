@@ -1,6 +1,6 @@
 ---
 title: ShivaCore-Kernel — Boot-Evidence
-summary: Belege, dass der Bare-Metal-Kernel unter QEMU sowohl über UEFI als auch über BIOS startet, samt Scheduler-Aktivitaet.
+summary: Belege, dass der Bare-Metal-Kernel unter QEMU ueber UEFI und BIOS startet, inklusive Bildschirmausgabe und Scheduler-Aktivitaet.
 ---
 
 # ShivaCore-Kernel — Boot-Evidence
@@ -47,6 +47,36 @@ Interrupt-Rahmen (Ring 0) und anschließend laufender Scheduler.
 | SCHED-001 Register-Checkpoints | 3662 |
 | Ausnahmen | 1× `BREAKPOINT` (erwartet) |
 
+## Bildschirmausgabe
+
+Der Kernel schreibt seit dem 08.11.2026 jede Boot-Meldung zusätzlich in den
+Framebuffer (Macro `kprintln!`). Der Bildschirm zeigt die Kette bis zum Heap:
+
+![ShivaCore-Boot auf dem Bildschirm](2026-11-08-uefi-screen.png)
+
+Ursache der zuvor leeren Anzeige war nicht der Zeichnen-Code — ein gefüllter
+Testbalken erschien korrekt — sondern die Schrift: `noto-sans-mono-bitmap`
+liefert nur Zeichen, deren Unicode-Bereich als Feature aktiviert ist. Im
+Manifest fehlten `unicode-basic-latin` und `unicode-latin-1-supplement`, also
+gab `get_raster` für jedes Zeichen `None` zurück. Beide Features sind jetzt
+gesetzt, damit auch Umlaute rastern.
+
+Per OCR aus dem Framebuffer gelesen (Ausschnitt 1000×190):
+
+```
+ShivaCore Kernel v0.0.3 -- K-Sprint 2
+Kernel-Einstiegspunkt erreicht (Handoff vom Bootloader).
+ShivaCore: CPU vendor=AMD family=15 model=107 stepping=1 apic=true ...
+CPU HAL compatibility check OK.
+ACPI RSDP/root/table checksums validated; tables=7
+GDT/IDT/PIC OK (K-Sprint 1).
+Paging-Mapper + Heap initialisiert (100 KiB).
+K-Sprint 2: Paging/Heap OK (Box+Vec getestet)
+```
+
+Die Scheduler-Checkpoints bleiben bewusst nur auf der seriellen Schnittstelle:
+bei 366 Kontextwechseln in 25 Sekunden würde der Bildschirm nur scrollen.
+
 ## Ergebnis BIOS
 
 `shivacore-bios.img`: Stage 4 lädt das ELF nach `0x1000000`, der Kernel läuft
@@ -55,7 +85,6 @@ mit denselben Checkpoints. Beide Wege sind über
 
 ## Grenzen
 
-Der Kernel schreibt nach dem Boot auf die serielle Schnittstelle, nicht in den
-Framebuffer — ein Screenshot zeigt nur den aufgeräumten Hintergrund
-(`#001400`). Textausgabe über den Bildschirm ist nicht nachgewiesen. Ein
-echter Hardware-Boot wurde nicht geprüft, nur QEMU mit TCG.
+Bildschirm- und Serienausgabe sind beide belegt. Ein Lauf auf echter Hardware
+wurde nicht geprüft, nur QEMU mit TCG-Emulation — ohne KVM ist die Aussage über
+Zeitverhalten (366 Wechsel in 25 s) nicht auf echte Hardware übertragbar.
