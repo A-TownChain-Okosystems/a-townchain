@@ -1,0 +1,11 @@
+[package]
+name = "globus-vfs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+globus-devices = { path = "../devices" }
+
+[lints]
+workspace = true
