@@ -1,0 +1,13 @@
+// ATCLang v0.3 — Verification Key Generator
+// Generiert VKs aus Setup-Parametern und Circuit-Definition
+// ATC-Standard: ATC-24
+
+module vk_generator {
+    fn generate_vk(circuit: string, setup_params: string) {
+        // VK aus Circuit + Setup generieren
+    }
+    
+    fn export_vk(vk: string) {
+        // VK exportieren (für On-chain Registry)
+    }
+}
