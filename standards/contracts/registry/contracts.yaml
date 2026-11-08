@@ -205,7 +205,7 @@ contracts:
     contract_path: apps/atc-contracts/atcoin/atcoin.atc
     source_sha256: 2918aab04ac7627951db9d0898a81915b2efd06dca243d39382ae6e19afcdb4d
     abi_sha256: b75558ae5604bc30ba985dfc081c44e1cfdb511396744e4f5e331b4a93c0ee96
-    note: "Symbol ATC, Max Supply 360M, Migrationsziel des ATC-001-Genesis-Tokens"
+    note: "Symbol ATC, Max Supply 360M, Migrationsziel des ATC-001-Genesis-Tokens; einzige kanonische ATCoin-Quelle"
 
   - contract_id: ATC-SC-TOKEN-002
     name: "ATC-8300 Fungible Token Standard"
@@ -220,8 +220,8 @@ contracts:
     audited: false
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/atc8300/atc8300.atc
-    source_sha256: 527771e5e352e2f7717f06135d668707534fa6c73e476fbcc8ad02c7285e3edc
-    abi_sha256: 023e78c701610c6daf95e8d4e12d69272b827f909da079e912a621f09f28e01c
+    source_sha256: 76252545eb5f28a5e270363646efff35f1a81efb738b9c871f9e93a94cc87936
+    abi_sha256: edb0ccc78db55007cd19ddc50c1f914e50159bdfeaf8fbb638b36fd906708136
     note: "Token-Standard (kein ERC-20-Fork); Interface-Basis fuer ATCLang-Vertraege"
 
   - contract_id: ATC-SC-TOKEN-003
@@ -237,9 +237,9 @@ contracts:
     audited: false
     source_repository: A-TownChain-Okosystems/a-townchain
     contract_path: apps/atc-contracts/atc8300/atc8300_token.atc
-    source_sha256: 643ee15de0119838d61e1e1623b6fa85ad40797a28bd46a3b5955a37526f48cf
-    abi_sha256: 1ece6c7c059217d7541e007ff87798ad2ff184f200277f98ec5f920aad1b1b0e
-    note: "Deploybare Token-Instanz auf Basis des ATC-8300-Standards"
+    source_sha256: a831239f05c0dc4aae280fb7290e0eba0c120e6fd26f64574033d5ed170aa0d0
+    abi_sha256: 177843826ce706f33d950f60f6c1e16ccac3c441ee249faa1240fc2700d5c2be
+    note: "Deploybare Token-Instanz; Vertragsname im Code ATC8300TokenInstance (Abgrenzung zum Standard ATC-SC-TOKEN-002)"
 
   - contract_id: ATC-SC-TOKEN-004
     name: "Generischer Token-Contract"
