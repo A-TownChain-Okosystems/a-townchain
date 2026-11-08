@@ -1,0 +1,298 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "os_feature_reference_and_gap_assessment",
+  "project": "GlobusOS",
+  "repository": "A-TownChain-Okosystems/globus-os",
+  "reference_snapshot": "2026-10-19",
+  "status": "DEVELOPMENT_BASELINE",
+  "canonical_work_item": "https://github.com/A-TownChain-Okosystems/globus-os/issues/51",
+  "canonical_documents": [
+    "docs/OS_STANDARD_COMPONENTS.md",
+    "docs/COMPONENT_FUNCTION_CATALOG.md",
+    "docs/IMPLEMENTATION_STATUS.md"
+  ],
+  "purpose": "Map a Windows-like general-purpose operating-system feature set to GlobusOS ownership boundaries and evidence-based gap assessment. This is a reference, not an implementation SSOT or proof of implementation.",
+  "architecture_rules": [
+    "Standalone First, Ecosystem Second",
+    "Catalog First, Implementation Second",
+    "One canonical owner per component/function",
+    "Do not duplicate implementations from canonical repositories",
+    "Green CI alone is not E2E_VERIFIED or production-ready",
+    "Unknown or missing evidence must not be treated as a pass"
+  ],
+  "ownership": [
+    {
+      "domain": "kernel_tcb",
+      "owner": "ShivaCore microkernel",
+      "canonical_boundary": "Canonical ShivaCore kernel repository/path",
+      "responsibilities": [
+        "scheduler",
+        "process_thread_primitives",
+        "address_space_isolation",
+        "privilege_transitions",
+        "exceptions",
+        "syscall_boundary",
+        "ipc_primitives",
+        "capability_enforcement"
+      ]
+    },
+    {
+      "domain": "boot_hardware",
+      "owner": "GlobusOS platform + defined ShivaCore interfaces",
+      "canonical_boundary": "Explicit boot/HAL/device contracts; resolve exact owner per interface",
+      "responsibilities": [
+        "firmware_handoff",
+        "boot_orchestration",
+        "hardware_discovery",
+        "interrupt_device_integration",
+        "dma_iommu",
+        "power_state_coordination"
+      ]
+    },
+    {
+      "domain": "core_os_services",
+      "owner": "GlobusOS user space",
+      "canonical_boundary": "Existing GlobusOS system services and catalog",
+      "responsibilities": [
+        "init_service_supervision",
+        "time_timers",
+        "vfs_storage",
+        "networking",
+        "device_services",
+        "identity_sessions",
+        "policy_audit",
+        "diagnostics_recovery"
+      ]
+    },
+    {
+      "domain": "security_servicing",
+      "owner": "Dedicated GlobusOS security/platform services; kernel enforcement in ShivaCore where required",
+      "canonical_boundary": "Existing security, package, update and key-isolation contracts",
+      "responsibilities": [
+        "trust_anchors",
+        "secure_boot_integration",
+        "tpm_tee_providers",
+        "key_isolation",
+        "signed_packages_updates",
+        "atomic_activation",
+        "rollback"
+      ]
+    },
+    {
+      "domain": "desktop_app_platform",
+      "owner": "Native GlobusOS services and SDK",
+      "canonical_boundary": "Existing desktop/runtime/API owners",
+      "responsibilities": [
+        "shell_launcher",
+        "compositor_window_manager",
+        "input",
+        "graphics_audio_apis",
+        "accessibility",
+        "application_lifecycle",
+        "versioned_apis"
+      ]
+    },
+    {
+      "domain": "extended_platform",
+      "owner": "Explicit runtime/isolation layers",
+      "canonical_boundary": "Dedicated canonical component per feature; do not infer kernel ownership",
+      "responsibilities": [
+        "virtualization",
+        "containers",
+        "compatibility",
+        "resource_quotas",
+        "smp_numa_scaling",
+        "power_management",
+        "suspend_resume",
+        "optional_high_availability"
+      ]
+    },
+    {
+      "domain": "ecosystem_integration",
+      "owner": "Existing canonical repositories",
+      "canonical_boundary": "Aurora AI, A-TownChain, ATC-VM, ATCLang and wallet remain in their existing SSOTs",
+      "responsibilities": [
+        "explicit_integration_contracts"
+      ],
+      "constraints": [
+        "Aurora AI stays outside the kernel TCB",
+        "Do not duplicate blockchain, VM, language or wallet core implementations in GlobusOS"
+      ]
+    }
+  ],
+  "priorities": [
+    {
+      "id": "P0",
+      "name": "Kernel security and isolation",
+      "examples": [
+        "process_thread_lifecycle",
+        "scheduler",
+        "address_spaces_page_permissions",
+        "syscall_boundary",
+        "ipc_capabilities",
+        "exception_safety"
+      ],
+      "acceptance_evidence": [
+        "exact_commit_source_mapping",
+        "positive_and_negative_security_tests",
+        "cross_process_isolation_evidence",
+        "same_sha_ci_run_job_step_exit_logs",
+        "qemu_or_hardware_evidence_when_applicable"
+      ]
+    },
+    {
+      "id": "P0",
+      "name": "Boot-to-user-space",
+      "examples": [
+        "deterministic_initialization",
+        "service_supervision",
+        "dependency_ordering",
+        "monotonic_time_timers",
+        "fault_containment",
+        "recovery_path"
+      ],
+      "acceptance_evidence": [
+        "reproducible_boot_evidence",
+        "service_start_failure_tests",
+        "recovery_tests",
+        "exact_commit_ci_evidence"
+      ]
+    },
+    {
+      "id": "P1",
+      "name": "Hardware and core services",
+      "examples": [
+        "cpu_smp_interrupts_acpi",
+        "pci_pcie_mmio_dma_iommu",
+        "device_hotplug",
+        "storage_nvme",
+        "vfs_filesystems",
+        "network_stack_sockets"
+      ],
+      "acceptance_evidence": [
+        "owner_and_abi_mapping",
+        "device_or_service_tests",
+        "failure_path_tests",
+        "integration_evidence",
+        "hardware_profile_evidence_when_required"
+      ]
+    },
+    {
+      "id": "P1",
+      "name": "Security and lifecycle",
+      "examples": [
+        "identity_authentication_sessions",
+        "authorization",
+        "key_isolation",
+        "audit_retention",
+        "signed_packages_sbom_provenance",
+        "atomic_update_rollback",
+        "backup_restore_crash_diagnostics"
+      ],
+      "acceptance_evidence": [
+        "tamper_and_signature_negative_tests",
+        "key_boundary_tests",
+        "rollback_tests",
+        "audit_privacy_review",
+        "exact_commit_ci_evidence"
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "Desktop and applications",
+      "examples": [
+        "display_compositor_window_manager",
+        "input",
+        "gpu_graphics_audio",
+        "shell_launcher",
+        "app_loader_lifecycle",
+        "sdk_api_compatibility",
+        "accessibility_localization"
+      ],
+      "acceptance_evidence": [
+        "component_tests",
+        "app_lifecycle_tests",
+        "desktop_e2e_scenarios",
+        "api_compatibility_tests"
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "Extended platform",
+      "examples": [
+        "virtualization",
+        "containers",
+        "compatibility",
+        "resource_quotas",
+        "smp_numa_scaling",
+        "power_management_suspend_resume",
+        "observability",
+        "optional_high_availability"
+      ],
+      "acceptance_evidence": [
+        "isolation_tests",
+        "resource_limit_tests",
+        "stress_tests",
+        "failure_recovery_evidence",
+        "hardware_profile_evidence_when_required"
+      ]
+    }
+  ],
+  "cross_cutting_requirements": [
+    "privacy_by_default",
+    "explicit_telemetry_policy",
+    "data_minimization",
+    "local_diagnostics",
+    "supply_chain_integrity",
+    "reproducible_evidence"
+  ],
+  "status_vocabulary": [
+    "SPECIFIED",
+    "IMPLEMENTED",
+    "TESTED",
+    "CI_VERIFIED",
+    "INTEGRATED",
+    "E2E_VERIFIED",
+    "RESIDUAL",
+    "BLOCKED",
+    "EXCLUDED",
+    "NOT_ASSESSED"
+  ],
+  "evidence_contract": {
+    "required_fields": [
+      "feature_id",
+      "domain",
+      "canonical_owner_repository",
+      "source_path",
+      "commit_sha",
+      "symbol_when_applicable",
+      "blob_sha_when_applicable",
+      "test_names_and_results",
+      "ci_run_job_step_exit_code_logs",
+      "integration_or_qemu_evidence_when_applicable",
+      "known_limitations",
+      "residual_risks",
+      "dependencies",
+      "next_action"
+    ],
+    "rules": [
+      "Resolve source paths and symbols from the assessed commit; do not guess them.",
+      "Bind all evidence to the exact immutable commit SHA.",
+      "Missing evidence is not a pass.",
+      "A green CI run does not by itself establish E2E_VERIFIED or production readiness.",
+      "Security claims require negative tests and observable enforcement, not API presence alone."
+    ]
+  },
+  "assessment": {
+    "status": "NOT_ASSESSED",
+    "note": "This reference document does not assert implementation or verification status for any listed feature. Populate feature-level assessments only after repository inspection and evidence collection.",
+    "features": []
+  },
+  "non_goals": [
+    "Not a complete implementation specification",
+    "Not a duplicate component/function SSOT",
+    "Not a claim that all Windows features are required for the first release",
+    "Does not authorize code changes in canonical repositories",
+    "Does not approve merge or release"
+  ]
+}
