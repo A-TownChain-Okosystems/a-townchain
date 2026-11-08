@@ -1,12 +1,13 @@
 ---
 title: ATC-Ökosystem — Betriebshandbuch
-summary: Wie das Monorepo als ein laufendes System gebaut, getestet und gestartet wird — sieben Workspaces, zwölf Programme, eine Kette.
+summary: Wie das Monorepo als ein laufendes System gebaut, getestet und gestartet wird — sieben Workspaces, 14 Programme, eine Kette.
 ---
 
 # ATC-Ökosystem — Betriebshandbuch
 
 Das Monorepo `a-townchain` ist ein Root-Workspace plus sechs eigenständige
-Unter-Workspaces. Zusammen sind das 109 Crates und zwölf lauffähige Programme.
+Unter-Workspaces. Zusammen sind das 109 Crates und 14 Programme, davon 13 im Standardbau
+(`shivacore` braucht den Bare-Metal-Pfad, siehe unten).
 Alles wird über einen Einstiegspunkt bedient:
 
 ```bash
@@ -27,6 +28,27 @@ tools/ecosystem.sh status    # Übersicht
 | `tooling/atc-engineering` | 13 | `atc-audit-cli` | Gates, Findings, Verifikation |
 | `components/zkp` | 7 | — | ZKP: Prover, Verifier, Circuits, VM |
 | `apps/atc-marketplace` | 2 | — | Marktplatz |
+
+### ShivaCore-Kernel (Bare Metal)
+
+`shivacore` trägt `required-features = ["x86-boot"]` und wird von
+`cargo build --workspace` bewusst übersprungen. Der Bau braucht ein eigenes
+Ziel und `build-std`:
+
+```bash
+cd kernel/globus-os
+cargo +nightly build -p shivacore --features x86-boot \
+  --target x86_64-unknown-none -Z build-std=core,alloc
+```
+
+**Gate offen (08.11.2026):** Mit dem aktuellen Nightly bricht dieser Bau in
+`sha2` und `curve25519-dalek` ab — im Debug-Profil mit
+`rustc-LLVM ERROR: Do not know how to split the result of this operator!`,
+im Release-Profil mit `SIGILL` im rustc. Das ist ein Codegen-Fehler der
+Toolchain für dieses Ziel, kein Fehler im Kernel-Code. Der Kernel ist damit
+baubar konzipiert, aber derzeit nicht übersetzbar; ein festgeschriebenes
+Nightly im Bare-Metal-Job ist der nächste Schritt. Alle übrigen 13 Programme
+entstehen im Standardbau.
 
 Toolchains: alles baut auf stable. `kernel/globus-os` ist per
 `rust-toolchain.toml` an Nightly gebunden, weil das Build-Skript des
