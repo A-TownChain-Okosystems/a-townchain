@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+  A-TownChain OS — Landing Page (K8.14)
+  Static HTML for atc-os.io (can be deployed via GitHub Pages)
+  Agent: Aurora #2 (6a275618)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A-TownChain OS — Blockchain Operating System</title>
+  <meta name="description" content="A-TownChain OS v1.0 — Hybrid Consensus, ATCLang, KAI-OS Integration. 24 Repos → 1 Software.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0e17; color: #e2e8f0; }
+    .hero { text-align: center; padding: 80px 20px; max-width: 900px; margin: 0 auto; }
+    .hero h1 { font-size: 3rem; margin-bottom: 20px; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 1.25rem; color: #94a3b8; margin-bottom: 40px; }
+    .badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+    .badge { padding: 8px 16px; border-radius: 20px; background: #1e293b; border: 1px solid #334155; font-size: 0.875rem; }
+    .downloads { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 800px; margin: 0 auto; }
+    .card { padding: 24px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; text-align: center; }
+    .card h3 { margin-bottom: 8px; color: #a855f7; }
+    .card p { color: #94a3b8; margin-bottom: 16px; font-size: 0.9rem; }
+    .btn { display: inline-block; padding: 10px 24px; background: #6366f1; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: background 0.2s; }
+    .btn:hover { background: #4f46e5; }
+    .stats { display: flex; gap: 40px; justify-content: center; margin: 60px 0; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat .num { font-size: 2.5rem; font-weight: bold; color: #a855f7; }
+    .stat .label { color: #64748b; font-size: 0.875rem; margin-top: 4px; }
+    footer { text-align: center; padding: 40px; color: #475569; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>A-TownChain OS</h1>
+    <p>Blockchain Operating System with Hybrid Consensus, ATCLang, and AI Integration</p>
+    <div class="badges">
+      <span class="badge">v1.0.0</span>
+      <span class="badge">PoH / PoW / PoS</span>
+      <span class="badge">ATCLang Native</span>
+      <span class="badge">Non-EVM</span>
+      <span class="badge">KAI-OS Ready</span>
+      <span class="badge">60 Kernel Modules</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">99</div><div class="label">ATC Standards</div></div>
+      <div class="stat"><div class="num">385</div><div class="label">Test Functions</div></div>
+      <div class="stat"><div class="num">2146</div><div class="label">Rust Tests</div></div>
+      <div class="stat"><div class="num">7</div><div class="label">Docker Services</div></div>
+    </div>
+  </div>
+
+  <div class="downloads">
+    <div class="card">
+      <h3>🐳 Docker</h3>
+      <p>One command to run all 7 services</p>
+      <code style="color:#a855f7;">docker compose up -d</code>
+    </div>
+    <div class="card">
+      <h3>🐧 Linux</h3>
+      <p>x86_64 binary (PyInstaller)</p>
+      <a href="https://github.com/A-TownChain-Okosystems/a-townchain-os/releases/latest" class="btn">Download</a>
+    </div>
+    <div class="card">
+      <h3>🍎 macOS</h3>
+      <p>ARM64 binary (PyInstaller)</p>
+      <a href="https://github.com/A-TownChain-Okosystems/a-townchain-os/releases/latest" class="btn">Download</a>
+    </div>
+    <div class="card">
+      <h3>🪟 Windows</h3>
+      <p>x86_64 binary (PyInstaller)</p>
+      <a href="https://github.com/A-TownChain-Okosystems/a-townchain-os/releases/latest" class="btn">Download</a>
+    </div>
+    <div class="card">
+      <h3>📦 From Source</h3>
+      <p>Python 3.12 + Node.js 20</p>
+      <a href="https://github.com/A-TownChain-Okosystems/a-townchain-os" class="btn">GitHub</a>
+    </div>
+    <div class="card">
+      <h3>📖 Documentation</h3>
+      <p>Install, Upgrade, Onboarding</p>
+      <a href="https://github.com/A-TownChain-Okosystems/a-townchain-os-docs" class="btn">Docs</a>
+    </div>
+  </div>
+
+  <footer>
+    A-TownChain OS v1.0 — © 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems<br>
+    Agent: Aurora #2 (6a275618)
+  </footer>
+</body>
+</html>
