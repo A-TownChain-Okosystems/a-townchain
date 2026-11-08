@@ -1,0 +1,69 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-89 — Base Contract (Fungible Token Base)
+// Sprint 2.5 | Smart Contract Layer | Chain-ID 9000
+// Migrated from: modules/contracts/base/base_contract.py (86 lines)
+// Abstract base for all ATC smart contracts: pause, owner, events
+// ─────────────────────────────────────────────────────────────
+
+contract BaseContract {
+    state owner: Address
+    state contract_addr: Address
+    state paused: bool
+    state events: List<Hash>
+    state created_at: u64
+
+    event Paused(by: Address)
+    event Unpaused(by: Address)
+    event ContractEvent(name: String, data: Bytes)
+
+    fn init() {
+        self.owner = msg_sender()
+        let seed = Hash::sha256(msg_sender(), Time::now())
+        self.contract_addr = Address::from_hash(seed)
+        self.paused = false
+        self.events = []
+        self.created_at = Time::now()
+    }
+
+    fn only_owner() -> bool {
+        return msg_sender() == self.owner
+    }
+
+    fn when_not_paused() -> bool {
+        return !self.paused
+    }
+
+    fn pause() -> bool {
+        if !self.only_owner() {
+            return false
+        }
+        self.paused = true
+        emit Paused(msg_sender())
+        return true
+    }
+
+    fn unpause() -> bool {
+        if !self.only_owner() {
+            return false
+        }
+        self.paused = false
+        emit Unpaused(msg_sender())
+        return true
+    }
+
+    fn emit_event(name: String, data: Bytes) -> bool {
+        let event_hash = Hash::sha256(name, data)
+        self.events.push(event_hash)
+        emit ContractEvent(name, data)
+        return true
+    }
+
+    fn get_event_count() -> u32 {
+        return self.events.len()
+    }
+
+    fn info() -> (Address, Address, bool, u64, u32) {
+        return (self.contract_addr, self.owner, self.paused, self.created_at, self.events.len())
+    }
+}
