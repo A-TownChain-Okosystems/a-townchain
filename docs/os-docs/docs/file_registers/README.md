@@ -14,7 +14,7 @@
 | atcnet | atcnet-wiki | [📄](atcnet_FILE_REGISTER.md) |
 | atc-standards | atc-standards-wiki | [📄](atc-standards_FILE_REGISTER.md) |
 | atc-contracts | atc-contracts-wiki | [📄](atc-contracts_FILE_REGISTER.md) |
-| genesis-chronicles | genesis-chronicles-wiki | [📄](genesis-chronicles_FILE_REGISTER.md) |
+| genesis-chronicles | genesis-chronicles-wiki | n/a |
 | atc-gateway | atc-gateway-wiki | [📄](atc-gateway_FILE_REGISTER.md) |
 | atc-ui | atc-ui-wiki | [📄](atc-ui_FILE_REGISTER.md) |
 | atclang | atclang-wiki | [📄](atclang_FILE_REGISTER.md) |
