@@ -81,11 +81,24 @@ und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v
   64-Hex-Hash liefern, archivierte keinen.
 - Aufraeumen: ungenutzte Parser-Methode `ident_like` entfernt (0 Build-Warnungen).
 
+### Added (Import-Aufloesung)
+
+- `use`-Pfade werden gegen den Projektindex aufgeloest: Symbol muss deklariert
+  (Struct, Enum, Vertrag, Top-Level-Funktion) oder kanonisches Builtin sein.
+- Kanonische Host-Funktionen (`sha256`, `keccak256`, `msg_sender`, `now`,
+  `ed25519_verify`, `secp256k1_verify`, ...) gelten als bekannt.
+- Wurzel-Namespace muss `ATC` sein; Importe, die eine Deklaration derselben
+  Datei verdecken, werden gemeldet.
+- Importe zaehlen nicht fuer ihre eigene Aufloesung — ein Tippfehler im Pfad
+  kann sich nicht selbst bestaetigen.
+- Befund am Bestand: beide realen Importe loesen auf, Projektlauf bleibt bei
+  0 Fehlern und 56 Warnungen.
+
 ### Verification
 
-- `cargo test --workspace`: 493 Tests gruen.
+- `cargo test --workspace`: 498 Tests gruen.
 - `./tools/ecosystem.sh build`: alle sieben Workspaces plus Bare-Metal-Kernel.
-- `./tools/ecosystem.sh test`: 2155 Tests, 0 fehlgeschlagen.
+- `./tools/ecosystem.sh test`: 2160 Tests, 0 fehlgeschlagen.
 - Contract-Registry-Gate A8: GATE PASS (16/16).
 
 ## [Unreleased] - 2026-09-11
