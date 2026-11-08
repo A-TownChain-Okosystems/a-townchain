@@ -1,0 +1,105 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// A-TownChain Mainnet Launch Manager (Sprint 4.0)
+// Chain-ID 9000 | SHA-256 | Non-EVM
+// Sprint 4.0 — Migrated from Python stub to ATCLang
+// ════════════════════════════════════════════════════════════════
+
+const CHAIN_ID: u64 = 9000
+const GENESIS_SUPPLY: u128 = 21000000000000000000000000  // 21M * 10^18
+const GENESIS_TIMESTAMP: u64 = 1735689600  // 2025-01-01T00:00:00Z
+
+struct GenesisConfig {
+    chain_id:           u64,
+    genesis_timestamp:  u64,
+    initial_supply:     u128,
+    initial_validators: List<Address>,
+    consensus_type:     String,
+    block_time:         u64,
+    max_block_size:     u32
+}
+
+struct LaunchPhase {
+    phase:      String,
+    completed:  bool,
+    timestamp:  u64
+}
+
+contract LaunchManager {
+
+    state config: GenesisConfig
+    state phases: List<LaunchPhase>
+    state is_launched: bool
+    state genesis_block: u64
+    state owner: Address
+
+    event PhaseCompleted(phase: String, timestamp: u64)
+    event MainnetLaunched(chain_id: u64, genesis_block: u64)
+    event ValidatorAdded(addr: Address)
+
+    fn init() {
+        self.is_launched = false
+        self.genesis_block = 0
+        self.owner = msg_sender()
+        self.config = GenesisConfig {
+            chain_id:           CHAIN_ID,
+            genesis_timestamp:  GENESIS_TIMESTAMP,
+            initial_supply:     GENESIS_SUPPLY,
+            initial_validators: [],
+            consensus_type:     "hybrid",
+            block_time:         10,
+            max_block_size:     1048576
+        }
+    }
+
+    // ── Validator hinzufügen ──────────────────────────
+    fn add_validator(addr: Address) -> bool {
+        require(msg_sender() == self.owner, "Launch: Nur Owner")
+        require(!self.is_launched, "Launch: Already launched")
+        self.config.initial_validators.push(addr)
+        emit ValidatorAdded(addr)
+        return true
+    }
+
+    // ── Phase abschließen ──────────────────────────────
+    fn complete_phase(phase_name: String) -> bool {
+        require(msg_sender() == self.owner, "Launch: Nur Owner")
+        let phase = LaunchPhase {
+            phase:     phase_name,
+            completed: true,
+            timestamp: block_timestamp()
+        }
+        self.phases.push(phase)
+        emit PhaseCompleted(phase_name, block_timestamp())
+        return true
+    }
+
+    // ── Mainnet Launch ────────────────────────────────
+    fn launch() -> bool {
+        require(msg_sender() == self.owner, "Launch: Nur Owner")
+        require(!self.is_launched, "Launch: Already launched")
+        require(self.config.initial_validators.len() >= 3, "Launch: Min 3 validators")
+
+        self.is_launched = true
+        self.genesis_block = block_number()
+        emit MainnetLaunched(CHAIN_ID, self.genesis_block)
+        return true
+    }
+
+    // ── Config abrufen ────────────────────────────────
+    fn get_config() -> GenesisConfig {
+        return self.config
+    }
+
+    fn is_mainnet_launched() -> bool {
+        return self.is_launched
+    }
+
+    fn get_genesis_block() -> u64 {
+        return self.genesis_block
+    }
+
+    fn get_chain_id() -> u64 {
+        return CHAIN_ID
+    }
+}
