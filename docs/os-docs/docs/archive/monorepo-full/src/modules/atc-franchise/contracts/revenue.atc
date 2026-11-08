@@ -1,0 +1,93 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ╔══════════════════════════════════════════════════════╗
+// ║  Revenue Share — Automatische Gewinnverteilung     ║
+// ║  ATCLang v0.2.0 | ATC-89 konform                ║
+// ╚══════════════════════════════════════════════════════╝
+
+use ATC::Types::Address
+
+struct RevenueEntry {
+    from_:   Address,
+    amount:  u128,
+    ts:      u64,
+    memo:    string,
+}
+
+contract RevenueShare {
+    state owner:         Address
+    state franchisor:    Address
+    state franchisee:    Address
+    state share_pct:     u8          // Franchisor-Anteil in %
+    state total_revenue: u128 = 0
+    state pending_f_sor: u128 = 0   // Ausstehend für Franchisor
+    state pending_f_see: u128 = 0   // Ausstehend für Franchisee
+    state entries:       Vec<RevenueEntry>
+    state license_id:    u64
+
+    fn init(
+        franchisor_addr: Address,
+        franchisee_addr: Address,
+        share_percent:   u8,
+        license_id_:     u64,
+    ) {
+        require(share_percent <= 50, "Max 50% für Franchisor")
+        require(share_percent >= 1,  "Min 1% für Franchisor")
+        self.owner        = caller
+        self.franchisor   = franchisor_addr
+        self.franchisee   = franchisee_addr
+        self.share_pct    = share_percent
+        self.license_id   = license_id_
+        emit RevenueShareInitialized(franchisor_addr, franchisee_addr, share_percent)
+    }
+
+    // Einnahme registrieren
+    fn record_revenue(amount: u128, memo: string) {
+        require(caller == self.franchisee || caller == self.owner, "Nicht berechtigt")
+        require(amount > 0, "Betrag muss > 0 sein")
+
+        let franchisor_cut: u128 = amount * u128(self.share_pct) / 100
+        let franchisee_cut: u128 = safe_sub(amount, franchisor_cut)
+
+        self.total_revenue  = safe_add(self.total_revenue, amount)
+        self.pending_f_sor  = safe_add(self.pending_f_sor, franchisor_cut)
+        self.pending_f_see  = safe_add(self.pending_f_see, franchisee_cut)
+
+        let entry: RevenueEntry = RevenueEntry {
+            from_:  caller,
+            amount: amount,
+            ts:     now(),
+            memo:   memo,
+        }
+        self.entries.push(entry)
+        emit RevenueRecorded(amount, franchisor_cut, franchisee_cut)
+    }
+
+    // Auszahlung an Franchisor
+    fn payout_franchisor() -> u128 {
+        require(caller == self.franchisor, "Nur Franchisor")
+        require(self.pending_f_sor > 0, "Nichts auszuzahlen")
+        let amount: u128 = self.pending_f_sor
+        self.pending_f_sor = 0
+        emit PayoutSent(self.franchisor, amount, "franchisor")
+        return amount
+    }
+
+    // Auszahlung an Franchisee
+    fn payout_franchisee() -> u128 {
+        require(caller == self.franchisee, "Nur Franchisee")
+        require(self.pending_f_see > 0, "Nichts auszuzahlen")
+        let amount: u128 = self.pending_f_see
+        self.pending_f_see = 0
+        emit PayoutSent(self.franchisee, amount, "franchisee")
+        return amount
+    }
+
+    fn get_stats() -> Map<string, u128> {
+        return {
+            "total_revenue":  self.total_revenue,
+            "pending_f_sor":  self.pending_f_sor,
+            "pending_f_see":  self.pending_f_see,
+            "share_pct":      u128(self.share_pct),
+        }
+    }
+}
