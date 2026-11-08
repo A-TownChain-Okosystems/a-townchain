@@ -1,0 +1,7 @@
+# A-TownChain OS v1.0.0 — ATCLang Native
+# Python dependencies for ATCLang parser/tooling only
+pytest==9.0.3  # Dependabot: unsichere tmpdir-Handhabung gefixt
+pytest-cov==5.0.0
+requests==2.33.0  # Dependabot: .netrc-Credential-Leak + unsichere Temp-File-Reuse gefixt
+cryptography==48.0.1  # Dependabot: OpenSSL-CVEs + SECT-Curve-Subgroup-Angriff gefixt
+python-dotenv==1.2.2  # Dependabot: Symlink-Angriff in set_key gefixt
