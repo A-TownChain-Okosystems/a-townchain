@@ -1,0 +1,179 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-45 — Biometric Authentication
+// Sprint 3.0 | Mobile Layer | Chain-ID 9000
+// Migrated from: mobile/wallet_api.py biometric section (113 lines)
+// Fingerprint/face ID with session management, lockout, attempt tracking
+// ─────────────────────────────────────────────────────────────
+
+const MAX_ATTEMPTS: u8 = 5
+const LOCKOUT_DURATION: u64 = 900  // 15 minutes
+const SESSION_TIMEOUT: u64 = 1800  // 30 minutes
+const BIOMETRIC_COOLDOWN: u64 = 3  // 3 seconds between attempts
+
+struct BiometricSession {
+    addr: Address,
+    token: Hash,
+    created_at: u64,
+    expires_at: u64,
+    is_active: bool,
+}
+
+struct AuthAttempt {
+    addr: Address,
+    timestamp: u64,
+    success: bool,
+}
+
+contract BiometricAuth {
+    state sessions: Map<Hash, BiometricSession>
+    state failed_attempts: Map<Address, u8>
+    state lockout_until: Map<Address, u64>
+    state attempt_log: List<AuthAttempt>
+    state active_sessions: u16
+    state total_auths: u64
+    state failed_auths: u64
+    state owner: Address
+
+    event AuthSuccess(addr: Address)
+    event AuthFailed(addr: Address, attempts_remaining: u8)
+    event AccountLocked(addr: Address, unlock_at: u64)
+    event SessionCreated(addr: Address, token: Hash)
+    event SessionExpired(token: Hash)
+    event BiometricEnrolled(addr: Address)
+
+    fn init() {
+        self.sessions = {}
+        self.failed_attempts = {}
+        self.lockout_until = {}
+        self.attempt_log = []
+        self.active_sessions = 0
+        self.total_auths = 0
+        self.failed_auths = 0
+        self.owner = msg_sender()
+    }
+
+    fn authenticate(addr: Address, biometric_hash: Hash) -> (Hash, bool) {
+        // Check if locked out
+        let lockout = self.lockout_until.get(addr)
+        if lockout != null && lockout > Time::now() {
+            return (Hash::zero(), false)
+        }
+
+        // In production: verify biometric_hash against stored template
+        let verified = biometric_hash != Hash::zero()
+        let attempt = AuthAttempt {
+            addr: addr,
+            timestamp: Time::now(),
+            success: verified,
+        }
+        self.attempt_log.push(attempt)
+
+        if verified {
+            self.total_auths += 1
+            self.failed_attempts[addr] = 0
+            emit AuthSuccess(addr)
+            let session = self.create_session(addr)
+            return (session, true)
+        }
+
+        self.failed_auths += 1
+        let attempts = self.failed_attempts.get(addr)
+        let current_attempts: u8 = 1
+        if attempts != null {
+            current_attempts = attempts + 1
+        }
+        self.failed_attempts[addr] = current_attempts
+
+        let remaining = MAX_ATTEMPTS - current_attempts
+        emit AuthFailed(addr, remaining)
+
+        if current_attempts >= MAX_ATTEMPTS {
+            let unlock_at = Time::now() + LOCKOUT_DURATION
+            self.lockout_until[addr] = unlock_at
+            self.failed_attempts[addr] = 0
+            emit AccountLocked(addr, unlock_at)
+        }
+
+        return (Hash::zero(), false)
+    }
+
+    fn create_session(addr: Address) -> Hash {
+        let token = Hash::sha256(addr, Time::now())
+        let session = BiometricSession {
+            addr: addr,
+            token: token,
+            created_at: Time::now(),
+            expires_at: Time::now() + SESSION_TIMEOUT,
+            is_active: true,
+        }
+        self.sessions[token] = session
+        self.active_sessions += 1
+        emit SessionCreated(addr, token)
+        return token
+    }
+
+    fn validate_session(token: Hash) -> (Address, bool) {
+        let session = self.sessions.get(token)
+        if session == null || !session.is_active {
+            return (Address::zero(), false)
+        }
+        if Time::now() > session.expires_at {
+            session.is_active = false
+            if self.active_sessions > 0 {
+                self.active_sessions -= 1
+            }
+            emit SessionExpired(token)
+            return (Address::zero(), false)
+        }
+        return (session.addr, true)
+    }
+
+    fn revoke_session(token: Hash) -> bool {
+        let session = self.sessions.get(token)
+        if session == null {
+            return false
+        }
+        session.is_active = false
+        if self.active_sessions > 0 {
+            self.active_sessions -= 1
+        }
+        emit SessionExpired(token)
+        return true
+    }
+
+    fn extend_session(token: Hash) -> bool {
+        let session = self.sessions.get(token)
+        if session == null || !session.is_active {
+            return false
+        }
+        session.expires_at = Time::now() + SESSION_TIMEOUT
+        return true
+    }
+
+    fn is_locked(addr: Address) -> bool {
+        let lockout = self.lockout_until.get(addr)
+        if lockout == null {
+            return false
+        }
+        return lockout > Time::now()
+    }
+
+    fn get_remaining_attempts(addr: Address) -> u8 {
+        let attempts = self.failed_attempts.get(addr)
+        if attempts == null {
+            return MAX_ATTEMPTS
+        }
+        return MAX_ATTEMPTS - attempts
+    }
+
+    fn enroll_biometric(addr: Address, template_hash: Hash) -> bool {
+        // In production: store encrypted biometric template
+        emit BiometricEnrolled(addr)
+        return true
+    }
+
+    fn get_stats() -> (u16, u64, u64) {
+        return (self.active_sessions, self.total_auths, self.failed_auths)
+    }
+}
