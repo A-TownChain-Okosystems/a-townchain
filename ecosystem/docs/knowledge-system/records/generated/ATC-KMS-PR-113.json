@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-113",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #113: docs(audit): add exact-SHA source inventory baseline",
+  "context": "Pull request 113 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/113",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Purpose\n\nAdds an exact-head/tree census for all 33 organization repositories as a prerequisite for completing the component/function list.\n\n## Evidence\n\n- 33 repositories recorded: 26 active, 7 archived.\n- Records default branch, observed head SHA, Git tree SHA, tracked blob count and filtered source-file count.\n- Source tree baseline: 8,177 candidate source files under the documented extension/path filter; this is a file count, **not** a function count.\n- Function symbol scan is explicitly `PENDING`; all function inventories remain `RESIDUAL`. No claim of catalog completeness or production readiness is made.\n\n## Next work\n\nImplement language-aware symbol extraction, map each public/exported function/API/syscall/RPC/CLI/event entrypoint to a component/function contract or reasoned exclusion, and bind results to exact source SHA. No merge, no gate relaxation, no repository lifecycle changes."
+}
