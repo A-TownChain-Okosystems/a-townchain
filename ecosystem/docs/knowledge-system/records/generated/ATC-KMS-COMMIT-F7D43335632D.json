@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-COMMIT-F7D43335632D",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "Commit: Merge pull request #192 from A-TownChain-Okosystems/catalog/category-family-class-taxonomy-001",
+  "context": "Git commit f7d43335632d638e0689bc7e71a6607af6af23f6 on A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "commit",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/commit/f7d43335632d638e0689bc7e71a6607af6af23f6",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "commit",
+    "generated",
+    "git"
+  ],
+  "links": [],
+  "content": "Merge pull request #192 from A-TownChain-Okosystems/catalog/category-family-class-taxonomy-001\n\ndocs(catalog): add versioned category-family-class taxonomy"
+}
