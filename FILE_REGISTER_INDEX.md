@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-08 20:54 UTC+2 aus `origin/main` @ `80f2148`.
+> Vollständige Dateiliste. Erzeugt 2026-11-08 21:16 UTC+2 aus `origin/main` @ `4d9a4f8`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 12349 Dateien**
+**Total: 12354 Dateien**
 
-## docs (5066)
+## docs (5067)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -15,6 +15,7 @@
 - `docs/MONOREPO_MIGRATION.md`
 - `docs/REPOSITORY_STANDARD.md`
 - `docs/SMART_CONTRACTS.md`
+- `docs/audits/CONTRACT-INTEGRITY-2026-11-08.md`
 - `docs/audits/REPOSITORY-AUDIT-2026-09-16.md`
 - `docs/boot/2026-11-08-uefi-screen.png`
 - `docs/boot/BOOT-EVIDENCE.md`
@@ -5074,7 +5075,7 @@
 - `docs/os-docs/wiki/windows-edition-wiki/STATUS.md`
 - `docs/zkp/PROOF_SYSTEM_SELECTION_MATRIX.md`
 
-## standards (2160)
+## standards (2161)
 
 - `standards/.atc/compliance.yaml`
 - `standards/.atc/discovery/baseline.json`
@@ -5383,6 +5384,7 @@
 - `standards/contracts/nft/README.md`
 - `standards/contracts/oracle/README.md`
 - `standards/contracts/registry/contracts.yaml`
+- `standards/contracts/registry/copy_audit.yaml`
 - `standards/contracts/registry/deployments.yaml`
 - `standards/contracts/registry/versions.yaml`
 - `standards/contracts/system/README.md`
@@ -12362,10 +12364,13 @@
 - `.github/workflows/ssot-source-validation.yml`
 - `.github/workflows/test-suite.yml`
 
-## tools (8)
+## tools (11)
 
+- `tools/atc-sc-validator/audit_contract_copies.py`
 - `tools/atc-sc-validator/check_contract_registry.py`
+- `tools/atc-sc-validator/tests/test_contract_copies.py`
 - `tools/atc-sc-validator/tests/test_contract_registry_gate.py`
+- `tools/atc-sc-validator/tests/test_supply_cap_invariant.py`
 - `tools/consensus_boundary_check.py`
 - `tools/consolidate_monorepo.py`
 - `tools/dependency_review.py`
