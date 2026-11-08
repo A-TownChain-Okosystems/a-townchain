@@ -19,6 +19,10 @@ pub enum MempoolError {
     NonceTooLow { expected: u64 },
     DuplicateTransaction,
     Full,
+    /// DID ist der Registry unbekannt (strikter Modus).
+    UnknownDid,
+    /// Mitgelieferter Pubkey ist nicht der autoritative Schluessel der DID.
+    KeyMismatch,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -30,6 +34,7 @@ pub struct TxEnvelope {
 
 pub struct Mempool {
     capacity: usize,
+    policy: IdentityPolicy,
     expected_nonce: HashMap<String, u64>,
     entries: Vec<TxEnvelope>,
     seen_ids: HashSet<[u8; 32]>,
@@ -39,10 +44,26 @@ impl Mempool {
     pub fn new(capacity: usize) -> Self {
         Self {
             capacity,
+            policy: IdentityPolicy::permissive(),
             expected_nonce: HashMap::new(),
             entries: Vec::new(),
             seen_ids: HashSet::new(),
         }
+    }
+
+    /// Mempool mit Identitaets-Policy (z. B. strikte DID-Registry).
+    pub fn with_policy(capacity: usize, policy: IdentityPolicy) -> Self {
+        let mut pool = Self::new(capacity);
+        pool.policy = policy;
+        pool
+    }
+
+    pub fn policy(&self) -> &IdentityPolicy {
+        &self.policy
+    }
+
+    pub fn policy_mut(&mut self) -> &mut IdentityPolicy {
+        &mut self.policy
     }
 
     pub fn len(&self) -> usize {
@@ -72,13 +93,7 @@ impl Mempool {
         if self.seen_ids.contains(&id) {
             return Err(MempoolError::DuplicateTransaction);
         }
-        env.tx
-            .verify_bound(&env.public_key, &env.signature)
-            .map_err(|e| match e {
-                TxError::SenderNotBound => MempoolError::SenderNotBound,
-                TxError::InvalidChainId => MempoolError::InvalidChainId,
-                _ => MempoolError::InvalidSignature,
-            })?;
+        self.policy.verify(&env)?;
         if self.entries.len() >= self.capacity {
             return Err(MempoolError::Full);
         }
@@ -133,6 +148,7 @@ impl Mempool {
 /// uebernimmt die Transaktionen nach erfolgreichem Anhang.
 #[derive(Debug, Clone, Default)]
 pub struct TxLedger {
+    policy: IdentityPolicy,
     expected_nonce: HashMap<String, u64>,
     seen_ids: HashSet<[u8; 32]>,
 }
@@ -146,11 +162,22 @@ pub enum LedgerError {
     DuplicateTransaction,
     NonceGap { expected: u64 },
     NonceTooLow { expected: u64 },
+    UnknownDid,
+    KeyMismatch,
 }
 
 impl TxLedger {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Ledger mit Identitaets-Policy (strikte DID-Registry).
+    pub fn with_policy(policy: IdentityPolicy) -> Self {
+        Self { policy, ..Self::default() }
+    }
+
+    pub fn policy_mut(&mut self) -> &mut IdentityPolicy {
+        &mut self.policy
     }
 
     pub fn expected_nonce(&self, sender: &str) -> Option<u64> {
@@ -176,9 +203,11 @@ impl TxLedger {
             if ids.contains(&id) {
                 return Err(LedgerError::DuplicateTransaction);
             }
-            verify_envelope(env).map_err(|e| match e {
+            self.policy.verify(env).map_err(|e| match e {
                 MempoolError::SenderNotBound => LedgerError::SenderNotBound,
                 MempoolError::InvalidChainId => LedgerError::InvalidChainId,
+                MempoolError::UnknownDid => LedgerError::UnknownDid,
+                MempoolError::KeyMismatch => LedgerError::KeyMismatch,
                 _ => LedgerError::InvalidSignature,
             })?;
             let expected = *nonces.get(&env.tx.sender_did).unwrap_or(&env.tx.nonce);
@@ -212,6 +241,56 @@ impl TxLedger {
     /// Nach externem Block-Import: Nonce-Zaehler eines Senders nachziehen.
     pub fn advance_nonce(&mut self, sender: &str, next_nonce: u64) {
         self.expected_nonce.insert(sender.to_string(), next_nonce);
+    }
+}
+
+/// Identitaets-Policy: entscheidet, ob der Verifier dem mitgelieferten Pubkey
+/// glaubt (self-certifying) oder ihn gegen die DID-Registry aufloest.
+#[derive(Debug, Clone, Default)]
+pub struct IdentityPolicy {
+    registry: crate::did::DidRegistry,
+    require_registered: bool,
+}
+
+impl IdentityPolicy {
+    /// Ohne Registry: DID == abgeleitete Adresse des Pubkeys (bisheriges Verhalten).
+    pub fn permissive() -> Self {
+        Self::default()
+    }
+
+    /// Mit Registry: nur registrierte DIDs, Schluessel muss der aktuelle sein.
+    pub fn strict(registry: crate::did::DidRegistry) -> Self {
+        Self { registry, require_registered: true }
+    }
+
+    pub fn registry(&self) -> &crate::did::DidRegistry {
+        &self.registry
+    }
+
+    pub fn registry_mut(&mut self) -> &mut crate::did::DidRegistry {
+        &mut self.registry
+    }
+
+    pub fn is_strict(&self) -> bool {
+        self.require_registered
+    }
+
+    /// Signaturpruefung nach Policy. Rotierte DIDs sind zulaessig, solange der
+    /// eingereichte Schluessel der aktuelle Registry-Schluessel ist.
+    pub fn verify(&self, env: &TxEnvelope) -> Result<(), MempoolError> {
+        if !self.require_registered {
+            return verify_envelope(env);
+        }
+        let current = self
+            .registry
+            .current_key(&env.tx.sender_did)
+            .map_err(|_| MempoolError::UnknownDid)?;
+        if current != env.public_key {
+            return Err(MempoolError::KeyMismatch);
+        }
+        env.tx
+            .verify(&env.public_key, &env.signature)
+            .map_err(|_| MempoolError::InvalidSignature)
     }
 }
 
