@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://a-townchain.org/schemas/memory/federation_handshake.schema.json",
+  "title":"Aurora Memory Federation Handshake",
+  "type":"object","additionalProperties":false,
+  "required":["protocol_version","request_id","node_id","node_type","challenge","capabilities","requested_scopes","timestamp"],
+  "properties":{
+    "protocol_version":{"type":"string","const":"MEMORY-FED-1"},
+    "request_id":{"type":"string","minLength":1},
+    "node_id":{"type":"string","minLength":1},
+    "node_type":{"type":"string","enum":["DEVICE_NODE","GLOBUSOS_NODE","SERVER_NODE","FEDERATION_NODE","READ_ONLY_KNOWLEDGE_NODE"]},
+    "challenge":{"type":"string","minLength":32},
+    "capabilities":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string"}},
+    "requested_scopes":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string"}},
+    "timestamp":{"type":"string","format":"date-time"},
+    "proof":{"type":"string"}
+  }
+}
