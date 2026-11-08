@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ATC-AI-VERIFY-001",
+  "title": "ATC AI Code Agent Verification Evidence",
+  "type": "object",
+  "required": ["schema_version", "repository", "change_id", "commit_sha", "status", "checks", "residuals", "merge_authorized"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "repository": { "type": "string", "minLength": 3 },
+    "change_id": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]{2,63}$" },
+    "commit_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "status": { "enum": ["PLANNED", "IMPLEMENTED", "VERIFYING", "VERIFIED", "RESIDUAL", "BLOCKED", "FAILED"] },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "required", "conclusion", "run_id", "job_id", "step", "exit_code", "log_url"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "required": { "type": "boolean" },
+          "conclusion": { "enum": ["pending", "success", "failure", "cancelled", "skipped", "unavailable", "sha_mismatch"] },
+          "run_id": { "type": ["integer", "null"], "minimum": 1 },
+          "job_id": { "type": ["integer", "null"], "minimum": 1 },
+          "step": { "type": ["string", "null"] },
+          "exit_code": { "type": ["integer", "null"] },
+          "log_url": { "type": ["string", "null"], "format": "uri" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "residuals": { "type": "array", "items": { "type": "string" } },
+    "merge_authorized": { "const": false }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "VERIFIED" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "checks": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "conclusion": { "const": "success" },
+                "run_id": { "type": "integer", "minimum": 1 },
+                "job_id": { "type": "integer", "minimum": 1 },
+                "step": { "type": "string", "minLength": 1 },
+                "exit_code": { "const": 0 },
+                "log_url": { "type": "string", "format": "uri" }
+              }
+            }
+          },
+          "residuals": { "maxItems": 0 }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}
