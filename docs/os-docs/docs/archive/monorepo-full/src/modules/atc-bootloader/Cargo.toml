@@ -1,0 +1,12 @@
+[package]
+name = "atc_bootloader"
+version = "0.1.0"
+edition = "2021"
+description = "UEFI Bootloader — GPT, Secure Boot, Kernel-Handoff"
+authors = ["Michael Wroblewski"]
+license = "ALL RIGHTS RESERVED"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
