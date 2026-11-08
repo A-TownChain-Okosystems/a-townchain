@@ -89,6 +89,20 @@ pub enum Stmt {
     Use {
         path: String,
     },
+    /// `module NAME` — Programmkopf (SPEC 3.1). Metadatum, keine Ausfuehrung.
+    Module {
+        name: String,
+    },
+    /// `import "std/crypto.atc" as Crypto` — Dateiimport mit optionalem Alias.
+    Import {
+        source: String,
+        alias: Option<String>,
+    },
+    /// `use A::B::{X, Y}` — Gruppenimport.
+    UseGroup {
+        path: String,
+        names: Vec<String>,
+    },
     /// Native data declaration; generic field types are preserved textually.
     Struct {
         name: String,
@@ -387,6 +401,39 @@ fn stmt_json(s: &Stmt, out: &mut String) {
             out.push_str("{\"kind\":\"UseDeclaration\",\"path\":\"");
             out.push_str(&esc(path));
             out.push_str("\"}");
+        }
+        Stmt::Module { name } => {
+            out.push_str("{\"kind\":\"ModuleDeclaration\",\"name\":\"");
+            out.push_str(&esc(name));
+            out.push_str("\"}");
+        }
+        Stmt::Import { source, alias } => {
+            out.push_str("{\"kind\":\"FileImportDeclaration\",\"source\":\"");
+            out.push_str(&esc(source));
+            out.push_str("\",\"alias\":");
+            match alias {
+                Some(a) => {
+                    out.push('"');
+                    out.push_str(&esc(a));
+                    out.push('"');
+                }
+                None => out.push_str("null"),
+            }
+            out.push('}');
+        }
+        Stmt::UseGroup { path, names } => {
+            out.push_str("{\"kind\":\"UseGroupDeclaration\",\"path\":\"");
+            out.push_str(&esc(path));
+            out.push_str("\",\"names\":[");
+            for (i, name) in names.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                out.push('"');
+                out.push_str(&esc(name));
+                out.push('"');
+            }
+            out.push_str("]}");
         }
         Stmt::Struct { name, fields } => {
             out.push_str("{\"fields\":[");
