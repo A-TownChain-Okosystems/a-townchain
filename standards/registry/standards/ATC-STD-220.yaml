@@ -1,0 +1,17 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: repository
+family: REPOSITORY / GIT
+family_id: '200'
+file: standards/repository/ATC-STD-220.md
+mandate: Owner-Entwurf Repository File Admission 11.09. (SCR-0099; Subfamilie 220-229
+  in Familie 200 Repository/Git)
+registry_version: 1
+standard_id: ATC-STD-220
+status: approved
+title: 'Repository File Admission & Placement Standard (Master Subfamilie 220-229:
+  Entscheidungsmodell 10 Spalten, Admission-Status ADMITTED/CONDITIONAL/QUARANTINED/REJECTED,
+  Taxonomie 20 Klassen, File Entitlements A/B/T/D/G/S/C/I/P/O, autoritative Quelle,
+  Generated-Artifact-Policy, CHECK-FILE-001 Checker, Ausnahmeprozess mit Expiry; Grundsatz
+  Presence is not permission)'
+version: 1.0.0
