@@ -1,0 +1,14 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — Invariante an der Obergrenze
+// (apps/atc-contracts/contracts/revenue.atc :: init, require share_percent <= 50):
+// Bei maximal erlaubten 50 % und ungeradem Betrag 1001 darf die Teilung
+// weder Wert erzeugen noch verlieren: Franchisor 500, Franchisee 501.
+// Geprueft wird der Franchisee-Anteil; die Summe bleibt per Konstruktion
+// (amount - cut) erhalten.
+contract T15RevenueShareCapRounding {
+    fn compute(amount: u64, share_pct: u64) -> u64 {
+        let franchisor_cut = amount * share_pct / 100
+        let franchisee_cut = amount - franchisor_cut
+        return franchisee_cut
+    }
+}
