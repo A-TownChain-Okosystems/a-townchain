@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-104",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #104: fix(explorer): resolve TypeScript/ts-jest dependency conflict",
+  "context": "Pull request 104 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/104",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\n- Align the explorer TypeScript dependency with the `ts-jest@29` peer range (`>=4.3 <7`) and update its lockfile to TypeScript 6.0.3.\n- Repair the SDK workspace lockfiles so declared `typescript` workspaces are represented in lockfile v3.\n- Align the canonical ATC SDK TypeScript compiler dependency with the locked TypeScript 6.0.3 toolchain.\n\n## Evidence\nWorkflow run `37852262191`, job `113567839472`, failed because `typescript@7.0.2` conflicts with `ts-jest@29.4.14` (`typescript >=4.3 <7`). The same run also showed `npm ci` fallback failures for SDK workspace roots whose lockfiles did not record their workspace packages.\n\n## Verification status\nManifest/lockfile consistency was checked through GitHub file reads. A fresh CI run is still required to establish VERIFIED status. No merge performed."
+}
