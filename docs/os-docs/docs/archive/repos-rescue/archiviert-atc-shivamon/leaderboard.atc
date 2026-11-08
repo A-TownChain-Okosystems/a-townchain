@@ -1,0 +1,12 @@
+// ATCLang v0.3 — atc-shivamon :: Leaderboard
+// rankings, seasons, rewards, tournaments
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module leaderboard {
+    // Public API — TBD
+    
+    fn init() {
+        // Initialization — TBD
+    }
+}
