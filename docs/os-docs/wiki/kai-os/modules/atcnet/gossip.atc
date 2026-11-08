@@ -1,0 +1,171 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-01 — Gossip Protocol
+// Sprint 2.2 | Network Layer | Chain-ID 9000
+// Migrated from: modules/atcnet/gossip.py (115 lines)
+// Flood-fill message propagation with dedup, TTL, handlers
+// ─────────────────────────────────────────────────────────────
+
+const MAX_TTL: u8 = 7
+const SEEN_CACHE_SIZE: u16 = 10000
+const MAX_HANDLERS: u8 = 32
+
+enum GossipType { Block, Transaction, Vote, PeerList, Custom }
+
+struct GossipMessage {
+    msg_type: GossipType,
+    payload: String,
+    sender: Address,
+    ttl: u8,
+    timestamp: u64,
+    msg_id: Hash,
+}
+
+contract GossipProtocol {
+    state seen: Map<Hash, bool>
+    state seen_count: u32
+    state handlers: Map<String, bool>
+    state messages_relayed: u64
+    state messages_dropped: u64
+    state messages_received: u64
+    state node_id: Address
+    state owner: Address
+
+    event MessageReceived(msg_id: Hash, msg_type: GossipType, sender: Address)
+    event MessageRelayed(msg_id: Hash, ttl: u8)
+    event MessageDropped(msg_id: Hash, reason: String)
+
+    fn init() {
+        self.seen = {}
+        self.seen_count = 0
+        self.handlers = {}
+        self.messages_relayed = 0
+        self.messages_dropped = 0
+        self.messages_received = 0
+        self.node_id = msg_sender()
+        self.owner = msg_sender()
+        self.register_default_handlers()
+    }
+
+    fn register_default_handlers() {
+        self.handlers["block"] = true
+        self.handlers["transaction"] = true
+        self.handlers["vote"] = true
+        self.handlers["peer_list"] = true
+    }
+
+    fn compute_msg_id(msg_type: GossipType, payload: String, sender: Address) -> Hash {
+        return Hash::sha256(msg_type, payload, sender, Time::now())
+    }
+
+    fn is_seen(msg_id: Hash) -> bool {
+        let s = self.seen.get(msg_id)
+        if s == null {
+            return false
+        }
+        return s
+    }
+
+    fn mark_seen(msg_id: Hash) {
+        if self.seen_count >= SEEN_CACHE_SIZE {
+            // In production: ring buffer eviction
+            return
+        }
+        self.seen[msg_id] = true
+        self.seen_count += 1
+    }
+
+    fn receive(msg: GossipMessage) -> bool {
+        self.messages_received += 1
+
+        if self.is_seen(msg.msg_id) {
+            self.messages_dropped += 1
+            emit MessageDropped(msg.msg_id, "duplicate")
+            return false
+        }
+
+        self.mark_seen(msg.msg_id)
+        emit MessageReceived(msg.msg_id, msg.msg_type, msg.sender)
+
+        // Process based on type
+        if msg.msg_type == GossipType::Block {
+            self.handle_block(msg.payload)
+        } else if msg.msg_type == GossipType::Transaction {
+            self.handle_transaction(msg.payload)
+        } else if msg.msg_type == GossipType::Vote {
+            self.handle_vote(msg.payload)
+        } else if msg.msg_type == GossipType::PeerList {
+            self.handle_peer_list(msg.payload)
+        }
+
+        // Relay if TTL > 0
+        if msg.ttl > 0 {
+            self.relay(msg)
+        }
+
+        return true
+    }
+
+    fn relay(msg: GossipMessage) -> bool {
+        msg.ttl -= 1
+        if msg.ttl == 0 {
+            self.messages_dropped += 1
+            emit MessageDropped(msg.msg_id, "ttl_expired")
+            return false
+        }
+        self.messages_relayed += 1
+        emit MessageRelayed(msg.msg_id, msg.ttl)
+        // In production: send to all connected peers
+        return true
+    }
+
+    fn broadcast_block(block_data: String) -> Hash {
+        let msg_id = self.compute_msg_id(GossipType::Block, block_data, msg_sender())
+        let msg = GossipMessage {
+            msg_type: GossipType::Block,
+            payload: block_data,
+            sender: msg_sender(),
+            ttl: MAX_TTL,
+            timestamp: Time::now(),
+            msg_id: msg_id,
+        }
+        self.mark_seen(msg_id)
+        self.relay(msg)
+        return msg_id
+    }
+
+    fn broadcast_tx(tx_data: String) -> Hash {
+        let msg_id = self.compute_msg_id(GossipType::Transaction, tx_data, msg_sender())
+        let msg = GossipMessage {
+            msg_type: GossipType::Transaction,
+            payload: tx_data,
+            sender: msg_sender(),
+            ttl: MAX_TTL,
+            timestamp: Time::now(),
+            msg_id: msg_id,
+        }
+        self.mark_seen(msg_id)
+        self.relay(msg)
+        return msg_id
+    }
+
+    fn handle_block(payload: String) {
+        // Parse and validate block, add to chain
+    }
+
+    fn handle_transaction(payload: String) {
+        // Parse and validate tx, add to mempool
+    }
+
+    fn handle_vote(payload: String) {
+        // Parse and record governance vote
+    }
+
+    fn handle_peer_list(payload: String) {
+        // Parse peer list, update peer table
+    }
+
+    fn get_stats() -> (u64, u64, u64, u32) {
+        return (self.messages_received, self.messages_relayed, self.messages_dropped, self.seen_count)
+    }
+}
