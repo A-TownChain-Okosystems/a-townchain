@@ -1,0 +1,210 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-34 — Asset Intelligence Factory: Zentralisiert alle Assets
+// GFF v2.0 — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct AssetIntelligenceFactory {
+    assets: Map<Hash256, SmartAsset>,
+    by_tag: Map<String, List<Hash256>>,
+    by_type: Map<String, List<Hash256>>,
+    duplicates: List<DuplicateGroup>,
+    quality_log: List<QualityEntry>,
+    conversions: List<ConversionJob>,
+    lod_cache: Map<Hash256, List<Hash256>>,
+}
+
+struct SmartAsset {
+    id: Hash256,
+    name: String,
+    type: AssetType,
+    path: String,
+    size_bytes: UInt64,
+    hash: Hash256,
+    tags: List<String>,
+    quality_score: Float32,
+    lod_variants: List<Hash256>,
+    dependencies: List<Hash256>,
+    dependents: List<Hash256>,
+    format: String,
+    auto_tagged: Bool,
+    duplicate_of: Hash256,
+    created_at: UInt64,
+    last_modified: UInt64,
+    usage_count: UInt32,
+}
+
+enum AssetType { Texture, Mesh, Material, Shader, Audio, Animation, Font, Prefab, Scene, Script, VFX, UI }
+
+struct DuplicateGroup {
+    id: Hash256,
+    asset_ids: List<Hash256>,
+    similarity: Float32,
+    canonical_id: Hash256,
+    resolved: Bool,
+}
+
+struct QualityEntry {
+    asset_id: Hash256,
+    metric: String,
+    score: Float32,
+    timestamp: UInt64,
+}
+
+struct ConversionJob {
+    id: Hash256,
+    asset_id: Hash256,
+    from_format: String,
+    to_format: String,
+    status: String,
+    result_path: String,
+    created_at: UInt64,
+}
+
+// Asset Intelligence: Asset registrieren
+pub fn register_asset(factory: AssetIntelligenceFactory, name: String, atype: AssetType, path: String, size: UInt64, hash: Hash256, format: String) -> Hash256 {
+    let aid = Crypto::sha256(serialize(name, hash, Chain::timestamp()))
+    factory.assets[aid] = SmartAsset {
+        id: aid, name: name, type: atype, path: path, size_bytes: size,
+        hash: hash, tags: [], quality_score: 0.0, lod_variants: [], dependencies: [],
+        dependents: [], format: format, auto_tagged: false, duplicate_of: Hash256::zero(),
+        created_at: Chain::timestamp(), last_modified: Chain::timestamp(), usage_count: 0,
+    }
+    // Duplikaterkennung
+    check_duplicates(factory, aid)
+    // Auto-Tagging
+    auto_tag(factory, aid)
+    return aid
+}
+
+// Asset Intelligence: Automatische Verschlagwortung
+pub fn auto_tag(factory: AssetIntelligenceFactory, asset_id: Hash256) {
+    let asset = factory.assets[asset_id]
+    let tags = []
+    // Typ-basierte Tags
+    tags.append(asset.type)
+    // Namensbasierte Tags
+    let parts = asset.name.split("_")
+    for part in parts { tags.append(part) }
+    // Pfad-basierte Tags
+    let path_parts = asset.path.split("/")
+    for part in path_parts { if part != "" { tags.append(part) } }
+    asset.tags = tags
+    asset.auto_tagged = true
+    for tag in tags {
+        if not factory.by_tag.contains(tag) { factory.by_tag[tag] = [] }
+        factory.by_tag[tag].append(asset_id)
+    }
+}
+
+// Asset Intelligence: Duplikaterkennung
+pub fn check_duplicates(factory: AssetIntelligenceFactory, new_id: Hash256) {
+    let new_asset = factory.assets[new_id]
+    for other_id in factory.assets.keys() {
+        if other_id == new_id { continue }
+        let other = factory.assets[other_id]
+        if other.type != new_asset.type { continue }
+        // Hash-basierte Duplikaterkennung
+        if other.hash == new_asset.hash {
+            let gid = Crypto::sha256(serialize(new_id, other_id, Chain::timestamp()))
+            factory.duplicates.append(DuplicateGroup {
+                id: gid, asset_ids: [new_id, other_id], similarity: 1.0,
+                canonical_id: other_id, resolved: false,
+            })
+            new_asset.duplicate_of = other_id
+            return
+        }
+        // Größenbasierte Similarity (Stub)
+        if other.size_bytes == new_asset.size_bytes and other.type == new_asset.type {
+            let gid = Crypto::sha256(serialize(new_id, other_id, Chain::timestamp()))
+            factory.duplicates.append(DuplicateGroup {
+                id: gid, asset_ids: [new_id, other_id], similarity: 0.85,
+                canonical_id: other_id, resolved: false,
+            })
+        }
+    }
+}
+
+// Asset Intelligence: Ähnlichkeitssuche
+pub fn find_similar(factory: AssetIntelligenceFactory, asset_id: Hash256) -> List<Hash256> {
+    require(factory.assets.contains(asset_id), "Asset not found")
+    let asset = factory.assets[asset_id]
+    let similar = []
+    for other_id in factory.assets.keys() {
+        if other_id == asset_id { continue }
+        let other = factory.assets[other_id]
+        if other.type != asset.type { continue }
+        let common_tags = 0
+        for tag in asset.tags { if other.tags.contains(tag) { common_tags = common_tags + 1 } }
+        if common_tags >= 2 { similar.append(other_id) }
+    }
+    return similar
+}
+
+// Asset Intelligence: Qualitätsbewertung
+pub fn assess_quality(factory: AssetIntelligenceFactory, asset_id: Hash256, metric: String, score: Float32) -> Bool {
+    require(factory.assets.contains(asset_id), "Asset not found")
+    factory.assets[asset_id].quality_score = score
+    factory.quality_log.append(QualityEntry {
+        asset_id: asset_id, metric: metric, score: score, timestamp: Chain::timestamp(),
+    })
+    return true
+}
+
+// Asset Intelligence: LOD-Erzeugung
+pub fn generate_lods(factory: AssetIntelligenceFactory, asset_id: Hash256, levels: UInt8) -> List<Hash256> {
+    require(factory.assets.contains(asset_id), "Asset not found")
+    let lod_ids = []
+    for i in 0..levels {
+        let lid = Crypto::sha256(serialize(asset_id, "lod", i, Chain::timestamp()))
+        factory.assets[lid] = SmartAsset {
+            id: lid, name: factory.assets[asset_id].name + "_lod" + i,
+            type: factory.assets[asset_id].type, path: factory.assets[asset_id].path + ".lod" + i,
+            size_bytes: factory.assets[asset_id].size_bytes / (2 ^ (i + 1)),
+            hash: Hash256::zero(), tags: ["lod"], quality_score: 0.0,
+            lod_variants: [], dependencies: [asset_id], dependents: [],
+            format: factory.assets[asset_id].format, auto_tagged: true,
+            duplicate_of: Hash256::zero(), created_at: Chain::timestamp(),
+            last_modified: Chain::timestamp(), usage_count: 0,
+        }
+        lod_ids.append(lid)
+        factory.assets[asset_id].lod_variants.append(lid)
+    }
+    factory.lod_cache[asset_id] = lod_ids
+    return lod_ids
+}
+
+// Asset Intelligence: Formatkonvertierung
+pub fn convert_format(factory: AssetIntelligenceFactory, asset_id: Hash256, to_format: String) -> Hash256 {
+    require(factory.assets.contains(asset_id), "Asset not found")
+    let job_id = Crypto::sha256(serialize(asset_id, to_format, Chain::timestamp()))
+    factory.conversions.append(ConversionJob {
+        id: job_id, asset_id: asset_id,
+        from_format: factory.assets[asset_id].format, to_format: to_format,
+        status: "completed", result_path: factory.assets[asset_id].path + "." + to_format,
+        created_at: Chain::timestamp(),
+    })
+    return job_id
+}
+
+// Asset Intelligence: Abhängigkeiten setzen
+pub fn set_dependency(factory: AssetIntelligenceFactory, asset_id: Hash256, dep_id: Hash256) -> Bool {
+    require(factory.assets.contains(asset_id), "Asset not found")
+    require(factory.assets.contains(dep_id), "Dependency not found")
+    factory.assets[asset_id].dependencies.append(dep_id)
+    factory.assets[dep_id].dependents.append(asset_id)
+    return true
+}
+
+// Asset Intelligence: Nach Tags suchen
+pub fn find_by_tags(factory: AssetIntelligenceFactory, tags: List<String>) -> List<Hash256> {
+    let results = []
+    for tag in tags {
+        let ids = factory.by_tag.get(tag, [])
+        for id in ids {
+            if not results.contains(id) { results.append(id) }
+        }
+    }
+    return results
+}
