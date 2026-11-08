@@ -1,0 +1,12 @@
+// Copyright (c) 2026 Michael Wroblewski - Apache-2.0
+// EXEC-GATE-Test — Invariante des Revenue-Share-Vertrags
+// (apps/atc-contracts/contracts/revenue.atc :: record_revenue, SC-004):
+// Bei einer Einnahme von 1000 und 20 % Franchisor-Anteil muss der
+// Franchisee-Anteil 800 betragen (amount - amount * share_pct / 100).
+contract T14RevenueShareSplit {
+    fn compute(amount: u64, share_pct: u64) -> u64 {
+        let franchisor_cut = amount * share_pct / 100
+        let franchisee_cut = amount - franchisor_cut
+        return franchisee_cut
+    }
+}
