@@ -1,0 +1,289 @@
+# ATC Protocol Registry — ATC-STD-PROTOCOL-001 §20/§21 (SSOT)
+# Generiert von tools/protocol/gen_protocol_registry.py — Änderungen nur via SCR.
+protocol-registry:
+  standard: ATC-STD-PROTOCOL-001
+  version: 1.0.0
+  generated: '2026-09-08'
+  note: 'ATC Protocol Registry gem. ATC-STD-PROTOCOL-001 §20/§21 — SSOT der ATC-PROTO-*-Familien. Eintrag = Autorisierung: Ein Protokoll OHNE Registry-Eintrag ist kein ATC-Protokoll. Status-Ehrlichkeitsregel
+    (REQ-PROTO-021): planned = Baseline ohne Implementierung, draft = Teilimplementierung existiert (Impl.-Spuren), active/experimental nur mit verifizierter Implementierung, deprecated = aktiv abgelöst.
+    Änderungen nur via SCR; Validator S-23 prüft Integrität je CI-Lauf.'
+  domains:
+  - P2P
+  - NODE
+  - CONSENSUS
+  - BLOCK
+  - TX
+  - MEMPOOL
+  - VALIDATOR
+  - STAKING
+  - MINING
+  - WALLET
+  - IDENTITY
+  - REPUTATION
+  - GOVERNANCE
+  - ORACLE
+  - ZKP
+  - BRIDGE
+  - IBC
+  - DATA
+  - STORAGE
+  - AI
+  - AGENT
+  - API
+  - EVENT
+  - AUDIT
+  - UPGRADE
+  - KERNEL
+  protocols:
+  - id: ATC-PROTO-P2P-001
+    name: ATC Peer-to-Peer Protocol
+    domain: P2P
+    version: 1.0.0
+    status: draft
+    priority: P1
+    layer: L1/L3
+    specification: 'protocols/p2p/ATC-PROTO-P2P-001.md — Spezifikation v1.0.0 APPROVED (SCR-0027) und IMPLEMENTIERT in ShivaCore K14-Upgrade (SCR-0028, p2p_secure.rs, 29 Unit-Tests, Kernel 423/423): Envelope
+      9+1, 13 Message-Types, 6-Phasen-Handshake, Replay-Schutz, Rate-Limiting, v0.9-Kompatibilitaetsmodus; Status draft bis Testnet-Verifikation/Activation'
+    note: 'v1.0.0 IMPLEMENTIERT (08.09. 01:35, K14-Upgrade p2p_secure.rs, SCR-0028): Envelope 9+1, 6-Phasen-Handshake, Replay-Schutz, Rate-Limiting, v0.9-Kompatibilitaetsmodus; Kernel 423/423 Tests gruen;
+      Status draft bis Testnet-Verifikation/Activation (PROTOCOL-001 Par.19)'
+  - id: ATC-PROTO-NODE-001
+    name: ATC Node Communication
+    domain: NODE
+    version: 1.0.0
+    status: planned
+    priority: P1
+    layer: L1
+    specification: Zu spezifizieren gem. ATC-STD-PROTOCOL-001 (SCR erforderlich)
+    note: Node-Discovery/Management auf P2P aufbauend
+  - id: ATC-PROTO-CONSENSUS-001
+    name: ATC Consensus Protocol
+    domain: CONSENSUS
+    version: 1.0.0
+    status: draft
+    priority: P1
+    layer: L1/L3
+    specification: 'protocols/consensus/ATC-PROTO-CONSENSUS-001.md — Spezifikation v1.0.0: deterministische Proposal-, PoH-, Voting-, DAG-, Fork-Choice-, Finality-, Validator-Set- und Timeout-Regeln; Status
+      draft bis Exact-SHA-Conformance.'
+    note: 'Impl.-Spuren: ShivaCore K16 (DAG+PoH+Validator+Voting+Finality)'
+  - id: ATC-PROTO-BLOCK-001
+    name: ATC Block Propagation
+    domain: BLOCK
+    version: 1.0.0
+    status: draft
+    priority: P1
+    layer: L3
+    specification: 'protocols/block/ATC-PROTO-BLOCK-001.md — Spezifikation v1.0.0: kanonischer Block-Header, chain_id 658467, parent continuity, tx_root/state_root, u128 total_fees und deterministische
+      Block-/Propagation-Bytes; Status draft bis Exact-SHA-Conformance.'
+    note: 'Impl.-Spuren: a-townchain Blockchain'
+  - id: ATC-PROTO-TX-001
+    name: ATC Transaction Protocol
+    domain: TX
+    version: 1.0.0
+    status: draft
+    priority: P1
+    layer: L3
+    specification: 'protocols/tx/ATC-PROTO-TX-001.md — Spezifikation v1.0.0: kanonische u128-Amounts, chain_id 658467, ATC-TX-DOMAIN-V2, secp256k1/ECDSA RFC6979 low-S, 33-Byte compressed public key, deterministische
+      Wire-/Signing-Bytes; Status draft bis Exact-SHA-Conformance.'
+    note: 'Impl.-Spuren: a-townchain + ShivaCore Tx-Pipeline'
+  - id: ATC-PROTO-MEMPOOL-001
+    name: ATC Mempool Protocol
+    domain: MEMPOOL
+    version: 1.0.0
+    status: draft
+    priority: P1
+    layer: L3
+    specification: 'protocols/mempool/ATC-PROTO-MEMPOOL-001.md — Spezifikation v1.0.0: deterministische Admission, Duplicate-/Nonce-Schutz, bounded capacity, Ordering, Replacement, Eviction und Block-Selection;
+      Status draft bis Exact-SHA-Conformance.'
+    note: 'Impl.-Spuren: mempool.rs (Referenzimplementierung)'
+  - id: ATC-PROTO-VALIDATOR-001
+    name: ATC Validator Protocol
+    domain: VALIDATOR
+    version: 1.0.0
+    status: draft
+    priority: P1
+    layer: L3
+    specification: 'protocols/validator/ATC-PROTO-VALIDATOR-001.md — Spezifikation v1.0.0: Validator Identity, Eligibility, Set-Derivation, Voting Authority, Block/Vote Validation, Weight, Quorum, Lifecycle,
+      Key Rotation und Equivocation; Status draft bis Exact-SHA-Conformance.'
+    note: 'Impl.-Spuren: ShivaCore K16 Validator'
+  - id: ATC-PROTO-STAKING-001
+    name: ATC Staking Protocol
+    domain: STAKING
+    version: 1.0.0
+    status: planned
+    priority: P1
+    layer: L3
+    specification: 'protocols/staking/ATC-PROTO-STAKING-001.md — Spezifikation v1.0.0: Bonding, Unbonding, Delegation, Validator-Backing, Rewards, Slashing, Replay-Schutz und deterministische State-Transitions;
+      Status draft bis Exact-SHA-Conformance.'
+    note: ''
+  - id: ATC-PROTO-MINING-001
+    name: ATC Mining Protocol
+    domain: MINING
+    version: 1.0.0
+    status: draft
+    priority: P1
+    layer: L3/L5
+    specification: 'protocols/mining/ATC-PROTO-MINING-001.md — Spezifikation v1.0.0: PoW-Domain, Proof Validation, Difficulty, Nonce, Rewards, Claims/Replay, Propagation und Conformance; Status draft bis
+      Exact-SHA-Conformance.'
+    note: Repo atc-mining vorhanden (L5-Dev-Plattform)
+  - id: ATC-PROTO-WALLET-001
+    name: ATC Wallet Protocol
+    domain: WALLET
+    version: 1.0.0
+    status: draft
+    priority: P1
+    layer: L3/L5
+    specification: 'protocols/wallet/ATC-PROTO-WALLET-001.md — Spezifikation v1.0.0: Key Custody, Account Derivation, TX Construction/Signing, Nonce Management, Local Validation, Broadcast, Recovery und
+      Conformance; Status draft bis Exact-SHA-Conformance.'
+    note: Repo atc-wallet vorhanden (L5-Dev-Plattform)
+  - id: ATC-PROTO-IDENTITY-001
+    name: ATC Identity Protocol
+    domain: IDENTITY
+    version: 1.0.0
+    status: draft
+    priority: P1
+    layer: L1/L3
+    specification: 'protocols/identity/ATC-PROTO-IDENTITY-001.md — Spezifikation v1.0.0: kanonische Identity Records, DID/RCT, Key Separation, Authentication, Rotation, Revocation, Recovery und Proof Verification;
+      Status draft bis Exact-SHA-Conformance.'
+    note: 'Impl.-Spuren: ShivaCore K6 (DID+RCT) + K6b (Ed25519)'
+  - id: ATC-PROTO-REPUTATION-001
+    name: ATC Reputation Protocol
+    domain: REPUTATION
+    version: 1.0.0
+    status: draft
+    priority: P2
+    layer: L1/L3
+    specification: 'protocols/reputation/ATC-PROTO-REPUTATION-001.md — Spezifikation v1.0.0: Identity Binding, Evidence, Deterministic Scoring, Decay, Sybil Resistance, Disputes, Privacy und Conformance;
+      Status draft bis Exact-SHA-Conformance.'
+    note: 'Impl.-Spuren: ShivaCore K15 (Reputation)'
+  - id: ATC-PROTO-GOVERNANCE-001
+    name: ATC Governance Protocol
+    domain: GOVERNANCE
+    version: 1.0.0
+    status: planned
+    priority: P2
+    layer: L3
+    specification: Zu spezifizieren gem. ATC-STD-PROTOCOL-001 (SCR erforderlich)
+    note: ''
+  - id: ATC-PROTO-ORACLE-001
+    name: ATC Oracle Protocol
+    domain: ORACLE
+    version: 1.0.0
+    status: planned
+    priority: P1
+    layer: L5
+    specification: 'protocols/oracle/ATC-PROTO-ORACLE-001.md — Spezifikation v1.0.0: Source Identity, Observations, Attestation, Freshness, Ordering, Aggregation, Failure/Dispute Handling und Conformance;
+      Status draft bis Exact-SHA-Conformance.'
+    note: Repo atc-oracle vorhanden
+  - id: ATC-PROTO-ZKP-001
+    name: ATC Zero Knowledge Protocol
+    domain: ZKP
+    version: 1.0.0
+    status: planned
+    priority: P1
+    layer: L5
+    specification: 'protocols/zkp/ATC-PROTO-ZKP-001.md — Spezifikation v1.0.0: Proof Envelope, Statement Binding, Verification, Replay-Schutz, Crypto-Agility, Resource Limits, Privacy und Conformance; Status
+      draft bis Exact-SHA-Conformance.'
+    note: Repo atc-zkp vorhanden
+  - id: ATC-PROTO-BRIDGE-001
+    name: ATC Cross-Chain Bridge
+    domain: BRIDGE
+    version: 1.0.0
+    status: planned
+    priority: P1
+    layer: L5
+    specification: 'protocols/bridge/ATC-PROTO-BRIDGE-001.md — Spezifikation v1.0.0: Cross-Domain Messages, Proof/Finality, Replay-Schutz, Ordering, Asset Accounting, Relayers, Recovery und Conformance;
+      Status draft bis Exact-SHA-Conformance.'
+    note: Repo atc-interop vorhanden
+  - id: ATC-PROTO-IBC-001
+    name: ATC Interoperability (IBC)
+    domain: IBC
+    version: 1.0.0
+    status: planned
+    priority: P1
+    layer: L5
+    specification: 'protocols/ibc/ATC-PROTO-IBC-001.md — Spezifikation v1.0.0: Channel Identity/Handshake, Packets, Commitments, Acknowledgements, Ordering, Timeouts, Capabilities, Recovery und Conformance;
+      Status draft bis Exact-SHA-Conformance.'
+    note: Repo atc-interop vorhanden
+  - id: ATC-PROTO-DATA-001
+    name: ATC Data Layer Protocol
+    domain: DATA
+    version: 1.0.0
+    status: planned
+    priority: P2
+    layer: L3/L5
+    specification: 'protocols/data/ATC-PROTO-DATA-001.md — Spezifikation v1.0.0: Object Identity, Canonical Encoding/Chunking, Commitments, Availability, Retrieval, Retention, Integrity, Recovery und Conformance;
+      Status draft bis Exact-SHA-Conformance.'
+    note: ''
+  - id: ATC-PROTO-STORAGE-001
+    name: ATC Decentralized Storage
+    domain: STORAGE
+    version: 1.0.0
+    status: planned
+    priority: P2
+    layer: L5
+    specification: 'protocols/storage/ATC-PROTO-STORAGE-001.md — Spezifikation v1.0.0: Namespace/Keys, Canonical Values, Atomic State, Integrity, Snapshots, Recovery, Concurrency und Conformance; Status
+      draft bis Exact-SHA-Conformance.'
+    note: Repo atc-storage vorhanden
+  - id: ATC-PROTO-AI-001
+    name: ATC AI Agent Protocol
+    domain: AI
+    version: 1.0.0
+    status: draft
+    priority: P2
+    layer: L2
+    specification: protocols/ai/ATC-PROTO-AI-001.md — Spezifikation v1.0.0; bestehende ShivaCore-AI-Implementierung als Baseline; Aktivierung erst nach ABI/Determinismus/Conformance.
+    note: aurora-ai (L2); Kopplung Kernel-Event-Bridge (ATC-M-003)
+  - id: ATC-PROTO-AGENT-001
+    name: ATC Agent-to-Agent Protocol
+    domain: AGENT
+    version: 1.0.0
+    status: planned
+    priority: P2
+    layer: L2
+    specification: Zu spezifizieren gem. ATC-STD-PROTOCOL-001 (SCR erforderlich)
+    note: AAS-Kopplung (ATC-AAS-001..025)
+  - id: ATC-PROTO-API-001
+    name: ATC API Protocol
+    domain: API
+    version: 1.0.0
+    status: planned
+    priority: P2
+    layer: L5
+    specification: Zu spezifizieren gem. ATC-STD-PROTOCOL-001 (SCR erforderlich)
+    note: Kopplung ATC-STD-202 (API-Konventionen)
+  - id: ATC-PROTO-EVENT-001
+    name: ATC Event Protocol
+    domain: EVENT
+    version: 1.0.0
+    status: planned
+    priority: P2
+    layer: L2/L4
+    specification: Zu spezifizieren gem. ATC-STD-PROTOCOL-001 (SCR erforderlich)
+    note: Kopplung Kernel-Event-Bridge (ATC-M-003)
+  - id: ATC-PROTO-AUDIT-001
+    name: ATC Audit Protocol
+    domain: AUDIT
+    version: 1.0.0
+    status: planned
+    priority: P2
+    layer: L3/L7
+    specification: Zu spezifizieren gem. ATC-STD-PROTOCOL-001 (SCR erforderlich)
+    note: Kopplung AUDIT-001/LogChain
+  - id: ATC-PROTO-UPGRADE-001
+    name: ATC Protocol Upgrade
+    domain: UPGRADE
+    version: 1.0.0
+    status: planned
+    priority: P1
+    layer: L0-L7
+    specification: Zu spezifizieren gem. ATC-STD-PROTOCOL-001 (SCR erforderlich)
+    note: Prozessnorm in ATC-STD-PROTOCOL-001 §19 verankert
+  - id: ATC-PROTO-KERNEL-001
+    name: ATC Kernel Interface Protocol
+    domain: KERNEL
+    version: 1.0.0
+    status: planned
+    priority: P2
+    layer: L1
+    specification: Zu spezifizieren gem. ATC-STD-PROTOCOL-001 (SCR erforderlich)
+    note: Syscall-Interface ATC-96 (ShivaCore K9)
