@@ -1,0 +1,343 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═══════════════════════════════════════════════════════════
+// AD-44 — Universe Factory (MetaFactory v3.0)
+// Verwaltet komplette Universen: Paralleluniversen, Zeitlinien,
+// Dimensionen, Planetensysteme, Galaxien, Kulturen, Fraktionen
+// ═══════════════════════════════════════════════════════════
+module MetaFactory.UniverseFactory[AD-44] {
+
+    import GCL.Core[AD-00]
+    import GCL.EventBus[AD-01]
+    import GCL.CommandBus[AD-02]
+    import GCL.QueryBus[AD-07]
+
+    // ─── Datenmodelle ───
+    struct Universe {
+        id: String
+        name: String
+        type: UniverseType      // Prime, Parallel, Mirror, Pocket, Dimensional
+        parent_id: Option<String>
+        age_years: U64
+        galaxies: Map<String, Galaxy>
+        dimensions: List<Dimension>
+        timelines: Map<String, Timeline>
+        global_rules: WorldRules
+        physics_constants: PhysicsConstants
+        civilizations: Map<String, Civilization>
+        status: UniverseStatus   // Forming, Active, Collapsing, Archived
+        created_date: Timestamp
+    }
+
+    struct Galaxy {
+        id: String
+        name: String
+        type: GalaxyType         // Spiral, Elliptical, Irregular, Dwarf
+        star_count: U64
+        planets: Map<String, Planet>
+        factions: List<Faction>
+        trade_routes: List<TradeRoute>
+        hazards: List<SpatialHazard>
+    }
+
+    struct Planet {
+        id: String
+        name: String
+        galaxy_id: String
+        type: PlanetType          // Terrestrial, GasGiant, Ice, Ocean, Desert, Volcanic
+        biome: Biome
+        gravity: Float
+        atmosphere: Atmosphere
+        population: U64
+        cities: Map<String, City>
+        resources: Map<ResourceType, U64>
+        moons: List<Moon>
+        orbital_period: Float
+        habitability_score: Float  // 0.0–1.0
+    }
+
+    struct Dimension {
+        id: String
+        name: String
+        physics_variant: PhysicsVariant
+        entry_point: Portal
+        stability: Float           // 0.0–1.0, <0.3 = collapsing
+        inhabitants: List<String>
+    }
+
+    struct Timeline {
+        id: String
+        name: String
+        parent_timeline: Option<String>
+        branch_point: Timestamp
+        events: List<TimelineEvent>
+        canonical: Bool            // True = official history
+        divergence_score: Float    // 0.0 = identical to parent
+    }
+
+    struct WorldRules {
+        magic_system: Option<MagicSystem>
+        technology_cap: TechLevel
+        death_rules: DeathRules
+        time_flow: TimeFlowRules
+        fast_travel: FastTravelRules
+        respawning: Bool
+    }
+
+    struct PhysicsConstants {
+        gravity: Float
+        speed_of_light: Float
+        entropy_rate: Float
+        quantum_fluctuation: Float
+    }
+
+    // ─── Factory Interface ───
+    interface IUniverseFactory {
+        fn create_universe(spec: UniverseSpec) -> Result<Universe>
+        fn create_galaxy(universe_id: String, spec: GalaxySpec) -> Result<Galaxy>
+        fn create_planet(galaxy_id: String, spec: PlanetSpec) -> Result<Planet>
+        fn create_dimension(universe_id: String, spec: DimensionSpec) -> Result<Dimension>
+        fn branch_timeline(timeline_id: String, branch_point: Timestamp) -> Result<Timeline>
+        fn merge_timelines(t1: String, t2: String) -> Result<Timeline>
+        fn get_universe(id: String) -> Option<Universe>
+        fn list_universes(filter: UniverseFilter) -> List<Universe>
+        fn archive_universe(id: String) -> Result<()>
+        fn validate_consistency(universe_id: String) -> ConsistencyReport
+    }
+
+    struct UniverseSpec {
+        name: String
+        type: UniverseType
+        galaxy_count: U32
+        initial_civilizations: U32
+        physics_preset: PhysicsPreset  // Realistic, Fantasy, SciFi, Custom
+        magic_enabled: Bool
+    }
+
+    // ─── Implementierung ───
+    class UniverseFactory implements IUniverseFactory {
+
+        gcl: GCLCore
+        universes: Map<String, Universe>
+        canon_engine: CanonEngine
+
+        fn init(gcl: GCLCore, canon: CanonEngine) {
+            self.gcl = gcl
+            self.canon_engine = canon
+            self.universes = Map::new()
+            self.gcl.subscribe("universe.factory", self.handle_command)
+        }
+
+        fn create_universe(spec: UniverseSpec) -> Result<Universe> {
+            let universe = Universe {
+                id: generate_id("UNI"),
+                name: spec.name,
+                type: spec.type,
+                parent_id: None,
+                age_years: 0,
+                galaxies: Map::new(),
+                dimensions: List::new(),
+                timelines: Map::new(),
+                global_rules: self.derive_rules(spec),
+                physics_constants: self.derive_physics(spec.physics_preset),
+                civilizations: Map::new(),
+                status: UniverseStatus::Forming,
+                created_date: now()
+            }
+
+            // Generate initial galaxies
+            for i in 0..spec.galaxy_count {
+                let gspec = GalaxySpec {
+                    name: format!("Galaxy-{}", i),
+                    type: GalaxyType::Spiral,
+                    star_count: 100_000_000_000,
+                    planet_density: 0.7
+                }
+                let galaxy = self.create_galaxy(universe.id, gspec)
+                universe.galaxies.insert(galaxy.id, galaxy)
+            }
+
+            // Generate initial civilizations
+            for i in 0..spec.initial_civilizations {
+                let civ = self.generate_civilization(universe.id, spec)
+                universe.civilizations.insert(civ.id, civ)
+            }
+
+            // Create prime timeline
+            let prime = Timeline {
+                id: generate_id("TL"),
+                name: "Prime Timeline",
+                parent_timeline: None,
+                branch_point: now(),
+                events: List::new(),
+                canonical: true,
+                divergence_score: 0.0
+            }
+            universe.timelines.insert(prime.id, prime)
+
+            universe.status = UniverseStatus::Active
+            self.universes.insert(universe.id, universe)
+
+            self.gcl.emit("universe.created", {universe_id: universe.id})
+            Ok(universe)
+        }
+
+        fn create_galaxy(universe_id: String, spec: GalaxySpec) -> Result<Galaxy> {
+            let galaxy = Galaxy {
+                id: generate_id("GAL"),
+                name: spec.name,
+                type: spec.type,
+                star_count: spec.star_count,
+                planets: Map::new(),
+                factions: List::new(),
+                trade_routes: List::new(),
+                hazards: List::new()
+            }
+
+            // Generate planets based on density
+            let planet_count = (spec.star_count / 1_000_000_000) * spec.planet_density as U64
+            for i in 0..min(planet_count, 1000) {
+                let pspec = PlanetSpec {
+                    name: format!("Planet-{}-{}", galaxy.id, i),
+                    type: random_planet_type(),
+                    biome: random_biome(),
+                    gravity: random_gravity(),
+                    population: 0
+                }
+                let planet = self.create_planet(galaxy.id, pspec)
+                galaxy.planets.insert(planet.id, planet)
+            }
+
+            self.gcl.emit("galaxy.created", {galaxy_id: galaxy.id, universe_id})
+            Ok(galaxy)
+        }
+
+        fn create_planet(galaxy_id: String, spec: PlanetSpec) -> Result<Planet> {
+            let planet = Planet {
+                id: generate_id("PLN"),
+                name: spec.name,
+                galaxy_id,
+                type: spec.type,
+                biome: spec.biome,
+                gravity: spec.gravity,
+                atmosphere: self.derive_atmosphere(spec.type),
+                population: spec.population,
+                cities: Map::new(),
+                resources: self.generate_resources(spec.biome),
+                moons: List::new(),
+                orbital_period: random_orbital(),
+                habitability_score: self.calc_habitability(spec)
+            }
+            Ok(planet)
+        }
+
+        fn create_dimension(universe_id: String, spec: DimensionSpec) -> Result<Dimension> {
+            let dim = Dimension {
+                id: generate_id("DIM"),
+                name: spec.name,
+                physics_variant: spec.physics_variant,
+                entry_point: spec.entry_point,
+                stability: 1.0,
+                inhabitants: List::new()
+            }
+            self.gcl.emit("dimension.created", {dimension_id: dim.id, universe_id})
+            Ok(dim)
+        }
+
+        fn branch_timeline(timeline_id: String, branch_point: Timestamp) -> Result<Timeline> {
+            let parent = self.find_timeline(timeline_id)
+            let branch = Timeline {
+                id: generate_id("TL"),
+                name: format!("Branch of {}", parent.name),
+                parent_timeline: Some(timeline_id),
+                branch_point,
+                events: parent.events.filter(|e| e.timestamp < branch_point),
+                canonical: false,
+                divergence_score: 0.0
+            }
+            // Register with canon engine for consistency
+            self.canon_engine.register_timeline(branch)
+            self.gcl.emit("timeline.branched", {branch_id: branch.id, parent: timeline_id})
+            Ok(branch)
+        }
+
+        fn merge_timelines(t1: String, t2: String) -> Result<Timeline> {
+            let tl1 = self.find_timeline(t1)
+            let tl2 = self.find_timeline(t2)
+            let merged = Timeline {
+                id: generate_id("TL"),
+                name: format!("Merged: {} + {}", tl1.name, tl2.name),
+                parent_timeline: Some(t1),
+                branch_point: now(),
+                events: merge_events(tl1.events, tl2.events),
+                canonical: true,
+                divergence_score: 0.0
+            }
+            self.gcl.emit("timeline.merged", {merged_id: merged.id})
+            Ok(merged)
+        }
+
+        fn validate_consistency(universe_id: String) -> ConsistencyReport {
+            let universe = self.universes.get(universe_id)
+            let mut violations = List::new()
+
+            // Check timeline consistency
+            for (id, tl) in universe.timelines {
+                if tl.canonical == false and tl.parent_id == None {
+                    violations.push(ConsistencyViolation {
+                        type: "orphan_timeline",
+                        entity_id: id,
+                        message: "Non-canonical timeline has no parent"
+                    })
+                }
+            }
+
+            // Check planet references
+            for (gid, galaxy) in universe.galaxies {
+                for (pid, planet) in galaxy.planets {
+                    if planet.galaxy_id != gid {
+                        violations.push(ConsistencyViolation {
+                            type: "galaxy_mismatch",
+                            entity_id: pid,
+                            message: "Planet galaxy_id mismatch"
+                        })
+                    }
+                }
+            }
+
+            ConsistencyReport {
+                universe_id,
+                violations,
+                total_entities: universe.galaxies.len() + universe.civilizations.len(),
+                passed: violations.is_empty()
+            }
+        }
+
+        fn derive_rules(spec: UniverseSpec) -> WorldRules {
+            WorldRules {
+                magic_system: if spec.magic_enabled { Some(MagicSystem::Generic) } else { None },
+                technology_cap: TechLevel::Singularity,
+                death_rules: DeathRules::Permanent,
+                time_flow: TimeFlowRules::Linear,
+                fast_travel: FastTravelRules::Portal,
+                respawning: false
+            }
+        }
+
+        fn derive_physics(preset: PhysicsPreset) -> PhysicsConstants {
+            match preset {
+                PhysicsPreset::Realistic => PhysicsConstants { gravity: 9.81, speed_of_light: 299_792_458.0, entropy_rate: 1.0, quantum_fluctuation: 0.001 },
+                PhysicsPreset::Fantasy => PhysicsConstants { gravity: 9.81, speed_of_light: 299_792_458.0, entropy_rate: 0.3, quantum_fluctuation: 0.5 },
+                PhysicsPreset::SciFi => PhysicsConstants { gravity: 9.81, speed_of_light: 299_792_458.0, entropy_rate: 0.8, quantum_fluctuation: 0.1 },
+                PhysicsPreset::Custom => PhysicsConstants { gravity: 9.81, speed_of_light: 299_792_458.0, entropy_rate: 1.0, quantum_fluctuation: 0.001 }
+            }
+        }
+
+        fn handle_command(cmd: Command) {
+            match cmd.action {
+                "create" => { let u = self.create_universe(cmd.data); self.gcl.respond(cmd, u) },
+                "archive" => { self.archive_universe(cmd.data.id); self.gcl.respond(cmd, Ok(())) },
+                _ => self.gcl.respond(cmd, Err("Unknown command"))
+            }
+        }
+    }
+}
