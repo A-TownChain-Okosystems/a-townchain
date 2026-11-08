@@ -1,0 +1,208 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-96 — Kernel Package Manager (ATCPkg)
+// Sprint 2.4 | Kernel Layer | Chain-ID 9000
+// v0.3 ATCLang syntax
+// On-chain package registry: install, publish, verify, deps
+// ─────────────────────────────────────────────────────────────
+
+const MAX_PACKAGE_SIZE: u32 = 1048576  // 1MB
+const MAX_DEPENDENCIES: u8 = 32
+const PACKAGE_NAME_MAX: u8 = 64
+
+enum PackageStatus { Published, Deprecated, Banned, Pending }
+
+struct Package {
+    name: String,
+    version: String,
+    author: Address,
+    hash: Hash,
+    description: String,
+    dependencies: List<String>,
+    status: PackageStatus,
+    published_at: u64,
+    downloads: u32,
+}
+
+struct InstallRecord {
+    package: String,
+    version: String,
+    installed_at: u64,
+    installed_by: Address,
+}
+
+contract KernelPackageManager {
+    state packages: Map<String, Package>
+    state versions: Map<String, List<String>>
+    state installed: Map<Address, List<InstallRecord>>
+    state total_packages: u32
+    state total_downloads: u32
+    state owner: Address
+
+    event PackagePublished(name: String, version: String, author: Address)
+    event PackageInstalled(name: String, version: String, by: Address)
+    event PackageDeprecated(name: String)
+    event PackageBanned(name: String, reason: String)
+
+    fn init() {
+        self.packages = {}
+        self.versions = {}
+        self.installed = {}
+        self.total_packages = 0
+        self.total_downloads = 0
+        self.owner = msg_sender()
+    }
+
+    fn publish(name: String, version: String, description: String, dependencies: List<String>, pkg_hash: Hash) -> bool {
+        if name == "" || name.len() > PACKAGE_NAME_MAX {
+            return false
+        }
+        if dependencies.len() > MAX_DEPENDENCIES {
+            return false
+        }
+        let existing = self.packages.get(name)
+        if existing != null {
+            // Only author or owner can publish new versions
+            if existing.author != msg_sender() && msg_sender() != self.owner {
+                return false
+            }
+        }
+        let pkg = Package {
+            name: name,
+            version: version,
+            author: msg_sender(),
+            hash: pkg_hash,
+            description: description,
+            dependencies: dependencies,
+            status: PackageStatus::Published,
+            published_at: Time::now(),
+            downloads: 0,
+        }
+        self.packages[name] = pkg
+        // Track version
+        let vlist = self.versions.get(name)
+        if vlist == null {
+            vlist = []
+        }
+        vlist.push(version)
+        self.versions[name] = vlist
+        if existing == null {
+            self.total_packages += 1
+        }
+        emit PackagePublished(name, version, msg_sender())
+        return true
+    }
+
+    fn install(name: String, version: String) -> bool {
+        let pkg = self.packages.get(name)
+        if pkg == null || pkg.status != PackageStatus::Published {
+            return false
+        }
+        if version != "" && pkg.version != version {
+            return false
+        }
+        // Check dependencies
+        let i: u8 = 0
+        while i < pkg.dependencies.len() {
+            let dep = self.packages.get(pkg.dependencies[i])
+            if dep == null || dep.status != PackageStatus::Published {
+                return false
+            }
+            i += 1
+        }
+        let record = InstallRecord {
+            package: name,
+            version: pkg.version,
+            installed_at: Time::now(),
+            installed_by: msg_sender(),
+        }
+        let user_installed = self.installed.get(msg_sender())
+        if user_installed == null {
+            user_installed = []
+        }
+        user_installed.push(record)
+        self.installed[msg_sender()] = user_installed
+        pkg.downloads += 1
+        self.total_downloads += 1
+        emit PackageInstalled(name, pkg.version, msg_sender())
+        return true
+    }
+
+    fn uninstall(name: String) -> bool {
+        let user_installed = self.installed.get(msg_sender())
+        if user_installed == null {
+            return false
+        }
+        let i: u32 = 0
+        while i < user_installed.len() {
+            if user_installed[i].package == name {
+                user_installed.remove(i)
+                return true
+            }
+            i += 1
+        }
+        return false
+    }
+
+    fn deprecate(name: String) -> bool {
+        let pkg = self.packages.get(name)
+        if pkg == null {
+            return false
+        }
+        if pkg.author != msg_sender() && msg_sender() != self.owner {
+            return false
+        }
+        pkg.status = PackageStatus::Deprecated
+        emit PackageDeprecated(name)
+        return true
+    }
+
+    fn ban(name: String, reason: String) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        let pkg = self.packages.get(name)
+        if pkg == null {
+            return false
+        }
+        pkg.status = PackageStatus::Banned
+        emit PackageBanned(name, reason)
+        return true
+    }
+
+    fn verify(name: String, pkg_hash: Hash) -> bool {
+        let pkg = self.packages.get(name)
+        if pkg == null {
+            return false
+        }
+        return pkg.hash == pkg_hash
+    }
+
+    fn get_package(name: String) -> (String, Address, String, PackageStatus, u32, u64) {
+        let pkg = self.packages.get(name)
+        if pkg == null {
+            return ("", Address::zero(), "", PackageStatus::Banned, 0, 0)
+        }
+        return (pkg.version, pkg.author, pkg.description, pkg.status, pkg.downloads, pkg.published_at)
+    }
+
+    fn get_versions(name: String) -> List<String> {
+        let vlist = self.versions.get(name)
+        if vlist == null {
+            return []
+        }
+        return vlist
+    }
+
+    fn get_installed(addr: Address) -> List<InstallRecord> {
+        let list = self.installed.get(addr)
+        if list == null {
+            return []
+        }
+        return list
+    }
+
+    fn get_stats() -> (u32, u32) {
+        return (self.total_packages, self.total_downloads)
+    }
+}
