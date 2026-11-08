@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://a-townchain.org/schemas/memory/capability.schema.json",
+  "title":"Aurora Memory Capability",
+  "type":"object","additionalProperties":false,
+  "required":["capability_id","principal","resource","actions","scope","expires_at"],
+  "properties":{
+    "capability_id":{"type":"string","minLength":1},
+    "principal":{"type":"string","minLength":1},
+    "resource":{"type":"string","minLength":1},
+    "actions":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","enum":["MEMORY_READ_LOCAL","MEMORY_WRITE_LOCAL","MEMORY_READ_SHARED","MEMORY_WRITE_SHARED","MEMORY_EXPORT","MEMORY_IMPORT","MEMORY_REVOKE","MEMORY_DELETE","MEMORY_AUDIT"]}},
+    "scope":{"type":"string","minLength":1},
+    "expires_at":{"type":["string","null"],"format":"date-time"},
+    "consent_reference":{"type":["string","null"]},
+    "policy_reference":{"type":["string","null"]},
+    "revocation_reference":{"type":["string","null"]}
+  }
+}
