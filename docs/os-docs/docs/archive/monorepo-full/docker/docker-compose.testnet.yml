@@ -1,0 +1,137 @@
+# Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# A-TownChain OS — Local Testnet (3 Nodes)
+# Usage: docker compose -f docker/docker-compose.testnet.yml up -d
+# Wiki: Kap. 18
+
+version: "3.9"
+
+x-node-base: &node-base
+  image: python:3.11-slim
+  working_dir: /app
+  volumes:
+    - ..:/app
+    - atcfs_data:/root/.atcfs
+  environment:
+    - PYTHONPATH=/app
+    - ATC_CHAIN_ID=658467
+    - ATC_LOG_LEVEL=INFO
+  networks:
+    - atcnet
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD", "python3", "-c", "import requests; requests.get('http://localhost:4000/health', timeout=2)"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+
+services:
+  # Bootstrap Node 0 (seed)
+  node0:
+    <<: *node-base
+    container_name: atc-node0
+    ports:
+      - "9000:9000"   # P2P
+      - "9100:9100"   # RPC
+      - "4000:4000"   # Gateway
+    environment:
+      - PYTHONPATH=/app
+      - ATC_NODE_ID=0
+      - ATC_P2P_PORT=9000
+      - ATC_RPC_PORT=9100
+      - ATC_GATEWAY_PORT=4000
+      - ATC_CHAIN_ID=658467
+      - ATC_IS_BOOTSTRAP=true
+    command: python3 blockchain/nodes/bootstrap.py --port 9000 --rpc-port 9100
+    volumes:
+      - node0_data:/data
+      - ..:/app
+
+  # Node 1
+  node1:
+    <<: *node-base
+    container_name: atc-node1
+    ports:
+      - "9001:9001"
+      - "9101:9101"
+    environment:
+      - PYTHONPATH=/app
+      - ATC_NODE_ID=1
+      - ATC_P2P_PORT=9001
+      - ATC_RPC_PORT=9101
+      - ATC_CHAIN_ID=658467
+      - ATC_BOOTSTRAP_PEERS=node0:9000
+    command: python3 blockchain/nodes/bootstrap.py --port 9001 --rpc-port 9101 --peers node0:9000
+    volumes:
+      - node1_data:/data
+      - ..:/app
+    depends_on:
+      node0:
+        condition: service_healthy
+
+  # Node 2
+  node2:
+    <<: *node-base
+    container_name: atc-node2
+    ports:
+      - "9002:9002"
+      - "9102:9102"
+    environment:
+      - PYTHONPATH=/app
+      - ATC_NODE_ID=2
+      - ATC_P2P_PORT=9002
+      - ATC_RPC_PORT=9102
+      - ATC_CHAIN_ID=658467
+      - ATC_BOOTSTRAP_PEERS=node0:9000,node1:9001
+    command: python3 blockchain/nodes/bootstrap.py --port 9002 --rpc-port 9102 --peers node0:9000,node1:9001
+    volumes:
+      - node2_data:/data
+      - ..:/app
+    depends_on:
+      node0:
+        condition: service_healthy
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: atc-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - atcnet
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=7d"
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: atc-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=atcchain
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - atcnet
+    depends_on:
+      - prometheus
+
+volumes:
+  node0_data:
+  node1_data:
+  node2_data:
+  atcfs_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  atcnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
