@@ -58,18 +58,22 @@ vom Gate respektiert.
   `verified`/`audited` brauchen Evidence, `archived` einen Archivmarker
 - **A6** ID-Format `ATC-SC-<KATEGORIE>-<NNN>`, eindeutig, Kategorie passt zur ID
 - **A7** Kategorie im Enum nach SC-001
+- **A8** jede registrierte Quelle besteht `atc check` (ATCLang-Parser und Typprüfung);
+  `--skip-compile` setzt das Gate aus, ein fehlendes Binary ist ein Fehler und kein Pass
 
-Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde.
+Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde, alle 16 Quellen
+kompilieren.
 `--write-hashes` zieht Hashes nach einer bewussten Quelländerung nach.
 
 Gegenprobe: mit absichtlich verfälschtem Hash, fehlendem Pfad und einer
 Waisenquelle meldet das Gate genau diese drei Befunde und endet mit Exit 1.
-13 Regressionstests decken jedes Gate einzeln ab.
+16 Regressionstests decken jedes Gate einzeln ab, inklusive Kompilierfehler und
+fehlendem Compiler-Binary.
 
 ## 4. Evidenz der Implementierungen
 
 - Alle 16 registrierten Contract-Quellen bestehen `atc check` (ATCLang-Parser und
-  Typprüfung), Exit 0.
+  Typprüfung), Exit 0 — inzwischen als Gate A8 automatisiert, nicht mehr nur manuell.
 - Neun Contract-Tests liegen als `.atc` unter `apps/atc-contracts/exec_chain/tests/`
   und laufen über den VM-Gate im Smoke-Test (`t10b_mint_positive_accept.ops`:
   12 Ops, PASS).
@@ -82,7 +86,8 @@ Waisenquelle meldet das Gate genau diese drei Befunde und endet mit Exit 1.
 - **Kein Audit.** Für keinen Contract existiert ein Audit-Referenznachweis
   (`audit_ref`), obwohl SC-005 eine Audit-Pipeline verlangt.
 - **Invarianten-Tests sind dünn.** Neun VM-Tests für 16 Contracts, überwiegend für
-  ATC-8300. Governance, Bridge und Revenue haben keinen eigenen Testfall.
+  ATC-8300. Governance, Bridge und Revenue haben keinen eigenen Testfall; A8 prüft
+  bisher nur Kompilierbarkeit, nicht Verhalten.
 - **CI-Anbindung fehlt.** Das Gate läuft lokal; die Integration als CI-Schritt ist
   durch fehlenden workflow-Scope des Agent-Tokens blockiert (bekannte
   Owner-Aktion, F-009/F-010).
