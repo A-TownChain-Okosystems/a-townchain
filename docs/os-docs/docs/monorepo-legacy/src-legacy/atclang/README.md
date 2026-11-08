@@ -1,6 +1,6 @@
 # atclang — L1: ATCLang v0.3.0 — Proprietäre Sprache, Compiler, VM, REPL
 
-Part of [A-TownChain OS Monorepo](../../../README.md)
+Part of [A-TownChain OS Monorepo](../../../../../../README.md)
 
 ## Inhalt
 
