@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-186",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #186: fix(registry): exclude specification-only cross-chain bindings",
+  "context": "Pull request 186 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/186",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n\nCorrects the WP-M0 runtime-symbol registry blocker found in workflow run 38812071575 (job 116687495451).\n\n- Clears the non-executable `source_path` and `symbol_or_entrypoint` values for `FN-XCHAIN-001..003`; the contracts remain specification-only and unimplemented.\n- Makes the registry builder explicitly ignore bindings marked `binding_kind=specification_only` or `status=SPECIFICATION_ONLY_NO_IMPLEMENTATION_BINDING`, so stale placeholder text cannot become executable source evidence.\n- Adds a regression test proving specification-only placeholders do not create catalog bindings or duplicate-binding blockers.\n\n## Evidence and acceptance\n\n- Source baseline: `417a30cd31e52a7f42e03ac1329e446182e1ea5f`\n- Original failure: https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/38812071575/job/116687495451\n- This PR does not claim functional verification or CP0 acceptance. The runtime registry must rebuild and validate successfully on the updated commit; overall status remains BLOCKED until CI evidence and independent review are complete.\n- Stacked on the architecture catalog work branch; review and merge order must preserve the parent change."
+}
