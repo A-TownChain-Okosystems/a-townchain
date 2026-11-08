@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-94",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #94: arch: implement P0 boundary contracts",
+  "context": "Pull request 94 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/94",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\nImplements the outstanding P0 architecture contracts without moving implementation ownership into the ecosystem repository.\n\nContracts: Network/P2P, Identity/Trust, State Ownership, Global Authority Matrix, Canonical Interfaces/Events, Failure/Recovery.\n\nAdds machine-readable contract set + JSON Schema + deterministic validator + exact-SHA CI. Updates ARCHITECTURE.md to bind the contract set and correct canonical migrated paths for L2/L3.\n\nStandalone First, Ecosystem Second remains enforced: this repository defines system boundaries; component repositories retain implementation/build/test/release SSOT.\n\nNo implementation readiness is inferred from architecture presence. Exact-SHA CI evidence is required."
+}
