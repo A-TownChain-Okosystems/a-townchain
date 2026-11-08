@@ -1,0 +1,33 @@
+name: Code Quality Matrix Live
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Install matrix dependencies
+        run: python3 -m pip install pyyaml
+      - name: Run live 26-repository conformance matrix
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ github.token }}
+        run: python3 tools/code_quality_matrix.py
+      - name: Upload matrix evidence even on findings
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: code-quality-matrix-${{ github.sha }}
+          path: docs/CODE-QUALITY-MATRIX.md
+          if-no-files-found: error
