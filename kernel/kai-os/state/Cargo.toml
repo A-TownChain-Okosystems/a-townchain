@@ -1,0 +1,11 @@
+[package]
+name = "kai-os-state"
+version = "0.1.0"
+edition = "2021"
+description = "KAI-OS State: Sync + Snapshots + Merkle Verification (S10-S12, AD-008)"
+license = "Apache-2.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
