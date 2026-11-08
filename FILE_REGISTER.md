@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-08 18:14 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `598f88d01` (letzter Commit 2026-11-08)
+> **Erzeugt:** 2026-11-08 18:14 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `1ba68a228` (letzter Commit 2026-11-08)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,7 +13,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 12327 |
+| **Total Dateien** | 12329 |
 | **Bereiche** | 15 |
 | **Verzeichnisse** | 2185 |
 
@@ -21,12 +21,12 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Endung | Dateien |
 |--------|---------|
-| `.md` | 4245 |
+| `.md` | 4246 |
 | `.atc` | 1642 |
 | `.yaml` | 1486 |
 | `.json` | 1411 |
 | `.rs` | 845 |
-| `.py` | 796 |
+| `.py` | 797 |
 | `.tsx` | 535 |
 | `(keine)` | 405 |
 | `.yml` | 303 |
@@ -70,12 +70,12 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `kernel` | 720 | Kernel- und OS-Ebenen |
 | `modules` | 208 | Module ohne eigene Produktschicht |
 | `tooling` | 164 | Werkzeuge und Engineering-Gates |
-| `(root)` | 20 | Wurzeldateien |
+| `(root)` | 21 | Wurzeldateien |
 | `.github` | 16 | CI- und Repository-Konfiguration |
 | `"docs` | 6 | — |
 | `.atc` | 6 | Repository-Evidenz |
+| `tools` | 6 | Einstiegspunkte |
 | `specs` | 5 | Spezifikationen |
-| `tools` | 5 | Einstiegspunkte |
 
 ## Verzeichnisse mit den meisten Dateien
 
@@ -108,25 +108,3 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `kernel/globus-os/modules/atc-shivacore/kernel/src` | 42 |
 
 … insgesamt 2185 Verzeichnisse.
-
----
-
-## Anhang: Änderungsnachtrag 2026-11-08 (P0-Härtung)
-
-
-| Datei | Zweck |
-|---|---|
-| `components/node/src/mempool.rs` | Mempool + TxLedger: Signatur, DID-Bindung, Nonce, Replay (SEC-P0-001/008) |
-| `components/node/src/did.rs` | DID-Registry mit Rotation, Persistenz (JSON, validiert) und IdentityPolicy (SEC-P0-004) |
-| `components/node/src/validator.rs` | ECDSA-Proposals mit Domain-Separation und öffentlicher Verifikation (SEC-P0-003) |
-| `components/node/src/chain.rs` | 256-Bit-Blockhashes, produce_tx_block/import_tx_block (SEC-P0-007) |
-| `components/node/src/bootstrap.rs` | Genesis boot_hash256 als Kettenanker |
-| `components/node/src/gossip.rs` | Wire-Format mit 64-Hex-Hashes |
-| `components/node/tests/tx_block_tests.rs` | 8 Regressionstests Tx-Blöcke/Replay |
-| `components/node/tests/block_hash_tests.rs` | 5 Regressionstests Hashbreite/Genesis-Bindung |
-| `components/node/tests/did_registry_tests.rs` | 4 Regressionstests DID-Auflösung/Rotation |
-| `components/wallet/src/keys.rs` | Kanonische Adressableitung address_from_pubkey (SEC-P0-005) |
-| `components/wallet/src/tx.rs` | verify_bound: DID↔Pubkey-Bindung (SEC-P0-004) |
-| `components/oracle/src/verification.rs` | Echte Ed25519-/secp256k1-Adapter statt Mock (SEC-P0-002) |
-| `components/oracle/tests/oracle_new_tests.rs` | Signaturtests mit echten Kurven |
-| `ARCHITECTURE.md` | Ablage-Status und Legacy-Grenze dokumentiert (08.11.2026) |
