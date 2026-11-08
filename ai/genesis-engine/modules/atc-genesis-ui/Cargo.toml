@@ -1,0 +1,8 @@
+[package]
+name = "atc-genesis-ui"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+
+[dependencies]
+atc-genesis-platform = { path = "../atc-genesis-platform" }
