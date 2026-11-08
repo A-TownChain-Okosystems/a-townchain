@@ -1,0 +1,478 @@
+# ATC Milestone Registry — ATC-STD-MILESTONE-001 §17/§18 (SSOT)
+# AD-027 Lauffähigkeits-Roadmap M1–M8 als ATC-M-001..008 registriert (Migrationsklausel §18).
+# category = angestrebte Ziel-Reifeklasse (M0–M8, §5). Statuswechsel nur über §2-Lifecycle.
+# Maschinenformat: schemas/milestone.schema.json · Validator: S-20 · Registry-Pflicht REQ-MS-018.
+milestones:
+  - id: ATC-M-001
+    name: "M1 Sprache läuft (L0 atclang)"
+    category: M2
+    status: ACCEPTED
+    version: "1.0.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "ATCLang-Programm wird zu ausführbarem CompiledModule kompiliert — Referenz-Pipeline mit semantischem Gate"
+    scope: "atclang-Repo (L0): Lexer/Parser/TypeChecker/compile_source; NICHT Rust Canonical Core (Phase 2/3)"
+    requirements: ["AD-022 Gates G1-G6", "G2-Pflichten (SEM-001..012)"]
+    deliverables: ["Python-Referenz-Compiler", "Language SPEC.md + registry.json", "Semantics SPEC + TypeChecker"]
+    acceptance_criteria:
+      - "G1 Language Specification PASSED (SPEC.md + registry.json, Commit abb3262)"
+      - "G2 AST/Semantics PASSED (TypeChecker SEM-001..012, semantisches Gate in compile_source, Commit e249a40, 20/20 Tests, Korpus CLEAN, 0 Regressionen)"
+      - "Run-Kriterium: compile_source → CompiledModule, Pipeline grün (Reality-Check, verifiziert 07.09.2026)"
+    tests: ["20/20 atclang Pipeline-/G2-Tests"]
+    security_status: PASSED
+    documentation_status: COMPLETE
+    compatibility_status: VERIFIED
+    dependencies: []
+    risk: {overall: LOW, technical: LOW, security: LOW, dependency: LOW, compatibility: LOW, operational: LOW, business: LOW}
+    evidence:
+      - {type: git-commit, ref: "atclang abb3262 (G1: SPEC.md + registry.json)", gate: requirement}
+      - {type: test-report, ref: "atclang e249a40 (G2: 20/20 Tests, Gate PASS)", gate: test}
+      - {type: documentation, ref: "a-townchain-os-docs/docs/roadmap/LAUFFAEHIGKEITS_ROADMAP.md M1-Status (verifiziert 07.09.2026)", gate: documentation}
+      - {type: run-log, ref: "compile_source → CompiledModule (Pipeline grün)", gate: acceptance}
+    audit_ref: "Roadmap M1-Status-Verifikation 07.09. (Reality-Check-Regel, AD-027)"
+    audit_result: "M1-Run-Kriterium erfüllt: G1+G2 PASSED, Pipeline grün, 20/20 Tests, 0 Regressionen. Ausbaustufen G3 (ATC-IR), G5, G6 (Rust Canonical Core) laufen als Revalidierung/Ausbau (§11-Vermerk)."
+    start: "2026-09-07"
+    target_date: "2026-09-07"
+    actual_completion: "2026-09-07"
+    revalidated: "Offen: G3/G5/G6 (AD-022) — Revalidierung bei Abschluss; ändert ACCEPTED nicht rückwirkend"
+
+  - id: ATC-M-002
+    name: "M2 Kernel läuft (L1 atc-shivacore)"
+    category: M2
+    status: ACCEPTED
+    version: "1.0.0"
+    owner: "Michael Wroblewski (Owner)"
+    responsible_agent: "aurora-base44-superagent-6a0a3f408dced6c5ca7506ef"
+    goal: "ShivaCore-Kernel läuft verifizierbar: voller Testbestand grün + Boot-Kette L0-L10"
+    scope: "atc-shivacore (L1): Kernel + Boot + Service-Space; NICHT Userspace-Integration (ATC-M-005)"
+    requirements: ["AD-020 Vault-Restauration", "AD-028 Service-Space-Migration"]
+    deliverables: ["Kernel-Crate (49+ Module)", "Boot-Sequence L0-L10", "service_space-Crate (10 Module)"]
+    acceptance_criteria:
+      - "674/674 Kernel-Tests PASS (Vault-Restauration verifiziert)"
+      - "Boot-Kette L0-L10 läuft (system.rs, K36: Init PID 1, Process Groups)"
+      - "AD-028 Service-Space-Migration verifiziert (Kernel-Primitive klein, Service-Module in service_space)"
+    tests: ["674/674 atc-shivacore Test-Suite"]
+    security_status: PASSED
+    documentation_status: COMPLETE
+    compatibility_status: VERIFIED
+    dependencies: ["ATC-M-001"]
+    risk: {overall: LOW, technical: LOW, security: LOW, dependency: LOW, compatibility: LOW, operational: LOW, business: LOW}
+    evidence:
+      - {type: test-report, ref: "atc-shivacore 674/674 Tests PASS (07.09.2026)", gate: test}
+      - {type: boot-log, ref: "Boot L0-L10 (system.rs/K36, InitProcess + SystemManager)", gate: acceptance}
+      - {type: audit-report, ref: "AD-028 Service-Space-Migration verifiziert (Dependency nur abwärts: Service → Kernel)", gate: audit}
+    audit_ref: "AD-028-Verifikation + M2-Gate 07.09.2026"
+    audit_result: "M2-Run-Kriterium erfüllt: 674/674 Tests + Boot L0-L10 + AD-028 sauber. Kernel lauffähig als Basis für M3/M4/M5."
+    start: "2026-09-07"
+    target_date: "2026-09-07"
+    actual_completion: "2026-09-07"
+
+  - id: ATC-M-003
+    name: "M3 KI läuft (L2 aurora-ai via Kernel-Event-Bridge)"
+    category: M2
+    status: IN_PROGRESS
+    version: "1.0.0"
+    owner: "Michael Wroblewski (Owner)"
+    responsible_agent: "aurora-base44-superagent-6a0a3f408dced6c5ca7506ef"
+    goal: "aurora-ai läuft über die Kernel-Event-Bridge auf ShivaCore (nicht nur als Standalone-Modul)"
+    scope: "aurora-ai (L2) + Kernel-Event-Bridge; nicht: Voll-AI-Stack (spätere Meilensteine)"
+    requirements: ["AD-027 M3-Run-Kriterium"]
+    deliverables: ["Kernel-Event-Bridge", "aurora-ai-Core auf Bridge laufend"]
+    acceptance_criteria:
+      - "Run-Kriterium (AD-027): aurora-ai via Kernel-Event-Bridge — KI-Modul läuft auf/via ShivaCore mit Test-/Run-Nachweis"
+    tests: []
+    security_status: IN_PROGRESS
+    documentation_status: IN_PROGRESS
+    compatibility_status: UNKNOWN
+    dependencies: ["ATC-M-002"]
+    risk: {overall: MEDIUM, technical: MEDIUM, security: MEDIUM, dependency: LOW, compatibility: MEDIUM, operational: LOW, business: LOW}
+    evidence: []
+    audit_ref: "ausstehend — AUD nach M3-Gates (AUDIT-001)"
+    start: "2026-09-07"
+    target_date: "2026-09-30"
+
+  - id: ATC-M-004
+    name: "M4 Blockchain läuft (L3 a-townchain)"
+    category: M2
+    status: PLANNED
+    version: "1.0.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "A-TownChain läuft: 2 Nodes synchronisieren, Chain-ID 658467, Contract-Ausführung auf ATVM"
+    scope: "a-townchain (L3) + atc-vm (L0) + atc-algorithm (L3); nicht: Mainnet (später)"
+    requirements: ["AD-027 M4-Run-Kriterium"]
+    deliverables: ["2 laufende Nodes mit Gossip-Sync", "Tx + Contract auf ATVM"]
+    acceptance_criteria:
+      - "Run-Kriterium (AD-027): 2 Nodes sync (Gossip), Chain-ID 658467, Contract auf ATVM — Test-/Run-Nachweis"
+    tests: []
+    security_status: NOT_STARTED
+    documentation_status: IN_PROGRESS
+    compatibility_status: UNKNOWN
+    dependencies: ["ATC-M-001", "ATC-M-002"]
+    risk: {overall: HIGH, technical: HIGH, security: CRITICAL, dependency: MEDIUM, compatibility: HIGH, operational: MEDIUM, business: MEDIUM}
+    evidence: []
+    audit_ref: "ausstehend — AUD nach M4-Gates"
+    start: "2026-10-01"
+    target_date: "2026-10-31"
+
+  - id: ATC-M-005
+    name: "M5 Betriebssystem läuft (L4 globus-os)"
+    category: M2
+    status: PLANNED
+    version: "1.0.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "globus-init-Bootchain läuft auf ShivaCore (Userspace-Init über den Kernel)"
+    scope: "globus-os (L4): globus-init + Shell; nicht: Desktop-Editions (eigene Produkte)"
+    requirements: ["AD-027 M5-Run-Kriterium"]
+    deliverables: ["globus-init-Bootchain auf ShivaCore"]
+    acceptance_criteria:
+      - "Run-Kriterium (AD-027): globus-init-Bootchain läuft auf ShivaCore — Boot-/Run-Nachweis"
+    tests: []
+    security_status: NOT_STARTED
+    documentation_status: IN_PROGRESS
+    compatibility_status: UNKNOWN
+    dependencies: ["ATC-M-002"]
+    risk: {overall: HIGH, technical: HIGH, security: MEDIUM, dependency: LOW, compatibility: HIGH, operational: MEDIUM, business: LOW}
+    evidence: []
+    audit_ref: "ausstehend — AUD nach M5-Gates"
+    start: "2026-11-01"
+    target_date: "2026-11-30"
+
+  - id: ATC-M-006
+    name: "M6 Dienste laufen (L5 13 Services)"
+    category: M3
+    status: PLANNED
+    version: "1.0.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "L5-Services laufen in verbindlicher Reihenfolge node→wallet→sdk→explorer→… (13 Services)"
+    scope: "atc-sdk, atc-node, atc-contracts, atc-wallet, atc-explorer, atc-indexer, atc-mining, atc-interop, atc-oracle, atc-storage, atc-launchpad, atc-marketplace, atc-compute"
+    requirements: ["AD-027 M6-Run-Kriterium", "M6-Reihenfolge (REALITY_STATUS)"]
+    deliverables: ["13 lauffähige L5-Services in Reihenfolge"]
+    acceptance_criteria:
+      - "Run-Kriterium (AD-027): Dienste laufen in M6-Reihenfolge — je Service Test-/Run-Nachweis"
+    tests: []
+    security_status: NOT_STARTED
+    documentation_status: IN_PROGRESS
+    compatibility_status: UNKNOWN
+    dependencies: ["ATC-M-004"]
+    risk: {overall: HIGH, technical: MEDIUM, security: HIGH, dependency: HIGH, compatibility: MEDIUM, operational: HIGH, business: MEDIUM}
+    evidence: []
+    audit_ref: "ausstehend — AUD nach M6-Gates"
+    start: "2026-12-01"
+    target_date: "2027-01-31"
+
+  - id: ATC-M-007
+    name: "M7 Spiel läuft (L6 genesis-engine + Genesis Chronicles, NFT auf Chain)"
+    category: M3
+    status: PLANNED
+    version: "1.0.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "Genesis Chronicles läuft (Engine-Loop, ECS) mit NFT-Anbindung auf Chain"
+    scope: "genesis-engine (M7-Order #1) + genesis-chronicles (M7-Order #2), L6"
+    requirements: ["AD-027 M7-Run-Kriterium"]
+    deliverables: ["Engine-Loop", "Genesis Chronicles spielbar", "NFT auf Chain"]
+    acceptance_criteria:
+      - "Run-Kriterium (AD-027): Spiel läuft (Engine→Genesis Chronicles), NFT auf Chain — Run-Nachweis"
+    tests: []
+    security_status: NOT_STARTED
+    documentation_status: IN_PROGRESS
+    compatibility_status: UNKNOWN
+    dependencies: ["ATC-M-004", "ATC-M-005"]
+    risk: {overall: MEDIUM, technical: MEDIUM, security: MEDIUM, dependency: MEDIUM, compatibility: LOW, operational: LOW, business: LOW}
+    evidence: []
+    audit_ref: "ausstehend — AUD nach M7-Gates"
+    start: "2027-02-01"
+    target_date: "2027-03-31"
+
+  - id: ATC-M-008
+    name: "M8 Ökosystem läuft (L7 a-townchain-os Launch-Stack)"
+    category: M3
+    status: PLANNED
+    version: "1.0.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "Integrations-Launch-Stack läuft: docker-compose healthy, Integration ALLER Layer"
+    scope: "a-townchain-os (L7) Launch-Stack + Integration L0-L7"
+    requirements: ["AD-027 M8-Run-Kriterium"]
+    deliverables: ["Launch-Stack (docker-compose)", "Integrationstests L0-L7"]
+    acceptance_criteria:
+      - "Run-Kriterium (AD-027): Monorepo-Launch-Stack, docker-compose healthy — Run-/Health-Nachweis"
+    tests: []
+    security_status: NOT_STARTED
+    documentation_status: IN_PROGRESS
+    compatibility_status: UNKNOWN
+    dependencies: ["ATC-M-001", "ATC-M-002", "ATC-M-003", "ATC-M-004", "ATC-M-005", "ATC-M-006", "ATC-M-007"]
+    risk: {overall: CRITICAL, technical: HIGH, security: HIGH, dependency: CRITICAL, compatibility: HIGH, operational: HIGH, business: HIGH}
+    evidence: []
+    audit_ref: "ausstehend — AUD nach M8-Gates"
+    start: "2027-04-01"
+    target_date: "2027-06-30"
+
+# ── System-Meilensteinmodell M0-M14 (SCR-0136, PR 94) — Alt->Neu-Abbildung, MAJOR-Revalidation UPD-G04/COMPAT-001 ──
+# Invarianten (Owner 06.10.): status_alt eingefroren; status startet bei null (nur neue Nachweise); mapping_alt = Referenz-Set, KEIN Evidence-Feld.
+  - id: ATC-M-SYS-000
+    name: "M0 Architektur & SSOT (System)"
+    category: M0
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "Zustaendigkeiten, SoT und Abhaengigkeiten eindeutig — keine konkurrierenden Wahrheiten"
+    scope: "Repo-Ownership, Layer-Mapping L0-L7, Dependency-Graph, SSOT-Audit (SCR-0136 M0)"
+    acceptance_criteria: ["Exit: Architekturgraph ohne Ownership-Ambiguitaet"]
+    dependencies: []
+    risk: {overall: MEDIUM, technical: MEDIUM, security: MEDIUM, dependency: MEDIUM, compatibility: MEDIUM, operational: MEDIUM, business: MEDIUM}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: []
+    status_alt: ""
+
+  - id: ATC-M-SYS-001
+    name: "M1 Governance Foundation (System)"
+    category: M0
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "Standards, Evidence, Merge-/Gate-Modell belastbar — Green CI wird nicht mit VERIFIED verwechselt"
+    scope: "Evidence-Modell, SHA-Bindung, VERIFIED-Schema (PR 92/93), Merge-/Gate-Governance, Enforcement inkl. F-160"
+    acceptance_criteria: ["Exit: Evidence kann maschinenlesbar zwischen TESTED und VERIFIED unterscheiden"]
+    dependencies: [ATC-M-SYS-000]
+    risk: {overall: MEDIUM, technical: MEDIUM, security: MEDIUM, dependency: MEDIUM, compatibility: MEDIUM, operational: MEDIUM, business: MEDIUM}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: []
+    status_alt: ""
+
+  - id: ATC-M-SYS-002
+    name: "M2 Engineering Foundation (System)"
+    category: M0
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "atc-engineering als verbindliche Engineering-/Evidence-Schicht"
+    scope: "Fleet-Inventory (33 Repos), CI-Governance, Audit-Framework, Fleet-Enforcement Wellen, Engineering-Baseline"
+    acceptance_criteria: ["Exit: atc-engineering kann den Zustand der gesamten Flotte reproduzierbar feststellen"]
+    dependencies: [ATC-M-SYS-001]
+    risk: {overall: MEDIUM, technical: MEDIUM, security: MEDIUM, dependency: MEDIUM, compatibility: MEDIUM, operational: MEDIUM, business: MEDIUM}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: []
+    status_alt: ""
+
+  - id: ATC-M-SYS-003
+    name: "M3 Protocol Foundation (System)"
+    category: M0
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "atc-standards + atc-algorithm normative Basis"
+    scope: "OEP-1..7 (OEP-2=WASM entschieden), M3b atc-algorithm-Paralleletappe"
+    acceptance_criteria: ["Exit: Protocol Family 0.1.0 ist normativ geschlossen"]
+    dependencies: [ATC-M-SYS-001]
+    risk: {overall: HIGH, technical: HIGH, security: HIGH, dependency: HIGH, compatibility: HIGH, operational: HIGH, business: HIGH}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: []
+    status_alt: ""
+
+  - id: ATC-M-SYS-004
+    name: "M4 Language Foundation (System)"
+    category: M2
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "atc-lang spezifiziert und deterministisch"
+    scope: "M4.1 Spezifikation, M4.2 Rust Canonical Core (F-108), M4.3 ATCB-Bytecode, M4.4 VM-ABI, M4.5 Golden Vectors, M4.6 Negative Corpus, M4.7 Freeze Gates"
+    acceptance_criteria: ["Exit: ATCLang Freeze-ready"]
+    dependencies: [ATC-M-SYS-003]
+    risk: {overall: HIGH, technical: HIGH, security: HIGH, dependency: HIGH, compatibility: HIGH, operational: HIGH, business: HIGH}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: ["ATC-M-001"]
+    status_alt: "ACCEPTED (ATC-M-001, eingefroren; Nachweis startet bei null)"
+
+  - id: ATC-M-SYS-005
+    name: "M5 VM Foundation (System)"
+    category: M2
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "atc-vm als kanonische L3-Ausfuehrungsschicht — SoT a-townchain/components/vm (Owner-Entscheidung 06.10.)"
+    scope: "M5.1 VM Core, M5.2 Gas, M5.3 Determinismus, M5.4 Security, M5.5 ATCLang-Integration, M5.6 Golden Vectors, M5.7 VM Freeze"
+    acceptance_criteria: ["Exit: L3 kann deterministisch Programme ausfuehren"]
+    dependencies: [ATC-M-SYS-004]
+    risk: {overall: HIGH, technical: HIGH, security: HIGH, dependency: HIGH, compatibility: HIGH, operational: HIGH, business: HIGH}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: []
+    status_alt: ""
+
+  - id: ATC-M-SYS-006
+    name: "M6 Blockchain Core (System)"
+    category: M2
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "A-TownChain als deterministischer L2-Core"
+    scope: "Ledger Core, TX V2 (secp256k1/RFC6979), Economics (658467/360M/18 Dec), Konsens-Integration, VM-Integration, State/Storage, Golden Vectors, Node"
+    acceptance_criteria: ["Exit: deterministischer Blockchain-Core mit reproduzierbarer State Transition"]
+    dependencies: [ATC-M-SYS-003, ATC-M-SYS-005]
+    risk: {overall: HIGH, technical: HIGH, security: HIGH, dependency: HIGH, compatibility: HIGH, operational: HIGH, business: HIGH}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: ["ATC-M-004"]
+    status_alt: "PLANNED (ATC-M-004, eingefroren; kein impliziter Uebertrag)"
+
+  - id: ATC-M-SYS-007
+    name: "M7 ShivaCore TCB (System)"
+    category: M2
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "bootfaehiger, capability-basierter Kernel als minimaler kryptografischer TCB"
+    scope: "Boot, Memory, Scheduler, Capability System, IPC, Security, Audit, Hardware Matrix, TCB Freeze"
+    acceptance_criteria: ["Exit: bootfaehiger und sicherheitstechnisch begrenzter ShivaCore-TCB"]
+    dependencies: [ATC-M-SYS-003]
+    risk: {overall: CRITICAL, technical: CRITICAL, security: CRITICAL, dependency: CRITICAL, compatibility: CRITICAL, operational: CRITICAL, business: CRITICAL}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: ["ATC-M-002"]
+    status_alt: "ACCEPTED (ATC-M-002, eingefroren; Nachweis startet bei null)"
+
+  - id: ATC-M-SYS-008
+    name: "M8 GlobusOS Base (System)"
+    category: M2
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "Betriebssystemdienste auf ShivaCore"
+    scope: "Service Architecture, Core Services, Device Layer, System Management, Security, ATC-Integration, OS Image"
+    acceptance_criteria: ["Exit: GlobusOS bootet und betreibt Systemdienste auf ShivaCore"]
+    dependencies: [ATC-M-SYS-007]
+    risk: {overall: HIGH, technical: HIGH, security: HIGH, dependency: HIGH, compatibility: HIGH, operational: HIGH, business: HIGH}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: ["ATC-M-005", "ATC-M-006"]
+    status_alt: "PLANNED (ATC-M-005, ATC-M-006 via Etappe M8.2, eingefroren)"
+
+  - id: ATC-M-SYS-009
+    name: "M9 ATC Toolchain (System)"
+    category: M2
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "vollstaendiger Build-Test-Verify-Release-Pfad: Source bis verifiziertes Artifact reproduzierbar verfolgbar"
+    scope: "Compiler/Formatter/Bytecode-Tooling, VM Runner, Test Harness, Golden Vector Runner, Evidence Generator, Artifact Signing, Reproducible Build"
+    acceptance_criteria: ["Exit: ein Commit kann reproduzierbar vom Source bis zum verifizierten Artifact verfolgt werden"]
+    dependencies: [ATC-M-SYS-004, ATC-M-SYS-005]
+    risk: {overall: HIGH, technical: HIGH, security: HIGH, dependency: HIGH, compatibility: HIGH, operational: HIGH, business: HIGH}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: []
+    status_alt: ""
+
+  - id: ATC-M-SYS-010
+    name: "M10 Aurora Runtime (System)"
+    category: M2
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "Aurora AI als kontrollierte Authority-/Runtime-Schicht — Control Plane, nicht Kernel-Authority"
+    scope: "Runtime, Authority Plane, ATC Model ABI, Compute HAL, Capability Interface, Audit, No Direct Kernel Authority"
+    acceptance_criteria: ["Exit: Aurora kann Systemaktionen kontrolliert ausloesen, ohne den TCB zu umgehen"]
+    dependencies: [ATC-M-SYS-001, ATC-M-SYS-007]
+    risk: {overall: HIGH, technical: HIGH, security: HIGH, dependency: HIGH, compatibility: HIGH, operational: HIGH, business: HIGH}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: ["ATC-M-003"]
+    status_alt: "IN_PROGRESS (ATC-M-003, eingefroren; Nachweis startet bei null)"
+
+  - id: ATC-M-SYS-011
+    name: "M11 System Integration (System)"
+    category: M3
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "Blockchain + VM + OS + AI + Toolchain integriert als zusammenhaengende Plattform"
+    scope: "9 Integrationsetappen inkl. Security-Boundary- und End-to-End-Tests"
+    acceptance_criteria: ["Exit: System funktioniert als zusammenhaengende Plattform"]
+    dependencies: [ATC-M-SYS-006, ATC-M-SYS-008, ATC-M-SYS-009, ATC-M-SYS-010]
+    risk: {overall: CRITICAL, technical: CRITICAL, security: CRITICAL, dependency: CRITICAL, compatibility: CRITICAL, operational: CRITICAL, business: CRITICAL}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: ["ATC-M-006", "ATC-M-008"]
+    status_alt: "PLANNED (ATC-M-006 via M8.2, ATC-M-008, eingefroren)"
+
+  - id: ATC-M-SYS-012
+    name: "M12 Genesis Engine (System)"
+    category: M3
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "Engine auf stabiler ATC-/OS-Basis als echter Consumer der Plattform"
+    scope: "Engine Core, Layer Registry, Rendering, Simulation, ATC-Integration, Marketplace/NFT, Multiplayer, Chronicles Runtime"
+    acceptance_criteria: ["Exit: Genesis Engine ist ein echter Consumer der Plattform, kein paralleler Technologie-Stack"]
+    dependencies: [ATC-M-SYS-011]
+    risk: {overall: MEDIUM, technical: MEDIUM, security: MEDIUM, dependency: MEDIUM, compatibility: MEDIUM, operational: MEDIUM, business: MEDIUM}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: ["ATC-M-007"]
+    status_alt: "PLANNED (ATC-M-007, eingefroren)"
+
+  - id: ATC-M-SYS-013
+    name: "M13 System Release Candidate (System)"
+    category: M6
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "vollstaendiger Release Candidate — kein fast fertig; je Subsystem exakt ein Zustand VERIFIED/BLOCKED/RESIDUAL"
+    scope: "13 RC-Gates (Architecture bis Genesis, je VERIFIED); BLOCKED kein Release-Blocker; RESIDUAL nur akzeptiert"
+    acceptance_criteria: ["Exit: alle RC-Gates VERIFIED, akzeptierte Residuals klassifiziert"]
+    dependencies: [ATC-M-SYS-011, ATC-M-SYS-012]
+    risk: {overall: CRITICAL, technical: CRITICAL, security: CRITICAL, dependency: CRITICAL, compatibility: CRITICAL, operational: CRITICAL, business: CRITICAL}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: ["ATC-M-008"]
+    status_alt: "PLANNED (ATC-M-008, eingefroren)"
+
+  - id: ATC-M-SYS-014
+    name: "M14 Production Release (System)"
+    category: M8
+    status: PLANNED
+    version: "0.1.0"
+    owner: "Michael Wroblewski (Owner)"
+    goal: "reproduzierbares, verifiziertes Gesamtsystem"
+    scope: "17 Release-Gates (Source-Freeze bis Signed Artifacts, Exact-SHA Release)"
+    acceptance_criteria: ["Exit: reproduzierbar gebautes, SHA-gebundenes, sicherheitsgeprueftes und evidenzbasiertes verifiziertes Gesamtsystem"]
+    dependencies: [ATC-M-SYS-013]
+    risk: {overall: CRITICAL, technical: CRITICAL, security: CRITICAL, dependency: CRITICAL, compatibility: CRITICAL, operational: CRITICAL, business: CRITICAL}
+    evidence: []
+    audit_ref: "ungesetzt — System-Meilensteinmodell 0.1.0-DRAFT (SCR-0136, PR 94); Registrierung 06.10.2026"
+    start: "2026-10-06"
+    target_date: "offen — 0.1.0-DRAFT, Terminplanung folgt"
+    mapping_alt: ["ATC-M-008"]
+    status_alt: "PLANNED (ATC-M-008, eingefroren)"
