@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-COMMIT-B18E16918B57",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "Commit: Merge pull request #203 from A-TownChain-Okosystems/docs/aurora-ecosystem-architecture-spec-v1",
+  "context": "Git commit b18e16918b57ebe4ee02b87df1b713e65381aadf on A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "commit",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/commit/b18e16918b57ebe4ee02b87df1b713e65381aadf",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "commit",
+    "generated",
+    "git"
+  ],
+  "links": [],
+  "content": "Merge pull request #203 from A-TownChain-Okosystems/docs/aurora-ecosystem-architecture-spec-v1\n\ndocs(architecture): add versioned Aurora ecosystem technical spec"
+}
