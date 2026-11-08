@@ -59,6 +59,8 @@ vom Gate respektiert.
 - **A6** ID-Format `ATC-SC-<KATEGORIE>-<NNN>`, eindeutig, Kategorie passt zur ID
 - **A7** Kategorie im Enum nach SC-001
 - **A8** jede registrierte Quelle besteht `atc check`; `--skip-compile` setzt das Gate
+- **A9** `abi_sha256` stimmt mit der abgeleiteten ABI der Quelle (`atc abi --digest`);
+  archivierte Einträge tragen keinen Wert, `--write-abis` zieht nach
   aus, ein fehlendes Binary ist ein Fehler und kein Pass.
   **Reichweite von A8 (Stand 08.11.2026):** der Parser liest Vertrags-Rümpfe als
   echte Syntaxbäume — `state` (einzeln und als Block, mit Defaults), `event`,
