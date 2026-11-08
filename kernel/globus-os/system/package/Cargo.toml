@@ -1,0 +1,13 @@
+[package]
+name = "globus-package"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ed25519-dalek = "3.0"
+hex = "0.4"
+sha2 = "0.10"
+
+[lints]
+workspace = true
