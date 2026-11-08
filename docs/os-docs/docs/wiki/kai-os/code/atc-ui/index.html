@@ -1,0 +1,2022 @@
+<!-- Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved. -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A-TownChain OS — Admin Code Center</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:#05080f;
+  --sidebar-bg:rgba(5,8,20,0.92);
+  --panel-bg:rgba(8,12,30,0.88);
+  --purple:#a259ff;
+  --cyan:#00d1ff;
+  --pink:#ff2d78;
+  --green:#00ffb3;
+  --orange:#ff8c00;
+  --text:#e0f0ff;
+  --dim:#4a6080;
+  --border:rgba(162,89,255,0.3);
+}
+
+body{
+  font-family:'Rajdhani',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+/* ─── TITLEBAR ─── */
+.titlebar{
+  height:36px;
+  background:rgba(5,8,20,0.98);
+  border-bottom:1px solid rgba(162,89,255,0.4);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+  flex-shrink:0;
+  z-index:200;
+}
+.titlebar-logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{
+  width:24px;height:24px;border-radius:6px;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:900;color:white;
+  font-family:'Orbitron',sans-serif;
+}
+.logo-text{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--text);letter-spacing:2px;}
+.logo-sub{font-size:9px;color:var(--dim);letter-spacing:3px;margin-left:2px;}
+.titlebar-center{
+  font-family:'Orbitron',sans-serif;font-size:12px;
+  letter-spacing:4px;color:var(--text);
+  text-shadow:0 0 20px rgba(162,89,255,0.8);
+}
+.win-btns{display:flex;gap:8px;align-items:center;}
+.win-btn{width:12px;height:12px;border-radius:50%;cursor:pointer;border:none;}
+.win-btn.close{background:#ff5f57;}
+.win-btn.min{background:#febc2e;}
+.win-btn.max{background:#28c840;}
+
+/* ─── MAIN LAYOUT ─── */
+.main{display:flex;flex:1;overflow:hidden;position:relative;}
+
+/* ─── BACKGROUND ─── */
+.bg-image{
+  position:absolute;top:0;left:160px;right:260px;bottom:0;
+  background:url('https://media.base44.com/images/public/69c1e0c577ccf6c45a27a480/9d5920b5b_generated_image.png') center/cover no-repeat;
+  z-index:0;
+}
+.bg-overlay{
+  position:absolute;top:0;left:160px;right:260px;bottom:0;
+  background:linear-gradient(90deg,rgba(5,8,20,0.6) 0%,transparent 15%,transparent 85%,rgba(5,8,20,0.6) 100%);
+  z-index:1;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  width:160px;flex-shrink:0;
+  background:var(--sidebar-bg);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  z-index:10;
+  backdrop-filter:blur(20px);
+}
+.sidebar-menu{flex:1;overflow-y:auto;padding:8px 0;}
+.sidebar-menu::-webkit-scrollbar{width:2px;}
+.sidebar-menu::-webkit-scrollbar-thumb{background:var(--purple);}
+.menu-item{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;cursor:pointer;
+  font-size:11px;color:var(--dim);
+  transition:all 0.2s;border-left:2px solid transparent;
+  letter-spacing:0.5px;
+}
+.menu-item:hover{color:var(--text);background:rgba(162,89,255,0.08);border-left-color:rgba(162,89,255,0.3);}
+.menu-item.active{color:var(--cyan);background:rgba(0,209,255,0.1);border-left-color:var(--cyan);}
+.menu-icon{font-size:13px;width:16px;text-align:center;}
+.sidebar-user{
+  padding:12px;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.user-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+  box-shadow:0 0 10px rgba(162,89,255,0.5);
+}
+.user-info{}
+.user-name{font-size:11px;font-weight:700;color:var(--text);}
+.user-role{font-size:9px;color:var(--dim);letter-spacing:1px;}
+.user-status{font-size:9px;color:var(--green);margin-top:1px;}
+
+/* ─── CENTER ─── */
+.center{flex:1;position:relative;overflow:hidden;}
+
+/* ─── RIGHT PANELS ─── */
+.rightbar{
+  width:200px;flex-shrink:0;
+  background:var(--sidebar-bg);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;gap:0;
+  z-index:10;
+  overflow-y:auto;
+  backdrop-filter:blur(20px);
+}
+.rightbar::-webkit-scrollbar{width:2px;}
+.rightbar::-webkit-scrollbar-thumb{background:var(--purple);}
+
+.rpanel{
+  padding:10px 12px;
+  border-bottom:1px solid rgba(162,89,255,0.15);
+}
+.rpanel-title{
+  font-family:'Orbitron',sans-serif;font-size:8px;
+  letter-spacing:2px;color:var(--dim);
+  margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;
+}
+.rpanel-title span{color:var(--green);font-size:9px;}
+
+/* System Status */
+.status-optimal{
+  font-family:'Orbitron',sans-serif;font-size:13px;
+  color:var(--green);font-weight:700;margin-bottom:8px;
+  text-shadow:0 0 10px var(--green);
+}
+.stat-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:10px;}
+.stat-label-r{color:var(--dim);letter-spacing:1px;}
+.stat-val-r{color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:9px;}
+.mini-bar{height:3px;background:rgba(255,255,255,0.05);border-radius:2px;flex:1;margin:0 8px;}
+.mini-fill{height:100%;border-radius:2px;}
+
+/* AI Orchestrator */
+.ai-brain{
+  width:60px;height:60px;margin:0 auto 8px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(162,89,255,0.3),rgba(0,209,255,0.1));
+  border:1px solid rgba(162,89,255,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+  box-shadow:0 0 20px rgba(162,89,255,0.3);
+  animation:brainpulse 3s ease-in-out infinite;
+}
+@keyframes brainpulse{0%,100%{box-shadow:0 0 20px rgba(162,89,255,0.3)}50%{box-shadow:0 0 40px rgba(162,89,255,0.6)}}
+.ai-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:10px;}
+.ai-name{color:var(--text);}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* Network Node */
+.node-hex{
+  width:70px;height:70px;margin:0 auto 8px;
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.node-ring{
+  width:60px;height:60px;border-radius:50%;
+  border:1px solid rgba(0,209,255,0.3);
+  display:flex;align-items:center;justify-content:center;
+  animation:spin 10s linear infinite;
+}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.node-inner{
+  width:40px;height:40px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,209,255,0.3),transparent);
+  border:1px solid var(--cyan);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  animation:spin 10s linear infinite reverse;
+}
+.net-row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px;}
+.net-k{color:var(--dim);}
+.net-v{color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:9px;}
+
+/* Proof of History */
+.poh-hash{
+  font-family:'Orbitron',sans-serif;font-size:8px;
+  color:var(--purple);word-break:break-all;margin-bottom:8px;
+  background:rgba(162,89,255,0.05);padding:4px 6px;border-radius:4px;
+  border:1px solid rgba(162,89,255,0.2);
+}
+.verified-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(0,255,179,0.1);border:1px solid rgba(0,255,179,0.3);
+  border-radius:3px;padding:2px 6px;
+  font-size:9px;color:var(--green);font-family:'Orbitron',sans-serif;
+}
+
+/* Quick Actions */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.qa-btn{
+  background:rgba(162,89,255,0.1);
+  border:1px solid rgba(162,89,255,0.25);
+  border-radius:6px;padding:6px 4px;
+  text-align:center;cursor:pointer;
+  transition:all 0.2s;font-size:9px;color:var(--dim);
+  font-family:'Orbitron',sans-serif;letter-spacing:0.5px;
+}
+.qa-btn:hover{background:rgba(162,89,255,0.25);border-color:var(--purple);color:var(--text);}
+.qa-icon{font-size:16px;margin-bottom:2px;}
+
+/* ─── BOTTOM BAR ─── */
+.bottombar{
+  height:90px;flex-shrink:0;
+  background:rgba(5,8,20,0.95);
+  border-top:1px solid rgba(162,89,255,0.4);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:0 20px;
+  z-index:200;
+  position:relative;
+}
+.bottombar::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--purple),var(--cyan),var(--purple),transparent);
+  box-shadow:0 0 10px var(--purple);
+}
+.dock-item{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:8px 10px;border-radius:12px;cursor:pointer;
+  background:rgba(162,89,255,0.08);
+  border:1px solid rgba(162,89,255,0.2);
+  transition:all 0.25s;min-width:64px;
+}
+.dock-item:hover{
+  transform:translateY(-6px);
+  background:rgba(162,89,255,0.25);
+  border-color:var(--purple);
+  box-shadow:0 8px 30px rgba(162,89,255,0.4);
+}
+.dock-item.active{
+  background:rgba(0,209,255,0.15);
+  border-color:var(--cyan);
+  box-shadow:0 0 20px rgba(0,209,255,0.3);
+}
+.dock-emoji{font-size:24px;}
+.dock-label{font-size:8px;color:var(--dim);font-family:'Orbitron',sans-serif;letter-spacing:0.5px;white-space:nowrap;}
+.dock-item.active .dock-label{color:var(--cyan);}
+
+/* ─── STATUS BAR ─── */
+.statusbar{
+  height:24px;flex-shrink:0;
+  background:rgba(3,5,12,0.99);
+  border-top:1px solid rgba(162,89,255,0.2);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;font-size:9px;color:var(--dim);
+  font-family:'Orbitron',sans-serif;letter-spacing:1px;
+  z-index:200;
+}
+.statusbar-left{display:flex;gap:20px;}
+.statusbar-right{display:flex;gap:16px;align-items:center;}
+.sb-item span{color:var(--cyan);}
+.sb-clock{color:var(--purple);font-size:11px;}
+
+/* ─── CENTER CONTENT ─── */
+.center-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  z-index:5;pointer-events:none;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:20px;
+}
+.page-content{
+  pointer-events:all;
+  padding:20px;
+  width:100%;height:100%;
+  overflow-y:auto;display:none;
+  background:rgba(5,8,20,0.75);
+  backdrop-filter:blur(4px);
+}
+.page-content.active{display:block;}
+.page-content::-webkit-scrollbar{width:3px;}
+.page-content::-webkit-scrollbar-thumb{background:var(--purple);}
+
+/* panels inside center */
+.c-panel{
+  background:rgba(8,12,30,0.85);
+  border:1px solid rgba(162,89,255,0.25);
+  border-radius:10px;padding:14px;
+  backdrop-filter:blur(10px);
+  margin-bottom:12px;
+}
+.c-panel-title{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;color:var(--purple);margin-bottom:10px;}
+.c-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.c-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.c-stat{text-align:center;padding:10px;}
+.c-stat-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;background:linear-gradient(90deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.c-stat-label{font-size:10px;color:var(--dim);letter-spacing:1px;margin-top:4px;}
+
+/* activity */
+.act-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(162,89,255,0.08);font-size:11px;}
+.act-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.act-txt{flex:1;color:var(--text);}
+.act-time{color:var(--dim);font-size:9px;}
+
+/* shivamon */
+.sv-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.sv-card{background:rgba(162,89,255,0.07);border:1px solid rgba(162,89,255,0.2);border-radius:8px;padding:8px;text-align:center;cursor:pointer;transition:all 0.2s;}
+.sv-card:hover{transform:translateY(-3px);border-color:var(--purple);box-shadow:0 4px 20px rgba(162,89,255,0.3);}
+.sv-emoji{font-size:22px;margin-bottom:3px;}
+.sv-name{font-size:9px;color:var(--text);}
+.sv-lv{font-size:8px;color:var(--cyan);font-family:'Orbitron',sans-serif;}
+
+/* chat */
+.chat-box{height:160px;overflow-y:auto;padding:6px 0;margin-bottom:8px;}
+.chat-box::-webkit-scrollbar{width:2px;}
+.chat-box::-webkit-scrollbar-thumb{background:var(--purple);}
+.c-msg{padding:6px 10px;margin-bottom:5px;border-radius:8px;font-size:11px;max-width:85%;}
+.c-msg.ai{background:rgba(162,89,255,0.12);border:1px solid rgba(162,89,255,0.25);}
+.c-msg.user{background:rgba(0,209,255,0.08);border:1px solid rgba(0,209,255,0.2);color:var(--cyan);margin-left:auto;}
+.chat-row{display:flex;gap:6px;}
+.chat-inp{flex:1;background:rgba(0,0,0,0.5);border:1px solid rgba(162,89,255,0.3);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:11px;outline:none;}
+.chat-inp:focus{border-color:var(--purple);}
+.chat-go{background:linear-gradient(135deg,var(--purple),var(--cyan));border:none;border-radius:6px;padding:7px 12px;color:white;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:1px;}
+
+/* atc items */
+.atc-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;margin-bottom:3px;background:rgba(162,89,255,0.04);border:1px solid rgba(162,89,255,0.12);border-radius:5px;font-size:10px;cursor:pointer;transition:all 0.15s;}
+.atc-row:hover{background:rgba(162,89,255,0.12);border-color:var(--purple);}
+.atc-id{font-family:'Orbitron',sans-serif;font-size:8px;color:var(--purple);}
+.atc-nm{color:var(--text);}
+.badge{font-size:8px;padding:1px 5px;border-radius:3px;font-family:'Orbitron',sans-serif;}
+.b-nft{background:rgba(162,89,255,0.2);color:var(--purple);}
+.b-token{background:rgba(0,209,255,0.2);color:var(--cyan);}
+.b-iso{background:rgba(0,255,179,0.2);color:var(--green);}
+.b-game{background:rgba(255,45,120,0.2);color:var(--pink);}
+
+/* progress */
+.pr-row{margin-bottom:8px;}
+.pr-lbl{display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px;}
+.pr-lbl span:first-child{color:var(--dim);letter-spacing:1px;}
+.pr-lbl span:last-child{color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:9px;}
+.pr-bar{height:3px;background:rgba(255,255,255,0.05);border-radius:2px;}
+.pr-fill{height:100%;border-radius:2px;}
+
+/* ─── CODE CENTER ─── */
+.ftree-folder{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 4px;cursor:pointer;font-size:11px;
+  color:var(--text);border-radius:4px;
+  transition:background 0.15s;
+}
+.ftree-folder:hover{background:rgba(162,89,255,0.08);}
+.ftree-children{padding-left:14px;}
+.ftree-file{
+  padding:4px 6px;font-size:10px;color:var(--dim);
+  cursor:pointer;border-radius:4px;transition:all 0.15s;
+  border-left:2px solid transparent;
+}
+.ftree-file:hover{color:var(--text);background:rgba(162,89,255,0.08);border-left-color:var(--purple);}
+.ftree-file.active-file{color:var(--cyan);background:rgba(0,209,255,0.08);border-left-color:var(--cyan);}
+.code-tab{
+  padding:4px 10px;font-size:10px;
+  background:rgba(162,89,255,0.08);
+  border:1px solid rgba(162,89,255,0.2);
+  border-radius:6px 6px 0 0;cursor:pointer;
+  color:var(--dim);transition:all 0.15s;
+  display:flex;align-items:center;gap:4px;
+}
+.code-tab.active{
+  background:rgba(0,209,255,0.12);
+  border-color:var(--cyan);color:var(--cyan);
+}
+.code-tab:hover:not(.active){color:var(--text);}
+
+
+/* ─── CODE CENTER IMPROVEMENTS ─── */
+#page-code {
+  display:none;
+  height:100%;
+  flex-direction:column;
+}
+#page-code.active {
+  display:flex !important;
+  flex-direction:column;
+}
+#page-code .code-editor-wrap {
+  flex:1;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+#code-editor {
+  flex:1;
+  min-height:150px;
+  tab-size:4;
+  -moz-tab-size:4;
+}
+#code-editor::selection {
+  background:rgba(162,89,255,0.3);
+}
+.ftree-file.active-file {
+  color:var(--cyan) !important;
+  background:rgba(0,209,255,0.08) !important;
+  border-left-color:var(--cyan) !important;
+}
+/* Syntax highlight colors in editor */
+#code-editor {
+  color:#c9d1d9;
+}
+/* Terminal cursor blink */
+@keyframes blink {
+  0%,100%{opacity:1} 50%{opacity:0}
+}
+.terminal-cursor {
+  display:inline-block;
+  width:8px;height:13px;
+  background:var(--green);
+  animation:blink 1s infinite;
+  vertical-align:middle;
+  margin-left:2px;
+}
+/* Code tab scrollable row */
+#file-tabs {
+  overflow-x:auto;
+  flex-wrap:nowrap !important;
+  padding-bottom:2px;
+}
+#file-tabs::-webkit-scrollbar {height:2px;}
+#file-tabs::-webkit-scrollbar-thumb {background:var(--purple);}
+/* Active menu highlight for code */
+.menu-item[data-page="code"].active {
+  color:var(--cyan);
+}
+
+
+/* ─── WALLET UI ─── */
+.wallet-container{display:flex;flex-direction:column;gap:16px;height:100%;overflow-y:auto;}
+.wallet-container::-webkit-scrollbar{width:3px;}
+.wallet-container::-webkit-scrollbar-thumb{background:var(--purple);}
+
+.wallet-header{
+  background:linear-gradient(135deg,rgba(162,89,255,0.15),rgba(0,209,255,0.08));
+  border:1px solid rgba(162,89,255,0.3);
+  border-radius:12px;padding:20px;
+  display:flex;align-items:center;gap:20px;
+}
+.wallet-avatar{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;flex-shrink:0;
+  box-shadow:0 0 24px rgba(162,89,255,0.5);
+}
+.wallet-title{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--text);margin-bottom:4px;}
+.wallet-address-display{
+  font-family:'Orbitron',sans-serif;font-size:9px;
+  color:var(--cyan);letter-spacing:1px;
+  background:rgba(0,209,255,0.05);border:1px solid rgba(0,209,255,0.2);
+  border-radius:6px;padding:4px 8px;display:inline-block;cursor:pointer;
+  transition:all 0.2s;margin-top:4px;
+}
+.wallet-address-display:hover{background:rgba(0,209,255,0.12);border-color:var(--cyan);}
+.wallet-balance-big{
+  font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;
+  color:var(--green);text-shadow:0 0 20px rgba(0,255,179,0.5);
+}
+.wallet-balance-sub{font-size:11px;color:var(--dim);margin-top:2px;}
+
+.wallet-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);padding-bottom:8px;}
+.wtab{
+  padding:6px 14px;font-size:10px;font-family:'Orbitron',sans-serif;
+  letter-spacing:1px;cursor:pointer;border-radius:6px 6px 0 0;
+  color:var(--dim);border:1px solid transparent;transition:all 0.2s;
+}
+.wtab.active{color:var(--cyan);border-color:var(--cyan);background:rgba(0,209,255,0.08);}
+.wtab:hover:not(.active){color:var(--text);background:rgba(162,89,255,0.08);}
+.wtab-panel{display:none;}.wtab-panel.active{display:block;}
+
+.send-form{display:flex;flex-direction:column;gap:12px;}
+.atc-input{
+  background:rgba(8,12,30,0.9);border:1px solid rgba(162,89,255,0.3);
+  border-radius:8px;padding:10px 14px;color:var(--text);
+  font-family:'Rajdhani',sans-serif;font-size:13px;width:100%;
+  outline:none;transition:border-color 0.2s;
+}
+.atc-input:focus{border-color:var(--cyan);}
+.atc-input::placeholder{color:var(--dim);}
+.atc-label{font-size:10px;color:var(--dim);letter-spacing:1px;font-family:'Orbitron',sans-serif;margin-bottom:4px;}
+.atc-btn{
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  border:none;border-radius:8px;padding:12px;
+  color:white;font-family:'Orbitron',sans-serif;font-size:11px;
+  letter-spacing:2px;cursor:pointer;width:100%;transition:all 0.2s;
+  font-weight:700;
+}
+.atc-btn:hover{opacity:0.85;transform:translateY(-1px);box-shadow:0 6px 20px rgba(162,89,255,0.4);}
+.atc-btn-outline{
+  background:transparent;border:1px solid rgba(162,89,255,0.4);
+  border-radius:8px;padding:10px;
+  color:var(--purple);font-family:'Orbitron',sans-serif;font-size:10px;
+  letter-spacing:1px;cursor:pointer;width:100%;transition:all 0.2s;
+}
+.atc-btn-outline:hover{border-color:var(--purple);background:rgba(162,89,255,0.1);}
+
+.tx-list{display:flex;flex-direction:column;gap:6px;}
+.tx-item{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(8,12,30,0.6);border:1px solid rgba(162,89,255,0.1);
+  border-radius:8px;padding:10px;
+}
+.tx-icon{font-size:18px;flex-shrink:0;}
+.tx-info{flex:1;}
+.tx-type{font-size:11px;color:var(--text);font-weight:600;}
+.tx-addr{font-size:9px;color:var(--dim);font-family:'Orbitron',sans-serif;letter-spacing:0.5px;}
+.tx-amount{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;}
+.tx-amount.out{color:var(--pink);}
+.tx-amount.in{color:var(--green);}
+.tx-time{font-size:9px;color:var(--dim);}
+
+.seed-box{
+  background:rgba(162,89,255,0.05);
+  border:1px solid rgba(162,89,255,0.2);
+  border-radius:10px;padding:16px;
+}
+.seed-warning{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,45,120,0.1);border:1px solid rgba(255,45,120,0.3);
+  border-radius:8px;padding:10px 12px;margin-bottom:12px;
+  font-size:10px;color:var(--pink);
+}
+.seed-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;
+}
+.seed-word{
+  background:rgba(8,12,30,0.8);border:1px solid rgba(162,89,255,0.2);
+  border-radius:6px;padding:5px 6px;text-align:center;
+  font-size:9px;color:var(--text);
+}
+.seed-num{font-size:8px;color:var(--dim);margin-bottom:1px;}
+.seed-w{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--cyan);}
+
+.key-display{
+  font-family:'Orbitron',sans-serif;font-size:8px;
+  color:var(--purple);word-break:break-all;
+  background:rgba(162,89,255,0.05);border:1px solid rgba(162,89,255,0.2);
+  border-radius:6px;padding:8px;margin-top:8px;
+}
+
+/* ─── SHIVAMON UI ─── */
+.shv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+.shv-card{
+  background:rgba(8,12,30,0.8);
+  border:1px solid rgba(162,89,255,0.2);
+  border-radius:12px;padding:14px;
+  cursor:pointer;transition:all 0.25s;text-align:center;
+  position:relative;overflow:hidden;
+}
+.shv-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--purple),var(--cyan));
+}
+.shv-card:hover{border-color:var(--purple);transform:translateY(-3px);box-shadow:0 8px 30px rgba(162,89,255,0.3);}
+.shv-emoji{font-size:40px;margin-bottom:8px;display:block;
+  filter:drop-shadow(0 0 10px rgba(162,89,255,0.5));
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.shv-name{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--text);margin-bottom:4px;}
+.shv-rarity{font-size:9px;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px;}
+.rarity-common{background:rgba(74,96,128,0.3);color:var(--dim);}
+.rarity-uncommon{background:rgba(0,255,179,0.1);color:var(--green);}
+.rarity-rare{background:rgba(0,209,255,0.1);color:var(--cyan);}
+.rarity-epic{background:rgba(162,89,255,0.2);color:var(--purple);}
+.rarity-legendary{background:rgba(255,140,0,0.2);color:var(--orange);}
+.rarity-genesis{background:rgba(255,45,120,0.2);color:var(--pink);}
+.shv-stats-mini{display:flex;justify-content:space-around;gap:4px;margin-top:8px;}
+.shv-stat-m{text-align:center;}
+.shv-stat-val{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--cyan);}
+.shv-stat-lbl{font-size:8px;color:var(--dim);}
+.shv-el{font-size:9px;color:var(--dim);margin-bottom:4px;}
+
+.shv-detail{
+  background:rgba(8,12,30,0.9);border:1px solid rgba(162,89,255,0.3);
+  border-radius:12px;padding:20px;display:none;
+}
+.shv-detail.open{display:block;}
+.shv-detail-header{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.shv-detail-emoji{font-size:60px;
+  filter:drop-shadow(0 0 20px rgba(162,89,255,0.8));
+  animation:float 3s ease-in-out infinite;
+}
+.shv-hp-bar{height:8px;background:rgba(255,255,255,0.05);border-radius:4px;margin:4px 0 8px;}
+.shv-hp-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--cyan));}
+.shv-moves{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.shv-move{
+  padding:4px 10px;border-radius:20px;font-size:9px;
+  font-family:'Orbitron',sans-serif;letter-spacing:0.5px;
+  background:rgba(162,89,255,0.15);border:1px solid rgba(162,89,255,0.3);
+  color:var(--purple);
+}
+.mint-form{background:rgba(8,12,30,0.6);border:1px solid rgba(162,89,255,0.2);border-radius:10px;padding:16px;}
+.el-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0;}
+.el-btn{
+  padding:6px;border-radius:8px;text-align:center;cursor:pointer;
+  font-size:10px;border:1px solid rgba(162,89,255,0.2);
+  background:rgba(162,89,255,0.05);transition:all 0.2s;color:var(--dim);
+}
+.el-btn:hover,.el-btn.sel{background:rgba(162,89,255,0.2);border-color:var(--purple);color:var(--text);}
+
+</style>
+</head>
+<body>
+
+<!-- TITLEBAR -->
+<div class="titlebar">
+  <div class="titlebar-logo">
+    <div class="logo-icon">A</div>
+    <div>
+      <div class="logo-text">A-TOWNCHAIN</div>
+      <div class="logo-sub">ADMINCODECENTER</div>
+    </div>
+  </div>
+  <div class="titlebar-center">AUTONOMOUS FRANCHISE FACTORY</div>
+  <div class="win-btns">
+    <div class="win-btn close"></div>
+    <div class="win-btn min"></div>
+    <div class="win-btn max"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-menu">
+      <div class="menu-item active" onclick="setPage('dashboard',this)"><span class="menu-icon">🏠</span>Dashboard</div>
+      <div class="menu-item" onclick="setPage('ai',this)"><span class="menu-icon">🧠</span>AI Orchestrator</div>
+      <div class="menu-item" onclick="setPage('factory',this)"><span class="menu-icon">🏭</span>Franchise Factory</div>
+      <div class="menu-item" onclick="setPage('wallet',this)" id="menu-wallet"><span class="menu-icon">💎</span>ATC Wallet</div>
+      <div class="menu-item" onclick="setPage('shivamon',this)" id="menu-shivamon"><span class="menu-icon">🐉</span>Shivamon</div>
+      <div class="menu-item" onclick="setPage('assets',this)"><span class="menu-icon">💎</span>Asset Vault</div>
+      <div class="menu-item" onclick="setPage('code',this)"><span class="menu-icon">&lt;/&gt;</span>Code Center</div>
+      <div class="menu-item" onclick="setPage('audio',this)"><span class="menu-icon">🎵</span>Audio Studio</div>
+      <div class="menu-item" onclick="setPage('render',this)"><span class="menu-icon">🎨</span>Render Engine</div>
+      <div class="menu-item" onclick="setPage('game',this)"><span class="menu-icon">🎮</span>Game Builder</div>
+      <div class="menu-item" onclick="setPage('mesh',this)"><span class="menu-icon">🔷</span>Mesh & Texture Lab</div>
+      <div class="menu-item" onclick="setPage('chain',this)"><span class="menu-icon">⛓</span>Blockchain Ledger</div>
+      <div class="menu-item" onclick="setPage('bench',this)"><span class="menu-icon">📊</span>Benchmark Center</div>
+      <div class="menu-item" onclick="setPage('drive',this)"><span class="menu-icon">☁️</span>Drive Sync</div>
+      <div class="menu-item" onclick="setPage('security',this)"><span class="menu-icon">🔐</span>Security Center</div>
+      <div class="menu-item" onclick="setPage('settings',this)"><span class="menu-icon">⚙️</span>Settings</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">👤</div>
+      <div class="user-info">
+        <div class="user-name">CEO</div>
+        <div class="user-role">A-TownChain</div>
+        <div class="user-status">● ONLINE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="center">
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+
+    <div class="center-overlay">
+
+      <!-- DASHBOARD PAGE -->
+      <div id="page-dashboard" class="page-content active">
+        <div class="c-grid" style="margin-bottom:10px">
+          <div class="c-panel"><div class="c-panel-title">⬡ ATC Token</div><div class="c-stat"><div class="c-stat-val">24,892</div><div class="c-stat-label">TOTAL SUPPLY</div></div><div style="font-size:10px;color:var(--green);margin-top:4px">▲ +3.7% / 24h</div></div>
+          <div class="c-panel"><div class="c-panel-title">◈ Nodes</div><div class="c-stat"><div class="c-stat-val" style="background:linear-gradient(90deg,#00d1ff,#00ffb3);-webkit-background-clip:text;-webkit-text-fill-color:transparent">847</div><div class="c-stat-label">ACTIVE NODES</div></div><div style="font-size:10px;color:var(--cyan);margin-top:4px">◎ All nominal</div></div>
+          <div class="c-panel"><div class="c-panel-title">⚡ Mining</div><div class="c-stat"><div class="c-stat-val" style="background:linear-gradient(90deg,#00ffb3,#00d1ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">1.2 PH/s</div><div class="c-stat-label">PROOF OF INTELLIGENCE</div></div><div style="font-size:10px;color:var(--green);margin-top:4px">▲ +12% efficiency</div></div>
+        </div>
+        <div class="c-panel">
+          <div class="c-panel-title">📡 Live Activity</div>
+          <div class="act-item"><div class="act-dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></div><div class="act-txt">Block #184,291 validiert</div><div class="act-time">2s</div></div>
+          <div class="act-item"><div class="act-dot" style="background:var(--purple);box-shadow:0 0 6px var(--purple)"></div><div class="act-txt">ATC-NFT-MUSIC geminted</div><div class="act-time">14s</div></div>
+          <div class="act-item"><div class="act-dot" style="background:var(--cyan);box-shadow:0 0 6px var(--cyan)"></div><div class="act-txt">Cross-Chain Bridge aktiviert</div><div class="act-time">1m</div></div>
+          <div class="act-item"><div class="act-dot" style="background:var(--pink);box-shadow:0 0 6px var(--pink)"></div><div class="act-txt">Shivamon Evolution: Voltrix Lv.55</div><div class="act-time">3m</div></div>
+        </div>
+      </div>
+
+      <!-- AI PAGE -->
+      <div id="page-ai" class="page-content">
+        <div class="c-panel">
+          <div class="c-panel-title">🧠 Gemini KI-Agent</div>
+          <div class="chat-box" id="chat-box">
+            <div class="c-msg ai">A-TownChain läuft stabil. 847 Nodes aktiv. Proof of Intelligence Mining bei 1.2 PH/s. Was soll ich tun?</div>
+          </div>
+          <div class="chat-row">
+            <input class="chat-inp" id="chat-inp" placeholder="Befehl an KI-Agent..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="chat-go" onclick="sendChat()">SEND</button>
+          </div>
+        </div>
+        <div class="c-grid-2">
+          <div class="c-panel">
+            <div class="c-panel-title">🔗 AI Models</div>
+            <div class="ai-row"><span class="ai-name">Gemini 2.0</span><div class="ai-dot"></div></div>
+            <div class="ai-row"><span class="ai-name">GPT-4o</span><div class="ai-dot"></div></div>
+            <div class="ai-row"><span class="ai-name">Local AI</span><div class="ai-dot"></div></div>
+            <div class="ai-row"><span class="ai-name">Stable Diffusion</span><div class="ai-dot"></div></div>
+          </div>
+          <div class="c-panel">
+            <div class="c-panel-title">⚙️ System</div>
+            <div style="font-size:10px;color:var(--dim)">
+              <div style="margin-bottom:5px">✅ SHA256 verifiziert</div>
+              <div style="margin-bottom:5px">✅ Drive Backup: OK</div>
+              <div style="margin-bottom:5px">✅ Rollback: v1.9.4</div>
+              <div>✅ Auto-Update: aktiv</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GAME PAGE -->
+      <div id="page-game" class="page-content">
+        <div class="c-panel">
+          <div class="c-panel-title">🐉 Shivamon Collection</div>
+          <div class="sv-grid">
+            <div class="sv-card"><div class="sv-emoji">🔥</div><div class="sv-name">Pyravox</div><div class="sv-lv">LV.42</div></div>
+            <div class="sv-card"><div class="sv-emoji">💧</div><div class="sv-name">Aqualis</div><div class="sv-lv">LV.38</div></div>
+            <div class="sv-card"><div class="sv-emoji">⚡</div><div class="sv-name">Voltrix</div><div class="sv-lv">LV.55</div></div>
+            <div class="sv-card"><div class="sv-emoji">🌙</div><div class="sv-name">Umbrath</div><div class="sv-lv">LV.29</div></div>
+            <div class="sv-card"><div class="sv-emoji">🌿</div><div class="sv-name">Sylveon</div><div class="sv-lv">LV.33</div></div>
+            <div class="sv-card"><div class="sv-emoji">❄️</div><div class="sv-name">Glacius</div><div class="sv-lv">LV.47</div></div>
+            <div class="sv-card"><div class="sv-emoji">🌀</div><div class="sv-name">Vortaxx</div><div class="sv-lv">LV.61</div></div>
+            <div class="sv-card"><div class="sv-emoji">🌋</div><div class="sv-name">Magmara</div><div class="sv-lv">LV.19</div></div>
+            <div class="sv-card"><div class="sv-emoji">☠️</div><div class="sv-name">Necrath</div><div class="sv-lv">LV.72</div></div>
+            <div class="sv-card" style="opacity:0.3;border-style:dashed"><div class="sv-emoji">❓</div><div class="sv-name">???</div><div class="sv-lv">LOCKED</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSETS PAGE -->
+      <div id="page-assets" class="page-content">
+        <div class="c-panel">
+          <div class="c-panel-title">💎 ATC Matrix — Assets</div>
+          <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+            <button onclick="filterA('all')" style="padding:4px 10px;background:rgba(162,89,255,0.3);border:1px solid var(--purple);border-radius:12px;color:var(--purple);font-family:'Orbitron',sans-serif;font-size:8px;cursor:pointer;letter-spacing:1px">ALL</button>
+            <button onclick="filterA('nft')" style="padding:4px 10px;background:rgba(162,89,255,0.1);border:1px solid rgba(162,89,255,0.3);border-radius:12px;color:var(--purple);font-family:'Orbitron',sans-serif;font-size:8px;cursor:pointer">NFT</button>
+            <button onclick="filterA('token')" style="padding:4px 10px;background:rgba(0,209,255,0.1);border:1px solid rgba(0,209,255,0.3);border-radius:12px;color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:8px;cursor:pointer">TOKEN</button>
+            <button onclick="filterA('iso')" style="padding:4px 10px;background:rgba(0,255,179,0.1);border:1px solid rgba(0,255,179,0.3);border-radius:12px;color:var(--green);font-family:'Orbitron',sans-serif;font-size:8px;cursor:pointer">ISO</button>
+            <button onclick="filterA('game')" style="padding:4px 10px;background:rgba(255,45,120,0.1);border:1px solid rgba(255,45,120,0.3);border-radius:12px;color:var(--pink);font-family:'Orbitron',sans-serif;font-size:8px;cursor:pointer">GAME</button>
+          </div>
+          <div id="atc-list"></div>
+        </div>
+      </div>
+
+      <!-- CHAIN PAGE -->
+      <div id="page-chain" class="page-content">
+        <div class="c-panel">
+          <div class="c-panel-title">⛓ Blockchain Ledger</div>
+          <div class="c-grid">
+            <div class="c-stat"><div class="c-stat-val">184,291</div><div class="c-stat-label">BLOCK HEIGHT</div></div>
+            <div class="c-stat"><div class="c-stat-val" style="background:linear-gradient(90deg,#00d1ff,#00ffb3);-webkit-background-clip:text;-webkit-text-fill-color:transparent">3,246</div><div class="c-stat-label">TX / SEC</div></div>
+            <div class="c-stat"><div class="c-stat-val" style="background:linear-gradient(90deg,#ff2d78,#a259ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">18ms</div><div class="c-stat-label">LATENCY</div></div>
+          </div>
+          <div class="poh-hash" style="margin-top:10px">LATEST: 0000a7f3...c9e2d71b &nbsp;&nbsp; <span class="verified-badge">✓ VERIFIED</span></div>
+          <div class="pr-row" style="margin-top:10px">
+            <div class="pr-lbl"><span>CHAIN SYNC</span><span>99.98%</span></div>
+            <div class="pr-bar"><div class="pr-fill" style="width:99.98%;background:linear-gradient(90deg,var(--purple),var(--cyan))"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECURITY PAGE -->
+      <div id="page-security" class="page-content">
+        <div class="c-panel">
+          <div class="c-panel-title">🔐 Security Center</div>
+          <div style="font-size:11px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div style="background:rgba(0,255,179,0.05);border:1px solid rgba(0,255,179,0.2);border-radius:8px;padding:12px">
+                <div style="color:var(--green);font-family:'Orbitron',sans-serif;font-size:9px;margin-bottom:8px">✓ AKTIV</div>
+                <div style="color:var(--dim);margin-bottom:4px">SHA256 Hash</div>
+                <div style="color:var(--dim);margin-bottom:4px">Rollback System</div>
+                <div style="color:var(--dim);margin-bottom:4px">2FA Authentifizierung</div>
+                <div style="color:var(--dim)">Drive Backup</div>
+              </div>
+              <div style="background:rgba(162,89,255,0.05);border:1px solid rgba(162,89,255,0.2);border-radius:8px;padding:12px">
+                <div style="color:var(--purple);font-family:'Orbitron',sans-serif;font-size:9px;margin-bottom:8px">ROLLBACK</div>
+                <div style="color:var(--text);font-family:'Orbitron',sans-serif;font-size:11px">v1.9.4</div>
+                <div style="color:var(--dim);font-size:10px;margin-top:4px">Letztes Backup:<br>vor 12 Minuten</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS PAGE -->
+      <div id="page-settings" class="page-content">
+        <div class="c-panel">
+          <div class="c-panel-title">⚙️ System Settings</div>
+          <div class="c-grid-2">
+            <div>
+              <div class="pr-row">
+                <div class="pr-lbl"><span>NEON GLOW</span><span style="color:var(--green)">ON</span></div>
+                <div class="pr-bar"><div class="pr-fill" style="width:100%;background:linear-gradient(90deg,var(--purple),var(--cyan))"></div></div>
+              </div>
+              <div class="pr-row">
+                <div class="pr-lbl"><span>DARK MODE</span><span style="color:var(--green)">ON</span></div>
+                <div class="pr-bar"><div class="pr-fill" style="width:100%;background:linear-gradient(90deg,var(--cyan),var(--green))"></div></div>
+              </div>
+              <div class="pr-row">
+                <div class="pr-lbl"><span>ANIMATIONS</span><span style="color:var(--green)">ON</span></div>
+                <div class="pr-bar"><div class="pr-fill" style="width:100%;background:linear-gradient(90deg,var(--pink),var(--purple))"></div></div>
+              </div>
+            </div>
+            <div style="font-size:10px;color:var(--dim)">
+              <div style="margin-bottom:6px">Chain: <span style="color:var(--green)">A-TownChain</span></div>
+              <div style="margin-bottom:6px">RPC: <span style="color:var(--cyan)">rpc.atown.io</span></div>
+              <div style="margin-bottom:6px">Version: <span style="color:var(--purple)">ShivaOS v2.0</span></div>
+              <div>Build: <span style="color:var(--text)">2026.05.15</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLACEHOLDER PAGES -->
+      <div id="page-factory" class="page-content"><div class="c-panel"><div class="c-panel-title">🏭 Franchise Factory</div><div style="text-align:center;padding:40px;color:var(--dim)">Franchise Engine wird geladen...</div></div></div>
+      <div id="page-code" class="page-content">
+  <!-- TOP BAR -->
+  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+    <div style="display:flex;gap:6px;align-items:center;">
+      <div style="font-family:'Orbitron',sans-serif;font-size:10px;color:var(--cyan);letter-spacing:2px;">&lt;/&gt; CODE CENTER</div>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite;"></div>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <button onclick="runCode()" style="padding:5px 12px;background:linear-gradient(135deg,var(--purple),var(--cyan));border:none;border-radius:6px;color:white;font-family:'Orbitron',sans-serif;font-size:8px;cursor:pointer;letter-spacing:1px;">▶ RUN</button>
+      <button onclick="saveCode()" style="padding:5px 12px;background:rgba(0,255,179,0.15);border:1px solid var(--green);border-radius:6px;color:var(--green);font-family:'Orbitron',sans-serif;font-size:8px;cursor:pointer;letter-spacing:1px;">💾 SAVE</button>
+      <button onclick="clearOutput()" style="padding:5px 12px;background:rgba(255,45,120,0.1);border:1px solid var(--pink);border-radius:6px;color:var(--pink);font-family:'Orbitron',sans-serif;font-size:8px;cursor:pointer;letter-spacing:1px;">✕ CLEAR</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:200px 1fr;gap:10px;height:calc(100% - 80px);">
+
+    <!-- FILE TREE -->
+    <div class="c-panel" style="overflow-y:auto;padding:10px;">
+      <div class="c-panel-title">📁 PROJECT STRUCTURE</div>
+
+      <!-- Folder: core -->
+      <div class="ftree-folder" onclick="toggleFolder('f-core')">
+        <span>📂</span> <span style="color:var(--cyan)">core/</span>
+      </div>
+      <div id="f-core" class="ftree-children">
+        <div class="ftree-file" onclick="openFile('kernel.py','core')">🐍 kernel.py</div>
+        <div class="ftree-file" onclick="openFile('event_bus.py','core')">🐍 event_bus.py</div>
+        <div class="ftree-file" onclick="openFile('module_loader.py','core')">🐍 module_loader.py</div>
+      </div>
+
+      <!-- Folder: plugins -->
+      <div class="ftree-folder" onclick="toggleFolder('f-plugins')">
+        <span>📂</span> <span style="color:var(--purple)">plugins/</span>
+      </div>
+      <div id="f-plugins" class="ftree-children" style="display:none">
+        <div class="ftree-file" onclick="openFile('wallet.py','plugins')">🔌 wallet.py</div>
+        <div class="ftree-file" onclick="openFile('game_engine.py','plugins')">🎮 game_engine.py</div>
+        <div class="ftree-file" onclick="openFile('ai_module.py','plugins')">🧠 ai_module.py</div>
+      </div>
+
+      <!-- Folder: blockchain -->
+      <div class="ftree-folder" onclick="toggleFolder('f-blockchain')">
+        <span>📂</span> <span style="color:var(--green)">blockchain/</span>
+      </div>
+      <div id="f-blockchain" class="ftree-children" style="display:none">
+        <div class="ftree-file" onclick="openFile('node.py','blockchain')">⛓ node.py</div>
+        <div class="ftree-file" onclick="openFile('smart_contracts.py','blockchain')">📜 smart_contracts.py</div>
+      </div>
+
+      <!-- Folder: ai -->
+      <div class="ftree-folder" onclick="toggleFolder('f-ai')">
+        <span>📂</span> <span style="color:var(--pink)">ai/</span>
+      </div>
+      <div id="f-ai" class="ftree-children" style="display:none">
+        <div class="ftree-file" onclick="openFile('agents.py','ai')">🤖 agents.py</div>
+        <div class="ftree-file" onclick="openFile('task_manager.py','ai')">📋 task_manager.py</div>
+      </div>
+
+      <!-- Folder: ui -->
+      <div class="ftree-folder" onclick="toggleFolder('f-ui')">
+        <span>📂</span> <span style="color:var(--orange)">ui/</span>
+      </div>
+      <div id="f-ui" class="ftree-children" style="display:none">
+        <div class="ftree-file" onclick="openFile('dashboard.html','ui')">🌐 dashboard.html</div>
+        <div class="ftree-file" onclick="openFile('styles.css','ui')">🎨 styles.css</div>
+      </div>
+
+      <!-- Folder: build -->
+      <div class="ftree-folder" onclick="toggleFolder('f-build')">
+        <span>📂</span> <span style="color:var(--cyan)">build/</span>
+      </div>
+      <div id="f-build" class="ftree-children" style="display:none">
+        <div class="ftree-file" onclick="openFile('build.py','build')">⚙️ build.py</div>
+        <div class="ftree-file" onclick="openFile('installer_config.json','build')">📦 installer_config.json</div>
+      </div>
+
+      <!-- Folder: config -->
+      <div class="ftree-folder" onclick="toggleFolder('f-config')">
+        <span>📂</span> <span style="color:var(--dim)">config/</span>
+      </div>
+      <div id="f-config" class="ftree-children" style="display:none">
+        <div class="ftree-file" onclick="openFile('settings.json','config')">⚙️ settings.json</div>
+      </div>
+
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(162,89,255,0.15);">
+        <div style="font-size:9px;color:var(--dim);margin-bottom:6px;letter-spacing:1px;">BRANCH</div>
+        <div style="font-size:10px;color:var(--green)">● main</div>
+        <div style="font-size:9px;color:var(--dim);margin-top:4px;">Last commit: 2m ago</div>
+      </div>
+    </div>
+
+    <!-- EDITOR + OUTPUT -->
+    <div style="display:flex;flex-direction:column;gap:8px;height:100%;">
+
+      <!-- FILE TABS -->
+      <div id="file-tabs" style="display:flex;gap:4px;flex-wrap:wrap;">
+        <div class="code-tab active" id="tab-kernel" onclick="switchTab('kernel.py','core')">
+          🐍 kernel.py <span onclick="closeTab(event,'kernel.py')" style="margin-left:4px;opacity:0.5;font-size:10px;">✕</span>
+        </div>
+      </div>
+
+      <!-- EDITOR -->
+      <div style="flex:1;position:relative;min-height:0;">
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(3,5,12,0.95);border:1px solid rgba(162,89,255,0.25);border-radius:8px;overflow:hidden;">
+          <!-- Line numbers + editor -->
+          <div style="display:flex;height:100%;">
+            <div id="line-numbers" style="padding:10px 8px;background:rgba(162,89,255,0.05);border-right:1px solid rgba(162,89,255,0.1);font-family:monospace;font-size:11px;color:var(--dim);user-select:none;min-width:36px;text-align:right;overflow:hidden;">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20</div>
+            <textarea id="code-editor" spellcheck="false" onkeydown="handleTab(event)" oninput="updateLineNumbers()" style="flex:1;padding:10px;background:transparent;border:none;outline:none;color:var(--text);font-family:'Courier New',monospace;font-size:12px;line-height:1.6;resize:none;caret-color:var(--cyan);"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTPUT TERMINAL -->
+      <div style="height:130px;background:rgba(0,0,0,0.8);border:1px solid rgba(0,255,179,0.2);border-radius:8px;overflow:hidden;">
+        <div style="background:rgba(0,255,179,0.05);padding:4px 10px;border-bottom:1px solid rgba(0,255,179,0.15);font-family:'Orbitron',sans-serif;font-size:8px;color:var(--green);letter-spacing:2px;">TERMINAL OUTPUT</div>
+        <div id="code-output" style="padding:8px 10px;font-family:'Courier New',monospace;font-size:11px;color:var(--green);overflow-y:auto;height:calc(100% - 26px);">
+          <span style="color:var(--dim)">A-TownChain OS v2.0 — Code Center ready.</span><br>
+          <span style="color:var(--cyan)">$</span> <span style="color:var(--text)">Warte auf Eingabe...</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+      <div id="page-audio" class="page-content"><div class="c-panel"><div class="c-panel-title">🎵 Audio Studio</div><div style="text-align:center;padding:40px;color:var(--dim)">Audio Engine bereit...</div></div></div>
+      <div id="page-render" class="page-content"><div class="c-panel"><div class="c-panel-title">🎨 Render Engine</div><div style="text-align:center;padding:40px;color:var(--dim)">Render Pipeline aktiv...</div></div></div>
+      <div id="page-mesh" class="page-content"><div class="c-panel"><div class="c-panel-title">🔷 Mesh & Texture Lab</div><div style="text-align:center;padding:40px;color:var(--dim)">3D Pipeline wird geladen...</div></div></div>
+      <div id="page-bench" class="page-content"><div class="c-panel"><div class="c-panel-title">📊 Benchmark Center</div><div style="text-align:center;padding:40px;color:var(--dim)">Benchmark läuft...</div></div></div>
+      <div id="page-drive" class="page-content"><div class="c-panel"><div class="c-panel-title">☁️ Drive Sync</div><div style="text-align:center;padding:40px;color:var(--dim)">Google Drive verbunden...</div></div></div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT PANELS -->
+  <div class="rightbar">
+    <!-- System Status -->
+    <div class="rpanel">
+      <div class="rpanel-title">SYSTEM STATUS <span>+</span></div>
+      <div class="status-optimal" id="sys-status">OPTIMAL</div>
+      <div class="stat-row"><span class="stat-label-r">CPU</span><div class="mini-bar"><div class="mini-fill" id="r-cpu" style="width:14%;background:linear-gradient(90deg,var(--cyan),var(--green))"></div></div><span class="stat-val-r" id="r-cpu-v">14%</span></div>
+      <div class="stat-row"><span class="stat-label-r">GPU</span><div class="mini-bar"><div class="mini-fill" style="width:23%;background:linear-gradient(90deg,var(--purple),var(--cyan))"></div></div><span class="stat-val-r">23%</span></div>
+      <div class="stat-row"><span class="stat-label-r">RAM</span><div class="mini-bar"><div class="mini-fill" style="width:36%;background:linear-gradient(90deg,var(--cyan),var(--purple))"></div></div><span class="stat-val-r">36%</span></div>
+      <div class="stat-row"><span class="stat-label-r">VRAM</span><div class="mini-bar"><div class="mini-fill" style="width:28%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div><span class="stat-val-r">28%</span></div>
+    </div>
+
+    <!-- AI Orchestrator -->
+    <div class="rpanel">
+      <div class="rpanel-title">AI ORCHESTRATOR</div>
+      <div class="ai-brain">🧠</div>
+      <div class="ai-row"><span class="ai-name">GEMINI 2.0</span><div class="ai-dot"></div></div>
+      <div class="ai-row"><span class="ai-name">GPT-4o</span><div class="ai-dot"></div></div>
+      <div class="ai-row"><span class="ai-name">LOCAL AI</span><div class="ai-dot"></div></div>
+      <div class="ai-row"><span class="ai-name">STABLE DIFFUSION</span><div class="ai-dot"></div></div>
+    </div>
+
+    <!-- Network Node -->
+    <div class="rpanel">
+      <div class="rpanel-title">NETWORK NODE</div>
+      <div class="node-hex">
+        <div class="node-ring">
+          <div class="node-inner">⬡</div>
+        </div>
+      </div>
+      <div class="net-row"><span class="net-k">NODES</span><span class="net-v" id="r-nodes">128</span></div>
+      <div class="net-row"><span class="net-k">PEERS</span><span class="net-v">512</span></div>
+      <div class="net-row"><span class="net-k">LATENCY</span><span class="net-v">18ms</span></div>
+      <div class="net-row"><span class="net-k">UPTIME</span><span class="net-v" style="color:var(--green)">99.98%</span></div>
+    </div>
+
+    <!-- Proof of History -->
+    <div class="rpanel">
+      <div class="rpanel-title">PROOF OF HISTORY</div>
+      <div class="poh-hash" id="r-hash">0000a7f3...c9e2d71b</div>
+      <div class="net-row"><span class="net-k">BLOCK</span><span class="net-v" id="r-block">1,284,732</span></div>
+      <div class="net-row"><span class="net-k">TX / SEC</span><span class="net-v">3,246</span></div>
+      <div class="net-row"><span class="net-k">STATUS</span><span class="verified-badge">✓ VERIFIED</span></div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="rpanel">
+      <div class="rpanel-title">QUICK ACTIONS</div>
+      <div class="qa-grid">
+        <div class="qa-btn" onclick="setPage('factory',null)"><div class="qa-icon">📁</div>NEW PROJECT</div>
+        <div class="qa-btn" onclick="setPage('assets',null)"><div class="qa-icon">📦</div>IMPORT ASSET</div>
+        <div class="qa-btn" onclick="setPage('ai',null)"><div class="qa-icon">🤖</div>AI CHAT</div>
+        <div class="qa-btn" onclick="setPage('bench',null)"><div class="qa-icon">📊</div>BENCHMARK</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- BOTTOM DOCK -->
+<div class="bottombar">
+  <div class="dock-item active" id="d-dashboard" onclick="setPage('dashboard',null,this)"><div class="dock-emoji">🏠</div><div class="dock-label">Dashboard</div></div>
+  <div class="dock-item" id="d-ai" onclick="setPage('ai',null,this)"><div class="dock-emoji">🧠</div><div class="dock-label">AI Orchestrator</div></div>
+  <div class="dock-item" id="d-factory" onclick="setPage('factory',null,this)"><div class="dock-emoji">🏭</div><div class="dock-label">Factory</div></div>
+  <div class="dock-item" id="d-assets" onclick="setPage('assets',null,this)"><div class="dock-emoji">💎</div><div class="dock-label">Assets</div></div>
+  <div class="dock-item" id="d-code" onclick="setPage('code',null,this)"><div class="dock-emoji">&lt;/&gt;</div><div class="dock-label">Code Center</div></div>
+  <div class="dock-item" id="d-audio" onclick="setPage('audio',null,this)"><div class="dock-emoji">🎵</div><div class="dock-label">Audio Studio</div></div>
+  <div class="dock-item" id="d-render" onclick="setPage('render',null,this)"><div class="dock-emoji">🎨</div><div class="dock-label">Render Engine</div></div>
+  <div class="dock-item" id="d-game" onclick="setPage('game',null,this)"><div class="dock-emoji">🎮</div><div class="dock-label">Game Builder</div></div>
+  <div class="dock-item" id="d-mesh" onclick="setPage('mesh',null,this)"><div class="dock-emoji">🔷</div><div class="dock-label">Mesh Lab</div></div>
+  <div class="dock-item" id="d-settings" onclick="setPage('settings',null,this)"><div class="dock-emoji">⚙️</div><div class="dock-label">Settings</div></div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <div class="statusbar-left">
+    <span class="sb-item">VERSION <span>1.0.0</span></span>
+    <span class="sb-item">BUILD <span>2026.05.15</span></span>
+    <span class="sb-item">A-TOWNCHAIN OS</span>
+  </div>
+  <div class="sb-clock" id="clock">22:22:00</div>
+  <div class="statusbar-right">
+    <span class="sb-item">22. MAI 2026</span>
+    <span>📶</span><span>🔊</span><span>🔋</span>
+  </div>
+</div>
+
+<script>
+// ── CLOCK ──
+function tick(){
+  const n=new Date();
+  document.getElementById('clock').textContent=n.toLocaleTimeString('de-DE',{hour12:false});
+}
+setInterval(tick,1000);tick();
+
+// ── LIVE STATS ──
+setInterval(()=>{
+  const v=Math.floor(10+Math.random()*30);
+  document.getElementById('r-cpu').style.width=v+'%';
+  document.getElementById('r-cpu-v').textContent=v+'%';
+  const b=1284732+Math.floor(Math.random()*5);
+  document.getElementById('r-block').textContent=b.toLocaleString('de-DE');
+}, 3000);
+
+// ── PAGE SWITCHING ──
+let activeDock=document.getElementById('d-dashboard');
+let activeMenu=document.querySelector('.menu-item.active');
+
+function setPage(id, menuEl, dockEl){
+  // pages
+  document.querySelectorAll('.page-content').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+
+  // sidebar
+  if(menuEl){
+    if(activeMenu) activeMenu.classList.remove('active');
+    menuEl.classList.add('active');
+    activeMenu=menuEl;
+  } else {
+    // sync sidebar from dock
+    document.querySelectorAll('.menu-item').forEach(m=>{
+      m.classList.remove('active');
+      if(m.getAttribute('onclick') && m.getAttribute('onclick').includes("'"+id+"'")){
+        m.classList.add('active');
+        activeMenu=m;
+      }
+    });
+  }
+
+  // dock
+  if(dockEl){
+    if(activeDock) activeDock.classList.remove('active');
+    dockEl.classList.add('active');
+    activeDock=dockEl;
+  } else {
+    // sync dock from sidebar
+    const d=document.getElementById('d-'+id);
+    if(d){
+      if(activeDock) activeDock.classList.remove('active');
+      d.classList.add('active');
+      activeDock=d;
+    }
+  }
+
+  if(id==='assets') renderATC();
+
+  if(id==='code') setTimeout(initCodeEditor, 50);
+
+}
+
+// ── ATC DATA ──
+const atcData=[
+  {id:'ATC-001',name:'Avatar NFT',cat:'nft'},{id:'ATC-002',name:'Skins',cat:'nft'},
+  {id:'ATC-003',name:'Hardware NFT',cat:'nft'},{id:'ATC-004',name:'Booster',cat:'nft'},
+  {id:'ATC-005',name:'Soulbound Badge',cat:'nft'},{id:'ATC-0020',name:'Energie/Fuel',cat:'token'},
+  {id:'ATC-0721',name:'Layered Avatar',cat:'nft'},{id:'ATC-2000',name:'Governance Token',cat:'token'},
+  {id:'ATC-2500',name:'Stablecoin',cat:'token'},{id:'ATC-8300',name:'Native Coin',cat:'token'},
+  {id:'ATC-9000',name:'Solana Token',cat:'token'},{id:'ATC-9100',name:'BSC Token',cat:'token'},
+  {id:'ATC-ISO20022-XRP',name:'Ripple ISO20022',cat:'iso'},{id:'ATC-ISO20022-ADA',name:'Cardano ISO20022',cat:'iso'},
+  {id:'ATC-ISO4217-COIN',name:'Währungscode',cat:'iso'},{id:'ATC-ISO17442-LEI',name:'Legal Entity ID',cat:'iso'},
+  {id:'ATC-GAMING-TOKEN',name:'Gaming Token',cat:'game'},{id:'ATC-GAMING-ASSET',name:'In-Game Assets',cat:'game'},
+  {id:'ATC-NFT-MUSIC',name:'Musik-NFT',cat:'nft'},{id:'ATC-NFT-VIDEO',name:'Video-NFT',cat:'nft'},
+  {id:'ATC-LAYERED-NFT',name:'Multi-Layer NFT',cat:'nft'},{id:'ATC-3D-MODEL',name:'3D Model Asset',cat:'nft'},
+  {id:'ATC-NFT-BRIDGE',name:'Cross-Chain Bridge',cat:'iso'},{id:'ATC-PROMPT-NFT',name:'Prompt NFT',cat:'nft'},
+];
+let curFilter='all';
+function filterA(f){curFilter=f;renderATC();}
+function renderATC(){
+  const list=document.getElementById('atc-list');
+  if(!list)return;
+  const data=curFilter==='all'?atcData:atcData.filter(a=>a.cat===curFilter);
+  list.innerHTML=data.map(a=>`<div class="atc-row"><span class="atc-id">${a.id}</span><span class="atc-nm">${a.name}</span><span class="badge b-${a.cat}">${a.cat.toUpperCase()}</span></div>`).join('');
+}
+
+
+// ─── CODE CENTER ───
+const codeFiles = {
+  'kernel.py': `# core/kernel.py
+# A-TownChain OS — Core Kernel
+# Kein Agent darf ohne Review Core-Logik verändern
+
+from core.event_bus import EventBus
+from core.module_loader import ModuleLoader
+
+class Kernel:
+    def __init__(self):
+        self.event_bus = EventBus()
+        self.loader = ModuleLoader(self.event_bus)
+        self.running = False
+    
+    def start(self):
+        print("[KERNEL] A-TownChain OS starting...")
+        self.running = True
+        self.event_bus.emit("system_started", {
+            "version": "2.0",
+            "chain": "A-TownChain"
+        })
+    
+    def stop(self):
+        self.running = False
+        print("[KERNEL] System shutdown.")`,
+
+  'event_bus.py': `# core/event_bus.py
+# Event-Driven Communication Layer
+
+class EventBus:
+    def __init__(self):
+        self.listeners = {}
+    
+    def subscribe(self, event, handler):
+        if event not in self.listeners:
+            self.listeners[event] = []
+        self.listeners[event].append(handler)
+    
+    def emit(self, event, data=None):
+        for handler in self.listeners.get(event, []):
+            handler(data)
+    
+    def unsubscribe(self, event, handler):
+        if event in self.listeners:
+            self.listeners[event].remove(handler)`,
+
+  'module_loader.py': `# core/module_loader.py
+# Dynamic Plugin/Module Loader
+
+import importlib
+import os
+
+class ModuleLoader:
+    def __init__(self, event_bus):
+        self.event_bus = event_bus
+        self.modules = []
+    
+    def load(self, module_path):
+        module = importlib.import_module(module_path)
+        if hasattr(module, 'Plugin'):
+            plugin = module.Plugin(self.event_bus)
+            plugin.register()
+            self.modules.append(plugin)
+            print(f"[LOADER] Module loaded: {module_path}")`,
+
+  'wallet.py': `# plugins/wallet.py
+# ATC Wallet Plugin — ERC20 / ATC-8300 Standard
+
+class Plugin:
+    def __init__(self, event_bus):
+        self.event_bus = event_bus
+        self.balance = {}
+    
+    def register(self):
+        self.event_bus.subscribe("transfer", self.on_transfer)
+        print("[WALLET] Plugin registered.")
+    
+    def on_transfer(self, data):
+        sender = data.get("from")
+        receiver = data.get("to")
+        amount = data.get("amount", 0)
+        print(f"[WALLET] {sender} → {receiver}: {amount} ATC")`,
+
+  'smart_contracts.py': `# blockchain/smart_contracts.py
+# ATC Smart Contract Layer — EVM Compatible
+
+contract_abi = {
+    "name": "ATCToken",
+    "standard": "ATC-8300",
+    "type": "ERC20"
+}
+
+class ATCToken:
+    def __init__(self):
+        self.balances = {}
+        self.total_supply = 1_000_000
+    
+    def transfer(self, sender, receiver, amount):
+        if self.balances.get(sender, 0) >= amount:
+            self.balances[sender] -= amount
+            self.balances[receiver] = self.balances.get(receiver, 0) + amount
+            return True
+        return False`,
+
+  'build.py': `# build/build.py
+# A-TownChain OS — Build System
+# Regel 3: Build-Code != App-Code
+
+import os
+import hashlib
+
+def compute_hash(filepath):
+    with open(filepath, 'rb') as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+def build():
+    print("[BUILD] Starting A-TownChain OS build...")
+    print("[BUILD] Checking module integrity...")
+    # os.system("pip install pyinstaller")
+    # os.system("pyinstaller --onefile main.py")
+    print("[BUILD] SHA256 verification complete.")
+    print("[BUILD] Build SUCCESS — version 2.0")
+
+if __name__ == "__main__":
+    build()`,
+
+  'settings.json': `{
+  "system": {
+    "version": "2.0",
+    "name": "A-TownChain OS",
+    "theme": "dark-neon"
+  },
+  "security": {
+    "permissions": "default",
+    "sandbox": true,
+    "autonomy": "controlled",
+    "rollback": "v1.9.4"
+  },
+  "blockchain": {
+    "chain": "A-TownChain",
+    "rpc": "rpc.atown.io",
+    "consensus": "PoI+PoS"
+  },
+  "ai": {
+    "model": "gemini-2.0",
+    "auto_update": true,
+    "language": "de"
+  }
+}`
+};
+
+let openTabs = ['kernel.py'];
+let activeFile = 'kernel.py';
+
+function initCodeEditor() {
+  const editor = document.getElementById('code-editor');
+  if (editor && !editor.value) {
+    editor.value = codeFiles['kernel.py'] || '';
+    updateLineNumbers();
+  }
+}
+
+function updateLineNumbers() {
+  const editor = document.getElementById('code-editor');
+  const nums = document.getElementById('line-numbers');
+  if (!editor || !nums) return;
+  const lines = editor.value.split('\n').length;
+  nums.innerHTML = Array.from({length: lines}, (_,i) => i+1).join('\n');
+}
+
+function handleTab(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const editor = document.getElementById('code-editor');
+    const start = editor.selectionStart;
+    editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(editor.selectionEnd);
+    editor.selectionStart = editor.selectionEnd = start + 4;
+    updateLineNumbers();
+  }
+}
+
+function openFile(filename, folder) {
+  const editor = document.getElementById('code-editor');
+  if (!editor) return;
+  editor.value = codeFiles[filename] || `# ${folder}/${filename}\n# Datei wird geladen...`;
+  updateLineNumbers();
+  activeFile = filename;
+
+  // add tab if not open
+  if (!openTabs.includes(filename)) {
+    openTabs.push(filename);
+    const tabs = document.getElementById('file-tabs');
+    if (tabs) {
+      const tab = document.createElement('div');
+      tab.className = 'code-tab';
+      tab.id = 'tab-' + filename.replace('.','_');
+      tab.innerHTML = getFileIcon(filename) + ' ' + filename + ' <span onclick="closeTab(event,\''+filename+'\')" style="margin-left:4px;opacity:0.5;font-size:10px;">✕</span>';
+      tab.onclick = () => switchTab(filename, folder);
+      tabs.appendChild(tab);
+    }
+  }
+  switchTab(filename, folder);
+}
+
+function getFileIcon(f) {
+  if (f.endsWith('.py')) return '🐍';
+  if (f.endsWith('.json')) return '📋';
+  if (f.endsWith('.html')) return '🌐';
+  if (f.endsWith('.css')) return '🎨';
+  return '📄';
+}
+
+function switchTab(filename, folder) {
+  activeFile = filename;
+  document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  const tab = document.getElementById('tab-' + filename.replace('.','_'));
+  if (tab) tab.classList.add('active');
+  const editor = document.getElementById('code-editor');
+  if (editor) {
+    editor.value = codeFiles[filename] || `# ${filename}\n# Lade...`;
+    updateLineNumbers();
+  }
+}
+
+function closeTab(e, filename) {
+  e.stopPropagation();
+  openTabs = openTabs.filter(t => t !== filename);
+  const tab = document.getElementById('tab-' + filename.replace('.','_'));
+  if (tab) tab.remove();
+  if (openTabs.length > 0) switchTab(openTabs[openTabs.length-1], '');
+}
+
+function toggleFolder(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function runCode() {
+  const editor = document.getElementById('code-editor');
+  const output = document.getElementById('code-output');
+  if (!editor || !output) return;
+  const code = editor.value;
+  const timestamp = new Date().toLocaleTimeString('de-DE');
+  output.innerHTML += `<br><span style="color:var(--dim)">[${timestamp}]</span> <span style="color:var(--cyan)">$</span> python ${activeFile}<br>`;
+  
+  // Simulate output
+  const lines = code.split('\n').filter(l => l.includes('print'));
+  if (lines.length > 0) {
+    lines.forEach(l => {
+      const match = l.match(/print\(["'](.+?)["']\)/);
+      if (match) output.innerHTML += `<span style="color:var(--green)">${match[1]}</span><br>`;
+    });
+  } else {
+    output.innerHTML += `<span style="color:var(--green)">✓ ${activeFile} — Ausgeführt ohne Fehler.</span><br>`;
+  }
+  output.innerHTML += `<span style="color:var(--dim)">Exit code: 0</span><br>`;
+  output.scrollTop = output.scrollHeight;
+}
+
+function saveCode() {
+  const output = document.getElementById('code-output');
+  const timestamp = new Date().toLocaleTimeString('de-DE');
+  if (output) output.innerHTML += `<br><span style="color:var(--green)">[${timestamp}] ✓ ${activeFile} gespeichert — SHA256 verifiziert.</span><br>`;
+  output.scrollTop = output.scrollHeight;
+}
+
+function clearOutput() {
+  const output = document.getElementById('code-output');
+  if (output) output.innerHTML = '<span style="color:var(--dim)">Terminal geleert.</span><br>';
+}
+
+// Init when code page is shown
+const origSetPage = window.setPage;
+
+// ── CHAT ──
+const chatResponses=[
+  "Blockchain-Sync bei 99.98% — alle Nodes stabil.",
+  "Mining-Effizienz bei +12% — Proof of Intelligence läuft optimal.",
+  "Shivamon NFTs können jetzt Cross-Chain gesendet werden.",
+  "Update verfügbar: ShivaOS v2.1 — SHA256 verifiziert.",
+  "Rollback-System bereit. Version: v1.9.4.",
+  "ATC Token steigt: +3.7% in den letzten 24h.",
+  "Drive Backup erfolgreich — alle Module gesichert.",
+];
+function sendChat(){
+  const inp=document.getElementById('chat-inp');
+  const box=document.getElementById('chat-box');
+  if(!inp.value.trim())return;
+  box.innerHTML+=`<div class="c-msg user">${inp.value}</div>`;
+  const q=inp.value; inp.value='';
+  setTimeout(()=>{
+    const r=chatResponses[Math.floor(Math.random()*chatResponses.length)];
+    box.innerHTML+=`<div class="c-msg ai">${r}</div>`;
+    box.scrollTop=box.scrollHeight;
+  },700);
+  box.scrollTop=box.scrollHeight;
+}
+</script>
+
+<!-- WALLET PAGE -->
+<div id="page-wallet" class="page-content">
+  <div class="wallet-container">
+
+    <!-- Header / Balance -->
+    <div class="wallet-header">
+      <div class="wallet-avatar">💎</div>
+      <div style="flex:1">
+        <div class="wallet-title">A-TOWN WALLET</div>
+        <div class="wallet-address-display" id="w-address" onclick="copyAddress()">
+          ATC ··· CLICK TO GENERATE
+        </div>
+        <div class="wallet-balance-sub" id="w-balance-sub">0.00 ATC — $0.00 USD</div>
+      </div>
+      <div style="text-align:right">
+        <div class="wallet-balance-big" id="w-balance">0.00</div>
+        <div style="font-size:9px;color:var(--dim);font-family:'Orbitron',sans-serif;">ATC</div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+      <button class="atc-btn" onclick="walletTab('send')">📤 SEND</button>
+      <button class="atc-btn" style="background:linear-gradient(135deg,var(--cyan),var(--green))" onclick="walletTab('receive')">📥 RECEIVE</button>
+      <button class="atc-btn-outline" onclick="generateWallet()">⚡ NEW WALLET</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="wallet-tabs">
+      <div class="wtab active" onclick="walletTab('overview')" id="wtab-overview">OVERVIEW</div>
+      <div class="wtab" onclick="walletTab('send')" id="wtab-send">SEND</div>
+      <div class="wtab" onclick="walletTab('receive')" id="wtab-receive">RECEIVE</div>
+      <div class="wtab" onclick="walletTab('history')" id="wtab-history">HISTORY</div>
+      <div class="wtab" onclick="walletTab('keys')" id="wtab-keys">KEYS</div>
+    </div>
+
+    <!-- Overview Tab -->
+    <div class="wtab-panel active" id="wpanel-overview">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div style="background:rgba(8,12,30,0.6);border:1px solid rgba(0,255,179,0.2);border-radius:10px;padding:14px;">
+          <div style="font-size:9px;color:var(--dim);font-family:'Orbitron',sans-serif;letter-spacing:1px;margin-bottom:6px;">ATC BALANCE</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:18px;color:var(--green);font-weight:700;" id="w-bal-big">0.00</div>
+          <div style="font-size:9px;color:var(--dim);">A-Town Coin</div>
+        </div>
+        <div style="background:rgba(8,12,30,0.6);border:1px solid rgba(0,209,255,0.2);border-radius:10px;padding:14px;">
+          <div style="font-size:9px;color:var(--dim);font-family:'Orbitron',sans-serif;letter-spacing:1px;margin-bottom:6px;">SHIVAMON NFTs</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:18px;color:var(--cyan);font-weight:700;" id="w-nft-count">0</div>
+          <div style="font-size:9px;color:var(--dim);">ATC-9000 Tokens</div>
+        </div>
+        <div style="background:rgba(8,12,30,0.6);border:1px solid rgba(162,89,255,0.2);border-radius:10px;padding:14px;">
+          <div style="font-size:9px;color:var(--dim);font-family:'Orbitron',sans-serif;letter-spacing:1px;margin-bottom:6px;">STANDARD</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--purple);font-weight:700;">ATC-8300</div>
+          <div style="font-size:9px;color:var(--dim);">Fungible Token</div>
+        </div>
+        <div style="background:rgba(8,12,30,0.6);border:1px solid rgba(255,140,0,0.2);border-radius:10px;padding:14px;">
+          <div style="font-size:9px;color:var(--dim);font-family:'Orbitron',sans-serif;letter-spacing:1px;margin-bottom:6px;">NETWORK</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--orange);font-weight:700;">A-TownChain</div>
+          <div style="font-size:9px;color:var(--dim);">PoW+PoS+PoH</div>
+        </div>
+      </div>
+      <div id="w-no-wallet" style="text-align:center;padding:30px;color:var(--dim);">
+        <div style="font-size:40px;margin-bottom:12px;">🔐</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:11px;margin-bottom:8px;">NO WALLET CONNECTED</div>
+        <div style="font-size:11px;margin-bottom:16px;">Erstelle ein neues Wallet oder stelle es mit deiner Seed Phrase wieder her.</div>
+        <button class="atc-btn" style="width:auto;padding:10px 24px;" onclick="generateWallet()">⚡ WALLET ERSTELLEN</button>
+      </div>
+    </div>
+
+    <!-- Send Tab -->
+    <div class="wtab-panel" id="wpanel-send">
+      <div class="send-form">
+        <div>
+          <div class="atc-label">VON (YOUR ADDRESS)</div>
+          <input class="atc-input" id="send-from" placeholder="ATC..." readonly>
+        </div>
+        <div>
+          <div class="atc-label">AN (RECEIVER ADDRESS)</div>
+          <input class="atc-input" id="send-to" placeholder="ATC7F3A9B2C...">
+        </div>
+        <div>
+          <div class="atc-label">BETRAG (ATC)</div>
+          <input class="atc-input" id="send-amount" type="number" placeholder="0.00" min="0">
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim);padding:0 2px;">
+          <span>Fee: 0.001 ATC</span>
+          <span id="send-max-bal">Balance: 0 ATC</span>
+        </div>
+        <button class="atc-btn" onclick="sendATC()">📤 SENDEN</button>
+        <div id="send-result" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- Receive Tab -->
+    <div class="wtab-panel" id="wpanel-receive">
+      <div style="text-align:center;padding:20px;">
+        <div style="font-size:80px;margin-bottom:12px;">📥</div>
+        <div class="atc-label" style="margin-bottom:8px;">DEINE ATC ADRESSE</div>
+        <div class="wallet-address-display" id="recv-address" style="word-break:break-all;white-space:normal;font-size:10px;padding:12px;display:block;text-align:center;">
+          Kein Wallet aktiv
+        </div>
+        <button class="atc-btn-outline" style="margin-top:12px;width:auto;padding:8px 20px;" onclick="copyAddress()">📋 KOPIEREN</button>
+        <div style="margin-top:16px;font-size:10px;color:var(--dim);">
+          Sende ATC an diese Adresse. Nur ATC-8300 kompatible Tokens!
+        </div>
+      </div>
+    </div>
+
+    <!-- History Tab -->
+    <div class="wtab-panel" id="wpanel-history">
+      <div class="tx-list" id="tx-list">
+        <div style="text-align:center;padding:30px;color:var(--dim);">
+          <div style="font-size:30px;margin-bottom:8px;">📋</div>
+          <div style="font-size:11px;">Keine Transaktionen</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keys Tab -->
+    <div class="wtab-panel" id="wpanel-keys">
+      <div class="seed-box">
+        <div class="seed-warning">
+          ⚠️ NIEMALS teilen! Seed Phrase = vollständiger Wallet-Zugriff.
+        </div>
+        <div class="atc-label">SEED PHRASE (24 WÖRTER)</div>
+        <div class="seed-grid" id="seed-grid">
+          <div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--dim);font-size:11px;">
+            Erstelle zuerst ein Wallet.
+          </div>
+        </div>
+        <div class="atc-label" style="margin-top:12px;">PRIVATE KEY</div>
+        <div class="key-display" id="privkey-display">—</div>
+        <div class="atc-label" style="margin-top:8px;">PUBLIC KEY</div>
+        <div class="key-display" id="pubkey-display" style="color:var(--cyan);">—</div>
+        <div style="margin-top:12px;">
+          <div class="atc-label">WALLET WIEDERHERSTELLEN</div>
+          <textarea class="atc-input" id="restore-phrase" rows="3"
+            placeholder="24 Wörter eingeben, durch Leerzeichen getrennt..."
+            style="resize:none;margin:6px 0;"></textarea>
+          <button class="atc-btn-outline" onclick="restoreWallet()">🔄 RESTORE</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- SHIVAMON PAGE -->
+<div id="page-shivamon" class="page-content">
+  <div class="wallet-container">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:16px;color:var(--text);">🐉 SHIVAMON COLLECTION</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px;">ATC-9000 Standard · NFT Battle Creatures</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:20px;color:var(--purple);" id="shv-count">0</div>
+        <div style="font-size:9px;color:var(--dim);">TOTAL OWNED</div>
+      </div>
+    </div>
+
+    <!-- Mint Form -->
+    <div class="mint-form">
+      <div class="atc-label">⚡ SHIVAMON MINTING</div>
+      <div style="display:flex;gap:8px;align-items:center;margin:8px 0;">
+        <input class="atc-input" id="mint-owner" placeholder="ATC Owner Adresse..." style="flex:1;">
+        <select class="atc-input" id="mint-rarity" style="width:130px;">
+          <option value="">Random Rarity</option>
+          <option value="Common">Common</option>
+          <option value="Uncommon">Uncommon</option>
+          <option value="Rare">Rare</option>
+          <option value="Epic">Epic</option>
+          <option value="Legendary">Legendary</option>
+          <option value="Genesis">Genesis ✨</option>
+        </select>
+      </div>
+      <div class="el-grid">
+        <div class="el-btn sel" onclick="selEl(this,'')">🎲 Random</div>
+        <div class="el-btn" onclick="selEl(this,'Fire')">🔥 Fire</div>
+        <div class="el-btn" onclick="selEl(this,'Water')">💧 Water</div>
+        <div class="el-btn" onclick="selEl(this,'Earth')">🌍 Earth</div>
+        <div class="el-btn" onclick="selEl(this,'Air')">💨 Air</div>
+        <div class="el-btn" onclick="selEl(this,'Shadow')">🌑 Shadow</div>
+        <div class="el-btn" onclick="selEl(this,'Neon')">⚡ Neon</div>
+        <div class="el-btn" onclick="selEl(this,'Quantum')">🌀 Quantum</div>
+      </div>
+      <button class="atc-btn" onclick="mintShivamon()" style="background:linear-gradient(135deg,var(--purple),var(--pink));">
+        🐉 SHIVAMON MINTING (10 ATC)
+      </button>
+      <div id="mint-result" style="display:none;margin-top:10px;"></div>
+    </div>
+
+    <!-- Shivamon Detail View -->
+    <div class="shv-detail" id="shv-detail">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+        <div class="shv-detail-header">
+          <div class="shv-detail-emoji" id="shv-d-emoji">🐉</div>
+          <div>
+            <div style="font-family:'Orbitron',sans-serif;font-size:16px;color:var(--text);" id="shv-d-name">—</div>
+            <div id="shv-d-rarity" class="shv-rarity rarity-rare" style="margin-top:4px;">Rare</div>
+            <div style="font-size:10px;color:var(--dim);margin-top:4px;" id="shv-d-el">⚡ Neon</div>
+          </div>
+        </div>
+        <button onclick="closeShvDetail()" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:18px;">✕</button>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-bottom:4px;">
+          <span>HP</span><span id="shv-d-hp">—</span>
+        </div>
+        <div class="shv-hp-bar"><div class="shv-hp-fill" id="shv-d-hp-bar" style="width:80%"></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;">
+        <div style="text-align:center;background:rgba(162,89,255,0.08);border-radius:8px;padding:8px;">
+          <div style="font-family:'Orbitron',sans-serif;font-size:14px;color:var(--pink);" id="shv-d-atk">—</div>
+          <div style="font-size:8px;color:var(--dim);">ATK</div>
+        </div>
+        <div style="text-align:center;background:rgba(162,89,255,0.08);border-radius:8px;padding:8px;">
+          <div style="font-family:'Orbitron',sans-serif;font-size:14px;color:var(--cyan);" id="shv-d-def">—</div>
+          <div style="font-size:8px;color:var(--dim);">DEF</div>
+        </div>
+        <div style="text-align:center;background:rgba(162,89,255,0.08);border-radius:8px;padding:8px;">
+          <div style="font-family:'Orbitron',sans-serif;font-size:14px;color:var(--green);" id="shv-d-spd">—</div>
+          <div style="font-size:8px;color:var(--dim);">SPD</div>
+        </div>
+        <div style="text-align:center;background:rgba(162,89,255,0.08);border-radius:8px;padding:8px;">
+          <div style="font-family:'Orbitron',sans-serif;font-size:14px;color:var(--orange);" id="shv-d-spc">—</div>
+          <div style="font-size:8px;color:var(--dim);">SPC</div>
+        </div>
+      </div>
+      <div class="atc-label">MOVES</div>
+      <div class="shv-moves" id="shv-d-moves"></div>
+      <div style="margin-top:12px;font-size:9px;color:var(--dim);font-family:'Orbitron',sans-serif;">
+        DNA: <span id="shv-d-dna" style="color:var(--purple);">—</span>
+      </div>
+    </div>
+
+    <!-- Collection Grid -->
+    <div class="atc-label">MY COLLECTION</div>
+    <div class="shv-grid" id="shv-collection-grid">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--dim);">
+        <div style="font-size:50px;margin-bottom:12px;">🥚</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:11px;margin-bottom:8px;">KEINE SHIVAMON</div>
+        <div style="font-size:11px;">Minte dein erstes Shivamon oben!</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+// ── WALLET STATE ──────────────────────────────────────
+const WalletState = {
+  address: null, privateKey: null, publicKey: null,
+  seedPhrase: [], balance: 0, txHistory: [], shivamon: []
+};
+
+const EL_EMOJIS = {
+  'Fire':'🔥','Water':'💧','Earth':'🌍','Air':'💨',
+  'Shadow':'🌑','Neon':'⚡','Quantum':'🌀'
+};
+
+// ── Generate Wallet (simuliert Backend-Aufruf) ─────────
+function generateWallet() {
+  // Kryptographische Wallet-Simulation im Browser
+  const words = ['abandon','ability','able','about','above','absent','absorb','abstract',
+    'absurd','abuse','access','accident','account','accuse','achieve','acid','acoustic',
+    'acquire','across','act','action','actor','actress','actual','adapt','add','addict',
+    'address','adjust','admit','adult','advance','advice','aerobic','affair','afford',
+    'afraid','again','age','agent','agree','ahead','aim','air','airport','aisle',
+    'alarm','album','alcohol','alert','alien','all','alley','allow','almost','alone',
+    'alpha','already','also','alter','always','amateur','amazing','among','amount',
+    'amused','analyst','anchor','ancient','anger','angle','angry','animal','ankle',
+    'announce','annual','another','answer','antenna','antique','anxiety','any','apart',
+    'apology','appear','apple','approve','april','arch','arctic'];
+
+  // 24 zufällige Wörter
+  const phrase = Array.from({length:24}, () => words[Math.floor(Math.random()*words.length)]);
+  
+  // Simuliere Private Key (SHA-256 Style — 64 hex chars)
+  const privRaw  = Array.from({length:64},()=>Math.floor(Math.random()*16).toString(16)).join('');
+  const pubRaw   = Array.from({length:64},()=>Math.floor(Math.random()*16).toString(16)).join('');
+  // ATC Adresse: ATC + 32 uppercase hex chars
+  const addrHex  = Array.from({length:32},()=>Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
+  const address  = 'ATC' + addrHex;
+
+  WalletState.address    = address;
+  WalletState.privateKey = privRaw;
+  WalletState.publicKey  = pubRaw;
+  WalletState.seedPhrase = phrase;
+  WalletState.balance    = 100;  // 100 ATC Faucet
+
+  updateWalletUI();
+  walletTab('overview');
+  showNotif('✅ Wallet erstellt! 100 ATC Faucet gutgeschrieben.');
+}
+
+function updateWalletUI() {
+  const a = WalletState.address;
+  if (!a) return;
+  const short = a.slice(0,8) + '···' + a.slice(-6);
+  
+  // Header
+  document.getElementById('w-address').textContent = short;
+  document.getElementById('w-balance').textContent = WalletState.balance.toFixed(2);
+  document.getElementById('w-balance-sub').textContent = WalletState.balance.toFixed(2) + ' ATC — $' + (WalletState.balance * 0.042).toFixed(2) + ' USD';
+  document.getElementById('w-bal-big').textContent = WalletState.balance.toFixed(2);
+  document.getElementById('w-nft-count').textContent = WalletState.shivamon.length;
+  document.getElementById('w-no-wallet').style.display = 'none';
+  
+  // Send
+  document.getElementById('send-from').value = a;
+  document.getElementById('send-max-bal').textContent = 'Balance: ' + WalletState.balance + ' ATC';
+  
+  // Receive
+  document.getElementById('recv-address').textContent = a;
+  
+  // Keys
+  const grid = document.getElementById('seed-grid');
+  grid.innerHTML = WalletState.seedPhrase.map((w,i) =>
+    '<div class="seed-word"><div class="seed-num">' + (i+1) + '</div><div class="seed-w">' + w + '</div></div>'
+  ).join('');
+  document.getElementById('privkey-display').textContent = WalletState.privateKey;
+  document.getElementById('pubkey-display').textContent = WalletState.publicKey;
+  
+  // Shivamon owner field
+  const mintOwner = document.getElementById('mint-owner');
+  if (mintOwner) mintOwner.value = WalletState.address;
+}
+
+function walletTab(tab) {
+  document.querySelectorAll('.wtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.wtab-panel').forEach(p => p.classList.remove('active'));
+  const tEl = document.getElementById('wtab-' + tab);
+  const pEl = document.getElementById('wpanel-' + tab);
+  if (tEl) tEl.classList.add('active');
+  if (pEl) pEl.classList.add('active');
+}
+
+function sendATC() {
+  const to     = document.getElementById('send-to').value.trim();
+  const amount = parseFloat(document.getElementById('send-amount').value);
+  const res    = document.getElementById('send-result');
+  
+  if (!WalletState.address) { showNotif('❌ Kein Wallet aktiv!'); return; }
+  if (!to.startsWith('ATC') || to.length !== 35) {
+    res.style.display = 'block';
+    res.innerHTML = '<div style="color:var(--pink);font-size:10px;padding:8px;background:rgba(255,45,120,0.1);border-radius:6px;">❌ Ungültige ATC Adresse (muss mit ATC beginnen, 35 Zeichen)</div>';
+    return;
+  }
+  if (amount <= 0 || amount > WalletState.balance) {
+    res.style.display = 'block';
+    res.innerHTML = '<div style="color:var(--pink);font-size:10px;padding:8px;background:rgba(255,45,120,0.1);border-radius:6px;">❌ Ungültiger Betrag oder nicht genug Balance</div>';
+    return;
+  }
+  WalletState.balance -= amount;
+  const txId = 'TX-' + Math.random().toString(16).slice(2,14).toUpperCase();
+  WalletState.txHistory.unshift({type:'send',to,amount,txId,time: new Date().toLocaleTimeString()});
+  updateWalletUI();
+  updateTxList();
+  res.style.display = 'block';
+  res.innerHTML = '<div style="color:var(--green);font-size:10px;padding:8px;background:rgba(0,255,179,0.1);border-radius:6px;">✅ ' + amount + ' ATC gesendet! TX: ' + txId + '</div>';
+}
+
+function updateTxList() {
+  const list = document.getElementById('tx-list');
+  if (!WalletState.txHistory.length) return;
+  list.innerHTML = WalletState.txHistory.map(tx => {
+    const isOut = tx.type === 'send';
+    const addr  = isOut ? tx.to : (tx.from || '');
+    const short = addr.length > 10 ? addr.slice(0,8) + '···' + addr.slice(-6) : addr;
+    return '<div class="tx-item">' +
+      '<div class="tx-icon">' + (isOut ? '📤' : '📥') + '</div>' +
+      '<div class="tx-info">' +
+        '<div class="tx-type">' + (isOut ? 'Gesendet' : 'Empfangen') + '</div>' +
+        '<div class="tx-addr">' + (isOut ? 'AN: ' : 'VON: ') + short + '</div>' +
+        '<div class="tx-time">' + tx.time + ' — ' + tx.txId + '</div>' +
+      '</div>' +
+      '<div class="tx-amount ' + (isOut ? 'out' : 'in') + '">' + (isOut ? '-' : '+') + tx.amount + ' ATC</div>' +
+    '</div>';
+  }).join('');
+}
+
+function copyAddress() {
+  if (!WalletState.address) return;
+  navigator.clipboard.writeText(WalletState.address).catch(()=>{});
+  showNotif('📋 Adresse kopiert: ' + WalletState.address);
+}
+
+function restoreWallet() {
+  const phrase = document.getElementById('restore-phrase').value.trim().split(/\s+/);
+  if (phrase.length !== 24) {
+    showNotif('❌ Genau 24 Wörter benötigt (aktuell: ' + phrase.length + ')');
+    return;
+  }
+  WalletState.seedPhrase = phrase;
+  const privRaw = Array.from({length:64},()=>Math.floor(Math.random()*16).toString(16)).join('');
+  const pubRaw  = Array.from({length:64},()=>Math.floor(Math.random()*16).toString(16)).join('');
+  const addrHex = Array.from({length:32},()=>Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
+  WalletState.address    = 'ATC' + addrHex;
+  WalletState.privateKey = privRaw;
+  WalletState.publicKey  = pubRaw;
+  WalletState.balance    = 0;
+  updateWalletUI();
+  showNotif('✅ Wallet wiederhergestellt!');
+}
+
+// ── SHIVAMON ───────────────────────────────────────────
+let selectedElement = '';
+
+function selEl(btn, el) {
+  document.querySelectorAll('.el-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  selectedElement = el;
+}
+
+function mintShivamon() {
+  const owner = document.getElementById('mint-owner').value.trim() || WalletState.address;
+  const rarity = document.getElementById('mint-rarity').value;
+  const res   = document.getElementById('mint-result');
+  
+  if (!owner || !owner.startsWith('ATC')) {
+    res.style.display = 'block';
+    res.innerHTML = '<div style="color:var(--pink);font-size:10px;padding:8px;background:rgba(255,45,120,0.1);border-radius:6px;">❌ Gültige ATC Adresse benötigt!</div>';
+    return;
+  }
+  if (WalletState.balance < 10) {
+    res.style.display = 'block';
+    res.innerHTML = '<div style="color:var(--pink);font-size:10px;padding:8px;background:rgba(255,45,120,0.1);border-radius:6px;">❌ Nicht genug ATC (10 ATC benötigt)</div>';
+    return;
+  }
+
+  // Shivamon generieren
+  const elements = selectedElement ? [selectedElement] : ['Fire','Water','Earth','Air','Shadow','Neon','Quantum'];
+  const el       = elements[Math.floor(Math.random()*elements.length)];
+  const rarities = rarity ? [rarity] : ['Common','Common','Common','Uncommon','Uncommon','Rare','Epic','Legendary'];
+  const rar      = rarity || rarities[Math.floor(Math.random()*rarities.length)];
+  
+  const namePool = {
+    Fire:['Ignarex','Pyrodon','Flamecor','Embrix','Volcanix'],
+    Water:['Aquarix','Tideon','Glacivex','Hydrox','Torrento'],
+    Earth:['Terranox','Stonex','Mudrix','Quarzon','Geovex'],
+    Air:['Windrix','Stormax','Gazeron','Cyclonix','Breezex'],
+    Shadow:['Shadowx','Voidrix','Darknex','Eclipsion','Umbravex'],
+    Neon:['Voltrix','Neonex','Arcvex','Plasmon','Thunderix'],
+    Quantum:['Quantrix','Phasex','Entanglex','Superion','Wavrix']
+  };
+  const name = namePool[el][Math.floor(Math.random()*5)] + '-' + String(WalletState.shivamon.length+1).padStart(4,'0');
+  const tokenId = 'SHV-' + Math.random().toString(16).slice(2,14).toUpperCase();
+  const mult = {Common:1,Uncommon:1.2,Rare:1.5,Epic:2,Legendary:3,Genesis:5}[rar] || 1;
+
+  const shv = {
+    token_id: tokenId, name, element: EL_EMOJIS[el] + ' ' + el,
+    rarity: rar, owner,
+    level: 1, xp: 0, wins: 0, losses: 0,
+    stats: {
+      hp:      Math.floor((50 + Math.random()*50) * mult),
+      attack:  Math.floor((40 + Math.random()*40) * mult),
+      defense: Math.floor((40 + Math.random()*40) * mult),
+      speed:   Math.floor((35 + Math.random()*35) * mult),
+      special: Math.floor((45 + Math.random()*45) * mult),
+    },
+    moves: ['Tackle','Scratch','Special Move','Ultimate'][0] || [],
+    dna_hash: Math.random().toString(16).slice(2,18) + '...'
+  };
+  
+  WalletState.shivamon.push(shv);
+  WalletState.balance -= 10;
+  updateWalletUI();
+  renderShivamonGrid();
+  
+  document.getElementById('shv-count').textContent = WalletState.shivamon.length;
+  res.style.display = 'block';
+  res.innerHTML = '<div style="color:var(--green);font-size:10px;padding:10px;background:rgba(0,255,179,0.08);border:1px solid rgba(0,255,179,0.2);border-radius:8px;">' +
+    EL_EMOJIS[el] + ' <strong>' + name + '</strong> geminted! ' +
+    '<span style="color:var(--purple);">' + rar + '</span> · Token: ' + tokenId +
+    '</div>';
+}
+
+function renderShivamonGrid() {
+  const grid = document.getElementById('shv-collection-grid');
+  if (!grid) return;
+  if (!WalletState.shivamon.length) return;
+  grid.innerHTML = WalletState.shivamon.map((s,i) => {
+    const elName = s.element.split(' ')[1] || 'Neon';
+    const emoji  = EL_EMOJIS[elName] || '🐉';
+    const rarC   = 'rarity-' + s.rarity.toLowerCase();
+    return '<div class="shv-card" onclick="showShvDetail(' + i + ')">' +
+      '<span class="shv-emoji">' + emoji + '</span>' +
+      '<div class="shv-name">' + s.name + '</div>' +
+      '<div class="shv-el">' + s.element + '</div>' +
+      '<div class="shv-rarity ' + rarC + '">' + s.rarity + '</div>' +
+      '<div class="shv-stats-mini">' +
+        '<div class="shv-stat-m"><div class="shv-stat-val">' + s.stats.hp + '</div><div class="shv-stat-lbl">HP</div></div>' +
+        '<div class="shv-stat-m"><div class="shv-stat-val">' + s.stats.attack + '</div><div class="shv-stat-lbl">ATK</div></div>' +
+        '<div class="shv-stat-m"><div class="shv-stat-val">' + s.stats.speed + '</div><div class="shv-stat-lbl">SPD</div></div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function showShvDetail(i) {
+  const s   = WalletState.shivamon[i];
+  const elName = s.element.split(' ')[1] || 'Neon';
+  const emoji  = EL_EMOJIS[elName] || '🐉';
+  const detail = document.getElementById('shv-detail');
+  const rarC   = 'rarity-' + s.rarity.toLowerCase();
+  
+  document.getElementById('shv-d-emoji').textContent = emoji;
+  document.getElementById('shv-d-name').textContent  = s.name;
+  const rarEl = document.getElementById('shv-d-rarity');
+  rarEl.textContent = s.rarity;
+  rarEl.className   = 'shv-rarity ' + rarC;
+  document.getElementById('shv-d-el').textContent    = s.element;
+  document.getElementById('shv-d-hp').textContent    = s.stats.hp;
+  document.getElementById('shv-d-hp-bar').style.width = Math.min(100, s.stats.hp / 3) + '%';
+  document.getElementById('shv-d-atk').textContent   = s.stats.attack;
+  document.getElementById('shv-d-def').textContent   = s.stats.defense;
+  document.getElementById('shv-d-spd').textContent   = s.stats.speed;
+  document.getElementById('shv-d-spc').textContent   = s.stats.special;
+  document.getElementById('shv-d-dna').textContent   = s.dna_hash;
+  document.getElementById('shv-d-moves').innerHTML   = 
+    ['Tackle','Scratch','Element Strike','Ultimate Blast']
+    .map(m => '<div class="shv-move">' + m + '</div>').join('');
+  detail.classList.add('open');
+  detail.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function closeShvDetail() {
+  document.getElementById('shv-detail').classList.remove('open');
+}
+
+function showNotif(msg) {
+  let n = document.getElementById('notif-toast');
+  if (!n) {
+    n = document.createElement('div');
+    n.id = 'notif-toast';
+    n.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);' +
+      'background:rgba(8,12,30,0.95);border:1px solid rgba(162,89,255,0.4);' +
+      'border-radius:8px;padding:10px 18px;font-size:11px;color:var(--text);' +
+      'z-index:9999;font-family:Rajdhani,sans-serif;white-space:nowrap;' +
+      'box-shadow:0 4px 20px rgba(162,89,255,0.3);';
+    document.body.appendChild(n);
+  }
+  n.textContent = msg;
+  n.style.display = 'block';
+  clearTimeout(n._t);
+  n._t = setTimeout(() => n.style.display = 'none', 3000);
+}
+
+</script>
+</body>
+</html>
