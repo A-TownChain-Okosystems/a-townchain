@@ -1,0 +1,17 @@
+// ATCLang v0.3 — Verifier Registry
+// Registry für Verifikationsschlüssel auf der Chain
+// ATC-Standard: ATC-24
+
+module verifier_registry {
+    fn register_vk(circuit_name: string, vk: string) {
+        // Verification Key auf Chain registrieren
+    }
+    
+    fn get_vk(circuit_name: string) {
+        // VK abrufen
+    }
+    
+    fn list_circuits() {
+        // Alle registrierten Circuits
+    }
+}
