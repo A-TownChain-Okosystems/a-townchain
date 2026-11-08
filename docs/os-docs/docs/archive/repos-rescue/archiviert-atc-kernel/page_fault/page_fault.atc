@@ -1,0 +1,78 @@
+// K-Sprint 32 — Page Fault Handler + Demand Paging (ATCLang Interface)
+// Rust: kernel/src/page_fault.rs (1371 lines, 47 tests)
+// Agent: Aurora #2 (6a275618)
+
+enum PageFaultType {
+    NOT_PRESENT,
+    PROTECTION_VIOLATION,
+    WRITE_TO_READONLY,
+    READ_FROM_EXEC_ONLY,
+    USER_ACCESS_KERNEL,
+    COPAGE_FAULT,
+}
+
+enum VmaType {
+    CODE,
+    DATA,
+    STACK,
+    HEAP,
+    MMAP,
+    SHARED,
+}
+
+struct VmaFlags {
+    read: bool,
+    write: bool,
+    execute: bool,
+    cow: bool,
+    shared: bool,
+}
+
+struct VirtualMemoryArea {
+    start: u64,
+    end: u64,
+    flags: VmaFlags,
+    vma_type: VmaType,
+}
+
+enum BackingStore {
+    NONE,
+    FILE(String),
+    SWAP(u64),
+    ZERO,
+    SHARED(u64),
+}
+
+struct PageFaultInfo {
+    fault_addr: u64,
+    error_code: u32,
+    is_user: bool,
+    is_write: bool,
+    is_exec: bool,
+}
+
+module Kernel::PageFault {
+    contract FrameAllocator {
+        fn alloc() -> Option<u64>
+        fn alloc_contiguous(count: u32) -> Option<u64>
+        fn free(frame: u64) -> bool
+        fn free_range(start: u64, count: u32) -> u32
+        fn is_allocated(frame: u64) -> bool
+        fn allocated_count() -> u32
+        fn free_count() -> u32
+    }
+
+    contract PageFaultHandler {
+        fn handle_fault(info: PageFaultInfo) -> Result<(), String>
+        fn from_registers(cr2: u64, error_code: u32) -> PageFaultInfo
+        fn can_demand_page(fault_type: PageFaultType) -> bool
+        fn can_cow(fault_type: PageFaultType) -> bool
+    }
+
+    contract VmaManager {
+        fn create_vma(start: u64, end: u64, flags: VmaFlags, vma_type: VmaType) -> VirtualMemoryArea
+        fn find_vma(addr: u64) -> Option<VirtualMemoryArea>
+        fn remove_vma(start: u64) -> bool
+        fn list_vmas() -> List<VirtualMemoryArea>
+    }
+}
