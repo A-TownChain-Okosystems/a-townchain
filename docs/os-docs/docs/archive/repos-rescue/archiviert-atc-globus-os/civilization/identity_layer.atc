@@ -1,0 +1,26 @@
+// ATCLang v0.3 — Identity Layer
+// On-chain Identität für Zivilisationen und Spieler
+// ATC-Standard: ATC-86
+
+module identity_layer {
+    struct Identity {
+        identity_id: string,
+        owner: string,
+        civ_id: string,
+        reputation: int,
+        achievements: List[string],
+        on_chain: bool,
+    }
+    
+    fn create_identity(owner: string, civ_id: string) {
+        // Neue Identität registrieren
+    }
+    
+    fn add_achievement(identity_id: string, achievement: string) {
+        // Errungenschaft hinzufügen
+    }
+    
+    fn get_reputation(identity_id: string) {
+        // Reputation abrufen
+    }
+}
