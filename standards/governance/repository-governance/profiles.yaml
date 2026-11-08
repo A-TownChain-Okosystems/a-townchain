@@ -1,0 +1,19 @@
+# ATC-GOV-001 Kap. 13 — Repository-Governance-Profile G0-G4 (maschinenlesbar)
+constitution_ref: ATC-GOV-001
+version: "1.0.0"
+profiles:
+  G0_experimental:   { governance_profile: experimental, review_level: 1, release_class: none, availability: best_effort }
+  G1_standard:       { governance_profile: standard, review_level: 2, release_class: normal, availability: standard }
+  G2_production:     { governance_profile: production, review_level: 2, release_class: controlled, availability: high }
+  G3_critical:       { governance_profile: critical, review_level: 3, release_class: controlled, availability: high, extra: [security-gate, architecture-review] }
+  G4_sovereign_core: { governance_profile: sovereign-core, review_level: 3, release_class: controlled-plus-timelock, availability: high, extra: [multi-authority-approval, formal-evidence, audit] }
+
+core_repo_assignment:
+  a-townchain:  { profile: G4, authorities: [Protocol Authority, Security Authority, Architecture Authority], security_level: S4 }
+  atclang:      { profile: G4, authorities: [Language Authority, Compiler Authority, Security Authority], security_level: S4 }
+  atc-shivacore: { profile: G4, authorities: [Kernel Authority, Security Authority, Architecture Authority], security_level: S4 }
+  globus-os:    { profile: G3, authorities: [OS Architecture Authority, Security Authority], security_level: S3 }
+  aurora-ai:    { profile: G3, authorities: [AI Governance Authority, Security Authority], security_level: S3 }
+  genesis-chronicles: { profile: G2, authorities: [Game Architecture Authority, Economy Governance], security_level: S2 }
+  default_unlisted: G1
+full_rollout: "Org-scope-SSOT (.github ai/org-scope.yaml) ergaenzen je Repo (governance_profile/security_level-Felder); Nachfolge-SCR mit Assurance-Engine"
