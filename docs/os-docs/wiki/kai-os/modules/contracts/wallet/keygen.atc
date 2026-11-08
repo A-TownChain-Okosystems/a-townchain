@@ -1,0 +1,75 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-87 — Wallet Key Generation
+// Sprint 2.5 | Smart Contract Layer | Chain-ID 9000
+// Migrated from: modules/contracts/wallet/keygen.py (139 lines)
+// Entropy → Mnemonic → Seed → Private Key → Public Key → ATC Address
+// ─────────────────────────────────────────────────────────────
+
+contract ATCKeyGenerator {
+    state generated_count: u64
+
+    fn init() {
+        self.generated_count = 0
+    }
+
+    fn generate_entropy() -> Hash {
+        return Hash::random()
+    }
+
+    fn entropy_to_mnemonic(entropy: Hash) -> List<String> {
+        // BIP39: 256-bit entropy → 24 words
+        let words: List<String> = []
+        let bits = Hash::to_bitstring(entropy)
+        let i: u16 = 0
+        while i < 264 {
+            let idx = String::substring_to_u16(bits, i, i + 11)
+            words.push(BIP39::word(idx))
+            i += 11
+        }
+        return words
+    }
+
+    fn mnemonic_to_seed(mnemonic: List<String>) -> Hash {
+        let mnemonic_str = String::join(mnemonic, " ")
+        return Hash::pbkdf2_sha512(mnemonic_str, "mnemonicA-TownChain", 2048)
+    }
+
+    fn seed_to_private_key(seed: Hash) -> Hash {
+        return Hash::hmac_sha256("A-TownChain seed", seed)
+    }
+
+    fn private_to_public_key(priv_key: Hash) -> Hash {
+        return Hash::sha256(priv_key)
+    }
+
+    fn public_key_to_address(pub_key: Hash) -> Address {
+        let step1 = Hash::sha256(pub_key)
+        let step2 = Hash::sha256(step1)
+        let checksum = Hash::sha256(step2)
+        return Address::from_atc_format(step2, checksum)
+    }
+
+    fn generate_wallet() -> (Address, Hash, Hash, List<String>) {
+        let entropy = self.generate_entropy()
+        let mnemonic = self.entropy_to_mnemonic(entropy)
+        let seed = self.mnemonic_to_seed(mnemonic)
+        let priv_key = self.seed_to_private_key(seed)
+        let pub_key = self.private_to_public_key(priv_key)
+        let addr = self.public_key_to_address(pub_key)
+        self.generated_count += 1
+        return (addr, pub_key, priv_key, mnemonic)
+    }
+
+    fn restore_from_mnemonic(mnemonic: List<String>) -> (Address, Hash, Hash) {
+        let seed = self.mnemonic_to_seed(mnemonic)
+        let priv_key = self.seed_to_private_key(seed)
+        let pub_key = self.private_to_public_key(priv_key)
+        let addr = self.public_key_to_address(pub_key)
+        return (addr, pub_key, priv_key)
+    }
+
+    fn validate_address(addr: Address) -> bool {
+        return Address::is_valid_atc(addr)
+    }
+}
