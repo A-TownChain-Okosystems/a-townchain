@@ -1,0 +1,70 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — Gateway Logger Middleware
+// Sprint 3.0 | Gateway Layer | Chain-ID 9000
+// Migrated from: modules/gateway/middleware/logger.py (8 lines)
+// Request logging for gateway middleware chain
+// ─────────────────────────────────────────────────────────────
+
+struct LogEntry {
+    timestamp: u64,
+    method: String,
+    path: String,
+    remote_addr: String,
+    status_code: u16,
+    response_time_ms: u32,
+}
+
+contract LoggerMiddleware {
+    state logs: List<LogEntry>
+    state log_count: u64
+    state max_logs: u16
+    state owner: Address
+
+    event RequestLogged(method: String, path: String, status: u16)
+
+    fn init() {
+        self.logs = []
+        self.log_count = 0
+        self.max_logs = 1000
+        self.owner = msg_sender()
+    }
+
+    fn log_request(method: String, path: String, remote_addr: String, status: u16, response_time: u32) -> bool {
+        if self.logs.len() >= self.max_logs {
+            // Ring buffer: in production, evict oldest
+            return true
+        }
+        let entry = LogEntry {
+            timestamp: Time::now(),
+            method: method,
+            path: path,
+            remote_addr: remote_addr,
+            status_code: status,
+            response_time_ms: response_time,
+        }
+        self.logs.push(entry)
+        self.log_count += 1
+        emit RequestLogged(method, path, status)
+        return true
+    }
+
+    fn get_recent_logs(count: u16) -> u64 {
+        if count > self.logs.len() {
+            return self.logs.len()
+        }
+        return count
+    }
+
+    fn get_stats() -> (u64, u16, u16) {
+        return (self.log_count, self.logs.len(), self.max_logs)
+    }
+
+    fn clear_logs() -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.logs = []
+        return true
+    }
+}
