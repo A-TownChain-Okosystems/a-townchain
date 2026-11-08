@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-95",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #95: governance: add trust and evidence status framework",
+  "context": "Pull request 95 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/95",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Scope\nImplements the canonical project trust/transparency framework without asserting readiness.\n\n### Added\n- `schemas/governance/project-status.schema.json`\n- `governance/status.json`\n- `governance/CLAIM_TO_EVIDENCE.md`\n- `governance/RESIDUALS.md`\n- `governance/ATTRIBUTION.md`\n- `governance/SECURITY.md`\n- `governance/validate.py`\n- `PROJECT_STATUS.md`\n\n### CI\nExtends the existing Repository Governance workflow with an evidence-framework validation job.\n\n### Evidence policy\n- Exact 40-character source SHA required.\n- `VERIFIED` requires independent audit/reproduction evidence and no residuals.\n- Failed gates remain failed evidence; no automatic PASS/VERIFIED generation.\n- ShivaCore baseline remains BLOCKED.\n- Dependency Review remains a documented non-blocking residual because Dependency Graph support is unavailable.\n\n### Deliberate omission\nNo third-party attribution entry was invented. The previously proposed `poke-env` row is not present in this repository and therefore is not registered as used.\n\nNext lifecycle step after merge: repair ShivaCore baseline, then rebase/reverify globus-os PR #37 and only then advance statuses."
+}
