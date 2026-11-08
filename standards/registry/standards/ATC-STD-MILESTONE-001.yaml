@@ -1,0 +1,18 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: milestone
+family: MILESTONE
+family_id: PREFIX
+file: standards/milestone/ATC-STD-MILESTONE-001.md
+mandate: Owner-Entwurf 07.09. 23:31 — 19 REQ-MS, ATC-MILESTONE-ACCEPTANCE-GATE + GOVERNANCE-RULE,
+  13-Status-Lifecycle ohne Spruenge, 19 Pflichtfelder, Reifeklassen M0-M8, Evidence
+  Packs, 8 Gates, Dependency-Deklaration, Sprint/Release-Trennung, MAJOR-Revalidation
+  (UPD-G04/COMPAT-001), Risikomodell, KI-Agenten-Regeln, 18-Punkte-DoD, maschinenlesbar
+  (milestone.schema.json + milestones.yaml + Validator S-20); AD-027 M1-M8 als ATC-M-001..008
+  registriert; SCR-0018; §9-Freigabe 07.09. 23:38, APPROVED, normativ, §30-eingefroren
+registry_version: 1
+standard_id: ATC-STD-MILESTONE-001
+status: approved
+title: 'ATC Milestone Standard — Verbindliche Meilenstein-Governance: Zustandsnachweis,
+  Lebenszyklus, Acceptance Gates, Evidence Packs, maschinenlesbare Registry'
+version: 1.0.0
