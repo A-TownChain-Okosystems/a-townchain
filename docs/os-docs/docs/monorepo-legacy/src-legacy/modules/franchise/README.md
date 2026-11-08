@@ -1,6 +1,6 @@
 # franchise — L8: Franchise DAO — Vault, Revenue Sharing, Token Economy
 
-Part of [A-TownChain OS Monorepo](../../../../README.md)
+Part of [A-TownChain OS Monorepo](../../../../../../../README.md)
 
 ## Inhalt
 
