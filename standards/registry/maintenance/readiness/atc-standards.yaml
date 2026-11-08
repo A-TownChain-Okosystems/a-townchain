@@ -1,0 +1,38 @@
+# ATC-STD-MAINT-000 Par.7.2 — Maintenance Readiness Record (SCR-0123, Welle 1)
+# Komponente: atc-standards (Registry/Governance-SSOT der Org) | Release: v1.1.0
+# Klassifikation: M1 Operational. Ehrlichheitsprinzip: Luecken werden benannt,
+# nicht versteckt. result=FAIL = naechstes Release BLOCKED (Par.7.2), kein Pipeline-Fehler.
+maintenance_readiness:
+  maintenance_owner:
+    state: complete
+    ref: "ShivaCoreDev + Org A-TownChain-Okosystems (Rollendokumentiert in ATC-AI-GOV-ACCESS-001 Par.4)"
+  maintenance_documentation:
+    state: complete
+    ref: "registry/ + AGENT_MANIFEST.md + MAINT-Familie 000..024 (SCR-0120) + README/STATUS generated Views"
+  dependency_inventory:
+    state: complete
+    ref: "CI-Pins pyyaml/jsonschema in Workflows; GitHub-Actions versioniert; Dependabot aktiv (PR #119/#120)"
+  security_process:
+    state: complete
+    ref: "CodeQL + Secret-Scanning gruen auf main; F-ORG-002 GESCHLOSSEN 07.10.2026 (SCR-0130): Dependency Graph in allen 7 betroffenen Repos per API aktiviert (aurora-ai, atc-wallet, atc-indexer, atc-interop, genesis-chronicles, atc-oracle, atc-launchpad, API-Response 204 je Repo)"
+  test_suite:
+    state: complete
+    ref: "ATC Test Suite (Tools-Smoke) + validate_all ALL COMPLIANT + Cross-Registry R1-R12 gruen auf main (Merge 7937b15, 14.09.)"
+  rollback_strategy:
+    state: complete
+    ref: "Rollback-Runbook GETESTET 07.10.2026 (docs/runbooks/ROLLBACK-REGISTRY.md, SCR-0130): Verfahren A Revert 493df45 konfliktfrei + Validator ALL COMPLIANT + Restore verifiziert; Verfahren B Tiefe-Revert-Konflikte dokumentiert mit Alternativpfad"
+  compatibility_strategy:
+    state: complete
+    ref: "Standard-Version-Gate 109 Versionserklaerungen 0 FAIL; Semantic Versioning verbindlich (ATC-STD-VERSION-001)"
+  monitoring:
+    state: complete
+    ref: "CI je Push/PR auf main (Allocation, Version, Naming, Governance, Maintenance-Conformance-Gates)"
+  evidence_collection:
+    state: complete
+    ref: "registry.lock SHA + evidence.yaml + SCR-Verzeichnis + Views-Regeneration (ATC-STD-MAINT-019-Schema)"
+  lifecycle_status:
+    state: complete
+    ref: "operational; GitHub Release v1.1.0 (Org-Audit 14.09., Releases 2/30)"
+result: PASS
+# SCR-0130 (07.10.2026): F-ORG-002 geschlossen (7 Repos Dependency Graph per
+# API aktiviert) + Rollback-Runbook getestet (MAINT-018 Par.4). 10/10 complete.
