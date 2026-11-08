@@ -1,0 +1,13 @@
+[package]
+name = "atc-marketplace"
+version = "0.1.0"
+edition = "2021"
+description = "Marketplace core — Listings, Orders, Settlement Interface & Adapters"
+authors = ["Michael Wroblewski"]
+license = "Apache-2.0"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+atc_assets = { path = "../atc-assets" }
