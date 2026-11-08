@@ -1,0 +1,17 @@
+// ATCLang v0.3 — Transfer Circuit
+// ZKP Circuit für private Transfers
+// ATC-Standard: ATC-24
+
+module transfer_circuit {
+    fn prove_transfer(amount: int, sender_balance: int, receiver: string) {
+        // Beweise: sender hat >= amount, amount > 0, balance korrekt aktualisiert
+    }
+    
+    fn prove_merkle_path(leaf: string, path: List[string], root: string) {
+        // Beweise Merkle-Inklusion ohne Leaf preiszugeben
+    }
+    
+    fn prove_nullifier(nullifier: string, spent: bool) {
+        // Verhindert Double-Spending ohne Identität offenzulegen
+    }
+}
