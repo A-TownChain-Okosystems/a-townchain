@@ -1,0 +1,16 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang v0.3 — Multi-Signature Wallet
+// Threshold, owners, revoke
+// ATC-Standard: ATC-17
+
+module multisig {
+    struct MultisigWallet {
+        threshold: int,
+        owners_count: int,
+        nonce: int
+    }
+    
+    fn confirm_transaction() {
+        // Adds owner confirmation signature to pending multisig transaction
+    }
+}
