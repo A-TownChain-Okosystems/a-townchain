@@ -1,0 +1,17 @@
+// ATCLang v0.3 — Devnet Launcher
+// Development-Network für schnelle Iteration
+// ATC-Standard: ATC-01
+
+module devnet_launcher {
+    fn quick_start() {
+        // Single-Node Devnet in < 5 Sekunden
+    }
+    
+    fn reset() {
+        // Devnet zurücksetzen (fresh state)
+    }
+    
+    fn fund_account(address: string, amount: int) {
+        // Test-Tokens an Adresse senden
+    }
+}
