@@ -1,0 +1,32 @@
+// ATCLang v0.3 — World Governance
+// Globale Governance für GlobusOS-Welten — Abstimmungen, Gesetze, Verfassung
+// ATC-Standard: ATC-17
+
+module world_governance {
+    struct WorldLaw {
+        law_id: string,
+        world_id: string,
+        title: string,
+        description: string,
+        proposed_by: string,
+        votes_for: int,
+        votes_against: int,
+        enacted: bool,
+    }
+    
+    fn propose_law(world_id: string, title: string, description: string) {
+        // Gesetz vorschlagen
+    }
+    
+    fn vote_law(law_id: string, identity_id: string, vote: bool) {
+        // Über Gesetz abstimmen
+    }
+    
+    fn enact_law(law_id: string) {
+        // Verabschiedetes Gesetz in Kraft setzen
+    }
+    
+    fn get_constitution(world_id: string) {
+        // Verfassung der Welt abrufen
+    }
+}
