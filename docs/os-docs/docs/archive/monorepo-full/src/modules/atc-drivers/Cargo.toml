@@ -1,0 +1,12 @@
+[package]
+name = "atc_drivers"
+version = "0.1.0"
+edition = "2021"
+description = "Hardware-Treiber — USB, GPU, Audio, SATA/NVMe, HID, Network"
+authors = ["Michael Wroblewski"]
+license = "ALL RIGHTS RESERVED"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
