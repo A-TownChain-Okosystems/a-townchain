@@ -1,6 +1,6 @@
 # contracts — L6: Smart Contracts — ATC-8300 Token, Governance, Bridge, Shivamon
 
-Part of [A-TownChain OS Monorepo](../../../../README.md)
+Part of [A-TownChain OS Monorepo](../../../../../../../README.md)
 
 ## Inhalt
 
