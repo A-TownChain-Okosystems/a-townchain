@@ -1,0 +1,47 @@
+# Canonical System Matrix — Core Domains
+
+schema_version: "1.0.0"
+generated: "2026-09-30"
+scope: "GlobusOS + Aurora AI + ShivaCore Kernel + A-TownChain + Genesis Engine"
+status_semantics: "Architecture/source inventory is not implementation evidence. UNANALYZED means implementation status requires direct verification."
+domains:
+  - 
+    id: "DOM-GLOBUSOS"
+    domain: "GLOBUSOS"
+    name: "GlobusOS"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source: "globus-os:main"
+    module_count: 11
+  - 
+    id: "DOM-AURORA"
+    domain: "AURORA"
+    name: "Aurora AI"
+    repo: "A-TownChain-Okosystems/aurora-ai"
+    status: "UNANALYZED"
+    source: "aurora-ai:main"
+    module_count: 6
+  - 
+    id: "DOM-SHIVACORE"
+    domain: "SHIVACORE"
+    name: "ShivaCore Kernel"
+    repo: "A-TownChain-Okosystems/atc-shivacore"
+    status: "UNANALYZED"
+    source: "atc-shivacore:main"
+    module_count: 2
+  - 
+    id: "DOM-ATC"
+    domain: "ATC"
+    name: "A-TownChain"
+    repo: "A-TownChain-Okosystems/a-townchain"
+    status: "UNANALYZED"
+    source: "a-townchain:main"
+    module_count: 6
+  - 
+    id: "DOM-GENESIS"
+    domain: "GENESIS"
+    name: "Genesis Engine"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source: "genesis-engine:main"
+    module_count: 24
