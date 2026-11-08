@@ -6,7 +6,7 @@ license = "Apache-2.0"
 publish = false
 
 [dependencies]
-atc-node = { path = "../components/atc-node" }
-atc-sdk = { path = "../components/atc-sdk" }
-atc-blockchain = { path = "../components/a-townchain/modules/atc-blockchain/kernel" }
+atc-node = { path = "../../components/node" }
+atc-sdk = { path = "../../components/sdk/modules/atc-sdk/rust" }
+atc-blockchain = { path = "../../modules/atc-blockchain/kernel" }
 ed25519-dalek = { version = "2", features = ["rand_core"] }
