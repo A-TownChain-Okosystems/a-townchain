@@ -1,0 +1,165 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-45 — Franchise Factory
+// Sprint 3.2 | Application Layer | Chain-ID 9000
+// Migrated from: modules/franchise/factory.py (137 lines)
+// Decentralized business ecosystem: mini-DAOs with token, governance, vault
+// ─────────────────────────────────────────────────────────────
+
+enum FranchiseStatus { Proposal, Active, Suspended, Dissolved }
+enum RoyaltyTier { Bronze, Silver, Gold, Platinum }
+
+struct FranchiseVault {
+    balance: u128,
+    total_in: u128,
+    total_out: u128,
+    tx_count: u32,
+}
+
+struct Franchise {
+    franchise_id: Hash,
+    name: String,
+    creator: Address,
+    status: FranchiseStatus,
+    royalty_tier: RoyaltyTier,
+    vault: FranchiseVault,
+    member_count: u32,
+    created_at: u64,
+}
+
+contract FranchiseFactory {
+    state franchises: Map<Hash, Franchise>
+    state franchise_count: u32
+    state total_volume: u128
+    state owner: Address
+
+    event FranchiseCreated(franchise_id: Hash, name: String, creator: Address)
+    event FranchiseActivated(franchise_id: Hash)
+    event FranchiseSuspended(franchise_id: Hash)
+    event VaultDeposit(franchise_id: Hash, amount: u128, from_addr: Address)
+    event VaultWithdrawal(franchise_id: Hash, amount: u128, to_addr: Address)
+
+    fn init() {
+        self.franchises = {}
+        self.franchise_count = 0
+        self.total_volume = 0
+        self.owner = msg_sender()
+    }
+
+    fn royalty_rate(tier: RoyaltyTier) -> u16 {
+        if tier == RoyaltyTier::Bronze {
+            return 500  // 5%
+        }
+        if tier == RoyaltyTier::Silver {
+            return 400  // 4%
+        }
+        if tier == RoyaltyTier::Gold {
+            return 300  // 3%
+        }
+        return 200  // Platinum 2%
+    }
+
+    fn create_franchise(name: String, tier: RoyaltyTier) -> Hash {
+        let id_input = name + Address::to_string(msg_sender()) + Int::to_string(Time::now())
+        let franchise_id = Hash::sha256(id_input)
+        let franchise = Franchise {
+            franchise_id: franchise_id,
+            name: name,
+            creator: msg_sender(),
+            status: FranchiseStatus::Proposal,
+            royalty_tier: tier,
+            vault: FranchiseVault { balance: 0, total_in: 0, total_out: 0, tx_count: 0 },
+            member_count: 1,
+            created_at: Time::now(),
+        }
+        self.franchises[franchise_id] = franchise
+        self.franchise_count += 1
+        emit FranchiseCreated(franchise_id, name, msg_sender())
+        return franchise_id
+    }
+
+    fn activate_franchise(franchise_id: Hash) -> bool {
+        let f = self.franchises.get(franchise_id)
+        if f == null {
+            return false
+        }
+        if f.creator != msg_sender() && msg_sender() != self.owner {
+            return false
+        }
+        f.status = FranchiseStatus::Active
+        emit FranchiseActivated(franchise_id)
+        return true
+    }
+
+    fn suspend_franchise(franchise_id: Hash) -> bool {
+        let f = self.franchises.get(franchise_id)
+        if f == null {
+            return false
+        }
+        if msg_sender() != self.owner {
+            return false
+        }
+        f.status = FranchiseStatus::Suspended
+        emit FranchiseSuspended(franchise_id)
+        return true
+    }
+
+    fn deposit_to_vault(franchise_id: Hash, amount: u128) -> bool {
+        let f = self.franchises.get(franchise_id)
+        if f == null || f.status != FranchiseStatus::Active {
+            return false
+        }
+        f.vault.balance += amount
+        f.vault.total_in += amount
+        f.vault.tx_count += 1
+        self.total_volume += amount
+        emit VaultDeposit(franchise_id, amount, msg_sender())
+        return true
+    }
+
+    fn withdraw_from_vault(franchise_id: Hash, amount: u128, to_addr: Address) -> bool {
+        let f = self.franchises.get(franchise_id)
+        if f == null || f.status != FranchiseStatus::Active {
+            return false
+        }
+        if f.vault.balance < amount {
+            return false
+        }
+        if f.creator != msg_sender() {
+            return false
+        }
+        f.vault.balance -= amount
+        f.vault.total_out += amount
+        f.vault.tx_count += 1
+        emit VaultWithdrawal(franchise_id, amount, to_addr)
+        return true
+    }
+
+    fn get_franchise(franchise_id: Hash) -> (String, Address, FranchiseStatus, u32) {
+        let f = self.franchises.get(franchise_id)
+        if f == null {
+            return ("", Address::zero(), FranchiseStatus::Proposal, 0)
+        }
+        return (f.name, f.creator, f.status, f.member_count)
+    }
+
+    fn get_vault_balance(franchise_id: Hash) -> (u128, u128, u128, u32) {
+        let f = self.franchises.get(franchise_id)
+        if f == null {
+            return (0, 0, 0, 0)
+        }
+        return (f.vault.balance, f.vault.total_in, f.vault.total_out, f.vault.tx_count)
+    }
+
+    fn get_franchise_count() -> u32 {
+        return self.franchise_count
+    }
+
+    fn get_royalty_rate(franchise_id: Hash) -> u16 {
+        let f = self.franchises.get(franchise_id)
+        if f == null {
+            return 0
+        }
+        return self.royalty_rate(f.royalty_tier)
+    }
+}
