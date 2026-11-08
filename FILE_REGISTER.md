@@ -993,3 +993,24 @@
 - `specs/ATC-VM-CONF-001-VM-CONFORMANCE.md`
 - `tools/consensus_boundary_check.py`
 - `tools/determinism_check.py`
+
+---
+
+## Nachtrag 2026-11-08 (P0-Härtung)
+
+| Datei | Zweck |
+|---|---|
+| `components/node/src/mempool.rs` | Mempool + TxLedger: Signatur, DID-Bindung, Nonce, Replay (SEC-P0-001/008) |
+| `components/node/src/did.rs` | DID-Registry mit Schlüsselrotation und IdentityPolicy (SEC-P0-004) |
+| `components/node/src/validator.rs` | ECDSA-Proposals mit Domain-Separation und öffentlicher Verifikation (SEC-P0-003) |
+| `components/node/src/chain.rs` | 256-Bit-Blockhashes, produce_tx_block/import_tx_block (SEC-P0-007) |
+| `components/node/src/bootstrap.rs` | Genesis boot_hash256 als Kettenanker |
+| `components/node/src/gossip.rs` | Wire-Format mit 64-Hex-Hashes |
+| `components/node/tests/tx_block_tests.rs` | 8 Regressionstests Tx-Blöcke/Replay |
+| `components/node/tests/block_hash_tests.rs` | 5 Regressionstests Hashbreite/Genesis-Bindung |
+| `components/node/tests/did_registry_tests.rs` | 4 Regressionstests DID-Auflösung/Rotation |
+| `components/wallet/src/keys.rs` | Kanonische Adressableitung address_from_pubkey (SEC-P0-005) |
+| `components/wallet/src/tx.rs` | verify_bound: DID↔Pubkey-Bindung (SEC-P0-004) |
+| `components/oracle/src/verification.rs` | Echte Ed25519-/secp256k1-Adapter statt Mock (SEC-P0-002) |
+| `components/oracle/tests/oracle_new_tests.rs` | Signaturtests mit echten Kurven |
+| `ARCHITECTURE.md` | Ablage-Status und Legacy-Grenze dokumentiert (08.11.2026) |
