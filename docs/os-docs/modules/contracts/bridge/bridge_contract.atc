@@ -1,0 +1,172 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-91 — Cross-Chain Bridge Contract
+// Sprint 2.5 | Smart Contract Layer | Chain-ID 9000
+// Migrated from: modules/contracts/bridge/bridge_contract.py (132 lines)
+// Lock-Mint / Burn-Release schema for cross-chain transfers
+// ─────────────────────────────────────────────────────────────
+
+const BRIDGE_FEE_BPS: u16 = 10        // 0.1% in basis points
+const MIN_AMOUNT: u128 = 10000000000   // 10 ATC (nano)
+const MAX_AMOUNT: u128 = 1000000000000000  // 1M ATC
+
+enum BridgeStatus { Pending, Locked, Minted, Released, Failed, Refunded }
+enum TargetChain { Eth, Bsc, Polygon }
+
+struct BridgeTx {
+    tx_id: Hash,
+    from_chain: u8,
+    to_chain: TargetChain,
+    from_addr: Address,
+    to_addr: String,
+    amount: u128,
+    token: String,
+    status: BridgeStatus,
+    fee: u128,
+    created: u64,
+    completed: u64,
+}
+
+contract BridgeContract {
+    state owner: Address
+    state bridge_txs: Map<Hash, BridgeTx>
+    state locked_amounts: Map<Address, u128>
+    state paused: bool
+    state total_locked: u128
+    state total_bridged: u128
+
+    event Locked(tx_id: Hash, from_addr: Address, amount: u128, target: TargetChain)
+    event Minted(tx_id: Hash, to_addr: String, amount: u128)
+    event Released(tx_id: Hash, to_addr: Address, amount: u128)
+    event Refunded(tx_id: Hash, reason: String)
+
+    fn init() {
+        self.owner = msg_sender()
+        self.bridge_txs = {}
+        self.locked_amounts = {}
+        self.paused = false
+        self.total_locked = 0
+        self.total_bridged = 0
+    }
+
+    fn lock(to_chain: TargetChain, to_addr: String, amount: u128, token: String) -> Hash {
+        if self.paused {
+            return Hash::zero()
+        }
+        if amount < MIN_AMOUNT || amount > MAX_AMOUNT {
+            return Hash::zero()
+        }
+        let from_addr = msg_sender()
+        let fee = amount * BRIDGE_FEE_BPS / 10000
+        let net_amount = amount - fee
+        // Lock tokens
+        let current_locked = self.locked_amounts.get(from_addr)
+        if current_locked == null {
+            self.locked_amounts[from_addr] = amount
+        } else {
+            self.locked_amounts[from_addr] = current_locked + amount
+        }
+        self.total_locked += amount
+        // Create bridge tx
+        let id_input = Address::to_string(from_addr) + to_addr + Int::to_string(amount) + Int::to_string(Time::now())
+        let tx_id = Hash::sha256(id_input)
+        let bridge_tx = BridgeTx {
+            tx_id: tx_id,
+            from_chain: 0,
+            to_chain: to_chain,
+            from_addr: from_addr,
+            to_addr: to_addr,
+            amount: net_amount,
+            token: token,
+            status: BridgeStatus::Locked,
+            fee: fee,
+            created: Time::now(),
+            completed: 0,
+        }
+        self.bridge_txs[tx_id] = bridge_tx
+        emit Locked(tx_id, from_addr, net_amount, to_chain)
+        return tx_id
+    }
+
+    fn mint_on_target(tx_id: Hash) -> bool {
+        let tx = self.bridge_txs.get(tx_id)
+        if tx == null {
+            return false
+        }
+        if tx.status != BridgeStatus::Locked {
+            return false
+        }
+        tx.status = BridgeStatus::Minted
+        tx.completed = Time::now()
+        self.total_bridged += tx.amount
+        emit Minted(tx_id, tx.to_addr, tx.amount)
+        return true
+    }
+
+    fn burn_and_release(tx_id: Hash, release_addr: Address) -> bool {
+        let tx = self.bridge_txs.get(tx_id)
+        if tx == null {
+            return false
+        }
+        if tx.status != BridgeStatus::Locked {
+            return false
+        }
+        // Release locked tokens
+        tx.status = BridgeStatus::Released
+        tx.completed = Time::now()
+        let locked = self.locked_amounts.get(tx.from_addr)
+        if locked != null && locked >= tx.amount {
+            self.locked_amounts[tx.from_addr] = locked - tx.amount
+        }
+        self.total_locked -= tx.amount
+        emit Released(tx_id, release_addr, tx.amount)
+        return true
+    }
+
+    fn refund(tx_id: Hash, reason: String) -> bool {
+        let tx = self.bridge_txs.get(tx_id)
+        if tx == null {
+            return false
+        }
+        if tx.status != BridgeStatus::Locked {
+            return false
+        }
+        tx.status = BridgeStatus::Refunded
+        tx.completed = Time::now()
+        let locked = self.locked_amounts.get(tx.from_addr)
+        if locked != null && locked >= tx.amount {
+            self.locked_amounts[tx.from_addr] = locked - tx.amount
+        }
+        self.total_locked -= tx.amount
+        emit Refunded(tx_id, reason)
+        return true
+    }
+
+    fn get_bridge_tx(tx_id: Hash) -> (BridgeStatus, u128, u64, u64) {
+        let tx = self.bridge_txs.get(tx_id)
+        if tx == null {
+            return (BridgeStatus::Failed, 0, 0, 0)
+        }
+        return (tx.status, tx.amount, tx.created, tx.completed)
+    }
+
+    fn get_stats() -> (u128, u128, u32) {
+        return (self.total_locked, self.total_bridged, self.bridge_txs.len())
+    }
+
+    fn pause() -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.paused = true
+        return true
+    }
+
+    fn unpause() -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.paused = false
+        return true
+    }
+}
