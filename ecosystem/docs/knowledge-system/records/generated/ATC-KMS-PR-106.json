@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-106",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #106: sync+fix: Umbrella-Subtree-Sync 2026-10-10 + rust-manifests-Gate vollstaendig gruen (184/184)",
+  "context": "Pull request 106 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/106",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Ziel\nUmbrella-Subtree-Sync 2026-10-10 (alle 6 Komponenten auf Source-SSOT-Stand, ADR-0001) **plus**: rust-manifests-Job der ecosystem-release-readiness vollstaendig gruen. Lokal per exakter Gate-Replik des CI-Jobs verifiziert: **184/184 Gates PASS, exit=0** (fmt + check + test + clippy ueber alle Rust-Roots; globus-os mit exclude boot und stable-Clippy-Flags wie im Workflow).\n\n## Fixes (neue Commits auf diesem Branch)\n### Echte Bugs\n- **atc-node (umbrella)**: JSON-RPC `answer_json()` brach bei `id` als letztem JSON-Feld ab (-32600 statt Ergebnis/-32601). Fallback auf `}`-Delimiter ergaenzt. 40/40 Tests gruen.\n- **genesis-engine**: `unescape()` hatte durch Backslash-Zeilenfortsetzung ein LEERES replace-Suchmuster und fuegte `\\n` zwischen jedes Zeichen ein; scene_roundtrip kaputt. Behoben, 87/87 Tests gruen.\n- **atc-aurora-localization**: kein Workspace-Member und ohne `[workspace]`-Tabelle; jeder Cargo-Aufruf brach ab. Eigenstaendig gemacht (Konvention wie atc-aurora-memory), `Locale` um `Ord` ergaenzt.\n\n### Lint-/Format-Debt (78+ Hints, keine Semantik-Aenderungen)\n- globus-os: 18 Lints (u.a. Scheduler-Rename `next`->`pick_next`), fmt, 1310 Tests gruen\n- a-townchain/components: algorithm, interop/bridge, node, oracle, sdk, vm, wallet\n- atc-security: fmt + Default fuer RateLimiter\n- genesis-engine: Clippy-Debt in animation/world/network/physics/runtime\n- **vm**: normative ATC-STD-600-Vorhaltungen (Gate, Gas-Tabelle, Chain-ID, Limits) als dokumentierte Welle-3-Items mit `allow(dead_code)` + Begruendung, NICHT still geloescht\n- Cargo.lock-Vervollstaendigung fuer Komponenten-Roots\n\n## Verifikation (Evidence-First)\n- Gate-Replik des rust-manifests-Jobs: 184/184 PASS, TOTAL pass=184 fail=0, exit=0\n- atc-node + atc-sdk je 3x wiederholt: 196/196 gruen (2 Timing-Flakes im Vorlauf unter Last, nicht reproduzierbar)\n\n## Governance\n- Conventional Commits (V-16)\n- Quellrepos unberuehrt (ADR-0001 SSOT); Rueckfluss der echten Bugfixes (atc-node JSON-RPC, genesis-editor unescape) in die Quellrepos als Follow-up zu klaeren"
+}
