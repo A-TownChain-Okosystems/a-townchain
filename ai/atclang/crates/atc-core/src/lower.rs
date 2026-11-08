@@ -261,6 +261,9 @@ impl<'a> FnLowerer<'a> {
                 self.function_name
             ))),
             Stmt::Use { .. }
+            | Stmt::Module { .. }
+            | Stmt::Import { .. }
+            | Stmt::UseGroup { .. }
             | Stmt::Struct { .. }
             | Stmt::Enum { .. }
             | Stmt::Contract { .. }
@@ -485,6 +488,9 @@ pub fn lower_program(prog: &Program) -> Result<CompiledProgram, LowerError> {
             Stmt::Fn(_)
                 | Stmt::NativeFunction { .. }
                 | Stmt::Use { .. }
+                | Stmt::Module { .. }
+                | Stmt::Import { .. }
+                | Stmt::UseGroup { .. }
                 | Stmt::Struct { .. }
                 | Stmt::Enum { .. }
                 | Stmt::Contract { .. }
