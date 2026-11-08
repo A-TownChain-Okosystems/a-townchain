@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+members = [
+  "modules/atc-genesis-animation",
+  "modules/atc-genesis-assets",
+  "modules/atc-genesis-audio",
+  "modules/atc-genesis-ecs",
+  "modules/atc-genesis-physics",
+  "modules/atc-genesis-platform",
+  "modules/atc-genesis-renderer",
+  "modules/atc-genesis-ui",
+  "modules/atc-genesis-sdk",
+  "modules/atc-genesis-ai",
+  "modules/atc-genesis-network",
+  "modules/atc-genesis-build",
+  "modules/atc-genesis-tools",
+  "modules/atc-genesis-cli",
+  "modules/atc-genesis-editor",
+  "modules/atc-genesis-input",
+  "modules/atc-genesis-world",
+  "modules/atc-genesis-gameplay",
+  "modules/atc-genesis-runtime",
+]
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+version = "0.1.0"
