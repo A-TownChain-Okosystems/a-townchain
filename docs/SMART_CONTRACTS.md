@@ -99,10 +99,20 @@ vom Gate respektiert.
   Siehe STATUS.md/ROADMAP.md (G3-G10 offen)
 
 Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde, alle 16 Quellen
-kompilieren. Semantik Stufe 1: 0 Fehler, 18 Warnungen (17 mehrfach deklarierte
-Vertragsnamen aus den Mirror-Kopien und 1 unbekannter Typname `bytes32` im
-Spiegel `modules/atc-standards-refs`; die 38 `emit`-Aufrufe ohne
-Event-Deklaration sind am 08.11.2026 durch Deklarationen geschlossen).
+kompilieren. Semantik Stufe 1: 0 Fehler, 17 Warnungen (mehrfach deklarierte
+Vertragsnamen aus den Mirror-Kopien; die 38 `emit`-Aufrufe ohne
+Event-Deklaration sind am 08.11.2026 durch Deklarationen geschlossen, `bytes32`
+im Standards-Refs-Spiegel durch das kanonische `Hash` ersetzt).
+`--write-hashes` zieht Hashes nach einer bewussten Quelländerung nach.
+
+Verbindliche Token-Parameter (Owner-Entscheidung 08.11.2026): maximale
+Gesamtmenge 360.000.000 ATC, 18 Dezimalstellen, begrenztes Supply-Modell. Der
+Wert 21.000.000 ist kein autorisierter Protokollwert und in keiner normativen
+Spezifikation verankert; er wurde aus beiden Spiegelkopien entfernt, alle fünf
+Kopien von `atc8300.atc` sind byte-gleich. Die Chain-ID 658467 gilt **innerhalb**
+der ATC-Blockchain; Chain-IDs fremder Ketten sind nicht Gegenstand der Invariante
+und werden von ihr weder geprüft noch festgeschrieben. Gepinnt wird beides in
+`tools/atc-sc-validator/tests/test_supply_cap_invariant.py`.
 `--write-hashes` zieht Hashes nach einer bewussten Quelländerung nach.
 
 Gegenprobe: mit absichtlich verfälschtem Hash, fehlendem Pfad und einer
