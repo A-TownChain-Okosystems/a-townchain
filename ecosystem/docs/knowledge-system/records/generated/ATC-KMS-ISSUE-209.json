@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-209",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #209: [P1] Prove Aurora-to-chain vertical E2E through wallet, VM and finality",
+  "context": "Issue 209 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/209",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Goal\nProduce one auditable vertical proof path from an Aurora task through policy, compute verification and authorized blockchain state change.\n\n## Scope\nExercise the reference flow in the architecture specification using a non-critical test action and a controlled test environment.\n\n## Acceptance criteria\n- [ ] Aurora task is correlated through task_id/run_id/agent_id/policy_version.\n- [ ] Policy/capability check is enforced and denial/revocation cases fail closed.\n- [ ] Required wallet approval/signature is separate from AI intent.\n- [ ] Node validates the transaction and VM execution is deterministic for the same protocol inputs.\n- [ ] Success is reported only after the defined finality condition; transaction ID and canonical-state evidence are recorded.\n- [ ] Negative tests cover invalid signature, policy denial, timeout/retry and invalid/unverified worker result.\n- [ ] All CI/E2E results cite exact tested SHAs for each participating repository and a reproducible run.\n\n## Dependencies\nNormative contracts; persistent Aurora lifecycle; multi-node worker path; independent result verification; chain test environment/finality contract."
+}
