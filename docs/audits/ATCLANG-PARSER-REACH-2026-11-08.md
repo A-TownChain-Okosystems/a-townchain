@@ -65,6 +65,9 @@ wird aus einer Erweiterung eine Aufweichung.
 
 ## 5. Was offen bleibt (Dialektfragen, keine Fehler)
 
+> Nachgeführt in Abschnitt 7: `pub`, punktierte Modulnamen und Schlüsselwort-Felder sind
+> inzwischen umgesetzt, die Tabelle unten zeigt den Stand vor dem zweiten Schritt.
+
 Nach diesem Stand sind die häufigsten Ablehnungen keine Implementierungslücken mehr, sondern
 Formen, die **keine Spezifikation definiert**. Sie brauchen eine Entscheidung, nicht Code:
 
@@ -85,3 +88,45 @@ Zeilen sind formatiert; fremde Dateien wurden nicht angefasst, um den Diff lesba
 Nicht Teil dieses Schritts: `ai/atclang/examples/{event_bus,kernel,shivamon}.atc` scheitern
 weiter (Slice `data[:120]`, `state:` als Feldname, `Rarity::COMMON` im Ausdruck). Kein Test
 parst `examples/`, deshalb ist das bisher niemandem aufgefallen.
+
+---
+
+## 7. Zweiter Schritt: `pub`, punktierte Module, Schlüsselwort-Felder
+
+**Datum:** 08.11.2026, aufbauend auf `66cd13b`
+
+| Form | Dateien | Entscheidung |
+|------|---------|--------------|
+| `pub fn` / `pub struct` / `pub const` | 106 | Angenommen und **verworfen**. ATCLang kennt keine Sichtbarkeitsebenen. Das AST-Feld `is_pub` ist im Compiler fest auf `false` verdrahtet und bleibt es: würde der Marker es kippen, verschöben sich die ABI-Hashes jeder Datei, die `pub` schreibt. |
+| `module ATC.OS.Kernel` | 24 | Punkt ist Namensbestandteil, der Name wird als `ATC.OS.Kernel` geführt. |
+| `module x[AD-49] { … }` | (in den 24) | Der Klammerzusatz ist ein Governance-Verweis, kein Sprachbestandteil: angenommen und verworfen. Ein fehlendes `]` bleibt ein Fehler. |
+| `struct S { state: u64 }`, `x.state`, `S { state: 1 }` | 23 | Feldnamen dürfen Schlüsselwörter sein. An diesen Stellen kann nur ein Name stehen, das Schlüsselwort hat dort keine zweite Bedeutung. |
+
+**Neuer Stand:** 1645 Dateien, **937 angenommen**, 708 abgelehnt (+57 gegenüber `66cd13b`,
++461 gegenüber `583d5a5`).
+
+`atc-core` hat jetzt **141 Tests** (9 neue, u. a. `pub_ist_bedeutungslos_und_landet_nicht_in_der_ast`,
+`modulname_darf_punktiert_sein`, `modul_tag_ohne_klammer_ist_ein_fehler`,
+`schluesselwort_als_strukt_feld`).
+
+**Invarianten unverändert nachgewiesen:** `apps/atc-contracts` 50/33/0/18,
+`components/contracts` 46/29/0/18, Registry-Gate PASS 16/16 (prüft `source_sha256` **und**
+`abi_sha256`), EXEC-CHAIN 20/20.
+
+### Was jetzt noch abgelehnt wird (340 aktive Dateien, ohne `/archive/`)
+
+Die häufigsten Ursachen sind erneut Formen ohne Spezifikation, keine Lücken:
+
+| Anzahl | Form | Was zu entscheiden wäre |
+|--------|------|-------------------------|
+| 42 | `event Name { … }` u. ä. auf Top-Level | `event` ist im Lexer kein Schlüsselwort, sondern ein Bezeichner |
+| 24 | führender Punkt / Fortsetzungszeilen | Fortsetzungssyntax über Zeilen |
+| 20 | `struct X:` mit eingerücktem Rumpf | Einrückungssyntax (SPEC §3.2 nennt `INDENT`/`DEDENT`, der Lexer hat sie nicht und kennt keine Spaltenpositionen) |
+| 19 | Feldtyp mit `[` (`data: u8[120]`) | Array-Längen-Notation |
+| 14 | `enum X:` eingerückt | wie oben |
+| 11 | `a..b` / doppelter Punkt | Bereichsoperator |
+| 9 | Felder ohne Komma, nur durch Zeilenumbruch getrennt | Zeilen als Trenner |
+
+Die eingerückten Rümpfe (34 Dateien zusammen) brauchen zuerst ein Positionsmodell im Lexer:
+ohne Spaltennummer je Token kann der Parser eine Blockausdehnung nicht bestimmen. Das ist ein
+eigener Schritt, keine Zeile im Parser.
