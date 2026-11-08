@@ -1,0 +1,277 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// A-TownChain DEX — Constant-Product AMM (ATC-88)
+// x * y = k | Swap-Router | LP-Token | 0.3% Fee
+// Sprint 2.3 — Migrated from Python stub to ATCLang
+// ════════════════════════════════════════════════════════════════
+
+const SWAP_FEE_BPS: u128 = 30        // 0.30% in Basis-Punkten
+const PROTOCOL_FEE_BPS: u128 = 5     // 0.05% → Treasury
+const MIN_LIQUIDITY: u128 = 1000     // Minimum LP-Token (gegen Dust)
+const MAX_SLIPPAGE_BPS: u128 = 500   // 5% max Slippage
+
+struct LiquidityPool {
+    pool_id:       Hash,
+    token_a:       Address,
+    token_b:       Address,
+    reserve_a:     u128,
+    reserve_b:     u128,
+    lp_supply:     u128,
+    fee_bps:       u128,
+    k:             u128,
+    created_at:    u64,
+    fees_earned_a: u128,
+    fees_earned_b: u128,
+    locked:        bool
+}
+
+struct SwapResult {
+    amount_in:     u128,
+    amount_out:    u128,
+    fee:           u128,
+    price_impact:  u128,    // in BPS
+    trader:        Address
+}
+
+struct LiquidityResult {
+    lp_minted:     u128,
+    reserve_a:     u128,
+    reserve_b:     u128,
+    lp_supply:     u128
+}
+
+struct RemoveLiquidityResult {
+    amount_a:      u128,
+    amount_b:      u128,
+    lp_burned:     u128
+}
+
+struct QuoteResult {
+    token_in:      Address,
+    token_out:     Address,
+    amount_in:     u128,
+    amount_out:    u128,
+    price_impact:  u128,
+    fee:           u128,
+    pool_id:       Hash
+}
+
+contract AMM {
+
+    state pools: Map<Hash, LiquidityPool>
+    state lp_balances: Map<Hash, Map<Address, u128>>
+    state pool_count: u128
+    state treasury: Address
+
+    event PoolCreated(pool_id: Hash, token_a: Address, token_b: Address)
+    event SwapExecuted(pool_id: Hash, trader: Address, amount_in: u128, amount_out: u128, fee: u128)
+    event LiquidityAdded(pool_id: Hash, provider: Address, lp_minted: u128)
+    event LiquidityRemoved(pool_id: Hash, provider: Address, lp_burned: u128)
+
+    // ── Internal: AMM Formel ──────────────────────────
+    fn get_amount_out(amount_in: u128, reserve_in: u128, reserve_out: u128, fee_bps: u128) -> u128 {
+        require(reserve_in > 0, "AMM: Pool leer")
+        require(amount_in > 0, "AMM: amount_in = 0")
+        let fee_factor = 10000 - fee_bps
+        let numerator = amount_in * fee_factor * reserve_out
+        let denominator = reserve_in * 10000 + amount_in * fee_factor
+        return numerator / denominator
+    }
+
+    // ── Pool erstellen ────────────────────────────────
+    fn create_pool(token_a: Address, token_b: Address) -> Hash {
+        let pool_id = sha256(to_string(token_a) + to_string(token_b))
+        let pool = LiquidityPool {
+            pool_id:       pool_id,
+            token_a:       token_a,
+            token_b:       token_b,
+            reserve_a:     0,
+            reserve_b:     0,
+            lp_supply:     0,
+            fee_bps:       SWAP_FEE_BPS,
+            k:             0,
+            created_at:    block_timestamp(),
+            fees_earned_a: 0,
+            fees_earned_b: 0,
+            locked:        false
+        }
+        self.pools[pool_id] = pool
+        self.pool_count += 1
+        emit PoolCreated(pool_id, token_a, token_b)
+        return pool_id
+    }
+
+    // ── Swap A→B ──────────────────────────────────────
+    fn swap_a_to_b(pool_id: Hash, amount_in: u128, min_out: u128, trader: Address) -> SwapResult {
+        let pool = self.pools[pool_id]
+        require(!pool.locked, "AMM: Reentrancy")
+        pool.locked = true
+        self.pools[pool_id] = pool
+
+        require(pool.reserve_a > 0 && pool.reserve_b > 0, "AMM: Pool leer")
+        let amount_out = get_amount_out(amount_in, pool.reserve_a, pool.reserve_b, pool.fee_bps)
+        require(amount_out >= min_out, "AMM: Slippage zu hoch")
+        let fee_amount = amount_in * pool.fee_bps / 10000
+
+        pool.reserve_a += amount_in
+        pool.reserve_b -= amount_out
+        pool.fees_earned_a += fee_amount
+        pool.k = pool.reserve_a * pool.reserve_b
+        pool.locked = false
+        self.pools[pool_id] = pool
+
+        emit SwapExecuted(pool_id, trader, amount_in, amount_out, fee_amount)
+        return SwapResult {
+            amount_in:    amount_in,
+            amount_out:   amount_out,
+            fee:          fee_amount,
+            price_impact: 0,
+            trader:       trader
+        }
+    }
+
+    // ── Swap B→A ──────────────────────────────────────
+    fn swap_b_to_a(pool_id: Hash, amount_in: u128, min_out: u128, trader: Address) -> SwapResult {
+        let pool = self.pools[pool_id]
+        require(!pool.locked, "AMM: Reentrancy")
+        pool.locked = true
+        self.pools[pool_id] = pool
+
+        require(pool.reserve_a > 0 && pool.reserve_b > 0, "AMM: Pool leer")
+        let amount_out = get_amount_out(amount_in, pool.reserve_b, pool.reserve_a, pool.fee_bps)
+        require(amount_out >= min_out, "AMM: Slippage zu hoch")
+        let fee_amount = amount_in * pool.fee_bps / 10000
+
+        pool.reserve_b += amount_in
+        pool.reserve_a -= amount_out
+        pool.fees_earned_b += fee_amount
+        pool.k = pool.reserve_a * pool.reserve_b
+        pool.locked = false
+        self.pools[pool_id] = pool
+
+        emit SwapExecuted(pool_id, trader, amount_in, amount_out, fee_amount)
+        return SwapResult {
+            amount_in:    amount_in,
+            amount_out:   amount_out,
+            fee:          fee_amount,
+            price_impact: 0,
+            trader:       trader
+        }
+    }
+
+    // ── Liquidität hinzufügen ─────────────────────────
+    fn add_liquidity(pool_id: Hash, amount_a: u128, amount_b: u128, provider: Address) -> LiquidityResult {
+        let pool = self.pools[pool_id]
+        require(!pool.locked, "AMM: Reentrancy")
+        pool.locked = true
+        self.pools[pool_id] = pool
+
+        let lp_out: u128 = 0
+        if pool.lp_supply == 0 {
+            // Erster LP: sqrt(a * b) - MIN_LIQUIDITY
+            let product = amount_a * amount_b
+            lp_out = sqrt_u128(product) - MIN_LIQUIDITY
+            require(lp_out > 0, "AMM: Zu wenig Liquidität")
+            // Min-Liquidität permanent sperren
+            self.lp_balances[pool_id]["LOCKED"] = MIN_LIQUIDITY
+            pool.lp_supply = MIN_LIQUIDITY
+        } else {
+            let lp_from_a = amount_a * pool.lp_supply / pool.reserve_a
+            let lp_from_b = amount_b * pool.lp_supply / pool.reserve_b
+            if lp_from_a < lp_from_b {
+                lp_out = lp_from_a
+            } else {
+                lp_out = lp_from_b
+            }
+        }
+
+        pool.reserve_a += amount_a
+        pool.reserve_b += amount_b
+        pool.lp_supply += lp_out
+        pool.k = pool.reserve_a * pool.reserve_b
+        pool.locked = false
+        self.pools[pool_id] = pool
+
+        let current_balance = self.lp_balances[pool_id][provider]
+        self.lp_balances[pool_id][provider] = current_balance + lp_out
+
+        emit LiquidityAdded(pool_id, provider, lp_out)
+        return LiquidityResult {
+            lp_minted: lp_out,
+            reserve_a: pool.reserve_a,
+            reserve_b: pool.reserve_b,
+            lp_supply: pool.lp_supply
+        }
+    }
+
+    // ── Liquidität entfernen ──────────────────────────
+    fn remove_liquidity(pool_id: Hash, lp_amount: u128, provider: Address) -> RemoveLiquidityResult {
+        let pool = self.pools[pool_id]
+        require(!pool.locked, "AMM: Reentrancy")
+        pool.locked = true
+        self.pools[pool_id] = pool
+
+        let balance = self.lp_balances[pool_id][provider]
+        require(balance >= lp_amount, "AMM: Unzureichende LP-Token")
+
+        let amount_a = lp_amount * pool.reserve_a / pool.lp_supply
+        let amount_b = lp_amount * pool.reserve_b / pool.lp_supply
+
+        self.lp_balances[pool_id][provider] = balance - lp_amount
+        pool.lp_supply -= lp_amount
+        pool.reserve_a -= amount_a
+        pool.reserve_b -= amount_b
+        pool.k = pool.reserve_a * pool.reserve_b
+        pool.locked = false
+        self.pools[pool_id] = pool
+
+        emit LiquidityRemoved(pool_id, provider, lp_amount)
+        return RemoveLiquidityResult {
+            amount_a:  amount_a,
+            amount_b:  amount_b,
+            lp_burned: lp_amount
+        }
+    }
+
+    // ── Quote (read-only) ─────────────────────────────
+    fn get_quote(pool_id: Hash, a_to_b: bool, amount_in: u128) -> QuoteResult {
+        let pool = self.pools[pool_id]
+        let amount_out: u128 = 0
+        let token_in: Address = pool.token_a
+        let token_out: Address = pool.token_b
+        if a_to_b {
+            amount_out = get_amount_out(amount_in, pool.reserve_a, pool.reserve_b, pool.fee_bps)
+        } else {
+            amount_out = get_amount_out(amount_in, pool.reserve_b, pool.reserve_a, pool.fee_bps)
+            token_in = pool.token_b
+            token_out = pool.token_a
+        }
+        let fee = amount_in * pool.fee_bps / 10000
+        return QuoteResult {
+            token_in:     token_in,
+            token_out:    token_out,
+            amount_in:    amount_in,
+            amount_out:   amount_out,
+            price_impact: 0,
+            fee:          fee,
+            pool_id:      pool_id
+        }
+    }
+
+    // ── TVL ───────────────────────────────────────────
+    fn get_tvl(pool_id: Hash) -> LiquidityPool {
+        return self.pools[pool_id]
+    }
+}
+
+// ── Helper: Integer Square Root ──────────────────────
+fn sqrt_u128(n: u128) -> u128 {
+    if n == 0 { return 0 }
+    let x = n
+    let y = (x + 1) / 2
+    while y < x {
+        x = y
+        y = (x + n / x) / 2
+    }
+    return x
+}
