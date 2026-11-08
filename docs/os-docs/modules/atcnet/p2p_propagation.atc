@@ -1,0 +1,215 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-01 — P2P Message Propagation
+// Sprint 2.2 | Network Layer | Chain-ID 9000
+// Migrated from: blockchain/nodes/p2p_propagation.py (380 lines)
+// TCP messaging, flood-fill broadcast, duplicate filtering
+// ─────────────────────────────────────────────────────────────
+
+const MAX_MESSAGE_SIZE: u32 = 1048576    // 1MB
+const PROPAGATION_TIMEOUT: u32 = 30      // seconds
+const MAX_HOP_COUNT: u8 = 15
+const SEEN_MSG_RETENTION: u64 = 3600     // 1 hour
+const MAX_PEERS: u8 = 50
+
+enum MessageType { Block, Transaction, Vote, PeerList, Ping, Pong }
+
+struct PeerMessage {
+    msg_id: Hash,
+    msg_type: MessageType,
+    payload: Bytes,
+    hop_count: u8,
+    timestamp: u64,
+    sender: Address,
+}
+
+contract P2PPropagation {
+    state peers: Map<Address, PeerInfo>
+    state seen_messages: Map<Hash, u64>
+    state msg_count: u64
+    state broadcast_count: u64
+    state duplicate_count: u64
+    state dropped_count: u64
+    state owner: Address
+
+    event MessageReceived(msg_id: Hash, msg_type: MessageType, sender: Address)
+    event MessageBroadcast(msg_id: Hash, peer_count: u8)
+    event PeerAdded(peer: Address)
+    event PeerRemoved(peer: Address, reason: String)
+
+    fn init() {
+        self.peers = {}
+        self.seen_messages = {}
+        self.msg_count = 0
+        self.broadcast_count = 0
+        self.duplicate_count = 0
+        self.dropped_count = 0
+        self.owner = msg_sender()
+    }
+
+    fn add_peer(peer: Address, host: String, port: u16) -> bool {
+        if self.peers.len() >= MAX_PEERS {
+            return false
+        }
+        let info = PeerInfo {
+            addr: peer,
+            host: host,
+            port: port,
+            connected_at: Time::now(),
+            last_seen: Time::now(),
+            latency_ms: 0,
+            active: true,
+        }
+        self.peers[peer] = info
+        emit PeerAdded(peer)
+        return true
+    }
+
+    fn remove_peer(peer: Address, reason: String) -> bool {
+        let info = self.peers.get(peer)
+        if info == null {
+            return false
+        }
+        info.active = false
+        emit PeerRemoved(peer, reason)
+        return true
+    }
+
+    fn broadcast(msg_type: MessageType, payload: Bytes) -> Hash {
+        let msg_id = Hash::sha256(payload, Time::now())
+        // Check duplicate
+        let seen = self.seen_messages.get(msg_id)
+        if seen != null {
+            self.duplicate_count += 1
+            return msg_id
+        }
+        self.seen_messages[msg_id] = Time::now()
+        self.msg_count += 1
+        // Forward to all active peers
+        let peer_addrs = self.peers.keys()
+        let forwarded: u8 = 0
+        let i: u16 = 0
+        while i < peer_addrs.len() {
+            let peer = self.peers.get(peer_addrs[i])
+            if peer != null && peer.active {
+                let msg = PeerMessage {
+                    msg_id: msg_id,
+                    msg_type: msg_type,
+                    payload: payload,
+                    hop_count: 0,
+                    timestamp: Time::now(),
+                    sender: msg_sender(),
+                }
+                self.send_to_peer(peer_addrs[i], msg)
+                forwarded += 1
+            }
+            i += 1
+        }
+        self.broadcast_count += 1
+        emit MessageBroadcast(msg_id, forwarded)
+        return msg_id
+    }
+
+    fn receive(msg: PeerMessage) -> bool {
+        // Check if already seen
+        let seen = self.seen_messages.get(msg.msg_id)
+        if seen != null {
+            self.duplicate_count += 1
+            return false
+        }
+        // Check hop count
+        if msg.hop_count >= MAX_HOP_COUNT {
+            self.dropped_count += 1
+            return false
+        }
+        // Check message size
+        if msg.payload.len() > MAX_MESSAGE_SIZE {
+            self.dropped_count += 1
+            return false
+        }
+        self.seen_messages[msg.msg_id] = Time::now()
+        self.msg_count += 1
+        emit MessageReceived(msg.msg_id, msg.msg_type, msg.sender)
+        // Re-broadcast to other peers (flood-fill)
+        let peer_addrs = self.peers.keys()
+        let i: u16 = 0
+        while i < peer_addrs.len() {
+            if peer_addrs[i] != msg.sender {
+                let peer = self.peers.get(peer_addrs[i])
+                if peer != null && peer.active {
+                    let new_msg = PeerMessage {
+                        msg_id: msg.msg_id,
+                        msg_type: msg.msg_type,
+                        payload: msg.payload,
+                        hop_count: msg.hop_count + 1,
+                        timestamp: msg.timestamp,
+                        sender: msg_sender(),
+                    }
+                    self.send_to_peer(peer_addrs[i], new_msg)
+                }
+            }
+            i += 1
+        }
+        return true
+    }
+
+    fn send_to_peer(peer: Address, msg: PeerMessage) -> bool {
+        // In production: TCP send with serialization
+        return true
+    }
+
+    fn cleanup_seen_messages() -> u32 {
+        let now = Time::now()
+        let cutoff = now - SEEN_MSG_RETENTION
+        let keys = self.seen_messages.keys()
+        let removed: u32 = 0
+        let i: u16 = 0
+        while i < keys.len() {
+            let ts = self.seen_messages.get(keys[i])
+            if ts != null && ts < cutoff {
+                self.seen_messages.remove(keys[i])
+                removed += 1
+            }
+            i += 1
+        }
+        return removed
+    }
+
+    fn update_peer_latency(peer: Address, latency_ms: u16) -> bool {
+        let info = self.peers.get(peer)
+        if info == null {
+            return false
+        }
+        info.latency_ms = latency_ms
+        info.last_seen = Time::now()
+        return true
+    }
+
+    fn get_stats() -> (u64, u64, u64, u64, u16) {
+        return (self.msg_count, self.broadcast_count, self.duplicate_count, self.dropped_count, self.peers.len())
+    }
+
+    fn get_active_peers() -> u16 {
+        let count: u16 = 0
+        let addrs = self.peers.keys()
+        let i: u16 = 0
+        while i < addrs.len() {
+            let peer = self.peers.get(addrs[i])
+            if peer != null && peer.active {
+                count += 1
+            }
+            i += 1
+        }
+        return count
+    }
+}
+
+struct PeerInfo {
+    addr: Address,
+    host: String,
+    port: u16,
+    connected_at: u64,
+    last_seen: u64,
+    latency_ms: u16,
+    active: bool,
+}
