@@ -1,0 +1,27 @@
+// ATCLang v0.3 — Mainnet Configuration
+// Produktions-Konfiguration für das Mainnet
+// ATC-Standard: ATC-01
+
+module mainnet_config {
+    struct ChainConfig {
+        chain_id: int,
+        chain_name: string,
+        block_time: int,
+        max_block_size: int,
+        gas_limit: int,
+        epoch_length: int,
+        validator_threshold: int,
+    }
+    
+    fn get_mainnet_config() {
+        // Mainnet-Konfiguration
+    }
+    
+    fn get_testnet_config() {
+        // Public Testnet-Konfiguration
+    }
+    
+    fn get_devnet_config() {
+        // Devnet-Konfiguration (niedrige Gas, schnelle Blocks)
+    }
+}
