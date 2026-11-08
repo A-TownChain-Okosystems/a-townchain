@@ -1,9 +1,9 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-08 19:24 UTC+2 aus `origin/main` @ `539a90193`.
+> Vollständige Dateiliste. Erzeugt 2026-11-08 19:28 UTC+2 aus `origin/main` @ `1216b6757`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 12336 Dateien**
+**Total: 12339 Dateien**
 
 ## docs (5065)
 
@@ -8502,7 +8502,7 @@
 - `ecosystem/tools/validate_privacy_policy.py`
 - `ecosystem/tools/validate_runtime_symbol_registry.py`
 
-## ai (971)
+## ai (974)
 
 - `ai/atclang/.atc/compliance.yaml`
 - `ai/atclang/.atc/evidence/evidence.yaml`
@@ -8588,9 +8588,12 @@
 - `ai/atclang/crates/atc-core/src/main.rs`
 - `ai/atclang/crates/atc-core/src/native.rs`
 - `ai/atclang/crates/atc-core/src/parser.rs`
+- `ai/atclang/crates/atc-core/src/semantics.rs`
+- `ai/atclang/crates/atc-core/src/types.rs`
 - `ai/atclang/crates/atc-core/src/value.rs`
 - `ai/atclang/crates/atc-core/src/vm.rs`
 - `ai/atclang/crates/atc-core/tests/cli.rs`
+- `ai/atclang/crates/atc-core/tests/contract_sources.rs`
 - `ai/atclang/crates/atc-core/tests/differential.rs`
 - `ai/atclang/crates/atc-core/tests/run.rs`
 - `ai/atclang/crates/atc-core/tests/stdlib_reference_conformance.rs`
