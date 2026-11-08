@@ -1,0 +1,53 @@
+{
+  "registry_id": "ATC-ARR-REGISTRY-001",
+  "schema_version": "1.0.0",
+  "status": "PROPOSED",
+  "authority_note": "Proposed registry only. Do not treat as enforced or approved until governance review, schema validation, CI enforcement, and SSOT reconciliation are evidenced.",
+  "registry_repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+  "record_schema": "docs/governance/schemas/arr-record.schema.json",
+  "records": [
+    {
+      "arr_id": "ARR-0001",
+      "title": "Establish ARR lifecycle, ownership, and evidence-gated acceptance",
+      "schema_version": "1.0.0",
+      "record_version": "0.1.0",
+      "status": "SPECIFIED",
+      "owner": "atc-engineering + Governance (approval pending)",
+      "priority": "P1",
+      "scope": {
+        "summary": "Define a governed, auditable ARR process for ecosystem-level architecture and software requirements without duplicating canonical implementations.",
+        "repositories": ["A-TownChain-Okosystems/a-townchain-ecosystem"],
+        "components": ["ARR lifecycle", "ARR registry", "schema", "SSOT mapping", "evidence controls"]
+      },
+      "requirement": "Every in-scope ecosystem architecture/software requirement must be represented by a versioned ARR record, linked to canonical ownership, measurable acceptance criteria, exact-SHA evidence, and explicit residuals. Approval remains subject to the applicable governance authority.",
+      "acceptance_criteria": [
+        {"id": "AC-1", "criterion": "Governance approves the authority model and lifecycle states.", "verification_method": "Recorded independent governance review and approval."},
+        {"id": "AC-2", "criterion": "The ARR record schema validates valid fixtures and rejects malformed records.", "verification_method": "Automated positive and negative schema tests bound to the exact PR SHA."},
+        {"id": "AC-3", "criterion": "The registry is reconciled with existing standards and decision registries so no competing SSOT is created.", "verification_method": "Documented registry ownership and cross-registry consistency review."},
+        {"id": "AC-4", "criterion": "Required CI checks fail closed on invalid ARR records and missing exact-SHA evidence.", "verification_method": "Workflow logs showing the checked-out source SHA, validator results, and negative-test failure behavior."},
+        {"id": "AC-5", "criterion": "Existing in-scope requirements are migrated or tracked as explicit residuals.", "verification_method": "Inventory report with source references and coverage totals."}
+      ],
+      "canonical_sources": [
+        {"repository": "A-TownChain-Okosystems/a-townchain-ecosystem", "path": "ARCHITECTURE.md", "authority": "SPECIFICATION_SSOT", "observed_commit_sha": null},
+        {"repository": "A-TownChain-Okosystems/a-townchain-ecosystem", "path": "components/atc-standards/standards/governance-core/ATC-STD-REGISTRY-001.md", "authority": "GOVERNANCE_SSOT", "observed_commit_sha": null}
+      ],
+      "ssot_references": [
+        {"id": "ATC-STD-REGISTRY-001", "version_or_revision": "current approved revision; verify at implementation", "role": "Registry SSOT and no-duplicate-registry constraints"},
+        {"id": "ARCHITECTURE.md", "version_or_revision": "main revision to be bound during review", "role": "System-of-systems architecture and repository boundaries"}
+      ],
+      "dependencies": ["ATC-STD-REGISTRY-001 review", "governance approval", "schema validator and tests", "exact-SHA CI enforcement"],
+      "security": {
+        "impact": "PENDING_ASSESSMENT",
+        "threats": ["Requirement bypass", "stale or mismatched source evidence", "duplicate SSOT", "false VERIFIED/ACCEPTED status", "unreviewed risk acceptance"],
+        "required_tests": ["Malformed record rejection", "Unknown status rejection", "SHA mismatch rejection", "Missing evidence rejection", "Canonical-source boundary validation"]
+      },
+      "evidence": [],
+      "residuals": [
+        {"id": "ARR-0001-R1", "description": "Governance approval not yet recorded.", "status": "OPEN", "owner": "Governance", "target_date": null, "closure_evidence_ref": null},
+        {"id": "ARR-0001-R2", "description": "Schema validator, negative tests, and fail-closed CI enforcement are not included in this documentation/schema proposal.", "status": "OPEN", "owner": "atc-engineering", "target_date": null, "closure_evidence_ref": null},
+        {"id": "ARR-0001-R3", "description": "Registry ownership and cross-registry SSOT reconciliation remain to be reviewed against the currently approved registry standard.", "status": "OPEN", "owner": "Governance + atc-engineering", "target_date": null, "closure_evidence_ref": null}
+      ],
+      "approval": {"review_status": "NOT_REVIEWED", "reviewers": [], "decision": null, "timestamp": null}
+    }
+  ]
+}
