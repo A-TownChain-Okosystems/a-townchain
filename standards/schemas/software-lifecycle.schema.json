@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "atc-software-lifecycle-state.schema.json",
+  "title": "ATC Software Lifecycle State (ATC-STD-V2S-000 §16)",
+  "type": "object",
+  "required": ["lifecycle"],
+  "properties": {
+    "lifecycle": {
+      "type": "object",
+      "required": ["vision", "requirements", "specification", "architecture", "maturity"],
+      "properties": {
+        "vision":            {"enum": ["pending", "in_progress", "approved", "skipped", "blocked"]},
+        "requirements":     {"enum": ["pending", "in_progress", "approved", "skipped", "blocked"]},
+        "specification":    {"enum": ["pending", "in_progress", "approved", "skipped", "blocked"]},
+        "architecture":     {"enum": ["pending", "in_progress", "approved", "skipped", "blocked"]},
+        "implementation":   {"enum": ["pending", "in_progress", "complete", "skipped", "blocked"]},
+        "integration":      {"enum": ["pending", "in_progress", "complete", "skipped", "blocked"]},
+        "testing":          {"enum": ["pending", "in_progress", "passed", "failed", "skipped", "blocked"]},
+        "security":         {"enum": ["pending", "in_progress", "passed", "failed", "skipped", "blocked"]},
+        "audit":            {"enum": ["pending", "in_progress", "passed", "failed", "skipped", "blocked"]},
+        "release":          {"enum": ["pending", "in_progress", "approved", "skipped", "blocked"]},
+        "deployment":       {"enum": ["pending", "in_progress", "complete", "skipped", "blocked"]},
+        "operations":       {"enum": ["pending", "in_progress", "active", "paused", "ended"]},
+        "monitoring":      {"enum": ["pending", "in_progress", "active", "off"]},
+        "maturity":         {"enum": ["M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9"]},
+        "skipped_stations": {"type": "array", "items": {"type": "string"},
+                             "description": "Pflicht bei skipped: Station + Begründung je Eintrag"},
+        "gate_records":     {"type": "array", "items": {"type": "object",
+                             "properties": {"gate": {"type": "string"}, "result": {"enum": ["PASS", "FAIL"]}, "date": {"type": "string"}, "reviewer": {"type": "string"}}}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
