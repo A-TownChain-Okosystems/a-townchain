@@ -1,0 +1,55 @@
+name: ATC Test Suite
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  cargo-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo test ueber alle Manifeste (SCR-0083)
+        run: |
+          set +e
+          FAIL=0
+          while IFS= read -r f; do
+            d="$(dirname "$f")"
+            echo "=== cargo test in $d"
+            if ! (cd "$d" && cargo test --quiet); then
+              echo "cargo test FAILED in $d"; FAIL=1
+            fi
+          done < <(find . -name Cargo.toml -not -path "*/archive/*" -not -path "*/node_modules/*")
+          exit $FAIL
+      - name: Evidence-Bindung (SCR-0086 idempotentes test_run-Update je Lauf + hartes Push-Gate)
+        if: success()
+        run: |
+          python3 - <<'PY'
+          import os, datetime, re
+          sha = os.environ["GITHUB_SHA"]
+          rid = os.environ["GITHUB_RUN_ID"]
+          wf  = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
+          ts  = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          p = ".atc/evidence/evidence.yaml"
+          t = open(p, encoding="utf-8").read()
+          t = re.sub(r"bound_commit: [^\n]*", "bound_commit: " + sha, t)
+          block = ("test_run:\n"
+                   "  workflow: " + wf + "\n"
+                   "  run_id: " + rid + "\n"
+                   "  commit: " + sha + "\n"
+                   "  timestamp: " + ts + "\n"
+                   "  result: PASS\n"
+                   "  runner: github-actions\n")
+          if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", t):
+              t = re.sub(r"(?m)^test_run:\n(?:  [^\n]*\n)+", block, t)
+          else:
+              t = t.rstrip() + "\n" + block
+          open(p, "w", encoding="utf-8").write(t)
+          PY
+          git config user.name "Aurora-Bot"
+          git config user.email "aurora@base44.ai"
+          git add .atc/evidence/evidence.yaml
+          git commit -m "chore(evidence): bound_commit + test_run aktualisiert (SCR-0086) [skip ci]" || echo "nichts zu committen"
+          git push
