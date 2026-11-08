@@ -1,0 +1,195 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — KAI-OS CLI Tool
+// Sprint 3.0 | Tools Layer | Chain-ID 9000
+// Migrated from: core/kai_cli.py (162 lines)
+// Command-line interface for node management, wallet, queries
+// ─────────────────────────────────────────────────────────────
+
+enum Command { Status, Wallet, Mine, Send, Mint, ListAll, Explore, Install, Help, Version }
+
+struct CLICommand {
+    cmd: Command,
+    args: List<String>,
+    flags: Map<String, String>,
+}
+
+struct CLIResult {
+    success: bool,
+    output: String,
+    error: String,
+}
+
+contract KAIcli {
+    state version: String
+    state commands_run: u64
+    state last_command: String
+    state owner: Address
+
+    event CommandExecuted(cmd: String, success: bool)
+    event WalletCreated(addr: Address)
+    event BlockMined(height: u64, hash: Hash)
+
+    fn init() {
+        self.version = "1.0.0"
+        self.commands_run = 0
+        self.last_command = ""
+        self.owner = msg_sender()
+    }
+
+    fn execute(cmd: Command, args: List<String>) -> CLIResult {
+        self.commands_run += 1
+        if cmd == Command::Status {
+            self.last_command = "status"
+            return self.cmd_status()
+        }
+        if cmd == Command::Wallet {
+            self.last_command = "wallet"
+            return self.cmd_wallet(args)
+        }
+        if cmd == Command::Mine {
+            self.last_command = "mine"
+            return self.cmd_mine(args)
+        }
+        if cmd == Command::Send {
+            self.last_command = "send"
+            return self.cmd_send(args)
+        }
+        if cmd == Command::Mint {
+            self.last_command = "mint"
+            return self.cmd_mint(args)
+        }
+        if cmd == Command::List {
+            self.last_command = "list"
+            return self.cmd_list(args)
+        }
+        if cmd == Command::Explore {
+            self.last_command = "explore"
+            return self.cmd_explore(args)
+        }
+        if cmd == Command::Install {
+            self.last_command = "install"
+            return self.cmd_install(args)
+        }
+        if cmd == Command::Version {
+            self.last_command = "version"
+            return CLIResult { success: true, output: "KAI-OS CLI v" + self.version, error: "" }
+        }
+        return self.cmd_help()
+    }
+
+    fn cmd_status() -> CLIResult {
+        let height = HybridConsensus::get_height()
+        let tx_count = HybridConsensus::get_tx_count()
+        let peer_count = P2PNode::get_peer_count()
+        let active_peers = P2PNode::get_active_peers()
+        let output = "=== KAI-OS Status ===\n"
+        output = output + "Chain Height: " + Int::to_string(height) + "\n"
+        output = output + "Total TXs: " + Int::to_string(tx_count) + "\n"
+        output = output + "Peers: " + Int::to_string(peer_count) + "\n"
+        output = output + "Active Peers: " + Int::to_string(active_peers) + "\n"
+        emit CommandExecuted("status", true)
+        return CLIResult { success: true, output: output, error: "" }
+    }
+
+    fn cmd_wallet(args: List<String>) -> CLIResult {
+        if args.len() == 0 {
+            return CLIResult { success: false, output: "", error: "Usage: wallet [create|balance|send]" }
+        }
+        if args[0] == "create" {
+            let wallet_addr = MobileWalletManager::create_wallet_addr("CLI Wallet", "A-TownChain")
+            emit WalletCreated(wallet_addr)
+            return CLIResult { success: true, output: "Wallet created: " + Address::to_string(wallet_addr), error: "" }
+        }
+        if args[0] == "balance" {
+            if args.len() < 2 {
+                return CLIResult { success: false, output: "", error: "Usage: wallet balance <address>" }
+            }
+            let addr = Address::from_string(args[1])
+            let balance = ATCoin::balance_of(addr)
+            return CLIResult { success: true, output: "Balance: " + Int::to_string(balance) + " ATC", error: "" }
+        }
+        return CLIResult { success: false, output: "", error: "Unknown wallet command" }
+    }
+
+    fn cmd_mine(args: List<String>) -> CLIResult {
+        let miner = msg_sender()
+        let block_height = HybridConsensus::create_block_height([], miner)
+        let block_hash = HybridConsensus::create_block_hash([], miner)
+        let reward = ATCoin::mint(miner, block_hash)
+        emit BlockMined(block_height, block_hash)
+        return CLIResult { success: true, output: "Mined block #" + Int::to_string(block_height) + " reward: " + Int::to_string(reward) + " ATC", error: "" }
+    }
+
+    fn cmd_send(args: List<String>) -> CLIResult {
+        if args.len() < 3 {
+            return CLIResult { success: false, output: "", error: "Usage: send <from> <to> <amount>" }
+        }
+        let from_addr = Address::from_string(args[0])
+        let to_addr = Address::from_string(args[1])
+        let amount = Int::from_string(args[2])
+        let success = ATCoin::transfer(from_addr, to_addr, amount)
+        return CLIResult { success: success, output: "", error: "Send failed" }
+    }
+
+    fn cmd_mint(args: List<String>) -> CLIResult {
+        if args.len() < 3 {
+            return CLIResult { success: false, output: "", error: "Usage: mint <name> <element> <rarity>" }
+        }
+        let token_id = ShivamonContract::mint(args[0], Element::Fire, Rarity::Common, 1)
+        return CLIResult { success: true, output: "Minted Shivamon: " + Hash::to_string(token_id), error: "" }
+    }
+
+    fn cmd_list(args: List<String>) -> CLIResult {
+        if args.len() == 0 {
+            return CLIResult { success: false, output: "", error: "Usage: list [nodes|blocks|shivamon]" }
+        }
+        if args[0] == "nodes" {
+            let count = P2PNode::get_peer_count()
+            return CLIResult { success: true, output: "Nodes: " + Int::to_string(count), error: "" }
+        }
+        if args[0] == "shivamon" {
+            let shivamon_count = ShivamonContract::get_token_count()
+            return CLIResult { success: true, output: "Shivamon: " + Int::to_string(shivamon_count), error: "" }
+        }
+        return CLIResult { success: false, output: "", error: "Unknown list type" }
+    }
+
+    fn cmd_explore(args: List<String>) -> CLIResult {
+        if args.len() < 1 {
+            return CLIResult { success: false, output: "", error: "Usage: explore <block_height|tx_hash|address>" }
+        }
+        return CLIResult { success: true, output: "Explorer: " + args[0], error: "" }
+    }
+
+    fn cmd_install(args: List<String>) -> CLIResult {
+        if args.len() < 1 {
+            return CLIResult { success: false, output: "", error: "Usage: install <package>" }
+        }
+        let version = ATCPkgManager::get_latest_version(args[0])
+        if version.len() == 0 {
+            return CLIResult { success: false, output: "", error: "Package not found" }
+        }
+        ATCPkgManager::install(args[0], version)
+        return CLIResult { success: true, output: "Installed " + args[0] + "@" + version, error: "" }
+    }
+
+    fn cmd_help() -> CLIResult {
+        let help_text = "KAI-OS CLI v" + self.version + "\n"
+        help_text = help_text + "Commands:\n"
+        help_text = help_text + "  status    - Show chain status\n"
+        help_text = help_text + "  wallet    - Wallet operations (create, balance, send)\n"
+        help_text = help_text + "  mine      - Mine a new block\n"
+        help_text = help_text + "  send      - Send ATC tokens\n"
+        help_text = help_text + "  mint      - Mint a Shivamon NFT\n"
+        help_text = help_text + "  list      - List nodes, blocks, or shivamon\n"
+        help_text = help_text + "  explore   - Blockchain explorer\n"
+        help_text = help_text + "  install   - Install ATCPKG package\n"
+        help_text = help_text + "  version   - Show CLI version"
+        return CLIResult { success: true, output: help_text, error: "" }
+    }
+
+    fn get_stats() -> (u64, String) {
+        return (self.commands_run, self.version)
+    }
+}
