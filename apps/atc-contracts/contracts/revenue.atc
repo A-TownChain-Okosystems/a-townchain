@@ -24,6 +24,10 @@ contract RevenueShare {
     state entries:       Vec<RevenueEntry>
     state license_id:    u64
 
+    event RevenueShareInitialized(franchisor: Address, franchisee: Address, share_percent: u8)
+    event RevenueRecorded(amount: u128, franchisor_cut: u128, franchisee_cut: u128)
+    event PayoutSent(to: Address, amount: u128, role: string)
+
     fn init(
         franchisor_addr: Address,
         franchisee_addr: Address,
