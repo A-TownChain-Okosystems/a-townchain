@@ -1,0 +1,17 @@
+// ATCLang v0.3 — State Proof Verifier
+// Verifiziert State-Roots für Cross-Chain-Transfers
+// ATC-Standard: ATC-91
+
+module state_proof {
+    fn verify_state_root(chain_id: int, height: int, root: string) {
+        // State-Root einer anderen Chain verifizieren
+    }
+    
+    fn verify_storage_proof(address: string, key: string, value: string, proof: string) {
+        // Storage-Proof verifizieren
+    }
+    
+    fn get_finalized_height(chain_id: int) {
+        // Finalisierte Block-Höhe der Source-Chain
+    }
+}
