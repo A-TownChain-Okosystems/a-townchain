@@ -1,0 +1,12 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: repo-discovery
+family: REPO
+family_id: PREFIX
+file: standards/repo-discovery/ATC-STD-REPO-DISCOVERY-004.md
+mandate: Owner-Entwurf 08.09. (SCR-0046), Prioritaet P1
+registry_version: 1
+standard_id: ATC-STD-REPO-DISCOVERY-004
+status: approved
+title: Duplicate Detection
+version: 1.0.0
