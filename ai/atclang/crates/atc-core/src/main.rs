@@ -17,7 +17,8 @@ const USAGE: &str = "ATCLang Compiler-CLI
 USAGE:
     atc compile <datei.atc>   kompiliert: kanonische AST-JSON auf stdout
     atc run     <datei.atc>   kompiliert, verifiziert und fuehrt aus
-    atc check   <datei.atc>   validiert still (Exit-Code 0 = ok)
+    atc check   <datei.atc>   validiert (Exit-Code 0 = ok)
+    atc check --strict <datei.atc>  behandelt Warnungen als Fehler
 
 EXIT-CODES:
     0  ok
@@ -31,12 +32,15 @@ fn compile_to_bytecode(src: &str) -> Result<CompiledProgram, String> {
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().skip(1).collect();
-    if args.len() != 2 {
+    // Aufruf: atc <modus> <datei> | atc check --strict <datei>
+    let strict = args.iter().skip(1).any(|a| a == "--strict");
+    let positional: Vec<&String> = args.iter().filter(|a| *a != "--strict").collect();
+    if positional.len() != 2 {
         eprintln!("{USAGE}");
         return ExitCode::from(2);
     }
-    let mode = args[0].as_str();
-    let path = args[1].as_str();
+    let mode = positional[0].as_str();
+    let path = positional[1].as_str();
     let src = match fs::read_to_string(path) {
         Ok(s) => s,
         Err(e) => {
@@ -106,6 +110,28 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         "check" => {
+            // Semantische Stufe: erst nach erfolgreichem Parse.
+            let report = atc_core::semantics::check_program(&program);
+            for w in &report.warnings {
+                eprintln!("  warnung: {w}");
+            }
+            if !report.errors.is_empty() {
+                for e in &report.errors {
+                    eprintln!("  - {e}");
+                }
+                eprintln!(
+                    "FEHLER: {path} verletzt {} semantische Regel(n)",
+                    report.errors.len()
+                );
+                return ExitCode::FAILURE;
+            }
+            if strict && !report.warnings.is_empty() {
+                eprintln!(
+                    "FEHLER (--strict): {path} hat {} offene Warnung(en)",
+                    report.warnings.len()
+                );
+                return ExitCode::FAILURE;
+            }
             eprintln!("OK: {path} validiert");
             ExitCode::SUCCESS
         }
