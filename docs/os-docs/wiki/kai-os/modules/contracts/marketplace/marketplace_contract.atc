@@ -1,0 +1,236 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-90 — NFT Marketplace Contract
+// Sprint 2.5 | Smart Contract Layer | Chain-ID 9000
+// Migrated from: modules/shivamon/contracts/marketplace_contract.py (300 lines)
+// NFT trading: list, buy, cancel, offers, 2.5% royalty, 1% platform fee
+// ─────────────────────────────────────────────────────────────
+
+const ROYALTY_BPS: u16 = 250       // 2.5%
+const PLATFORM_FEE_BPS: u16 = 100  // 1.0%
+const LISTING_TTL: u64 = 2592000   // 30 days
+const MAX_OFFERS_PER_TOKEN: u8 = 20
+
+enum ListingStatus { Active, Sold, Cancelled, Expired }
+
+struct Listing {
+    listing_id: Hash,
+    token_id: Hash,
+    seller: Address,
+    price: u128,
+    created_at: u64,
+    expires_at: u64,
+    status: ListingStatus,
+    buyer: Address,
+    sold_at: u64,
+    sold_price: u128,
+}
+
+struct Offer {
+    offer_id: Hash,
+    token_id: Hash,
+    buyer: Address,
+    offer_price: u128,
+    created_at: u64,
+    active: bool,
+}
+
+contract MarketplaceContract {
+    state listings: Map<Hash, Listing>
+    state token_to_listing: Map<Hash, Hash>
+    state offers: Map<Hash, Offer>
+    state token_offers: Map<Hash, List<Hash>>
+    state sales_history: List<Hash>
+    state total_volume: u128
+    state total_sales: u32
+    state active_listings: u32
+    state owner: Address
+    state paused: bool
+
+    event Listed(listing_id: Hash, token_id: Hash, seller: Address, price: u128)
+    event Sold(listing_id: Hash, token_id: Hash, buyer: Address, price: u128)
+    event Cancelled(listing_id: Hash)
+    event OfferMade(offer_id: Hash, token_id: Hash, buyer: Address, price: u128)
+    event OfferAccepted(offer_id: Hash, token_id: Hash)
+
+    fn init() {
+        self.listings = {}
+        self.token_to_listing = {}
+        self.offers = {}
+        self.token_offers = {}
+        self.sales_history = []
+        self.total_volume = 0
+        self.total_sales = 0
+        self.active_listings = 0
+        self.owner = msg_sender()
+        self.paused = false
+    }
+
+    fn list_for_sale(token_id: Hash, price: u128) -> Hash {
+        if self.paused {
+            return Hash::zero()
+        }
+        if price == 0 {
+            return Hash::zero()
+        }
+        let seller = msg_sender()
+        // Check token not already listed
+        let existing = self.token_to_listing.get(token_id)
+        if existing != null {
+            return Hash::zero()
+        }
+        let id_input = token_id + seller + price + Time::now()
+        let listing_id = Hash::sha256(id_input)
+        let listing = Listing {
+            listing_id: listing_id,
+            token_id: token_id,
+            seller: seller,
+            price: price,
+            created_at: Time::now(),
+            expires_at: Time::now() + LISTING_TTL,
+            status: ListingStatus::Active,
+            buyer: Address::zero(),
+            sold_at: 0,
+            sold_price: 0,
+        }
+        self.listings[listing_id] = listing
+        self.token_to_listing[token_id] = listing_id
+        self.active_listings += 1
+        emit Listed(listing_id, token_id, seller, price)
+        return listing_id
+    }
+
+    fn buy(listing_id: Hash) -> bool {
+        if self.paused {
+            return false
+        }
+        let listing = self.listings.get(listing_id)
+        if listing == null {
+            return false
+        }
+        if listing.status != ListingStatus::Active {
+            return false
+        }
+        if Time::now() > listing.expires_at {
+            listing.status = ListingStatus::Expired
+            self.active_listings -= 1
+            return false
+        }
+        let buyer = msg_sender()
+        // Calculate fees
+        let royalty = listing.price * ROYALTY_BPS / 10000
+        let platform_fee = listing.price * PLATFORM_FEE_BPS / 10000
+        let seller_proceeds = listing.price - royalty - platform_fee
+        // Transfer NFT
+        ShivamonContract::transfer(listing.token_id, buyer)
+        // Transfer ATC
+        ATCoin::transfer(buyer, listing.seller, seller_proceeds)
+        listing.status = ListingStatus::Sold
+        listing.buyer = buyer
+        listing.sold_at = Time::now()
+        listing.sold_price = listing.price
+        self.token_to_listing.remove(listing.token_id)
+        self.active_listings -= 1
+        self.total_volume += listing.price
+        self.total_sales += 1
+        self.sales_history.push(listing_id)
+        emit Sold(listing_id, listing.token_id, buyer, listing.price)
+        return true
+    }
+
+    fn cancel_listing(listing_id: Hash) -> bool {
+        let listing = self.listings.get(listing_id)
+        if listing == null {
+            return false
+        }
+        if listing.seller != msg_sender() {
+            return false
+        }
+        if listing.status != ListingStatus::Active {
+            return false
+        }
+        listing.status = ListingStatus::Cancelled
+        self.token_to_listing.remove(listing.token_id)
+        self.active_listings -= 1
+        emit Cancelled(listing_id)
+        return true
+    }
+
+    fn make_offer(token_id: Hash, offer_price: u128) -> Hash {
+        if self.paused {
+            return Hash::zero()
+        }
+        if offer_price == 0 {
+            return Hash::zero()
+        }
+        // Check offer count
+        let existing = self.token_offers.get(token_id)
+        if existing != null && existing.len() >= MAX_OFFERS_PER_TOKEN {
+            return Hash::zero()
+        }
+        let buyer = msg_sender()
+        let id_input = token_id + buyer + offer_price + Time::now()
+        let offer_id = Hash::sha256(id_input)
+        let offer = Offer {
+            offer_id: offer_id,
+            token_id: token_id,
+            buyer: buyer,
+            offer_price: offer_price,
+            created_at: Time::now(),
+            active: true,
+        }
+        self.offers[offer_id] = offer
+        let offer_list = self.token_offers.get(token_id)
+        if offer_list == null {
+            self.token_offers[token_id] = [offer_id]
+        } else {
+            offer_list.push(offer_id)
+        }
+        emit OfferMade(offer_id, token_id, buyer, offer_price)
+        return offer_id
+    }
+
+    fn accept_offer(offer_id: Hash) -> bool {
+        let offer = self.offers.get(offer_id)
+        if offer == null || !offer.active {
+            return false
+        }
+        // Verify caller owns the token via ownership check
+        let is_owner = ShivamonContract::is_token_owner(offer.token_id, msg_sender())
+        if !is_owner {
+            return false
+        }
+        // Transfer NFT and ATC
+        ShivamonContract::transfer(offer.token_id, offer.buyer)
+        ATCoin::transfer(offer.buyer, msg_sender(), offer.offer_price)
+        offer.active = false
+        self.total_volume += offer.offer_price
+        self.total_sales += 1
+        emit OfferAccepted(offer_id, offer.token_id)
+        return true
+    }
+
+    fn get_active_listings() -> u32 {
+        return self.active_listings
+    }
+
+    fn get_stats() -> (u32, u32, u128) {
+        return (self.active_listings, self.total_sales, self.total_volume)
+    }
+
+    fn pause() -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.paused = true
+        return true
+    }
+
+    fn unpause() -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.paused = false
+        return true
+    }
+}
