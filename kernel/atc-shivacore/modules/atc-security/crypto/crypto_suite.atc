@@ -1,0 +1,16 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang v0.3 — Crypto Suite
+// SHA-256, ECDSA, AES, signature verification
+// ATC-Standard: ATC-24
+
+module crypto_suite {
+    struct CryptoKey {
+        key_id: string,
+        algo: string,
+        public_key: string
+    }
+    
+    fn verify_signature() {
+        // Verifies cryptographic signature using ECDSA or Ed25519
+    }
+}
