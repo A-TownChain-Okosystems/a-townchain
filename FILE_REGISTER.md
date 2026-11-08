@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-08 19:46 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `7008239f1` (letzter Commit 2026-11-08)
+> **Erzeugt:** 2026-11-08 20:43 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `06b57e1` (letzter Commit 2026-11-08)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,7 +13,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 12343 |
+| **Total Dateien** | 12349 |
 | **Bereiche** | 15 |
 | **Verzeichnisse** | 2188 |
 
@@ -22,9 +22,9 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | Endung | Dateien |
 |--------|---------|
 | `.md` | 4250 |
-| `.atc` | 1642 |
+| `.atc` | 1645 |
 | `.yaml` | 1486 |
-| `.json` | 1411 |
+| `.json` | 1414 |
 | `.rs` | 852 |
 | `.py` | 799 |
 | `.tsx` | 535 |
@@ -67,7 +67,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
 | `ai` | 977 | KI-, Sprach- und Engine-Schicht |
 | `components` | 872 | Chain-Komponenten (kanonischer Code) |
-| `apps` | 851 | Produkt-Anwendungen |
+| `apps` | 857 | Produkt-Anwendungen |
 | `kernel` | 720 | Kernel- und OS-Ebenen |
 | `modules` | 208 | Module ohne eigene Produktschicht |
 | `tooling` | 164 | Werkzeuge und Engineering-Gates |
