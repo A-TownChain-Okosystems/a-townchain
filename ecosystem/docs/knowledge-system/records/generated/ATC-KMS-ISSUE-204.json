@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-204",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #204: [P0] Define normative identity, compute-job, attestation, policy and transaction contracts",
+  "context": "Issue 204 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/204",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Goal\nTurn the proposed interfaces in [the architecture specification](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/blob/docs/aurora-ecosystem-architecture-spec-v1/docs/architecture/AURORA_ECOSYSTEM_TECHNICAL_SPEC_V1.md#4-required-interfaces-and-proposed-contracts) into versioned normative contracts owned by `atc-standards`.\n\n## Scope\n- Define versioned schemas for agent identity/registration/revocation, compute job/run/worker lease, result attestation, policy decision and transaction correlation metadata.\n- Specify canonical IDs, timestamps, nonce/freshness, expiry, error/status enums, compatibility and migration rules.\n- Define the correctness assurance model for each job class; distinguish signer attribution from result correctness.\n- State which repository owns each schema and how runtime implementations pin compatible versions.\n\n## Acceptance criteria\n- [ ] Each contract has a versioned machine-readable schema and normative semantics.\n- [ ] Duplicate identity, expired/revoked credential, stale/replayed result and invalid policy decision cases are specified.\n- [ ] Transaction flow separates proposal, wallet authorization/signature, execution candidate and finality.\n- [ ] Positive and negative conformance tests are defined.\n- [ ] Review/approval and exact commit SHA are recorded; downstream implementations can reference the version.\n\n## Dependencies\nNone. This is a prerequisite for the lifecycle and multi-node implementation issues.\n\n## Evidence\nLink schema files, review record and test results tied to exact SHAs. Do not mark VERIFIED based on documentation presence alone."
+}
