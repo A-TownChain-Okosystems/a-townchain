@@ -1,0 +1,121 @@
+// Copyright (c) 2026 Michael Wroblewski — Apache-2.0
+//! CLI-Integrationstests: `atc compile` / `atc check` gegen den
+//! Differential-Korpus (gueltige Programme) und einen invaliden Eingabefall.
+
+use std::path::Path;
+use std::process::Command;
+
+#[test]
+fn cli_compile_und_check_ueber_differential_korpus() {
+    let exe = env!("CARGO_BIN_EXE_atc");
+    let corpus = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("differential")
+        .join("corpus");
+    let mut entries: Vec<std::path::PathBuf> = std::fs::read_dir(&corpus)
+        .expect("corpus-Verzeichnis fehlt")
+        .filter_map(|e| e.ok())
+        .map(|e| e.path())
+        .filter(|p| p.extension().is_some_and(|x| x.to_string_lossy() == "atc"))
+        .collect();
+    entries.sort();
+    assert!(!entries.is_empty(), "Korpus leer — CLI-Test ungueltig");
+    for path in entries {
+        let out = Command::new(exe)
+            .arg("compile")
+            .arg(&path)
+            .output()
+            .unwrap();
+        assert!(
+            out.status.success(),
+            "compile fehlgeschlagen fuer {:?}: {}",
+            path,
+            String::from_utf8_lossy(&out.stderr)
+        );
+        assert!(
+            !out.stdout.is_empty(),
+            "compile: leere JSON-Ausgabe fuer {:?}",
+            path
+        );
+        let out = Command::new(exe).arg("check").arg(&path).output().unwrap();
+        assert!(out.status.success(), "check fehlgeschlagen fuer {:?}", path);
+    }
+}
+
+#[test]
+fn cli_lehnt_ungueltiges_programm_und_aufrufe_ab() {
+    let exe = env!("CARGO_BIN_EXE_atc");
+    let bad = std::env::temp_dir().join("atc_cli_invalid.atc");
+    std::fs::write(&bad, "fn 5() { return }").unwrap();
+    let out = Command::new(exe).arg("compile").arg(&bad).output().unwrap();
+    assert!(
+        !out.status.success(),
+        "invalides Programm muss fehlschlagen"
+    );
+    assert!(
+        String::from_utf8_lossy(&out.stderr).contains("Kompilierfehler"),
+        "Fehlermeldung fehlt: {}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let out = Command::new(exe).arg("compile").output().unwrap();
+    assert_eq!(
+        out.status.code(),
+        Some(2),
+        "Aufruffehler muss Exit-Code 2 geben"
+    );
+    let out = Command::new(exe)
+        .arg("compile")
+        .arg("/nicht/vorhanden.atc")
+        .output()
+        .unwrap();
+    assert_eq!(
+        out.status.code(),
+        Some(2),
+        "unlesbare Datei muss Exit-Code 2 geben"
+    );
+}
+#[test]
+fn cli_run_fuehrt_programm_aus_und_lehnt_laufzeitfehler_ab() {
+    let exe = env!("CARGO_BIN_EXE_atc");
+    let good = std::env::temp_dir().join("atc_cli_run_good.atc");
+    std::fs::write(
+        &good,
+        "fn add(a: i64, b: i64) -> i64 { return a + b } fn main() -> i64 { return add(20, 22) }",
+    )
+    .unwrap();
+    let out = Command::new(exe).arg("run").arg(&good).output().unwrap();
+    assert!(
+        out.status.success(),
+        "run fehlgeschlagen: {}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert_eq!(String::from_utf8_lossy(&out.stdout).trim(), "42");
+
+    let bad = std::env::temp_dir().join("atc_cli_run_bad.atc");
+    std::fs::write(&bad, "fn main() -> i64 { return 1 / 0 }").unwrap();
+    let out = Command::new(exe).arg("run").arg(&bad).output().unwrap();
+    assert_eq!(out.status.code(), Some(1), "Div/0 muss Exit-Code 1 geben");
+    let msg = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        msg.contains("Kompilierfehler") || msg.contains("Verifizierer"),
+        "Meldung: {msg}"
+    );
+}
+
+#[test]
+fn production_cli_boundary_is_rust_only() {
+    // The production entry point is the Rust Cargo binary.  The historical
+    // Python reference VM is test/reference tooling and must not be selected
+    // implicitly by the production CLI.
+    let exe = std::path::Path::new(env!("CARGO_BIN_EXE_atc"));
+    assert!(exe.is_file(), "Rust production CLI fehlt: {exe:?}");
+    let manifest = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+    assert!(manifest.ends_with("crates/atc-core"));
+    assert!(
+        exe.starts_with(manifest.join("target")) || exe.starts_with(manifest.join("../..")),
+        "Production-CLI liegt außerhalb des Rust-Crate-Builds: {exe:?}"
+    );
+    assert!(
+        !manifest.join("../../src/atclang/vm/atcvm.py").is_file(),
+        "historische Python-VM darf nicht als Produktions-Implementierung vorhanden sein"
+    );
+}
