@@ -1,7 +1,10 @@
 # Root-Workspace des a-townchain-Monorepos.
-# Kanonisch sind components/, modules/, tooling/ und die Produkt-Apps.
-# apps/-Spiegel bereits vorhandener components-Crates, die sieben Unter-Workspaces
-# und das Archiv bleiben ausserhalb und werden ueber ihre eigenen Manifeste gebaut.
+# Kanonisch: components/, modules/, tooling/ und die Produkt-Apps.
+# Ausgeschlossen bleiben:
+#  - die sieben Unter-Workspaces (eigene Manifeste) und das Doku-Archiv
+#  - apps/-Spiegel bereits vorhandener components-Crates
+#  - modules/atc-blockchain/kernel und ecosystem/integration: durch FV-002
+#    blockiert (Kernel-Crate unvollstaendig, src enthaelt nur blockchain.rs)
 [workspace]
 resolver = "2"
 members = [
@@ -25,16 +28,8 @@ members = [
     "components/storage",
     "components/vm",
     "components/wallet",
-    "docs/os-docs/docs/archive/repos-rescue/archiviert-atc-kernel",
-    "docs/os-docs/docs/archive/shiva-os/crates/shiva-data-analyst",
-    "docs/os-docs/docs/archive/shiva-os/crates/shiva-marketplace",
-    "docs/os-docs/docs/archive/shiva-os/crates/shiva-security",
-    "docs/os-docs/docs/archive/shiva-os/crates/shiva-visualization",
-    "docs/os-docs/docs/monorepo-legacy/src-legacy/shivacore/kernel",
-    "ecosystem/integration",
     "kernel/atc-shivacore/modules/atc-security",
     "kernel/atc-shivacore/sdk",
-    "modules/atc-blockchain/kernel",
     "modules/atc-dns",
     "modules/atc-governance",
     "modules/atc-zkp",
@@ -42,15 +37,20 @@ members = [
 ]
 exclude = [
     "ai/genesis-engine",
+    "apps/atc-interop",
     "apps/atc-marketplace",
+    "apps/atc-mining",
+    "apps/atc-node",
+    "apps/atc-sdk",
+    "apps/atc-storage",
     "components/zkp",
     "docs/os-docs/docs/archive/monorepo-full",
+    "docs/os-docs/docs/archive/repos-rescue",
+    "docs/os-docs/docs/archive/shiva-os",
+    "docs/os-docs/docs/monorepo-legacy/src-legacy",
+    "ecosystem/integration",
     "kernel/globus-os",
     "kernel/kai-os",
+    "modules/atc-blockchain/kernel",
     "tooling/atc-engineering",
-    "apps/atc-node",
-    "apps/atc-mining",
-    "apps/atc-storage",
-    "apps/atc-sdk",
-    "apps/atc-interop",
 ]
