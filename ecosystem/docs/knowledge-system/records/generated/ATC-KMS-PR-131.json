@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-131",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #131: docs(catalog): add ecosystem UI menu and settings catalog",
+  "context": "Pull request 131 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/131",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Ziel\n\nEinen gemeinsamen, versionierten Navigations- und Einstellungsindex für die gesamte A-TownChain-Ökosystem-Oberfläche dokumentieren, ohne kanonische Implementierungen aus ihren Repositories zu verschieben oder zu duplizieren.\n\n## Hinzugefügt\n\n- `docs/ECOSYSTEM_UI_MENU_SETTINGS_CATALOG.md` — Navigation, Einstellungsdomänen, SSOT-Zuständigkeiten, Sicherheitsinvarianten und Reconciliation-Gates.\n- `docs/ECOSYSTEM_UI_MENU_SETTINGS_CATALOG.json` — maschinenlesbare Version desselben Architektur-Indexes.\n\n## Scope und Ownership\n\n- Ecosystem-Repository bleibt Integrations-/Evidence-Control-Plane.\n- GlobusOS behält Desktop, Control Center, System Settings und OS-API-Ownership; der vorhandene [GlobusOS PR #27](https://github.com/A-TownChain-Okosystems/globus-os/pull/27) bleibt der detaillierte OS/UI-Katalog.\n- Aurora AI, A-TownChain, ATCLang, ATC-VM und ShivaCore behalten ihre kanonischen Implementierungsgrenzen.\n- Keine UI- oder Runtime-Implementierung wird durch diese Dokumentation behauptet.\n\n## Sicherheitsvertrag\n\n`UI → API → Identity → Capability → Policy → Validation → Authoritative State → Audit`\n\nUnbekannte Autorisierungskontexte müssen geschlossen fehlschlagen. Aurora-Modellausgaben verleihen keine Berechtigung. Wallet-/Transaktionssignierung, Konsens, VM, Kernel/TCB und TPM/TEE dürfen keine UI-seitigen Bypässe erhalten.\n\n## Evidenzstatus / Residuals\n\n- Status: `PROPOSED`; Source-Reconciliation: `INCOMPLETE`.\n- Alle Menü- und Einstellungsbereiche bleiben `UNASSESSED`; Katalogeinträge sind kein Implementierungs- oder Verifikationsnachweis.\n- Der Cross-Repo-Abgleich tatsächlicher Routen, Symbole, Schemas, APIs und exakter Source HEADs ist noch nicht durchgeführt.\n- Vor Abschluss sind bidirektionale vollständige Source-Reconciliation und exakte SHA-bezogene Run→Job→Step→Exit-Code/Log-Evidenz erforderlich.\n- Kein Implementierungscode geändert, keine CI-Gates abgeschwächt.\n\n## Merge-Status\n\nDraft und nicht merge-bereit, bis die dokumentierten Reconciliation- und Evidenz-Gates erfüllt sind."
+}
