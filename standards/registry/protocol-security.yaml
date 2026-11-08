@@ -1,0 +1,25 @@
+# ATC Protocol Security Registry — ATC-STD-PROTOCOL-003 §3 (SSOT, SCR-0029)
+# Status je Pflicht-Angriff: IMPLEMENTED / PARTIAL / PLANNED / MISSING (Ehrlichkeitsregel).
+protocol_security:
+  version: 1.0.0
+  generated: '2026-09-08'
+  families:
+    - family: ATC-PROTO-P2P-001
+      threat_model_version: "1.0.0 (in Spezifikation, SCR-0027)"
+      implementation_ref: "atc-shivacore p2p_secure.rs (SCR-0028)"
+      attacks:
+        M1_mitm: PARTIAL        # Signatur-Pflicht im Envelope; echter Ed25519-Backend ausstehend (HAL-Simulation)
+        M2_replay: IMPLEMENTED   # Nonce je Absender + Message-ID-Seen-Set + Timestamp-Fenster, 3 Tests
+        M3_spoofing: PARTIAL    # DID-Bindung + Challenge-Response implementiert; Backend-Simulation
+        M4_tampering: PARTIAL   # Signatur ueber kanonische Bytes; Backend-Simulation
+        M5_eclipse: IMPLEMENTED # Subnetz-/Eclipse-Regel in Discovery-Spezifikation; Test auf Spezifikationsebene
+        M6_sybil: PLANNED       # DID-Identitaet erforderlich; Sybil-Resistenz-Tests ausstehend
+        M7_ddos: IMPLEMENTED    # Token-Bucket 100 msgs/s + 256 kiB/s je Peer (K15), Rate-Limit-Test
+        M8_malformed: PARTIAL   # Truncation-/Feldpruefung implementiert + Tests; Fuzzing-Korpus ausstehend
+        M9_privilege_escalation: IMPLEMENTED # Capability-Authorization (Vote-Gate), 1 Test
+        M10_key_compromise: PLANNED   # Rotation-/Revocation-Mechanismus spezifiziert, Implementierung ausstehend
+        M11_downgrade: PARTIAL  # Versionsfenster + Verhandlung; Downgrade-Erzwingungstest ausstehend
+        M12_supply_chain: PLANNED # Dependabot aktiv (SEC-C-002); Lockfile-Pinning je Repo ausstehend
+      open_exceptions: []
+      last_audit: "SCR-0027/0028 (08.09.2026)"
+  note: "Familien ohne Threat-Modell erhalten es mit ihrer Spezifikation; active ohne Eintrag verboten (REQ-PTS-004)."
