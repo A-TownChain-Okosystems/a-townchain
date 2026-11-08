@@ -1,0 +1,399 @@
+{
+  "schema_id": "ATC-DEPENDENCY-GRAPH-001",
+  "schema_version": "0.1.0",
+  "status": "DRAFT",
+  "generated": "2026-10-12",
+  "derivation": "Generated from atc-standards registry SSOT (dependencies.yaml repositories section, branch registry/f-001-repository-edges); edges capped to registered interfaces (interfaces.yaml IFC-0001..0007). NOT independently authoritative.",
+  "provenance": {
+    "registry_branch_sha": "ae3cec75efc913aa301d570af1568467aa03f6b7",
+    "atc_standards_main_sha": "dc0ff69d8f1abb4bc4ba7a409d5bad20cf5e8f41",
+    "catalog_ref": "docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.json (PR #115)",
+    "manifest_ref": "docs/build/ATC-BUILD-MANIFEST-001.json",
+    "repository_baseline": "2026-10-12 pull of all 26 active repos, SHAs in MASTER_OVERVIEW-001.json sources.repository_heads"
+  },
+  "policy": {
+    "ssot": "registry/dependencies.yaml is the only source of edges; this artifact is a derived, validated projection",
+    "fail_closed": "unknown edge target, cycle, or missing coverage fails validation",
+    "no_sham_validation": "topological order proves build ORDER only, not functional correctness",
+    "explicit_blockers": "open architecture decisions are recorded as blockers, never silently resolved",
+    "no_auto_merge": "changes go through PR review; no automated merges"
+  },
+  "nodes": [
+    {
+      "id": ".github",
+      "layer": "L5",
+      "uses": [],
+      "canonical_note": null
+    },
+    {
+      "id": "a-townchain",
+      "layer": "L3",
+      "uses": [
+        "atc-shivacore",
+        "atclang"
+      ],
+      "canonical_note": null
+    },
+    {
+      "id": "a-townchain-ecosystem",
+      "layer": "L7",
+      "uses": [],
+      "canonical_note": null
+    },
+    {
+      "id": "a-townchain-os",
+      "layer": "L7",
+      "uses": [
+        "a-townchain",
+        "atc-shivacore",
+        "atclang",
+        "aurora-ai"
+      ],
+      "canonical_note": null
+    },
+    {
+      "id": "a-townchain-os-docs",
+      "layer": "L5",
+      "uses": [],
+      "canonical_note": null
+    },
+    {
+      "id": "atc-algorithm",
+      "layer": "L3",
+      "uses": [],
+      "canonical_note": "FREEZE per SCR-0127: canonical build location a-townchain/components/algorithm; quellrepo reference/verification only"
+    },
+    {
+      "id": "atc-compute",
+      "layer": "L3",
+      "uses": [
+        "atc-shivacore"
+      ],
+      "canonical_note": null
+    },
+    {
+      "id": "atc-contracts",
+      "layer": "L3",
+      "uses": [
+        "a-townchain",
+        "atclang"
+      ],
+      "canonical_note": "FREEZE per SCR-0127: canonical build location a-townchain/components/contracts; quellrepo reference/verification only"
+    },
+    {
+      "id": "atc-engineering",
+      "layer": "L5",
+      "uses": [],
+      "canonical_note": null
+    },
+    {
+      "id": "atc-ide",
+      "layer": "L5",
+      "uses": [],
+      "canonical_note": null
+    },
+    {
+      "id": "atc-launchpad",
+      "layer": "L6",
+      "uses": [
+        "atc-sdk"
+      ],
+      "canonical_note": null
+    },
+    {
+      "id": "atc-marketplace",
+      "layer": "L6",
+      "uses": [
+        "atc-contracts",
+        "atc-sdk"
+      ],
+      "canonical_note": null
+    },
+    {
+      "id": "atc-node",
+      "layer": "L3",
+      "uses": [
+        "a-townchain",
+        "atc-shivacore"
+      ],
+      "canonical_note": "FREEZE per SCR-0127: canonical build location a-townchain/components/node; quellrepo reference/verification only"
+    },
+    {
+      "id": "atc-sdk",
+      "layer": "L3",
+      "uses": [
+        "a-townchain",
+        "atclang"
+      ],
+      "canonical_note": "FREEZE per SCR-0127: canonical build location a-townchain/components/sdk; quellrepo reference/verification only"
+    },
+    {
+      "id": "atc-shivacore",
+      "layer": "L1",
+      "uses": [
+        "atclang"
+      ],
+      "canonical_note": null
+    },
+    {
+      "id": "atc-standards",
+      "layer": "L5",
+      "uses": [],
+      "canonical_note": null
+    },
+    {
+      "id": "atc-toolchain",
+      "layer": "L5",
+      "uses": [],
+      "canonical_note": null
+    },
+    {
+      "id": "atc-vm",
+      "layer": "L3",
+      "uses": [],
+      "canonical_note": "FREEZE per SCR-0127: canonical build location a-townchain/components/vm; quellrepo reference/verification only"
+    },
+    {
+      "id": "atc-zkp",
+      "layer": "L3",
+      "uses": [],
+      "canonical_note": "FREEZE per SCR-0127: canonical build location a-townchain/components/zkp; quellrepo reference/verification only"
+    },
+    {
+      "id": "atclang",
+      "layer": "L0",
+      "uses": [],
+      "canonical_note": null
+    },
+    {
+      "id": "aurora-ai",
+      "layer": "L2",
+      "uses": [
+        "atc-shivacore"
+      ],
+      "canonical_note": null
+    },
+    {
+      "id": "demo-repository",
+      "layer": "L5",
+      "uses": [],
+      "canonical_note": null
+    },
+    {
+      "id": "genesis-chronicles",
+      "layer": "L6",
+      "uses": [
+        "atc-contracts",
+        "genesis-engine"
+      ],
+      "canonical_note": null
+    },
+    {
+      "id": "genesis-engine",
+      "layer": "L6",
+      "uses": [
+        "atc-sdk"
+      ],
+      "canonical_note": null
+    },
+    {
+      "id": "genesis-franchise-factory",
+      "layer": "L6",
+      "uses": [],
+      "canonical_note": null
+    },
+    {
+      "id": "globus-os",
+      "layer": "L4",
+      "uses": [
+        "atc-shivacore"
+      ],
+      "canonical_note": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "atclang",
+      "to": "atc-shivacore",
+      "ifc": "IFC-0001"
+    },
+    {
+      "from": "atclang",
+      "to": "a-townchain",
+      "ifc": "IFC-0001"
+    },
+    {
+      "from": "atc-shivacore",
+      "to": "a-townchain",
+      "ifc": "IFC-0002"
+    },
+    {
+      "from": "atclang",
+      "to": "atc-contracts",
+      "ifc": "IFC-0001"
+    },
+    {
+      "from": "a-townchain",
+      "to": "atc-contracts",
+      "ifc": "IFC-0003"
+    },
+    {
+      "from": "atclang",
+      "to": "atc-sdk",
+      "ifc": "IFC-0001"
+    },
+    {
+      "from": "a-townchain",
+      "to": "atc-sdk",
+      "ifc": "IFC-0003"
+    },
+    {
+      "from": "atc-shivacore",
+      "to": "atc-node",
+      "ifc": "IFC-0002"
+    },
+    {
+      "from": "a-townchain",
+      "to": "atc-node",
+      "ifc": "IFC-0003"
+    },
+    {
+      "from": "atc-shivacore",
+      "to": "atc-compute",
+      "ifc": "IFC-0002"
+    },
+    {
+      "from": "atc-shivacore",
+      "to": "aurora-ai",
+      "ifc": "IFC-0002"
+    },
+    {
+      "from": "atc-shivacore",
+      "to": "globus-os",
+      "ifc": "IFC-0002"
+    },
+    {
+      "from": "atc-sdk",
+      "to": "atc-marketplace",
+      "ifc": "IFC-0004"
+    },
+    {
+      "from": "atc-contracts",
+      "to": "atc-marketplace",
+      "ifc": "IFC-0005"
+    },
+    {
+      "from": "atc-sdk",
+      "to": "atc-launchpad",
+      "ifc": "IFC-0004"
+    },
+    {
+      "from": "atc-sdk",
+      "to": "genesis-engine",
+      "ifc": "IFC-0004"
+    },
+    {
+      "from": "genesis-engine",
+      "to": "genesis-chronicles",
+      "ifc": "IFC-0006"
+    },
+    {
+      "from": "atc-contracts",
+      "to": "genesis-chronicles",
+      "ifc": "IFC-0005"
+    },
+    {
+      "from": "atclang",
+      "to": "a-townchain-os",
+      "ifc": "IFC-0001"
+    },
+    {
+      "from": "atc-shivacore",
+      "to": "a-townchain-os",
+      "ifc": "IFC-0002"
+    },
+    {
+      "from": "a-townchain",
+      "to": "a-townchain-os",
+      "ifc": "IFC-0003"
+    },
+    {
+      "from": "aurora-ai",
+      "to": "a-townchain-os",
+      "ifc": "IFC-0007"
+    }
+  ],
+  "topological_order": [
+    "atc-standards",
+    ".github",
+    "atc-toolchain",
+    "atc-ide",
+    "atc-engineering",
+    "a-townchain-os-docs",
+    "a-townchain-ecosystem",
+    "genesis-franchise-factory",
+    "atc-vm",
+    "atc-algorithm",
+    "atc-zkp",
+    "demo-repository",
+    "atclang",
+    "atc-shivacore",
+    "atc-compute",
+    "aurora-ai",
+    "globus-os",
+    "a-townchain",
+    "atc-contracts",
+    "atc-node",
+    "atc-sdk",
+    "atc-marketplace",
+    "atc-launchpad",
+    "genesis-engine",
+    "genesis-chronicles",
+    "a-townchain-os"
+  ],
+  "cycle_check": {
+    "algorithm": "kahn",
+    "acyclic": true,
+    "checked_by": "tools/validate_build_graph.py"
+  },
+  "blockers": [
+    {
+      "id": "DEC-ATVM-SHIVAVM",
+      "kind": "architecture_decision",
+      "description": "canonical contract VM (ATVM vs ShivaVM) undecided",
+      "blocking": "build order of VM-dependent components is provisional",
+      "ref": "Task DB v3.x"
+    },
+    {
+      "id": "AD-008",
+      "kind": "language_migration",
+      "description": "8 repos migrate Python/TypeScript to Rust",
+      "blocking": "Python build entries are transitional",
+      "ref": ".github issue #12"
+    },
+    {
+      "id": "MK13-15-DIALECT",
+      "kind": "specification_gap",
+      "description": "47 .atc files (Franchise/MetaFactory/Civilization) do not parse with current compiler",
+      "blocking": "genesis-franchise-factory and parts of genesis-engine/chronicles cannot build from source contracts",
+      "ref": "MILESTONES.md"
+    },
+    {
+      "id": "INFRA-DEPGRAPH-001",
+      "kind": "platform_config",
+      "description": "GitHub dependency graph not provisioned org-wide",
+      "blocking": "dependency-review CI gate stays red on 6 repos",
+      "ref": "atc-algorithm #3"
+    }
+  ],
+  "gates": {
+    "G1_schema": "PASS (tools/validate_build_graph.py, exit 0)",
+    "G2_topology": "PASS (26/26 active repos assigned, 22 edges, acyclic, topological order verified)",
+    "G3_build": "PARTIAL (entry points evidenced from repo files at exact SHAs; commands not yet executed end-to-end)",
+    "G4_tests": "PENDING (no build+test evidence chain recorded)",
+    "G5_provenance": "PARTIAL (registry SHAs pinned; CI run IDs pending)",
+    "G6_integration": "DONE - MASTER_OVERVIEW-001.json artifacts registry (commit f659926)"
+  },
+  "edge_semantics": "from = dependency (built first), to = dependent consumer; direction of build order",
+  "uses_semantics": "node.uses lists dependencies consumed via registered interfaces (registry/dependencies.yaml repositories section)"
+}
