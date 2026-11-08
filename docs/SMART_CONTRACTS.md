@@ -72,8 +72,16 @@ vom Gate respektiert.
   (`atc check --strict` behandelt Warnungen als Fehler).
   **VM-Subset:** `&&`/`||` werden mit Kurzschluss ausgewertet, `!` normalisiert
   auf 1/0; nicht unterstützte Operatoren (z. B. `%`) lehnen im Frontend ab.
-  **Noch offen:** Typprüfung, Namensauflösung über Vertrags-/Dateigrenzen und
-  Codegen für Verträge.
+  **Semantik Stufe 2 (Typprüfung):** `src/types.rs` prüft `return` gegen den
+  deklarierten Rückgabetyp, `let`-Annotationen, Zuweisungen an Zustandsfelder,
+  `require`/`if`/`while`-Bedingungen und `emit`-Argumente — aber nur, wenn beide
+  Seiten einen bekannten Typ haben. Unbekannte Namen, Aufrufe über Dateigrenzen
+  und nominale Typen gelten als unbekannt und erzeugen keinen Befund; die
+  Prüfung behauptet damit keine Typkorrektheit, die sie nicht beweisen kann.
+  Lauf über alle 47 Quellen: 0 Befunde. Gegenprobe mit absichtlich falschen
+  Typen: 4 Befunde, Exit 1.
+  **Noch offen:** Namensauflösung/Typprüfung über Vertrags- und Dateigrenzen
+  (Importe) und Codegen für Verträge.
   Siehe STATUS.md/ROADMAP.md (G3-G10 offen)
 
 Aktueller Lauf: **GATE PASS** — 16 Einträge, 16 Quellen, 0 Befunde, alle 16 Quellen
