@@ -1,0 +1,188 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-08 — AssetBus: Asset-Pipeline + Streaming + Hot Reload
+// Genesis Communication Layer (GCL) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct Asset {
+    id: Hash256,
+    path: String,
+    type: AssetType,
+    version: UInt32,
+    size_bytes: UInt64,
+    loaded: Bool,
+    ref_count: UInt32,
+    data: Bytes,
+    dependencies: List<Hash256>,
+    last_modified: UInt64,
+    hot_reload: Bool,
+}
+
+enum AssetType {
+    Texture, Mesh, Shader, Audio, Font, Material, Animation, Scene, Script, Prefab, Config
+}
+
+struct AssetBus {
+    assets: Map<Hash256, Asset>,
+    by_path: Map<String, Hash256>,
+    loading_queue: List<String>,
+    streaming: Bool,
+    max_concurrent_loads: UInt8,
+    loaded_bytes: UInt64,
+    budget_bytes: UInt64,
+    dedup_enabled: Bool,
+    hot_reload_enabled: Bool,
+}
+
+// AssetBus: Asset registrieren
+pub fn register_asset(bus: AssetBus, path: String, asset_type: AssetType) -> Hash256 {
+    let asset_id = Crypto::sha256(serialize(path, asset_type))
+    if bus.by_path.contains(path) {
+        return bus.by_path[path]  // Dedup
+    }
+    bus.assets[asset_id] = Asset {
+        id: asset_id,
+        path: path,
+        type: asset_type,
+        version: 1,
+        size_bytes: 0,
+        loaded: false,
+        ref_count: 0,
+        data: nil,
+        dependencies: [],
+        last_modified: Chain::timestamp(),
+        hot_reload: bus.hot_reload_enabled,
+    }
+    bus.by_path[path] = asset_id
+    return asset_id
+}
+
+// AssetBus: Asset laden (sync)
+pub fn load_asset(bus: AssetBus, asset_id: Hash256) -> Bool {
+    require(bus.assets.contains(asset_id), "Asset not found")
+    let asset = bus.assets[asset_id]
+    if asset.loaded {
+        asset.ref_count = asset.ref_count + 1
+        return true
+    }
+    // Dependencies zuerst laden
+    for dep_id in asset.dependencies {
+        if bus.assets.contains(dep_id) and not bus.assets[dep_id].loaded {
+            load_asset(bus, dep_id)
+        }
+    }
+    // Load logic (Stub: in echter Engine Datei von Disk/GPU laden)
+    asset.loaded = true
+    asset.ref_count = 1
+    bus.loaded_bytes = bus.loaded_bytes + asset.size_bytes
+    emit AssetLoaded(asset_id, asset.path, asset.size_bytes)
+    return true
+}
+
+// AssetBus: Asset freigeben
+pub fn unload_asset(bus: AssetBus, asset_id: Hash256) -> Bool {
+    require(bus.assets.contains(asset_id), "Asset not found")
+    let asset = bus.assets[asset_id]
+    if asset.ref_count > 1 {
+        asset.ref_count = asset.ref_count - 1
+        return true
+    }
+    // Dependencies freigeben
+    for dep_id in asset.dependencies {
+        if bus.assets.contains(dep_id) and bus.assets[dep_id].ref_count > 0 {
+            unload_asset(bus, dep_id)
+        }
+    }
+    asset.loaded = false
+    asset.ref_count = 0
+    asset.data = nil
+    bus.loaded_bytes = bus.loaded_bytes - asset.size_bytes
+    emit AssetUnloaded(asset_id, asset.path)
+    return true
+}
+
+// AssetBus: Streaming (async load)
+pub fn request_stream(bus: AssetBus, path: String) -> Bool {
+    if not bus.by_path.contains(path) {
+        return false
+    }
+    bus.loading_queue.append(path)
+    return true
+}
+
+// AssetBus: Streaming-Queue verarbeiten
+pub fn process_streaming(bus: AssetBus) -> UInt8 {
+    let processed = 0
+    let batch = min(bus.max_concurrent_loads, bus.loading_queue.len())
+    for i in 0..batch {
+        if bus.loading_queue.len() == 0 { break }
+        let path = bus.loading_queue.pop(0)
+        if bus.by_path.contains(path) {
+            let aid = bus.by_path[path]
+            load_asset(bus, aid)
+            processed = processed + 1
+        }
+    }
+    return processed
+}
+
+// AssetBus: Hot Reload
+pub fn reload_asset(bus: AssetBus, asset_id: Hash256) -> Bool {
+    require(bus.assets.contains(asset_id), "Asset not found")
+    let asset = bus.assets[asset_id]
+    if not asset.hot_reload {
+        return false
+    }
+    asset.version = asset.version + 1
+    asset.last_modified = Chain::timestamp()
+    emit AssetHotReloaded(asset_id, asset.path, asset.version)
+    return true
+}
+
+// AssetBus: Dependency hinzufügen
+pub fn add_dependency(bus: AssetBus, asset_id: Hash256, dep_id: Hash256) -> Bool {
+    require(bus.assets.contains(asset_id), "Asset not found")
+    if not bus.assets[asset_id].dependencies.contains(dep_id) {
+        bus.assets[asset_id].dependencies.append(dep_id)
+    }
+    return true
+}
+
+// AssetBus: Memory Budget prüfen
+pub fn check_budget(bus: AssetBus) -> Bool {
+    return bus.loaded_bytes < bus.budget_bytes
+}
+
+// AssetBus: Statistiken
+pub fn asset_stats(bus: AssetBus) -> AssetStats {
+    let loaded = 0
+    let total_refs = 0
+    for id in bus.assets.keys() {
+        if bus.assets[id].loaded {
+            loaded = loaded + 1
+            total_refs = total_refs + bus.assets[id].ref_count
+        }
+    }
+    return AssetStats {
+        total_assets: bus.assets.len(),
+        loaded: loaded,
+        pending: bus.loading_queue.len(),
+        loaded_bytes: bus.loaded_bytes,
+        budget_bytes: bus.budget_bytes,
+        utilization: if bus.budget_bytes > 0 then (bus.loaded_bytes * 100) / bus.budget_bytes else 0,
+    }
+}
+
+struct AssetStats {
+    total_assets: UInt32,
+    loaded: UInt32,
+    pending: UInt32,
+    loaded_bytes: UInt64,
+    budget_bytes: UInt64,
+    utilization: UInt8,
+}
+
+event AssetLoaded(id: Hash256, path: String, size: UInt64)
+event AssetUnloaded(id: Hash256, path: String)
+event AssetHotReloaded(id: Hash256, path: String, version: UInt32)
