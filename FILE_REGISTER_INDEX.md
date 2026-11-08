@@ -1,18 +1,22 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-08 18:14 UTC+2 aus `origin/main` @ `1ba68a228`.
+> Vollständige Dateiliste. Erzeugt 2026-11-08 19:19 UTC+2 aus `origin/main` @ `539a90193`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 12329 Dateien**
+**Total: 12336 Dateien**
 
-## docs (5061)
+## docs (5065)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
+- `docs/CONSENSUS.md`
 - `docs/ENGINEERING_AUDIT.md`
 - `docs/MAINNET_READINESS.md`
 - `docs/MONOREPO_MIGRATION.md`
 - `docs/REPOSITORY_STANDARD.md`
+- `docs/SMART_CONTRACTS.md`
 - `docs/audits/REPOSITORY-AUDIT-2026-09-16.md`
+- `docs/boot/2026-11-08-uefi-screen.png`
+- `docs/boot/BOOT-EVIDENCE.md`
 - `docs/demo/.atc/compliance.yaml`
 - `docs/demo/.atc/evidence/evidence.yaml`
 - `docs/demo/.atc/lifecycle.yaml`
@@ -9472,7 +9476,7 @@
 - `ai/genesis-franchise-factory/tests/test_spec_loader.py`
 - `ai/genesis-franchise-factory/tools/validate_specs.py`
 
-## components (871)
+## components (872)
 
 - `components/algorithm/.atc/compliance.yaml`
 - `components/algorithm/.atc/evidence/evidence.yaml`
@@ -9941,6 +9945,7 @@
 - `components/node/src/bootstrap.rs`
 - `components/node/src/chain.rs`
 - `components/node/src/config.rs`
+- `components/node/src/consensus.rs`
 - `components/node/src/did.rs`
 - `components/node/src/discovery.rs`
 - `components/node/src/gossip.rs`
@@ -12344,6 +12349,17 @@
 - `.github/workflows/ssot-source-validation.yml`
 - `.github/workflows/test-suite.yml`
 
+## tools (8)
+
+- `tools/atc-sc-validator/check_contract_registry.py`
+- `tools/atc-sc-validator/tests/test_contract_registry_gate.py`
+- `tools/consensus_boundary_check.py`
+- `tools/consolidate_monorepo.py`
+- `tools/dependency_review.py`
+- `tools/determinism_check.py`
+- `tools/ecosystem.sh`
+- `tools/file_register.py`
+
 ## "docs (6)
 
 - `"docs/os-docs/docs/issues/ISSUE_25__GATEWAY_4000__VOLLST\303\204NDIGE.md"`
@@ -12361,15 +12377,6 @@
 - `.atc/ownership.yaml`
 - `.atc/repository.yaml`
 - `.atc/standards.yaml`
-
-## tools (6)
-
-- `tools/consensus_boundary_check.py`
-- `tools/consolidate_monorepo.py`
-- `tools/dependency_review.py`
-- `tools/determinism_check.py`
-- `tools/ecosystem.sh`
-- `tools/file_register.py`
 
 ## specs (5)
 
