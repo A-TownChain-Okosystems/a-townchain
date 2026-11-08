@@ -37,11 +37,26 @@ und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v
 - Nicht unterstuetzte Operatoren (`%`) lehnen weiterhin im Frontend ab
   (fail-closed, kein stiller Durchlauf).
 
+### Added (Semantik Stufe 2 — Typ- und Signaturpruefung)
+
+- `atc_core::types`: prueft `return` gegen den Rueckgabetyp, `let x: T = ...`
+  gegen die Annotation, Zuweisungen an Zustandsfelder, `require`/`if`/`while`
+  auf `bool`-Bedingungen und `emit`-Argumente gegen die Event-Deklaration.
+- Konservativ by design: gemeldet wird nur bei zwei bekannten, widerspruechlichen
+  Typen; unbekannte Namen, Aufrufe ueber Dateigrenzen und nominale Typen bleiben
+  `Unknown` und erzeugen keinen Befund. Die Pruefung behauptet keine
+  Typkorrektheit, die sie nicht beweisen kann.
+- `atc check` fuehrt Stufe 1 (Deklarationen/Referenzen) und Stufe 2 (Typen)
+  zusammen; Aufrufe bekannter Funktionen mit falscher Argumentanzahl werden als
+  Warnung gemeldet.
+- Befund am Bestand: 47 von 47 Quellen ohne Typbefund; absichtlich fehlerhafter
+  Vertrag ergibt 4 Befunde und Exit 1.
+
 ### Verification
 
-- `cargo test --workspace`: 471 Tests gruen.
+- `cargo test --workspace`: 479 Tests gruen.
 - `./tools/ecosystem.sh build`: alle sieben Workspaces plus Bare-Metal-Kernel.
-- `./tools/ecosystem.sh test`: 2133 Tests, 0 fehlgeschlagen.
+- `./tools/ecosystem.sh test`: 2141 Tests, 0 fehlgeschlagen.
 - Contract-Registry-Gate A8: GATE PASS (16/16).
 
 ## [Unreleased] - 2026-09-11
