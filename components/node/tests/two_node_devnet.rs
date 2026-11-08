@@ -7,7 +7,7 @@ use std::io::{BufRead, BufReader, Write};
 use std::net::TcpStream;
 use std::time::Duration;
 
-fn start_node() -> (u16, u64) {
+fn start_node() -> (u16, String) {
     let g = Genesis::devnet();
     let (peers, boot_hash) = devnet_boot(&g, &[(1, "atc-node-1".into()), (2, "atc-node-2".into())]).expect("devnet_boot fehlgeschlagen");
     let state = DevnetRpc::from_state(&g, &peers);
@@ -16,7 +16,7 @@ fn start_node() -> (u16, u64) {
     drop(probe);
     let addr = format!("127.0.0.1:{}", port);
     std::thread::spawn(move || { let _ = serve(&addr, state); });
-    (port, boot_hash)
+    (port, atc_node::chain::hash_hex(&boot_hash))
 }
 
 fn query(port: u16, cmd: &str) -> String {
