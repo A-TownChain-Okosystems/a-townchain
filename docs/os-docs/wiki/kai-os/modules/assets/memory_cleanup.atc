@@ -1,0 +1,122 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-74 — Automatic Memory Cleanup
+# Genesis Engine — LRU-basierte Speicherbereinigung
+# Standard: AD-74
+
+struct MemoryEntry:
+    asset_path: String
+    asset_type: String
+    size_bytes: Int64
+    ref_count: Int32
+    last_used: Float          # Timestamp
+    load_time: Float          # Wie lange geladen
+    priority: String
+
+struct CleanupConfig:
+    unused_threshold: Float   # Sekunden ungenutzt bis Unload (default: 300 = 5min)
+    check_interval: Float     # Prüf-Intervall (default: 60s)
+    max_memory_mb: Int32      # Max RAM (mobile: 512, desktop: 4096)
+    min_free_mb: Int32        # Min freier RAM
+    aggressive: Bool          # Mobile-Modus — aggressiver Cleanup
+
+func create_cleanup_config(platform: String) -> CleanupConfig:
+    if platform == "mobile":
+        return CleanupConfig {
+            unused_threshold: 120.0,   # 2 min auf Mobile
+            check_interval: 30.0,       # Häufiger prüfen
+            max_memory_mb: 512,
+            min_free_mb: 64,
+            aggressive: true
+        }
+    return CleanupConfig {
+        unused_threshold: 300.0,   # 5 min auf Desktop
+        check_interval: 60.0,
+        max_memory_mb: 4096,
+        min_free_mb: 256,
+        aggressive: false
+    }
+
+# Hintergrund-Prozess der regelmäßig ungenutzte Assets entlädt
+func run_cleanup_loop(entries: Map<String, MemoryEntry>, config: CleanupConfig) -> Bool:
+    set_interval(config.check_interval, func:
+        current_time = now()
+        freed = 0
+        for path, entry in entries:
+            if entry.ref_count == 0:
+                unused_duration = current_time - entry.last_used
+                if unused_duration > config.unused_threshold:
+                    # Asset ist zu lange ungenutzt — entladen
+                    unload_asset(path)
+                    entries.remove(path)
+                    freed += entry.size_bytes
+                    log_debug(f"Auto-unload: {path} (unused {unused_duration:.0f}s, freed {entry.size_bytes} bytes)")
+        if freed > 0:
+            log_info(f"Cleanup: freed {freed / 1048576:.1f} MB")
+            # Nach Cleanup: GC anstoßen
+            trigger_gc()
+    )
+    return true
+
+# Notfall-Cleanup — wenn RAM knapp wird
+func emergency_cleanup(entries: Map<String, MemoryEntry>, config: CleanupConfig) -> Int64:
+    freed = 0
+    # 1. Alle LOW Priority Assets entladen
+    for path, entry in entries:
+        if entry.priority == "low" and entry.ref_count == 0:
+            unload_asset(path)
+            entries.remove(path)
+            freed += entry.size_bytes
+    # 2. Wenn nicht genug: MEDIUM Priority
+    if get_free_memory_mb() < config.min_free_mb:
+        for path, entry in entries:
+            if entry.priority == "medium" and entry.ref_count == 0:
+                unload_asset(path)
+                entries.remove(path)
+                freed += entry.size_bytes
+    # 3. Aggressiv: älteste ungenutzte HIGH Priority
+    if config.aggressive and get_free_memory_mb() < config.min_free_mb:
+        sorted = sort_by_last_used(entries)
+        for entry in sorted:
+            if entry.ref_count == 0:
+                unload_asset(entry.asset_path)
+                entries.remove(entry.asset_path)
+                freed += entry.size_bytes
+                if get_free_memory_mb() >= config.min_free_mb:
+                    break
+    log_warn(f"Emergency cleanup: freed {freed / 1048576:.1f} MB")
+    return freed
+
+# Touch — reset last_used Timer
+func touch_asset(entries: Map<String, MemoryEntry>, path: String) -> Bool:
+    if path in entries:
+        entries[path].last_used = now()
+        entries[path].ref_count += 1
+        return true
+    return false
+
+func release_asset(entries: Map<String, MemoryEntry>, path: String) -> Bool:
+    if path in entries:
+        entries[path].ref_count -= 1
+        entries[path].last_used = now()
+        return true
+    return false
+
+# Statistik für Telemetrie
+func get_memory_stats(entries: Map<String, MemoryEntry>) -> Map:
+    total = 0
+    unused = 0
+    by_type = {}
+    for entry in entries:
+        total += entry.size_bytes
+        if entry.ref_count == 0:
+            unused += entry.size_bytes
+        t = entry.asset_type
+        if t not in by_type:
+            by_type[t] = 0
+        by_type[t] += entry.size_bytes
+    return {
+        "total_mb": total / 1048576.0,
+        "unused_mb": unused / 1048576.0,
+        "by_type": by_type,
+        "entry_count": len(entries)
+    }
