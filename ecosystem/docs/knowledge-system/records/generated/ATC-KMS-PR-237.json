@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-237",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #237: docs(ci): baseline ecosystem pipeline coverage and gaps",
+  "context": "Pull request 237 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/237",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n\nAdds a source-grounded baseline of the existing ecosystem CI workflow surface before any new pipeline is introduced.\n\n## Findings recorded\n\n- Inventories the 19 workflow files present on the inspected `main` revision.\n- Maps existing component, catalog, security, determinism, E2E and release-readiness coverage.\n- Records the known weak determinism invocation for the Rust scan using `--test-cmd \"true\"`.\n- Separates workflow definitions from exact-SHA run evidence and from global release authorization.\n- Lists prioritized P0/P1/P2 reconciliation tasks and preserves SSOT ownership boundaries.\n\n## Evidence boundary\n\n- Base commit inspected: `08df784788932df3f4392440b33b711a100c7a1f`\n- Documentation commit: `987bf4ba779c7df1a9dddb4f31accb70e1d1fab5`\n- This PR changes documentation only. No workflow execution, functional verification, release approval, or status promotion is claimed.\n- Keep this PR unmerged until the content and referenced workflow definitions are reviewed."
+}
