@@ -1,0 +1,43 @@
+// ============================================================================
+// Module: dock
+// Description: Application dock
+// ATC-Standard: ATC-24
+// Sprint: 3.0
+// Language: ATCLang v0.3
+// Created: 2026-08-08
+// Agent: Aurora (MasterBrain · Base44)
+// ============================================================================
+
+module dock {
+
+// Primary struct
+struct Dock {
+    id: UInt64,
+    name: String,
+    active: Bool,
+    created_at: UInt64,
+    updated_at: UInt64,
+}
+
+// Initialize module
+fn init() -> Bool {
+    return true
+}
+
+// Get status
+fn status() -> String {
+    return "dock ready"
+}
+
+// Pin app
+fn pin(app: String) -> Bool {
+    // TODO: Implement
+    return Bool:default()
+}
+// Unpin app
+fn unpin(app: String) -> Bool {
+    // TODO: Implement
+    return Bool:default()
+}
+
+} // module dock
