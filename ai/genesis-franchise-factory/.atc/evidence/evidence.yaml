@@ -1,0 +1,26 @@
+# ATC Evidence SSOT — SCR-0080 (Owner-P0-01) — maschinenlesbar und EHRLICH
+# Statusleiter (verbindlich): SPECIFIED -> IMPLEMENTED -> TESTED -> VERIFIED -> AUDITED -> RELEASED
+# CLAIMED != PASS · DOCUMENTED != IMPLEMENTED · IMPLEMENTED != VERIFIED
+schema_version: "1.0.0"
+repository: genesis-franchise-factory
+generated: "2026-09-13"
+generated_by: "Org-Build 13.09.2026 (Superagent): kanonische Specs aus a-townchain-os-docs-Archiv uebernommen + Referenz-Implementierung gebaut"
+bound_commit: 0f2b7c841b1cab1dfcf5d61aee279348ceb39050
+maturity_class: C          # A=substanziell B=Rebuild/Produkt C=Plattform/Anwendung
+r_level: R1
+implementation:
+  status: partial          # substantial|partial|skeleton|docs_only
+  summary: "GFF als Plattform-Repo realisiert: (1) 23 kanonische Factory-Specs (AD-21..43) + GFF Core (AD-20) + ATC-9900 DAO-Kern + Contracts unveraendert aus dem Org-Archiv uebernommen (specs/); (2) Referenz-Implementierung gff/: Pipeline-Orchestrator (core.py, AD-20-Portierung mit injizierbarem Executor + ehrlichem Dry-Run), ATC-9900 DAO-Modell (dao.py), 12-Phasen-Lifecycle (lifecycle.py, AD-43); (3) Spec-Gate (tools/validate_specs.py) als CI-verbindliche Vollstaendigkeits-/Trennungspruefung. KEINE Production-Integration (GCL-Bus, ATC-VM-Bindung, Store-Anbindung folgen)."
+tests:
+  status: implemented
+  evidence: "pytest: 33 Tests (spec_loader, core, dao, lifecycle, spec-gate) — lokal PASS 13.09.2026; CI: test-suite.yml (pytest + ruff + spec-gate)"
+security:
+  status: not_audited
+  evidence: "Keine Security-Pruefung; keine Secrets im Repo (nur kanonische Specs + stdlib-Code)"
+conformance:
+  status: partial
+  evidence: "ATC-STD-201 (repository.yaml, evidence.yaml, ARCHITECTURE.md); Plattform-Trennung: Spec-Gate blockt chronicles-Imports in allen .atc-Dateien"
+release:
+  status: not_applicable
+milestone_claims:
+  rule: "M-Claims nur mit Evidence-Bundle (ATC-STD-MILESTONE-001)"
