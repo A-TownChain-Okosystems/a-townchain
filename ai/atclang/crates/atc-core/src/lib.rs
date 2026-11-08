@@ -15,5 +15,6 @@ pub mod project;
 pub mod abi;
 pub mod native;
 pub mod parser;
+pub mod storage;
 pub mod value;
 pub mod vm;
