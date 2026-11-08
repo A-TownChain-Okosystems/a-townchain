@@ -1,0 +1,27 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-37 Multiplayer Factory
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct MultiplayerFactory { matchmakers: Map<Hash256, Matchmaker>, lobbies: Map<Hash256, Lobby>, friends: Map<String, List<String>>, clans: Map<Hash256, MPClan>, voice: Map<Hash256, VoiceChannel>, rankings: Map<String, Ranking>, crossplay: CrossplayCfg, sync: SyncCfg }
+struct Matchmaker { id: Hash256, name: String, mode: String, team_size: UInt8, max_players: UInt16, mmr_range: UInt32, queue: List<MPPlayer>, avg_wait: UInt32 }
+struct MPPlayer { id: String, mmr: UInt32, region: String, platform: String, queued: UInt64 }
+struct Lobby { id: Hash256, name: String, host: String, members: List<String>, max: UInt8, mode: String, region: String, public: Bool, status: String }
+struct MPClan { id: Hash256, name: String, tag: String, leader: String, members: List<String>, level: UInt16 }
+struct VoiceChannel { id: Hash256, name: String, participants: List<String>, max: UInt8, region: String, encrypted: Bool }
+struct Ranking { name: String, tiers: List<RankTier>, season: UInt16 }
+struct RankTier { name: String, min_mmr: UInt32, max_mmr: UInt32 }
+struct CrossplayCfg { enabled: Bool, platforms: List<String>, shared_mmr: Bool, voice: Bool }
+struct SyncCfg { tick: UInt16, interp_ms: UInt32, rewind_ms: UInt32, server_auth: Bool, lag_comp: Bool }
+
+pub fn create_matchmaker(f, name, mode, team, max_p, mmr) -> Hash256 { let mid = Crypto::sha256(serialize(name, Chain::timestamp())); f.matchmakers[mid] = Matchmaker { id: mid, name: name, mode: mode, team_size: team, max_players: max_p, mmr_range: mmr, queue: [], avg_wait: 0 }; return mid }
+pub fn join_queue(f, mm_id, player, mmr, region, platform) -> Bool { require(f.matchmakers.contains(mm_id)); f.matchmakers[mm_id].queue.append(MPPlayer { id: player, mmr: mmr, region: region, platform: platform, queued: Chain::timestamp() }); return true }
+pub fn try_match(f, mm_id) -> List<String> { require(f.matchmakers.contains(mm_id)); let mm = f.matchmakers[mm_id]; let r = []; if mm.queue.len() >= mm.max_players { for i in 0..mm.max_players { r.append(mm.queue[i].id) }; mm.queue = mm.queue[mm.max_players..] }; return r }
+pub fn create_lobby(f, name, host, mode, region, max, public) -> Hash256 { let lid = Crypto::sha256(serialize(name, Chain::timestamp())); f.lobbies[lid] = Lobby { id: lid, name: name, host: host, members: [host], max: max, mode: mode, region: region, public: public, status: "waiting" }; return lid }
+pub fn join_lobby(f, lid, player) -> Bool { require(f.lobbies.contains(lid)); require(f.lobbies[lid].members.len() < f.lobbies[lid].max); f.lobbies[lid].members.append(player); return true }
+pub fn add_friend(f, player, friend) -> Bool { if not f.friends.contains(player) { f.friends[player] = [] }; f.friends[player].append(friend); return true }
+pub fn create_voice(f, name, region, max, enc) -> Hash256 { let vid = Crypto::sha256(serialize(name, Chain::timestamp())); f.voice[vid] = VoiceChannel { id: vid, name: name, participants: [], max: max, region: region, encrypted: enc }; return vid }
+pub fn join_voice(f, vid, player) -> Bool { require(f.voice.contains(vid)); require(f.voice[vid].participants.len() < f.voice[vid].max); f.voice[vid].participants.append(player); return true }
+pub fn create_ranking(f, name, tiers) -> Bool { f.rankings[name] = Ranking { name: name, tiers: tiers, season: 1 }; return true }
+pub fn config_crossplay(f, platforms, shared, voice) -> Bool { f.crossplay = CrossplayCfg { enabled: true, platforms: platforms, shared_mmr: shared, voice: voice }; return true }
+pub fn config_sync(f, tick, interp, rewind, auth) -> Bool { f.sync = SyncCfg { tick: tick, interp_ms: interp, rewind_ms: rewind, server_auth: auth, lag_comp: true }; return true }
