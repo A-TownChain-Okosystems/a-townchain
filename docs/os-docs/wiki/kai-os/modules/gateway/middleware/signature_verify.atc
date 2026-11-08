@@ -1,0 +1,43 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-87 — Signature Verification Middleware
+// Sprint 3.0 | Gateway Layer | Chain-ID 9000
+// Migrated from: modules/gateway/middleware/signature_verify.py (56 lines)
+// ECDSA signature verification for TX endpoints
+// ─────────────────────────────────────────────────────────────
+
+contract SignatureVerifier {
+    state verified_count: u64
+    state rejected_count: u64
+
+    fn init() {
+        self.verified_count = 0
+        self.rejected_count = 0
+    }
+
+    fn verify_request(tx_data: Bytes, signature: Hash, pub_key: Hash) -> bool {
+        if tx_data.len() == 0 || signature == Hash::zero() || pub_key == Hash::zero() {
+            self.rejected_count += 1
+            return false
+        }
+        let message = Hash::sha256(tx_data)
+        if Hash::ecdsa_verify(message, signature, pub_key) {
+            self.verified_count += 1
+            return true
+        }
+        self.rejected_count += 1
+        return false
+    }
+
+    fn verify_and_forward(tx_data: Bytes, signature: Hash, pub_key: Hash, target_path: String) -> (u16, Bytes) {
+        let is_valid = self.verify_request(tx_data, signature, pub_key)
+        if !is_valid {
+            return (401, "Signature verification failed".as_bytes())
+        }
+        return GatewayRouter::forward(target_path, "POST", tx_data)
+    }
+
+    fn stats() -> (u64, u64) {
+        return (self.verified_count, self.rejected_count)
+    }
+}
