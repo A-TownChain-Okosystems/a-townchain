@@ -1,0 +1,122 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// A-TownChain DID — Decentralized Identity (Sprint 2.4)
+// Self-sovereign identity on A-TownChain
+// ════════════════════════════════════════════════════════════════
+
+struct DIDDocument {
+    did:            String,
+    controller:     Address,
+    public_key:     Hash,
+    service_endpoint: String,
+    created:        u64,
+    updated:        u64,
+    active:         bool
+}
+
+struct VerifiableCredential {
+    vc_id:          Hash,
+    issuer:         Address,
+    subject:        Address,
+    credential_type: String,
+    data_hash:      Hash,
+    issued_at:      u64,
+    revoked:        bool
+}
+
+contract DIDRegistry {
+
+    state documents: Map<String, DIDDocument>
+    state credentials: Map<Hash, VerifiableCredential>
+    state did_count: u128
+    state vc_count: u128
+
+    event DIDCreated(did: String, controller: Address)
+    event DIDUpdated(did: String)
+    event CredentialIssued(vc_id: Hash, issuer: Address, subject: Address)
+    event CredentialRevoked(vc_id: Hash)
+
+    fn init() {
+        self.did_count = 0
+        self.vc_count = 0
+    }
+
+    // ── DID erstellen ─────────────────────────────────
+    fn create_did(controller: Address, public_key: Hash, service_endpoint: String) -> String {
+        let did = "did:atc:" + to_string(sha256(to_string(controller) + to_string(public_key) + to_string(block_timestamp())))
+        let doc = DIDDocument {
+            did:              did,
+            controller:       controller,
+            public_key:       public_key,
+            service_endpoint: service_endpoint,
+            created:          block_timestamp(),
+            updated:          block_timestamp(),
+            active:           true
+        }
+        self.documents[did] = doc
+        self.did_count += 1
+        emit DIDCreated(did, controller)
+        return did
+    }
+
+    // ── DID aktualisieren ─────────────────────────────
+    fn update_did(did: String, new_public_key: Hash, new_endpoint: String) -> bool {
+        let doc = self.documents[did]
+        require(doc.controller == msg_sender(), "DID: Not controller")
+        doc.public_key = new_public_key
+        doc.service_endpoint = new_endpoint
+        doc.updated = block_timestamp()
+        self.documents[did] = doc
+        emit DIDUpdated(did)
+        return true
+    }
+
+    // ── DID abrufen ───────────────────────────────────
+    fn get_did(did: String) -> DIDDocument {
+        return self.documents[did]
+    }
+
+    // ── Credential ausstellen ──────────────────────────
+    fn issue_credential(subject: Address, credential_type: String, data_hash: Hash) -> Hash {
+        let issuer = msg_sender()
+        let vc_id = sha256(to_string(issuer) + to_string(subject) + credential_type + to_string(data_hash) + to_string(block_timestamp()))
+        let vc = VerifiableCredential {
+            vc_id:           vc_id,
+            issuer:          issuer,
+            subject:         subject,
+            credential_type: credential_type,
+            data_hash:       data_hash,
+            issued_at:       block_timestamp(),
+            revoked:         false
+        }
+        self.credentials[vc_id] = vc
+        self.vc_count += 1
+        emit CredentialIssued(vc_id, issuer, subject)
+        return vc_id
+    }
+
+    // ── Credential widerrufen ─────────────────────────
+    fn revoke_credential(vc_id: Hash) -> bool {
+        let vc = self.credentials[vc_id]
+        require(vc.issuer == msg_sender(), "DID: Not issuer")
+        vc.revoked = true
+        self.credentials[vc_id] = vc
+        emit CredentialRevoked(vc_id)
+        return true
+    }
+
+    // ── Credential verifizieren ───────────────────────
+    fn verify_credential(vc_id: Hash) -> bool {
+        let vc = self.credentials[vc_id]
+        return !vc.revoked
+    }
+
+    // ── Stats ─────────────────────────────────────────
+    fn get_did_count() -> u128 {
+        return self.did_count
+    }
+
+    fn get_vc_count() -> u128 {
+        return self.vc_count
+    }
+}
