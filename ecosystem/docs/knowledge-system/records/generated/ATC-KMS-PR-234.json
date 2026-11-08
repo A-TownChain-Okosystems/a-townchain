@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-234",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #234: docs(catalog): refresh COMP-ATC-ENG source binding and inventory",
+  "context": "Pull request 234 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/234",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Scope\nReapply the existing `FN-ATC-ENG-002` lexical source-binding correction on the current `main` base and refresh the duplicated `COMP-ATC-ENG` source-inventory snapshot from live canonical source data.\n\n## Evidence\n- Ecosystem base: `dfbd67fa107e567d4142268b84a5091eae1f4a6a`\n- Catalog branch head after inventory refresh: `a8a689d73239bba6f1e743c1eed9072a85b8c6d1`\n- Catalog blob SHA: `3724a6f8981da81144f9a7147f7ee8ac2a9a480b`\n- Canonical source HEAD: `38ab42e81847ac6bc03c2d288ec7a9b8a940c670`\n- Canonical source tree: `043b59d0581f8cb0ca445516004c5021c0d9ebc6`\n- Source files checked: `crates/atc-evidence/src/lib.rs` (blob `5dd34c63488b46dd7fc74dd40b0224a25663125a`) and `scripts/standards_enforcement_audit.py` (blob `7bf813773120e0b8bb225862fcace1bda00bfb25`)\n\n## Limitations\nThe function binding is lexical only, not functional verification. The inventory records a two-file snapshot, not a complete exported-symbol census; `exported_symbols_reconciled=false` and completeness remains `RESIDUAL`. Explicit `UNSPECIFIED` interface-version values are not replaced without a canonical versioned contract as evidence. No merge or release is requested."
+}
