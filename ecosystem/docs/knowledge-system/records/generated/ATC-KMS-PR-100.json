@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-100",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #100: fix: remove wall-clock sources from determinism tests",
+  "context": "Pull request 100 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "archived",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/100",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: False\nDraft: False\n\n## Scope\n\nRemove the 24 REQ-ENG-002 wall-clock findings from the ATC blockchain test suite.\n\n### Root cause\n\nAll 24 findings were test-only temporary-path generation using `SystemTime::now()`. They were not consensus/runtime clock reads.\n\n### Fix\n\nBoth affected test modules now use a deterministic test-only `test_temp_path(name)` helper. Test names provide stable unique path identifiers; no allowlist entry is added.\n\nChanged files:\n- `components/a-townchain/modules/atc-blockchain/kernel/src/storage.rs`\n- `components/a-townchain/modules/atc-blockchain/kernel/src/blockchain.rs`\n\n### Evidence intent\n\n- 24/24 historical REQ-ENG-002 findings targeted.\n- `SystemTime::now()` count: 0 in both affected files.\n- No production consensus/block-processing logic changed.\n- One commit, one scope.\n- Base: `916856ac28fa463afd5e63f4e0e744fb279d35c3`\n- Head: `61af6cba6ff703a0dfa1049619c76dba5125687a`\n\nThe Determinism Gate must establish the final result through its own Exact-SHA execution evidence; no green status is treated as VERIFIED by itself."
+}
