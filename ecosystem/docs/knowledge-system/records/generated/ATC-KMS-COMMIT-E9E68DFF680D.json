@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-COMMIT-E9E68DFF680D",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "Commit: ci(competitive-monitoring): checkout and attest exact PR head",
+  "context": "Git commit e9e68dff680d6bcf289d692b574462b95d3b2a9f on A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "commit",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/commit/e9e68dff680d6bcf289d692b574462b95d3b2a9f",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "commit",
+    "generated",
+    "git"
+  ],
+  "links": [],
+  "content": "ci(competitive-monitoring): checkout and attest exact PR head"
+}
