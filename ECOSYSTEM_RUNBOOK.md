@@ -58,6 +58,27 @@ Zwischenstand, falls der Codegen je wieder bricht: `cargo +nightly check`
 mit demselben Ziel und `-Z build-std` prüft den Kernel in Sekunden ohne
 LLVM-Codegen und trennt damit Typfehler von Toolchain-Fehlern.
 
+### Kernel booten
+
+```bash
+./tools/ecosystem.sh boot          # baut ELF, erzeugt Images, bootet unter QEMU
+ATC_BOOT_SECONDS=60 ./tools/ecosystem.sh boot   # längerer Lauf
+```
+
+Voraussetzungen sind `qemu-system-x86` und `ovmf`. Der Befehl baut den Kernel
+falls nötig, erzeugt über `modules/atc-shivacore/boot` ein BIOS- und ein
+UEFI-Image unter `/tmp/atc_boot/` und startet die UEFI-Variante auf `q35` mit
+512 MB. Er gilt als bestanden, wenn der Kernel-Einstiegspunkt im seriellen
+Protokoll (`/tmp/atc_boot_serial.log`) auftaucht.
+
+Belegt am 08.11.2026: Einstiegspunkt erreicht, CPU- und ACPI-Erkennung
+durchlaufen, Scheduler wechselt in 25 Sekunden 366-mal zwischen PID 1000 und
+1001. Details in [`docs/boot/BOOT-EVIDENCE.md`](docs/boot/BOOT-EVIDENCE.md).
+
+Der Kernel spricht über die serielle Schnittstelle, nicht in den Framebuffer —
+ein Bildschirm-Screenshot zeigt nur den Hintergrund. Ein Lauf auf echter
+Hardware ist nicht geprüft, nur QEMU mit TCG-Emulation.
+
 Toolchains: alles baut auf stable. `kernel/globus-os` ist per
 `rust-toolchain.toml` an Nightly gebunden, weil das Build-Skript des
 UEFI-Bootloaders unstable Cargo-Flags (`-Z`) setzt. Die Datei gilt nur für
