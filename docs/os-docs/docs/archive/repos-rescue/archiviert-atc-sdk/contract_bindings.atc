@@ -1,0 +1,12 @@
+// ATCLang v0.3 — atc-sdk :: Contract Bindings
+// ABI, type-safe calls, event decoding
+// STUB: Wird in Sprint implementiert
+// ATC-Standard: ATC-24
+
+module contract_bindings {
+    // Public API — TBD
+    
+    fn init() {
+        // Initialization — TBD
+    }
+}
