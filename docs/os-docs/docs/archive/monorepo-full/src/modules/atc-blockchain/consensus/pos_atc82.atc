@@ -1,0 +1,92 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-82 — Proof of Stake (PoS) Konsens in ATCLang
+// Migriert von: blockchain/consensus/pos.py → ATCLang
+// Sprint 2.1 — Issue #74
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct Validator {
+    address: Address,
+    stake: UInt256,
+    active: Bool,
+    last_forge: UInt64,
+    slashes: UInt8,
+}
+
+struct PoSState {
+    validators: Map<Address, Validator>,
+    total_stake: UInt256,
+    current_epoch: UInt64,
+    epoch_length: UInt64,
+    last_finalized: UInt64,
+}
+
+// ATC-82: Validator registrieren
+pub fn register_validator(state: PoSState, addr: Address, stake: UInt256) -> Bool {
+    require(stake >= 1000, "Minimum stake is 1000 ATC")
+    require(not state.validators.contains(addr), "Already registered")
+
+    state.validators[addr] = Validator {
+        address: addr,
+        stake: stake,
+        active: true,
+        last_forge: 0,
+        slashes: 0,
+    }
+    state.total_stake = state.total_stake + stake
+
+    emit ValidatorRegistered(addr, stake)
+    return true
+}
+
+// ATC-82: Validator auswählen (Weighted Random)
+pub fn select_proposer(state: PoSState, block_height: UInt64) -> Address {
+    let seed = Crypto::sha256(serialize(block_height, state.current_epoch))
+    let rand_val = UInt256::from_bytes(seed) % state.total_stake
+
+    let cumulative = 0
+    for addr in state.validators.keys() {
+        let v = state.validators[addr]
+        if v.active {
+            cumulative = cumulative + v.stake
+            if rand_val <= cumulative {
+                return addr
+            }
+        }
+    }
+    // Fallback: ersten aktiven Validator
+    for addr in state.validators.keys() {
+        if state.validators[addr].active {
+            return addr
+        }
+    }
+    return Address::zero()
+}
+
+// ATC-82: Slashing
+pub fn slash_validator(state: PoSState, addr: Address, reason: String) -> Bool {
+    require(state.validators.contains(addr), "Validator not found")
+    let v = state.validators[addr]
+    v.slashes = v.slashes + 1
+    if v.slashes >= 3 {
+        v.active = false
+        state.total_stake = state.total_stake - v.stake / 2
+        emit ValidatorSlashed(addr, reason, v.stake / 2)
+    } else {
+        emit ValidatorWarned(addr, reason, v.slashes)
+    }
+    return true
+}
+
+// ATC-82: Epoch-Wechsel
+pub fn advance_epoch(state: PoSState) -> Bool {
+    state.current_epoch = state.current_epoch + 1
+    emit EpochAdvanced(state.current_epoch)
+    return true
+}
+
+event ValidatorRegistered(addr: Address, stake: UInt256)
+event ValidatorSlashed(addr: Address, reason: String, penalty: UInt256)
+event ValidatorWarned(addr: Address, reason: String, warnings: UInt8)
+event EpochAdvanced(epoch: UInt64)
