@@ -1,0 +1,6 @@
+{
+  "name": "A-TownChain - Lumino IDE",
+  "description": "Ein webbasiertes IDE für die eigene Programmiersprache Lumino. Teil des A-TownChain-Ökosystems.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
