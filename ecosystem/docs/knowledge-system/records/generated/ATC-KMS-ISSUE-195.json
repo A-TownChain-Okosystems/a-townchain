@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-195",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #195: Integrate ATC-CHILD-SAFETY-POLICY-001 across canonical components",
+  "context": "Issue 195 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/195",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Ecosystem-Integration: ATC-CHILD-SAFETY-POLICY-001\n\n**Normative intake:** https://github.com/A-TownChain-Okosystems/atc-standards/issues/114  \n**Status:** `BLOCKED` until the normative standard is approved and registered.\n\n### Purpose\nTrack ecosystem-level ownership, dependency mapping, implementation coverage and evidence for the child-safety policy. This issue does not create a second normative SSOT or implement component behavior in the umbrella repository.\n\n### Required work\n- [ ] Link the approved standard and exact registry version once governance approval is recorded.\n- [ ] Map requirements CS-001..CS-008 (or their approved final IDs) to canonical repositories, exact paths/symbols and owning teams.\n- [ ] Identify applicable runtime enforcement boundaries for GlobusOS/ShivaCore, Aurora AI/Runtime, Wallet, A-TownChain/ATC-VM, apps and communication services.\n- [ ] Reconcile component inventory against the organization repository manifest; do not infer completeness from search results alone.\n- [ ] Record each requirement as `MAPPED`, `IMPLEMENTED`, `VERIFIED`, `RESIDUAL`, `BLOCKED` or justified `EXCLUDED`.\n- [ ] Attach reproducible evidence bound to full commit SHA, workflow run/job/step, exit code/logs and artifact hashes.\n- [ ] Keep unverified critical controls `BLOCKED`; no production-readiness claim from documentation or green CI alone.\n\n### SSOT boundary\n`atc-standards` owns normative policy. This repository owns integration mapping, cross-repository dependencies and evidence aggregation only. Kernel, VM, wallet and agent implementations remain in their canonical source repositories.\n\n### Acceptance\nA complete requirement-to-source mapping, no unexplained unresolved edges, approved normative source link, and evidence-based status per control."
+}
