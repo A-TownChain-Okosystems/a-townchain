@@ -1,0 +1,21 @@
+standard: ATC-STD-201
+standard_version: "1.0.1"
+repository:
+  name: demo-repository
+  classification: EXPERIMENTAL
+  maturity: R1
+  status: docs_only
+project:
+  organization: A-TownChain-Okosystems
+  domain: demo
+  component: template
+language:
+  primary: html
+license:
+  type: apache-2.0
+security:
+  criticality: low
+api:
+  stability: not_applicable
+protocol:
+  compatibility: not_applicable
