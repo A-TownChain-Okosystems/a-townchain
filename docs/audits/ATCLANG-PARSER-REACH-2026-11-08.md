@@ -221,3 +221,70 @@ alle Blocker einer Datei bekannt sind, lässt sich sagen, wie viele Formen wirkl
 `parser.rs` mit den 4 vorbestehenden Diffs (meine Zeilen sauber und formatiert).
 Invarianten: `apps/atc-contracts` 50/33/0/18, `components/contracts` 46/29/0/18,
 Registry-Gate PASS 16/16, EXEC-CHAIN 20/20.
+
+---
+
+## 10. Fünfter Schritt: Fehlersammlung statt Erstfehler-Abbruch
+
+**Datum:** 08.11.2026, aufbauend auf `6dccb27`
+
+### Was gebaut wurde
+
+`parse_program_collecting(src)` im `atc-core`: derselbe Parser, aber nach einem Fehler
+wird bis zur nächsten Deklaration gesprungen und weitergemacht. Anker sind die Token,
+die eine Deklaration beginnen können (`let/const/fn/use/import/struct/enum/contract/
+state/module/pub/@`, `event`, `type`); eine schließende `}` beendet den Sprung, damit ein
+Fehler im Rumpf nicht in den nächsten Block läuft. Gesammelt wird auf Programmebene und
+im Contract-Körper.
+
+Der Normalbetrieb ist **nicht** betroffen: `collect` ist standardmäßig `false` und der
+Fehler verlässt den Parser wie bisher (drei Tests halten das fest, unter anderem
+`normalbetrieb_bricht_beim_ersten_fehler_ab`).
+
+CLI: `atc check --all <datei|verzeichnis>` gibt alle Blocker aus.
+
+### Der Befund: die Zahlen sind jetzt lesbar, und sie sind unangenehm
+
+| | |
+|---|---|
+| aktive Dateien (ohne `/archive/`, `/legacy/`) | 888 |
+| davon mit Blockern | 270 |
+| Blocker roh | **1997** |
+| verschiedene Blocker je Datei | **882** |
+| Durchschnitt | **7,4 Blocker je fehlerhafter Datei** |
+
+Verteilung: 8 Dateien mit 1 Blocker, 93 mit 5, 11 mit 10, 5 mit 20, 2 mit 46.
+
+Damit ist die frühere Annahme widerlegt, die 270 Dateien hätten „einen" fehlenden Dialekt.
+Sie tragen im Schnitt sieben, einzelne bis zu 46. Der stille Effekt: jede behobene Form
+hat genau eine Datei um **einen** Blocker weitergebracht, nicht eine Datei mehr
+angenommen. Das erklärt, warum der Korpuszähler seit `e9fce31` bei 1095 steht.
+
+**Wichtige Einschränkung:** die häufigste Meldung — „Deklaration am Top-Level erwartet"
+in 262 von 270 Dateien — ist ganz überwiegend **Folgefehler**. Nach dem Sprung landet der
+Parser mitten in einer Anweisung, die der Ausdrucksteil nicht kennt. Für die Auswertung
+zählt deshalb die Liste ohne diese Meldung (rund 620 echte Formen), nicht die Rohzahl.
+
+### Die echten Blockerarten (verschieden je Datei gezählt)
+
+| Dateien | Form |
+|---------|------|
+| 19 | `Feldname nach '.'` |
+| 12 | `Funktionsname erwartet` |
+| 10 | `Typ erwartet` |
+| 9 | `Deklaration im contract erwartet` |
+| 7 | `',' oder '}' nach Enum-Variante` |
+| 7 | `Funktionsdeklaration register ist außerhalb des unterstützten Parsers` |
+| 6 | `'{' nach if-Bedingung` |
+| 6 | `Feldname im Event` |
+| 5 | `']' nach Index` |
+
+Neu sichtbar geworden ist unter anderem **`struct Query<T> {`**: generische Typparameter
+an der Struct-Deklaration kennt der Parser nicht, obwohl `Map<K, V>` als Feldtyp längst
+geht. Das war vorher hinter anderen Fehlern verborgen.
+
+### Stand
+
+`atc-core`: **154 Tests**, Clippy `-D warnings` ohne Befund.
+Invarianten unverändert: `apps/atc-contracts` 50/33/0/18, `components/contracts`
+46/29/0/18, Registry-Gate PASS 16/16, EXEC-CHAIN 20/20, Korpus 1095/1645.
