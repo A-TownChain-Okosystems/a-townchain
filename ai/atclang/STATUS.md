@@ -68,6 +68,11 @@ Verified by `cargo test --workspace` (498 tests) and `./tools/ecosystem.sh test`
   symbols sorted, so declaration order and re-runs cannot change the hash.
   `atc abi --hash` prints only the hashes. The ABI describes the interface, not
   the execution: it is not bytecode and contract codegen (G11) stays open.
+- Contract codegen (G11) scoping: `docs/CODEGEN_G11_SCOPE.md` inventories what is
+  missing from the verified code (no state slots, no require/emit, no types
+  beyond i64, no host calls; contract bodies are rejected by the lowering), lays
+  out six independently verifiable slices S1-S6 and lists four owner decisions
+  (state model, u256, slice order, artifact format). Still NOT PRODUCTION_READY.
   Regression binds the ABI to the contract registry: every non-archived entry
   must yield at least one contract with functions and a stable 64-hex hash, an
   archived entry must yield none.
