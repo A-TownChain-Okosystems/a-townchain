@@ -1,0 +1,17 @@
+// ATCLang v0.3 — Merkle Proof Verifier
+// Verifiziert Merkle-Proofs für Cross-Chain-Deposits
+// ATC-Standard: ATC-91
+
+module merkle_verifier {
+    fn verify_deposit_proof(deposit_hash: string, proof: List[string], root: string) {
+        // Merkle-Proof für Deposit verifizieren
+    }
+    
+    fn compute_root(leaves: List[string]) {
+        // Merkle-Root aus Deposits berechnen
+    }
+    
+    fn verify_inclusion(leaf: string, path: List[string], root: string) {
+        // Generische Merkle-Inklusion prüfen
+    }
+}
