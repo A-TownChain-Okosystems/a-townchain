@@ -1,0 +1,228 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — Database Repository
+// Sprint 3.0 | Backend Layer | Chain-ID 9000
+// Migrated from: backend/db/repository.py (195 lines)
+// CRUD for wallets, shivamon, transactions, blocks
+// ─────────────────────────────────────────────────────────────
+
+struct WalletRecord {
+    addr: Address,
+    public_key: Hash,
+    label: String,
+    balance: u128,
+    created_at: u64,
+}
+
+struct ShivamonRecord {
+    token_id: Hash,
+    name: String,
+    element: String,
+    rarity: String,
+    owner: Address,
+    generation: u8,
+    level: u16,
+    xp: u32,
+    wins: u16,
+    losses: u16,
+    hp: u16,
+    attack: u16,
+    defense: u16,
+    speed: u16,
+    special: u16,
+    dna_hash: Hash,
+    minted_at: u64,
+}
+
+struct TxRecord {
+    tx_id: Hash,
+    from_addr: Address,
+    to_addr: Address,
+    amount: u128,
+    fee: u128,
+    timestamp: u64,
+    block_height: u64,
+    status: String,
+}
+
+struct BlockRecord {
+    height: u64,
+    hash: Hash,
+    prev_hash: Hash,
+    timestamp: u64,
+    tx_count: u32,
+    miner: Address,
+    difficulty: u8,
+    nonce: u64,
+}
+
+contract DatabaseRepository {
+    state wallets: Map<Address, WalletRecord>
+    state shivamon: Map<Hash, ShivamonRecord>
+    state transactions: Map<Hash, TxRecord>
+    state blocks: Map<u64, BlockRecord>
+    state wallet_count: u32
+    state shivamon_count: u32
+    state tx_count: u64
+    state block_count: u64
+    state owner: Address
+
+    fn init() {
+        self.wallets = {}
+        self.shivamon = {}
+        self.transactions = {}
+        self.blocks = {}
+        self.wallet_count = 0
+        self.shivamon_count = 0
+        self.tx_count = 0
+        self.block_count = 0
+        self.owner = msg_sender()
+    }
+
+    // ── Wallet CRUD ───────────────────────────────────
+    fn save_wallet(addr: Address, public_key: Hash, label: String) -> bool {
+        let record = WalletRecord {
+            addr: addr,
+            public_key: public_key,
+            label: label,
+            balance: 0,
+            created_at: Time::now(),
+        }
+        self.wallets[addr] = record
+        self.wallet_count += 1
+        return true
+    }
+
+    fn find_wallet(addr: Address) -> (Hash, String, u128, u64) {
+        let w = self.wallets.get(addr)
+        if w == null {
+            return (Hash::zero(), "", 0, 0)
+        }
+        return (w.public_key, w.label, w.balance, w.created_at)
+    }
+
+    fn update_balance(addr: Address, new_balance: u128) -> bool {
+        let w = self.wallets.get(addr)
+        if w == null {
+            return false
+        }
+        w.balance = new_balance
+        return true
+    }
+
+    fn list_wallets() -> u32 {
+        return self.wallet_count
+    }
+
+    // ── Shivamon CRUD ─────────────────────────────────
+    fn save_shivamon(token_id: Hash, name: String, element: String, rarity: String, owner: Address) -> bool {
+        let record = ShivamonRecord {
+            token_id: token_id,
+            name: name,
+            element: element,
+            rarity: rarity,
+            owner: owner,
+            generation: 1,
+            level: 1,
+            xp: 0,
+            wins: 0,
+            losses: 0,
+            hp: 50,
+            attack: 50,
+            defense: 50,
+            speed: 50,
+            special: 50,
+            dna_hash: Hash::sha256(token_id, name),
+            minted_at: Time::now(),
+        }
+        self.shivamon[token_id] = record
+        self.shivamon_count += 1
+        return true
+    }
+
+    fn find_shivamon(token_id: Hash) -> (String, String, Address, u16) {
+        let s = self.shivamon.get(token_id)
+        if s == null {
+            return ("", "", Address::zero(), 0)
+        }
+        return (s.name, s.rarity, s.owner, s.level)
+    }
+
+    fn update_shivamon_owner(token_id: Hash, new_owner: Address) -> bool {
+        let s = self.shivamon.get(token_id)
+        if s == null {
+            return false
+        }
+        s.owner = new_owner
+        return true
+    }
+
+    // ── Transaction CRUD ──────────────────────────────
+    fn save_tx(tx_id: Hash, from_addr: Address, to_addr: Address, amount: u128, fee: u128) -> bool {
+        let record = TxRecord {
+            tx_id: tx_id,
+            from_addr: from_addr,
+            to_addr: to_addr,
+            amount: amount,
+            fee: fee,
+            timestamp: Time::now(),
+            block_height: 0,
+            status: "pending",
+        }
+        self.transactions[tx_id] = record
+        self.tx_count += 1
+        return true
+    }
+
+    fn find_tx(tx_id: Hash) -> (Address, Address, u128, u64, String) {
+        let t = self.transactions.get(tx_id)
+        if t == null {
+            return (Address::zero(), Address::zero(), 0, 0, "")
+        }
+        return (t.from_addr, t.to_addr, t.amount, t.timestamp, t.status)
+    }
+
+    fn confirm_tx(tx_id: Hash, block_height: u64) -> bool {
+        let t = self.transactions.get(tx_id)
+        if t == null {
+            return false
+        }
+        t.block_height = block_height
+        t.status = "confirmed"
+        return true
+    }
+
+    // ── Block CRUD ────────────────────────────────────
+    fn save_block(height: u64, hash: Hash, prev_hash: Hash, miner: Address, tx_count: u32) -> bool {
+        let record = BlockRecord {
+            height: height,
+            hash: hash,
+            prev_hash: prev_hash,
+            timestamp: Time::now(),
+            tx_count: tx_count,
+            miner: miner,
+            difficulty: 3,
+            nonce: 0,
+        }
+        self.blocks[height] = record
+        self.block_count += 1
+        return true
+    }
+
+    fn find_block(height: u64) -> (Hash, Hash, u64, u32) {
+        let b = self.blocks.get(height)
+        if b == null {
+            return (Hash::zero(), Hash::zero(), 0, 0)
+        }
+        return (b.hash, b.prev_hash, b.timestamp, b.tx_count)
+    }
+
+    fn get_chain_height() -> u64 {
+        return self.block_count
+    }
+
+    // ── Stats ─────────────────────────────────────────
+    fn get_stats() -> (u32, u32, u64, u64) {
+        return (self.wallet_count, self.shivamon_count, self.tx_count, self.block_count)
+    }
+}
