@@ -66,11 +66,26 @@ und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v
   56 Warnungen — 38 offene `emit`-Deklarationen, 17 Mirror-Duplikate,
   1 unbekannter Typ (`bytes32` im standards-refs-Spiegel).
 
+### Added (Vertrags-ABI — Roadmap G7)
+
+- `atc_core::abi`: kanonische Vertrags-ABI aus geparsten Quellen — Zustands-
+  felder (mit Default-Flag), Events mit Feldern, Funktionssignaturen inkl.
+  Tupel-Rueckgaben und nativen Funktionen (Signaturtext tokenweise).
+- Deterministisch: feste Schluesselreihenfolge, alphabetisch sortierte Symbole,
+  eigene JSON-Maskierung; gleiche Quelle ergibt immer gleiche ABI und gleichen
+  SHA-256. Deklarationsreihenfolge aendert den Hash nicht.
+- `atc abi <datei|verzeichnis>` gibt JSONL aus (eine Zeile je Vertrag mit
+  `path`, `abi_sha256`, `abi`); `atc abi --hash` nur `hash  pfad  vertrag`.
+- Regression bindet die ABI an die Contract-Registry: nicht-archivierte
+  Eintraege muessen mindestens einen Vertrag mit Funktionen und stabilen
+  64-Hex-Hash liefern, archivierte keinen.
+- Aufraeumen: ungenutzte Parser-Methode `ident_like` entfernt (0 Build-Warnungen).
+
 ### Verification
 
-- `cargo test --workspace`: 486 Tests gruen.
+- `cargo test --workspace`: 493 Tests gruen.
 - `./tools/ecosystem.sh build`: alle sieben Workspaces plus Bare-Metal-Kernel.
-- `./tools/ecosystem.sh test`: 2148 Tests, 0 fehlgeschlagen.
+- `./tools/ecosystem.sh test`: 2155 Tests, 0 fehlgeschlagen.
 - Contract-Registry-Gate A8: GATE PASS (16/16).
 
 ## [Unreleased] - 2026-09-11
