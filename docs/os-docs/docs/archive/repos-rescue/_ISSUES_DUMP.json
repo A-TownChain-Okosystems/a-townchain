@@ -1,0 +1,67 @@
+{
+ "archiviert-atc-genesis-engine": [
+  {
+   "number": 9,
+   "title": "[MVP-Vorschlag] Sprint 0 — Minimal-ECS + 2D-Sprite-Renderer (realistischer erster Schritt)",
+   "state": "open",
+   "created": "2026-07-08T16:15:19Z",
+   "body": "Statt der vollen Vision auf einmal: ein radikal reduziertes MVP als ehrlicher erster Sprint.\n\n**Vorschlag für Scope:**\n- Minimal-ECS (Entities + Components + einfaches Query-System)\n- Simpler 2D-Sprite-Renderer (kein PBR, kein Raytracing, keine 3D-Pipeline)\n- Keine KI-Module, keine Konsolen-Ports, kein Netzwerk in dieser Phase\n\n**Ziel:** Ein lauffähiges, kleines Beispiel (z. B. 2D-Sprite bewegt sich über den Bildschirm via ECS-Query), um zu verifizieren, dass das Fundament trägt — bevor über Rendering/Physik/KI überhaupt nachgedacht wird.\n\nDieses Issue markiert den einzigen Punkt in diesem Repo, der aktuell tatsächlich technisch angegangen werden könnte, wenn gewünscht."
+  },
+  {
+   "number": 8,
+   "title": "[VISION] Editor — Szeneneditor, Terrain-Editor, Material-Editor, Blueprint-Visual-Scripting",
+   "state": "open",
+   "created": "2026-07-08T16:15:18Z",
+   "body": "Drag-and-Drop-Editor, Szeneneditor, Terrain-Editor, Material-Editor, Blueprint-artiges Visual-Scripting.\n\n**Status:** Vision, kein Code vorhanden."
+  },
+  {
+   "number": 7,
+   "title": "[VISION] Netzwerk — Server-Authoritative Multiplayer, Replikation, Matchmaking, Cloud-Sync",
+   "state": "open",
+   "created": "2026-07-08T16:15:18Z",
+   "body": "Server-Authoritative Multiplayer-Architektur, State-Replikation, Matchmaking, Cloud-Synchronisierung.\n\n**Status:** Vision, kein Code vorhanden."
+  },
+  {
+   "number": 6,
+   "title": "[VISION] KI-System — Behavior Trees, GOAP, Utility AI, ML-Schnittstellen, NPC-Automatisierung",
+   "state": "open",
+   "created": "2026-07-08T16:15:17Z",
+   "body": "Behavior Trees, GOAP, Utility AI, Machine-Learning-Schnittstellen, automatisierte NPC-Verhaltensgenerierung.\n\n**Status:** Vision, kein Code vorhanden."
+  },
+  {
+   "number": 5,
+   "title": "[VISION] Audio Engine — 3D-Audio, Raumakustik, dynamische Musik, Sprachsystem",
+   "state": "open",
+   "created": "2026-07-08T16:15:16Z",
+   "body": "3D-Audio, Raumakustik-Simulation, dynamisches Musiksystem, Sprachsystem.\n\n**Status:** Vision, kein Code vorhanden."
+  },
+  {
+   "number": 4,
+   "title": "[VISION] Animation System — Blend Trees, IK, Motion Matching, Animation Layers",
+   "state": "open",
+   "created": "2026-07-08T16:15:15Z",
+   "body": "Blend Trees, Inverse Kinematik, Motion Matching, Animation Layers.\n\n**Status:** Vision, kein Code vorhanden."
+  },
+  {
+   "number": 3,
+   "title": "[VISION] Physics Engine — 3D/2D-Physik, Kollisionen, Ragdolls, Cloth/Soft-Body",
+   "state": "open",
+   "created": "2026-07-08T16:15:15Z",
+   "body": "3D- und 2D-Physik, Kollisionserkennung, Ragdolls, Fahrzeugphysik, Cloth-/Soft-Body-Simulation.\n\n**Status:** Vision, kein Code vorhanden. Alternative: bestehende Physik-Bibliothek (z. B. Rapier für Rust) statt Eigenbau — deutlich realistischer."
+  },
+  {
+   "number": 2,
+   "title": "[VISION] Rendering Engine — PBR, Raytracing, Global Illumination, LOD",
+   "state": "open",
+   "created": "2026-07-08T16:15:14Z",
+   "body": "Physically Based Rendering, Raytracing-Unterstützung, Global Illumination, LOD-System, HDR/Post-Processing.\n\n**Status:** Vision, kein Code vorhanden. Bei Epic/Unity je ein mehrjähriges Team-Projekt — realistisch nicht kurzfristig umsetzbar."
+  },
+  {
+   "number": 1,
+   "title": "[VISION] Core Engine — ECS, Event-System, Multithreading, Ressourcenverwaltung",
+   "state": "open",
+   "created": "2026-07-08T16:15:13Z",
+   "body": "Fundament der Engine: Entity-Component-System, Event-/Message-System, Multithreading-Architektur, Ressourcenverwaltung (Asset-Loading/Streaming).\n\n**Status:** Vision, kein Code vorhanden. Realistischer Umfang: mehrere Monate für ein minimales ECS allein.\n\nSiehe README.md für volle Größeneinordnung."
+  }
+ ]
+}
