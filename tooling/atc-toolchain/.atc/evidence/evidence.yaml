@@ -1,0 +1,76 @@
+# ATC Evidence SSOT — maschinenlesbar und EHRLICH (SCR-0080-Regelwerk)
+# Statusleiter: SPECIFIED -> IMPLEMENTED -> TESTED -> VERIFIED -> AUDITED -> RELEASED
+# CLAIMED != PASS · DOCUMENTED != IMPLEMENTED · IMPLEMENTED != VERIFIED
+# ── Zwei-Normativen-Hinweis (Owner-Beobachtung 06.10.): NICHT miteinander verrechnen ──
+# Diese Datei traegt zwei SHA-Normativen mit unterschiedlichen Pruefmassen:
+#   bound_commit + test_run     => SCR-0080-Evidence-Normativ (letzte CI-verifizierte
+#                                  Basis: 39f7b55; Schema implementation/tests/...)
+#   status_bindung.VERIFIED_*   => lokale Statusvokabular-Bindung (IMPLEMENTED /
+#                                  EXECUTION PENDING / VERIFIED; bezieht sich auf
+#                                  2f379395 bzw. neuere Commits; NORMATIV_REF: SCR-PENDING)
+# 39f7b55 (SCR-0080) und 2f379395 (status_bindung) beschreiben verschiedene Fragen.
+# Maschinelle Auswertung (Gate 0 / Flottenrevalidierung): Feld je Normativ lesen,
+# keine Gegenueberstellung als Widerspruch.
+schema_version: "1.0.0"
+repository: atc-toolchain
+generated: "2026-10-05"
+generated_by: "Aurora Superagent (Owner-Order: Repo-Erstellung)"
+bound_commit: 39f7b55ff1a99e2f42357c7650b6ebf806700c78
+maturity_class: C
+r_level: R1
+implementation:
+  status: skeleton
+  summary: "R1-Skelett: Governance-Grundausstattung; Werkzeug-Implementierung (CLI/Build/Audit-Runner) folgt"
+tests:
+  status: pass_with_evidence
+  evidence: "Governance-Smoke-Test (tests/test_governance_smoke.py, unittest, 5 Tests) — lokal + CI (smoke-tests.yml Run 37380786776, commit 39f7b55, PASS). Nur Metadaten-Smoke, KEIN Werkzeug-Implementierungs-Claim (CLI/Build/Audit-Runner folgt)."
+security:
+  status: not_audited
+conformance:
+  status: not_verified
+release:
+  status: development
+milestone_claims:
+  rule: "M-Claims nur mit Evidence-Bundle (ATC-STD-MILESTONE-001)"
+  latest_verified: null
+canonical_role:
+  capability: developer_toolchain
+  canonical: true
+test_run:
+  workflow: Smoke Tests (unittest)
+  run_id: 37380786776
+  commit: 39f7b55ff1a99e2f42357c7650b6ebf806700c78
+  timestamp: 2026-10-05T22:11:04Z
+  result: PASS
+  runner: github-actions
+
+# ── Statusvokabular-Bindung (Owner, 06.10.): IMPLEMENTED / EXECUTION PENDING / VERIFIED ──
+# IMPLEMENTED != VERIFIED · EXECUTION PENDING = beschlossen, nicht begonnen.
+# Additive Bindung; SCR-0080-Dimensionen oberhalb bleiben unveraendert (org-weites Schema).
+status_bindung:
+  NORMATIV_REF: "SCR-PENDING (atc-standards)"
+  SCOPE: "local atc-toolchain convention until SCR resolves"
+  VERIFIED_SCOPE: [governance, smoke-suite]
+  VERIFIED_SHA: "2f379395c48be303a33dffd1c05fbf511d489ab5"
+  VERIFIED_RUN:
+    governance: 37390728473
+    smoke_suite: 37390728544
+  VERIFIED_GRENZE: "VERIFIED bezieht sich ausschliesslich auf Workflow-Konformitaet bzw. Smoke-Suite-Umfang auf VERIFIED_SHA — keine Aussage ueber Code-Korrektheit"
+  governance_grundausstattung:
+    status: VERIFIED
+    evidence: "atc-repo-audit GATE PASS 100/100 (R1 COMPLIANT, EXCELLENT) — verifiziert GOVERNANCE-KONFORMITAET von 2f379395 (Run 37390728473), nicht Code-Korrektheit"
+  smoke_test_suite:
+    status: VERIFIED
+    evidence: "smoke-tests.yml auf 2f379395 gruen (Run 37390728544; Ursprungslauf 37380786776 lief auf 39f7b55, s. test_run). Aussagekraft endet am Suite-Umfang (5 Metadaten-Tests)"
+  rust_foundation_ankerbaum:
+    status: IMPLEMENTED
+    evidence: "Commits 09a00330/ad514218/abe17cc5 auf Branch anchor/compiler-baseline (PRESERVATION-ANKER, NICHT auf main); CI dort rot (rustfmt, README-Purpose) — NICHT VERIFIED"
+  rust_foundation_integration_main:
+    status: EXECUTION PENDING
+    evidence: "gebunden an Sequenz: ATCB-Freeze (erledigt: ee265313 in atclang) -> Spec-Konsolidierung -> Gate 0"
+  cli_kern_atc_tc:
+    status: EXECUTION PENDING
+    evidence: "kein Code auf main; Toolchain-Schritt 1 wartet auf Gate 0"
+  atcb_v1_norm:
+    status: IMPLEMENTED
+    evidence: "Freeze-Commit ee265313 in atclang (ATC-BC-001 v1.0.0-FROZEN); Referenzimplementierung dort vorbelastet CI-rot — NICHT VERIFIED bis Gate 0"
