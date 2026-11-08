@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a-townchain-okosystems/standards/schemas/maintenance/maintenance-readiness.schema.json",
+  "title": "ATC Maintenance Readiness (ATC-STD-MAINT-000 §7.2)",
+  "description": "Release-Gate-Schema: 'A system MUST NOT be released to a lifecycle state requiring operational support unless its required maintenance capabilities are implemented, validated, documented, and evidenced.' FAIL = BLOCK (Maintenance Readiness Gate). Fuer M2/M3-Releases zusaetzlich critical_maintenance (alle required).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["maintenance_readiness", "result"],
+  "properties": {
+    "maintenance_readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maintenance_owner", "maintenance_documentation", "dependency_inventory", "security_process", "test_suite", "rollback_strategy", "compatibility_strategy", "monitoring", "evidence_collection", "lifecycle_status"],
+      "properties": {
+        "maintenance_owner": {"$ref": "#/$defs/reqfield"},
+        "maintenance_documentation": {"$ref": "#/$defs/reqfield"},
+        "dependency_inventory": {"$ref": "#/$defs/reqfield"},
+        "security_process": {"$ref": "#/$defs/reqfield"},
+        "test_suite": {"$ref": "#/$defs/reqfield"},
+        "rollback_strategy": {"$ref": "#/$defs/reqfield"},
+        "compatibility_strategy": {"$ref": "#/$defs/reqfield"},
+        "monitoring": {"$ref": "#/$defs/reqfield"},
+        "evidence_collection": {"$ref": "#/$defs/reqfield"},
+        "lifecycle_status": {"$ref": "#/$defs/reqfield"}
+      }
+    },
+    "critical_maintenance": {
+      "type": "object",
+      "description": "Zusaetzlich MUSS fuer M2/M3-Releases vollstaendig sein",
+      "additionalProperties": false,
+      "required": ["independent_validation", "security_review", "rollback_test", "incident_record", "audit_evidence"],
+      "properties": {
+        "independent_validation": {"$ref": "#/$defs/reqfield"},
+        "security_review": {"$ref": "#/$defs/reqfield"},
+        "rollback_test": {"$ref": "#/$defs/reqfield"},
+        "incident_record": {"$ref": "#/$defs/reqfield"},
+        "audit_evidence": {"$ref": "#/$defs/reqfield"}
+      }
+    },
+    "result": {"type": "string", "enum": ["PASS", "FAIL"], "description": "PASS = RELEASE, FAIL = BLOCK"}
+  },
+  "$defs": {
+    "reqfield": {"type": "object", "additionalProperties": false, "required": ["state"], "properties": {"state": {"type": "string", "enum": ["required", "complete", "incomplete"]}, "ref": {"type": "string", "description": "Evidence-Referenz (commit/PR/Report)"}}}
+  }
+}
