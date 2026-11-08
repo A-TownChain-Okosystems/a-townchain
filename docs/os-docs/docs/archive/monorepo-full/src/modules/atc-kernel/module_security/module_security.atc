@@ -1,0 +1,226 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// K-Sprint 49 — Module Verification & Signing (ATCLang Interface)
+// Rust-Implementierung: shivacore/kernel/src/module_security.rs (1682 Zeilen, 65 Tests)
+// Agent: Aurora #2 (6a275618)
+// Zweck: ATCLang-Contract für Kernel Module Security — Verifikation, Signierung, Revocation
+// Abhängigkeiten: kernel_api.atc, lkm.atc (K48), did.atc (K6)
+
+import "std/chain.atc" as Chain
+
+// ════════════════════════════════════════════════════════════════
+//  TRUST LEVELS
+// ════════════════════════════════════════════════════════════════
+
+enum TrustLevel {
+    CORE,
+    VERIFIED,
+    COMMUNITY,
+    UNTRUSTED,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  SIGNATURE TYPES
+// ════════════════════════════════════════════════════════════════
+
+enum SigAlgorithm {
+    ED25519,
+    SECP256K1,
+    PLACEHOLDER,
+}
+
+struct ModuleSignature {
+    signer_did: String,
+    signature: List<u8>,
+    content_hash: List<u8>,
+    algorithm: SigAlgorithm,
+    timestamp: u64,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  TRUST ANCHOR
+// ════════════════════════════════════════════════════════════════
+
+struct TrustAnchor {
+    did: String,
+    name: String,
+    trust_level: TrustLevel,
+    public_key: List<u8>,
+    active: bool,
+    created: u64,
+    expires: u64,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  REVOCATION
+// ════════════════════════════════════════════════════════════════
+
+enum RevocationSubject {
+    MODULE(String),
+    MODULE_HASH(List<u8>),
+    SIGNER(String),
+}
+
+enum RevocationReason {
+    VULNERABILITY,
+    MALICIOUS,
+    KEY_COMPROMISE,
+    SUPERSEDED,
+    DEPRECATED,
+    OTHER,
+}
+
+struct RevocationEntry {
+    subject: RevocationSubject,
+    reason: RevocationReason,
+    revoked_at: u64,
+    revoked_by: String,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  LOAD POLICY
+// ════════════════════════════════════════════════════════════════
+
+struct LoadPolicy {
+    allow_verified: bool,
+    allow_community: bool,
+    allow_untrusted: bool,
+    require_signature: bool,
+    require_hash: bool,
+    min_trust_level: TrustLevel,
+    enforce_version_pin: bool,
+    check_revocation: bool,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  VERIFICATION RESULT
+// ════════════════════════════════════════════════════════════════
+
+struct VerificationCheck {
+    name: String,
+    passed: bool,
+    detail: String,
+}
+
+struct VerificationResult {
+    passed: bool,
+    trust_level: TrustLevel,
+    checks: List<VerificationCheck>,
+    failure_reason: Option<String>,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  AUDIT
+// ════════════════════════════════════════════════════════════════
+
+enum SecurityAction {
+    LOAD_REQUESTED,
+    VERIFICATION_PASSED,
+    VERIFICATION_FAILED,
+    MODULE_LOADED,
+    MODULE_BLOCKED,
+    MODULE_REVOKED,
+    SIGNER_REVOKED,
+    ANCHOR_ADDED,
+    ANCHOR_REMOVED,
+}
+
+struct SecurityAuditEntry {
+    timestamp: u64,
+    module_name: String,
+    action: SecurityAction,
+    trust_level: TrustLevel,
+    policy_name: String,
+}
+
+struct SecurityStats {
+    total_requests: u64,
+    passed: u64,
+    blocked: u64,
+    revoked: u64,
+    anchors_count: u32,
+    revocations_count: u32,
+    blacklist_count: u32,
+    whitelist_count: u32,
+    audit_entries: u32,
+}
+
+// ════════════════════════════════════════════════════════════════
+//  MODULE SECURITY MANAGER CONTRACT
+// ════════════════════════════════════════════════════════════════
+
+module Kernel::ModuleSecurity {
+
+    contract ModuleSecurityManager {
+
+        state anchors: Map<String, TrustAnchor>
+        state revocations: List<RevocationEntry>
+        state blacklist: Map<String, RevocationReason>
+        state whitelist: Map<String, TrustLevel>
+        state version_pins: Map<String, String>
+        state known_hashes: Map<String, List<u8>>
+        state policy: LoadPolicy
+        state audit_log: List<SecurityAuditEntry>
+
+        // ── Events ──────────────────────────────────────────
+        event ModuleVerified(module_name: String, trust_level: TrustLevel)
+        event ModuleBlocked(module_name: String, reason: String)
+        event SignerRevoked(did: String, reason: RevocationReason)
+        event ModuleRevoked(module_name: String, reason: RevocationReason)
+        event AnchorAdded(did: String, trust_level: TrustLevel)
+        event AnchorRemoved(did: String)
+        event HashMismatch(module_name: String, expected: List<u8>, actual: List<u8>)
+
+        // ── Trust Anchor Management ─────────────────────────
+        fn add_anchor(anchor: TrustAnchor) -> bool
+        fn remove_anchor(did: String) -> bool
+        fn get_anchor(did: String) -> Option<TrustAnchor>
+        fn anchor_count() -> u32
+
+        // ── Revocation ──────────────────────────────────────
+        fn revoke(entry: RevocationEntry) -> bool
+        fn is_revoked_module(name: String) -> bool
+        fn is_revoked_signer(did: String) -> bool
+        fn is_revoked_hash(hash: List<u8>) -> bool
+        fn revocation_count() -> u32
+
+        // ── Blacklist / Whitelist ────────────────────────────
+        fn blacklist_module(name: String, reason: RevocationReason) -> bool
+        fn unblacklist_module(name: String) -> bool
+        fn is_blacklisted(name: String) -> bool
+        fn whitelist_module(name: String, trust_level: TrustLevel) -> bool
+        fn unwhitelist_module(name: String) -> bool
+        fn is_whitelisted(name: String) -> bool
+
+        // ── Version Pinning ──────────────────────────────────
+        fn pin_version(module: String, version: String) -> bool
+        fn unpin_version(module: String) -> bool
+        fn get_version_pin(module: String) -> Option<String>
+        fn check_version(module: String, version: String) -> bool
+
+        // ── Hash Tracking ────────────────────────────────────
+        fn register_hash(module: String, hash: List<u8>) -> bool
+        fn verify_hash(module: String, hash: List<u8>) -> bool
+        fn hash_mismatch(module: String, hash: List<u8>) -> bool
+
+        // ── Policy ──────────────────────────────────────────
+        fn set_policy(policy: LoadPolicy) -> bool
+        fn policy() -> LoadPolicy
+
+        // ── Core Verification ────────────────────────────────
+        fn verify(
+            module_name: String,
+            module_version: String,
+            content_hash: List<u8>,
+            signature: Option<ModuleSignature>,
+            now: u64
+        ) -> VerificationResult
+
+        // ── Audit ───────────────────────────────────────────
+        fn audit_log() -> List<SecurityAuditEntry>
+        fn audit_count() -> u32
+        fn clear_audit() -> bool
+
+        // ── Stats ───────────────────────────────────────────
+        fn stats() -> SecurityStats
+    }
+}
