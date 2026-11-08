@@ -1,0 +1,12 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: architecture
+family: LEGACY-SERIES
+family_id: LEGACY
+file: standards/architecture/ATC-ARCH-001.md
+mandate: Owner-Direktive 12.09.2026 (KAI-OS = Architekturbegriff, GlobusOS = OS)
+registry_version: 1
+standard_id: ATC-ARCH-001
+status: approved
+title: KAI-OS System Architecture Standard
+version: 1.0.0
