@@ -1,0 +1,12 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: readme
+family: README
+family_id: PREFIX
+file: standards/readme/ATC-STD-README-001.md
+mandate: Owner-Entwurf 07.09. — README als standardisierte Einstiegsschnittstelle
+registry_version: 1
+standard_id: ATC-STD-README-001
+status: approved
+title: README Standard
+version: 1.0.0
