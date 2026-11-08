@@ -1,0 +1,498 @@
+name: Pinned Source Catalog Reconciliation
+
+on:
+  pull_request:
+    paths:
+      - "scripts/org_function_catalog.py"
+      - "scripts/validate_bidirectional_reconciliation.py"
+      - "scripts/git_tree_manifest.py"
+      - "scripts/validate_git_tree_inventory.py"
+      - "tests/test_git_tree_manifest.py"
+      - "scripts/build_pr29_finding_remediation_ledger.py"
+      - "tests/test_pr29_finding_remediation_ledger.py"
+      - "docs/architecture/pr29-finding-remediation-ledger-contract.v1.json"
+      - ".github/workflows/pinned-source-catalog-reconciliation.yml"
+      - "docs/architecture/source-catalog-reconciliation.v1.json"
+      - "docs/architecture/source-catalog-expected-tree-delta.v1.json"
+      - "schemas/source-catalog-reconciliation.schema.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  pinned-inventory:
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_COMMIT: b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4
+      CATALOG_COMMIT: 5c27a52e476d6ca10ab3650e7d0370a20e741e70
+      GENERATOR_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout workflow revision
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Python and install authoritative parser dependencies
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install source catalog parsers
+        run: python -m pip install --disable-pip-version-check 'tree-sitter>=0.25,<0.26' 'tree-sitter-rust>=0.24,<0.25' 'tree-sitter-bash>=0.23,<0.24' 'markdown-it-py>=3,<5' 'PyYAML>=6,<7'
+
+      - name: Git-tree manifest validator regression tests
+        run: python -m unittest discover -s tests -p 'test_git_tree_manifest.py' -v
+
+      - name: Per-finding remediation ledger regression tests
+        run: python -m unittest discover -s tests -p 'test_pr29_finding_remediation_ledger.py' -v
+
+      - name: Verify pinned commits and selected generator identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "${SOURCE_COMMIT}^{commit}"
+          git cat-file -e "${CATALOG_COMMIT}^{commit}"
+          generator_blob="$(git rev-parse "${GENERATOR_COMMIT}:scripts/org_function_catalog.py")"
+          printf 'SOURCE_COMMIT=%s\nCATALOG_COMMIT=%s\nGENERATOR_COMMIT=%s\nGENERATOR_BLOB=%s\n' \
+            "$SOURCE_COMMIT" "$CATALOG_COMMIT" "$GENERATOR_COMMIT" "$generator_blob"
+          test "${#generator_blob}" -eq 40
+          mkdir -p reconciliation-artifacts
+
+      - name: Download pinned baseline artifact by immutable run and artifact name
+        uses: actions/download-artifact@v4
+        with:
+          name: pinned-source-catalog-reconciliation-38568553298-1
+          run-id: 38568553298
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: reconciliation-artifacts/baseline-361
+
+      - name: Verify downloaded baseline artifact member hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd reconciliation-artifacts/baseline-361
+          cat > SHA256SUMS <<'EOF'
+          56ce15481cd60ad0dd4a504af0c46cbad9a50e196ef221f485a29b0e9d3da85c  catalog-inventory.json
+          009d8352a1b9e22a43600e88fbbdda65b5ae0713a75cc3490eddc77ee7cea94d  independent-bidirectional-reconciliation.json
+          fcf8fbb637e7a960c4646b6d25ba1da88d868e63d061725711110d165a4a64ba  reconciliation-report.json
+          4c8bdc8ef5313dd1b117a2943ff2226ae4ae7a787febc143b903909eb759f8d6  source-inventory.json
+          EOF
+          sha256sum --check SHA256SUMS
+          rm SHA256SUMS
+
+      - name: Generate separate inventories from exact Git trees
+        shell: bash
+        run: |
+          set -euo pipefail
+          git worktree add --detach /tmp/atce-source "$SOURCE_COMMIT"
+          git worktree add --detach /tmp/atce-catalog "$CATALOG_COMMIT"
+          ATC_CATALOG_SOURCE_SHA="$SOURCE_COMMIT" python "$GITHUB_WORKSPACE/scripts/org_function_catalog.py" /tmp/atce-source \
+            --repository A-TownChain-Okosystems/atc-engineering \
+            --output reconciliation-artifacts/source-inventory.json
+          ATC_CATALOG_SOURCE_SHA="$CATALOG_COMMIT" python "$GITHUB_WORKSPACE/scripts/org_function_catalog.py" /tmp/atce-catalog \
+            --repository A-TownChain-Okosystems/atc-engineering \
+            --output reconciliation-artifacts/catalog-inventory.json
+
+      - name: Capture exact source and catalog Git-tree manifests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/git_tree_manifest.py --root "$GITHUB_WORKSPACE" --commit "$SOURCE_COMMIT" --output reconciliation-artifacts/source-git-tree-manifest.json
+          python scripts/git_tree_manifest.py --root "$GITHUB_WORKSPACE" --commit "$CATALOG_COMMIT" --output reconciliation-artifacts/catalog-git-tree-manifest.json
+
+      - name: Reconcile inventories against exact Git trees
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s reconciliation-artifacts/source-inventory.json
+          test -s reconciliation-artifacts/catalog-inventory.json
+          python scripts/validate_git_tree_inventory.py \
+            --root "$GITHUB_WORKSPACE" \
+            --source-manifest reconciliation-artifacts/source-git-tree-manifest.json \
+            --source-inventory reconciliation-artifacts/source-inventory.json \
+            --catalog-manifest reconciliation-artifacts/catalog-git-tree-manifest.json \
+            --catalog-inventory reconciliation-artifacts/catalog-inventory.json \
+            --output reconciliation-artifacts/git-tree-reconciliation.json
+
+      - name: Produce deterministic identity-delta report
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          out = Path("reconciliation-artifacts")
+          source = json.loads((out / "source-inventory.json").read_text())
+          catalog = json.loads((out / "catalog-inventory.json").read_text())
+
+          def by_id(doc):
+              result = {}
+              duplicates = {}
+              for symbol in doc.get("symbols", []):
+                  key = symbol["symbol_id"]
+                  if key in result:
+                      duplicates.setdefault(key, [result[key]]).append(symbol)
+                  else:
+                      result[key] = symbol
+              return result, duplicates
+
+          src, src_dups = by_id(source)
+          cat, cat_dups = by_id(catalog)
+          source_ids, catalog_ids = set(src), set(cat)
+          source_only = sorted(source_ids - catalog_ids)
+          catalog_only = sorted(catalog_ids - source_ids)
+          common = sorted(source_ids & catalog_ids)
+          changed = sorted(key for key in common if (
+              src[key].get("path") != cat[key].get("path")
+              or src[key].get("source_blob_sha") != cat[key].get("source_blob_sha")
+              or src[key].get("signature") != cat[key].get("signature")
+              or src[key].get("source_start_line") != cat[key].get("source_start_line")
+              or src[key].get("source_end_line") != cat[key].get("source_end_line")
+          ))
+
+          def file_map(doc):
+              return {item["path"]: item for item in doc.get("files", [])}
+          sf, cf = file_map(source), file_map(catalog)
+          file_paths = sorted(set(sf) | set(cf))
+          source_exclusions = source.get("exclusions", [])
+          catalog_exclusions = catalog.get("exclusions", [])
+
+          def exclusions_by_id(items):
+              result = {}
+              duplicates = {}
+              for item in items:
+                  key = item.get("exclusion_id")
+                  if key in result:
+                      duplicates.setdefault(key, [result[key]]).append(item)
+                  else:
+                      result[key] = item
+              return result, duplicates
+
+          src_exclusions, src_exclusion_dups = exclusions_by_id(source_exclusions)
+          cat_exclusions, cat_exclusion_dups = exclusions_by_id(catalog_exclusions)
+          source_exclusion_ids = set(src_exclusions)
+          catalog_exclusion_ids = set(cat_exclusions)
+          source_only_exclusion_ids = sorted(source_exclusion_ids - catalog_exclusion_ids)
+          catalog_only_exclusion_ids = sorted(catalog_exclusion_ids - source_exclusion_ids)
+          changed_common_exclusion_ids = sorted(
+              key for key in source_exclusion_ids & catalog_exclusion_ids
+              if src_exclusions[key] != cat_exclusions[key]
+          )
+          file_deltas = [
+              {"path": path, "source_status": sf.get(path, {}).get("status", "ABSENT"),
+               "catalog_status": cf.get(path, {}).get("status", "ABSENT"),
+               "source_blob_sha": sf.get(path, {}).get("blob_sha"),
+               "catalog_blob_sha": cf.get(path, {}).get("blob_sha")}
+              for path in file_paths
+              if path not in sf or path not in cf
+              or sf[path].get("blob_sha") != cf[path].get("blob_sha")
+              or sf[path].get("status") != cf[path].get("status")
+          ]
+          generator_bytes = Path("scripts/org_function_catalog.py").read_bytes()
+          report = {
+              "schema_version": "1.0.0",
+              "repository": "A-TownChain-Okosystems/atc-engineering",
+              "status": "DETECTED",
+              "source_commit_sha": source.get("observed_commit_sha"),
+              "catalog_commit_sha": catalog.get("observed_commit_sha"),
+              "generator_blob_sha": hashlib.sha1(
+                  b"blob " + str(len(generator_bytes)).encode() + b"\0" + generator_bytes
+              ).hexdigest(),
+              "parser_coverage": {
+                  "source": source.get("parser_coverage", {}),
+                  "catalog": catalog.get("parser_coverage", {}),
+              },
+              "counts": {
+                  "source_files": len(source.get("files", [])),
+                  "catalog_files": len(catalog.get("files", [])),
+                  "source_symbols": len(source.get("symbols", [])),
+                  "catalog_symbols": len(catalog.get("symbols", [])),
+                  "source_only_symbol_ids": len(source_only),
+                  "catalog_only_symbol_ids": len(catalog_only),
+                  "changed_common_symbol_ids": len(changed),
+                  "duplicate_source_symbol_ids": len(src_dups),
+                  "duplicate_catalog_symbol_ids": len(cat_dups),
+                  "source_exclusions": len(source_exclusions),
+                  "catalog_exclusions": len(catalog_exclusions),
+                  "source_only_exclusion_ids": len(source_only_exclusion_ids),
+                  "catalog_only_exclusion_ids": len(catalog_only_exclusion_ids),
+                  "changed_common_exclusion_ids": len(changed_common_exclusion_ids),
+                  "duplicate_source_exclusion_ids": len(src_exclusion_dups),
+                  "duplicate_catalog_exclusion_ids": len(cat_exclusion_dups),
+                  "source_parse_errors": sum(1 for x in source.get("files", []) if x.get("status") == "PARSE_ERROR"),
+                  "catalog_parse_errors": sum(1 for x in catalog.get("files", []) if x.get("status") == "PARSE_ERROR"),
+                  "changed_file_bindings": len(file_deltas)
+              },
+              "source_only_symbol_ids": source_only,
+              "catalog_only_symbol_ids": catalog_only,
+              "changed_common_symbol_ids": changed,
+              "duplicate_source_symbol_ids": {k: [x.get("path") for x in v] for k, v in sorted(src_dups.items())},
+              "duplicate_catalog_symbol_ids": {k: [x.get("path") for x in v] for k, v in sorted(cat_dups.items())},
+              "changed_file_bindings": file_deltas,
+              "source_only_exclusion_ids": source_only_exclusion_ids,
+              "catalog_only_exclusion_ids": catalog_only_exclusion_ids,
+              "changed_common_exclusion_ids": changed_common_exclusion_ids,
+              "duplicate_source_exclusion_ids": {k: [x.get("path") for x in v] for k, v in sorted(src_exclusion_dups.items())},
+              "duplicate_catalog_exclusion_ids": {k: [x.get("path") for x in v] for k, v in sorted(cat_exclusion_dups.items())},
+              "source_exclusions": source_exclusions,
+              "catalog_exclusions": catalog_exclusions,
+              "limitations": [
+                  "This compares two generated inventories from the pinned trees; it is not proof that every source declaration is captured.",
+                  "Non-Python extractors are heuristic and may miss declarations or report false positives.",
+                  "Matching symbol IDs across snapshots are not an independent source-to-canonical-catalog completeness proof.",
+                  "Exclusions require manual, reason-by-reason review; interface contracts and organization-wide ownership are outside this report.",
+                  "Status remains DETECTED regardless of zero deltas; no VERIFIED or RECONCILED promotion is performed."
+              ]
+          }
+          (out / "reconciliation-report.json").write_text(
+              json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+          )
+          print(json.dumps({"status": report["status"], "counts": report["counts"]}, sort_keys=True))
+          PY
+
+      - name: Fail closed on unresolved symbol, file, parser, or unsubstantiated exclusion differences
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+          report = json.loads(Path("reconciliation-artifacts/reconciliation-report.json").read_text())
+          counts = report["counts"]
+          source = report.get("source_exclusions", [])
+          catalog = report.get("catalog_exclusions", [])
+
+          def unjustified(items):
+              required = ("exclusion_id", "repository", "path", "reason_code", "category", "reason", "rationale", "evidence")
+              bad = [item for item in items if any(not item.get(key) for key in required)
+                     or not re.fullmatch(r"[0-9a-f]{64}", item.get("exclusion_id", ""))
+                     or not isinstance(item.get("evidence"), list)
+                     or not all(isinstance(ev, dict) and ev.get("reference") for ev in item.get("evidence", []))]
+              ids = [item.get("exclusion_id") for item in items]
+              duplicate_ids = {value for value in ids if ids.count(value) > 1}
+              return len(bad) + len(duplicate_ids)
+
+          unsubstantiated = unjustified(source) + unjustified(catalog)
+
+          # These three deltas are the exact, reviewed change set between the two
+          # pinned commits (compare b2ad23e...5c27a52); anything else remains blocking.
+          expected_file_deltas = {
+              ".github/workflows/org-function-catalog.yml": {
+                  "source_blob_sha": "b16497c6137f94dbc4c620f3ba51c8578f8cced0",
+                  "catalog_blob_sha": "94e9855cb682598256627dc5de485d37befd63d3",
+              },
+              "docs/architecture/atc-engineering-component-evidence.v1.json": {
+                  "source_blob_sha": None,
+                  "catalog_blob_sha": "f972a64f37d1837b5746e138c7821c96ebf20e39",
+              },
+              "schemas/atc-engineering-component-evidence.schema.json": {
+                  "source_blob_sha": None,
+                  "catalog_blob_sha": "823823a33974f3c01676c1e2112ddc6b7e6754f7",
+              },
+          }
+          actual_file_deltas = {item["path"]: item for item in report.get("changed_file_bindings", [])}
+          unexpected_file_deltas = {
+              path: actual_file_deltas[path] for path in actual_file_deltas
+              if path not in expected_file_deltas
+              or actual_file_deltas[path].get("source_blob_sha") != expected_file_deltas[path]["source_blob_sha"]
+              or actual_file_deltas[path].get("catalog_blob_sha") != expected_file_deltas[path]["catalog_blob_sha"]
+          }
+          missing_expected_file_deltas = sorted(set(expected_file_deltas) - set(actual_file_deltas))
+          unresolved_file_bindings = len(unexpected_file_deltas) + len(missing_expected_file_deltas)
+          counts["expected_file_bindings"] = len(actual_file_deltas) - len(unexpected_file_deltas)
+          counts["unresolved_file_bindings"] = unresolved_file_bindings
+          blocking = {
+              key: counts[key] for key in (
+                  "source_only_symbol_ids", "catalog_only_symbol_ids",
+                  "changed_common_symbol_ids", "duplicate_source_symbol_ids",
+                  "duplicate_catalog_symbol_ids", "source_parse_errors",
+                  "catalog_parse_errors"
+              ) if counts.get(key) != 0
+          }
+          if unresolved_file_bindings:
+              blocking["unresolved_file_bindings"] = unresolved_file_bindings
+          # Explicitly reviewed deltas between these two pinned snapshots.
+          # The workflow YAML is inventoried but not parsed as executable source;
+          # JSON artifacts are now parsed authoritatively. The current pinned
+          # inventories have no exclusion-list deltas; any new delta blocks.
+          expected_catalog_only_exclusions = {}
+          expected_changed_exclusions = {}
+          actual_catalog_only = {item.get("exclusion_id"): item for item in report.get("catalog_exclusions", [])
+                                 if item.get("exclusion_id") in set(report.get("catalog_only_exclusion_ids", []))}
+          actual_changed_exclusions = {
+              key: {"source": next((x for x in report.get("source_exclusions", []) if x.get("exclusion_id") == key), {}),
+                    "catalog": next((x for x in report.get("catalog_exclusions", []) if x.get("exclusion_id") == key), {})}
+              for key in report.get("changed_common_exclusion_ids", [])
+          }
+          reviewed_catalog_only = (
+              set(actual_catalog_only) == set(expected_catalog_only_exclusions)
+              and all(
+                  actual_catalog_only[key].get("path") == expected["path"]
+                  and actual_catalog_only[key].get("source_blob_sha") == expected["source_blob_sha"]
+                  and actual_catalog_only[key].get("reason_code") == expected["reason_code"]
+                  for key, expected in expected_catalog_only_exclusions.items()
+              )
+          )
+          reviewed_changed_exclusions = (
+              set(actual_changed_exclusions) == set(expected_changed_exclusions)
+              and all(
+                  actual_changed_exclusions[key]["source"].get("path") == expected["path"]
+                  and actual_changed_exclusions[key]["catalog"].get("path") == expected["path"]
+                  and actual_changed_exclusions[key]["source"].get("source_blob_sha") == expected["source_blob_sha"]
+                  and actual_changed_exclusions[key]["catalog"].get("source_blob_sha") == expected["catalog_blob_sha"]
+                  and actual_changed_exclusions[key]["source"].get("reason_code") == expected["reason_code"]
+                  and actual_changed_exclusions[key]["catalog"].get("reason_code") == expected["reason_code"]
+                  for key, expected in expected_changed_exclusions.items()
+              )
+          )
+          reviewed_exclusion_deltas = reviewed_catalog_only and reviewed_changed_exclusions
+          unexpected_exclusion_deltas = (
+              counts.get("source_only_exclusion_ids", 0) != 0
+              or counts.get("duplicate_source_exclusion_ids", 0) != 0
+              or counts.get("duplicate_catalog_exclusion_ids", 0) != 0
+              or not reviewed_exclusion_deltas
+          )
+          exclusion_deltas = {
+              key: counts.get(key, 0) for key in (
+                  "source_only_exclusion_ids", "catalog_only_exclusion_ids",
+                  "changed_common_exclusion_ids", "duplicate_source_exclusion_ids",
+                  "duplicate_catalog_exclusion_ids"
+              ) if counts.get(key, 0) != 0
+          }
+          if unexpected_exclusion_deltas:
+              blocking["exclusion_deltas_require_review"] = exclusion_deltas or {"unexpected_delta_set": 1}
+          if unsubstantiated:
+              blocking["unsubstantiated_exclusions"] = unsubstantiated
+          counts["unsubstantiated_exclusions"] = unsubstantiated
+          report["exclusion_delta_review"] = {
+              "status": "REVIEWED_EXPECTED_DELTAS" if reviewed_exclusion_deltas else "BLOCKED",
+              "source_only_ids": report.get("source_only_exclusion_ids", []),
+              "catalog_only_ids": report.get("catalog_only_exclusion_ids", []),
+              "changed_common_ids": report.get("changed_common_exclusion_ids", []),
+              "reviewed_catalog_only_exclusions": sorted(expected_catalog_only_exclusions) if reviewed_catalog_only else [],
+              "reviewed_changed_exclusions": sorted(expected_changed_exclusions) if reviewed_changed_exclusions else [],
+              "note": "Only the exact pinned, reason-coded deltas above are reviewed. Any other exclusion delta remains blocking; parser completeness and organization-wide exclusion correctness remain unverified."
+          }
+          report["expected_file_binding_evidence"] = {
+              "comparison": "https://github.com/A-TownChain-Okosystems/atc-engineering/compare/b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4...5c27a52e476d6ca10ab3650e7d0370a20e741e70",
+              "expected_paths": sorted(expected_file_deltas),
+              "unresolved_paths": sorted(set(unexpected_file_deltas) | set(missing_expected_file_deltas)),
+              "note": "Expected deltas are explicitly bound to exact source/catalog blob SHAs; this is not a RECONCILED or VERIFIED status claim."
+          }
+          # Zero identity deltas do not prove parser completeness. Only an
+          # explicit COMPLETE status from an authoritative parser satisfies this gate.
+          REQUIRED_PARSER_MODES = {
+              "json": "stdlib_json",
+              "markdown": "commonmark_ast",
+              "python": "python_ast",
+              "rust": "tree_sitter_rust_cst",
+              "shell": "tree_sitter_bash_cst",
+              "toml": "stdlib_tomllib",
+              "unknown": "explicit_unknown_classifier",
+              "yaml": "pyyaml_ast",
+          }
+
+          def incomplete_languages(inventory):
+              coverage = inventory.get("parser_coverage")
+              if not isinstance(coverage, dict):
+                  return sorted(REQUIRED_PARSER_MODES)
+              return sorted(
+                  language for language, mode in REQUIRED_PARSER_MODES.items()
+                  if not isinstance(coverage.get(language), dict)
+                  or coverage[language].get("status") != "AUTHORITATIVE_COMPLETE"
+                  or coverage[language].get("parser_mode") != mode
+              )
+
+          parser_blockers = {
+              "source": incomplete_languages(json.loads(Path("reconciliation-artifacts/source-inventory.json").read_text())),
+              "catalog": incomplete_languages(json.loads(Path("reconciliation-artifacts/catalog-inventory.json").read_text())),
+          }
+          report["parser_coverage_gate"] = {
+              "status": "BLOCKED" if any(parser_blockers.values()) else "COMPLETE",
+              "incomplete_languages": parser_blockers,
+              "rule": "Every required format must report AUTHORITATIVE_COMPLETE with the exact allowlisted parser identity; missing groups, parse errors, unsupported files, and heuristic parser modes block reconciliation."
+          }
+          report["status"] = "BLOCKED" if blocking or any(parser_blockers.values()) else "DETECTED"
+          report["reconciliation_blockers"] = {
+              "inventory_and_binding": blocking,
+              "parser_coverage": parser_blockers,
+          }
+          Path("reconciliation-artifacts/reconciliation-report.json").write_text(
+              json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+          )
+          print(json.dumps({"status": report["status"], "blocking_counts": blocking,
+                            "parser_coverage_gate": report["parser_coverage_gate"],
+                            "expected_file_bindings": counts["expected_file_bindings"],
+                            "unresolved_file_bindings": unresolved_file_bindings,
+                            "source_exclusions": len(source), "catalog_exclusions": len(catalog)}, sort_keys=True))
+          if blocking or any(parser_blockers.values()):
+              raise SystemExit("Reconciliation BLOCKED: unresolved inventory differences or incomplete authoritative parser coverage")
+          PY
+
+      - name: Independently compare source and catalog inventories in both directions
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_bidirectional_reconciliation.py \
+            --expected-deltas docs/architecture/source-catalog-expected-tree-delta.v1.json \
+            reconciliation-artifacts/source-inventory.json \
+            reconciliation-artifacts/catalog-inventory.json \
+            --output reconciliation-artifacts/independent-bidirectional-reconciliation.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("reconciliation-artifacts/independent-bidirectional-reconciliation.json").read_text())
+          print(json.dumps({
+              "status": report["status"],
+              "source_commit_sha": report["source_commit_sha"],
+              "catalog_commit_sha": report["catalog_commit_sha"],
+              "blocking_findings": report["counts"]["blocking_findings"],
+              "finding_codes": sorted({item["code"] for item in report["findings"]}),
+          }, sort_keys=True))
+          # BLOCKED is a valid evidence result, not a CI crash. The artifact must
+          # preserve blockers rather than masking them or claiming reconciliation.
+          PY
+
+      - name: Build and enforce per-finding remediation ledger
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_pr29_finding_remediation_ledger.py \
+            --ledger-contract docs/architecture/pr29-finding-remediation-ledger-contract.v1.json \
+            --baseline-dir reconciliation-artifacts/baseline-361 \
+            --source-inventory reconciliation-artifacts/source-inventory.json \
+            --catalog-inventory reconciliation-artifacts/catalog-inventory.json \
+            --current-reconciliation reconciliation-artifacts/independent-bidirectional-reconciliation.json \
+            --tree-reconciliation reconciliation-artifacts/git-tree-reconciliation.json \
+            --expected-deltas docs/architecture/source-catalog-expected-tree-delta.v1.json \
+            --current-head-sha "$GENERATOR_COMMIT" \
+            --output reconciliation-artifacts/pr29-finding-remediation-ledger.json
+
+      - name: Validate artifact JSON and print provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool reconciliation-artifacts/source-inventory.json >/dev/null
+          python -m json.tool reconciliation-artifacts/catalog-inventory.json >/dev/null
+          python -m json.tool reconciliation-artifacts/reconciliation-report.json >/dev/null
+          sha256sum reconciliation-artifacts/*.json
+          printf 'Run: %s\nCommit: %s\n' "${GITHUB_RUN_ID}" "${GITHUB_SHA}"
+
+      - name: Upload pinned inventories and reconciliation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pinned-source-catalog-reconciliation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reconciliation-artifacts/*.json
+          if-no-files-found: error
+          retention-days: 90
