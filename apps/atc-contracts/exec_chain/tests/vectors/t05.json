@@ -1,0 +1,1 @@
+{"input": {"quorum_needed": 2100000, "votes_cast": 100000}, "expected": 2000000}
