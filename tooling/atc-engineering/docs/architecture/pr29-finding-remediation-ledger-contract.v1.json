@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "repository": "A-TownChain-Okosystems/atc-engineering",
+  "baseline_run_id": 38568553298,
+  "baseline_artifact_id": 11896618352,
+  "baseline_artifact_name": "pinned-source-catalog-reconciliation-38568553298-1",
+  "baseline_artifact_sha256": "21cfc22c127113b9b928b773e2322ee90a421bef152244687cb536e937d2b7bf",
+  "baseline_findings_count": 361,
+  "source_commit_sha": "b2ad23ee45a53de40ccfc1f1a1b4d37ca936d0e4",
+  "catalog_commit_sha": "5c27a52e476d6ca10ab3650e7d0370a20e741e70",
+  "expected_delta_contract": "docs/architecture/source-catalog-expected-tree-delta.v1.json",
+  "resolution_policy": {
+    "MISSING_SYMBOL_BINDING": "Match every baseline symbol uniquely to a current non-empty parser-derived signature using path, terminal qualified name, source blob SHA, and source-start-line delta <= 1.",
+    "UNRESOLVED_FILE_STATUS": "Require the same path and blob SHA in the current pinned inventory, with an authoritative parser result or a matching evidence-backed exclusion.",
+    "PARSER_NOT_AUTHORITATIVE": "Require exact allowlisted parser mode, AUTHORITATIVE_COMPLETE status, zero unsupported files, and zero parse errors.",
+    "CATALOG_FILE_NOT_IN_SOURCE_CENSUS": "Resolve only through an exact added-file record in the expected-delta contract with matching old/new blob bindings and passing independent tree gates.",
+    "FILE_BLOB_MISMATCH": "Resolve only through an exact modified-file record in the expected-delta contract with matching old/new blob bindings and passing independent tree gates."
+  },
+  "merge_approval": "NOT_GRANTED",
+  "governance": "This contract pins the historical baseline for per-finding accounting. It does not approve merge or imply organization-wide VERIFIED status.",
+  "baseline_file_sha256": {
+    "catalog-inventory.json": "56ce15481cd60ad0dd4a504af0c46cbad9a50e196ef221f485a29b0e9d3da85c",
+    "independent-bidirectional-reconciliation.json": "009d8352a1b9e22a43600e88fbbdda65b5ae0713a75cc3490eddc77ee7cea94d",
+    "reconciliation-report.json": "fcf8fbb637e7a960c4646b6d25ba1da88d868e63d061725711110d165a4a64ba",
+    "source-inventory.json": "4c8bdc8ef5313dd1b117a2943ff2226ae4ae7a787febc143b903909eb759f8d6"
+  }
+}
