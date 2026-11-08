@@ -1,0 +1,145 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-84 — Fork Resolution Protocol
+// Sprint 2.3 | Consensus Layer | Chain-ID 9000
+// Upgraded to v0.3 ATCLang syntax
+// LMD-GHOST (Latest Message Driven GHOST) fork choice
+// ─────────────────────────────────────────────────────────────
+
+const MAX_FORKS: u8 = 8
+const FINALITY_THRESHOLD: u8 = 67  // 2/3 majority
+
+struct Fork {
+    fork_id: Hash,
+    start_height: u64,
+    end_height: u64,
+    head_hash: Hash,
+    total_difficulty: u128,
+    vote_count: u16,
+    is_canonical: bool,
+}
+
+struct Vote {
+    voter: Address,
+    fork_id: Hash,
+    block_hash: Hash,
+    stake: u128,
+    timestamp: u64,
+}
+
+contract ForkResolution {
+    state forks: Map<Hash, Fork>
+    state votes: List<Vote>
+    state canonical_fork: Hash
+    state fork_count: u8
+    state owner: Address
+
+    event ForkDetected(fork_id: Hash, start_height: u64)
+    event ForkResolved(fork_id: Hash, canonical: bool)
+    event VoteCast(voter: Address, fork_id: Hash, stake: u128)
+
+    fn init() {
+        self.forks = {}
+        self.votes = []
+        self.canonical_fork = Hash::zero()
+        self.fork_count = 0
+        self.owner = msg_sender()
+    }
+
+    fn register_fork(fork_id: Hash, start_height: u64, head_hash: Hash, difficulty: u128) -> bool {
+        if self.fork_count >= MAX_FORKS {
+            return false
+        }
+        let fork = Fork {
+            fork_id: fork_id,
+            start_height: start_height,
+            end_height: start_height,
+            head_hash: head_hash,
+            total_difficulty: difficulty,
+            vote_count: 0,
+            is_canonical: false,
+        }
+        self.forks[fork_id] = fork
+        self.fork_count += 1
+        emit ForkDetected(fork_id, start_height)
+        return true
+    }
+
+    fn update_fork_head(fork_id: Hash, new_head: Hash, new_height: u64, added_difficulty: u128) -> bool {
+        let f = self.forks.get(fork_id)
+        if f == null {
+            return false
+        }
+        f.head_hash = new_head
+        f.end_height = new_height
+        f.total_difficulty += added_difficulty
+        return true
+    }
+
+    fn cast_vote(voter: Address, fork_id: Hash, block_hash: Hash, stake: u128) -> bool {
+        let vote = Vote {
+            voter: voter,
+            fork_id: fork_id,
+            block_hash: block_hash,
+            stake: stake,
+            timestamp: Time::now(),
+        }
+        self.votes.push(vote)
+        let f = self.forks.get(fork_id)
+        if f != null {
+            f.vote_count += 1
+        }
+        emit VoteCast(voter, fork_id, stake)
+        self.resolve_forks()
+        return true
+    }
+
+    fn resolve_forks() -> Hash {
+        let keys = self.forks.keys()
+        let best_fork: Hash = Hash::zero()
+        let best_difficulty: u128 = 0
+        let i: u16 = 0
+        while i < keys.len() {
+            let f = self.forks.get(keys[i])
+            if f != nil {
+                if f.total_difficulty > best_difficulty {
+                    best_difficulty = f.total_difficulty
+                    best_fork = keys[i]
+                }
+            }
+            i += 1
+        }
+        // Mark canonical
+        let j: u16 = 0
+        while j < keys.len() {
+            let f = self.forks.get(keys[j])
+            if f != nil {
+                f.is_canonical = (keys[j] == best_fork)
+                emit ForkResolved(keys[j], f.is_canonical)
+            }
+            j += 1
+        }
+        self.canonical_fork = best_fork
+        return best_fork
+    }
+
+    fn get_canonical_fork() -> Hash {
+        return self.canonical_fork
+    }
+
+    fn get_fork_info(fork_id: Hash) -> (u64, u64, Hash, u128, u16, bool) {
+        let f = self.forks.get(fork_id)
+        if f == null {
+            return (0, 0, Hash::zero(), 0, 0, false)
+        }
+        return (f.start_height, f.end_height, f.head_hash, f.total_difficulty, f.vote_count, f.is_canonical)
+    }
+
+    fn get_fork_count() -> u8 {
+        return self.fork_count
+    }
+
+    fn get_vote_count() -> u32 {
+        return self.votes.len()
+    }
+}
