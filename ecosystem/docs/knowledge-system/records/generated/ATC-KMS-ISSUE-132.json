@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-ISSUE-132",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "discussion",
+  "title": "Issue #132: Implement catalog functions across canonical repositories — phased rollout",
+  "context": "Issue 132 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "issue",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/132",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "issue"
+  ],
+  "links": [],
+  "content": "State: open\n\n## Ziel\n\nAlle im kanonischen Komponenten-/Funktionskatalog aufgeführten, belegten Primärfunktionen tatsächlich implementieren und integrieren. Das Ökosystem-Repository koordiniert Contracts, Zuständigkeiten, Integrationsnachweise und Release-Gates; es wird **keine zweite Implementierungs-SSOT** für VM, Konsens, Wallet, Node, SDK, Kernel oder Aurora aufgebaut.\n\n## Verbindliche Reihenfolge\n\n1. **Katalog fixieren und reconciliieren**\n   - Ausgangspunkt: `docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.json` und die zugehörige Markdown-Spezifikation.\n   - Aktuellen Katalog-Head und alle offenen Katalog-PRs erfassen; nicht stillschweigend einen PR-Head als `main` behandeln.\n   - Vollständiger bidirektionaler Source-Census über alle aktiven Repositories, exakte HEAD-/Tree-/Blob-SHAs und Parser-/Toolversionen.\n   - Jede Primärfunktion auf ein kanonisches Repository, Pfad, Symbol/Entry-Point und einen versionierten Vertrag binden.\n   - Tests, generierte Symbole, Dokumentation und CI mit reproduzierbarem Grund ausschließen; Hilfsfunktionen nicht automatisch als Produktfunktionen katalogisieren; Delegationen/Duplikate semantisch prüfen.\n   - Unbekannte oder widersprüchliche Verträge als `UNRESOLVED`/`BLOCKED` belassen.\n\n2. **Implementierung nach SSOT-Eigentümerschaft**\n   - Blockchain, Wallet, Node, Konsens und Transaktionen: kanonische A-TownChain-Repositories.\n   - ATC-VM und Algorithmus: `a-townchain/components/vm` und `a-townchain/components/algorithm`.\n   - ShivaCore/Kernel: `globus-os/modules/atc-shivacore/kernel/`.\n   - GlobusOS UI/System Settings und OS-APIs: `globus-os`.\n   - Aurora AI: kanonisches Aurora-Repository; policy-/capability-gated, keine Autorität aus Modelloutputs.\n   - ATCLang/Toolchain und normative Contracts: jeweilige kanonische Toolchain-/Standards-Repositories.\n   - Dieses Ökosystem-Repository enthält Integrationsadapter nur dann, wenn sie zum dokumentierten Control-Plane-Scope gehören, sowie Contracts, Inventare, Validatoren und Evidence.\n\n3. **Sicherheits- und Konsensblocker**\n   - Keine Konsens-, Finalitäts-, Quorum-, Fork-Choice-, Genesis- oder Cross-Chain-Asset-Transfer-Semantik erfinden.\n   - TX-V2-Konformität, Bytecode-Magic/ABI, kryptografische Hash-/Storage-Eigenschaften und SDK-Cross-Language-Vektoren anhand normativer Verträge klären, bevor abhängige Funktionen freigegeben werden.\n   - Alle Wallet-/Transaktions- und Systemeinstellungsaktionen folgen den zuständigen Identity-/Capability-/Policy-/Audit-Gates.\n\n4. **Verifikation je Funktion**\n   - `IMPLEMENTED`, `VERIFIED` und `RESIDUAL` getrennt ausweisen.\n   - Exakter Source- und Catalog-SHA; reproduzierbare Tests; exakte-HEAD CI mit Run → Job → Step → Exit-Code/Log.\n   - Schema-Validierung allein ist kein Funktionsnachweis.\n   - Kein Merge, Release oder `VERIFIED`-Status bei fehlenden, übersprungenen, ausstehenden oder nicht zugänglichen Nachweisen.\n\n## Abnahmekriterien\n\n- 100 % der Katalog-Primärfunktionen sind implementiert oder mit begründetem, evidenzgebundenem Ausschluss/Blocker versehen.\n- 100 % der relevanten Quellsymbole sind bidirektional zugeordnet; keine unerklärten Runtime-Symbole oder Katalogeinträge.\n- Jede Implementierung liegt im kanonischen Eigentümer-Repository; keine Parallel-SSOT.\n- Schnittstellen- und Schema-Verträge, Sicherheitsinvarianten, Tests und exakte-HEAD CI sind nachgewiesen.\n- Unbekannte Konsens-/Finalitätsregeln bleiben blockiert; Drafts bleiben Drafts, bis sämtliche Gates erfüllt sind.\n\n## Startstatus\n\nDieses Issue startet die Umsetzung als koordiniertes, repoübergreifendes Programm. Es behauptet **nicht**, dass die Katalogfunktionen bereits implementiert oder verifiziert sind. Zuerst ist der aktuelle Katalog-/Source-Reconciliation-Stand anhand der exakten Heads zu aktualisieren; danach werden kleine, zuständigkeitsgerechte Implementierungs-PRs erstellt."
+}
