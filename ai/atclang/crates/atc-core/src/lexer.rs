@@ -24,6 +24,12 @@ pub enum Token {
     Policy,
     Require,
     Use,
+    /// `module` — Programmkopf laut SPEC 3.1.
+    Module,
+    /// `import` — Datei- oder Pfadimport (Korpusform).
+    Import,
+    /// `as` — Alias eines Dateiimports.
+    As,
     Struct,
     Enum,
     Pipe,
@@ -126,6 +132,15 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, LexError> {
                     tokens.push(Token::Slash);
                 }
             }
+            // SPEC 2.6: '#' bis Zeilenende ist ein Kommentar. Der Rust-Lexer
+            // kannte bisher nur '//', weshalb jede Quelle mit '#' scheiterte.
+            '#' => {
+                for (_, comment_ch) in chars.by_ref() {
+                    if comment_ch == '\n' {
+                        break;
+                    }
+                }
+            }
             '%' => tokens.push(Token::Percent),
             '|' => tokens.push(Token::Pipe),
             '&' => tokens.push(Token::Ampersand),
@@ -223,6 +238,9 @@ pub fn tokenize(src: &str) -> Result<Vec<Token>, LexError> {
                     "policy" => tokens.push(Token::Policy),
                     "require" => tokens.push(Token::Require),
                     "use" => tokens.push(Token::Use),
+                    "module" => tokens.push(Token::Module),
+                    "import" => tokens.push(Token::Import),
+                    "as" => tokens.push(Token::As),
                     "struct" => tokens.push(Token::Struct),
                     "enum" => tokens.push(Token::Enum),
                     _ => tokens.push(Token::Ident(ident)),
@@ -379,5 +397,30 @@ mod tests {
     #[test]
     fn ungültiges_zeichen() {
         assert_eq!(tokenize("let $ = 1"), Err(LexError { pos: 4, ch: '$' }));
+    }
+
+    #[test]
+    fn hash_kommentar_ist_trivia() {
+        // SPEC 2.6: '#' bis Zeilenende ist ein Kommentar.
+        let ts = tokenize("# Modulkopf\nlet x = 1; # nachgestellt\n").unwrap();
+        assert!(ts.contains(&Token::Let));
+        assert!(ts.contains(&Token::Ident("x".into())));
+        assert!(ts.contains(&Token::Int(1)));
+        assert_eq!(ts.last(), Some(&Token::Eof));
+    }
+
+    #[test]
+    fn hash_kommentar_schliesst_zeichen_aus() {
+        // Ein '#' in einem String ist kein Kommentar.
+        let ts = tokenize("let s = \"a#b\";").unwrap();
+        assert!(ts.contains(&Token::String("a#b".into())));
+    }
+
+    #[test]
+    fn modul_import_und_alias_sind_schluesselwoerter() {
+        let ts = tokenize("module m import \"p\" as A").unwrap();
+        assert!(ts.contains(&Token::Module));
+        assert!(ts.contains(&Token::Import));
+        assert!(ts.contains(&Token::As));
     }
 }
