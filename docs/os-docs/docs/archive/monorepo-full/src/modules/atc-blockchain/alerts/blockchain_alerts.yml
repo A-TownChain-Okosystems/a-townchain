@@ -1,0 +1,34 @@
+# Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+groups:
+  - name: atc_blockchain
+    rules:
+      - alert: NodeDown
+        expr: up == 0
+        for: 2m
+        labels: {severity: critical}
+        annotations: {summary: "ATC Node {{ $labels.instance }} DOWN"}
+      - alert: LowTPS
+        expr: atc_tps < 5
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "TPS kritisch: {{ $value }}"}
+      - alert: BlockProductionStopped
+        expr: increase(atc_blocks_total[5m]) == 0
+        for: 5m
+        labels: {severity: critical}
+        annotations: {summary: "Kein neuer Block seit 5min!"}
+      - alert: BridgeInvariantViolation
+        expr: atc_bridge_locked < atc_bridge_minted
+        for: 0s
+        labels: {severity: critical}
+        annotations: {summary: "KRITISCH: Bridge-Invariante verletzt!"}
+      - alert: GatewayHighLatency
+        expr: http_request_duration_p99 > 2
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "P99 Latenz > 2s: {{ $value }}s"}
+      - alert: HighMemory
+        expr: process_resident_memory_bytes > 500000000
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "Memory > 500MB: {{ $value | humanizeBytes }}"}
