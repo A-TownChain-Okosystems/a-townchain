@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-08 20:54 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `80f2148` (letzter Commit 2026-11-08)
+> **Erzeugt:** 2026-11-08 21:16 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `4d9a4f8` (letzter Commit 2026-11-08)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,7 +13,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 12349 |
+| **Total Dateien** | 12354 |
 | **Bereiche** | 15 |
 | **Verzeichnisse** | 2188 |
 
@@ -21,12 +21,12 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Endung | Dateien |
 |--------|---------|
-| `.md` | 4250 |
+| `.md` | 4251 |
 | `.atc` | 1645 |
-| `.yaml` | 1486 |
+| `.yaml` | 1487 |
 | `.json` | 1414 |
 | `.rs` | 852 |
-| `.py` | 799 |
+| `.py` | 802 |
 | `.tsx` | 535 |
 | `(keine)` | 405 |
 | `.yml` | 303 |
@@ -62,8 +62,8 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Bereich | Dateien | Inhalt |
 |---------|---------|--------|
-| `docs` | 5066 | Dokumentation und Archive |
-| `standards` | 2160 | Normative Standards und Werkzeuge |
+| `docs` | 5067 | Dokumentation und Archive |
+| `standards` | 2161 | Normative Standards und Werkzeuge |
 | `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
 | `ai` | 977 | KI-, Sprach- und Engine-Schicht |
 | `components` | 872 | Chain-Komponenten (kanonischer Code) |
@@ -73,7 +73,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `tooling` | 164 | Werkzeuge und Engineering-Gates |
 | `(root)` | 21 | Wurzeldateien |
 | `.github` | 16 | CI- und Repository-Konfiguration |
-| `tools` | 8 | Einstiegspunkte |
+| `tools` | 11 | Einstiegspunkte |
 | `"docs` | 6 | — |
 | `.atc` | 6 | Repository-Evidenz |
 | `specs` | 5 | Spezifikationen |
