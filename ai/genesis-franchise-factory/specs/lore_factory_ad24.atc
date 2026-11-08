@@ -1,0 +1,209 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-24 — Lore Factory: Verwaltet Hintergrundwissen
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct LoreFactory {
+    entries: Map<Hash256, LoreEntry>,
+    by_franchise: Map<Hash256, List<Hash256>>,
+    timelines: Map<Hash256, Timeline>,
+    books: Map<Hash256, LoreBook>,
+    mythologies: Map<Hash256, Mythology>,
+    relationships: Map<Hash256, List<LoreRelationship>>,
+}
+
+struct LoreEntry {
+    id: Hash256,
+    franchise_id: Hash256,
+    title: String,
+    category: LoreCategory,
+    content: String,
+    date_in_world: String,
+    tags: List<String>,
+    references: List<Hash256>,
+    created_at: UInt64,
+}
+
+enum LoreCategory { Event, Book, Myth, Conflict, Relationship, Location, Artifact, Organization, Timeline }
+
+struct Timeline {
+    id: Hash256,
+    franchise_id: Hash256,
+    name: String,
+    epochs: List<Epoch>,
+    events: List<TimelineEvent>,
+}
+
+struct Epoch {
+    name: String,
+    start_date: String,
+    end_date: String,
+    description: String,
+}
+
+struct TimelineEvent {
+    id: Hash256,
+    date: String,
+    title: String,
+    description: String,
+    importance: UInt8,
+    participants: List<String>,
+}
+
+struct LoreBook {
+    id: Hash256,
+    title: String,
+    author: String,
+    chapters: List<String>,
+    in_world_author: String,
+    excerpt: String,
+}
+
+struct Mythology {
+    id: Hash256,
+    name: String,
+    deities: List<Deity>,
+    creation_myth: String,
+    afterlife: String,
+    rituals: List<String>,
+}
+
+struct Deity {
+    name: String,
+    domain: String,
+    alignment: String,
+    symbol: String,
+    followers: UInt32,
+}
+
+struct LoreRelationship {
+    entity_a: String,
+    entity_b: String,
+    type: String,
+    description: String,
+}
+
+// Lore Factory: Eintrag erstellen
+pub fn create_lore_entry(factory: LoreFactory, franchise_id: Hash256, title: String, category: LoreCategory, content: String, date: String) -> Hash256 {
+    let lid = Crypto::sha256(serialize(title, franchise_id, Chain::timestamp()))
+    factory.entries[lid] = LoreEntry {
+        id: lid,
+        franchise_id: franchise_id,
+        title: title,
+        category: category,
+        content: content,
+        date_in_world: date,
+        tags: [],
+        references: [],
+        created_at: Chain::timestamp(),
+    }
+    if not factory.by_franchise.contains(franchise_id) {
+        factory.by_franchise[franchise_id] = []
+    }
+    factory.by_franchise[franchise_id].append(lid)
+    return lid
+}
+
+// Lore Factory: Timeline erstellen
+pub fn create_timeline(factory: LoreFactory, franchise_id: Hash256, name: String) -> Hash256 {
+    let tid = Crypto::sha256(serialize(name, franchise_id, Chain::timestamp()))
+    factory.timelines[tid] = Timeline {
+        id: tid,
+        franchise_id: franchise_id,
+        name: name,
+        epochs: [],
+        events: [],
+    }
+    return tid
+}
+
+// Lore Factory: Epoche hinzufügen
+pub fn add_epoch(factory: LoreFactory, timeline_id: Hash256, name: String, start: String, end: String, desc: String) -> Bool {
+    require(factory.timelines.contains(timeline_id), "Timeline not found")
+    factory.timelines[timeline_id].epochs.append(Epoch {
+        name: name, start_date: start, end_date: end, description: desc,
+    })
+    return true
+}
+
+// Lore Factory: Timeline-Ereignis hinzufügen
+pub fn add_timeline_event(factory: LoreFactory, timeline_id: Hash256, date: String, title: String, desc: String, importance: UInt8) -> Bool {
+    require(factory.timelines.contains(timeline_id), "Timeline not found")
+    factory.timelines[timeline_id].events.append(TimelineEvent {
+        id: Crypto::sha256(serialize(date, title, timeline_id)),
+        date: date, title: title, description: desc,
+        importance: importance, participants: [],
+    })
+    return true
+}
+
+// Lore Factory: Buch erstellen
+pub fn create_book(factory: LoreFactory, title: String, author: String, chapters: List<String>, excerpt: String) -> Hash256 {
+    let bid = Crypto::sha256(serialize(title, author, Chain::timestamp()))
+    factory.books[bid] = LoreBook {
+        id: bid, title: title, author: author, chapters: chapters,
+        in_world_author: author, excerpt: excerpt,
+    }
+    return bid
+}
+
+// Lore Factory: Mythologie erstellen
+pub fn create_mythology(factory: LoreFactory, name: String, creation_myth: String, afterlife: String) -> Hash256 {
+    let mid = Crypto::sha256(serialize(name, Chain::timestamp()))
+    factory.mythologies[mid] = Mythology {
+        id: mid, name: name, deities: [],
+        creation_myth: creation_myth, afterlife: afterlife, rituals: [],
+    }
+    return mid
+}
+
+// Lore Factory: Gottheit hinzufügen
+pub fn add_deity(factory: LoreFactory, mythology_id: Hash256, name: String, domain: String, alignment: String, symbol: String) -> Bool {
+    require(factory.mythologies.contains(mythology_id), "Mythology not found")
+    factory.mythologies[mythology_id].deities.append(Deity {
+        name: name, domain: domain, alignment: alignment, symbol: symbol, followers: 0,
+    })
+    return true
+}
+
+// Lore Factory: Beziehung definieren
+pub fn add_lore_relationship(factory: LoreFactory, franchise_id: Hash256, entity_a: String, entity_b: String, rel_type: String, desc: String) -> Bool {
+    if not factory.relationships.contains(franchise_id) {
+        factory.relationships[franchise_id] = []
+    }
+    factory.relationships[franchise_id].append(LoreRelationship {
+        entity_a: entity_a, entity_b: entity_b, type: rel_type, description: desc,
+    })
+    return true
+}
+
+// Lore Factory: Alle Einträge eines Franchise
+pub fn lore_by_franchise(factory: LoreFactory, franchise_id: Hash256) -> List<Hash256> {
+    return factory.by_franchise.get(franchise_id, [])
+}
+
+// Lore Factory: Vollständige Lore generieren (Batch)
+pub fn generate_lore(factory: LoreFactory, franchise_id: Hash256) -> Bool {
+    // Basis-Timeline
+    let tid = create_timeline(factory, franchise_id, "Main Timeline")
+    add_epoch(factory, tid, "Age of Creation", "Year 0", "Year 1000", "The world was formed")
+    add_epoch(factory, tid, "Age of Heroes", "Year 1000", "Year 2000", "Heroes rose to power")
+    add_epoch(factory, tid, "Age of Conflict", "Year 2000", "Year 3000", "Great wars reshaped the world")
+    add_epoch(factory, tid, "Current Age", "Year 3000", "Present", "The current era")
+
+    // Basis-Mythologie
+    let mid = create_mythology(factory, "Primary Mythology", "In the beginning, the Creator forged the world from chaos.", "Souls journey to the Eternal Realm.")
+    add_deity(factory, mid, "The Creator", "Creation, Life", "Neutral Good", "Sun")
+    add_deity(factory, mid, "The Destroyer", "Death, Decay", "Neutral Evil", "Skull")
+
+    // Historischer Konflikt
+    create_lore_entry(factory, franchise_id, "The Great War", LoreCategory::Conflict, "A devastating conflict that reshaped the world.", "Year 2500")
+    create_lore_entry(factory, franchise_id, "The Treaty of Ages", LoreCategory::Event, "The peace treaty that ended the Great War.", "Year 2510")
+
+    emit LoreGenerated(franchise_id)
+    return true
+}
+
+event LoreGenerated(franchise_id: Hash256)
