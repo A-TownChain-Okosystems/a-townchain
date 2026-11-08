@@ -1,0 +1,3753 @@
+# Canonical Subsystem Matrix — Core Domains
+
+schema_version: "2.0.0"
+generated: "2026-09-30"
+scope: "Canonical subsystem matrix: subsystem → function → interface → dependency → ownership → test → evidence → verification"
+status_semantics: "Source presence does not imply implementation. Every implementation, interface, test and evidence claim requires direct verification. UNANALYZED means not yet verified."
+subsystems:
+  - id: "SUB-GLOBUSOS-ATC-BOOTLOADER"
+    domain: "GLOBUSOS"
+    name: "atc-bootloader"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-bootloader/"
+    source_file_count: 20
+    representative_source:
+      - "modules/atc-bootloader/Cargo.toml"
+      - "modules/atc-bootloader/config.atc"
+      - "modules/atc-bootloader/kernel_handshake.atc"
+      - "modules/atc-bootloader/recovery.atc"
+      - "modules/atc-bootloader/src/boot.rs"
+      - "modules/atc-bootloader/src/entry.rs"
+      - "modules/atc-bootloader/src/info.rs"
+      - "modules/atc-bootloader/src/lib.rs"
+      - "modules/atc-bootloader/src/mmap.rs"
+      - "modules/atc-bootloader/stage1.atc"
+      - "modules/atc-bootloader/stage2.atc"
+    documentation:
+      - "modules/atc-bootloader/ARCHITECTURE.md"
+      - "modules/atc-bootloader/COMPONENT_PLAN.md"
+      - "modules/atc-bootloader/README.md"
+      - "modules/atc-bootloader/ROADMAP.md"
+      - "modules/atc-bootloader/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-bootloader/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-bootloader/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GLOBUSOS-ATC-DRIVERS"
+    domain: "GLOBUSOS"
+    name: "atc-drivers"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-drivers/"
+    source_file_count: 28
+    representative_source:
+      - "modules/atc-drivers/Cargo.toml"
+      - "modules/atc-drivers/drivers/display_driver.atc"
+      - "modules/atc-drivers/drivers/driver_framework.atc"
+      - "modules/atc-drivers/drivers/input_driver.atc"
+      - "modules/atc-drivers/drivers/network_driver.atc"
+      - "modules/atc-drivers/drivers/storage_driver.atc"
+      - "modules/atc-drivers/kernel/src/hw_drivers.rs"
+      - "modules/atc-drivers/src/audio.rs"
+      - "modules/atc-drivers/src/components/HardwareDriversView.tsx"
+      - "modules/atc-drivers/src/driver_framework.rs"
+      - "modules/atc-drivers/src/gpu.rs"
+      - "modules/atc-drivers/src/hid.rs"
+      - "modules/atc-drivers/src/lib.rs"
+      - "modules/atc-drivers/src/net.rs"
+      - "modules/atc-drivers/src/storage.rs"
+      - "modules/atc-drivers/src/usb.rs"
+    documentation:
+      - "modules/atc-drivers/ARCHITECTURE.md"
+      - "modules/atc-drivers/COMPONENT_PLAN.md"
+      - "modules/atc-drivers/README.md"
+      - "modules/atc-drivers/ROADMAP.md"
+      - "modules/atc-drivers/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-drivers/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-drivers/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GLOBUSOS-ATC-GLOBUS-DESKTOP"
+    domain: "GLOBUSOS"
+    name: "atc-globus-desktop"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-globus-desktop/"
+    source_file_count: 15
+    representative_source:
+      - "modules/atc-globus-desktop/src/app_launcher.atc"
+      - "modules/atc-globus-desktop/src/dock.atc"
+      - "modules/atc-globus-desktop/src/notifications.atc"
+      - "modules/atc-globus-desktop/src/settings_ui.atc"
+      - "modules/atc-globus-desktop/src/themes.atc"
+      - "modules/atc-globus-desktop/src/window_manager.atc"
+    documentation:
+      - "modules/atc-globus-desktop/ARCHITECTURE.md"
+      - "modules/atc-globus-desktop/COMPONENT_PLAN.md"
+      - "modules/atc-globus-desktop/README.md"
+      - "modules/atc-globus-desktop/ROADMAP.md"
+      - "modules/atc-globus-desktop/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-globus-desktop/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-globus-desktop/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GLOBUSOS-ATC-GLOBUS-FS"
+    domain: "GLOBUSOS"
+    name: "atc-globus-fs"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-globus-fs/"
+    source_file_count: 14
+    representative_source:
+      - "modules/atc-globus-fs/src/atcfs_driver.atc"
+      - "modules/atc-globus-fs/src/disk_stats.atc"
+      - "modules/atc-globus-fs/src/file_index.atc"
+      - "modules/atc-globus-fs/src/file_manager.atc"
+      - "modules/atc-globus-fs/src/permissions.atc"
+    documentation:
+      - "modules/atc-globus-fs/ARCHITECTURE.md"
+      - "modules/atc-globus-fs/COMPONENT_PLAN.md"
+      - "modules/atc-globus-fs/README.md"
+      - "modules/atc-globus-fs/ROADMAP.md"
+      - "modules/atc-globus-fs/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-globus-fs/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-globus-fs/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GLOBUSOS-ATC-GLOBUS-NET"
+    domain: "GLOBUSOS"
+    name: "atc-globus-net"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-globus-net/"
+    source_file_count: 14
+    representative_source:
+      - "modules/atc-globus-net/src/dns_client.atc"
+      - "modules/atc-globus-net/src/firewall.atc"
+      - "modules/atc-globus-net/src/network_config.atc"
+      - "modules/atc-globus-net/src/network_stack.atc"
+      - "modules/atc-globus-net/src/network_status.atc"
+    documentation:
+      - "modules/atc-globus-net/ARCHITECTURE.md"
+      - "modules/atc-globus-net/COMPONENT_PLAN.md"
+      - "modules/atc-globus-net/README.md"
+      - "modules/atc-globus-net/ROADMAP.md"
+      - "modules/atc-globus-net/STATUS.md"
+      - "modules/atc-globus-net/src/network_status.atc"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-globus-net/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-globus-net/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GLOBUSOS-ATC-GLOBUS-OS"
+    domain: "GLOBUSOS"
+    name: "atc-globus-os"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-globus-os/"
+    source_file_count: 29
+    representative_source:
+      - "modules/atc-globus-os/civilization/civilization_engine.atc"
+      - "modules/atc-globus-os/civilization/ecosystem_ai.atc"
+      - "modules/atc-globus-os/civilization/experience_orchestrator.atc"
+      - "modules/atc-globus-os/civilization/identity_layer.atc"
+      - "modules/atc-globus-os/core/globus_core.atc"
+      - "modules/atc-globus-os/core/world_registry.atc"
+      - "modules/atc-globus-os/economy/global_economy.atc"
+      - "modules/atc-globus-os/economy/resource_pools.atc"
+      - "modules/atc-globus-os/governance/planetary_council.atc"
+      - "modules/atc-globus-os/governance/world_governance.atc"
+      - "modules/atc-globus-os/network/globus_discovery.atc"
+      - "modules/atc-globus-os/network/world_sync.atc"
+      - "modules/atc-globus-os/src/index.ts"
+      - "modules/atc-globus-os/vite.config.ts"
+      - "modules/atc-globus-os/world/persistent_world.atc"
+      - "modules/atc-globus-os/world/proc_universe.atc"
+      - "modules/atc-globus-os/world/world_engine.atc"
+    documentation:
+      - "modules/atc-globus-os/ARCHITECTURE.md"
+      - "modules/atc-globus-os/COMPONENT_PLAN.md"
+      - "modules/atc-globus-os/README.md"
+      - "modules/atc-globus-os/ROADMAP.md"
+      - "modules/atc-globus-os/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-globus-os/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-globus-os/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GLOBUSOS-ATC-GLOBUS-REGISTRY"
+    domain: "GLOBUSOS"
+    name: "atc-globus-registry"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-globus-registry/"
+    source_file_count: 14
+    representative_source:
+      - "modules/atc-globus-registry/src/asset_tokenizer.atc"
+      - "modules/atc-globus-registry/src/ip_registry.atc"
+      - "modules/atc-globus-registry/src/license_manager.atc"
+      - "modules/atc-globus-registry/src/registry_dashboard.atc"
+      - "modules/atc-globus-registry/src/registry_sync.atc"
+    documentation:
+      - "modules/atc-globus-registry/ARCHITECTURE.md"
+      - "modules/atc-globus-registry/COMPONENT_PLAN.md"
+      - "modules/atc-globus-registry/README.md"
+      - "modules/atc-globus-registry/ROADMAP.md"
+      - "modules/atc-globus-registry/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-globus-registry/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-globus-registry/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GLOBUSOS-ATC-GLOBUS-SHELL"
+    domain: "GLOBUSOS"
+    name: "atc-globus-shell"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-globus-shell/"
+    source_file_count: 21
+    representative_source:
+      - "modules/atc-globus-shell/Cargo.toml"
+      - "modules/atc-globus-shell/src/cli_commands.atc"
+      - "modules/atc-globus-shell/src/cli_commands.rs"
+      - "modules/atc-globus-shell/src/lib.rs"
+      - "modules/atc-globus-shell/src/pipe_system.atc"
+      - "modules/atc-globus-shell/src/pipe_system.rs"
+      - "modules/atc-globus-shell/src/shell.atc"
+      - "modules/atc-globus-shell/src/shell.rs"
+      - "modules/atc-globus-shell/src/shell_completion.atc"
+      - "modules/atc-globus-shell/src/shell_completion.rs"
+      - "modules/atc-globus-shell/src/shell_history.atc"
+      - "modules/atc-globus-shell/src/shell_history.rs"
+    documentation:
+      - "modules/atc-globus-shell/ARCHITECTURE.md"
+      - "modules/atc-globus-shell/COMPONENT_PLAN.md"
+      - "modules/atc-globus-shell/README.md"
+      - "modules/atc-globus-shell/ROADMAP.md"
+      - "modules/atc-globus-shell/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-globus-shell/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-globus-shell/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GLOBUSOS-ATC-LINUX-EDITION"
+    domain: "GLOBUSOS"
+    name: "atc-linux-edition"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-linux-edition/"
+    source_file_count: 16
+    representative_source:
+      - "modules/atc-linux-edition/Cargo.toml"
+      - "modules/atc-linux-edition/src/app.rs"
+      - "modules/atc-linux-edition/src/explorer.rs"
+      - "modules/atc-linux-edition/src/main.rs"
+      - "modules/atc-linux-edition/src/node.rs"
+      - "modules/atc-linux-edition/src/settings.rs"
+      - "modules/atc-linux-edition/src/wallet.rs"
+    documentation:
+      - "modules/atc-linux-edition/ARCHITECTURE.md"
+      - "modules/atc-linux-edition/COMPONENT_PLAN.md"
+      - "modules/atc-linux-edition/README.md"
+      - "modules/atc-linux-edition/ROADMAP.md"
+      - "modules/atc-linux-edition/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-linux-edition/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-linux-edition/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GLOBUSOS-ATC-SHIVACORE"
+    domain: "GLOBUSOS"
+    name: "atc-shivacore"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-shivacore/"
+    source_file_count: 84
+    representative_source:
+      - "modules/atc-shivacore/boot/Cargo.toml"
+      - "modules/atc-shivacore/boot/src/main.rs"
+      - "modules/atc-shivacore/kernel/.cargo/config.toml"
+      - "modules/atc-shivacore/kernel/.gitignore"
+      - "modules/atc-shivacore/kernel/Cargo.toml"
+      - "modules/atc-shivacore/kernel/src/ai.rs"
+      - "modules/atc-shivacore/kernel/src/allocator.rs"
+      - "modules/atc-shivacore/kernel/src/atcfs.rs"
+      - "modules/atc-shivacore/kernel/src/ats1000.rs"
+      - "modules/atc-shivacore/kernel/src/block.rs"
+      - "modules/atc-shivacore/kernel/src/capability.rs"
+      - "modules/atc-shivacore/kernel/src/container.rs"
+      - "modules/atc-shivacore/kernel/src/container_net.rs"
+      - "modules/atc-shivacore/kernel/src/contract.rs"
+      - "modules/atc-shivacore/kernel/src/cow.rs"
+      - "modules/atc-shivacore/kernel/src/cross_subsystem.rs"
+      - "modules/atc-shivacore/kernel/src/devfs.rs"
+      - "modules/atc-shivacore/kernel/src/diagnostics.rs"
+      - "modules/atc-shivacore/kernel/src/elf_loader.rs"
+      - "modules/atc-shivacore/kernel/src/framebuffer.rs"
+    documentation:
+      - "modules/atc-shivacore/ARCHITECTURE.md"
+      - "modules/atc-shivacore/COMPONENT_PLAN.md"
+      - "modules/atc-shivacore/README.md"
+      - "modules/atc-shivacore/ROADMAP.md"
+      - "modules/atc-shivacore/STATUS.md"
+      - "modules/atc-shivacore/docs/M1.2_VMM_IMPLEMENTATION.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-shivacore/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-shivacore/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GLOBUSOS-ATC-WINDOWS-EDITION"
+    domain: "GLOBUSOS"
+    name: "atc-windows-edition"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/globus-os"
+    status: "UNANALYZED"
+    source_path: "modules/atc-windows-edition/"
+    source_file_count: 16
+    representative_source:
+      - "modules/atc-windows-edition/Cargo.toml"
+      - "modules/atc-windows-edition/src/app.rs"
+      - "modules/atc-windows-edition/src/explorer.rs"
+      - "modules/atc-windows-edition/src/main.rs"
+      - "modules/atc-windows-edition/src/node.rs"
+      - "modules/atc-windows-edition/src/settings.rs"
+      - "modules/atc-windows-edition/src/wallet.rs"
+    documentation:
+      - "modules/atc-windows-edition/ARCHITECTURE.md"
+      - "modules/atc-windows-edition/COMPONENT_PLAN.md"
+      - "modules/atc-windows-edition/README.md"
+      - "modules/atc-windows-edition/ROADMAP.md"
+      - "modules/atc-windows-edition/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/globus-os"
+      canonical_path: "modules/atc-windows-edition/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/globus-os:modules/atc-windows-edition/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-AURORA-ATC-AISTUDIO"
+    domain: "AURORA"
+    name: "atc-aistudio"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/aurora-ai"
+    status: "UNANALYZED"
+    source_path: "modules/atc-aistudio/"
+    source_file_count: 283
+    representative_source:
+      - "modules/atc-aistudio/aaa_asset_core.atc"
+      - "modules/atc-aistudio/ai_assets.atc"
+      - "modules/atc-aistudio/ai_studio_ad49.atc"
+      - "modules/atc-aistudio/animation.atc"
+      - "modules/atc-aistudio/asset_bundle.atc"
+      - "modules/atc-aistudio/asset_genome_ad66.atc"
+      - "modules/atc-aistudio/civilization_engine_ad60.atc"
+      - "modules/atc-aistudio/cloud_assets.atc"
+      - "modules/atc-aistudio/cross_franchise_ad46.atc"
+      - "modules/atc-aistudio/data_lake_ad51.atc"
+      - "modules/atc-aistudio/digital_twin_ad50.atc"
+      - "modules/atc-aistudio/ecosystem_ai_mesh_ad62.atc"
+      - "modules/atc-aistudio/encryption.atc"
+      - "modules/atc-aistudio/evolution_engine_ad69.atc"
+      - "modules/atc-aistudio/experience_orchestrator_ad68.atc"
+      - "modules/atc-aistudio/federated_learning.atc"
+      - "modules/atc-aistudio/gcp_core_ad70.atc"
+      - "modules/atc-aistudio/global_simulation_core_ad64.atc"
+      - "modules/atc-aistudio/hot_reload.atc"
+      - "modules/atc-aistudio/identity_layer_ad65.atc"
+    documentation:
+      - "modules/atc-aistudio/ARCHITECTURE.md"
+      - "modules/atc-aistudio/COMPONENT_PLAN.md"
+      - "modules/atc-aistudio/README.md"
+      - "modules/atc-aistudio/ROADMAP.md"
+      - "modules/atc-aistudio/SOFTWARE_ROADMAP.md"
+      - "modules/atc-aistudio/STATUS.md"
+      - "modules/atc-aistudio/fix_wiki.cjs"
+      - "modules/atc-aistudio/fix_wiki.js"
+      - "modules/atc-aistudio/src/atcLangRoadmapData.ts"
+      - "modules/atc-aistudio/src/atcLangWikiData.ts"
+      - "modules/atc-aistudio/src/components/ArchitectureDependencyGraph.tsx"
+      - "modules/atc-aistudio/src/components/ArchitectureView.tsx"
+      - "modules/atc-aistudio/src/components/AtcLangArchitectureView.tsx"
+      - "modules/atc-aistudio/src/components/BatteryStatus.tsx"
+      - "modules/atc-aistudio/src/components/GitHubStatusDashboard.tsx"
+      - "modules/atc-aistudio/src/components/RoadmapView.tsx"
+      - "modules/atc-aistudio/src/components/StrategicArchitectureMap.tsx"
+      - "modules/atc-aistudio/src/components/SyncStatusDonutChart.tsx"
+      - "modules/atc-aistudio/src/components/SyncStatusOverview.tsx"
+      - "modules/atc-aistudio/src/roadmapData.ts"
+    ownership:
+      repository: "A-TownChain-Okosystems/aurora-ai"
+      canonical_path: "modules/atc-aistudio/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/aurora-ai:modules/atc-aistudio/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-AURORA-ATC-AURORA-AGENTS"
+    domain: "AURORA"
+    name: "atc-aurora-agents"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/aurora-ai"
+    status: "UNANALYZED"
+    source_path: "modules/atc-aurora-agents/"
+    source_file_count: 26
+    representative_source:
+      - "modules/atc-aurora-agents/Cargo.toml"
+      - "modules/atc-aurora-agents/src/agent_base.rs"
+      - "modules/atc-aurora-agents/src/agent_pool.rs"
+      - "modules/atc-aurora-agents/src/agents.rs"
+      - "modules/atc-aurora-agents/src/architect_agent.atc"
+      - "modules/atc-aurora-agents/src/coding_agent.atc"
+      - "modules/atc-aurora-agents/src/documentation_agent.atc"
+      - "modules/atc-aurora-agents/src/governance_agent.atc"
+      - "modules/atc-aurora-agents/src/knowledge_agent.atc"
+      - "modules/atc-aurora-agents/src/lib.rs"
+      - "modules/atc-aurora-agents/src/product_agent.atc"
+      - "modules/atc-aurora-agents/src/qa_agent.atc"
+      - "modules/atc-aurora-agents/src/repository_agent.atc"
+      - "modules/atc-aurora-agents/src/research_agent.atc"
+      - "modules/atc-aurora-agents/src/roadmap_agent.atc"
+      - "modules/atc-aurora-agents/src/security_agent.atc"
+      - "modules/atc-aurora-agents/src/standards_agent.atc"
+    documentation:
+      - "modules/atc-aurora-agents/ARCHITECTURE.md"
+      - "modules/atc-aurora-agents/COMPONENT_PLAN.md"
+      - "modules/atc-aurora-agents/README.md"
+      - "modules/atc-aurora-agents/ROADMAP.md"
+      - "modules/atc-aurora-agents/STATUS.md"
+      - "modules/atc-aurora-agents/src/roadmap_agent.atc"
+    ownership:
+      repository: "A-TownChain-Okosystems/aurora-ai"
+      canonical_path: "modules/atc-aurora-agents/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/aurora-ai:modules/atc-aurora-agents/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-AURORA-ATC-AURORA-AI"
+    domain: "AURORA"
+    name: "atc-aurora-ai"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/aurora-ai"
+    status: "UNANALYZED"
+    source_path: "modules/atc-aurora-ai/"
+    source_file_count: 32
+    representative_source:
+      - "modules/atc-aurora-ai/agents/architect_agent.atc"
+      - "modules/atc-aurora-ai/agents/coding_agent.atc"
+      - "modules/atc-aurora-ai/agents/knowledge_agent.atc"
+      - "modules/atc-aurora-ai/agents/orchestrator_agent.atc"
+      - "modules/atc-aurora-ai/agents/research_agent.atc"
+      - "modules/atc-aurora-ai/agents/security_agent.atc"
+      - "modules/atc-aurora-ai/core/agent_registry.atc"
+      - "modules/atc-aurora-ai/core/aurora_core.atc"
+      - "modules/atc-aurora-ai/core/model_hub.atc"
+      - "modules/atc-aurora-ai/memory/agent_memory.atc"
+      - "modules/atc-aurora-ai/memory/context_window.atc"
+      - "modules/atc-aurora-ai/orchestration/decision_handler.atc"
+      - "modules/atc-aurora-ai/orchestration/sync_orchestrator.atc"
+      - "modules/atc-aurora-ai/orchestration/workflow_engine.atc"
+      - "modules/atc-aurora-ai/runtime/agent_runtime.atc"
+      - "modules/atc-aurora-ai/runtime/llm_router.atc"
+      - "modules/atc-aurora-ai/runtime/tool_executor.atc"
+      - "modules/atc-aurora-ai/setup.py"
+      - "modules/atc-aurora-ai/src/__init__.py"
+      - "modules/atc-aurora-ai/src/agents/__init__.py"
+    documentation:
+      - "modules/atc-aurora-ai/ARCHITECTURE.md"
+      - "modules/atc-aurora-ai/COMPONENT_PLAN.md"
+      - "modules/atc-aurora-ai/README.md"
+      - "modules/atc-aurora-ai/ROADMAP.md"
+      - "modules/atc-aurora-ai/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/aurora-ai"
+      canonical_path: "modules/atc-aurora-ai/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/aurora-ai:modules/atc-aurora-ai/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-AURORA-ATC-AURORA-CORE"
+    domain: "AURORA"
+    name: "atc-aurora-core"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/aurora-ai"
+    status: "UNANALYZED"
+    source_path: "modules/atc-aurora-core/"
+    source_file_count: 21
+    representative_source:
+      - "modules/atc-aurora-core/Cargo.toml"
+      - "modules/atc-aurora-core/src/agent_registry.atc"
+      - "modules/atc-aurora-core/src/agent_registry.rs"
+      - "modules/atc-aurora-core/src/aurora_core.atc"
+      - "modules/atc-aurora-core/src/aurora_core.rs"
+      - "modules/atc-aurora-core/src/config_manager.atc"
+      - "modules/atc-aurora-core/src/config_manager.rs"
+      - "modules/atc-aurora-core/src/lib.rs"
+      - "modules/atc-aurora-core/src/llm_router.atc"
+      - "modules/atc-aurora-core/src/llm_router.rs"
+      - "modules/atc-aurora-core/src/model_hub.atc"
+      - "modules/atc-aurora-core/src/model_hub.rs"
+    documentation:
+      - "modules/atc-aurora-core/ARCHITECTURE.md"
+      - "modules/atc-aurora-core/COMPONENT_PLAN.md"
+      - "modules/atc-aurora-core/README.md"
+      - "modules/atc-aurora-core/ROADMAP.md"
+      - "modules/atc-aurora-core/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/aurora-ai"
+      canonical_path: "modules/atc-aurora-core/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/aurora-ai:modules/atc-aurora-core/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-AURORA-ATC-AURORA-MEMORY"
+    domain: "AURORA"
+    name: "atc-aurora-memory"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/aurora-ai"
+    status: "UNANALYZED"
+    source_path: "modules/atc-aurora-memory/"
+    source_file_count: 21
+    representative_source:
+      - "modules/atc-aurora-memory/Cargo.toml"
+      - "modules/atc-aurora-memory/src/context_window.atc"
+      - "modules/atc-aurora-memory/src/context_window.rs"
+      - "modules/atc-aurora-memory/src/knowledge_base.atc"
+      - "modules/atc-aurora-memory/src/knowledge_base.rs"
+      - "modules/atc-aurora-memory/src/learning_pipeline.atc"
+      - "modules/atc-aurora-memory/src/learning_pipeline.rs"
+      - "modules/atc-aurora-memory/src/lib.rs"
+      - "modules/atc-aurora-memory/src/memory_index.atc"
+      - "modules/atc-aurora-memory/src/memory_index.rs"
+      - "modules/atc-aurora-memory/src/vector_store.atc"
+      - "modules/atc-aurora-memory/src/vector_store.rs"
+    documentation:
+      - "modules/atc-aurora-memory/ARCHITECTURE.md"
+      - "modules/atc-aurora-memory/COMPONENT_PLAN.md"
+      - "modules/atc-aurora-memory/README.md"
+      - "modules/atc-aurora-memory/ROADMAP.md"
+      - "modules/atc-aurora-memory/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/aurora-ai"
+      canonical_path: "modules/atc-aurora-memory/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/aurora-ai:modules/atc-aurora-memory/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-AURORA-ATC-AURORA-RUNTIME"
+    domain: "AURORA"
+    name: "atc-aurora-runtime"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/aurora-ai"
+    status: "UNANALYZED"
+    source_path: "modules/atc-aurora-runtime/"
+    source_file_count: 14
+    representative_source:
+      - "modules/atc-aurora-runtime/src/agent_runtime.atc"
+      - "modules/atc-aurora-runtime/src/result_collector.atc"
+      - "modules/atc-aurora-runtime/src/sandbox.atc"
+      - "modules/atc-aurora-runtime/src/task_scheduler.atc"
+      - "modules/atc-aurora-runtime/src/tool_executor.atc"
+    documentation:
+      - "modules/atc-aurora-runtime/ARCHITECTURE.md"
+      - "modules/atc-aurora-runtime/COMPONENT_PLAN.md"
+      - "modules/atc-aurora-runtime/README.md"
+      - "modules/atc-aurora-runtime/ROADMAP.md"
+      - "modules/atc-aurora-runtime/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/aurora-ai"
+      canonical_path: "modules/atc-aurora-runtime/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/aurora-ai:modules/atc-aurora-runtime/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-SHIVACORE-ATC-SECURITY"
+    domain: "SHIVACORE"
+    name: "atc-security"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/atc-shivacore"
+    status: "UNANALYZED"
+    source_path: "modules/atc-security/"
+    source_file_count: 22
+    representative_source:
+      - "modules/atc-security/Cargo.toml"
+      - "modules/atc-security/audit/security_audit.atc"
+      - "modules/atc-security/compliance/compliance_engine.atc"
+      - "modules/atc-security/crypto/crypto_suite.atc"
+      - "modules/atc-security/keys/key_management.atc"
+      - "modules/atc-security/src/audit.rs"
+      - "modules/atc-security/src/encryption.rs"
+      - "modules/atc-security/src/lib.rs"
+      - "modules/atc-security/src/rate_limit.rs"
+      - "modules/atc-security/src/sandbox.rs"
+      - "modules/atc-security/src/scanner.rs"
+      - "modules/atc-security/tests/penetration_test.atc"
+      - "modules/atc-security/threats/threat_detector.atc"
+    documentation:
+      - "modules/atc-security/ARCHITECTURE.md"
+      - "modules/atc-security/COMPONENT_PLAN.md"
+      - "modules/atc-security/README.md"
+      - "modules/atc-security/ROADMAP.md"
+      - "modules/atc-security/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/atc-shivacore"
+      canonical_path: "modules/atc-security/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/atc-shivacore:modules/atc-security/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-SHIVACORE-ATC-SHIVACORE-TOOLS"
+    domain: "SHIVACORE"
+    name: "atc-shivacore-tools"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/atc-shivacore"
+    status: "UNANALYZED"
+    source_path: "modules/atc-shivacore-tools/"
+    source_file_count: 15
+    representative_source:
+      - "modules/atc-shivacore-tools/build.atc"
+      - "modules/atc-shivacore-tools/debug.atc"
+      - "modules/atc-shivacore-tools/flash.atc"
+      - "modules/atc-shivacore-tools/profiler.atc"
+      - "modules/atc-shivacore-tools/qemu.atc"
+      - "modules/atc-shivacore-tools/tools/manager.atc"
+    documentation:
+      - "modules/atc-shivacore-tools/ARCHITECTURE.md"
+      - "modules/atc-shivacore-tools/COMPONENT_PLAN.md"
+      - "modules/atc-shivacore-tools/README.md"
+      - "modules/atc-shivacore-tools/ROADMAP.md"
+      - "modules/atc-shivacore-tools/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/atc-shivacore"
+      canonical_path: "modules/atc-shivacore-tools/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/atc-shivacore:modules/atc-shivacore-tools/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-ATC-ATC-BLOCKCHAIN"
+    domain: "ATC"
+    name: "atc-blockchain"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/a-townchain"
+    status: "UNANALYZED"
+    source_path: "modules/atc-blockchain/"
+    source_file_count: 82
+    representative_source:
+      - "modules/atc-blockchain/__init__.py"
+      - "modules/atc-blockchain/atcoin/__init__.py"
+      - "modules/atc-blockchain/consensus/__init__.py"
+      - "modules/atc-blockchain/consensus/consensus.atc"
+      - "modules/atc-blockchain/consensus/fork_atc85.atc"
+      - "modules/atc-blockchain/consensus/fork_resolution.atc"
+      - "modules/atc-blockchain/consensus/gas_fee.atc"
+      - "modules/atc-blockchain/consensus/gas_fee_atc86.atc"
+      - "modules/atc-blockchain/consensus/hybrid_atc84.atc"
+      - "modules/atc-blockchain/consensus/hybrid_consensus.atc"
+      - "modules/atc-blockchain/consensus/monetary_policy_binding.atc"
+      - "modules/atc-blockchain/consensus/poh.atc"
+      - "modules/atc-blockchain/consensus/poh.py"
+      - "modules/atc-blockchain/consensus/poh_atc83.atc"
+      - "modules/atc-blockchain/consensus/poh_integration.atc"
+      - "modules/atc-blockchain/consensus/poh_integration.py"
+      - "modules/atc-blockchain/consensus/pos.atc"
+      - "modules/atc-blockchain/consensus/pos_atc82.atc"
+      - "modules/atc-blockchain/consensus/pow.atc"
+      - "modules/atc-blockchain/consensus/pow_atc81.atc"
+    documentation:
+      - "modules/atc-blockchain/ARCHITECTURE.md"
+      - "modules/atc-blockchain/COMPONENT_PLAN.md"
+      - "modules/atc-blockchain/README.md"
+      - "modules/atc-blockchain/ROADMAP.md"
+      - "modules/atc-blockchain/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/a-townchain"
+      canonical_path: "modules/atc-blockchain/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/a-townchain:modules/atc-blockchain/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-ATC-ATC-DNS"
+    domain: "ATC"
+    name: "atc-dns"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/a-townchain"
+    status: "UNANALYZED"
+    source_path: "modules/atc-dns/"
+    source_file_count: 20
+    representative_source:
+      - "modules/atc-dns/Cargo.toml"
+      - "modules/atc-dns/cache.atc"
+      - "modules/atc-dns/dnssec.atc"
+      - "modules/atc-dns/records.atc"
+      - "modules/atc-dns/resolver.atc"
+      - "modules/atc-dns/src/cache.rs"
+      - "modules/atc-dns/src/lib.rs"
+      - "modules/atc-dns/src/registry.rs"
+      - "modules/atc-dns/src/resolver.rs"
+      - "modules/atc-dns/src/zones.rs"
+      - "modules/atc-dns/zones.atc"
+    documentation:
+      - "modules/atc-dns/ARCHITECTURE.md"
+      - "modules/atc-dns/COMPONENT_PLAN.md"
+      - "modules/atc-dns/README.md"
+      - "modules/atc-dns/ROADMAP.md"
+      - "modules/atc-dns/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/a-townchain"
+      canonical_path: "modules/atc-dns/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/a-townchain:modules/atc-dns/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-ATC-ATC-GOVERNANCE"
+    domain: "ATC"
+    name: "atc-governance"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/a-townchain"
+    status: "UNANALYZED"
+    source_path: "modules/atc-governance/"
+    source_file_count: 22
+    representative_source:
+      - "modules/atc-governance/Cargo.toml"
+      - "modules/atc-governance/delegation/delegation.atc"
+      - "modules/atc-governance/multisig/multisig.atc"
+      - "modules/atc-governance/proposal/proposal_manager.atc"
+      - "modules/atc-governance/src/delegation.rs"
+      - "modules/atc-governance/src/lib.rs"
+      - "modules/atc-governance/src/proposal.rs"
+      - "modules/atc-governance/src/timelock.rs"
+      - "modules/atc-governance/src/treasury.rs"
+      - "modules/atc-governance/src/voting.rs"
+      - "modules/atc-governance/timelock/timelock.atc"
+      - "modules/atc-governance/treasury/treasury.atc"
+      - "modules/atc-governance/voting/voting_engine.atc"
+    documentation:
+      - "modules/atc-governance/ARCHITECTURE.md"
+      - "modules/atc-governance/COMPONENT_PLAN.md"
+      - "modules/atc-governance/README.md"
+      - "modules/atc-governance/ROADMAP.md"
+      - "modules/atc-governance/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/a-townchain"
+      canonical_path: "modules/atc-governance/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/a-townchain:modules/atc-governance/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-ATC-ATC-TESTNET"
+    domain: "ATC"
+    name: "atc-testnet"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/a-townchain"
+    status: "UNANALYZED"
+    source_path: "modules/atc-testnet/"
+    source_file_count: 24
+    representative_source:
+      - "modules/atc-testnet/config/genesis_config.atc"
+      - "modules/atc-testnet/config/mainnet_config.atc"
+      - "modules/atc-testnet/devnet/snapshot_manager.atc"
+      - "modules/atc-testnet/launcher/devnet_launcher.atc"
+      - "modules/atc-testnet/launcher/testnet_launcher.atc"
+      - "modules/atc-testnet/nodes/node_bootstrap.atc"
+      - "modules/atc-testnet/nodes/validator_setup.atc"
+      - "modules/atc-testnet/scripts/deploy_testnet.atc"
+      - "modules/atc-testnet/setup.py"
+      - "modules/atc-testnet/src/__init__.py"
+      - "modules/atc-testnet/src/config/__init__.py"
+      - "modules/atc-testnet/src/explorer/__init__.py"
+      - "modules/atc-testnet/src/faucet/__init__.py"
+      - "modules/atc-testnet/src/validator/__init__.py"
+    documentation:
+      - "modules/atc-testnet/ARCHITECTURE.md"
+      - "modules/atc-testnet/COMPONENT_PLAN.md"
+      - "modules/atc-testnet/README.md"
+      - "modules/atc-testnet/ROADMAP.md"
+      - "modules/atc-testnet/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/a-townchain"
+      canonical_path: "modules/atc-testnet/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/a-townchain:modules/atc-testnet/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-ATC-ATC-ZKP"
+    domain: "ATC"
+    name: "atc-zkp"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/a-townchain"
+    status: "UNANALYZED"
+    source_path: "modules/atc-zkp/"
+    source_file_count: 27
+    representative_source:
+      - "modules/atc-zkp/Cargo.toml"
+      - "modules/atc-zkp/circuits/groth16.atc"
+      - "modules/atc-zkp/circuits/range_circuit.atc"
+      - "modules/atc-zkp/circuits/transfer_circuit.atc"
+      - "modules/atc-zkp/gadgets/hash_gadget.atc"
+      - "modules/atc-zkp/gadgets/merkle_tree.atc"
+      - "modules/atc-zkp/provers/fft_prover.atc"
+      - "modules/atc-zkp/provers/prover_manager.atc"
+      - "modules/atc-zkp/setup/trusted_setup.atc"
+      - "modules/atc-zkp/setup/verification_key_gen.atc"
+      - "modules/atc-zkp/src/circuits.rs"
+      - "modules/atc-zkp/src/lib.rs"
+      - "modules/atc-zkp/src/merkle.rs"
+      - "modules/atc-zkp/src/snarks.rs"
+      - "modules/atc-zkp/src/starks.rs"
+      - "modules/atc-zkp/src/verifier.rs"
+      - "modules/atc-zkp/verifiers/verifier_manager.atc"
+      - "modules/atc-zkp/verifiers/verifier_registry.atc"
+    documentation:
+      - "modules/atc-zkp/ARCHITECTURE.md"
+      - "modules/atc-zkp/COMPONENT_PLAN.md"
+      - "modules/atc-zkp/README.md"
+      - "modules/atc-zkp/ROADMAP.md"
+      - "modules/atc-zkp/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/a-townchain"
+      canonical_path: "modules/atc-zkp/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/a-townchain:modules/atc-zkp/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-ATC-ATCNET"
+    domain: "ATC"
+    name: "atcnet"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/a-townchain"
+    status: "UNANALYZED"
+    source_path: "modules/atcnet/"
+    source_file_count: 32
+    representative_source:
+      - "modules/atcnet/atcnet.atc"
+      - "modules/atcnet/atcnet.py"
+      - "modules/atcnet/bootstrap_client.atc"
+      - "modules/atcnet/bootstrap_client.py"
+      - "modules/atcnet/discovery.atc"
+      - "modules/atcnet/discovery.py"
+      - "modules/atcnet/gossip.atc"
+      - "modules/atcnet/nat_traversal.atc"
+      - "modules/atcnet/network/atc-02_liquid_state_migration_failover.atc"
+      - "modules/atcnet/network/atc-05_quantumresistant_signatures.atc"
+      - "modules/atcnet/network/atc-10_global_time_sync_oracles.atc"
+      - "modules/atcnet/network/core_node_atc01.atc"
+      - "modules/atcnet/network/sharding_atc07.atc"
+      - "modules/atcnet/node.py"
+      - "modules/atcnet/p2p_node.atc"
+      - "modules/atcnet/p2p_propagation.atc"
+      - "modules/atcnet/p2p_propagation.py"
+      - "modules/atcnet/service_discovery.atc"
+      - "modules/atcnet/setup.py"
+      - "modules/atcnet/tests/test_atcnet.py"
+    documentation:
+      - "modules/atcnet/ARCHITECTURE.md"
+      - "modules/atcnet/COMPONENT_PLAN.md"
+      - "modules/atcnet/README.md"
+      - "modules/atcnet/ROADMAP.md"
+      - "modules/atcnet/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/a-townchain"
+      canonical_path: "modules/atcnet/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/a-townchain:modules/atcnet/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-AI"
+    domain: "GENESIS"
+    name: "atc-genesis-ai"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-ai/"
+    source_file_count: 2
+    representative_source:
+      - "modules/atc-genesis-ai/Cargo.toml"
+      - "modules/atc-genesis-ai/src/lib.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-ai/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-ai/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-ANIMATION"
+    domain: "GENESIS"
+    name: "atc-genesis-animation"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-animation/"
+    source_file_count: 2
+    representative_source:
+      - "modules/atc-genesis-animation/Cargo.toml"
+      - "modules/atc-genesis-animation/src/lib.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-animation/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-animation/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-ASSETS"
+    domain: "GENESIS"
+    name: "atc-genesis-assets"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-assets/"
+    source_file_count: 3
+    representative_source:
+      - "modules/atc-genesis-assets/Cargo.toml"
+      - "modules/atc-genesis-assets/src/lib.rs"
+      - "modules/atc-genesis-assets/src/registry.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-assets/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-assets/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-AUDIO"
+    domain: "GENESIS"
+    name: "atc-genesis-audio"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-audio/"
+    source_file_count: 3
+    representative_source:
+      - "modules/atc-genesis-audio/Cargo.toml"
+      - "modules/atc-genesis-audio/src/lib.rs"
+      - "modules/atc-genesis-audio/src/mixer.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-audio/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-audio/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-BUILD"
+    domain: "GENESIS"
+    name: "atc-genesis-build"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-build/"
+    source_file_count: 2
+    representative_source:
+      - "modules/atc-genesis-build/Cargo.toml"
+      - "modules/atc-genesis-build/src/lib.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-build/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-build/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-CLI"
+    domain: "GENESIS"
+    name: "atc-genesis-cli"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-cli/"
+    source_file_count: 2
+    representative_source:
+      - "modules/atc-genesis-cli/Cargo.toml"
+      - "modules/atc-genesis-cli/src/main.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-cli/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-cli/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-CREATURES"
+    domain: "GENESIS"
+    name: "atc-genesis-creatures"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-creatures/"
+    source_file_count: 14
+    representative_source:
+      - "modules/atc-genesis-creatures/src/creature_ai.atc"
+      - "modules/atc-genesis-creatures/src/creature_spawner.atc"
+      - "modules/atc-genesis-creatures/src/dna_system.atc"
+      - "modules/atc-genesis-creatures/src/ecosystem.atc"
+      - "modules/atc-genesis-creatures/src/shivamon_link.atc"
+    documentation:
+      - "modules/atc-genesis-creatures/ARCHITECTURE.md"
+      - "modules/atc-genesis-creatures/COMPONENT_PLAN.md"
+      - "modules/atc-genesis-creatures/README.md"
+      - "modules/atc-genesis-creatures/ROADMAP.md"
+      - "modules/atc-genesis-creatures/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-creatures/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-creatures/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-DOCS"
+    domain: "GENESIS"
+    name: "atc-genesis-docs"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-docs/"
+    source_file_count: 1
+    representative_source:
+
+    documentation:
+      - "modules/atc-genesis-docs/README.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-docs/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-docs/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-ECS"
+    domain: "GENESIS"
+    name: "atc-genesis-ecs"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-ecs/"
+    source_file_count: 17
+    representative_source:
+      - "modules/atc-genesis-ecs/Cargo.toml"
+      - "modules/atc-genesis-ecs/src/component_registry.atc"
+      - "modules/atc-genesis-ecs/src/ecs_core.atc"
+      - "modules/atc-genesis-ecs/src/event_bus.atc"
+      - "modules/atc-genesis-ecs/src/lib.rs"
+      - "modules/atc-genesis-ecs/src/lifecycle.rs"
+      - "modules/atc-genesis-ecs/src/query_engine.atc"
+      - "modules/atc-genesis-ecs/src/system_scheduler.atc"
+    documentation:
+      - "modules/atc-genesis-ecs/ARCHITECTURE.md"
+      - "modules/atc-genesis-ecs/COMPONENT_PLAN.md"
+      - "modules/atc-genesis-ecs/README.md"
+      - "modules/atc-genesis-ecs/ROADMAP.md"
+      - "modules/atc-genesis-ecs/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-ecs/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-ecs/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-EDITOR"
+    domain: "GENESIS"
+    name: "atc-genesis-editor"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-editor/"
+    source_file_count: 2
+    representative_source:
+      - "modules/atc-genesis-editor/Cargo.toml"
+      - "modules/atc-genesis-editor/src/lib.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-editor/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-editor/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-ENGINE"
+    domain: "GENESIS"
+    name: "atc-genesis-engine"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-engine/"
+    source_file_count: 27
+    representative_source:
+      - "modules/atc-genesis-engine/creature_spawner.atc"
+      - "modules/atc-genesis-engine/engine.atc"
+      - "modules/atc-genesis-engine/engine/MILESTONE_1.md"
+      - "modules/atc-genesis-engine/engine/core/ecs.py"
+      - "modules/atc-genesis-engine/engine/main.py"
+      - "modules/atc-genesis-engine/engine/render/renderer2d.py"
+      - "modules/atc-genesis-engine/engine/requirements.txt"
+      - "modules/atc-genesis-engine/engine/tests/test_ecs.py"
+      - "modules/atc-genesis-engine/renderer.atc"
+      - "modules/atc-genesis-engine/setup.py"
+      - "modules/atc-genesis-engine/terrain.atc"
+    documentation:
+      - "modules/atc-genesis-engine/ARCHITECTURE.md"
+      - "modules/atc-genesis-engine/COMPONENT_PLAN.md"
+      - "modules/atc-genesis-engine/README.md"
+      - "modules/atc-genesis-engine/ROADMAP.md"
+      - "modules/atc-genesis-engine/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-engine/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-engine/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-GAMEPLAY"
+    domain: "GENESIS"
+    name: "atc-genesis-gameplay"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-gameplay/"
+    source_file_count: 4
+    representative_source:
+      - "modules/atc-genesis-gameplay/Cargo.toml"
+      - "modules/atc-genesis-gameplay/src/economy.rs"
+      - "modules/atc-genesis-gameplay/src/lib.rs"
+      - "modules/atc-genesis-gameplay/src/needs.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-gameplay/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-gameplay/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-INPUT"
+    domain: "GENESIS"
+    name: "atc-genesis-input"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-input/"
+    source_file_count: 2
+    representative_source:
+      - "modules/atc-genesis-input/Cargo.toml"
+      - "modules/atc-genesis-input/src/lib.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-input/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-input/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-NETWORK"
+    domain: "GENESIS"
+    name: "atc-genesis-network"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-network/"
+    source_file_count: 3
+    representative_source:
+      - "modules/atc-genesis-network/Cargo.toml"
+      - "modules/atc-genesis-network/src/lib.rs"
+      - "modules/atc-genesis-network/src/security.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-network/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-network/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-PHYSICS"
+    domain: "GENESIS"
+    name: "atc-genesis-physics"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-physics/"
+    source_file_count: 3
+    representative_source:
+      - "modules/atc-genesis-physics/Cargo.toml"
+      - "modules/atc-genesis-physics/src/collision.rs"
+      - "modules/atc-genesis-physics/src/lib.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-physics/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-physics/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-PLATFORM"
+    domain: "GENESIS"
+    name: "atc-genesis-platform"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-platform/"
+    source_file_count: 2
+    representative_source:
+      - "modules/atc-genesis-platform/Cargo.toml"
+      - "modules/atc-genesis-platform/src/lib.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-platform/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-platform/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-RENDERER"
+    domain: "GENESIS"
+    name: "atc-genesis-renderer"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-renderer/"
+    source_file_count: 8
+    representative_source:
+      - "modules/atc-genesis-renderer/Cargo.toml"
+      - "modules/atc-genesis-renderer/src/animation.rs"
+      - "modules/atc-genesis-renderer/src/backend.rs"
+      - "modules/atc-genesis-renderer/src/batching.rs"
+      - "modules/atc-genesis-renderer/src/ecs.rs"
+      - "modules/atc-genesis-renderer/src/lib.rs"
+      - "modules/atc-genesis-renderer/src/render_item.rs"
+      - "modules/atc-genesis-renderer/src/resources.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-renderer/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-renderer/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-RUNTIME"
+    domain: "GENESIS"
+    name: "atc-genesis-runtime"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-runtime/"
+    source_file_count: 4
+    representative_source:
+      - "modules/atc-genesis-runtime/Cargo.toml"
+      - "modules/atc-genesis-runtime/src/lib.rs"
+      - "modules/atc-genesis-runtime/src/lifecycle.rs"
+      - "modules/atc-genesis-runtime/tests/lifecycle.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-runtime/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-runtime/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-SAMPLES"
+    domain: "GENESIS"
+    name: "atc-genesis-samples"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-samples/"
+    source_file_count: 1
+    representative_source:
+
+    documentation:
+      - "modules/atc-genesis-samples/README.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-samples/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-samples/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-SDK"
+    domain: "GENESIS"
+    name: "atc-genesis-sdk"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-sdk/"
+    source_file_count: 2
+    representative_source:
+      - "modules/atc-genesis-sdk/Cargo.toml"
+      - "modules/atc-genesis-sdk/src/lib.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-sdk/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-sdk/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-TEMPLATES"
+    domain: "GENESIS"
+    name: "atc-genesis-templates"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-templates/"
+    source_file_count: 2
+    representative_source:
+
+    documentation:
+      - "modules/atc-genesis-templates/README.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-templates/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-templates/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-TOOLS"
+    domain: "GENESIS"
+    name: "atc-genesis-tools"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-tools/"
+    source_file_count: 2
+    representative_source:
+      - "modules/atc-genesis-tools/Cargo.toml"
+      - "modules/atc-genesis-tools/src/lib.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-tools/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-tools/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-UI"
+    domain: "GENESIS"
+    name: "atc-genesis-ui"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-ui/"
+    source_file_count: 2
+    representative_source:
+      - "modules/atc-genesis-ui/Cargo.toml"
+      - "modules/atc-genesis-ui/src/lib.rs"
+    documentation:
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-ui/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-ui/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
+  - id: "SUB-GENESIS-ATC-GENESIS-WORLD"
+    domain: "GENESIS"
+    name: "atc-genesis-world"
+    kind: "module"
+    repo: "A-TownChain-Okosystems/genesis-engine"
+    status: "UNANALYZED"
+    source_path: "modules/atc-genesis-world/"
+    source_file_count: 17
+    representative_source:
+      - "modules/atc-genesis-world/Cargo.toml"
+      - "modules/atc-genesis-world/src/biome.atc"
+      - "modules/atc-genesis-world/src/erosion.atc"
+      - "modules/atc-genesis-world/src/lib.rs"
+      - "modules/atc-genesis-world/src/terrain.atc"
+      - "modules/atc-genesis-world/src/vegetation.atc"
+      - "modules/atc-genesis-world/src/weather.atc"
+      - "modules/atc-genesis-world/src/world_seed.atc"
+    documentation:
+      - "modules/atc-genesis-world/ARCHITECTURE.md"
+      - "modules/atc-genesis-world/COMPONENT_PLAN.md"
+      - "modules/atc-genesis-world/README.md"
+      - "modules/atc-genesis-world/ROADMAP.md"
+      - "modules/atc-genesis-world/STATUS.md"
+    ownership:
+      repository: "A-TownChain-Okosystems/genesis-engine"
+      canonical_path: "modules/atc-genesis-world/"
+      owner: null
+      integration_owner: null
+      source_of_truth: "A-TownChain-Okosystems/genesis-engine:modules/atc-genesis-world/"
+    status_detail:
+      implementation: "UNANALYZED"
+      verification: "UNANALYZED"
+      evidence: "UNANALYZED"
+    functions: []
+    interfaces: []
+    dependencies:
+      internal: []
+      external: []
+      hardware: []
+    tests:
+      unit: []
+      integration: []
+      system: []
+      qemu: []
+      other: []
+    evidence:
+      source: []
+      tests: []
+      ci:
+        workflow: null
+        run: null
+        job: null
+        result: null
+        step: null
+        exit_code: null
+        log: null
+        exact_sha: null
+    verification:
+      state: "UNANALYZED"
+      findings: []
+      root_causes: []
+      minimal_fixes: []
+      commits: []
+      reruns: []
+      chain:
+        - "Function"
+        - "Source"
+        - "Test"
+        - "CI Run"
+        - "Job"
+        - "Step"
+        - "Exit Code"
+        - "Log"
+        - "Finding/RCA"
+        - "Fix"
+        - "Commit"
+        - "Rerun"
+        - "Verification"
