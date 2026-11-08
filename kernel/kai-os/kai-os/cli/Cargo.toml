@@ -1,0 +1,13 @@
+[package]
+name = "kai-os-cli"
+version = "0.1.0"
+edition = "2021"
+description = "KAI-OS CLI: Komposition über bestehende Crates (S21-S22, AD-008.2)"
+license = "Apache-2.0"
+
+[dependencies]
+kai-os-health = { path = "../health" }
+kai-os-keyring = { path = "../keyring" }
+kai-os-state = { path = "../state" }
+kai-os-ai = { path = "../ai" }
+serde = { version = "1", features = ["derive"] }
