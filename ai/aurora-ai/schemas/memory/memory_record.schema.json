@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a-townchain.org/schemas/memory/memory_record.schema.json",
+  "title": "Aurora Canonical Memory Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["memory_id","owner","source_node","scope","type","content","created_at","updated_at","version","confidence","provenance","access_policy","capability_requirement","retention_policy","integrity_hash"],
+  "properties": {
+    "memory_id": {"type":"string","minLength":1},
+    "owner": {"type":"string","minLength":1},
+    "source_node": {"type":"string","minLength":1},
+    "scope": {"type":"string","enum":["DEVICE","PERSONAL","CONVERSATION","KNOWLEDGE","WORLD","GAME","OS","BLOCKCHAIN","EVIDENCE","SHARED","MODEL"]},
+    "type": {"type":"string","enum":["FACT","USER_MEMORY","MODEL_INFERENCE","RAG_RESULT","WORLD_STATE","GAME_STATE","BLOCKCHAIN_FACT","UNVERIFIED_INFORMATION"]},
+    "content": {"type":["string","object","array","number","boolean","null"]},
+    "content_reference": {"type":"string"},
+    "created_at": {"type":"string","format":"date-time"},
+    "updated_at": {"type":"string","format":"date-time"},
+    "version": {"type":"integer","minimum":1},
+    "confidence": {"type":"number","minimum":0,"maximum":1},
+    "provenance": {
+      "type":"object","additionalProperties":false,"required":["source","source_id"],
+      "properties":{"source":{"type":"string","minLength":1},"source_id":{"type":"string","minLength":1}}
+    },
+    "access_policy": {"type":"string","minLength":1},
+    "capability_requirement": {"type":"string","minLength":1},
+    "retention_policy": {"type":"string","minLength":1},
+    "integrity_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "chain_proof": {"type":"string"}
+  },
+  "oneOf": [{"required":["content"]},{"required":["content_reference"]}]
+}
