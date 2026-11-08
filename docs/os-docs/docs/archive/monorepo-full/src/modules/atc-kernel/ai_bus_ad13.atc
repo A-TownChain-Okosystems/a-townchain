@@ -1,0 +1,310 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-13 — AIBus: KI-Kommunikation + NPC + Pathfinding
+// Genesis Communication Layer (GCL) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct AIAgent {
+    id: UInt32,
+    entity_id: UInt32,
+    name: String,
+    agent_type: AIAgentType,
+    state: String,
+    target: UInt32,
+    path: List<Vec3>,
+    path_idx: UInt16,
+    behavior_tree: Hash256,
+    perception_range: Float32,
+    memory: Map<String, Any>,
+    active: Bool,
+    last_update: UInt64,
+}
+
+enum AIAgentType { NPC, Enemy, Companion, Animal, Boss, Swarm, Crowd }
+
+struct AIBus {
+    agents: Map<UInt32, AIAgent>,
+    nav_mesh: NavMesh,
+    behavior_trees: Map<Hash256, BehaviorTree>,
+    dialog_system: DialogSystem,
+    pathfinding_queue: List<PathRequest>,
+    max_agents: UInt32,
+    active_agents: UInt32,
+    update_interval_ms: UInt32,
+    lod_ai: Bool,
+}
+
+struct NavMesh {
+    polygons: List<NavPoly>,
+    connections: Map<UInt32, List<UInt32>>,
+    dirty: Bool,
+}
+
+struct NavPoly {
+    id: UInt32,
+    vertices: List<Vec3>,
+    center: Vec3,
+    area: Float32,
+    flags: UInt8,
+}
+
+struct BehaviorTree {
+    id: Hash256,
+    root: BTNode,
+    nodes: Map<UInt32, BTNode>,
+}
+
+struct BTNode {
+    id: UInt32,
+    type: BTNodeType,
+    children: List<UInt32>,
+    decorator: String,
+    data: Map<String, Any>,
+}
+
+enum BTNodeType { Root, Sequence, Selector, Action, Condition, Decorator }
+
+struct DialogSystem {
+    conversations: Map<UInt32, Conversation>,
+    active_conversation: UInt32,
+    voice_enabled: Bool,
+}
+
+struct Conversation {
+    id: UInt32,
+    npc_id: UInt32,
+    nodes: List<DialogNode>,
+    current_node: UInt32,
+}
+
+struct DialogNode {
+    id: UInt32,
+    text: String,
+    speaker: String,
+    choices: List<DialogChoice>,
+    next: UInt32,
+}
+
+struct DialogChoice {
+    text: String,
+    next: UInt32,
+    condition: String,
+}
+
+struct PathRequest {
+    id: Hash256,
+    agent_id: UInt32,
+    start: Vec3,
+    end: Vec3,
+    async: Bool,
+}
+
+// AIBus: Agent registrieren
+pub fn register_agent(bus: AIBus, entity_id: UInt32, name: String, agent_type: AIAgentType, perception: Float32) -> UInt32 {
+    require(bus.agents.len() < bus.max_agents, "Max agents reached")
+    let id = bus.agents.len() + 1
+    bus.agents[id] = AIAgent {
+        id: id,
+        entity_id: entity_id,
+        name: name,
+        agent_type: agent_type,
+        state: "idle",
+        target: 0,
+        path: [],
+        path_idx: 0,
+        behavior_tree: Hash256::zero(),
+        perception_range: perception,
+        memory: {},
+        active: true,
+        last_update: Chain::timestamp(),
+    }
+    bus.active_agents = bus.active_agents + 1
+    emit AgentRegistered(id, name, agent_type)
+    return id
+}
+
+// AIBus: Agent entfernen
+pub fn remove_agent(bus: AIBus, agent_id: UInt32) -> Bool {
+    if bus.agents.contains(agent_id) {
+        bus.agents[agent_id].active = false
+        bus.active_agents = bus.active_agents - 1
+        emit AgentRemoved(agent_id)
+    }
+    return true
+}
+
+// AIBus: Pathfinding anfragen
+pub fn request_path(bus: AIBus, agent_id: UInt32, start: Vec3, end: Vec3, async: Bool) -> Hash256 {
+    let req = PathRequest {
+        id: Crypto::sha256(serialize(agent_id, start, end, Chain::timestamp())),
+        agent_id: agent_id,
+        start: start,
+        end: end,
+        async: async,
+    }
+    if async {
+        bus.pathfinding_queue.append(req)
+    } else {
+        let path = compute_path(bus.nav_mesh, start, end)
+        bus.agents[agent_id].path = path
+        bus.agents[agent_id].path_idx = 0
+    }
+    return req.id
+}
+
+// AIBus: Pathfinding-Queue verarbeiten
+pub fn process_pathfinding(bus: AIBus, max_per_frame: UInt8) -> UInt8 {
+    let processed = 0
+    for i in 0..min(max_per_frame, bus.pathfinding_queue.len()) {
+        if bus.pathfinding_queue.len() == 0 { break }
+        let req = bus.pathfinding_queue.pop(0)
+        if bus.agents.contains(req.agent_id) {
+            let path = compute_path(bus.nav_mesh, req.start, req.end)
+            bus.agents[req.agent_id].path = path
+            bus.agents[req.agent_id].path_idx = 0
+            processed = processed + 1
+        }
+    }
+    return processed
+}
+
+// AIBus: Agent Update (Behavior Tree)
+pub fn update_agent(bus: AIBus, agent_id: UInt32, dt: Float32) -> Bool {
+    require(bus.agents.contains(agent_id), "Agent not found")
+    let agent = bus.agents[agent_id]
+    if not agent.active { return false }
+
+    // Behavior Tree ausführen
+    if agent.behavior_tree != Hash256::zero() and bus.behavior_trees.contains(agent.behavior_tree) {
+        let bt = bus.behavior_trees[agent.behavior_tree]
+        execute_bt_node(bus, bt, bt.root, agent, dt)
+    }
+
+    // Path following
+    if agent.path.len() > 0 and agent.path_idx < agent.path.len() {
+        let target_pos = agent.path[agent.path_idx]
+        // Move towards target_pos (Stub)
+        let dist = distance_to(agent, target_pos)
+        if dist < 0.5 {
+            agent.path_idx = agent.path_idx + 1
+            if agent.path_idx >= agent.path.len() {
+                agent.state = "idle"
+                agent.path = []
+                emit PathComplete(agent_id)
+            }
+        }
+    }
+
+    agent.last_update = Chain::timestamp()
+    return true
+}
+
+// AIBus: Alle Agents updaten (mit LOD)
+pub fn update_all_agents(bus: AIBus, dt: Float32) -> Bool {
+    for agent_id in bus.agents.keys() {
+        let agent = bus.agents[agent_id]
+        if not agent.active { continue }
+        if bus.lod_ai {
+            // LOD: ferne Agents seltener updaten
+            let time_since = Chain::timestamp() - agent.last_update
+            if time_since < bus.update_interval_ms { continue }
+        }
+        update_agent(bus, agent_id, dt)
+    }
+    return true
+}
+
+// AIBus: Verhalten setzen
+pub fn set_agent_state(bus: AIBus, agent_id: UInt32, state: String) -> Bool {
+    require(bus.agents.contains(agent_id), "Agent not found")
+    bus.agents[agent_id].state = state
+    emit AgentStateChanged(agent_id, state)
+    return true
+}
+
+// AIBus: Ziel setzen
+pub fn set_target(bus: AIBus, agent_id: UInt32, target_entity: UInt32) -> Bool {
+    require(bus.agents.contains(agent_id), "Agent not found")
+    bus.agents[agent_id].target = target_entity
+    bus.agents[agent_id].state = "pursuing"
+    return true
+}
+
+// AIBus: Behavior Tree zuweisen
+pub fn assign_behavior_tree(bus: AIBus, agent_id: UInt32, bt_id: Hash256) -> Bool {
+    require(bus.agents.contains(agent_id), "Agent not found")
+    require(bus.behavior_trees.contains(bt_id), "Behavior tree not found")
+    bus.agents[agent_id].behavior_tree = bt_id
+    return true
+}
+
+// AIBus: Dialog starten
+pub fn start_dialog(bus: AIBus, npc_id: UInt32, conversation_id: UInt32) -> Bool {
+    require(bus.dialog_system.conversations.contains(conversation_id), "Conversation not found")
+    bus.dialog_system.active_conversation = conversation_id
+    bus.dialog_system.conversations[conversation_id].current_node = 0
+    emit DialogStarted(npc_id, conversation_id)
+    return true
+}
+
+// AIBus: Dialog-Choice wählen
+pub fn dialog_choice(bus: AIBus, choice_idx: UInt32) -> Bool {
+    let conv_id = bus.dialog_system.active_conversation
+    if conv_id == 0 { return false }
+    let conv = bus.dialog_system.conversations[conv_id]
+    let node = conv.nodes[conv.current_node]
+    if choice_idx >= node.choices.len() { return false }
+    let choice = node.choices[choice_idx]
+    conv.current_node = choice.next
+    emit DialogAdvanced(conv_id, choice.next)
+    return true
+}
+
+// Helper: Behavior Tree Node ausführen
+pub fn execute_bt_node(bus: AIBus, bt: BehaviorTree, node: BTNode, agent: AIAgent, dt: Float32) -> BTStatus {
+    match node.type {
+        BTNodeType::Sequence => {
+            for child_id in node.children {
+                let child = bt.nodes[child_id]
+                let status = execute_bt_node(bus, bt, child, agent, dt)
+                if status != BTStatus::Success { return status }
+            }
+            return BTStatus::Success
+        },
+        BTNodeType::Selector => {
+            for child_id in node.children {
+                let child = bt.nodes[child_id]
+                let status = execute_bt_node(bus, bt, child, agent, dt)
+                if status == BTStatus::Success { return BTStatus::Success }
+            }
+            return BTStatus::Failure
+        },
+        BTNodeType::Action => {
+            // Stub: Action ausführen
+            return BTStatus::Success
+        },
+        BTNodeType::Condition => {
+            // Stub: Bedingung prüfen
+            return BTStatus::Success
+        },
+        _ => return BTStatus::Failure,
+    }
+}
+
+// Helper: Path computation (A* on NavMesh)
+pub fn compute_path(nav_mesh: NavMesh, start: Vec3, end: Vec3) -> List<Vec3> {
+    // Stub: vereinfachte direkte Linie
+    return [start, end]
+}
+
+enum BTStatus { Success, Failure, Running }
+
+type Vec3 = Any
+
+event AgentRegistered(id: UInt32, name: String, agent_type: AIAgentType)
+event AgentRemoved(id: UInt32)
+event AgentStateChanged(id: UInt32, state: String)
+event PathComplete(agent_id: UInt32)
+event DialogStarted(npc_id: UInt32, conversation_id: UInt32)
+event DialogAdvanced(conv_id: UInt32, node_id: UInt32)
