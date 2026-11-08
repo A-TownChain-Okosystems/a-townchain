@@ -1,0 +1,200 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATCLang — Experience Orchestrator (AD-68)
+// Genesis Civilization Platform v4.0
+// Passt Inhalte dynamisch an den Spieler an
+
+struct ExperienceOrchestrator {
+    id: String,
+    world_id: String,
+    player_profiles: Vec<PlayerProfile>,
+    active_adjustments: Vec<Adjustment>,
+    flow_model: FlowModel,
+    content_rotation: ContentRotation,
+    personalization: PersonalizationConfig
+}
+
+struct PlayerProfile {
+    id: String,
+    player_id: String,
+    skill_level: f32,          // 0.0-1.0
+    play_style: String,        // "aggressive"|"cautious"|"explorer"|"social"|"completionist"|"speedrunner"
+    preferred_content: Vec<String>,
+    difficulty_preference: f32,
+    session_length_avg: u32,   // minutes
+    churn_risk: f32,
+    engagement: f32,
+    spending_behavior: String, // "free"|"low"|"medium"|"whale"
+    last_active: String,
+    learned_preferences: Map<String, f32>
+}
+
+struct Adjustment {
+    id: String,
+    type: String,              // "difficulty"|"reward"|"event"|"tutorial"|"npc"|"story"|"pacing"
+    target: String,            // player_id or "global"
+    parameter: String,
+    old_value: f32,
+    new_value: f32,
+    reason: String,
+    expires: Option<String>,
+    active: bool
+}
+
+struct FlowModel {
+    current_zone: String,      // "boredom"|"flow"|"anxiety"|"relaxation"
+    challenge_level: f32,      // 0.0-1.0
+    skill_level: f32,          // 0.0-1.0
+    arousal: f32,              // 0.0-1.0
+    recommendations: Vec<String>
+}
+
+struct ContentRotation {
+    active_content: Vec<String>,
+    rotation_interval: u32,    // hours
+    last_rotation: String,
+    personalized: bool,
+    ab_tests: Vec<ABTest>
+}
+
+struct ABTest {
+    id: String,
+    name: String,
+    variants: Vec<ABVariant>,
+    traffic_split: Vec<f32>,
+    start: String,
+    end: String,
+    metric: String,
+    significant: bool
+}
+
+struct ABVariant {
+    name: String,
+    changes: Map<String, f32>,
+    participants: u32,
+    conversions: u32
+}
+
+struct PersonalizationConfig {
+    enabled: bool,
+    adaptation_speed: f32,     // 0.0 (slow) to 1.0 (instant)
+    max_adjustments_per_session: u8,
+    conservative_mode: bool,   // Don't change too much at once
+    learn_from_behavior: bool,
+    cross_session_learning: bool
+}
+
+fn exp_create(world_id: String) -> ExperienceOrchestrator {
+    ExperienceOrchestrator {
+        id: generate_id("EXP"),
+        world_id: world_id,
+        player_profiles: Vec::new(),
+        active_adjustments: Vec::new(),
+        flow_model: FlowModel { current_zone: "flow", challenge_level: 0.5, skill_level: 0.5, arousal: 0.5, recommendations: Vec::new() },
+        content_rotation: ContentRotation { active_content: Vec::new(), rotation_interval: 24, last_rotation: now(), personalized: true, ab_tests: Vec::new() },
+        personalization: PersonalizationConfig { enabled: true, adaptation_speed: 0.3, max_adjustments_per_session: 3, conservative_mode: true, learn_from_behavior: true, cross_session_learning: true }
+    }
+}
+
+fn exp_profile_player(player_id: String) -> PlayerProfile {
+    let data = get_player_telemetry(player_id);
+    PlayerProfile {
+        id: generate_id("PP"),
+        player_id: player_id,
+        skill_level: calculate_skill(data),
+        play_style: detect_play_style(data),
+        preferred_content: detect_preferences(data),
+        difficulty_preference: data.preferred_difficulty,
+        session_length_avg: data.avg_session_minutes,
+        churn_risk: calculate_churn_risk(data),
+        engagement: calculate_engagement(data),
+        spending_behavior: classify_spending(data),
+        last_active: data.last_active,
+        learned_preferences: Map::new()
+    }
+}
+
+fn exp_adjust_difficulty(player_id: String) -> Adjustment {
+    let p = get_profile(player_id);
+    let flow = calculate_flow(p);
+    
+    let old_diff = p.difficulty_preference;
+    let new_diff = if flow.current_zone == "boredom" {
+        old_diff + 0.1  // Increase challenge
+    } else if flow.current_zone == "anxiety" {
+        old_diff - 0.1  // Decrease challenge
+    } else {
+        old_diff  // In flow, no change
+    };
+    
+    let adj = Adjustment {
+        id: generate_id("ADJ"),
+        type: "difficulty",
+        target: player_id,
+        parameter: "enemy_scaling",
+        old_value: old_diff,
+        new_value: new_diff.clamp(0.1, 1.0),
+        reason: "Flow state: " + flow.current_zone,
+        expires: Some(now() + 3600),
+        active: true
+    };
+    
+    exp_apply_adjustment(adj);
+    adj
+}
+
+fn exp_calculate_flow(profile: PlayerProfile) -> FlowModel {
+    let challenge = current_challenge_level(profile.player_id);
+    let skill = profile.skill_level;
+    let arousal = (challenge + skill) / 2.0;
+    
+    let zone = if challenge > skill + 0.15 {
+        "anxiety"
+    } else if challenge < skill - 0.15 {
+        "boredom"
+    } else {
+        "flow"
+    };
+    
+    let mut recs = Vec::new();
+    match zone {
+        "boredom" => recs.push("Increase difficulty or introduce new mechanics"),
+        "anxiety" => recs.push("Reduce difficulty, offer tutorial, or simplify objectives"),
+        "flow" => recs.push("Maintain current pacing"),
+        _ => {}
+    }
+    
+    FlowModel { current_zone: zone, challenge_level: challenge, skill_level: skill, arousal: arousal, recommendations: recs }
+}
+
+fn exp_personalize_content(player_id: String) -> Vec<String> {
+    let p = get_profile(player_id);
+    let mut content = Vec::new();
+    
+    // Select content based on preferences
+    for pref in p.preferred_content {
+        let candidates = get_content_by_type(pref);
+        for c in candidates {
+            if !content.contains(c) && content.len() < 5 {
+                content.push(c);
+            }
+        }
+    }
+    
+    // Adjust based on skill
+    if p.skill_level < 0.3 {
+        content.push("tutorial_content");
+    } else if p.skill_level > 0.8 {
+        content.push("endgame_content");
+    }
+    
+    // Churn prevention
+    if p.churn_risk > 0.7 {
+        content.push("retention_event");
+        content.push("comeback_bonus");
+    }
+    
+    content
+}
+
+// Standards: AD-68
+// Dependencies: AI Director (AD-41), Analytics Factory (AD-31), TelemetryBus (AD-14)
