@@ -1,0 +1,6 @@
+# CODEOWNERS — atc-engineering
+# Default-Owner:
+*                       @ShivaCoreDev
+# Governance-dokumente: Owner-Review verpflichtend
+/docs/governance/       @ShivaCoreDev
+/AGENTS.md              @ShivaCoreDev
