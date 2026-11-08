@@ -1,0 +1,29 @@
+# Audit Record — ATC-STD-AI-DEV-009 §1 (Append-Only, keine Aenderung/Loeschung)
+# Ablage: .github/ai/audit/AUD-NNN.yaml
+audit:
+  id: AUD-031                      # fortlaufend, nie wiederverwendet
+  task_id: ATC-TASK-00427
+  agent: {id: ATC-AI-DEV-001, version: "1.0.0"}
+  started: "<ISO-8601>"
+  completed: "<ISO-8601>"
+  corrects: null                   # nur bei Folgercord: Vorgänger-AUD-ID
+  sources: [repository, issue, standard, architecture, tests, ci_cd]
+  findings: []                     # F-NNN
+  actions: []                      # ACT-NNN
+  validation:
+    tests: PASS                    # PASS|FAIL|PENDING
+    lint: PASS
+    build: PASS
+    security: PASS
+    ci_run: "#<github-run-id>"     # Pflicht: nachvollziehbarer CI-Run
+  documentation: {status: COMPLETE, references: []}
+  next_action: null                # ACT-NNN oder null bei Abschluss
+  human_review: {required: true, requested: false}
+  consistency:                     # Abweichung => BLOCKED (AI-DEV-001 §12)
+    code: updated                  # updated|unchanged
+    specification: consistent      # consistent|deviation
+    standard: consistent
+    wiki: checked
+    architecture: checked
+    tests: updated
+    roadmap: checked
