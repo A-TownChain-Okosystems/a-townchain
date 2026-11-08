@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-203",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #203: docs(architecture): add versioned Aurora ecosystem technical spec",
+  "context": "Pull request 203 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/203",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\nAdds `docs/architecture/AURORA_ECOSYSTEM_TECHNICAL_SPEC_V1.md` as a versioned draft supplement to the existing system architecture.\n\nThe specification defines:\n- L0–L7 responsibility domains and cross-layer Control Plane X;\n- trust boundaries and authority invariants;\n- proposed contracts for agent identity, compute jobs, attestations, policy decisions and blockchain transaction flow;\n- a repository evidence snapshot with exact observed default-branch HEAD SHAs and conservative IMPLEMENTED/OPEN distinctions;\n- prioritized implementation work packages, acceptance criteria and open decisions.\n\n## Evidence and limitations\n- Evidence snapshot: 2026-10-18.\n- The cited SHAs are observed default-branch heads, not claims that CI/E2E passed for them.\n- IMPLEMENTED describes the existence of a cited artifact only; VERIFIED requires an exact-SHA test/run reference.\n- The document explicitly does not claim a production-ready, fully integrated decentralized AI/compute path.\n\n## Review requested\nPlease review the normative boundary rules, contract fields, evidence status semantics and open decisions. Required implementation work is intentionally separated into issues. No merge or production-readiness claim is made by this PR."
+}
