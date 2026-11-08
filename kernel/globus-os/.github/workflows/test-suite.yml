@@ -1,0 +1,104 @@
+name: ATC Test Suite
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  cargo-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt, clippy, rust-src, llvm-tools-preview
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo test ueber alle Manifeste (SCR-0078, F-093)
+        run: |
+          set +e
+          FAIL=0
+          while IFS= read -r f; do
+            d="$(dirname "$f")"
+            if [ "$d" = "./modules/atc-shivacore/boot" ]; then
+              echo "SKIP $d: boot-image builder has no unit tests; exercised by the dedicated ShivaCore boot workflow."
+              continue
+            fi
+            echo "=== cargo test in $d"
+            if ! (cd "$d" && cargo +nightly test --quiet); then
+              echo "cargo test FAILED in $d"
+              FAIL=1
+            fi
+          done < <(find . -name Cargo.toml -not -path "*/archive/*" -not -path "*/node_modules/*")
+          exit "$FAIL"
+
+  npm-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: npm install + test/build (SCR-0078, F-093)
+        run: |
+          set +e
+          FAIL=0
+          while IFS= read -r f; do
+            d="$(dirname "$f")"
+            echo "=== npm in $d"
+            if ! (cd "$d" && npm install --no-audit --no-fund --silent); then
+              echo "npm install FAILED in $d"
+              FAIL=1
+              continue
+            fi
+            (cd "$d" && npm test --if-present --silent) || { echo "npm test FAILED in $d"; FAIL=1; }
+            (cd "$d" && npm run build --if-present --silent) || { echo "npm build FAILED in $d"; FAIL=1; }
+          done < <(find . -name package.json -not -path "*/archive/*" -not -path "*/node_modules/*" -not -path "*/.*/*")
+          exit "$FAIL"
+
+  evidence:
+    if: ${{ success() }}
+    needs: [cargo-tests, npm-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Evidence-Bindung (SCR-0086)
+        run: |
+          python3 - <<'PY'
+          import datetime
+          import os
+          import re
+
+          sha = os.environ["GITHUB_SHA"]
+          rid = os.environ["GITHUB_RUN_ID"]
+          wf = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
+          ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          path = ".atc/evidence/evidence.yaml"
+          text = open(path, encoding="utf-8").read()
+          text = re.sub(r"bound_commit: [^\n]*", "bound_commit: " + sha, text)
+          block = (
+              "test_run:\n"
+              "  workflow: " + wf + "\n"
+              "  run_id: " + rid + "\n"
+              "  commit: " + sha + "\n"
+              "  timestamp: " + ts + "\n"
+              "  result: PASS\n"
+              "  runner: github-actions\n"
+          )
+          if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", text):
+              text = re.sub(r"(?m)^test_run:\n(?:  [^\n]*\n)+", block, text)
+          else:
+              text = text.rstrip() + "\n" + block
+          open(path, "w", encoding="utf-8").write(text)
+          PY
+      - name: Publish SHA-bound evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scr-0086-evidence-${{ github.run_id }}
+          path: .atc/evidence/evidence.yaml
+          if-no-files-found: error
+          retention-days: 90
