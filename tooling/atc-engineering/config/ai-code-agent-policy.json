@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0",
+  "policy_id": "ATC-AI-CODE-AGENT-001",
+  "authority": {
+    "normative_standards_repository": "A-TownChain-Okosystems/atc-standards",
+    "canonical_implementation_must_be_resolved_before_change": true,
+    "unresolved_standard_or_ssot_conflict": "BLOCKED"
+  },
+  "lifecycle": [
+    "PLANNED",
+    "IMPLEMENTED",
+    "VERIFYING",
+    "VERIFIED",
+    "RESIDUAL",
+    "BLOCKED",
+    "FAILED"
+  ],
+  "required_controls": {
+    "requirements_and_acceptance_criteria": true,
+    "canonical_repository_and_implementation": true,
+    "impact_and_dependency_review": true,
+    "negative_boundary_and_error_path_tests": true,
+    "regression_test_for_reproducible_bug": true,
+    "independent_review_for_high_risk_changes": true,
+    "exact_head_sha_verification": true,
+    "record_run_job_step_exit_code_and_logs": true,
+    "missing_stale_unreadable_or_mismatched_evidence_fails_closed": true,
+    "preserve_existing_tests_and_assertions": true,
+    "preserve_security_and_branch_protection_gates": true,
+    "human_approval_required_for_merge_or_release": true,
+    "automatic_merge": false,
+    "force_push": false,
+    "gate_weakening": false,
+    "test_skipping_to_hide_failure": false
+  },
+  "verification_rules": {
+    "verified_requires_all_required_gates_pass": true,
+    "verified_requires_current_full_commit_sha_match": true,
+    "build_success_alone_is_sufficient": false,
+    "pr_green_without_sha_match_is_sufficient": false,
+    "unavailable_required_gate_status": "BLOCKED",
+    "failed_required_gate_status": "FAILED",
+    "exhausted_repair_attempts_status": "BLOCKED",
+    "max_repair_attempts_per_finding": 3,
+    "each_retry_requires_new_diagnosis": true
+  },
+  "evidence": {
+    "schema": "schemas/ai-agent/ATC-AI-VERIFY-001.json",
+    "sha_length": 40,
+    "sha_format": "lowercase_hex",
+    "required_check_fields": [
+      "name",
+      "required",
+      "conclusion",
+      "run_id",
+      "job_id",
+      "step",
+      "exit_code",
+      "log_url"
+    ],
+    "merge_authorized_default": false
+  },
+  "separation_of_duties": {
+    "coder_may_self_certify_verified": false,
+    "release_authority_may_be_implicit": false,
+    "governance_and_human_approval_are_separate_gates": true
+  }
+}
