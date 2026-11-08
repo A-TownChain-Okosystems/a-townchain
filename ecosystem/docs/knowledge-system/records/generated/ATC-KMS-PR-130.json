@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-130",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #130: docs(catalog): add Globus OS Neural AI ecosystem contracts",
+  "context": "Pull request 130 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "archived",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/130",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: False\nDraft: False\n\n## Summary\nAdds the Globus OS + Neural AI + A-TownChain structure plan to the machine-readable component/function catalog.\n\n### Catalog additions\n- `FN-GLOBUS-003` — OS service boundary and platform integration\n- `FN-AURORA-004` — Policy-gated Neural AI orchestration\n- `FN-ECO-003` — Cross-layer architecture and catalog reconciliation\n\n### Governance\n- Canonical implementation ownership is unchanged.\n- The ecosystem repository remains an architecture/integration/evidence control plane, not an implementation SSOT.\n- All three entries are marked `RESIDUAL` / `UNBOUND_RESIDUAL`; this does not claim source implementation or verification.\n- Unknown consensus/economic rules remain `BLOCKED`.\n- Source-tree reconciliation, versioned interface contracts, and exact-SHA Run → Job → Step → exit-code/log evidence remain required.\n- No automatic merge; this PR is intentionally Draft.\n\nVersion: 0.1.0\nDate: 2026-10-15\nWatermark: A-TownChain / Globus OS / Aurora AI"
+}
