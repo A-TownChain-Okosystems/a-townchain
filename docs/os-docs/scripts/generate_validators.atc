@@ -1,0 +1,135 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-01 — Genesis Validator Generator
+// Sprint 2.3 | Infrastructure Layer | Chain-ID 9000
+// Migrated from: scripts/generate_validators.py (395 lines)
+// Generates genesis wallet, validator keys, mainnet config
+// ─────────────────────────────────────────────────────────────
+
+const DEFAULT_VALIDATOR_COUNT: u8 = 5
+const CHAIN_ID: u32 = 9000
+
+struct ValidatorKey {
+    validator_id: u8,
+    private_key: Hash,
+    public_key: Hash,
+    address: Address,
+    stake: u128,
+    created_at: u64,
+}
+
+struct GenesisConfig {
+    chain_id: u32,
+    genesis_wallet: Address,
+    genesis_supply: u128,
+    validators: List<ValidatorKey>,
+    created_at: u64,
+    block_time: u16,
+    epoch_length: u32,
+}
+
+contract ValidatorGenerator {
+    state validators: Map<Address, ValidatorKey>
+    state validator_count: u8
+    state genesis_wallet: Address
+    state genesis_supply: u128
+    state config: GenesisConfig
+    state owner: Address
+
+    event ValidatorGenerated(validator_id: u8, address: Address, stake: u128)
+    event GenesisCreated(genesis_wallet: Address, supply: u128)
+
+    fn init() {
+        self.validators = {}
+        self.validator_count = 0
+        self.genesis_wallet = Address::zero()
+        self.genesis_supply = 0
+        self.owner = msg_sender()
+    }
+
+    fn generate_keypair(validator_id: u8, stake: u128) -> ValidatorKey {
+        let priv_key = Hash::random()
+        let pub_key = Hash::sha256(priv_key)
+        let addr = Address::from_hash(Hash::sha256(pub_key))
+        let key = ValidatorKey {
+            validator_id: validator_id,
+            private_key: priv_key,
+            public_key: pub_key,
+            address: addr,
+            stake: stake,
+            created_at: Time::now(),
+        }
+        return key
+    }
+
+    fn generate_genesis(count: u8, stake_per_validator: u128) -> Address {
+        // Generate genesis wallet
+        let genesis_priv = Hash::random()
+        let genesis_pub = Hash::sha256(genesis_priv)
+        let genesis_addr = Address::from_hash(Hash::sha256(genesis_pub))
+        self.genesis_wallet = genesis_addr
+        self.genesis_supply = 21000000000000000000000000  // 21M ATC
+        emit GenesisCreated(genesis_addr, self.genesis_supply)
+
+        // Generate validators
+        let i: u8 = 0
+        while i < count {
+            let key = self.generate_keypair(i, stake_per_validator)
+            self.validators[key.address] = key
+            self.validator_count += 1
+            emit ValidatorGenerated(i, key.address, stake_per_validator)
+            i += 1
+        }
+
+        // Build genesis config
+        let config = GenesisConfig {
+            chain_id: CHAIN_ID,
+            genesis_wallet: genesis_addr,
+            genesis_supply: self.genesis_supply,
+            validators: self.validators.keys(),
+            created_at: Time::now(),
+            block_time: 12,
+            epoch_length: 1000,
+        }
+        self.config = config
+        return genesis_addr
+    }
+
+    fn get_validator(addr: Address) -> (u8, Hash, u128, u64) {
+        let v = self.validators.get(addr)
+        if v == null {
+            return (0, Hash::zero(), 0, 0)
+        }
+        return (v.validator_id, v.public_key, v.stake, v.created_at)
+    }
+
+    fn get_validator_count() -> u8 {
+        return self.validator_count
+    }
+
+    fn get_genesis_wallet() -> Address {
+        return self.genesis_wallet
+    }
+
+    fn get_genesis_config() -> (u32, Address, u128, u16, u32) {
+        return (self.config.chain_id, self.config.genesis_wallet, self.config.genesis_supply, self.config.block_time, self.config.epoch_length)
+    }
+
+    fn total_stake() -> u128 {
+        let total: u128 = 0
+        let addrs = self.validators.keys()
+        let i: u16 = 0
+        while i < addrs.len() {
+            let v = self.validators.get(addrs[i])
+            if v != null {
+                total += v.stake
+            }
+            i += 1
+        }
+        return total
+    }
+
+    fn export_config() -> (u32, u8, u128, u64, u16) {
+        return (self.config.chain_id, self.validator_count, self.total_stake(), self.config.created_at, self.config.block_time)
+    }
+}
