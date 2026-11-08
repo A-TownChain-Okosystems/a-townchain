@@ -1,0 +1,31 @@
+{
+  "id": "ATC-KMS-PR-199",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #199: docs(architecture): define ecosystem repository structure",
+  "context": "Pull request 199 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/199",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-ISSUE-71"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-ISSUE-185"
+    }
+  ],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Summary\n- Adds `docs/architecture/ATC-ECOSYSTEM-REPOSITORY-STRUCTURE-001.md` as a proposed target structure for the ecosystem control plane.\n- Defines repository structure, minimum catalog/SSOT/evidence contracts, validation gates, status semantics, implementation order, and acceptance criteria.\n- Explicitly preserves the canonical L0–L7 + X architecture in `ARCHITECTURE.md` / Issue #71 rather than introducing a conflicting L1–L6 model.\n- Requires reconciliation with the current tree, existing schema/catalog, and WP-M0–M8 plan in Issue #185 before implementation.\n- Keeps `demo-repository` excluded from the live drift gate and prohibits duplicate registries or implementation SSOTs.\n\n## Status\n`PROPOSED / NOT VERIFIED`. Documentation-only proposal. No validators, workflow gates, or production implementations are claimed to have been added or verified.\n\n## Acceptance\n- [ ] Reconcile target tree against current repository state and active issues/PRs.\n- [ ] Confirm existing catalog/schema/manifest sources; do not create parallel authoritative sources.\n- [ ] Review compatibility with canonical L0–L7 + X architecture.\n- [ ] Run documentation/structure checks and attach exact-SHA evidence.\n- [ ] Keep this PR Draft until evidence and review pass.\n\nRelated: #71, #185."
+}
