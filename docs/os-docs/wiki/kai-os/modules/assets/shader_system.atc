@@ -1,0 +1,143 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-76 — Shader System
+# Genesis Engine — Asset-gebundene Shader mit Hot-Reload
+# Standard: AD-76
+
+enum ShaderType:
+    VERTEX
+    FRAGMENT
+    GEOMETRY
+    COMPUTE
+    TESSELLATION
+
+struct Shader:
+    name: String
+    shader_type: ShaderType
+    source: String            # GLSL / HLSL / WGSL
+    uniforms: Map<String, UniformDef>
+    attributes: Array<String>
+    compiled: Bool
+    program_id: Int32         # GPU Program Handle
+    file_path: String         # Für Hot-Reload
+
+struct UniformDef:
+    name: String
+    uniform_type: String      # "float" | "vec2" | "vec3" | "vec4" | "mat4" | "sampler2d" | "int"
+    default_value: Variant
+    animated: Bool
+
+# Preset Shader — sofort einsatzbereit
+# Jeder Asset kann einen Shader-Namen tragen, der hier aufgelöst wird
+struct ShaderPreset:
+    name: String
+    description: String
+    fragment_src: String
+    uniforms: Map<String, Variant>
+    category: String          # "fx" | "ui" | "post" | "environment"
+
+func get_preset_shaders() -> Array<ShaderPreset>:
+    return [
+        ShaderPreset {
+            name: "glow", description: "Soft glow / bloom halo",
+            fragment_src: "uniform float intensity; uniform vec3 color; ...",
+            uniforms: {"intensity": 1.5, "color": [1,1,1]},
+            category: "fx"
+        },
+        ShaderPreset {
+            name: "neon", description: "Cyberpunk neon outline",
+            fragment_src: "uniform float pulse; uniform vec3 neonColor; ...",
+            uniforms: {"pulse": 1.0, "neonColor": [0,1,1]},
+            category: "fx"
+        },
+        ShaderPreset {
+            name: "hologram", description: "Holographic projection effect",
+            fragment_src: "uniform float scanline; uniform float flicker; ...",
+            uniforms: {"scanline": 0.5, "flicker": 0.1},
+            category: "fx"
+        },
+        ShaderPreset {
+            name: "scanline", description: "CRT scanline overlay",
+            fragment_src: "uniform float lineDensity; uniform float rollSpeed; ...",
+            uniforms: {"lineDensity": 0.3, "rollSpeed": 0.05},
+            category: "post"
+        },
+        ShaderPreset {
+            name: "crt", description: "Full CRT monitor effect",
+            fragment_src: "uniform float curvature; uniform float vignette; ...",
+            uniforms: {"curvature": 0.5, "vignette": 0.8},
+            category: "post"
+        },
+        ShaderPreset {
+            name: "bloom", description: "HDR bloom post-process",
+            fragment_src: "uniform float threshold; uniform float intensity; ...",
+            uniforms: {"threshold": 0.8, "intensity": 1.2},
+            category: "post"
+        }
+    ]
+
+func compile_shader(name: String, source: String, stype: ShaderType) -> Shader:
+    shader = Shader {
+        name: name, shader_type: stype, source: source,
+        uniforms: {}, attributes: [], compiled: false,
+        program_id: -1, file_path: ""
+    }
+    # Kompiliere auf GPU
+    pid = gpu_compile(source, stype)
+    if pid >= 0:
+        shader.program_id = pid
+        shader.compiled = true
+        log_info(f"Shader '{name}' compiled (program {pid})")
+    else:
+        log_error(f"Shader '{name}' compilation failed")
+    return shader
+
+func apply_shader_to_asset(asset_path: String, shader_name: String) -> Bool:
+    shader = get_shader(shader_name)
+    if not shader or not shader.compiled:
+        # Versuche Preset
+        preset = find_preset(shader_name)
+        if preset:
+            shader = compile_shader(shader_name, preset.fragment_src, FRAGMENT)
+    if shader and shader.compiled:
+        bind_shader(asset_path, shader.program_id)
+        return true
+    return false
+
+func set_uniform(shader: Shader, name: String, value: Variant) -> Bool:
+    if name not in shader.uniforms:
+        return false
+    gpu_set_uniform(shader.program_id, name, value)
+    return true
+
+# Hot-Reload: Shader-Datei geändert → neu kompilieren
+func hot_reload_shader(shader: Shader) -> Bool:
+    if shader.file_path == "":
+        return false
+    new_source = read_file(shader.file_path)
+    if new_source != shader.source:
+        old_pid = shader.program_id
+        new_pid = gpu_compile(new_source, shader.shader_type)
+        if new_pid >= 0:
+            shader.source = new_source
+            shader.program_id = new_pid
+            gpu_delete_program(old_pid)
+            log_info(f"Shader '{shader.name}' hot-reloaded")
+            return true
+    return false
+
+# Shader Variants — verschiedene Qualitätsstufen
+func create_shader_variant(base: Shader, quality: String) -> Shader:
+    variant = copy_shader(base)
+    match quality:
+        "low":
+            # Reduziere Iterationen, deaktiviere Effekte
+            variant.source = optimize_for_low(base.source)
+        "medium":
+            variant.source = optimize_for_medium(base.source)
+        "high":
+            # Volle Qualität
+            pass
+        "ultra":
+            # Zusätzliche Effekte
+            variant.source = enhance_for_ultra(base.source)
+    return variant
