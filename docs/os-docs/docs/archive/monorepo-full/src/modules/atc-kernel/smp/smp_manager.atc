@@ -1,0 +1,105 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// K-Sprint 43 — SMP / Multi-Core Support (ATCLang Interface)
+// Rust-Implementierung: shivacore/kernel/src/smp.rs (2506 Zeilen, 99 Tests)
+
+import "std/chain.atc" as Chain
+
+// ════════════════════════════════════════════════════════════════
+//  SMP TYPES
+// ════════════════════════════════════════════════════════════════
+
+enum CpuState {
+    OFFLINE,
+    BOOTING,
+    ONLINE,
+    PAUSED,
+    STOPPING,
+}
+
+enum IpiType {
+    RESCHEDULE,
+    TLB_SHOOTDOWN,
+    CALL_FUNCTION,
+    CALL_FUNCTION_SINGLE,
+    STOP,
+    WAKEUP,
+    MIGRATE,
+    CRASH,
+}
+
+enum SmpError {
+    CPU_NOT_FOUND,
+    TASK_NOT_FOUND,
+    CPU_OFFLINE,
+    ALREADY_ONLINE,
+    ALREADY_OFFLINE,
+    CANNOT_OFFLINE_BSP,
+    AFFINITY_VIOLATION,
+    BARRIER_NOT_FOUND,
+}
+
+struct CpuId { id: u32 }
+struct CpuAffinity { mask: u64, hard: bool }
+struct IpiMessage { ipi_type: IpiType, source: CpuId, target: CpuId, data: u64 }
+struct SmpBarrier { barrier_id: u32, expected: u32, arrived: u32, generation: u64 }
+struct SmpStats { total_cpus: u32, online_cpus: u32, total_tasks: u32, total_migrations: u64, total_ipis: u64 }
+
+// ════════════════════════════════════════════════════════════════
+//  SMP MANAGER CONTRACT
+// ════════════════════════════════════════════════════════════════
+
+module Kernel::SmpManager {
+
+    contract SmpManager {
+        state per_cpu: Map<u32, PerCpuData>
+        state tasks: Map<u32, TaskSmpInfo>
+        state topology: CpuTopology
+        state total_migrations: u64 = 0
+        state total_ipis: u64 = 0
+
+        event CpuOnline(cpu: CpuId)
+        event CpuOffline(cpu: CpuId)
+        event TaskMigrated(pid: u32, from: CpuId, to: CpuId)
+        event LoadBalanced(migrations: u32)
+        event IpiSent(source: CpuId, target: CpuId, ipi_type: IpiType)
+        event BarrierArrived(barrier_id: u32, cpu: CpuId, complete: bool)
+        event TaskPinned(pid: u32, cpu: CpuId)
+        event AffinityChanged(pid: u32, old_mask: u64, new_mask: u64)
+
+        // ── CPU Hotplug ──────────────────────────────────────
+        fn bring_cpu_online(cpu: CpuId) -> bool
+        fn take_cpu_offline(cpu: CpuId) -> bool
+        fn pause_cpu(cpu: CpuId) -> bool
+        fn resume_cpu(cpu: CpuId) -> bool
+
+        // ── Task Management ──────────────────────────────────
+        fn register_task(pid: u32) -> bool
+        fn pin_task(pid: u32, cpu: CpuId) -> bool
+        fn unpin_task(pid: u32) -> bool
+        fn set_task_affinity(pid: u32, mask: CpuAffinity) -> bool
+        fn enqueue_task(pid: u32, cpu: CpuId) -> bool
+        fn dequeue_task(pid: u32) -> bool
+        fn schedule_next(cpu: CpuId) -> Option<u32>
+
+        // ── Migration & Load Balancing ────────────────────────
+        fn migrate_task(pid: u32, from: CpuId, to: CpuId) -> bool
+        fn balance_load() -> List<(u32, CpuId, CpuId)>
+        fn find_idle_cpu() -> Option<CpuId>
+        fn find_cpu_for_task(pid: u32) -> Option<CpuId>
+
+        // ── IPI ───────────────────────────────────────────────
+        fn send_ipi(source: CpuId, target: CpuId, ipi_type: IpiType) -> bool
+        fn send_ipi_all(source: CpuId, ipi_type: IpiType) -> u32
+        fn send_ipi_mask(source: CpuId, mask: CpuAffinity, ipi_type: IpiType) -> u32
+
+        // ── Barriers ─────────────────────────────────────────
+        fn create_barrier(cpus: List<CpuId>) -> u32
+        fn arrive_barrier(barrier_id: u32, cpu: CpuId) -> bool
+        fn destroy_barrier(barrier_id: u32) -> bool
+
+        // ── Stats ────────────────────────────────────────────
+        fn stats() -> SmpStats
+        fn online_count() -> u32
+        fn avg_load() -> f64
+    }
+}
