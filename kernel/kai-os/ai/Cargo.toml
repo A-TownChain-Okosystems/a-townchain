@@ -1,0 +1,11 @@
+[package]
+name = "kai-os-ai"
+version = "0.1.0"
+edition = "2021"
+description = "KAI-OS AI Runtime: IPC + Proposals + Audit Trail (S13-S15, AD-008)"
+license = "Apache-2.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
