@@ -288,3 +288,56 @@ geht. Das war vorher hinter anderen Fehlern verborgen.
 `atc-core`: **154 Tests**, Clippy `-D warnings` ohne Befund.
 Invarianten unverändert: `apps/atc-contracts` 50/33/0/18, `components/contracts`
 46/29/0/18, Registry-Gate PASS 16/16, EXEC-CHAIN 20/20, Korpus 1095/1645.
+
+---
+
+## 11. Untersuchung der 19 Dateien mit `Feldname nach '.'`
+
+**Datum:** 08.11.2026, Stand `40ebb3c`, aktiv ohne `/archive/` und `/legacy/`.
+
+### Ergebnis: eine einzige fehlende Konstruktion, nicht 19 Fehler
+
+Die 19 Dateien sind **12 verschiedene Inhalte** (Spiegel unter `docs/os-docs/`,
+`docs/os-docs/wiki/kai-os/` und `modules/`), und alle scheitern an derselben Form:
+dem halboffenen Bereich `..`.
+
+| Anzahl Zeilen | Form | Beispiel |
+|---|---|---|
+| 160 | `for … in a..b` | `for i in 0..cids.len() {` |
+| 13 | Index-Bereich | `to_u8(seq[0..2])`, `self.history[start..]` |
+| 75 | kein Bereich | `"…"`-Strings und Kommentare mit `...` (kein Befund) |
+
+Insgesamt enthalten **92 aktive Dateien** `..`, die meisten scheitern vorher an einem
+anderen Blocker. Die 19 sind also nur die Spitze.
+
+### Der entscheidende Punkt: `..` ist bereits spezifiziert
+
+Die Sprachspezifikation kennt die Konstruktion vollständig, der Rust-Kern nicht:
+
+| Stelle | Aussage |
+|--------|---------|
+| `language/SPEC.md` §2.1 (Token-Inventar) | **`DOTDOT`** und **`DOTDOTEQ`** sind Token der Sprache |
+| `language/SPEC.md` §3.4, Stufe 7 (`parse_primary`) | Produktion **`Range`** |
+| `language/SPEC.md` §3.4, Grundformen | „**Ranges `..`/`..=`, Slices und Ternaries existieren als AST-Knoten (RangeExpr, SliceExpr, TernaryExpr)**" |
+| `specs/semantics/SPEC.md` §9.3 | `SliceExpr`-Codegen fehlt (bekannter Compiler-Backlog) |
+
+Damit ist das **keine Architekturentscheidung, sondern eine Konformitätslücke**: die
+Konstruktion ist normativ vorhanden, der kanonische Rust-Kern hat weder das Token noch
+den AST-Knoten. Das ist der billigste Block der ganzen Liste, weil nichts entworfen
+werden muss.
+
+### ABI-Sicherheit geprüft
+
+`apps/atc-contracts` und `components/contracts`: **0 Zeilen** mit `..`. Neue AST-Knoten
+können deshalb keinen bestehenden Vertrags-Hash verändern — vorausgesetzt, das
+kanonische Encoding bestehender Knoten bleibt unberührt.
+
+### Einordnung
+
+`for i in 0..n` ist eine `RangeExpr` an der Iterator-Position, `seq[0..2]` eine
+`SliceExpr` an der Index-Position. Beides gehört in Lexer und Parser (Konformität),
+der Codegen von `SliceExpr` bleibt der bereits dokumentierte Backlog und ist **nicht**
+Teil dieser Lücke.
+
+Nächster Schritt bleibt die Reihenfolge des Owners: Spezifikation der generischen
+Structs (siehe `specs/language/GENERIC-STRUCTS-CANDIDATE.md`), danach Implementierung.
