@@ -1,0 +1,12 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: sc
+family: SC
+family_id: PREFIX
+file: standards/sc/ATC-STD-SC-002.md
+mandate: Owner-Entwurf 07.09. — contract_id + Code-Repo-Commit-Deployment-Rueckverfolgung
+registry_version: 1
+standard_id: ATC-STD-SC-002
+status: approved
+title: Smart Contract Identity Standard
+version: 1.1.0
