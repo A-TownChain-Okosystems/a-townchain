@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-212",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #212: [Draft] GlobusOS: Guarded Automatic Performance Optimization",
+  "context": "Pull request 212 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/212",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Ziel\nKonservative Grundlage für automatische Performance-Optimierung in ShivaCore/GlobusOS; Optimierung bleibt bis zum Nachweis vertrauenswürdiger Messungen im Dry-Run.\n\n## Implementierung\n- performance_optimizer.rs definiert Messgrößen, Optimierungsparameter und konservative Grenzen; dry_run = true bleibt Standard.\n- optimization_trial.rs führt Optimierungsversuche transaktional aus und rollt abgelehnte/fehlgeschlagene Änderungen zurück.\n- UserSchedulerOptimizationAdapter unterstützt nur den Scheduler-Quantum; unzuverlässige oder simulierte Messungen werden abgelehnt.\n- timer.rs stellt eine x86-64 invariant-TSC-Zeitquelle bereit, deren Frequenz beim Booten über PIT-Kanal 2 kalibriert wird. Das TSC-Messfenster beginnt erst nach beobachtetem PIT-LOW; unplausible Frequenzen, Null-Intervalle und fehlende Kalibrierung bleiben fail-closed.\n- interrupts.rs übergibt monotone Zeitstempel aus dem Ring-3-Timer-IRQ-Pfad an UserScheduler und schreibt echte Dispatch-Latenzwerte in die serielle Diagnoseausgabe.\n- user_sched.rs erfasst Ready-Zeitpunkte und Ready→Running-Latenzen beim Dispatch sowie timestamped unblock/resume-Übergänge.\n- Deterministische Regressionstests decken Dispatch-Latenz, unblock-Zeitstempel, fail-closed Verhalten ohne kalibrierte Zeit und TSC/PIT-Frequenzkonvertierung ab.\n- .github/workflows/shivacore-qemu-runtime.yml ergänzt einen eigenen Gate-Workflow für rustfmt, Kernel-Library-Tests, Bare-Metal-Build und QEMU-Boot mit Assertions auf erfolgreiche TSC/PIT-Kalibrierung, Scheduler-Latenzbelege und fehlende Kernel-Panics.\n\n## Noch offene Nachweise / Freigabeblocker\n- Der neue QEMU-Workflow wurde eingereicht, aber sein Ergebnis ist noch nicht als PASS belegt. Er muss auf dem aktuellen PR-HEAD tatsächlich laufen und erfolgreich enden.\n- Die reale Port-I/O-Kalibrierung ist noch nicht auf physischer Hardware bestätigt; QEMU deckt nur die konfigurierte virtuelle Plattform ab.\n- Die Scheduler-Latenztests mit deterministischen Zeitstempeln ersetzen keinen erfolgreichen QEMU-Seriennachweis und keinen länger laufenden reproduzierbaren Performance-Workload.\n- Alle bestehenden relevanten CI- und Security-Checks müssen für den exakten aktuellen HEAD erfolgreich sein.\n- Keine automatische Änderung von Schedulerparametern ohne vertrauenswürdige Messung; dry_run bleibt aktiv.\n\n## Governance\nPR bleibt OPEN und DRAFT. Kein Merge, kein Auto-Merge und kein Release, bevor Build/Tests, Security-Checks, QEMU-Boot und serielle Laufzeitmessungen auf einem exakten SHA erfolgreich belegt sind."
+}
