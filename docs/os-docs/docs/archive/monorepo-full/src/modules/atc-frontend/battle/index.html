@@ -1,0 +1,302 @@
+<!-- Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved. -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚔️ Shivamon Battle</title>
+<style>
+  :root {
+    --bg: #0a0a1a; --panel: #111128; --border: #2a2a5a;
+    --neon: #00f5ff; --neon2: #ff00ff; --warn: #ff4444;
+    --text: #e0e0ff; --dim: #6060a0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: "Courier New", monospace; min-height: 100vh; }
+
+  .arena { display: grid; grid-template-columns: 1fr 80px 1fr; gap: 16px; padding: 24px; max-width: 900px; margin: 0 auto; }
+
+  .shivamon-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .shivamon-card.active { border-color: var(--neon); box-shadow: 0 0 20px rgba(0,245,255,0.2); }
+
+  .name { font-size: 1.3em; font-weight: bold; color: var(--neon); text-shadow: 0 0 8px var(--neon); }
+  .level { color: var(--dim); font-size: 0.85em; }
+  .element-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold; }
+
+  .hp-bar-wrap { background: #1a1a3a; border-radius: 4px; height: 14px; overflow: hidden; }
+  .hp-bar { height: 100%; background: linear-gradient(90deg, #00ff88, #00f5ff); transition: width 0.5s ease; border-radius: 4px; }
+  .hp-bar.low { background: linear-gradient(90deg, #ff4444, #ff8800); }
+  .hp-text { font-size: 0.8em; color: var(--dim); margin-top: 2px; }
+
+  .moves { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .move-btn {
+    background: #1a1a3a; border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); padding: 10px 8px; font-size: 0.85em; cursor: pointer;
+    transition: all 0.2s; font-family: inherit;
+  }
+  .move-btn:hover:not(:disabled) { border-color: var(--neon); color: var(--neon); transform: scale(1.02); }
+  .move-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .move-pp { color: var(--dim); font-size: 0.75em; }
+
+  .vs-col { display: flex; align-items: center; justify-content: center; }
+  .vs { font-size: 2em; font-weight: bold; color: var(--neon2); text-shadow: 0 0 12px var(--neon2); }
+
+  .log-panel {
+    grid-column: 1 / -1; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; height: 220px; overflow-y: auto;
+  }
+  .log-panel h3 { color: var(--neon); margin-bottom: 12px; font-size: 0.9em; }
+  .log-entry { padding: 4px 0; border-bottom: 1px solid #1a1a3a; font-size: 0.85em; line-height: 1.4; }
+  .log-entry.super  { color: #ffd700; }
+  .log-entry.crit   { color: var(--neon2); }
+  .log-entry.weak   { color: var(--dim); }
+  .log-entry.win    { color: #00ff88; font-weight: bold; font-size: 1em; }
+
+  .controls { grid-column: 1 / -1; display: flex; gap: 12px; justify-content: center; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--neon), var(--neon2));
+    border: none; border-radius: 8px; padding: 12px 28px;
+    color: #000; font-weight: bold; font-size: 1em; cursor: pointer;
+    font-family: inherit; transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .sprite { font-size: 4em; text-align: center; padding: 8px;
+    animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  .hit { animation: shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .xp-gained { grid-column: 1/-1; text-align: center; color: #ffd700; font-size: 1.1em; display: none; }
+</style>
+</head>
+<body>
+<div style="text-align:center; padding: 20px 0 0;">
+  <h1 style="color: var(--neon); text-shadow: 0 0 16px var(--neon); font-size: 1.6em;">⚔️ SHIVAMON BATTLE ARENA</h1>
+  <p style="color: var(--dim); font-size: 0.85em; margin-top: 4px;">A-TownChain Ökosystem · ATC-9000</p>
+</div>
+
+<div class="arena" id="arena">
+  <!-- Player Shivamon -->
+  <div class="shivamon-card active" id="card-player">
+    <div class="sprite" id="sprite-player">🔥</div>
+    <div>
+      <div class="name" id="name-player">Ignaros</div>
+      <div class="level">Lv. 15 · <span class="element-badge" style="background:#ff440030;color:#ff8800;">FIRE</span></div>
+    </div>
+    <div>
+      <div class="hp-bar-wrap"><div class="hp-bar" id="hp-bar-player" style="width:100%"></div></div>
+      <div class="hp-text" id="hp-text-player">HP: 85 / 85</div>
+    </div>
+    <div class="moves" id="moves-player"></div>
+  </div>
+
+  <!-- VS -->
+  <div class="vs-col"><div class="vs">VS</div></div>
+
+  <!-- Enemy Shivamon -->
+  <div class="shivamon-card" id="card-enemy">
+    <div class="sprite" id="sprite-enemy">💧</div>
+    <div>
+      <div class="name" id="name-enemy">Aquaris</div>
+      <div class="level">Lv. 14 · <span class="element-badge" style="background:#0088ff30;color:#00aaff;">WATER</span></div>
+    </div>
+    <div>
+      <div class="hp-bar-wrap"><div class="hp-bar" id="hp-bar-enemy" style="width:100%"></div></div>
+      <div class="hp-text" id="hp-text-enemy">HP: 78 / 78</div>
+    </div>
+    <div class="moves" id="moves-enemy" style="opacity:0.3">
+      <div style="color:var(--dim);font-size:0.8em;grid-column:1/-1;text-align:center;padding:8px">Gegner wählt automatisch</div>
+    </div>
+  </div>
+
+  <!-- Battle Log -->
+  <div class="log-panel">
+    <h3>📋 KAMPFLOG</h3>
+    <div id="battle-log"></div>
+  </div>
+
+  <div class="xp-gained" id="xp-gained"></div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn-primary" id="btn-reset" onclick="initBattle()">🔄 Neuer Kampf</button>
+    <button class="btn-primary" id="btn-auto" onclick="autoBattle()">⚡ Auto-Battle</button>
+  </div>
+</div>
+
+<script>
+const ELEMENTS = { FIRE:"🔥",WATER:"💧",EARTH:"🌍",AIR:"🌪️",SHADOW:"🌑",NEON:"✨",QUANTUM:"⚛️" };
+const TYPE_CHART = {
+  FIRE:{WATER:0.5,EARTH:2.0,AIR:1.5}, WATER:{FIRE:2.0,EARTH:0.5,NEON:1.5},
+  EARTH:{WATER:2.0,AIR:0.5},          AIR:{EARTH:2.0,FIRE:0.5},
+  SHADOW:{NEON:0.5,QUANTUM:2.0},      NEON:{SHADOW:2.0,QUANTUM:0.5},
+  QUANTUM:{SHADOW:0.5,NEON:2.0},
+};
+
+const SHIVAMON_POOL = [
+  {name:"Ignaros",  element:"FIRE",    hp:85,  maxHp:85,  atk:72, def:48, spd:68,
+   moves:[{name:"Flammenwerfer",el:"FIRE",pow:90,acc:1.0,pp:15},{name:"Glutstoß",el:"FIRE",pow:60,acc:1.0,pp:25},{name:"Hitzeschild",el:"FIRE",pow:40,acc:0.9,pp:30},{name:"Inferno",el:"FIRE",pow:110,acc:0.85,pp:5}]},
+  {name:"Aquaris",  element:"WATER",   hp:78,  maxHp:78,  atk:68, def:55, spd:60,
+   moves:[{name:"Wasserstrahl",el:"WATER",pow:85,acc:1.0,pp:15},{name:"Schwall",el:"WATER",pow:55,acc:1.0,pp:25},{name:"Eiskanone",el:"WATER",pow:95,acc:0.9,pp:10},{name:"Springflut",el:"WATER",pow:65,acc:0.95,pp:20}]},
+  {name:"Terravex", element:"EARTH",   hp:95,  maxHp:95,  atk:80, def:70, spd:35,
+   moves:[{name:"Erdstoß",el:"EARTH",pow:80,acc:1.0,pp:15},{name:"Steinregen",el:"EARTH",pow:70,acc:0.9,pp:20},{name:"Bergkraft",el:"EARTH",pow:100,acc:0.8,pp:8},{name:"Sandstorm",el:"EARTH",pow:50,acc:1.0,pp:30}]},
+  {name:"Zephyron", element:"AIR",     hp:70,  maxHp:70,  atk:65, def:40, spd:95,
+   moves:[{name:"Wirbelwind",el:"AIR",pow:75,acc:1.0,pp:20},{name:"Windklinge",el:"AIR",pow:85,acc:0.95,pp:15},{name:"Sturm",el:"AIR",pow:110,acc:0.8,pp:5},{name:"Böe",el:"AIR",pow:55,acc:1.0,pp:30}]},
+  {name:"Umbralix", element:"SHADOW",  hp:72,  maxHp:72,  atk:88, def:35, spd:80,
+   moves:[{name:"Schattenklau",el:"SHADOW",pow:85,acc:1.0,pp:15},{name:"Dunkelheit",el:"SHADOW",pow:75,acc:0.9,pp:20},{name:"Seelensog",el:"SHADOW",pow:100,acc:0.85,pp:8},{name:"Nachtrieb",el:"SHADOW",pow:60,acc:1.0,pp:25}]},
+  {name:"Neonix",   element:"NEON",    hp:68,  maxHp:68,  atk:75, def:42, spd:88,
+   moves:[{name:"Lichtblitz",el:"NEON",pow:80,acc:1.0,pp:20},{name:"Laserstrahl",el:"NEON",pow:95,acc:0.9,pp:10},{name:"Neonpuls",el:"NEON",pow:65,acc:1.0,pp:25},{name:"Photonbombe",el:"NEON",pow:115,acc:0.75,pp:5}]},
+];
+
+let player, enemy, turn, battleOver, autoTimer;
+
+function deepCopy(o) { return JSON.parse(JSON.stringify(o)); }
+
+function calcDamage(att, dfn, move) {
+  const eff  = (TYPE_CHART[move.el]||{})[dfn.element] || 1.0;
+  const crit = Math.random() < 0.0625;
+  if (Math.random() > move.acc) return {dmg:0, eff, crit:false, miss:true};
+  const base = ((2*15/5+2)*move.pow*att.atk/dfn.def)/50+2;
+  const rand = 0.85 + Math.random()*0.15;
+  const dmg  = Math.max(1, Math.round(base*eff*(crit?1.5:1)*rand));
+  return {dmg, eff, crit, miss:false};
+}
+
+function logMsg(txt, cls="") {
+  const d = document.createElement("div");
+  d.className = "log-entry " + cls;
+  d.textContent = txt;
+  const log = document.getElementById("battle-log");
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+function updateHPBar(who, current, max) {
+  const pct = Math.max(0, current/max*100);
+  const bar = document.getElementById(`hp-bar-${who}`);
+  bar.style.width = pct + "%";
+  bar.className   = "hp-bar" + (pct < 25 ? " low" : "");
+  document.getElementById(`hp-text-${who}`).textContent = `HP: ${Math.max(0,current)} / ${max}`;
+}
+
+function renderMoves() {
+  const c = document.getElementById("moves-player");
+  c.innerHTML = "";
+  player.moves.forEach((mv, i) => {
+    const btn = document.createElement("button");
+    btn.className = "move-btn";
+    btn.disabled  = mv.pp <= 0 || battleOver;
+    btn.innerHTML = `${ELEMENTS[mv.el]||""} ${mv.name}<br><span class="move-pp">PP: ${mv.pp} · Pow: ${mv.pow}</span>`;
+    btn.onclick   = () => playerAttack(i);
+    c.appendChild(btn);
+  });
+}
+
+function animHit(who) {
+  const el = document.getElementById(`card-${who}`);
+  el.classList.add("hit");
+  setTimeout(() => el.classList.remove("hit"), 350);
+}
+
+async function playerAttack(moveIdx) {
+  if (battleOver || turn !== "player") return;
+  turn = "enemy";
+  document.querySelectorAll(".move-btn").forEach(b => b.disabled = true);
+  const mv = player.moves[moveIdx];
+  mv.pp--;
+  const {dmg, eff, crit, miss} = calcDamage(player, enemy, mv);
+  await delay(200);
+  if (miss) {
+    logMsg(`${player.name} setzt ${mv.name} ein — aber trifft nicht!`);
+  } else {
+    enemy.hp = Math.max(0, enemy.hp - dmg);
+    animHit("enemy");
+    updateHPBar("enemy", enemy.hp, enemy.maxHp);
+    let cls = ""; let extra = "";
+    if (eff >= 2)   { cls = "super"; extra = " 💥 SUPER EFFEKTIV!"; }
+    if (eff <= 0.5) { cls = "weak";  extra = " 😑 Nicht sehr effektiv..."; }
+    if (crit)       { cls = "crit";  extra += " ✨ KRITISCHER TREFFER!"; }
+    logMsg(`⚔️ ${player.name} → ${mv.name} (${dmg} Schaden)${extra}`, cls);
+  }
+  await delay(400);
+  if (enemy.hp <= 0) { endBattle("player"); return; }
+  await enemyTurn();
+}
+
+async function enemyTurn() {
+  await delay(600);
+  const avail = enemy.moves.filter(m => m.pp > 0);
+  const mv    = avail.length ? avail[Math.floor(Math.random()*avail.length)] : {name:"Struggle",el:enemy.element,pow:30,acc:1.0,pp:1};
+  const {dmg, eff, crit, miss} = calcDamage(enemy, player, mv);
+  if (miss) {
+    logMsg(`${enemy.name} setzt ${mv.name} ein — aber trifft nicht!`);
+  } else {
+    player.hp = Math.max(0, player.hp - dmg);
+    animHit("player");
+    updateHPBar("player", player.hp, player.maxHp);
+    let cls = ""; let extra = "";
+    if (eff >= 2)   { cls = "super"; extra = " 💥 SUPER EFFEKTIV!"; }
+    if (eff <= 0.5) { cls = "weak";  extra = " 😑 Nicht sehr effektiv..."; }
+    if (crit)       { cls = "crit";  extra += " ✨ KRITISCHER TREFFER!"; }
+    logMsg(`🛡️ ${enemy.name} → ${mv.name} (${dmg} Schaden)${extra}`, cls);
+  }
+  if (player.hp <= 0) { endBattle("enemy"); return; }
+  turn = "player";
+  renderMoves();
+}
+
+function endBattle(winner) {
+  battleOver = true;
+  if (winner === "player") {
+    logMsg(`🏆 ${player.name} hat gewonnen!`, "win");
+    const xp = Math.floor(Math.random()*80+40);
+    const xpEl = document.getElementById("xp-gained");
+    xpEl.textContent = `+${xp} XP erhalten! 🌟`;
+    xpEl.style.display = "block";
+  } else {
+    logMsg(`💀 ${enemy.name} hat gewonnen!`, "win");
+  }
+  document.querySelectorAll(".move-btn").forEach(b => b.disabled = true);
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function initBattle() {
+  clearTimeout(autoTimer);
+  battleOver = false; turn = "player";
+  const pool = SHIVAMON_POOL;
+  const pi = Math.floor(Math.random()*pool.length);
+  let   ei = Math.floor(Math.random()*pool.length);
+  while (ei === pi) ei = Math.floor(Math.random()*pool.length);
+  player = deepCopy(pool[pi]); enemy = deepCopy(pool[ei]);
+  document.getElementById("name-player").textContent  = player.name;
+  document.getElementById("name-enemy").textContent   = enemy.name;
+  document.getElementById("sprite-player").textContent = ELEMENTS[player.element]||"❓";
+  document.getElementById("sprite-enemy").textContent  = ELEMENTS[enemy.element]||"❓";
+  updateHPBar("player", player.hp, player.maxHp);
+  updateHPBar("enemy",  enemy.hp,  enemy.maxHp);
+  document.getElementById("battle-log").innerHTML = "";
+  document.getElementById("xp-gained").style.display = "none";
+  logMsg(`⚔️ ${player.name} vs ${enemy.name} — Kampf beginnt!`);
+  logMsg(`Typ: ${player.element} vs ${enemy.element}`);
+  renderMoves();
+}
+
+async function autoBattle() {
+  if (battleOver) initBattle();
+  while (!battleOver) {
+    const avail = player.moves.filter(m => m.pp > 0);
+    if (!avail.length) break;
+    const best = avail.reduce((a,b) => a.pow > b.pow ? a : b);
+    const idx  = player.moves.indexOf(best);
+    await playerAttack(idx);
+    await delay(300);
+  }
+}
+
+initBattle();
+</script>
+</body>
+</html>
