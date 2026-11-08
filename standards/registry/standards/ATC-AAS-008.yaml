@@ -1,0 +1,12 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: aas
+family: LEGACY-SERIES
+family_id: LEGACY
+file: standards/aas/ATC-AAS-008.md
+mandate: ''
+registry_version: 1
+standard_id: ATC-AAS-008
+status: approved
+title: Agent Workflow Standard (P0)
+version: 1.1.0
