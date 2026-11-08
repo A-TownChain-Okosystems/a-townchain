@@ -1,0 +1,19 @@
+# GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Phase 1) - NICHT MANUELL BEARBEITEN
+authority: A-TownChain-Okosystems
+category: readme
+conformance:
+  required: true
+dependencies:
+- ATC-ENT-009
+- ATC-STD-000
+- ATC-STD-201
+- ATC-STD-202
+id: ATC-STD-README-001
+implementation:
+  status: specification_only
+normative: true
+owner: Michael (Owner-Entwurf)
+source_file: standards/readme/ATC-STD-README-001.md
+status: approved
+title: README Standard
+version: 1.0.0
