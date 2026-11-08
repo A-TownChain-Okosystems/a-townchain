@@ -1,0 +1,192 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ════════════════════════════════════════════════════════════════
+// A-TownChain Node — P2P Network Node (ATC-01)
+// Non-EVM Blockchain Node with P2P Discovery
+// Sprint 2.2 — Migrated from Python stub to ATCLang
+// ════════════════════════════════════════════════════════════════
+
+const MAX_PEERS: u32 = 50
+const PING_INTERVAL: u64 = 5
+const PING_TIMEOUT: u64 = 2
+const BLOCK_SYNC_BATCH: u32 = 100
+
+enum NodeStatus {
+    BOOTING,
+    SYNCING,
+    ACTIVE,
+    DEGRADED,
+    OFFLINE
+}
+
+struct PeerInfo {
+    peer_id:    Hash,
+    address:    Address,
+    host:       String,
+    port:       u16,
+    latency:    u64,      // ms
+    uptime:     u128,     // percentage * 100
+    last_seen:  u64,
+    score:      u128      // 0-100
+}
+
+struct NodeInfo {
+    node_id:        Hash,
+    version:        String,
+    chain_id:       u64,    // 9000
+    status:         String,
+    best_block:     u64,
+    peer_count:     u32,
+    started_at:     u64
+}
+
+struct BlockHeader {
+    height:     u64,
+    hash:       Hash,
+    parent:     Hash,
+    timestamp:  u64,
+    proposer:   Address,
+    tx_count:   u32
+}
+
+contract Node {
+
+    state node_info: NodeInfo
+    state peers: Map<Hash, PeerInfo>
+    state peer_count: u32
+    state best_block: u64
+    state chain_id: u64
+    state status: String
+    state is_validator: bool
+
+    event PeerConnected(peer_id: Hash, host: String, port: u16)
+    event PeerDisconnected(peer_id: Hash, reason: String)
+    event BlockReceived(height: u64, hash: Hash, from: Address)
+    event StatusChanged(old_status: String, new_status: String)
+
+    fn init() {
+        let node_id = sha256(to_string(msg_sender()) + to_string(block_timestamp()))
+        self.node_info = NodeInfo {
+            node_id:      node_id,
+            version:      "1.0.0",
+            chain_id:     9000,
+            status:       "BOOTING",
+            best_block:   0,
+            peer_count:   0,
+            started_at:   block_timestamp()
+        }
+        self.chain_id = 9000
+        self.status = "BOOTING"
+        self.best_block = 0
+        self.peer_count = 0
+        self.is_validator = false
+    }
+
+    // ── Peer verbinden ────────────────────────────────
+    fn connect_peer(peer_id: Hash, host: String, port: u16) -> bool {
+        require(self.peer_count < MAX_PEERS, "Node: Max peers erreicht")
+
+        let peer = PeerInfo {
+            peer_id:   peer_id,
+            address:   peer_id,
+            host:      host,
+            port:      port,
+            latency:   0,
+            uptime:    10000,
+            last_seen: block_timestamp(),
+            score:     50
+        }
+        self.peers[peer_id] = peer
+        self.peer_count += 1
+
+        emit PeerConnected(peer_id, host, port)
+        return true
+    }
+
+    // ── Peer trennen ──────────────────────────────────
+    fn disconnect_peer(peer_id: Hash, reason: String) -> bool {
+        require(exists(self.peers, peer_id), "Node: Peer nicht gefunden")
+        delete(self.peers, peer_id)
+        self.peer_count -= 1
+        emit PeerDisconnected(peer_id, reason)
+        return true
+    }
+
+    // ── Block empfangen ───────────────────────────────
+    fn receive_block(header: BlockHeader, from: Address) -> bool {
+        require(header.hash != "", "Node: Invalid block hash")
+        require(header.height > self.best_block, "Node: Block height zu niedrig")
+
+        self.best_block = header.height
+        self.node_info.best_block = header.height
+
+        emit BlockReceived(header.height, header.hash, from)
+        return true
+    }
+
+    // ── Status ändern ─────────────────────────────────
+    fn set_status(new_status: String) -> bool {
+        let old = self.status
+        self.status = new_status
+        self.node_info.status = new_status
+        emit StatusChanged(old, new_status)
+        return true
+    }
+
+    // ── Node Info ─────────────────────────────────────
+    fn get_info() -> NodeInfo {
+        return self.node_info
+    }
+
+    fn get_peer_count() -> u32 {
+        return self.peer_count
+    }
+
+    fn get_best_block() -> u64 {
+        return self.best_block
+    }
+
+    fn get_chain_id() -> u64 {
+        return self.chain_id
+    }
+
+    // ── Peer Score updaten ────────────────────────────
+    fn update_peer_score(peer_id: Hash, latency: u64, is_online: bool) -> bool {
+        let peer = self.peers[peer_id]
+        require(exists(self.peers, peer_id), "Node: Peer nicht gefunden")
+
+        peer.latency = latency
+        peer.last_seen = block_timestamp()
+
+        // Score: Latency 40%, Uptime 25%, Reliability 25%, Bandwidth 10%
+        let latency_score: u128 = 100
+        if latency > 0 {
+            latency_score = 10000 / latency
+            if latency_score > 100 { latency_score = 100 }
+        }
+
+        let uptime_score: u128 = peer.uptime / 100
+        let reliability: u128 = 100
+        if !is_online { reliability = 0 }
+
+        let total = latency_score * 40 / 100 + uptime_score * 25 / 100 + reliability * 25 / 100 + 10
+        peer.score = total
+
+        // Auto-blacklist bei sehr niedrigem Score
+        if total < 10 {
+            disconnect_peer(peer_id, "Score zu niedrig")
+        } else {
+            self.peers[peer_id] = peer
+        }
+        return true
+    }
+
+    // ── Validator Status ──────────────────────────────
+    fn set_validator(val: bool) -> bool {
+        self.is_validator = val
+        return true
+    }
+
+    fn is_node_validator() -> bool {
+        return self.is_validator
+    }
+}
