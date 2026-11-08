@@ -1,0 +1,357 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-81..85 — Hybrid Consensus (PoH → PoW → PoS)
+// Sprint 2.3 | Consensus Layer | Chain-ID 9000
+// Upgraded from v0.1 to v0.3 ATCLang syntax
+// Combines: PoH (time proof) → PoW (mining) → PoS (validation)
+// ─────────────────────────────────────────────────────────────
+
+const TARGET_BLOCK_TIME: u64 = 10          // seconds
+const MAX_DIFFICULTY: u8 = 10
+const MIN_STAKE: u128 = 1000
+const EPOCH_LENGTH: u32 = 100
+const SLASH_PERCENT: u8 = 10               // slash 10% on double-sign
+
+enum ValidatorStatus { Active, Inactive, Slashed, Jailed }
+enum BlockStatus { Pending, Proposed, Validated, Finalized, Rejected }
+enum ConsensusPhase { PoH, PoW, PoS, Final }
+
+struct Validator {
+    address: Address,
+    stake: u128,
+    status: ValidatorStatus,
+    blocks_proposed: u32,
+    blocks_validated: u32,
+    last_active: u64,
+    jail_until: u64,
+}
+
+struct Block {
+    height: u64,
+    prev_hash: Hash,
+    poh_hash: Hash,
+    pow_hash: Hash,
+    nonce: u64,
+    merkle_root: Hash,
+    transactions: List<Hash>,
+    miner: Address,
+    validator: Address,
+    timestamp: u64,
+    reward: u128,
+    status: BlockStatus,
+}
+
+contract HybridConsensus {
+    state difficulty: u8
+    state height: u64
+    state blocks: List<Block>
+    state validators: Map<Address, Validator>
+    state block_reward: u128
+    state epoch: u32
+    state epoch_start: u64
+    state total_stake: u128
+    state slashed_count: u32
+    state owner: Address
+
+    event BlockCreated(height: u64, hash: Hash, miner: Address, validator: Address)
+    event BlockFinalized(height: u64, hash: Hash)
+    event ValidatorAdded(addr: Address, stake: u128)
+    event ValidatorRemoved(addr: Address)
+    event ValidatorSlashed(addr: Address, slash_amount: u128)
+    event EpochChanged(epoch: u32, total_stake: u128)
+    event DifficultyAdjusted(old: u8, new: u8)
+
+    fn init() {
+        self.difficulty = 3
+        self.height = 0
+        self.blocks = []
+        self.validators = {}
+        self.block_reward = 50
+        self.epoch = 0
+        self.epoch_start = Time::now()
+        self.total_stake = 0
+        self.slashed_count = 0
+        self.owner = msg_sender()
+    }
+
+    // ── PoH Phase: Generate time proof ────────────────────────
+
+    fn poh_tick(data: String) -> Hash {
+        return Hash::sha256(data, Time::now(), self.height)
+    }
+
+    // ── PoW Phase: Mining ──────────────────────────────────────
+
+    fn mine_block(transactions: List<Hash>, miner: Address) -> Block {
+        let prev_hash: Hash = Hash::zero()
+        if self.blocks.len() > 0 {
+            prev_hash = self.blocks[self.blocks.len() - 1].pow_hash
+        }
+
+        let block_height = self.height + 1
+        let poh_hash = self.poh_tick(Address::to_string(miner) + Int::to_string(block_height))
+        let merkle = self.compute_merkle_root(transactions)
+        let timestamp = Time::now()
+
+        // PoW: find nonce where hash starts with `difficulty` zeros
+        let nonce: u64 = 0
+        let pow_hash: Hash = Hash::zero()
+        let found = false
+        while !found {
+            let attempt = Hash::sha256(prev_hash, poh_hash, merkle, nonce)
+            if self.check_difficulty(attempt) {
+                found = true
+                pow_hash = attempt
+            } else {
+                nonce += 1
+            }
+        }
+
+        // PoS: select validator for this block
+        let validator = self.select_validator(pow_hash)
+
+        let block = Block {
+            height: block_height,
+            prev_hash: prev_hash,
+            poh_hash: poh_hash,
+            pow_hash: pow_hash,
+            nonce: nonce,
+            merkle_root: merkle,
+            transactions: transactions,
+            miner: miner,
+            validator: validator,
+            timestamp: timestamp,
+            reward: self.block_reward,
+            status: BlockStatus::Proposed,
+        }
+
+        self.blocks.push(block)
+        self.height = block_height
+
+        // Reward distribution
+        self.distribute_reward(block)
+
+        // Epoch check
+        if block_height % EPOCH_LENGTH == 0 {
+            self.advance_epoch()
+        }
+
+        emit BlockCreated(block_height, pow_hash, miner, validator)
+        return block
+    }
+
+    fn check_difficulty(h: Hash) -> bool {
+        // Check if hash has `difficulty` leading zero bytes
+        let prefix = Hash::leading_zeros(h)
+        return prefix >= self.difficulty
+    }
+
+    // ── PoS Phase: Validator selection ─────────────────────────
+
+    fn select_validator(seed: Hash) -> Address {
+        let keys = self.validators.keys()
+        if keys.len() == 0 {
+            return Address::zero()
+        }
+        let seed_val = Hash::to_u64(seed)
+        let idx = seed_val % keys.len()
+        return keys[idx]
+    }
+
+    fn validate_block(block_height: u64, validator_addr: Address) -> bool {
+        if block_height > self.blocks.len() {
+            return false
+        }
+        let block = self.blocks[block_height - 1]
+        if block.status != BlockStatus::Proposed {
+            return false
+        }
+        let v = self.validators.get(validator_addr)
+        if v == null || v.status != ValidatorStatus::Active {
+            return false
+        }
+        block.status = BlockStatus::Validated
+        v.blocks_validated += 1
+        v.last_active = Time::now()
+        emit BlockFinalized(block_height, block.pow_hash)
+        return true
+    }
+
+    // ── Validator Management ───────────────────────────────────
+
+    fn add_validator(addr: Address, stake: u128) -> bool {
+        if stake < MIN_STAKE {
+            return false
+        }
+        let v = Validator {
+            address: addr,
+            stake: stake,
+            status: ValidatorStatus::Active,
+            blocks_proposed: 0,
+            blocks_validated: 0,
+            last_active: Time::now(),
+            jail_until: 0,
+        }
+        self.validators[addr] = v
+        self.total_stake += stake
+        emit ValidatorAdded(addr, stake)
+        return true
+    }
+
+    fn remove_validator(addr: Address) -> bool {
+        let v = self.validators.get(addr)
+        if v == null {
+            return false
+        }
+        self.total_stake -= v.stake
+        v.status = ValidatorStatus::Inactive
+        emit ValidatorRemoved(addr)
+        return true
+    }
+
+    fn slash_validator(addr: Address) -> bool {
+        let v = self.validators.get(addr)
+        if v == null || v.status != ValidatorStatus::Active {
+            return false
+        }
+        let slash_amount = v.stake * SLASH_PERCENT / 100
+        v.stake -= slash_amount
+        self.total_stake -= slash_amount
+        v.status = ValidatorStatus::Slashed
+        self.slashed_count += 1
+        emit ValidatorSlashed(addr, slash_amount)
+        return true
+    }
+
+    fn jail_validator(addr: Address, duration: u64) -> bool {
+        let v = self.validators.get(addr)
+        if v == null {
+            return false
+        }
+        v.status = ValidatorStatus::Jailed
+        v.jail_until = Time::now() + duration
+        return true
+    }
+
+    // ── Epoch Management ───────────────────────────────────────
+
+    fn advance_epoch() {
+        self.epoch += 1
+        self.epoch_start = Time::now()
+        self.adjust_difficulty()
+        emit EpochChanged(self.epoch, self.total_stake)
+    }
+
+    fn adjust_difficulty() {
+        if self.blocks.len() < EPOCH_LENGTH {
+            return
+        }
+        let epoch_blocks = self.blocks.len() % EPOCH_LENGTH
+        if epoch_blocks == 0 {
+            return
+        }
+        let first = self.blocks[self.blocks.len() - EPOCH_LENGTH]
+        let last = self.blocks[self.blocks.len() - 1]
+        let elapsed = last.timestamp - first.timestamp
+        let expected = EPOCH_LENGTH * TARGET_BLOCK_TIME
+        let old_diff = self.difficulty
+        if elapsed < expected / 2 && self.difficulty < MAX_DIFFICULTY {
+            self.difficulty += 1
+        } else if elapsed > expected * 2 && self.difficulty > 1 {
+            self.difficulty -= 1
+        }
+        if old_diff != self.difficulty {
+            emit DifficultyAdjusted(old_diff, self.difficulty)
+        }
+    }
+
+    // ── Helpers ────────────────────────────────────────────────
+
+    fn compute_merkle_root(txs: List<Hash>) -> Hash {
+        if txs.len() == 0 {
+            return Hash::sha256("empty")
+        }
+        if txs.len() == 1 {
+            return txs[0]
+        }
+        // Simple merkle: hash pairs
+        let layer: List<Hash> = txs
+        while layer.len() > 1 {
+            let next: List<Hash> = []
+            let i: u16 = 0
+            while i < layer.len() {
+                if i + 1 < layer.len() {
+                    next.push(Hash::sha256(layer[i], layer[i + 1]))
+                } else {
+                    next.push(Hash::sha256(layer[i], layer[i]))
+                }
+                i += 2
+            }
+            layer = next
+        }
+        return layer[0]
+    }
+
+    fn distribute_reward(block: Block) {
+        let v = self.validators.get(block.validator)
+        if v != null {
+            v.blocks_proposed += 1
+        }
+        // In production: transfer block_reward to miner + validator
+    }
+
+    // ── Queries ────────────────────────────────────────────────
+
+    fn get_height() -> u64 {
+        return self.height
+    }
+
+    fn get_block(h: u64) -> (Hash, Hash, Address, Address, u128, BlockStatus) {
+        if h == 0 || h > self.blocks.len() {
+            return (Hash::zero(), Hash::zero(), Address::zero(), Address::zero(), 0, BlockStatus::Rejected)
+        }
+        let b = self.blocks[h - 1]
+        return (b.prev_hash, b.pow_hash, b.miner, b.validator, b.reward, b.status)
+    }
+
+    fn get_validator_count() -> u16 {
+        return self.validators.len()
+    }
+
+    fn get_total_stake() -> u128 {
+        return self.total_stake
+    }
+
+    fn get_tx_count() -> u64 {
+        let count: u64 = 0
+        let i: u16 = 0
+        while i < self.blocks.len() {
+            count += self.blocks[i].transactions.len()
+            i += 1
+        }
+        return count
+    }
+
+    fn get_epoch() -> (u32, u64, u128, u8, u32) {
+        return (self.epoch, self.epoch_start, self.total_stake, self.difficulty, self.slashed_count)
+    }
+
+    fn set_difficulty(diff: u8) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        if diff > 0 && diff <= MAX_DIFFICULTY {
+            self.difficulty = diff
+            return true
+        }
+        return false
+    }
+
+    fn set_block_reward(reward: u128) -> bool {
+        if msg_sender() != self.owner {
+            return false
+        }
+        self.block_reward = reward
+        return true
+    }
+}
