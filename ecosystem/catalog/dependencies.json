@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-22",
+  "status": "PARTIAL",
+  "edges": [
+    {
+      "source": {
+        "repository": "A-TownChain-Okosystems/genesis-engine",
+        "path": "modules/atc-genesis-renderer/src/render_item.rs",
+        "commit_sha": "a004a13f4b42397d300963a7ab7b17e67d969de1",
+        "blob_sha": "05ace2c83e2c98e8c06134beb8e76be484b80eb3"
+      },
+      "target": {
+        "type": "component",
+        "name": "ECS Transform component"
+      },
+      "kind": "dataflow",
+      "status": "CONFIRMED",
+      "evidence": "Targeted source inspection; render-item collector reads transform data."
+    },
+    {
+      "source": {
+        "repository": "A-TownChain-Okosystems/genesis-engine",
+        "path": "modules/atc-genesis-renderer/src/render_item.rs",
+        "commit_sha": "a004a13f4b42397d300963a7ab7b17e67d969de1",
+        "blob_sha": "05ace2c83e2c98e8c06134beb8e76be484b80eb3"
+      },
+      "target": {
+        "type": "component",
+        "name": "Mesh/Material bindings"
+      },
+      "kind": "dataflow",
+      "status": "CONFIRMED",
+      "evidence": "Targeted source inspection; render-item collector reads mesh/material bindings."
+    },
+    {
+      "source": {
+        "repository": "A-TownChain-Okosystems/genesis-engine",
+        "path": "modules/atc-genesis-engine/engine/render/renderer2d.py",
+        "commit_sha": "a004a13f4b42397d300963a7ab7b17e67d969de1",
+        "blob_sha": "f23f46d26d26bb410efc6c13a7282d708b9052e5"
+      },
+      "target": {
+        "type": "external_library",
+        "name": "pygame"
+      },
+      "kind": "runtime-library",
+      "status": "CONFIRMED",
+      "evidence": "pygame.draw.rect() and pygame.display.flip() observed in targeted inspection."
+    }
+  ],
+  "limitations": [
+    "Only directly observed edges are recorded.",
+    "No inferred cross-repository edges are marked confirmed.",
+    "Full caller/dependency graph extraction is pending."
+  ]
+}
