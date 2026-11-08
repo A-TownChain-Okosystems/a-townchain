@@ -1,0 +1,16 @@
+// ATCLang v0.3 — Limit Orders
+// On-chain order book, fill logic
+// ATC-Standard: ATC-88
+
+module limit_orders {
+    struct LimitOrder {
+        order_id: string,
+        trader: string,
+        target_price: int,
+        amount: int
+    }
+    
+    fn fill_order() {
+        // Executes matching limit order when target price is reached
+    }
+}
