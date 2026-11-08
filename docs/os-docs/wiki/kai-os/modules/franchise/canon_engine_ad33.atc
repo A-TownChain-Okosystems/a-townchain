@@ -1,0 +1,171 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-33 — Canon Engine: Verhindert Widersprüche im Franchise
+// GFF v2.0 — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct CanonEngine {
+    canon_entries: Map<Hash256, CanonEntry>,
+    timelines: Map<Hash256, CanonTimeline>,
+    contradictions: List<Contradiction>,
+    alt_universes: Map<Hash256, AlternateUniverse>,
+    canon_versions: Map<UInt32, CanonVersion>,
+    current_version: UInt32,
+    locked: Bool,
+}
+
+struct CanonEntry {
+    id: Hash256,
+    franchise_id: Hash256,
+    title: String,
+    category: CanonCategory,
+    content: String,
+    canonical: Bool,
+    source: String,
+    version: UInt32,
+    references: List<Hash256>,
+    contradictions: List<Hash256>,
+    created_at: UInt64,
+    last_modified: UInt64,
+}
+
+enum CanonCategory { History, CharacterRelation, Event, Location, Artifact, Organization, Timeline, Mythology }
+
+struct CanonTimeline {
+    id: Hash256,
+    franchise_id: Hash256,
+    name: String,
+    is_primary: Bool,
+    events: List<CanonEvent>,
+    divergences: List<String>,
+}
+
+struct CanonEvent {
+    id: Hash256,
+    date: String,
+    title: String,
+    description: String,
+    participants: List<String>,
+    importance: UInt8,
+    canonical: Bool,
+}
+
+struct Contradiction {
+    id: Hash256,
+    entry_a: Hash256,
+    entry_b: Hash256,
+    description: String,
+    resolution: String,
+    resolved: Bool,
+    detected_at: UInt64,
+}
+
+struct AlternateUniverse {
+    id: Hash256,
+    name: String,
+    parent_timeline: Hash256,
+    divergence_point: String,
+    differences: List<String>,
+    entries: List<Hash256>,
+}
+
+struct CanonVersion {
+    version: UInt32,
+    timestamp: UInt64,
+    changes: List<String>,
+    locked: Bool,
+}
+
+// Canon Engine: Eintrag hinzufügen
+pub fn add_canon_entry(engine: CanonEngine, franchise_id: Hash256, title: String, category: CanonCategory, content: String, source: String) -> Hash256 {
+    let eid = Crypto::sha256(serialize(title, franchise_id, Chain::timestamp()))
+    engine.canon_entries[eid] = CanonEntry {
+        id: eid, franchise_id: franchise_id, title: title, category: category,
+        content: content, canonical: true, source: source, version: engine.current_version,
+        references: [], contradictions: [], created_at: Chain::timestamp(),
+        last_modified: Chain::timestamp(),
+    }
+    // Auf Widersprüche prüfen
+    check_contradictions(engine, eid)
+    return eid
+}
+
+// Canon Engine: Widerspruchserkennung
+pub fn check_contradictions(engine: CanonEngine, new_entry_id: Hash256) {
+    let new_entry = engine.canon_entries[new_entry_id]
+    for other_id in engine.canon_entries.keys() {
+        if other_id == new_entry_id { continue }
+        let other = engine.canon_entries[other_id]
+        if other.franchise_id != new_entry.franchise_id { continue }
+        if other.category != new_entry.category { continue }
+        // Vereinfachte Widerspruchserkennung (gleiche Titel, unterschiedlicher Inhalt)
+        if other.title == new_entry.title and other.content != new_entry.content {
+            let cid = Crypto::sha256(serialize(new_entry_id, other_id, Chain::timestamp()))
+            engine.contradictions.append(Contradiction {
+                id: cid, entry_a: new_entry_id, entry_b: other_id,
+                description: "Content mismatch for same title: " + new_entry.title,
+                resolution: "", resolved: false, detected_at: Chain::timestamp(),
+            })
+            new_entry.contradictions.append(cid)
+            other.contradictions.append(cid)
+        }
+    }
+}
+
+// Canon Engine: Widerspruch auflösen
+pub fn resolve_contradiction(engine: CanonEngine, contradiction_id: Hash256, resolution: String, keep_entry: Hash256) -> Bool {
+    for c in engine.contradictions {
+        if c.id == contradiction_id {
+            c.resolution = resolution
+            c.resolved = true
+            // Nicht-kanonisch markieren
+            let other = if c.entry_a == keep_entry then c.entry_b else c.entry_a
+            engine.canon_entries[other].canonical = false
+            return true
+        }
+    }
+    return false
+}
+
+// Canon Engine: Primäre Timeline erstellen
+pub fn create_primary_timeline(engine: CanonEngine, franchise_id: Hash256, name: String) -> Hash256 {
+    let tid = Crypto::sha256(serialize(name, franchise_id, Chain::timestamp()))
+    engine.timelines[tid] = CanonTimeline {
+        id: tid, franchise_id: franchise_id, name: name,
+        is_primary: true, events: [], divergences: [],
+    }
+    return tid
+}
+
+// Canon Engine: Alternatives Universum erstellen
+pub fn create_alt_universe(engine: CanonEngine, name: String, parent: Hash256, divergence: String) -> Hash256 {
+    let uid = Crypto::sha256(serialize(name, parent, Chain::timestamp()))
+    engine.alt_universes[uid] = AlternateUniverse {
+        id: uid, name: name, parent_timeline: parent,
+        divergence_point: divergence, differences: [], entries: [],
+    }
+    return uid
+}
+
+// Canon Engine: Version sperren (Snapshot)
+pub fn lock_version(engine: CanonEngine) -> UInt32 {
+    engine.current_version = engine.current_version + 1
+    engine.canon_versions[engine.current_version] = CanonVersion {
+        version: engine.current_version, timestamp: Chain::timestamp(),
+        changes: [], locked: true,
+    }
+    engine.locked = false
+    return engine.current_version
+}
+
+// Canon Engine: Kanonizität prüfen
+pub fn is_canonical(engine: CanonEngine, entry_id: Hash256) -> Bool {
+    if not engine.canon_entries.contains(entry_id) { return false }
+    return engine.canon_entries[entry_id].canonical
+}
+
+// Canon Engine: Alle Widersprüche
+pub fn get_contradictions(engine: CanonEngine) -> List<Contradiction> {
+    return engine.contradictions.filter(fn c => not c.resolved)
+}
