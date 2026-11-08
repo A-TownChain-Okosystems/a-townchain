@@ -1,0 +1,2088 @@
+<!-- Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved. -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A-TownChain OS v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#020510;--purple:#a259ff;--cyan:#00d1ff;--green:#00ffb3;
+  --pink:#ff2d78;--orange:#ff8c00;--text:#e8eaf6;--dim:#6b7ba4;
+  --glass:rgba(8,12,30,0.85);--border:rgba(162,89,255,0.25);
+  --win-bg:rgba(5,8,22,0.96);--win-border:rgba(162,89,255,0.35);
+  --taskbar-h:44px;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:'Rajdhani',sans-serif;color:var(--text)}
+
+/* ═══════════════════ DESKTOP ═══════════════════ */
+#desktop{
+  position:fixed;inset:0;bottom:var(--taskbar-h);
+  background:radial-gradient(ellipse at 20% 50%,rgba(162,89,255,0.12) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(0,209,255,0.08) 0%,transparent 50%),
+             radial-gradient(ellipse at 60% 80%,rgba(255,45,120,0.06) 0%,transparent 40%),
+             linear-gradient(135deg,#020510 0%,#040820 50%,#020514 100%);
+  overflow:hidden;
+}
+/* Grid lines */
+#desktop::before{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(162,89,255,0.04) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(162,89,255,0.04) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+}
+/* Scan line animation */
+#desktop::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(transparent 50%,rgba(0,0,0,0.015) 50%);
+  background-size:100% 3px;pointer-events:none;animation:scan 8s linear infinite;
+}
+@keyframes scan{from{background-position:0 0}to{background-position:0 100%}}
+
+/* ═══════════════════ DESKTOP ICONS ═══════════════════ */
+#desktop-icons{
+  position:absolute;inset:12px 12px 12px 12px;
+  display:flex;flex-direction:column;flex-wrap:wrap;
+  align-content:flex-start;gap:6px;pointer-events:none;
+}
+.dicon{
+  width:76px;height:80px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:6px;cursor:pointer;border-radius:8px;
+  padding:8px 4px;user-select:none;pointer-events:all;
+  transition:background 0.15s;
+}
+.dicon:hover{background:rgba(162,89,255,0.18)}
+.dicon.selected{background:rgba(162,89,255,0.25);outline:1px solid rgba(162,89,255,0.5)}
+.dicon-icon{font-size:26px;line-height:1;filter:drop-shadow(0 0 6px rgba(162,89,255,0.5))}
+.dicon-label{
+  font-size:10px;color:var(--text);text-align:center;line-height:1.3;
+  text-shadow:0 1px 4px rgba(0,0,0,0.9),0 0 8px rgba(0,0,0,1);
+  word-break:break-word;max-width:70px;
+}
+
+/* ═══════════════════ TASKBAR ═══════════════════ */
+#taskbar{
+  position:fixed;bottom:0;left:0;right:0;height:var(--taskbar-h);
+  background:rgba(4,6,18,0.96);backdrop-filter:blur(20px);
+  border-top:1px solid rgba(162,89,255,0.2);
+  display:flex;align-items:center;gap:2px;padding:0 6px;
+  z-index:9000;
+}
+/* Start button */
+#start-btn{
+  width:38px;height:34px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  border:none;border-radius:6px;cursor:pointer;font-size:16px;
+  transition:transform 0.1s,box-shadow 0.1s;flex-shrink:0;
+  box-shadow:0 0 12px rgba(162,89,255,0.4);
+}
+#start-btn:hover{transform:scale(1.05);box-shadow:0 0 18px rgba(162,89,255,0.6)}
+#start-btn.active{background:linear-gradient(135deg,var(--cyan),var(--purple))}
+/* Taskbar separator */
+.tb-sep{width:1px;height:24px;background:rgba(162,89,255,0.2);margin:0 4px;flex-shrink:0}
+/* Pinned + running app buttons */
+.tb-app{
+  height:34px;min-width:34px;max-width:160px;display:flex;align-items:center;gap:6px;
+  padding:0 8px;border:none;border-radius:6px;cursor:pointer;
+  background:transparent;color:var(--text);font-family:'Rajdhani',sans-serif;
+  font-size:11px;transition:background 0.15s;position:relative;flex-shrink:0;
+}
+.tb-app:hover{background:rgba(162,89,255,0.18)}
+.tb-app.running{background:rgba(162,89,255,0.12)}
+.tb-app.running::after{
+  content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
+  width:20px;height:2px;background:var(--purple);border-radius:1px;
+}
+.tb-app.focused{background:rgba(162,89,255,0.25)}
+.tb-app.focused::after{background:var(--cyan);width:26px}
+.tb-app-icon{font-size:16px;line-height:1}
+.tb-app-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px}
+/* Taskbar right — system tray */
+#sys-tray{
+  margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0;
+}
+.tray-item{
+  display:flex;align-items:center;gap:4px;padding:4px 8px;
+  border-radius:5px;cursor:pointer;transition:background 0.15s;font-size:11px;
+}
+.tray-item:hover{background:rgba(162,89,255,0.18)}
+#clock{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--text);text-align:center;line-height:1.5}
+.tray-dot{width:7px;height:7px;border-radius:50%}
+
+/* ═══════════════════ START MENU ═══════════════════ */
+#start-menu{
+  position:fixed;bottom:var(--taskbar-h);left:0;width:520px;
+  background:rgba(4,7,20,0.97);backdrop-filter:blur(30px);
+  border:1px solid rgba(162,89,255,0.3);border-radius:0 12px 0 0;
+  z-index:9100;display:none;flex-direction:column;overflow:hidden;
+  box-shadow:4px 0 40px rgba(0,0,0,0.8);
+}
+#start-menu.open{display:flex}
+.sm-header{
+  padding:16px 16px 12px;
+  border-bottom:1px solid rgba(162,89,255,0.15);
+}
+.sm-logo{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+}
+.sm-logo-icon{
+  width:36px;height:36px;background:linear-gradient(135deg,var(--purple),var(--cyan));
+  border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.sm-logo-text{font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:1px}
+.sm-logo-sub{font-size:10px;color:var(--dim)}
+.sm-search{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(162,89,255,0.08);border:1px solid rgba(162,89,255,0.25);
+  border-radius:8px;padding:8px 12px;
+}
+.sm-search input{
+  flex:1;background:none;border:none;outline:none;color:var(--text);
+  font-family:'Rajdhani',sans-serif;font-size:13px;
+}
+.sm-search input::placeholder{color:var(--dim)}
+.sm-section{padding:12px 16px 6px;font-family:'Orbitron',sans-serif;font-size:8px;color:var(--dim);letter-spacing:2px}
+.sm-apps{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
+  padding:0 10px 10px;overflow-y:auto;max-height:280px;
+}
+.sm-app{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 4px;border-radius:8px;cursor:pointer;transition:background 0.15s;
+}
+.sm-app:hover{background:rgba(162,89,255,0.18)}
+.sm-app-icon{font-size:22px;filter:drop-shadow(0 0 4px rgba(162,89,255,0.4))}
+.sm-app-name{font-size:9px;color:var(--text);text-align:center;line-height:1.3}
+.sm-footer{
+  padding:10px 16px;border-top:1px solid rgba(162,89,255,0.15);
+  display:flex;align-items:center;gap:8px;
+}
+.sm-footer-btn{
+  display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;
+  cursor:pointer;transition:background 0.15s;font-size:11px;border:none;
+  background:transparent;color:var(--text);font-family:'Rajdhani',sans-serif;
+}
+.sm-footer-btn:hover{background:rgba(162,89,255,0.18)}
+
+/* ═══════════════════ WINDOWS ═══════════════════ */
+.window{
+  position:fixed;min-width:300px;min-height:200px;
+  background:var(--win-bg);border:1px solid var(--win-border);
+  border-radius:10px;overflow:hidden;display:none;flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,0.8),0 0 0 1px rgba(162,89,255,0.1);
+  backdrop-filter:blur(20px);resize:both;
+}
+.window.open{display:flex}
+.window.minimized{display:none!important}
+.window.maximized{
+  top:0!important;left:0!important;
+  width:100vw!important;height:calc(100vh - var(--taskbar-h))!important;
+  border-radius:0;resize:none;
+}
+.win-titlebar{
+  height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;
+  background:rgba(162,89,255,0.08);border-bottom:1px solid rgba(162,89,255,0.15);
+  cursor:move;user-select:none;flex-shrink:0;
+}
+.win-icon{font-size:14px}
+.win-title{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:1px;color:var(--text);flex:1}
+.win-controls{display:flex;gap:5px;margin-left:auto}
+.win-btn{
+  width:12px;height:12px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:8px;
+  transition:filter 0.15s;
+}
+.win-btn:hover{filter:brightness(1.4)}
+.win-btn.close{background:#ff5f56}
+.win-btn.minimize{background:#febc2e}
+.win-btn.maximize{background:#28c840}
+.win-body{flex:1;overflow:auto;padding:0}
+/* Windows scrollbar */
+.win-body::-webkit-scrollbar{width:4px}
+.win-body::-webkit-scrollbar-thumb{background:rgba(162,89,255,0.4);border-radius:2px}
+
+/* ═══════════════════ RIGHT-CLICK MENU ═══════════════════ */
+#ctx-menu{
+  position:fixed;background:rgba(4,7,20,0.97);border:1px solid rgba(162,89,255,0.3);
+  border-radius:8px;z-index:9500;display:none;min-width:180px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.8);overflow:hidden;
+  backdrop-filter:blur(20px);
+}
+.ctx-item{
+  padding:8px 16px;font-size:12px;cursor:pointer;
+  display:flex;align-items:center;gap:10px;transition:background 0.1s;
+}
+.ctx-item:hover{background:rgba(162,89,255,0.18)}
+.ctx-sep{height:1px;background:rgba(162,89,255,0.15);margin:4px 0}
+
+/* ═══════════════════ NOTIFICATION ═══════════════════ */
+#notif-area{
+  position:fixed;top:12px;right:12px;z-index:9400;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none;
+}
+.notif{
+  background:rgba(4,7,20,0.97);border:1px solid rgba(162,89,255,0.35);
+  border-radius:8px;padding:10px 16px;font-size:11px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.6);animation:notif-in 0.3s ease;
+  pointer-events:all;min-width:220px;
+  display:flex;align-items:center;gap:10px;
+  backdrop-filter:blur(20px);
+}
+.notif.error{border-color:rgba(255,45,120,0.5)}
+.notif.success{border-color:rgba(0,255,179,0.5)}
+@keyframes notif-in{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes notif-out{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+
+/* ═══════════════════ APP STYLES ═══════════════════ */
+.app-body{padding:16px;font-size:12px}
+.panel{
+  background:rgba(162,89,255,0.04);border:1px solid rgba(162,89,255,0.2);
+  border-radius:10px;padding:14px;margin-bottom:10px;
+}
+.panel-title{
+  font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;
+  color:var(--purple);margin-bottom:12px;
+}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.stat-card{
+  background:rgba(0,0,0,0.3);border:1px solid rgba(162,89,255,0.15);
+  border-radius:8px;padding:10px;text-align:center;
+}
+.stat-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;margin-bottom:3px}
+.stat-lbl{font-size:9px;color:var(--dim);letter-spacing:1px}
+.btn{
+  padding:7px 14px;border:none;border-radius:6px;cursor:pointer;
+  font-family:'Orbitron',sans-serif;font-size:8px;font-weight:700;
+  letter-spacing:1px;transition:all 0.15s;
+}
+.btn-primary{background:linear-gradient(135deg,var(--purple),var(--cyan));color:#000}
+.btn-primary:hover{box-shadow:0 0 16px rgba(162,89,255,0.5)}
+.btn-ghost{background:rgba(162,89,255,0.12);border:1px solid rgba(162,89,255,0.3);color:var(--purple)}
+.btn-ghost:hover{background:rgba(162,89,255,0.22)}
+.btn-danger{background:rgba(255,45,120,0.15);border:1px solid rgba(255,45,120,0.3);color:var(--pink)}
+input.field,textarea.field,select.field{
+  width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(162,89,255,0.3);
+  border-radius:6px;padding:8px 12px;color:var(--text);
+  font-family:'Rajdhani',sans-serif;font-size:12px;outline:none;
+  transition:border-color 0.2s;
+}
+input.field:focus,textarea.field:focus{border-color:var(--purple)}
+.pr-row{margin-bottom:8px}
+.pr-lbl{display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px;color:var(--dim)}
+.pr-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:2px}
+.pr-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--purple),var(--cyan))}
+.tab-row{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.tab-btn{
+  padding:5px 12px;border-radius:10px;border:1px solid rgba(162,89,255,0.25);
+  background:rgba(0,0,0,0.2);color:var(--dim);font-family:'Orbitron',sans-serif;
+  font-size:8px;cursor:pointer;transition:all 0.15s;letter-spacing:1px;
+}
+.tab-btn.active{background:rgba(162,89,255,0.25);border-color:var(--purple);color:var(--purple)}
+
+/* ── Chat ── */
+#chat-messages{
+  height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;
+  padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;margin-bottom:8px;
+}
+#chat-messages::-webkit-scrollbar{width:3px}
+#chat-messages::-webkit-scrollbar-thumb{background:rgba(162,89,255,0.4);border-radius:2px}
+.c-msg{padding:8px 12px;border-radius:8px;max-width:85%;font-size:11px;line-height:1.5}
+.c-msg.user{
+  align-self:flex-end;background:linear-gradient(135deg,rgba(162,89,255,0.3),rgba(0,209,255,0.2));
+  border:1px solid rgba(162,89,255,0.3);
+}
+.c-msg.ai{
+  align-self:flex-start;background:rgba(8,12,30,0.8);
+  border:1px solid rgba(162,89,255,0.15);
+}
+
+/* ── Shivamon ── */
+.shv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+.shv-card{
+  background:rgba(8,12,30,0.8);border:1px solid rgba(162,89,255,0.2);
+  border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;
+  transition:border-color 0.2s,transform 0.2s;
+}
+.shv-card:hover{border-color:var(--purple);transform:translateY(-2px)}
+.shv-card .em{font-size:28px;margin-bottom:6px}
+.shv-card .nm{font-family:'Orbitron',sans-serif;font-size:8px;color:var(--text)}
+.shv-card .lv{font-size:9px;color:var(--dim);margin-top:2px}
+
+/* ── Marketplace ── */
+.market-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.market-card{
+  background:rgba(8,12,30,0.8);border:1px solid rgba(162,89,255,0.2);
+  border-radius:10px;padding:12px;text-align:center;
+}
+.market-card:hover{border-color:var(--purple)}
+
+/* ── ATC Asset rows ── */
+.atc-row{
+  display:flex;align-items:center;gap:8px;padding:6px 8px;
+  border-bottom:1px solid rgba(162,89,255,0.08);font-size:11px;
+  cursor:pointer;transition:background 0.1s;border-radius:4px;
+}
+.atc-row:hover{background:rgba(162,89,255,0.08)}
+.atc-id{font-family:monospace;font-size:10px;color:var(--cyan);flex-shrink:0}
+.atc-nm{flex:1;color:var(--text)}
+.badge{font-size:8px;border-radius:8px;padding:2px 8px;font-family:'Orbitron',sans-serif}
+.b-nft{color:var(--pink);border:1px solid var(--pink)}
+.b-token{color:var(--cyan);border:1px solid var(--cyan)}
+.b-game{color:var(--green);border:1px solid var(--green)}
+.b-iso{color:var(--orange);border:1px solid var(--orange)}
+.b-music{color:var(--purple);border:1px solid var(--purple)}
+.b-art{color:var(--purple);border:1px solid var(--purple)}
+
+/* ── Battle ── */
+@keyframes battle-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes dmg-float{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-40px)}}
+
+/* ── Governance ── */
+.gov-card{
+  background:rgba(8,12,30,0.6);border:1px solid rgba(162,89,255,0.2);
+  border-radius:10px;padding:14px;margin-bottom:8px;
+}
+
+/* ── Settings ── */
+.settings-nav{
+  width:160px;flex-shrink:0;border-right:1px solid rgba(162,89,255,0.15);
+  padding:12px 0;
+}
+.settings-nav-item{
+  padding:8px 16px;cursor:pointer;font-size:12px;transition:background 0.1s;
+  display:flex;align-items:center;gap:8px;border-radius:0;
+}
+.settings-nav-item:hover{background:rgba(162,89,255,0.1)}
+.settings-nav-item.active{background:rgba(162,89,255,0.18);color:var(--purple)}
+.settings-content{flex:1;padding:16px;overflow-y:auto}
+.settings-section{margin-bottom:20px}
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid rgba(162,89,255,0.08);font-size:12px;
+}
+.toggle{
+  width:36px;height:20px;background:rgba(162,89,255,0.2);border-radius:10px;
+  position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;
+}
+.toggle.on{background:var(--purple)}
+.toggle::after{
+  content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;
+  background:#fff;border-radius:50%;transition:transform 0.2s;
+}
+.toggle.on::after{transform:translateX(16px)}
+
+/* ── Code editor ── */
+.ftree-folder{padding:4px 8px;cursor:pointer;font-size:11px;color:var(--cyan);display:flex;align-items:center;gap:6px}
+.ftree-file{padding:3px 8px 3px 22px;cursor:pointer;font-size:10px;color:var(--dim);transition:color 0.1s}
+.ftree-file:hover,.ftree-file.active{color:var(--text)}
+.code-editor{
+  background:rgba(0,0,0,0.4);border-radius:6px;padding:12px;
+  font-family:'Courier New',monospace;font-size:11px;color:#abb2bf;
+  white-space:pre;overflow:auto;height:240px;resize:vertical;
+  border:1px solid rgba(162,89,255,0.15);outline:none;
+}
+.code-editor:focus{border-color:var(--purple)}
+.code-output{
+  background:rgba(0,0,0,0.6);border-radius:6px;padding:10px;
+  font-family:'Courier New',monospace;font-size:10px;color:var(--green);
+  height:80px;overflow-y:auto;border:1px solid rgba(0,255,179,0.15);
+}
+
+/* ── Explorer ── */
+.exp-table{width:100%;border-collapse:collapse;font-size:11px}
+.exp-table th{text-align:left;padding:6px 8px;color:var(--dim);font-family:'Orbitron',sans-serif;font-size:8px;border-bottom:1px solid rgba(162,89,255,0.15)}
+.exp-table td{padding:6px 8px;border-bottom:1px solid rgba(162,89,255,0.06)}
+.exp-table tr:hover td{background:rgba(162,89,255,0.05)}
+
+/* ── Wallet ── */
+.wallet-addr{
+  font-family:monospace;font-size:11px;color:var(--cyan);
+  background:rgba(0,209,255,0.06);border:1px solid rgba(0,209,255,0.2);
+  border-radius:6px;padding:8px 12px;word-break:break-all;margin-bottom:10px;
+}
+
+/* ── Factory tabs ── */
+.ff-fader{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.ff-fader-track{flex:1;width:6px;background:rgba(255,255,255,0.08);border-radius:3px;position:relative}
+.ff-fader-fill{position:absolute;bottom:0;width:100%;border-radius:3px}
+.ff-fader-label{font-size:7px;color:var(--dim);font-family:'Orbitron',sans-serif}
+
+/* Scrollbar global */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(162,89,255,0.3);border-radius:2px}
+
+/* ── Animations ── */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(162,89,255,0.3)}50%{box-shadow:0 0 16px rgba(162,89,255,0.6)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ DESKTOP ═══════════════════════════════ -->
+<div id="desktop" oncontextmenu="showCtxMenu(event)" onclick="hideCtxMenu();closeStartMenu()">
+
+  <!-- Floating ATC logo on desktop -->
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);opacity:0.04;pointer-events:none;text-align:center">
+    <div style="font-family:'Orbitron',sans-serif;font-size:80px;font-weight:900;color:var(--purple);animation:float 6s ease-in-out infinite">ATC</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:14px;letter-spacing:8px;color:var(--cyan)">A-TOWNCHAIN OS v2.0</div>
+  </div>
+
+  <!-- Desktop Icons -->
+  <div id="desktop-icons">
+    <div class="dicon" ondblclick="openWin('win-ai')" onclick="selectIcon(this)">
+      <div class="dicon-icon">🧠</div>
+      <div class="dicon-label">AI Orchestrator</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-wallet')" onclick="selectIcon(this)">
+      <div class="dicon-icon">💎</div>
+      <div class="dicon-label">ATC Wallet</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-shivamon')" onclick="selectIcon(this)">
+      <div class="dicon-icon">🐉</div>
+      <div class="dicon-label">Shivamon</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-battle')" onclick="selectIcon(this)">
+      <div class="dicon-icon">⚔️</div>
+      <div class="dicon-label">Battle Arena</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-market')" onclick="selectIcon(this)">
+      <div class="dicon-icon">🛒</div>
+      <div class="dicon-label">Marketplace</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-govern')" onclick="selectIcon(this)">
+      <div class="dicon-icon">🏛</div>
+      <div class="dicon-label">Governance</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-explorer')" onclick="selectIcon(this)">
+      <div class="dicon-icon">⛓</div>
+      <div class="dicon-label">Chain Explorer</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-factory')" onclick="selectIcon(this)">
+      <div class="dicon-icon">🏭</div>
+      <div class="dicon-label">Franchise Factory</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-code')" onclick="selectIcon(this)">
+      <div class="dicon-icon">&lt;/&gt;</div>
+      <div class="dicon-label">Code Center</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-settings')" onclick="selectIcon(this)">
+      <div class="dicon-icon">⚙️</div>
+      <div class="dicon-label">Einstellungen</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-dash')" onclick="selectIcon(this)">
+      <div class="dicon-icon">📊</div>
+      <div class="dicon-label">Dashboard</div>
+    </div>
+    <div class="dicon" ondblclick="openWin('win-assets')" onclick="selectIcon(this)">
+      <div class="dicon-icon">📦</div>
+      <div class="dicon-label">Asset Vault</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ TASKBAR ═══════════════════════════════ -->
+<div id="taskbar">
+  <button id="start-btn" onclick="toggleStartMenu(event)">⚡</button>
+  <div class="tb-sep"></div>
+  <!-- Pinned apps -->
+  <button class="tb-app" onclick="openWin('win-dash')" id="tb-dash">
+    <span class="tb-app-icon">📊</span><span class="tb-app-label">Dashboard</span>
+  </button>
+  <button class="tb-app" onclick="openWin('win-ai')" id="tb-ai">
+    <span class="tb-app-icon">🧠</span><span class="tb-app-label">AI</span>
+  </button>
+  <button class="tb-app" onclick="openWin('win-wallet')" id="tb-wallet">
+    <span class="tb-app-icon">💎</span><span class="tb-app-label">Wallet</span>
+  </button>
+  <button class="tb-app" onclick="openWin('win-shivamon')" id="tb-shivamon">
+    <span class="tb-app-icon">🐉</span><span class="tb-app-label">Shivamon</span>
+  </button>
+  <button class="tb-app" onclick="openWin('win-explorer')" id="tb-explorer">
+    <span class="tb-app-icon">⛓</span><span class="tb-app-label">Explorer</span>
+  </button>
+  <div class="tb-sep"></div>
+
+  <!-- System tray -->
+  <div id="sys-tray">
+    <div class="tray-item">
+      <div class="tray-dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></div>
+      <span style="font-size:10px;color:var(--dim)">ONLINE</span>
+    </div>
+    <div class="tray-item">
+      <span style="font-size:12px">🌐</span>
+      <span style="font-size:10px;color:var(--dim)">847 Nodes</span>
+    </div>
+    <div class="tray-item">
+      <span style="font-size:12px">🧠</span>
+      <span style="font-size:10px;color:var(--dim)">AI</span>
+    </div>
+    <div class="tray-item" onclick="openWin('win-settings')">
+      <span style="font-size:12px">⚙️</span>
+    </div>
+    <div class="tray-item">
+      <div id="clock">00:00:00<br><span style="font-size:9px;color:var(--dim)">21.05.2026</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ START MENU ═══════════════════════════════ -->
+<div id="start-menu">
+  <div class="sm-header">
+    <div class="sm-logo">
+      <div class="sm-logo-icon">⚡</div>
+      <div>
+        <div class="sm-logo-text">A-TOWNCHAIN OS</div>
+        <div class="sm-logo-sub">v2.0 — Autonomous Franchise Factory</div>
+      </div>
+    </div>
+    <div class="sm-search">
+      <span style="color:var(--dim)">🔍</span>
+      <input id="sm-search-inp" placeholder="App suchen..." oninput="filterSmApps(this.value)">
+    </div>
+  </div>
+  <div class="sm-section">ALLE APPS</div>
+  <div class="sm-apps" id="sm-apps">
+    <div class="sm-app" onclick="openWinSm('win-dash')"><div class="sm-app-icon">📊</div><div class="sm-app-name">Dashboard</div></div>
+    <div class="sm-app" onclick="openWinSm('win-ai')"><div class="sm-app-icon">🧠</div><div class="sm-app-name">AI Orchestrator</div></div>
+    <div class="sm-app" onclick="openWinSm('win-wallet')"><div class="sm-app-icon">💎</div><div class="sm-app-name">ATC Wallet</div></div>
+    <div class="sm-app" onclick="openWinSm('win-shivamon')"><div class="sm-app-icon">🐉</div><div class="sm-app-name">Shivamon</div></div>
+    <div class="sm-app" onclick="openWinSm('win-battle')"><div class="sm-app-icon">⚔️</div><div class="sm-app-name">Battle Arena</div></div>
+    <div class="sm-app" onclick="openWinSm('win-market')"><div class="sm-app-icon">🛒</div><div class="sm-app-name">Marketplace</div></div>
+    <div class="sm-app" onclick="openWinSm('win-govern')"><div class="sm-app-icon">🏛</div><div class="sm-app-name">Governance</div></div>
+    <div class="sm-app" onclick="openWinSm('win-explorer')"><div class="sm-app-icon">⛓</div><div class="sm-app-name">Chain Explorer</div></div>
+    <div class="sm-app" onclick="openWinSm('win-factory')"><div class="sm-app-icon">🏭</div><div class="sm-app-name">Franchise Factory</div></div>
+    <div class="sm-app" onclick="openWinSm('win-code')"><div class="sm-app-icon">&lt;/&gt;</div><div class="sm-app-name">Code Center</div></div>
+    <div class="sm-app" onclick="openWinSm('win-assets')"><div class="sm-app-icon">📦</div><div class="sm-app-name">Asset Vault</div></div>
+    <div class="sm-app" onclick="openWinSm('win-settings')"><div class="sm-app-icon">⚙️</div><div class="sm-app-name">Einstellungen</div></div>
+  </div>
+  <div class="sm-footer">
+    <button class="sm-footer-btn" onclick="closeStartMenu()"><span>👤</span> CEO · A-TownChain</button>
+    <button class="sm-footer-btn" style="margin-left:auto" onclick="showNotif('Neustart…','info');closeStartMenu()"><span>🔄</span> Neustart</button>
+    <button class="sm-footer-btn" onclick="showNotif('Herunterfahren…','info');closeStartMenu()"><span>⏻</span> Herunterfahren</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ CONTEXT MENU ═══════════════════════════════ -->
+<div id="ctx-menu">
+  <div class="ctx-item" onclick="hideCtxMenu()">🔄 Desktop aktualisieren</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="openWin('win-settings');hideCtxMenu()">⚙️ Einstellungen</div>
+  <div class="ctx-item" onclick="openWin('win-dash');hideCtxMenu()">📊 Dashboard öffnen</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="changeWallpaper();hideCtxMenu()">🎨 Hintergrund ändern</div>
+  <div class="ctx-item" onclick="sortDesktopIcons();hideCtxMenu()">⬛ Icons sortieren</div>
+</div>
+
+<!-- Notification area -->
+<div id="notif-area"></div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+  WINDOWS
+════════════════════════════════════════════════════════════════════════ -->
+
+<!-- ── DASHBOARD ── -->
+<div id="win-dash" class="window" style="top:60px;left:80px;width:680px;height:420px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-dash')">
+    <span class="win-icon">📊</span>
+    <span class="win-title">DASHBOARD — A-TOWNCHAIN OS</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-dash')" title="Minimieren"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-dash')" title="Maximieren"></button>
+      <button class="win-btn close" onclick="closeWin('win-dash')" title="Schließen"></button>
+    </div>
+  </div>
+  <div class="win-body app-body">
+    <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-card"><div class="stat-val" style="color:var(--purple)" id="dash-supply">—</div><div class="stat-lbl">ATC SUPPLY</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--cyan)" id="dash-nodes">847</div><div class="stat-lbl">NODES</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--green)" id="dash-blocks">—</div><div class="stat-lbl">BLÖCKE</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--pink)" id="dash-nfts">—</div><div class="stat-lbl">SHIVAMON NFTs</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">📡 LIVE ACTIVITY</div>
+      <div id="dash-feed" style="font-size:11px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div><span>Block #184.291 validiert</span><span style="color:var(--dim);margin-left:auto;font-size:10px">2s</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:var(--purple)"></div><span>ATC-NFT-MUSIC geminted</span><span style="color:var(--dim);margin-left:auto;font-size:10px">14s</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:var(--cyan)"></div><span>Neue Governance Proposal erstellt</span><span style="color:var(--dim);margin-left:auto;font-size:10px">1m</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:var(--pink)"></div><span>Shivamon Evolution: Voltrix Lv.55</span><span style="color:var(--dim);margin-left:auto;font-size:10px">3m</span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="panel">
+        <div class="panel-title">⚡ SYSTEM STATUS</div>
+        <div class="pr-row"><div class="pr-lbl"><span>CPU</span><span id="dash-cpu">14%</span></div><div class="pr-bar"><div class="pr-fill" id="dash-cpu-bar" style="width:14%"></div></div></div>
+        <div class="pr-row"><div class="pr-lbl"><span>RAM</span><span id="dash-ram">36%</span></div><div class="pr-bar"><div class="pr-fill" id="dash-ram-bar" style="width:36%;background:linear-gradient(90deg,var(--cyan),var(--purple))"></div></div></div>
+        <div class="pr-row"><div class="pr-lbl"><span>GPU</span><span id="dash-gpu">23%</span></div><div class="pr-bar"><div class="pr-fill" id="dash-gpu-bar" style="width:23%;background:linear-gradient(90deg,var(--pink),var(--orange))"></div></div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">🌐 NETWORK</div>
+        <div style="font-size:11px;display:flex;flex-direction:column;gap:6px">
+          <div class="pr-row"><div class="pr-lbl"><span>Nodes Online</span><span style="color:var(--green)">847</span></div></div>
+          <div class="pr-row"><div class="pr-lbl"><span>Latency</span><span style="color:var(--cyan)">18ms</span></div></div>
+          <div class="pr-row"><div class="pr-lbl"><span>Chain Sync</span><span style="color:var(--purple)">99.98%</span></div><div class="pr-bar"><div class="pr-fill" style="width:99.98%"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── AI ORCHESTRATOR ── -->
+<div id="win-ai" class="window" style="top:80px;left:160px;width:480px;height:480px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-ai')">
+    <span class="win-icon">🧠</span>
+    <span class="win-title">AI ORCHESTRATOR — GEMINI 2.0</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-ai')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-ai')"></button>
+      <button class="win-btn close" onclick="closeWin('win-ai')"></button>
+    </div>
+  </div>
+  <div class="win-body app-body">
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <span style="font-size:9px;color:var(--green);border:1px solid var(--green);border-radius:10px;padding:2px 8px;font-family:'Orbitron',sans-serif">● GEMINI 2.0</span>
+      <span style="font-size:9px;color:var(--cyan);border:1px solid var(--cyan);border-radius:10px;padding:2px 8px;font-family:'Orbitron',sans-serif">● GPT-4o</span>
+      <span style="font-size:9px;color:var(--purple);border:1px solid var(--purple);border-radius:10px;padding:2px 8px;font-family:'Orbitron',sans-serif">● LOCAL AI</span>
+    </div>
+    <div id="chat-messages">
+      <div class="c-msg ai">👋 A-TownChain AI aktiv. Wie kann ich dir helfen?</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <input id="chat-inp" class="field" placeholder="Frage an den AI-Orchestrator..." style="flex:1" onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="btn btn-primary" onclick="sendChat()">SEND</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ATC WALLET ── -->
+<div id="win-wallet" class="window" style="top:100px;left:240px;width:500px;height:440px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-wallet')">
+    <span class="win-icon">💎</span>
+    <span class="win-title">ATC WALLET</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-wallet')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-wallet')"></button>
+      <button class="win-btn close" onclick="closeWin('win-wallet')"></button>
+    </div>
+  </div>
+  <div class="win-body app-body">
+    <div id="wallet-disconnected">
+      <div style="text-align:center;padding:30px">
+        <div style="font-size:40px;margin-bottom:12px">💎</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--dim);margin-bottom:16px">WALLET VERBINDEN</div>
+        <button class="btn btn-primary" onclick="connectWallet()" style="font-size:10px;padding:10px 24px">⚡ WALLET ERSTELLEN / VERBINDEN</button>
+      </div>
+    </div>
+    <div id="wallet-connected" style="display:none">
+      <div class="panel">
+        <div class="panel-title">WALLET ADRESSE</div>
+        <div class="wallet-addr" id="wallet-addr-display">—</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div>
+            <div style="font-size:10px;color:var(--dim)">BALANCE</div>
+            <div style="font-family:'Orbitron',sans-serif;font-size:24px;color:var(--purple)" id="wallet-bal-display">0.00 ATC</div>
+          </div>
+          <button class="btn btn-ghost" style="margin-left:auto" onclick="refreshWalletBalance()">🔄 Refresh</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">TRANSFER</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input id="wallet-to" class="field" placeholder="Empfänger-Adresse (ATC-...)">
+          <input id="wallet-amount" type="number" class="field" placeholder="Betrag in ATC" min="0">
+          <button class="btn btn-primary" onclick="sendATC()">💸 SENDEN</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">TX HISTORIE</div>
+        <div id="wallet-tx-list" style="font-size:11px;max-height:100px;overflow-y:auto">
+          <div style="color:var(--dim);text-align:center;padding:10px">Keine Transaktionen</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SHIVAMON ── -->
+<div id="win-shivamon" class="window" style="top:60px;left:300px;width:580px;height:500px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-shivamon')">
+    <span class="win-icon">🐉</span>
+    <span class="win-title">SHIVAMON — ATC-9000 NFT STANDARD</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-shivamon')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-shivamon')"></button>
+      <button class="win-btn close" onclick="closeWin('win-shivamon')"></button>
+    </div>
+  </div>
+  <div class="win-body app-body">
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="shvTab('collection',this)">📦 Collection</button>
+      <button class="tab-btn" onclick="shvTab('mint',this)">✨ Mint</button>
+      <button class="tab-btn" onclick="shvTab('breed',this)">🧬 Breed</button>
+      <button class="tab-btn" onclick="shvTab('stats',this)">📊 Stats</button>
+    </div>
+    <!-- Collection -->
+    <div id="shvt-collection">
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="shv-owner-inp" class="field" placeholder="Wallet-Adresse..." style="flex:1">
+        <button class="btn btn-ghost" onclick="loadShivamon()">🔍 Laden</button>
+      </div>
+      <div id="shv-grid" class="shv-grid">
+        <div style="color:var(--dim);font-size:11px;text-align:center;padding:20px;grid-column:1/-1">Wallet verbinden und Collection laden...</div>
+      </div>
+    </div>
+    <!-- Mint -->
+    <div id="shvt-mint" style="display:none">
+      <div class="panel">
+        <div class="panel-title">NEUES SHIVAMON MINEN</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input id="shv-mint-owner" class="field" placeholder="Owner-Adresse (ATC-...)">
+          <select id="shv-mint-count" class="field">
+            <option value="1">1 Shivamon</option>
+            <option value="3">3 Shivamon</option>
+            <option value="5">5 Shivamon</option>
+            <option value="10">10 Shivamon</option>
+          </select>
+          <button class="btn btn-primary" onclick="mintShivamon()">✨ MINTING STARTEN</button>
+        </div>
+      </div>
+      <div id="shv-mint-result" style="margin-top:10px"></div>
+    </div>
+    <!-- Breed -->
+    <div id="shvt-breed" style="display:none">
+      <div class="panel">
+        <div class="panel-title">🧬 SHIVAMON ZÜCHTEN — 25 ATC Kosten</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input id="breed-p1" class="field" placeholder="Parent 1 Token-ID (SHV-...)">
+          <input id="breed-p2" class="field" placeholder="Parent 2 Token-ID (SHV-...)">
+          <input id="breed-owner" class="field" placeholder="Owner-Adresse">
+          <button class="btn btn-primary" onclick="breedShivamon()">🧬 ZÜCHTEN</button>
+        </div>
+      </div>
+      <div id="breed-result" style="margin-top:10px"></div>
+    </div>
+    <!-- Stats -->
+    <div id="shvt-stats" style="display:none">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-val" style="color:var(--purple)" id="shv-stat-total">—</div><div class="stat-lbl">GEMINTED</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--cyan)">9.900</div><div class="stat-lbl">MAX SUPPLY</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--pink)" id="shv-stat-battles">—</div><div class="stat-lbl">BATTLES</div></div>
+      </div>
+      <div id="shv-rarity-breakdown" class="panel" style="margin-top:10px">
+        <div class="panel-title">RARITY DISTRIBUTION</div>
+        <div id="shv-rarity-bars"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── BATTLE ARENA ── -->
+<div id="win-battle" class="window" style="top:80px;left:200px;width:580px;height:480px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-battle')">
+    <span class="win-icon">⚔️</span>
+    <span class="win-title">BATTLE ARENA</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-battle')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-battle')"></button>
+      <button class="win-btn close" onclick="closeWin('win-battle')"></button>
+    </div>
+  </div>
+  <div class="win-body app-body">
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start;margin-bottom:12px">
+      <div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--dim);margin-bottom:6px">ANGREIFER</div>
+        <select id="battle-attacker-sel" class="field">
+          <option value="">— Token-ID eingeben —</option>
+        </select>
+        <input id="battle-attacker-inp" class="field" placeholder="oder: SHV-XXXXXXXX" style="margin-top:6px">
+        <div id="battle-fighter-a" style="margin-top:8px;text-align:center;background:rgba(255,45,120,0.05);border:1px solid rgba(255,45,120,0.2);border-radius:10px;padding:12px">
+          <div id="battle-fighter-a-el" style="font-size:28px">⚔️</div>
+          <div id="battle-fighter-a-name" style="font-family:'Orbitron',sans-serif;font-size:9px;margin-top:4px">—</div>
+          <div style="margin-top:6px"><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--dim);margin-bottom:3px"><span>HP</span><span id="hp-label-a">—</span></div><div style="height:5px;background:rgba(255,255,255,0.1);border-radius:3px"><div id="hp-bar-a" style="height:100%;width:100%;background:var(--green);border-radius:3px;transition:width 0.5s,background 0.3s"></div></div></div>
+        </div>
+      </div>
+      <div style="text-align:center;padding-top:50px">
+        <div style="font-family:'Orbitron',sans-serif;font-size:16px;color:var(--purple);margin-bottom:10px">VS</div>
+        <button id="battle-start-btn" onclick="startBattle()" class="btn btn-primary" style="padding:8px 14px;font-size:9px">⚔️ KAMPF</button>
+      </div>
+      <div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--dim);margin-bottom:6px">VERTEIDIGER</div>
+        <select id="battle-defender-sel" class="field">
+          <option value="">— Token-ID eingeben —</option>
+        </select>
+        <input id="battle-defender-inp" class="field" placeholder="oder: SHV-XXXXXXXX" style="margin-top:6px">
+        <div id="battle-fighter-d" style="margin-top:8px;text-align:center;background:rgba(0,209,255,0.05);border:1px solid rgba(0,209,255,0.2);border-radius:10px;padding:12px">
+          <div id="battle-fighter-d-el" style="font-size:28px">🛡</div>
+          <div id="battle-fighter-d-name" style="font-family:'Orbitron',sans-serif;font-size:9px;margin-top:4px">—</div>
+          <div style="margin-top:6px"><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--dim);margin-bottom:3px"><span>HP</span><span id="hp-label-d">—</span></div><div style="height:5px;background:rgba(255,255,255,0.1);border-radius:3px"><div id="hp-bar-d" style="height:100%;width:100%;background:var(--green);border-radius:3px;transition:width 0.5s,background 0.3s"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">KAMPF-LOG</div>
+      <div id="battle-log" style="height:100px;overflow-y:auto;font-size:11px;padding:4px">
+        <span style="color:var(--dim)">Wähle zwei Shivamon und starte den Kampf...</span>
+      </div>
+      <div id="battle-result" style="margin-top:8px;display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MARKETPLACE ── -->
+<div id="win-market" class="window" style="top:70px;left:180px;width:600px;height:500px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-market')">
+    <span class="win-icon">🛒</span>
+    <span class="win-title">SHIVAMON MARKETPLACE</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-market')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-market')"></button>
+      <button class="win-btn close" onclick="closeWin('win-market')"></button>
+    </div>
+  </div>
+  <div class="win-body app-body">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val" id="market-floor" style="color:var(--green)">—</div><div class="stat-lbl">FLOOR PRICE</div></div>
+      <div class="stat-card"><div class="stat-val" id="market-vol" style="color:var(--cyan)">—</div><div class="stat-lbl">TOTAL VOLUME</div></div>
+      <div class="stat-card"><div class="stat-val" id="market-count" style="color:var(--purple)">—</div><div class="stat-lbl">LISTINGS</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">LISTING ERSTELLEN</div>
+      <div style="display:flex;gap:8px">
+        <input id="market-list-token" class="field" placeholder="Token-ID (SHV-...)" style="flex:2">
+        <input id="market-list-price" type="number" class="field" placeholder="Preis ATC" style="flex:1">
+        <button class="btn btn-ghost" onclick="listMyShivamon()">LISTEN</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">AKTIVE LISTINGS</div>
+      <div id="market-listings" class="market-grid" style="max-height:200px;overflow-y:auto">
+        <div style="color:var(--dim);text-align:center;padding:20px;grid-column:1/-1">Lade Listings...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── GOVERNANCE ── -->
+<div id="win-govern" class="window" style="top:70px;left:200px;width:560px;height:520px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-govern')">
+    <span class="win-icon">🏛</span>
+    <span class="win-title">ON-CHAIN GOVERNANCE</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-govern')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-govern')"></button>
+      <button class="win-btn close" onclick="closeWin('win-govern')"></button>
+    </div>
+  </div>
+  <div class="win-body app-body">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val" id="gov-total" style="color:var(--purple)">0</div><div class="stat-lbl">PROPOSALS</div></div>
+      <div class="stat-card"><div class="stat-val" id="gov-active" style="color:var(--green)">0</div><div class="stat-lbl">AKTIV</div></div>
+      <div class="stat-card"><div class="stat-val" id="gov-passed" style="color:var(--cyan)">0</div><div class="stat-lbl">ANGENOMMEN</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">NEUER PROPOSAL</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="gov-new-title" class="field" placeholder="Titel des Proposals...">
+        <textarea id="gov-new-desc" class="field" placeholder="Beschreibung..." style="height:60px;resize:vertical"></textarea>
+        <button class="btn btn-primary" onclick="createProposal()">📋 PROPOSAL ERSTELLEN</button>
+      </div>
+    </div>
+    <div id="gov-proposals" style="max-height:220px;overflow-y:auto">
+      <div style="color:var(--dim);text-align:center;padding:20px">Lade Proposals...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CHAIN EXPLORER ── -->
+<div id="win-explorer" class="window" style="top:80px;left:160px;width:620px;height:480px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-explorer')">
+    <span class="win-icon">🔍</span>
+    <span class="win-title">BLOCKCHAIN EXPLORER</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-explorer')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-explorer')"></button>
+      <button class="win-btn close" onclick="closeWin('win-explorer')"></button>
+    </div>
+  </div>
+  <div class="win-body app-body">
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input id="explorer-search" class="field" placeholder="Block #, TX-ID, ATC-Adresse, SHV-Token..." style="flex:1">
+      <button class="btn btn-primary" onclick="explorerSearch()">SEARCH</button>
+    </div>
+    <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-card"><div class="stat-val" id="exp-height" style="color:var(--purple)">—</div><div class="stat-lbl">HEIGHT</div></div>
+      <div class="stat-card"><div class="stat-val" id="exp-txs" style="color:var(--cyan)">—</div><div class="stat-lbl">TPS</div></div>
+      <div class="stat-card"><div class="stat-val" id="exp-nodes" style="color:var(--green)">—</div><div class="stat-lbl">NODES</div></div>
+      <div class="stat-card"><div class="stat-val" id="exp-nfts" style="color:var(--pink)">—</div><div class="stat-lbl">NFTs</div></div>
+    </div>
+    <div class="tab-row">
+      <button class="tab-btn active" id="exp-tab-blocks" onclick="explorerTab('blocks',this)">⬛ BLÖCKE</button>
+      <button class="tab-btn" id="exp-tab-txs" onclick="explorerTab('txs',this)">📋 TRANSAKTIONEN</button>
+      <button class="tab-btn" id="exp-tab-shivamon" onclick="explorerTab('shivamon',this)">🐉 SHIVAMON</button>
+    </div>
+    <div id="explorer-content" style="font-size:11px"></div>
+  </div>
+</div>
+
+<!-- ── FRANCHISE FACTORY ── -->
+<div id="win-factory" class="window" style="top:60px;left:120px;width:640px;height:520px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-factory')">
+    <span class="win-icon">🏭</span>
+    <span class="win-title">FRANCHISE FACTORY</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-factory')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-factory')"></button>
+      <button class="win-btn close" onclick="closeWin('win-factory')"></button>
+    </div>
+  </div>
+  <div class="win-body app-body">
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="factoryTab('audio',this)">🎵 AUDIO</button>
+      <button class="tab-btn" onclick="factoryTab('render',this)">🎨 RENDER</button>
+      <button class="tab-btn" onclick="factoryTab('game',this)">🎮 GAME</button>
+      <button class="tab-btn" onclick="factoryTab('mesh',this)">🔷 MESH</button>
+      <button class="tab-btn" onclick="factoryTab('assets',this)">📦 ASSETS</button>
+    </div>
+    <!-- Audio -->
+    <div id="ff-audio">
+      <div class="stat-grid"><div class="stat-card"><div class="stat-val" style="color:var(--cyan)">48</div><div class="stat-lbl">TRACKS</div></div><div class="stat-card"><div class="stat-val" style="color:var(--green)">44.1 kHz</div><div class="stat-lbl">SAMPLE RATE</div></div><div class="stat-card"><div class="stat-val" style="color:var(--purple)">32-bit</div><div class="stat-lbl">BIT DEPTH</div></div></div>
+      <div class="panel">
+        <div class="panel-title">MIXER</div>
+        <div style="display:flex;gap:8px;align-items:flex-end;height:90px">
+          <div class="ff-fader"><div class="ff-fader-track"><div class="ff-fader-fill" style="height:90%;background:var(--purple)"></div></div><div class="ff-fader-label">MASTER</div></div>
+          <div class="ff-fader"><div class="ff-fader-track"><div class="ff-fader-fill" style="height:75%;background:var(--cyan)"></div></div><div class="ff-fader-label">DRUMS</div></div>
+          <div class="ff-fader"><div class="ff-fader-track"><div class="ff-fader-fill" style="height:60%;background:var(--green)"></div></div><div class="ff-fader-label">BASS</div></div>
+          <div class="ff-fader"><div class="ff-fader-track"><div class="ff-fader-fill" style="height:85%;background:var(--pink)"></div></div><div class="ff-fader-label">SYNTH</div></div>
+          <div class="ff-fader"><div class="ff-fader-track"><div class="ff-fader-fill" style="height:50%;background:var(--orange)"></div></div><div class="ff-fader-label">VOX</div></div>
+          <div class="ff-fader"><div class="ff-fader-track"><div class="ff-fader-fill" style="height:40%;background:var(--purple)"></div></div><div class="ff-fader-label">FX</div></div>
+          <div class="ff-fader"><div class="ff-fader-track"><div class="ff-fader-fill" style="height:70%;background:var(--cyan)"></div></div><div class="ff-fader-label">PAD</div></div>
+          <div class="ff-fader"><div class="ff-fader-track"><div class="ff-fader-fill" style="height:55%;background:var(--green)"></div></div><div class="ff-fader-label">SFX</div></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" style="flex:1">⏮</button>
+        <button class="btn btn-primary" style="flex:1">▶ PLAY</button>
+        <button class="btn btn-danger" style="flex:1">⏺ REC</button>
+        <button class="btn btn-ghost" style="flex:1">⏭</button>
+      </div>
+    </div>
+    <!-- Render -->
+    <div id="ff-render" style="display:none">
+      <div class="stat-grid"><div class="stat-card"><div class="stat-val" style="color:var(--pink)">4K</div><div class="stat-lbl">OUTPUT</div></div><div class="stat-card"><div class="stat-val" style="color:var(--green)">60 FPS</div><div class="stat-lbl">FRAME RATE</div></div><div class="stat-card"><div class="stat-val" style="color:var(--cyan)">RTX ON</div><div class="stat-lbl">RAY TRACING</div></div></div>
+      <div class="panel"><div class="panel-title">RENDER PIPELINE</div>
+        <div class="pr-row"><div class="pr-lbl"><span>Geometry Pass</span><span style="color:var(--cyan)">100%</span></div><div class="pr-bar"><div class="pr-fill" style="width:100%"></div></div></div>
+        <div class="pr-row"><div class="pr-lbl"><span>Ray Tracing</span><span style="color:var(--pink)">87%</span></div><div class="pr-bar"><div class="pr-fill" style="width:87%;background:var(--pink)"></div></div></div>
+        <div class="pr-row"><div class="pr-lbl"><span>Post-Processing</span><span style="color:var(--green)">72%</span></div><div class="pr-bar"><div class="pr-fill" style="width:72%;background:var(--green)"></div></div></div>
+        <div class="pr-row"><div class="pr-lbl"><span>Color Grading</span><span style="color:var(--orange)">60%</span></div><div class="pr-bar"><div class="pr-fill" style="width:60%;background:var(--orange)"></div></div></div>
+        <div class="pr-row"><div class="pr-lbl"><span>Output Encode</span><span style="color:var(--cyan)">44%</span></div><div class="pr-bar"><div class="pr-fill" style="width:44%"></div></div></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%">🎬 RENDER STARTEN</button>
+    </div>
+    <!-- Game -->
+    <div id="ff-game" style="display:none">
+      <div class="stat-grid"><div class="stat-card"><div class="stat-val" style="color:var(--green)">12</div><div class="stat-lbl">LEVELS</div></div><div class="stat-card"><div class="stat-val" style="color:var(--cyan)">847</div><div class="stat-lbl">ASSETS</div></div><div class="stat-card"><div class="stat-val" style="color:var(--purple)">2D/3D</div><div class="stat-lbl">ENGINE</div></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div class="panel" style="cursor:pointer;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='rgba(162,89,255,0.2)'"><div style="font-size:18px;margin-bottom:4px">🗺</div><div style="font-size:10px;font-family:'Orbitron',sans-serif">Level Editor</div><div style="font-size:9px;color:var(--dim);margin-top:4px">Map &amp; Terrain</div></div>
+        <div class="panel" style="cursor:pointer;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='rgba(162,89,255,0.2)'"><div style="font-size:18px;margin-bottom:4px">🤖</div><div style="font-size:10px;font-family:'Orbitron',sans-serif">NPC System</div><div style="font-size:9px;color:var(--dim);margin-top:4px">KI-Charaktere</div></div>
+        <div class="panel" style="cursor:pointer;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='rgba(162,89,255,0.2)'"><div style="font-size:18px;margin-bottom:4px">⚙️</div><div style="font-size:10px;font-family:'Orbitron',sans-serif">Physics</div><div style="font-size:9px;color:var(--dim);margin-top:4px">Kollision &amp; Gravitation</div></div>
+        <div class="panel" style="cursor:pointer;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='rgba(162,89,255,0.2)'"><div style="font-size:18px;margin-bottom:4px">🎯</div><div style="font-size:10px;font-family:'Orbitron',sans-serif">Quest System</div><div style="font-size:9px;color:var(--dim);margin-top:4px">Missions &amp; Rewards</div></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%">🎮 NEUES SPIEL ERSTELLEN</button>
+    </div>
+    <!-- Mesh -->
+    <div id="ff-mesh" style="display:none">
+      <div class="stat-grid"><div class="stat-card"><div class="stat-val" style="color:var(--orange)">2.4M</div><div class="stat-lbl">POLYGONE</div></div><div class="stat-card"><div class="stat-val" style="color:var(--cyan)">4096px</div><div class="stat-lbl">TEX-SIZE</div></div><div class="stat-card"><div class="stat-val" style="color:var(--green)">PBR</div><div class="stat-lbl">MATERIAL</div></div></div>
+      <div class="panel"><div class="panel-title">MATERIAL CHANNELS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:4px;background:#3a7bd5;flex-shrink:0"></div><span style="font-size:11px">Albedo</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:4px;background:#8a2be2;flex-shrink:0"></div><span style="font-size:11px">Normal</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:4px;background:#2ecc71;flex-shrink:0"></div><span style="font-size:11px">Roughness</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:4px;background:#e0e0e0;flex-shrink:0"></div><span style="font-size:11px">Metallic</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:4px;background:#ff6b35;flex-shrink:0"></div><span style="font-size:11px">Emission</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:4px;background:#555;flex-shrink:0"></div><span style="font-size:11px">Ambient Occ.</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1">📥 IMPORT MESH</button><button class="btn btn-primary" style="flex:1">🔷 BAKE TEXTURES</button></div>
+    </div>
+    <!-- Assets -->
+    <div id="ff-assets" style="display:none">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="tab-btn active" onclick="ffFilterA('all',this)">ALL</button>
+        <button class="tab-btn" onclick="ffFilterA('nft',this)">NFT</button>
+        <button class="tab-btn" onclick="ffFilterA('token',this)">TOKEN</button>
+        <button class="tab-btn" onclick="ffFilterA('game',this)">GAME</button>
+        <button class="tab-btn" onclick="ffFilterA('music',this)">MUSIC</button>
+      </div>
+      <div id="ff-atc-list" style="max-height:320px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CODE CENTER ── -->
+<div id="win-code" class="window" style="top:60px;left:200px;width:680px;height:500px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-code')">
+    <span class="win-icon">&lt;/&gt;</span>
+    <span class="win-title">CODE CENTER — ATCOS IDE</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-code')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-code')"></button>
+      <button class="win-btn close" onclick="closeWin('win-code')"></button>
+    </div>
+  </div>
+  <div class="win-body" style="display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,0,0,0.3);border-bottom:1px solid rgba(162,89,255,0.1)">
+      <span style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--cyan)">&lt;/&gt; ATCOS IDE</span>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;margin-left:4px"></div>
+      <div style="display:flex;gap:6px;margin-left:auto">
+        <button class="btn btn-primary" onclick="runCode()" style="font-size:8px;padding:4px 10px">▶ RUN</button>
+        <button class="btn btn-ghost" onclick="saveCode()" style="font-size:8px;padding:4px 10px">💾 SAVE</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:180px 1fr;flex:1;overflow:hidden">
+      <div style="border-right:1px solid rgba(162,89,255,0.1);padding:10px;overflow-y:auto;background:rgba(0,0,0,0.2)">
+        <div style="font-family:'Orbitron',sans-serif;font-size:8px;color:var(--dim);margin-bottom:8px;letter-spacing:1px">PROJECT</div>
+        <div class="ftree-folder">📂 core/</div>
+        <div class="ftree-file active" onclick="openFile('kernel.py')">🐍 kernel.py</div>
+        <div class="ftree-file" onclick="openFile('event_bus.py')">🐍 event_bus.py</div>
+        <div class="ftree-folder">📂 blockchain/</div>
+        <div class="ftree-file" onclick="openFile('atcoin.py')">🐍 atcoin.py</div>
+        <div class="ftree-file" onclick="openFile('chain.py')">🐍 chain.py</div>
+        <div class="ftree-folder">📂 api/</div>
+        <div class="ftree-file" onclick="openFile('server.py')">🐍 server.py</div>
+        <div class="ftree-file" onclick="openFile('ai_routes.py')">🐍 ai_routes.py</div>
+        <div class="ftree-folder">📂 contracts/</div>
+        <div class="ftree-file" onclick="openFile('shivamon_contract.py')">🐍 shivamon_contract.py</div>
+        <div class="ftree-file" onclick="openFile('governance_contract.py')">🐍 governance_contract.py</div>
+      </div>
+      <div style="display:flex;flex-direction:column;padding:10px;gap:8px;overflow:hidden">
+        <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--dim)" id="code-filename">kernel.py</div>
+        <textarea id="code-editor" class="code-editor" style="flex:1;min-height:0"></textarea>
+        <div class="code-output" id="code-output"><span style="color:var(--dim)">Ready...</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ASSET VAULT ── -->
+<div id="win-assets" class="window" style="top:80px;left:200px;width:560px;height:460px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-assets')">
+    <span class="win-icon">📦</span>
+    <span class="win-title">ASSET VAULT — ATC MATRIX</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-assets')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-assets')"></button>
+      <button class="win-btn close" onclick="closeWin('win-assets')"></button>
+    </div>
+  </div>
+  <div class="win-body app-body">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="tab-btn active" onclick="filterAssets('all',this)">ALL</button>
+      <button class="tab-btn" onclick="filterAssets('nft',this)">NFT</button>
+      <button class="tab-btn" onclick="filterAssets('token',this)">TOKEN</button>
+      <button class="tab-btn" onclick="filterAssets('game',this)">GAME</button>
+      <button class="tab-btn" onclick="filterAssets('iso',this)">ISO</button>
+    </div>
+    <div id="assets-list" style="max-height:360px;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- ── SETTINGS ── -->
+<div id="win-settings" class="window" style="top:80px;left:200px;width:580px;height:460px">
+  <div class="win-titlebar" onmousedown="startDrag(event,'win-settings')">
+    <span class="win-icon">⚙️</span>
+    <span class="win-title">EINSTELLUNGEN — A-TOWNCHAIN OS</span>
+    <div class="win-controls">
+      <button class="win-btn minimize" onclick="minimizeWin('win-settings')"></button>
+      <button class="win-btn maximize" onclick="maximizeWin('win-settings')"></button>
+      <button class="win-btn close" onclick="closeWin('win-settings')"></button>
+    </div>
+  </div>
+  <div class="win-body" style="display:flex;overflow:hidden">
+    <div class="settings-nav">
+      <div class="settings-nav-item active" onclick="settingsNav('system',this)">💻 System</div>
+      <div class="settings-nav-item" onclick="settingsNav('display',this)">🖥️ Anzeige</div>
+      <div class="settings-nav-item" onclick="settingsNav('network',this)">🌐 Netzwerk</div>
+      <div class="settings-nav-item" onclick="settingsNav('blockchain',this)">⛓ Blockchain</div>
+      <div class="settings-nav-item" onclick="settingsNav('ai',this)">🧠 AI</div>
+      <div class="settings-nav-item" onclick="settingsNav('security',this)">🔐 Sicherheit</div>
+      <div class="settings-nav-item" onclick="settingsNav('about',this)">ℹ️ Info</div>
+    </div>
+    <div class="settings-content">
+      <!-- SYSTEM -->
+      <div id="set-system">
+        <div class="settings-section">
+          <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--purple);margin-bottom:12px;letter-spacing:2px">SYSTEM</div>
+          <div class="settings-row"><span>OS Version</span><span style="color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:10px">v2.0.0</span></div>
+          <div class="settings-row"><span>Build</span><span style="color:var(--dim)">2026.05.21</span></div>
+          <div class="settings-row"><span>Kernel</span><span style="color:var(--green)">● Running</span></div>
+          <div class="settings-row"><span>Autostart</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>Debug Mode</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>Logging</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+      </div>
+      <!-- DISPLAY -->
+      <div id="set-display" style="display:none">
+        <div class="settings-section">
+          <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--purple);margin-bottom:12px;letter-spacing:2px">ANZEIGE</div>
+          <div class="settings-row"><span>Hintergrund</span>
+            <div style="display:flex;gap:6px">
+              <div style="width:20px;height:20px;border-radius:4px;background:linear-gradient(135deg,#020510,#040820);border:2px solid var(--purple);cursor:pointer" onclick="setWallpaper('dark')"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:linear-gradient(135deg,#0a0a2e,#1a0040);border:1px solid rgba(162,89,255,0.3);cursor:pointer" onclick="setWallpaper('deep')"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:linear-gradient(135deg,#001a2e,#002040);border:1px solid rgba(0,209,255,0.3);cursor:pointer" onclick="setWallpaper('blue')"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:linear-gradient(135deg,#1a0010,#200020);border:1px solid rgba(255,45,120,0.3);cursor:pointer" onclick="setWallpaper('red')"></div>
+            </div>
+          </div>
+          <div class="settings-row"><span>Animationen</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>Neon-Glow</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>CRT-Scanlines</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>Grid-Overlay</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+      </div>
+      <!-- NETWORK -->
+      <div id="set-network" style="display:none">
+        <div class="settings-section">
+          <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--purple);margin-bottom:12px;letter-spacing:2px">NETZWERK</div>
+          <div class="settings-row"><span>Status</span><span style="color:var(--green)">● Connected</span></div>
+          <div class="settings-row"><span>Nodes Online</span><span style="color:var(--cyan)" id="set-nodes">847</span></div>
+          <div class="settings-row"><span>Peers</span><span style="color:var(--dim)">512</span></div>
+          <div class="settings-row"><span>Latency</span><span style="color:var(--dim)">18ms</span></div>
+          <div class="settings-row"><span>Gateway URL</span><span style="font-family:monospace;font-size:10px;color:var(--dim)">localhost:5000</span></div>
+        </div>
+      </div>
+      <!-- BLOCKCHAIN -->
+      <div id="set-blockchain" style="display:none">
+        <div class="settings-section">
+          <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--purple);margin-bottom:12px;letter-spacing:2px">BLOCKCHAIN</div>
+          <div class="settings-row"><span>Chain ID</span><span style="color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:10px">ATC-1</span></div>
+          <div class="settings-row"><span>Konsensus</span><span style="color:var(--dim)">PoW + PoS + PoH</span></div>
+          <div class="settings-row"><span>Max Supply</span><span style="color:var(--purple)">21.000.000 ATC</span></div>
+          <div class="settings-row"><span>Mining Reward</span><span style="color:var(--green)">2.0 ATC / Block</span></div>
+          <div class="settings-row"><span>Auto-Mining</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+      </div>
+      <!-- AI -->
+      <div id="set-ai" style="display:none">
+        <div class="settings-section">
+          <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--purple);margin-bottom:12px;letter-spacing:2px">KI-MODELLE</div>
+          <div class="settings-row"><span>Gemini 2.0</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>GPT-4o</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>Local AI</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>Stable Diffusion</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>API-Key setzen</span><button class="btn btn-ghost" style="font-size:9px" onclick="showNotif('GEMINI_API_KEY in .env setzen','info')">KEY SETZEN</button></div>
+        </div>
+      </div>
+      <!-- SECURITY -->
+      <div id="set-security" style="display:none">
+        <div class="settings-section">
+          <div style="font-family:'Orbitron',sans-serif;font-size:9px;color:var(--purple);margin-bottom:12px;letter-spacing:2px">SICHERHEIT</div>
+          <div class="settings-row"><span>Verschlüsselung</span><span style="color:var(--green)">AES-256</span></div>
+          <div class="settings-row"><span>2FA</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>Whitelist Mode</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>Firewall</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="settings-row"><span>Audit Logs</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+      </div>
+      <!-- ABOUT -->
+      <div id="set-about" style="display:none">
+        <div style="text-align:center;padding:20px">
+          <div style="font-size:48px;margin-bottom:12px;animation:float 4s ease-in-out infinite">⚡</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:16px;color:var(--purple);margin-bottom:4px">A-TOWNCHAIN OS</div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:10px;color:var(--cyan);margin-bottom:12px">v2.0.0 — Autonomous Franchise Factory</div>
+          <div style="font-size:11px;color:var(--dim);line-height:1.8">
+            Stack: Python/Flask · SQLite · Gemini 2.0<br>
+            Blockchain: ATC-1 · PoW+PoS+PoH<br>
+            NFT Standard: ATC-9000<br>
+            Build: 2026.05.21
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+  JAVASCRIPT
+════════════════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════
+// WINDOW MANAGER
+// ═══════════════════════════════════════════════════
+const WM = {
+  topZ: 200,
+  states: {}, // id → { minimized, maximized, prevRect }
+
+  open(id) {
+    const w = document.getElementById(id);
+    if(!w) return;
+    w.classList.add('open');
+    w.classList.remove('minimized');
+    this.focus(id);
+    this.updateTaskbar(id, true);
+    if(!this.states[id]) this.states[id] = {minimized:false, maximized:false};
+    this.states[id].minimized = false;
+    // Slight cascade offset
+    const openWins = document.querySelectorAll('.window.open:not(.minimized)').length;
+    if(openWins > 1 && !this.states[id].prevRect) {
+      const offset = (openWins-1) * 20;
+      w.style.left = (parseInt(w.style.left||80) + offset) + 'px';
+      w.style.top  = (parseInt(w.style.top||60) + offset) + 'px';
+    }
+  },
+
+  close(id) {
+    const w = document.getElementById(id);
+    if(!w) return;
+    w.classList.remove('open','minimized','maximized');
+    if(this.states[id]) { this.states[id].maximized = false; this.states[id].prevRect = null; }
+    this.updateTaskbar(id, false);
+  },
+
+  minimize(id) {
+    const w = document.getElementById(id);
+    if(!w) return;
+    w.classList.add('minimized');
+    if(!this.states[id]) this.states[id] = {};
+    this.states[id].minimized = true;
+    this.updateTaskbar(id, true, false);
+  },
+
+  maximize(id) {
+    const w = document.getElementById(id);
+    if(!w) return;
+    if(!this.states[id]) this.states[id] = {};
+    if(this.states[id].maximized) {
+      // Restore
+      const r = this.states[id].prevRect;
+      if(r) { w.style.top=r.top; w.style.left=r.left; w.style.width=r.width; w.style.height=r.height; }
+      w.classList.remove('maximized');
+      this.states[id].maximized = false;
+    } else {
+      // Save rect
+      this.states[id].prevRect = {top:w.style.top,left:w.style.left,width:w.style.width,height:w.style.height};
+      w.classList.add('maximized');
+      this.states[id].maximized = true;
+    }
+    this.focus(id);
+  },
+
+  focus(id) {
+    document.querySelectorAll('.window.open').forEach(w => w.style.zIndex = 100);
+    const w = document.getElementById(id);
+    if(w) w.style.zIndex = ++this.topZ;
+    // Update taskbar focus
+    document.querySelectorAll('.tb-app').forEach(b => b.classList.remove('focused'));
+    const tb = document.getElementById('tb-'+id.replace('win-',''));
+    if(tb) tb.classList.add('focused');
+  },
+
+  updateTaskbar(id, open, focused=true) {
+    const tbId = 'tb-'+id.replace('win-','');
+    let btn = document.getElementById(tbId);
+    if(open) {
+      if(btn) { btn.classList.add('running'); if(focused) btn.classList.add('focused'); else btn.classList.remove('focused'); }
+      else {
+        // Add dynamic button to taskbar
+        const info = WIN_INFO[id] || {icon:'🔲', label:id};
+        btn = document.createElement('button');
+        btn.className = 'tb-app running' + (focused ? ' focused' : '');
+        btn.id = tbId;
+        btn.innerHTML = `<span class="tb-app-icon">${info.icon}</span><span class="tb-app-label">${info.label}</span>`;
+        btn.onclick = () => {
+          const s = WM.states[id] || {};
+          if(s.minimized) WM.open(id);
+          else WM.focus(id);
+        };
+        const tray = document.getElementById('sys-tray');
+        tray.parentNode.insertBefore(btn, tray);
+      }
+    } else {
+      if(btn) { btn.classList.remove('running','focused'); }
+    }
+  }
+};
+
+const WIN_INFO = {
+  'win-dash':     {icon:'📊', label:'Dashboard'},
+  'win-ai':       {icon:'🧠', label:'AI'},
+  'win-wallet':   {icon:'💎', label:'Wallet'},
+  'win-shivamon': {icon:'🐉', label:'Shivamon'},
+  'win-battle':   {icon:'⚔️', label:'Battle'},
+  'win-market':   {icon:'🛒', label:'Market'},
+  'win-govern':   {icon:'🏛', label:'Governance'},
+  'win-explorer': {icon:'⛓', label:'Explorer'},
+  'win-factory':  {icon:'🏭', label:'Factory'},
+  'win-code':     {icon:'</>',label:'Code'},
+  'win-assets':   {icon:'📦', label:'Assets'},
+  'win-settings': {icon:'⚙️', label:'Settings'},
+};
+
+function openWin(id) {
+  WM.open(id);
+  // Trigger lazy loads
+  if(id==='win-govern')   loadGovernance();
+  if(id==='win-market')   loadMarketplace();
+  if(id==='win-explorer') { loadExplorer(); explorerTab('blocks'); }
+  if(id==='win-dash')     loadDashboard();
+  if(id==='win-shivamon') { shvTab('collection'); loadShvStats(); }
+  if(id==='win-assets')   renderAssets('all');
+  if(id==='win-factory')  { factoryTab('audio'); ffRenderAssets(); }
+  if(id==='win-code')     setTimeout(()=>openFile('kernel.py'), 100);
+}
+function closeWin(id)    { WM.close(id); }
+function minimizeWin(id) { WM.minimize(id); }
+function maximizeWin(id) { WM.maximize(id); }
+function openWinSm(id)   { closeStartMenu(); openWin(id); }
+
+// Click on window to focus
+document.querySelectorAll('.window').forEach(w => {
+  w.addEventListener('mousedown', () => WM.focus(w.id));
+});
+
+// ═══════════════════════════════════════════════════
+// WINDOW DRAG
+// ═══════════════════════════════════════════════════
+let _drag = null;
+function startDrag(e, id) {
+  if(e.target.classList.contains('win-btn')) return;
+  const w = document.getElementById(id);
+  if(!w || WM.states[id]?.maximized) return;
+  WM.focus(id);
+  const startX = e.clientX - w.offsetLeft;
+  const startY = e.clientY - w.offsetTop;
+  _drag = {w, startX, startY};
+  e.preventDefault();
+}
+document.addEventListener('mousemove', e => {
+  if(!_drag) return;
+  let x = e.clientX - _drag.startX;
+  let y = e.clientY - _drag.startY;
+  // Clamp to viewport
+  x = Math.max(-200, Math.min(window.innerWidth - 100, x));
+  y = Math.max(0,   Math.min(window.innerHeight - 80, y));
+  _drag.w.style.left = x + 'px';
+  _drag.w.style.top  = y + 'px';
+});
+document.addEventListener('mouseup', () => { _drag = null; });
+
+// ═══════════════════════════════════════════════════
+// TASKBAR / START MENU
+// ═══════════════════════════════════════════════════
+function toggleStartMenu(e) {
+  e.stopPropagation();
+  const sm = document.getElementById('start-menu');
+  const btn = document.getElementById('start-btn');
+  const open = sm.classList.contains('open');
+  sm.classList.toggle('open', !open);
+  btn.classList.toggle('active', !open);
+}
+function closeStartMenu() {
+  document.getElementById('start-menu').classList.remove('open');
+  document.getElementById('start-btn').classList.remove('active');
+}
+function filterSmApps(q) {
+  const lq = q.toLowerCase();
+  document.querySelectorAll('.sm-app').forEach(a => {
+    const name = a.querySelector('.sm-app-name')?.textContent.toLowerCase() || '';
+    a.style.display = name.includes(lq) ? '' : 'none';
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  const t = now.toLocaleTimeString('de-DE');
+  const d = now.toLocaleDateString('de-DE');
+  document.getElementById('clock').innerHTML = `${t}<br><span style="font-size:9px;color:var(--dim)">${d}</span>`;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ═══════════════════════════════════════════════════
+// CONTEXT MENU
+// ═══════════════════════════════════════════════════
+function showCtxMenu(e) {
+  e.preventDefault();
+  const m = document.getElementById('ctx-menu');
+  m.style.display = 'block';
+  m.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px';
+  m.style.top  = Math.min(e.clientY, window.innerHeight - 200) + 'px';
+}
+function hideCtxMenu() { document.getElementById('ctx-menu').style.display = 'none'; }
+document.addEventListener('click', hideCtxMenu);
+document.addEventListener('keydown', e => { if(e.key==='Escape') { hideCtxMenu(); closeStartMenu(); } });
+
+// ═══════════════════════════════════════════════════
+// DESKTOP ICON SELECTION
+// ═══════════════════════════════════════════════════
+function selectIcon(el) {
+  document.querySelectorAll('.dicon').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+document.getElementById('desktop').addEventListener('click', e => {
+  if(!e.target.closest('.dicon')) document.querySelectorAll('.dicon').forEach(d => d.classList.remove('selected'));
+});
+
+// ═══════════════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════════════
+function showNotif(msg, type='info') {
+  const area = document.getElementById('notif-area');
+  const n = document.createElement('div');
+  n.className = 'notif' + (type==='error'?' error':type==='success'?' success':'');
+  const icons = {info:'ℹ️', error:'❌', success:'✅', warn:'⚠️'};
+  n.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span style="flex:1">${msg}</span>`;
+  area.appendChild(n);
+  setTimeout(() => { n.style.animation='notif-out 0.3s ease forwards'; setTimeout(()=>n.remove(), 300); }, 3500);
+}
+
+// ═══════════════════════════════════════════════════
+// WALLPAPER / DISPLAY
+// ═══════════════════════════════════════════════════
+const wallpapers = {
+  dark: 'radial-gradient(ellipse at 20% 50%,rgba(162,89,255,0.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(0,209,255,0.08) 0%,transparent 50%),linear-gradient(135deg,#020510 0%,#040820 50%,#020514 100%)',
+  deep: 'radial-gradient(ellipse at 30% 40%,rgba(100,0,200,0.2) 0%,transparent 60%),linear-gradient(135deg,#0a0a2e 0%,#1a0040 100%)',
+  blue: 'radial-gradient(ellipse at 50% 30%,rgba(0,150,255,0.18) 0%,transparent 60%),linear-gradient(135deg,#001a2e 0%,#002040 100%)',
+  red:  'radial-gradient(ellipse at 60% 60%,rgba(200,0,80,0.15) 0%,transparent 60%),linear-gradient(135deg,#1a0010 0%,#200020 100%)',
+};
+function setWallpaper(key) {
+  document.getElementById('desktop').style.background = wallpapers[key];
+  showNotif('Hintergrund geändert', 'success');
+}
+function changeWallpaper() {
+  const keys = Object.keys(wallpapers);
+  const idx = Math.floor(Math.random() * keys.length);
+  setWallpaper(keys[idx]);
+}
+function sortDesktopIcons() { showNotif('Icons sortiert', 'success'); }
+
+// ═══════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════
+async function loadDashboard() {
+  try {
+    const [chain, nft] = await Promise.all([
+      fetch('/api/blockchain/info').then(r=>r.json()).catch(()=>null),
+      fetch('/api/game/shivamon/stats').then(r=>r.json()).catch(()=>null),
+    ]);
+    if(chain) {
+      document.getElementById('dash-blocks').textContent = (chain.height||0).toLocaleString();
+    }
+    if(nft) document.getElementById('dash-nfts').textContent = nft.total_minted||0;
+    // Simulate changing stats
+    setInterval(() => {
+      const cpu = 10 + Math.random()*20;
+      const ram = 30 + Math.random()*20;
+      document.getElementById('dash-cpu').textContent = cpu.toFixed(0)+'%';
+      document.getElementById('dash-ram').textContent = ram.toFixed(0)+'%';
+      document.getElementById('dash-cpu-bar').style.width = cpu+'%';
+      document.getElementById('dash-ram-bar').style.width = ram+'%';
+    }, 3000);
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════
+// AI CHAT (Issue #2)
+// ═══════════════════════════════════════════════════
+async function sendChat() {
+  const inp = document.getElementById('chat-inp');
+  const box = document.getElementById('chat-messages');
+  if(!inp.value.trim()) return;
+  const q = inp.value.trim(); inp.value = '';
+  box.innerHTML += `<div class="c-msg user">${q}</div>`;
+  const tid = 'ai-'+Date.now();
+  box.innerHTML += `<div class="c-msg ai" id="${tid}" style="color:var(--dim)">● ● ●</div>`;
+  box.scrollTop = box.scrollHeight;
+  try {
+    const res = await fetch('/api/ai/query', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({prompt:q})});
+    const d = await res.json();
+    const el = document.getElementById(tid);
+    if(el) {
+      const badge = d.gemini_active
+        ? `<span style="font-size:9px;color:var(--green);font-family:'Orbitron',sans-serif"> [GEMINI]</span>`
+        : `<span style="font-size:9px;color:var(--dim);font-family:'Orbitron',sans-serif"> [MOCK]</span>`;
+      el.innerHTML = (d.response||'—') + badge;
+      el.style.color = '';
+    }
+  } catch(e) {
+    const el = document.getElementById(tid);
+    if(el) el.innerHTML = '<span style="color:var(--pink)">API nicht erreichbar</span>';
+  }
+  box.scrollTop = box.scrollHeight;
+}
+document.getElementById('chat-inp')?.addEventListener('keydown', e => { if(e.key==='Enter') sendChat(); });
+
+// ═══════════════════════════════════════════════════
+// WALLET
+// ═══════════════════════════════════════════════════
+const WalletState = { address: null, balance: 0 };
+async function connectWallet() {
+  const addr = 'ATC-' + Math.random().toString(36).substr(2,8).toUpperCase() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  WalletState.address = addr;
+  try {
+    const r = await fetch('/api/wallet/create', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:addr, initial_balance:1000})});
+    const d = await r.json();
+    WalletState.balance = d.balance || 1000;
+  } catch(e) { WalletState.balance = 1000; }
+  document.getElementById('wallet-disconnected').style.display = 'none';
+  document.getElementById('wallet-connected').style.display = '';
+  document.getElementById('wallet-addr-display').textContent = addr;
+  document.getElementById('wallet-bal-display').textContent = WalletState.balance.toFixed(2) + ' ATC';
+  document.getElementById('shv-mint-owner').value = addr;
+  document.getElementById('shv-owner-inp').value = addr;
+  document.getElementById('breed-owner').value = addr;
+  showNotif('Wallet verbunden: '+addr.slice(0,20)+'...', 'success');
+}
+async function refreshWalletBalance() {
+  if(!WalletState.address) return;
+  try {
+    const r = await fetch('/api/wallet/balance/'+WalletState.address);
+    const d = await r.json();
+    WalletState.balance = d.balance || WalletState.balance;
+    document.getElementById('wallet-bal-display').textContent = WalletState.balance.toFixed(2) + ' ATC';
+    showNotif('Balance aktualisiert', 'success');
+  } catch(e) { showNotif('Refresh fehlgeschlagen', 'error'); }
+}
+async function sendATC() {
+  const to = document.getElementById('wallet-to').value.trim();
+  const amount = parseFloat(document.getElementById('wallet-amount').value);
+  if(!WalletState.address || !to || !amount) { showNotif('Alle Felder ausfüllen!', 'warn'); return; }
+  try {
+    const r = await fetch('/api/wallet/transfer', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({from:WalletState.address, to, amount})});
+    const d = await r.json();
+    if(d.success) {
+      showNotif(`✅ ${amount} ATC → ${to.slice(0,20)}...`, 'success');
+      WalletState.balance -= amount;
+      document.getElementById('wallet-bal-display').textContent = WalletState.balance.toFixed(2) + ' ATC';
+      const list = document.getElementById('wallet-tx-list');
+      list.innerHTML = `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(162,89,255,0.1);font-size:10px"><span style="color:var(--pink)">↑ Gesendet</span><span>${amount} ATC → ${to.slice(0,14)}...</span></div>` + list.innerHTML;
+    } else { showNotif('❌ '+d.error, 'error'); }
+  } catch(e) { showNotif('API nicht erreichbar', 'error'); }
+}
+
+// ═══════════════════════════════════════════════════
+// SHIVAMON (Issue #4 + #11)
+// ═══════════════════════════════════════════════════
+const EL_EMOJI = {'🔥 Fire':'🔥','💧 Water':'💧','🌍 Earth':'🌍','💨 Air':'💨','🌑 Shadow':'🌑','⚡ Neon':'⚡','🌀 Quantum':'🌀'};
+const RARITY_COL = {Common:'var(--dim)',Uncommon:'var(--green)',Rare:'var(--cyan)',Epic:'var(--purple)',Legendary:'var(--orange)',Genesis:'var(--pink)'};
+
+function shvTab(tab, btn) {
+  ['collection','mint','breed','stats'].forEach(t => {
+    const el = document.getElementById('shvt-'+t);
+    if(el) el.style.display = t===tab ? '' : 'none';
+  });
+  if(btn) {
+    document.querySelectorAll('#win-shivamon .tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  if(tab==='stats') loadShvStats();
+}
+
+async function loadShivamon() {
+  const owner = document.getElementById('shv-owner-inp')?.value?.trim();
+  if(!owner) { showNotif('Wallet-Adresse eingeben!', 'warn'); return; }
+  const grid = document.getElementById('shv-grid');
+  grid.innerHTML = '<div style="color:var(--dim);text-align:center;padding:20px;grid-column:1/-1">Lade...</div>';
+  try {
+    const d = await fetch('/api/game/shivamon/owner/'+owner).then(r=>r.json());
+    const shivamon = d.shivamon || [];
+    if(!shivamon.length) {
+      grid.innerHTML = '<div style="color:var(--dim);text-align:center;padding:20px;grid-column:1/-1">Keine Shivamon — mint zuerst!</div>';
+      return;
+    }
+    grid.innerHTML = shivamon.map(s => {
+      const em = EL_EMOJI[s.element] || '🐉';
+      const col = RARITY_COL[s.rarity] || 'var(--text)';
+      return `<div class="shv-card" onclick="showShvDetail('${s.token_id}')">
+        <div class="em">${em}</div>
+        <div class="nm">${(s.name||'').split('-')[0]}</div>
+        <div class="lv" style="color:${col}">${s.rarity}</div>
+        <div class="lv">Lv.${s.level||1}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    grid.innerHTML = '<div style="color:var(--pink);text-align:center;padding:20px;grid-column:1/-1">API nicht erreichbar</div>';
+  }
+}
+
+async function showShvDetail(tokenId) {
+  try {
+    const d = await fetch('/api/game/shivamon/'+tokenId).then(r=>r.json());
+    if(d.error) return;
+    const em = EL_EMOJI[d.element] || '🐉';
+    showNotif(`${em} ${d.name} · ${d.element} · ${d.rarity} · ATK:${d.stats?.attack} HP:${d.stats?.hp}`, 'info');
+  } catch(e) {}
+}
+
+async function mintShivamon() {
+  const owner = document.getElementById('shv-mint-owner')?.value?.trim();
+  const count = parseInt(document.getElementById('shv-mint-count')?.value || 1);
+  if(!owner) { showNotif('Owner-Adresse eingeben!', 'warn'); return; }
+  const res = document.getElementById('shv-mint-result');
+  res.innerHTML = '<div style="color:var(--dim)">Minting...</div>';
+  try {
+    const minted = [];
+    for(let i=0; i<count; i++) {
+      const d = await fetch('/api/game/shivamon/mint', {method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({owner})}).then(r=>r.json());
+      if(d.shivamon) minted.push(d.shivamon);
+    }
+    res.innerHTML = minted.map(s => {
+      const em = EL_EMOJI[s.element]||'🐉';
+      const col = RARITY_COL[s.rarity]||'var(--text)';
+      return `<div class="shv-card" style="margin-bottom:8px">
+        <div class="em">${em}</div>
+        <div class="nm">${(s.name||'').split('-')[0]}</div>
+        <div class="lv" style="color:${col}">${s.rarity}</div>
+        <div class="lv" style="font-size:9px;color:var(--dim)">${s.token_id}</div>
+      </div>`;
+    }).join('');
+    showNotif(`✅ ${minted.length} Shivamon geminted!`, 'success');
+  } catch(e) { res.innerHTML = '<div style="color:var(--pink)">Mint fehlgeschlagen</div>'; }
+}
+
+async function breedShivamon() {
+  const p1 = document.getElementById('breed-p1')?.value?.trim();
+  const p2 = document.getElementById('breed-p2')?.value?.trim();
+  const owner = document.getElementById('breed-owner')?.value?.trim();
+  if(!p1||!p2||!owner) { showNotif('Alle Felder ausfüllen!', 'warn'); return; }
+  const res = document.getElementById('breed-result');
+  res.innerHTML = '<div style="color:var(--dim)">Züchten...</div>';
+  try {
+    const d = await fetch('/api/game/shivamon/breed', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({parent1:p1, parent2:p2, owner})}).then(r=>r.json());
+    if(!d.success) { res.innerHTML = `<div style="color:var(--pink)">❌ ${d.error}</div>`; return; }
+    const s = d.child;
+    const em = EL_EMOJI[s.element]||'🐉';
+    const col = RARITY_COL[s.rarity]||'var(--text)';
+    res.innerHTML = `<div class="panel">
+      <div class="panel-title">🧬 NEUES SHIVAMON!</div>
+      <div style="text-align:center">
+        <div style="font-size:40px;margin-bottom:8px">${em}</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:12px">${s.name}</div>
+        <div style="color:${col};font-size:11px;margin-top:4px">${s.rarity} · Gen.${s.generation}</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:4px">${s.token_id}</div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;font-size:10px">
+          <span>ATK:${s.stats?.attack}</span><span>HP:${s.stats?.hp}</span><span>DEF:${s.stats?.defense}</span>
+        </div>
+      </div>
+    </div>`;
+    showNotif('🧬 Breeding erfolgreich!', 'success');
+  } catch(e) { res.innerHTML = '<div style="color:var(--pink)">API nicht erreichbar</div>'; }
+}
+
+async function loadShvStats() {
+  try {
+    const d = await fetch('/api/game/shivamon/stats').then(r=>r.json());
+    document.getElementById('shv-stat-total').textContent = d.total_minted||0;
+    document.getElementById('shv-stat-battles').textContent = d.battles||0;
+    const bars = document.getElementById('shv-rarity-bars');
+    const total = d.total_minted||1;
+    const rarities = [
+      ['Common','var(--dim)',60],['Uncommon','var(--green)',25],['Rare','var(--cyan)',10],
+      ['Epic','var(--purple)',4],['Legendary','var(--orange)',0.9],['Genesis','var(--pink)',0.1]
+    ];
+    bars.innerHTML = rarities.map(([n,c,pct])=>`
+      <div class="pr-row"><div class="pr-lbl"><span style="color:${c}">${n}</span><span>${pct}%</span></div>
+      <div class="pr-bar"><div class="pr-fill" style="width:${pct}%;background:${c}"></div></div></div>`).join('');
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════
+// BATTLE ARENA (Issue #3)
+// ═══════════════════════════════════════════════════
+const BattleState = { running: false, attackerMaxHp:1, defenderMaxHp:1 };
+
+async function startBattle() {
+  if(BattleState.running) return;
+  const aId = document.getElementById('battle-attacker-sel')?.value || document.getElementById('battle-attacker-inp')?.value?.trim();
+  const dId = document.getElementById('battle-defender-sel')?.value || document.getElementById('battle-defender-inp')?.value?.trim();
+  if(!aId||!dId) { showNotif('Beide Token-IDs eingeben!', 'warn'); return; }
+  if(aId===dId)  { showNotif('Verschiedene Shivamon wählen!', 'warn'); return; }
+  BattleState.running = true;
+  document.getElementById('battle-start-btn').textContent = '⚔️...';
+  document.getElementById('battle-log').innerHTML = '';
+  document.getElementById('battle-result').style.display='none';
+  try {
+    const d = await fetch('/api/game/shivamon/battle', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({attacker:aId, defender:dId})}).then(r=>r.json());
+    if(!d.success) { showNotif('❌ '+d.error, 'error'); BattleState.running=false; document.getElementById('battle-start-btn').textContent='⚔️ KAMPF'; return; }
+    const w=d.winner, l=d.loser;
+    document.getElementById('battle-fighter-a-name').textContent = (l.name||'?').split('-')[0];
+    document.getElementById('battle-fighter-d-name').textContent = (w.name||'?').split('-')[0];
+    document.getElementById('battle-fighter-a-el').textContent   = EL_EMOJI[l.element]||'⚔️';
+    document.getElementById('battle-fighter-d-el').textContent   = EL_EMOJI[w.element]||'🛡';
+    BattleState.attackerMaxHp = l.stats?.hp||100;
+    BattleState.defenderMaxHp = w.stats?.hp||100;
+    for(const rnd of (d.rounds||[])) {
+      await sleep(600);
+      appendBattleLog(`R${rnd.round}: <b style="color:var(--cyan)">${rnd.attacker?.split('-')[0]||'?'}</b> → <b style="color:var(--pink)">-${rnd.damage}</b> Schaden`);
+    }
+    await sleep(800);
+    const res = document.getElementById('battle-result');
+    res.style.display='block';
+    res.innerHTML=`<div style="text-align:center;padding:12px;background:rgba(162,89,255,0.1);border:1px solid rgba(162,89,255,0.3);border-radius:10px">
+      <div style="font-size:24px;margin-bottom:6px">🏆</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:12px;color:var(--green)">${(w.name||'?').split('-')[0]} GEWINNT!</div>
+      <div style="font-size:10px;color:var(--cyan);margin-top:4px">+${d.xp_gained||0} XP</div>
+    </div>`;
+    showNotif('⚔️ Battle beendet!', 'success');
+  } catch(e) { showNotif('Battle-API nicht erreichbar', 'error'); }
+  BattleState.running=false;
+  document.getElementById('battle-start-btn').textContent='⚔️ KAMPF';
+}
+
+function appendBattleLog(html) {
+  const log = document.getElementById('battle-log');
+  if(!log) return;
+  log.innerHTML += `<div style="padding:3px 0;border-bottom:1px solid rgba(162,89,255,0.08)">${html}</div>`;
+  log.scrollTop = log.scrollHeight;
+}
+function updateHPBar(side, curr, max) {
+  const b = document.getElementById('hp-bar-'+side);
+  if(!b) return;
+  const pct = Math.max(0, Math.min(100, curr/max*100));
+  b.style.width = pct+'%';
+  b.style.background = pct>50?'var(--green)':pct>25?'var(--orange)':'var(--pink)';
+  const l = document.getElementById('hp-label-'+side);
+  if(l) l.textContent = Math.max(0,curr)+' / '+max;
+}
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+// ═══════════════════════════════════════════════════
+// MARKETPLACE (Issue #13)
+// ═══════════════════════════════════════════════════
+async function loadMarketplace() {
+  try {
+    const [listings, stats] = await Promise.all([
+      fetch('/api/marketplace/listings').then(r=>r.json()),
+      fetch('/api/marketplace/stats').then(r=>r.json())
+    ]);
+    const s = stats||{};
+    document.getElementById('market-floor').textContent = (s.floor_price||0).toFixed(0)+' ATC';
+    document.getElementById('market-vol').textContent   = (s.total_volume||0).toFixed(0)+' ATC';
+    document.getElementById('market-count').textContent = s.listings||0;
+    renderListings(listings.listings||[]);
+  } catch(e) {
+    document.getElementById('market-listings').innerHTML = '<div style="color:var(--pink);text-align:center;padding:20px;grid-column:1/-1">API nicht erreichbar</div>';
+  }
+}
+function renderListings(listings) {
+  const box = document.getElementById('market-listings');
+  if(!box) return;
+  if(!listings.length) {
+    box.innerHTML = '<div style="text-align:center;padding:30px;color:var(--dim);grid-column:1/-1">Keine Listings — sei der Erste!</div>';
+    return;
+  }
+  box.innerHTML = listings.map(l => {
+    const s = l.shivamon||{};
+    const em = EL_EMOJI[s.element]||'🐉';
+    const col = RARITY_COL[s.rarity]||'var(--text)';
+    return `<div class="market-card">
+      <div style="font-size:28px;margin-bottom:6px">${em}</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:8px;color:var(--text);margin-bottom:4px">${(s.name||'?').split('-')[0]}</div>
+      <div style="font-size:9px;color:${col};margin-bottom:6px">${s.rarity||'?'}</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:12px;color:var(--green);margin-bottom:8px">${l.price_atc} ATC</div>
+      <button onclick="buyNFT('${l.listing_id}')" class="btn btn-primary" style="width:100%;font-size:8px;padding:5px">KAUFEN</button>
+    </div>`;
+  }).join('');
+}
+async function buyNFT(listingId) {
+  const buyer = WalletState.address;
+  if(!buyer) { showNotif('Zuerst Wallet verbinden!', 'warn'); return; }
+  try {
+    const d = await fetch('/api/marketplace/buy', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({listing_id:listingId, buyer})}).then(r=>r.json());
+    showNotif(d.success ? '✅ NFT gekauft! '+d.token_id : '❌ '+d.error, d.success?'success':'error');
+    if(d.success) loadMarketplace();
+  } catch(e) { showNotif('API Fehler', 'error'); }
+}
+async function listMyShivamon() {
+  const tokenId = document.getElementById('market-list-token')?.value?.trim();
+  const price = parseFloat(document.getElementById('market-list-price')?.value||0);
+  const seller = WalletState.address;
+  if(!tokenId||!price||!seller) { showNotif('Alle Felder ausfüllen + Wallet verbinden!', 'warn'); return; }
+  try {
+    const d = await fetch('/api/marketplace/list', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token_id:tokenId, seller, price_atc:price})}).then(r=>r.json());
+    showNotif(d.success ? '✅ NFT gelistet!' : '❌ '+d.error, d.success?'success':'error');
+    if(d.success) loadMarketplace();
+  } catch(e) { showNotif('API Fehler', 'error'); }
+}
+
+// ═══════════════════════════════════════════════════
+// GOVERNANCE (Issue #9)
+// ═══════════════════════════════════════════════════
+async function loadGovernance() {
+  const box = document.getElementById('gov-proposals');
+  if(!box) return;
+  box.innerHTML = '<div style="color:var(--dim);text-align:center;padding:20px">Lade...</div>';
+  try {
+    const [d, stats] = await Promise.all([
+      fetch('/api/governance/proposals').then(r=>r.json()),
+      fetch('/api/governance/stats').then(r=>r.json()).catch(()=>({}))
+    ]);
+    document.getElementById('gov-total').textContent  = stats.total||0;
+    document.getElementById('gov-active').textContent = stats.active||0;
+    document.getElementById('gov-passed').textContent = stats.passed||0;
+    const proposals = d.proposals||[];
+    if(!proposals.length) { box.innerHTML = '<div style="text-align:center;padding:30px;color:var(--dim)">Keine Proposals</div>'; return; }
+    box.innerHTML = proposals.map(p => {
+      const sc = p.status==='active'?'var(--green)':p.status==='passed'?'var(--cyan)':'var(--pink)';
+      const totalVotes = Object.values(p.votes||{}).reduce((a,b)=>a+b,0);
+      const deadline = new Date((p.deadline||0)*1000).toLocaleDateString('de-DE');
+      return `<div class="gov-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-family:'Orbitron',sans-serif;font-size:9px">${p.title}</div>
+          <span style="font-size:8px;color:${sc};border:1px solid ${sc};border-radius:8px;padding:2px 7px;font-family:'Orbitron',sans-serif">${p.status?.toUpperCase()}</span>
+        </div>
+        <div style="font-size:10px;color:var(--dim);margin-bottom:8px">${p.description}</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          ${(p.options||[]).map(opt => {
+            const pct = totalVotes>0 ? ((p.votes[opt]||0)/totalVotes*100).toFixed(0) : 0;
+            return `<div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:9px;margin-bottom:3px"><span>${opt}</span><span style="color:var(--cyan)">${pct}%</span></div><div class="pr-bar"><div class="pr-fill" style="width:${pct}%"></div></div></div>`;
+          }).join('')}
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:9px;color:var(--dim)">${p.vote_count} Stimmen · ${deadline}</span>
+          ${p.status==='active' ? `<div style="display:flex;gap:4px">${(p.options||[]).map(opt=>`<button onclick="govVote('${p.proposal_id}','${opt}')" class="btn btn-ghost" style="font-size:8px;padding:3px 8px">${opt}</button>`).join('')}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    box.innerHTML = '<div style="color:var(--pink);text-align:center;padding:20px">API nicht erreichbar</div>';
+  }
+}
+async function govVote(proposalId, option) {
+  const voter = WalletState.address || 'ATC-DEMO-VOTER';
+  try {
+    const d = await fetch('/api/governance/vote', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({voter, proposal_id:proposalId, option, voting_power:1})}).then(r=>r.json());
+    showNotif(d.success ? `✅ Abgestimmt: ${option}` : '❌ '+d.error, d.success?'success':'error');
+    if(d.success) loadGovernance();
+  } catch(e) { showNotif('API Fehler', 'error'); }
+}
+async function createProposal() {
+  const title = document.getElementById('gov-new-title')?.value?.trim();
+  const desc  = document.getElementById('gov-new-desc')?.value?.trim();
+  const creator = WalletState.address || 'ATC-DEMO-001';
+  if(!title||!desc) { showNotif('Titel und Beschreibung angeben!', 'warn'); return; }
+  try {
+    const d = await fetch('/api/governance/proposals', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({creator, title, description:desc})}).then(r=>r.json());
+    showNotif(d.success ? '✅ Proposal erstellt!' : '❌ '+d.error, d.success?'success':'error');
+    if(d.success) { document.getElementById('gov-new-title').value=''; document.getElementById('gov-new-desc').value=''; loadGovernance(); }
+  } catch(e) { showNotif('API Fehler', 'error'); }
+}
+
+// ═══════════════════════════════════════════════════
+// BLOCKCHAIN EXPLORER (Issue #5)
+// ═══════════════════════════════════════════════════
+async function loadExplorer() {
+  try {
+    const [chain, nft] = await Promise.all([
+      fetch('/api/blockchain/info').then(r=>r.json()).catch(()=>null),
+      fetch('/api/game/shivamon/stats').then(r=>r.json()).catch(()=>null),
+    ]);
+    if(chain) {
+      document.getElementById('exp-height').textContent = (chain.height||0).toLocaleString();
+      document.getElementById('exp-txs').textContent = ((chain.poh?.ticks_per_sec)||0).toFixed(0)+' TPS';
+    }
+    if(nft) document.getElementById('exp-nfts').textContent = nft.total_minted||0;
+    document.getElementById('exp-nodes').textContent = '847';
+  } catch(e) {}
+}
+async function explorerTab(tab, btn) {
+  if(btn) {
+    document.querySelectorAll('#win-explorer .tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const box = document.getElementById('explorer-content');
+  if(!box) return;
+  box.innerHTML = '<div style="color:var(--dim);text-align:center;padding:20px">Lade...</div>';
+  try {
+    if(tab==='blocks') {
+      const d = await fetch('/api/blockchain/blocks').then(r=>r.json());
+      const blocks = d.blocks||[];
+      if(!blocks.length) { box.innerHTML = `<div style="text-align:center;padding:30px;color:var(--dim)">Keine Blöcke<br><button class="btn btn-ghost" onclick="mineDemoBlock()" style="margin-top:10px">⛏ DEMO BLOCK MINEN</button></div>`; return; }
+      box.innerHTML = `<table class="exp-table"><thead><tr><th>HEIGHT</th><th>HASH</th><th>MINER</th><th>TXS</th><th>REWARD</th></tr></thead><tbody>`+
+        [...blocks].reverse().slice(0,20).map(b=>`<tr>
+          <td style="color:var(--purple);font-weight:700">#${b.height}</td>
+          <td style="font-family:monospace;color:var(--cyan)">${(b.hash||'').slice(0,14)}...</td>
+          <td style="color:var(--dim)">${(b.miner||'—').slice(0,12)}</td>
+          <td>${(b.transactions||[]).length}</td>
+          <td style="color:var(--green)">${(b.reward||0).toFixed(2)} ATC</td>
+        </tr>`).join('')+'</tbody></table>';
+    } else if(tab==='txs') {
+      box.innerHTML = `<div style="text-align:center;padding:30px;color:var(--dim)">
+        <div style="font-size:28px;margin-bottom:8px">📊</div>
+        <div>Mine Blöcke um Transaktionen zu sehen.</div>
+        <button class="btn btn-ghost" onclick="mineDemoBlock()" style="margin-top:12px">⛏ DEMO BLOCK MINEN</button>
+      </div>`;
+    } else if(tab==='shivamon') {
+      const d = await fetch('/api/game/shivamon/stats').then(r=>r.json());
+      box.innerHTML = `<div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="stat-val" style="color:var(--purple)">${d.total_minted||0}</div><div class="stat-lbl">GEMINTED</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--cyan)">${d.max_supply||9900}</div><div class="stat-lbl">MAX SUPPLY</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--pink)">${d.battles||0}</div><div class="stat-lbl">BATTLES</div></div>
+      </div>`;
+    }
+  } catch(e) { box.innerHTML = '<div style="color:var(--pink);text-align:center;padding:20px">API nicht erreichbar</div>'; }
+}
+async function mineDemoBlock() {
+  try {
+    await fetch('/api/blockchain/mine', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({miner:'demo-miner', transactions:[]})});
+    showNotif('⛏ Block gemint!', 'success');
+    loadExplorer();
+    explorerTab('blocks');
+  } catch(e) { showNotif('Mining fehlgeschlagen', 'error'); }
+}
+async function explorerSearch() {
+  const q = document.getElementById('explorer-search').value.trim();
+  if(!q) return;
+  if(q.startsWith('ATC')) {
+    const d = await fetch('/api/wallet/balance/'+q).then(r=>r.json()).catch(()=>null);
+    showNotif(d ? `💎 Balance: ${d.balance} ATC` : '❌ Adresse nicht gefunden', d?'info':'error');
+  } else if(q.startsWith('SHV-')) {
+    const d = await fetch('/api/game/shivamon/'+q).then(r=>r.json()).catch(()=>null);
+    showNotif(d&&!d.error ? `🐉 ${d.name} (${d.rarity})` : '❌ Token nicht gefunden', d&&!d.error?'info':'error');
+  } else {
+    showNotif('Format: ATC-..., SHV-... oder Block-Nr.', 'warn');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// FRANCHISE FACTORY (Issues #3b / Audio / Render / Game / Mesh / Assets)
+// ═══════════════════════════════════════════════════
+function factoryTab(tab, btn) {
+  ['audio','render','game','mesh','assets'].forEach(t => {
+    const el = document.getElementById('ff-'+t);
+    if(el) el.style.display = t===tab ? '' : 'none';
+  });
+  if(btn) {
+    document.querySelectorAll('#win-factory .tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  if(tab==='assets') ffRenderAssets();
+}
+
+// ═══════════════════════════════════════════════════
+// ASSET VAULT
+// ═══════════════════════════════════════════════════
+const atcData = [
+  {id:'ATC-001',name:'Avatar NFT',cat:'nft'},{id:'ATC-002',name:'Skins',cat:'nft'},
+  {id:'ATC-003',name:'Hardware NFT',cat:'nft'},{id:'ATC-004',name:'Booster',cat:'nft'},
+  {id:'ATC-005',name:'Soulbound Badge',cat:'nft'},{id:'ATC-0020',name:'Energie/Fuel',cat:'token'},
+  {id:'ATC-0721',name:'Layered Avatar',cat:'nft'},{id:'ATC-2000',name:'Governance Token',cat:'token'},
+  {id:'ATC-2500',name:'Stablecoin',cat:'token'},{id:'ATC-8300',name:'Native Coin',cat:'token'},
+  {id:'ATC-9000',name:'Solana Token',cat:'token'},{id:'ATC-9100',name:'BSC Token',cat:'token'},
+  {id:'ATC-ISO20022-XRP',name:'Ripple ISO20022',cat:'iso'},{id:'ATC-ISO20022-ADA',name:'Cardano ISO20022',cat:'iso'},
+  {id:'ATC-GAMING-TOKEN',name:'Gaming Token',cat:'game'},{id:'ATC-GAMING-ASSET',name:'In-Game Assets',cat:'game'},
+  {id:'ATC-NFT-MUSIC',name:'Musik-NFT',cat:'nft'},{id:'ATC-NFT-VIDEO',name:'Video-NFT',cat:'nft'},
+  {id:'ATC-PROMPT-NFT',name:'Prompt NFT',cat:'nft'},{id:'ATC-3D-MODEL',name:'3D Model Asset',cat:'game'},
+];
+let assetFilter = 'all';
+function filterAssets(cat, btn) {
+  assetFilter = cat;
+  if(btn) { document.querySelectorAll('#win-assets .tab-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+  renderAssets(cat);
+}
+function renderAssets(cat) {
+  const list = document.getElementById('assets-list');
+  if(!list) return;
+  const data = cat==='all' ? atcData : atcData.filter(a=>a.cat===cat);
+  list.innerHTML = data.map(a=>`<div class="atc-row">
+    <span class="atc-id">${a.id}</span>
+    <span class="atc-nm">${a.name}</span>
+    <span class="badge b-${a.cat}">${a.cat.toUpperCase()}</span>
+  </div>`).join('');
+}
+let ffAssetFilter = 'all';
+function ffFilterA(cat, btn) {
+  ffAssetFilter = cat;
+  if(btn) { document.querySelectorAll('#ff-assets .tab-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+  ffRenderAssets();
+}
+function ffRenderAssets() {
+  const list = document.getElementById('ff-atc-list');
+  if(!list) return;
+  const data = ffAssetFilter==='all' ? atcData : atcData.filter(a=>a.cat===ffAssetFilter);
+  list.innerHTML = data.map(a=>`<div class="atc-row">
+    <span class="atc-id">${a.id}</span><span class="atc-nm">${a.name}</span>
+    <span class="badge b-${a.cat}">${a.cat.toUpperCase()}</span>
+  </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// CODE CENTER
+// ═══════════════════════════════════════════════════
+const codeFiles = {
+  'kernel.py': `# core/kernel.py\nclass Kernel:\n    def __init__(self):\n        self.running = False\n    def start(self):\n        print("[KERNEL] A-TownChain OS starting...")\n        self.running = True`,
+  'event_bus.py': `# core/event_bus.py\nclass EventBus:\n    def __init__(self):\n        self.listeners = {}\n    def subscribe(self, event, handler):\n        self.listeners.setdefault(event, []).append(handler)\n    def emit(self, event, data={}):\n        for h in self.listeners.get(event, []):\n            h(data)`,
+  'atcoin.py': `# blockchain/atcoin/atcoin.py\nfrom decimal import Decimal\n\nclass ATCoin:\n    def __init__(self):\n        self.total_supply = Decimal("0")\n        self.max_supply   = Decimal("21000000")\n        self.balances     = {}\n        self.paused       = False\n\n    def mint(self, receiver, amount):\n        amount = Decimal(str(amount))\n        self.balances[receiver] = self.balance_of(receiver) + amount\n        self.total_supply += amount\n        return {"success": True}`,
+  'chain.py': `# blockchain/chain.py\nclass AChain:\n    def __init__(self):\n        self.blocks = []\n        self.difficulty = 3\n    \n    def mine(self, miner, txs=[]):\n        block = {"height": len(self.blocks), "miner": miner, "transactions": txs}\n        self.blocks.append(block)\n        return block`,
+  'server.py': `# backend/api/server.py\nfrom flask import Flask\nfrom flask_cors import CORS\n\ndef create_app(kernel=None):\n    app = Flask(__name__)\n    CORS(app)\n    from backend.api.routes.blockchain import blockchain_bp\n    app.register_blueprint(blockchain_bp, url_prefix="/api/blockchain")\n    return app`,
+  'ai_routes.py': `# backend/api/routes/ai_routes.py\nfrom flask import Blueprint, request, jsonify\nai_bp = Blueprint("ai", __name__)\n\n@ai_bp.route("/query", methods=["POST"])\ndef query():\n    prompt = request.json.get("prompt", "")\n    # Gemini 2.0 integration\n    return jsonify({"response": "AI response", "gemini_active": False})`,
+  'shivamon_contract.py': `# blockchain/contracts/shivamon/shivamon_contract.py\nclass ShivamonContract:\n    def mint(self, owner):\n        # Mint new Shivamon NFT\n        pass\n    def breed(self, parent1_id, parent2_id, owner):\n        # DNA mixing + stat inheritance\n        pass\n    def battle(self, attacker_id, defender_id):\n        # Turn-based combat\n        pass`,
+  'governance_contract.py': `# blockchain/contracts/governance/governance_contract.py\nclass GovernanceContract:\n    def create_proposal(self, creator, title, description):\n        # Create on-chain proposal\n        pass\n    def vote(self, voter, proposal_id, option, voting_power=1):\n        # Cast vote\n        pass`,
+};
+let activeFile = 'kernel.py';
+function openFile(name) {
+  activeFile = name;
+  document.getElementById('code-filename').textContent = name;
+  document.getElementById('code-editor').value = codeFiles[name] || `# ${name}\n# Datei wird geladen...`;
+  document.querySelectorAll('.ftree-file').forEach(f => f.classList.remove('active'));
+  event?.target?.classList.add('active');
+}
+function runCode() {
+  const output = document.getElementById('code-output');
+  output.innerHTML = `<span style="color:var(--green)">[RUN] ${activeFile} wird ausgeführt...</span>\n<span style="color:var(--cyan)">[OK] Keine Fehler gefunden. Exit code: 0</span>`;
+}
+function saveCode() {
+  const output = document.getElementById('code-output');
+  const ts = new Date().toLocaleTimeString('de-DE');
+  output.innerHTML += `\n<span style="color:var(--purple)">[${ts}] ✓ ${activeFile} gespeichert</span>`;
+  showNotif('💾 '+activeFile+' gespeichert', 'success');
+}
+
+// ═══════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════
+function settingsNav(section, el) {
+  ['system','display','network','blockchain','ai','security','about'].forEach(s => {
+    const d = document.getElementById('set-'+s);
+    if(d) d.style.display = s===section ? '' : 'none';
+  });
+  document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// AUTO-LOAD ON STARTUP
+// ═══════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  // Open Dashboard by default
+  setTimeout(() => {
+    openWin('win-dash');
+    loadDashboard();
+  }, 300);
+  // Poll dashboard stats
+  setInterval(async () => {
+    try {
+      const d = await fetch('/api/blockchain/info').then(r=>r.json()).catch(()=>null);
+      if(d) document.getElementById('dash-blocks').textContent = (d.height||0).toLocaleString();
+    } catch(e){}
+  }, 10000);
+});
+</script>
+</body>
+</html>
