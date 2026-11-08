@@ -1,0 +1,168 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-24 — Service Discovery & Health Check
+// Sprint 3.0 | Gateway Layer | Chain-ID 9000
+// Migrated from: gateway/service_discovery.py
+// Wiki: Kap. 8
+// ─────────────────────────────────────────────────────────────
+
+const HEALTH_INTERVAL: u16 = 10   // seconds between health checks
+const SERVICE_TIMEOUT: u8 = 5     // HTTP timeout for health checks
+
+struct ServiceEndpoint {
+    name: String,
+    host: String,
+    port: u16,
+    health_path: String,
+    healthy: bool,
+    last_check: u64,
+    response_ms: u32,
+    version: String,
+}
+
+contract ServiceDiscovery {
+    state services: Map<String, ServiceEndpoint>
+    state running: bool
+    state last_check_cycle: u64
+
+    event ServiceRegistered(name: String, host: String, port: u16)
+    event ServiceDeregistered(name: String)
+    event ServiceHealthy(name: String, response_ms: u32)
+    event ServiceUnhealthy(name: String, reason: String)
+    event HealthCheckCycleComplete(total: u16, healthy: u16, unhealthy: u16)
+
+    fn init() {
+        self.running = false
+        self.last_check_cycle = 0
+        // Register default A-TownChain OS services
+        self.register_defaults()
+    }
+
+    // ── Default services ────────────────────────────
+    fn register_defaults() {
+        self.register("gateway", "127.0.0.1", 4000, "/health")
+        self.register("core", "127.0.0.1", 5000, "/health")
+        self.register("chain", "127.0.0.1", 5001, "/health")
+        self.register("wallet", "127.0.0.1", 5002, "/health")
+        self.register("ai", "127.0.0.1", 5003, "/health")
+        self.register("game", "127.0.0.1", 5004, "/health")
+        self.register("prometheus", "127.0.0.1", 9100, "/health")
+    }
+
+    // ── Register a service ──────────────────────────
+    fn register(name: String, host: String, port: u16, health_path: String) -> bool {
+        let svc = ServiceEndpoint {
+            name: name,
+            host: host,
+            port: port,
+            health_path: health_path,
+            healthy: false,
+            last_check: 0,
+            response_ms: 0,
+            version: "unknown",
+        }
+        self.services[name] = svc
+        emit ServiceRegistered(name, host, port)
+        return true
+    }
+
+    // ── Deregister a service ────────────────────────
+    fn deregister(name: String) -> bool {
+        if self.services.contains(name) {
+            self.services.remove(name)
+            emit ServiceDeregistered(name)
+            return true
+        }
+        return false
+    }
+
+    // ── Check single service health ─────────────────
+    fn check_health(name: String) -> bool {
+        let svc = self.services.get(name)
+        if svc == null {
+            return false
+        }
+        let url = "http://" + svc.host + ":" + Int::to_string(svc.port) + svc.health_path
+        let t0 = Time::now_ms()
+        let resp = HTTP::get(url, SERVICE_TIMEOUT)
+        let elapsed = Time::now_ms() - t0
+
+        svc.last_check = Time::now()
+        svc.response_ms = elapsed
+
+        if resp.status == 200 {
+            svc.healthy = true
+            svc.version = resp.header("X-Version")
+            emit ServiceHealthy(name, elapsed)
+            return true
+        } else {
+            svc.healthy = false
+            emit ServiceUnhealthy(name, "HTTP " + Int::to_string(resp.status))
+            return false
+        }
+    }
+
+    // ── Run health check cycle ──────────────────────
+    fn run_health_cycle() -> (u16, u16, u16) {
+        let total: u16 = 0
+        let healthy: u16 = 0
+        let unhealthy: u16 = 0
+        let names = self.services.keys()
+        for i in 0..names.len() {
+            total += 1
+            if self.check_health(names[i]) {
+                healthy += 1
+            } else {
+                unhealthy += 1
+            }
+        }
+        self.last_check_cycle = Time::now()
+        emit HealthCheckCycleComplete(total, healthy, unhealthy)
+        return (total, healthy, unhealthy)
+    }
+
+    // ── Get healthy services ────────────────────────
+    fn get_healthy() -> List<String> {
+        let result = []
+        let names = self.services.keys()
+        for i in 0..names.len() {
+            let svc = self.services.get(names[i])
+            if svc.healthy {
+                result.push(names[i])
+            }
+        }
+        return result
+    }
+
+    // ── Get service by name ─────────────────────────
+    fn get_service(name: String) -> ServiceEndpoint {
+        return self.services.get(name)
+    }
+
+    // ── Get base URL for a service ──────────────────
+    fn get_url(name: String) -> String {
+        let svc = self.services.get(name)
+        if svc == null {
+            return ""
+        }
+        return "http://" + svc.host + ":" + Int::to_string(svc.port)
+    }
+
+    // ── Update service metadata ─────────────────────
+    fn update_version(name: String, version: String) -> bool {
+        let svc = self.services.get(name)
+        if svc == null {
+            return false
+        }
+        svc.version = version
+        return true
+    }
+
+    // ── Stats ───────────────────────────────────────
+    fn stats() -> (u16, u16, u16, u64) {
+        let total = self.services.len()
+        let healthy = self.get_healthy().len()
+        let unhealthy = total - healthy
+        return (total, healthy, unhealthy, self.last_check_cycle)
+    }
+}
