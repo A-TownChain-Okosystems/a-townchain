@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // ╔══════════════════════════════════════════════════════╗
 // ║  Revenue Share — Automatische Gewinnverteilung     ║
-// ║  ATCLang v0.2.0 | ATC-89 konform                ║
+// ║  ATCLang v0.2.0 | ATC-8300 konform                ║
 // ╚══════════════════════════════════════════════════════╝
 
 use ATC::Types::Address
@@ -23,6 +23,10 @@ contract RevenueShare {
     state pending_f_see: u128 = 0   // Ausstehend für Franchisee
     state entries:       Vec<RevenueEntry>
     state license_id:    u64
+
+    event RevenueShareInitialized(franchisor: Address, franchisee: Address, share_percent: u8)
+    event RevenueRecorded(amount: u128, franchisor_cut: u128, franchisee_cut: u128)
+    event PayoutSent(to: Address, amount: u128, role: string)
 
     fn init(
         franchisor_addr: Address,
