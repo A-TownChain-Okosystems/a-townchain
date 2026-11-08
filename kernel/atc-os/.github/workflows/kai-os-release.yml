@@ -1,0 +1,208 @@
+name: KAI-OS Release Pipeline (Windows x64)
+
+# KAI-OS Node Release: Build -> Test -> Sign -> Verify -> Release.
+# Fail-Closed (REQ-ENG-006): Kein GitHub Release ohne SignPath-Signierung.
+# Trigger: Tag vX.Y.Z (muss kai-os/node/Cargo.toml version entsprechen).
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality-gates:
+    name: Quality Gates (fmt / clippy / test / audit)
+    if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: kai-os
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: kai-os
+      - name: Rustfmt Gate
+        run: cargo fmt --all --check
+      - name: Clippy Gate (-D warnings)
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Workspace-Tests
+        run: cargo test --workspace --locked
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+      - name: Security Audit (RustSec)
+        run: cargo audit --deny warnings
+
+  release:
+    name: Windows Release (signiert, attested)
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: kai-os
+
+      # GATE: Tag == kai-os-node Version (Repository/Tag/Release konsistent)
+      - name: Version-Consistency-Gate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tag = "${env:GITHUB_REF_NAME}" -replace '^v',''
+          $toml = Get-Content "kai-os/node/Cargo.toml" -Raw
+          if ($toml -notmatch '(?m)^version\s*=\s*"(\d+\.\d+\.\d+)"') { Write-Error "Version in kai-os/node/Cargo.toml nicht lesbar"; exit 1 }
+          $crate = $Matches[1]
+          if ($tag -ne $crate) { Write-Error "Tag v$tag != kai-os-node v$crate. Version in kai-os/node/Cargo.toml bumpen und neu taggen."; exit 1 }
+          "VERSION=$crate" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host "Version konsistent: v$crate"
+
+      # GATES: fmt / clippy / tests / audit
+      - name: Rustfmt Gate
+        working-directory: kai-os
+        run: cargo fmt --all --check
+      - name: Clippy Gate (-D warnings)
+        working-directory: kai-os
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Workspace-Tests
+        working-directory: kai-os
+        run: cargo test --workspace --locked
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+      - name: Security Audit (RustSec)
+        working-directory: kai-os
+        run: cargo audit --deny warnings
+
+      # BUILD: reproduzierbar (--locked) Release-Binary
+      - name: Release-Build kai-os-node (x64, --locked)
+        working-directory: kai-os
+        run: cargo build --release --locked -p kai-os-node
+
+      # SIGN: SignPath Authenticode (fail-closed)
+      - name: Sign kai-os-node.exe (SignPath)
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File packaging/windows/sign-signpath.ps1 -ArtifactPath "kai-os/target/release/kai-os-node.exe" -OutputPath "kai-os/target/release/kai-os-node-signed.exe"
+      - name: Signature-Verify kai-os-node.exe
+        shell: pwsh
+        run: |
+          $sig = Get-AuthenticodeSignature "kai-os/target/release/kai-os-node-signed.exe"
+          if ($sig.Status -ne 'Valid') { Write-Error "Signatur INVALID: $($sig.Status)"; exit 1 }
+          Write-Host "Signatur gueltig: $($sig.SignerCertificate.Subject)"
+          Move-Item -Force "kai-os/target/release/kai-os-node-signed.exe" "kai-os/target/release/kai-os-node.exe"
+
+      # PACKAGE: portable ZIP
+      - name: Portable-ZIP
+        shell: pwsh
+        run: |
+          $v = $env:VERSION
+          $stage = "staging/KAI-OS-$v-windows-x64"
+          New-Item -ItemType Directory -Force -Path "$stage/bin" | Out-Null
+          Copy-Item "kai-os/target/release/kai-os-node.exe" "$stage/bin/"
+          Copy-Item "LICENSE" "$stage/"
+          Copy-Item "kai-os/README.md" "$stage/README-kai-os.md" -ErrorAction SilentlyContinue
+          Compress-Archive -Path "$stage" -DestinationPath "KAI-OS-$v-windows-x64.zip" -Force
+
+      # PACKAGE: SBOM (CycloneDX)
+      - name: SBOM (CycloneDX)
+        uses: anchore/sbom-action@v0
+        with:
+          artifact-name: KAI-OS-${{ env.VERSION }}.cdx.json
+          output-file: KAI-OS-${{ env.VERSION }}.cdx.json
+          format: cyclonedx-json
+          path: kai-os/target/release/kai-os-node.exe
+
+      # PACKAGE: Inno-Setup-Installer (bettet die signierte exe ein)
+      - name: Installer bauen (Inno Setup)
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { Write-Error "Inno Setup 6 nicht gefunden"; exit 1 }
+          & $iscc "/DVersion=$env:VERSION" "packaging/windows/KAI-OS.iss"
+
+      # SIGN: Installer (fail-closed)
+      - name: Sign KAI-OS-Setup.exe (SignPath)
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File packaging/windows/sign-signpath.ps1 -ArtifactPath "packaging/windows/release/KAI-OS-Setup-$env:VERSION.exe" -OutputPath "KAI-OS-Setup-signed.exe"
+      - name: Signature-Verify Installer
+        shell: pwsh
+        run: |
+          $sig = Get-AuthenticodeSignature "KAI-OS-Setup-signed.exe"
+          if ($sig.Status -ne 'Valid') { Write-Error "Installer-Signatur INVALID: $($sig.Status)"; exit 1 }
+          Move-Item -Force "KAI-OS-Setup-signed.exe" "packaging/windows/release/KAI-OS-Setup-$env:VERSION.exe"
+
+      # INTEGRITY: SHA256SUMS
+      - name: SHA256SUMS.txt
+        shell: pwsh
+        run: |
+          $files = @(
+            "packaging/windows/release/KAI-OS-Setup-$env:VERSION.exe",
+            "KAI-OS-$env:VERSION-windows-x64.zip",
+            "KAI-OS-$env:VERSION.cdx.json"
+          )
+          $lines = foreach ($f in $files) {
+            $h = (Get-FileHash $f -Algorithm SHA256).Hash.ToLower()
+            "$h  $(Split-Path $f -Leaf)"
+          }
+          $lines | Out-File -Encoding ascii "SHA256SUMS.txt"
+
+      # PROVENANCE: Artifact Attestation
+      - name: Build-Provenance attestieren
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            packaging/windows/release/KAI-OS-Setup-${{ env.VERSION }}.exe
+            KAI-OS-${{ env.VERSION }}-windows-x64.zip
+            KAI-OS-${{ env.VERSION }}.cdx.json
+
+      # RELEASE: Verifikation VOR Veröffentlichung (fail-closed)
+      - name: Release-Verification
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $v = $env:VERSION
+          $assets = @(
+            "packaging/windows/release/KAI-OS-Setup-$v.exe",
+            "KAI-OS-$v-windows-x64.zip",
+            "KAI-OS-$v.cdx.json",
+            "SHA256SUMS.txt"
+          )
+          foreach ($a in $assets) { if (-not (Test-Path $a)) { Write-Error "FEHLT: $a"; exit 1 } }
+          $sig = Get-AuthenticodeSignature "packaging/windows/release/KAI-OS-Setup-$v.exe"
+          if ($sig.Status -ne 'Valid') { Write-Error "Installer-Signatur INVALID vor Release"; exit 1 }
+          # ZIP selbst traegt keine Authenticode-Signatur -> signierte exe INNERHALB des ZIP pruefen
+          $tmp = New-Item -ItemType Directory -Force -Path "zip-verify"
+          Expand-Archive "KAI-OS-$v-windows-x64.zip" -DestinationPath $tmp -Force
+          $sigZip = Get-AuthenticodeSignature (Get-ChildItem "$tmp" -Recurse -Filter "kai-os-node.exe").FullName
+          if ($sigZip.Status -ne 'Valid') { Write-Error "Signatur der exe im ZIP INVALID: $($sigZip.Status)"; exit 1 }
+          Remove-Item -Recurse -Force $tmp
+          Write-Host "Release-Verification PASS: alle Assets vorhanden, signiert, geprueft."
+
+      - name: GitHub Release veröffentlichen
+        uses: softprops/action-gh-release@v3
+        with:
+          generate_release_notes: true
+          files: |
+            packaging/windows/release/KAI-OS-Setup-${{ env.VERSION }}.exe
+            KAI-OS-${{ env.VERSION }}-windows-x64.zip
+            KAI-OS-${{ env.VERSION }}.cdx.json
+            SHA256SUMS.txt
