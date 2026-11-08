@@ -1,0 +1,164 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ATC-01 — Core Node Protocol in ATCLang
+// Migriert von: blockchain/network/core_node.py → ATCLang
+// Sprint 2.2 — Issue #82
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+// P2P Node-Struktur
+struct NodeConfig {
+    node_id: Hash256,
+    listen_addr: String,
+    listen_port: UInt16,
+    max_peers: UInt16,
+    bootstrap_nodes: List<String>,
+    chain_id: UInt32,
+    version: String,
+}
+
+struct PeerInfo {
+    id: Hash256,
+    addr: String,
+    port: UInt16,
+    latency_ms: UInt32,
+    last_seen: UInt64,
+    reputation: Int16,
+    synced: Bool,
+}
+
+struct NodeState {
+    config: NodeConfig,
+    peers: Map<Hash256, PeerInfo>,
+    best_hash: Hash256,
+    best_height: UInt64,
+    mempool: List<Hash256>,
+    is_syncing: Bool,
+    uptime: UInt64,
+}
+
+// ATC-01: Node initialisieren
+pub fn init_node(config: NodeConfig) -> NodeState {
+    let node_id = Crypto::sha256(serialize(config.listen_addr, config.listen_port, Chain::timestamp()))
+    config.node_id = node_id
+
+    return NodeState {
+        config: config,
+        peers: {},
+        best_hash: Hash256::zero(),
+        best_height: 0,
+        mempool: [],
+        is_syncing: false,
+        uptime: Chain::timestamp(),
+    }
+}
+
+// ATC-01: Peer hinzufügen
+pub fn add_peer(state: NodeState, peer_id: Hash256, addr: String, port: UInt16) -> Bool {
+    require(state.peers.len() < state.config.max_peers, "Max peers reached")
+
+    state.peers[peer_id] = PeerInfo {
+        id: peer_id,
+        addr: addr,
+        port: port,
+        latency_ms: 0,
+        last_seen: Chain::timestamp(),
+        reputation: 0,
+        synced: false,
+    }
+
+    emit PeerConnected(peer_id, addr, port)
+    return true
+}
+
+// ATC-01: Peer entfernen
+pub fn remove_peer(state: NodeState, peer_id: Hash256) -> Bool {
+    require(state.peers.contains(peer_id), "Peer not found")
+    state.peers.delete(peer_id)
+    emit PeerDisconnected(peer_id)
+    return true
+}
+
+// ATC-01: Handshake (Version + Chain-Info austauschen)
+pub fn handshake(state: NodeState, remote_id: Hash256) -> HandshakeResult {
+    require(state.peers.contains(remote_id), "Unknown peer")
+
+    let peer = state.peers[remote_id]
+    peer.last_seen = Chain::timestamp()
+
+    return HandshakeResult {
+        version: state.config.version,
+        chain_id: state.config.chain_id,
+        best_height: state.best_height,
+        best_hash: state.best_hash,
+        node_id: state.config.node_id,
+    }
+}
+
+// ATC-01: Block announce (neuer Block an Peers senden)
+pub fn announce_block(state: NodeState, block_hash: Hash256, height: UInt64) -> Bool {
+    for peer_id in state.peers.keys() {
+        let peer = state.peers[peer_id]
+        if peer.synced and peer.reputation >= 0 {
+            emit BlockAnnounced(peer_id, block_hash, height)
+        }
+    }
+    return true
+}
+
+// ATC-01: Transaction broadcast
+pub fn broadcast_tx(state: NodeState, tx_hash: Hash256) -> Bool {
+    if state.mempool.contains(tx_hash) {
+        return false
+    }
+    state.mempool.append(tx_hash)
+    for peer_id in state.peers.keys() {
+        emit TxBroadcast(peer_id, tx_hash)
+    }
+    return true
+}
+
+// ATC-01: Sync-Status aktualisieren
+pub fn update_sync_status(state: NodeState, remote_height: UInt64) -> Bool {
+    if remote_height > state.best_height {
+        state.is_syncing = true
+        emit SyncStarted(state.best_height, remote_height)
+    } else if remote_height == state.best_height {
+        state.is_syncing = false
+        emit SyncComplete(state.best_height)
+    }
+    return true
+}
+
+// ATC-01: Peer-Reputation aktualisieren
+pub fn update_reputation(state: NodeState, peer_id: Hash256, delta: Int16) -> Bool {
+    require(state.peers.contains(peer_id), "Peer not found")
+    state.peers[peer_id].reputation = state.peers[peer_id].reputation + delta
+    if state.peers[peer_id].reputation < -100 {
+        remove_peer(state, peer_id)
+    }
+    return true
+}
+
+// ATC-01: Mempool aufräumen
+pub fn cleanup_mempool(state: NodeState, max_size: UInt32) -> Bool {
+    while state.mempool.len() > max_size {
+        state.mempool.pop(0)
+    }
+    return true
+}
+
+struct HandshakeResult {
+    version: String,
+    chain_id: UInt32,
+    best_height: UInt64,
+    best_hash: Hash256,
+    node_id: Hash256,
+}
+
+event PeerConnected(id: Hash256, addr: String, port: UInt16)
+event PeerDisconnected(id: Hash256)
+event BlockAnnounced(peer: Hash256, hash: Hash256, height: UInt64)
+event TxBroadcast(peer: Hash256, hash: Hash256)
+event SyncStarted(local: UInt64, remote: UInt64)
+event SyncComplete(height: UInt64)
