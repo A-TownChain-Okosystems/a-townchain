@@ -62,6 +62,11 @@ impl Genesis {
         for (key, value) in fields { out.extend_from_slice(&(key.len() as u32).to_be_bytes()); out.extend_from_slice(key.as_bytes()); out.extend_from_slice(&(value.len() as u64).to_be_bytes()); out.extend_from_slice(value.as_bytes()); }
         out
     }
+
+    /// Vollstaendiger 256-Bit-Bindungs-Hash der Genesis (SEC-P0-007).
+    pub fn boot_hash256(&self) -> [u8; 32] {
+        atc_hash(&self.canonical_boot_encoding())
+    }
 }
 
 pub(crate) fn townhash_u64(data: &str) -> u64 {
