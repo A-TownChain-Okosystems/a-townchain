@@ -1,0 +1,13 @@
+[package]
+name = "kai-os-keyring"
+version = "0.1.0"
+edition = "2021"
+description = "KAI-OS Keyring: Ed25519-Key-Isolation (S16-S18, AD-008)"
+license = "Apache-2.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+ed25519-dalek = "2"
+
+[dev-dependencies]
+kai-os-network = { path = "../network" }
