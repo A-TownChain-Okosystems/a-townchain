@@ -1,0 +1,27 @@
+{
+  "id": "ATC-KMS-COMPONENT-GLOBUS-OS-CD602E3D08",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "module",
+  "title": "Component: globus-os",
+  "context": "Component subtree indexed from A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "file",
+    "ref": "components/globus-os",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "component",
+    "generated",
+    "globus-os"
+  ],
+  "links": [
+    {
+      "relation": "part-of",
+      "target": "ATC-KMS-REPOSITORY-STRUCTURE"
+    }
+  ],
+  "content": "Files: 536\n\nManifests: components/globus-os/Cargo.toml, components/globus-os/modules/atc-bootloader/Cargo.toml, components/globus-os/modules/atc-drivers/Cargo.toml, components/globus-os/modules/atc-drivers/package.json, components/globus-os/modules/atc-globus-browser/Cargo.toml, components/globus-os/modules/atc-globus-os/package.json, components/globus-os/modules/atc-globus-shell/Cargo.toml, components/globus-os/modules/atc-linux-edition/Cargo.toml, components/globus-os/modules/atc-shivacore/boot/Cargo.toml, components/globus-os/modules/atc-shivacore/kernel/Cargo.toml, components/globus-os/modules/atc-shivacore/service_space/Cargo.toml, components/globus-os/modules/atc-windows-edition/Cargo.toml, components/globus-os/sdk/Cargo.toml, components/globus-os/system/application-manager/Cargo.toml, components/globus-os/system/audio/Cargo.toml, components/globus-os/system/aurora-core/Cargo.toml, components/globus-os/system/compositor-manager/Cargo.toml, components/globus-os/system/configuration-manager/Cargo.toml, components/globus-os/system/core/Cargo.toml, components/globus-os/system/devices/Cargo.toml, components/globus-os/system/diagnostics/Cargo.toml, components/globus-os/system/environment-manager/Cargo.toml, components/globus-os/system/event-bus/Cargo.toml, components/globus-os/system/graphics/Cargo.toml, components/globus-os/system/identity/Cargo.toml, components/globus-os/system/input-manager/Cargo.toml, components/globus-os/system/ipc-manager/Cargo.toml, components/globus-os/system/ipc/Cargo.toml, components/globus-os/system/job-manager/Cargo.toml, components/globus-os/system/media/Cargo.toml, components/globus-os/system/memory/Cargo.toml, components/globus-os/system/mount-manager/Cargo.toml, components/globus-os/system/net/Cargo.toml, components/globus-os/system/notification-manager/Cargo.toml, components/globus-os/system/observability/Cargo.toml, components/globus-os/system/package-manager/Cargo.toml, components/globus-os/system/package/Cargo.toml, components/globus-os/system/policy/Cargo.toml, components/globus-os/system/power/Cargo.toml, components/globus-os/system/process-manager/Cargo.toml, components/globus-os/system/process/Cargo.toml, components/globus-os/system/recovery-manager/Cargo.toml, components/globus-os/system/resource/Cargo.toml, components/globus-os/system/runtime/Cargo.toml, components/globus-os/system/security/Cargo.toml, components/globus-os/system/service-manager/Cargo.toml, components/globus-os/system/services/Cargo.toml, components/globus-os/system/settings/Cargo.toml, components/globus-os/system/shivacore-api/Cargo.toml, components/globus-os/system/system-manager/Cargo.toml, components/globus-os/system/task/Cargo.toml, components/globus-os/system/thread-manager/Cargo.toml, components/globus-os/system/update-manager/Cargo.toml, components/globus-os/system/update/Cargo.toml, components/globus-os/system/vfs/Cargo.toml, components/globus-os/system/volume-manager/Cargo.toml, components/globus-os/system/wallet-service/Cargo.toml, components/globus-os/system/watchdog/Cargo.toml, components/globus-os/system/window-manager/Cargo.toml"
+}
