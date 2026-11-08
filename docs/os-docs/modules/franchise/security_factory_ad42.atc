@@ -1,0 +1,30 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-42 Security Factory
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+struct SecurityFactory { anti_cheat: AntiCheat, encryption: EncCfg, identity: IdentityMgr, fraud: FraudDet, audit: List<Audit>, backup: BackupCfg, perms: Map<String, PermSet> }
+enum DetType { SpeedHack, Aimbot, Wallhack, Dupe, Injection, MemEdit, Behavior }
+struct AntiCheat { enabled: Bool, rules: List<DetRule>, flagged: Map<String, Flag>, bans: Map<String, Ban>, auto_ban: Bool, threshold: UInt8 }
+struct DetRule { id: Hash256, name: String, type: DetType, threshold: Float32, action: String }
+struct Flag { player: String, flags: UInt8, reasons: List<String>, last: UInt64 }
+struct Ban { player: String, reason: String, at: UInt64, expires: UInt64, permanent: Bool }
+struct EncCfg { algorithm: String, tls: Bool, e2e: Bool, at_rest: Bool, rotation_days: UInt16 }
+struct IdentityMgr { users: Map<String, User>, sessions: Map<String, Sess>, mfa: Bool }
+struct User { id: String, username: String, email: String, verified: Bool, mfa: Bool, failed: UInt8, locked: Bool }
+struct Sess { id: String, user: String, token: String, created: UInt64, expires: UInt64, ip: String, active: Bool }
+struct FraudDet { enabled: Bool, velocity: Bool, flagged: List<Hash256> }
+struct Audit { id: Hash256, actor: String, action: String, target: String, timestamp: UInt64, ip: String }
+struct BackupCfg { enabled: Bool, last: UInt64, count: UInt32, encrypted: Bool }
+struct PermSet { role: String, perms: List<String>, restrictions: List<String> }
+
+pub fn add_rule(f, name, dt, thresh, action) -> Hash256 { let rid = Crypto::sha256(serialize(name, Chain::timestamp())); f.anti_cheat.rules.append(DetRule { id: rid, name: name, type: dt, threshold: thresh, action: action }); return rid }
+pub fn flag_player(f, pid, reason) -> Bool { if not f.anti_cheat.flagged.contains(pid) { f.anti_cheat.flagged[pid] = Flag { player: pid, flags: 0, reasons: [], last: Chain::timestamp() } }; let e = f.anti_cheat.flagged[pid]; e.flags = e.flags + 1; e.reasons.append(reason); e.last = Chain::timestamp(); if f.anti_cheat.auto_ban and e.flags >= f.anti_cheat.threshold { ban(f, pid, "Auto", true) }; return true }
+pub fn ban(f, pid, reason, permanent) -> Bool { f.anti_cheat.bans[pid] = Ban { player: pid, reason: reason, at: Chain::timestamp(), expires: if permanent then UInt64::max() else Chain::timestamp() + 86400, permanent: permanent }; return true }
+pub fn is_banned(f, pid) -> Bool { if not f.anti_cheat.bans.contains(pid) { return false }; let b = f.anti_cheat.bans[pid]; if b.permanent { return true }; return Chain::timestamp() < b.expires }
+pub fn register_user(f, username, email) -> String { let uid = serialize(Crypto::sha256(serialize(username, Chain::timestamp()))); f.identity.users[uid] = User { id: uid, username: username, email: email, verified: false, mfa: false, failed: 0, locked: false }; return uid }
+pub fn login(f, uid, ip) -> String { require(f.identity.users.contains(uid)); require(not f.identity.users[uid].locked); let sid = serialize(Crypto::sha256(serialize(uid, Chain::timestamp()))); f.identity.sessions[sid] = Sess { id: sid, user: uid, token: serialize(Crypto::sha256(serialize(sid))), created: Chain::timestamp(), expires: Chain::timestamp() + 86400, ip: ip, active: true }; audit(f, uid, "login", "session", ip); return sid }
+pub fn audit(f, actor, action, target, ip) -> Hash256 { let aid = Crypto::sha256(serialize(actor, Chain::timestamp())); f.audit.append(Audit { id: aid, actor: actor, action: action, target: target, timestamp: Chain::timestamp(), ip: ip }); return aid }
+pub fn create_backup(f) -> Bool { if not f.backup.enabled { return false }; f.backup.last = Chain::timestamp(); f.backup.count = f.backup.count + 1; return true }
+pub fn set_perms(f, role, perms, restrict) -> Bool { f.perms[role] = PermSet { role: role, perms: perms, restrictions: restrict }; return true }
+pub fn has_perm(f, role, perm) -> Bool { if not f.perms.contains(role) { return false }; return f.perms[role].perms.contains(perm) }
+pub fn check_fraud(f, tx, velocity) -> Bool { if not f.fraud.enabled { return true }; if f.fraud.velocity and velocity > 10 { f.fraud.flagged.append(tx); return false }; return true }
