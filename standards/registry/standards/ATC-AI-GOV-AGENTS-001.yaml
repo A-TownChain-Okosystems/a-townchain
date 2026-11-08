@@ -1,0 +1,14 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: ai-gov
+family: LEGACY-SERIES
+family_id: LEGACY
+file: standards/ai-gov/ATC-AI-GOV-AGENTS-001.md
+mandate: Owner-Entwurf 09.09. Zielbild pruefbares Governance-System; operativer SSOT
+  .github-Hub (SCR-0057); 6 REQ-AGOV; SCR-0061
+registry_version: 1
+standard_id: ATC-AI-GOV-AGENTS-001
+status: approved
+title: ATC Agent Governance — Organisationsweite Arbeitsregeln (Discovery, Hierarchie,
+  Registry-Binding, Session-Mandat, Readiness)
+version: 1.0.0
