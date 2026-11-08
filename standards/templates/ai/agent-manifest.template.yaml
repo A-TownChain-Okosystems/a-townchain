@@ -1,0 +1,33 @@
+# Agent Manifest — ATC-STD-AI-DEV-001 §2
+# Ablage: .github/ai/ (agent.yaml + capabilities.yaml + permissions.yaml
+#         + workflow.yaml + memory-policy.yaml)
+agent:
+  id: ATC-AI-DEV-001          # ATC-AI-{ARCH|DEV|TEST|SEC|DOC|AUDIT|RELEASE}-NNN
+  name: <agent-name>
+  type: software-development-agent
+  version: 1.0.0
+  provider: {type: llm, name: <provider>}
+  role: {primary: software-engineer}
+  authority: {read: true, write: true, merge: false, delete: false, release: false}
+  repository_scope: [<repo-1>, <repo-2>]
+
+capabilities:                  # capabilities.yaml
+  - repository_analysis
+  - code_generation
+  - code_modification
+  - test_generation
+  - test_execution
+  - documentation
+  - pull_request_creation
+
+restrictions:                  # Pflicht-Invarianten, nicht entfernbar
+  - no_production_deployment
+  - no_secret_access
+  - no_direct_main_merge
+
+required_artifacts:            # jede Aufgabe MUSS diese hinterlassen
+  - task_reference             # ATC-TASK-NNNN
+  - evidence                   # Fundstellen (§4)
+  - change_summary
+  - validation_result
+  - next_action                # ACT-NNN
