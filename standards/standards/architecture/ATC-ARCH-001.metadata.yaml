@@ -1,0 +1,15 @@
+# GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Phase 1) - NICHT MANUELL BEARBEITEN
+authority: A-TownChain Ecosystems
+category: architecture
+conformance:
+  required: true
+dependencies: []
+id: ATC-ARCH-001
+implementation:
+  status: specification_only
+normative: true
+owner: ShivaCoreDev
+source_file: standards/architecture/ATC-ARCH-001.md
+status: approved
+title: KAI-OS System Architecture Standard
+version: 1.0.0
