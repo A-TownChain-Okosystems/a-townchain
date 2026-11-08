@@ -1,0 +1,66 @@
+// K-Sprint 17 — Memory Pool / Transaction Pool (ATCLang Interface)
+// Rust: kernel/src/mempool.rs (75 lines, 36 tests)
+// Agent: Aurora #2 (6a275618)
+
+import "std/chain.atc" as Chain
+
+enum TxType {
+    TRANSFER = 1,
+    STAKE = 2,
+    UNSTAKE = 3,
+    DELEGATE = 4,
+    VOTE = 5,
+    CONTRACT_CALL = 6,
+    CONTRACT_DEPLOY = 7,
+}
+
+struct Transaction {
+    id: List<u8>,
+    tx_type: TxType,
+    sender_did: String,
+    recipient_did: Option<String>,
+    amount: u64,
+    nonce: u64,
+    gas_price: u64,
+    timestamp: u64,
+}
+
+struct PoolEntry {
+    tx: Transaction,
+    status: String,
+    added_at: u64,
+}
+
+module Kernel::Mempool {
+    contract MemoryPool {
+        fn add(tx: Transaction, now: u64) -> Result<(), String>
+        fn validate_tx(tx_id: List<u8>, now: u64) -> Result<(), String>
+        fn get_pending_batch(max_count: u32) -> List<Transaction>
+        fn mark_in_dag(tx_id: List<u8>) -> bool
+        fn mark_confirmed(tx_id: List<u8>) -> bool
+        fn cleanup(now: u64) -> u32
+        fn get(tx_id: List<u8>) -> Option<PoolEntry>
+        fn count() -> u32
+        fn pending_count() -> u32
+        fn txs_by_sender(did: String) -> List<Transaction>
+        fn sender_nonce(did: String) -> u64
+    }
+
+    contract NonceTracker {
+        fn get_nonce(did: String) -> u64
+        fn increment_nonce(did: String) -> u64
+    }
+
+    contract StateDb {
+        fn get_balance(did: String) -> u64
+        fn set_balance(did: String, amount: u64) -> bool
+        fn transfer(from: String, to: String, amount: u64) -> Result<(), String>
+    }
+
+    contract TxValidator {
+        fn validate(tx: Transaction, now: u64) -> Result<(), String>
+        fn check_nonce(tx: Transaction) -> Result<(), String>
+        fn check_balance(tx: Transaction) -> Result<(), String>
+        fn check_signature(tx: Transaction) -> Result<(), String>
+    }
+}
