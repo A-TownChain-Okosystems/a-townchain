@@ -197,3 +197,60 @@ def test_a7_unbekannte_kategorie(tmp_path):
     reg.write_text(reg.read_text().replace("category: SC-TOKEN", "category: SC-UNSINN"))
     findings, _ = run(tmp_path, reg, deployments(tmp_path))
     assert "A7" in gates(findings)
+
+
+# ---------------------------------------------------------------- Gate A9 (ABI)
+
+
+ABI = "a" * 64
+
+
+def fake_atc_abi(tmp_path: Path, digest: str = ABI) -> Path:
+    """Stub, der `abi --digest` mit festem Hash beantwortet."""
+    binary = tmp_path / "atc_abi"
+    binary.write_text(
+        "#!/bin/sh\n"
+        'if [ "$1" = "abi" ]; then printf \'%s  "%s"  1\\n\'; exit 0; fi\n'.replace("%s", digest, 1)
+        + "exit 0\n",
+        encoding="utf-8",
+    )
+    binary.chmod(0o755)
+    return binary
+
+
+def test_a9_fehlender_abi_hash_wird_gemeldet(tmp_path):
+    reg = make_tree(tmp_path)
+    findings, _ = run(tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path))
+    assert "A9" in gates(findings)
+    assert any("abi_sha256 fehlt" in f["detail"] for f in findings)
+
+
+def test_a9_abi_drift_wird_erkannt(tmp_path):
+    reg = make_tree(tmp_path, extra_entry=f"    abi_sha256: {'b' * 64}\n")
+    findings, _ = run(tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path))
+    assert any(f["gate"] == "A9" and "ABI driftet" in f["detail"] for f in findings)
+
+
+def test_a9_passender_abi_hash_ist_sauber(tmp_path):
+    reg = make_tree(tmp_path, extra_entry=f"    abi_sha256: {ABI}\n")
+    findings, _ = run(tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path))
+    assert findings == [], f"unerwartete Befunde: {findings}"
+
+
+def test_a9_archivierter_eintrag_traegt_keine_abi(tmp_path):
+    reg = make_tree(tmp_path, status="archived", extra_entry=f"    abi_sha256: {ABI}\n")
+    src = tmp_path / "apps/atc-contracts/token.atc"
+    src.write_text("// ARCHIVED\n", encoding="utf-8")
+    findings, _ = run(tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path))
+    assert any(
+        f["gate"] == "A9" and "archivierter Eintrag traegt abi_sha256" in f["detail"] for f in findings
+    )
+
+
+def test_write_abis_zogen_hash_in_die_registry(tmp_path):
+    """Der Schreibpfad muss die nachgezogene ABI wirklich persistieren."""
+    reg = make_tree(tmp_path)
+    loaded = GATE.load_registry(reg)
+    GATE.check_registry(tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path), reg=loaded)
+    GATE.write_registry(loaded, reg)
+    assert f"abi_sha256: {ABI}" in reg.read_text(encoding="utf-8")
