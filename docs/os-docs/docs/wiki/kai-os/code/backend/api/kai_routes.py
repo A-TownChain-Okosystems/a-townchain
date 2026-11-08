@@ -58,7 +58,8 @@ def create_agent():
             if field not in data:
                 return jsonify({"error": f"Missing field: {field}"}), 400
         
-        agent_id = f"agent_{hashlib.sha256(f\"{data['name']}{datetime.utcnow().isoformat()}\".encode()).hexdigest()[:16]}"
+        digest = hashlib.sha256(f"{data['name']}{datetime.utcnow().isoformat()}".encode()).hexdigest()
+        agent_id = f"agent_{digest[:16]}"
         did = f"did:kai:z6Mkh{agent_id}"
         
         # TODO: Register with Agent Registry Smart Contract
@@ -85,7 +86,8 @@ def invoke_agent(agent_id: str):
         async_mode = data.get('async', True)
         
         # TODO: Queue task with AI Kernel
-        task_id = f"task_{hashlib.sha256(f\"{agent_id}{datetime.utcnow().isoformat()}\".encode()).hexdigest()[:16]}"
+        task_digest = hashlib.sha256(f"{agent_id}{datetime.utcnow().isoformat()}".encode()).hexdigest()
+        task_id = f"task_{task_digest[:16]}"
         
         if async_mode:
             return jsonify({
@@ -266,7 +268,8 @@ def transfer_tokens():
             return jsonify({"error": "Missing 'to' or 'amount'"}), 400
         
         # TODO: Execute transfer on blockchain
-        tx_hash = f"0x{hashlib.sha256(f\"{to_address}{amount}\".encode()).hexdigest()}"
+        tx_digest = hashlib.sha256(f"{to_address}{amount}".encode()).hexdigest()
+        tx_hash = f"0x{tx_digest}"
         
         return jsonify({
             "tx_hash": tx_hash,
