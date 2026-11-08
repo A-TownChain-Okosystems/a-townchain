@@ -1,0 +1,25 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-39 Publishing Factory
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+struct PublishingFactory { builds: Map<Hash256, Build>, packages: Map<Hash256, Pkg>, certs: Map<Hash256, Cert>, channels: Map<String, Channel>, patches: Map<Hash256, Patch>, rollbacks: List<Rollback>, versions: Map<String, VerInfo> }
+enum BStatus { Queued, Building, Testing, Ready, Failed }
+enum Store { Steam, Epic, PSN, Xbox, Nintendo, AppStore, GooglePlay }
+enum CertStatus { Pending, InReview, Passed, Failed }
+struct Build { id: Hash256, ver: String, platform: String, status: BStatus, size_mb: Float32, checksum: Hash256, build_time: UInt32, created: UInt64 }
+struct Pkg { id: Hash256, build: Hash256, store: Store, name: String, ver: String, status: String, price: Float32, submitted: UInt64, approved: UInt64, released: UInt64 }
+struct Cert { id: Hash256, pkg: Hash256, status: CertStatus, submitted: UInt64, completed: UInt64, notes: String }
+struct Channel { name: String, builds: List<Hash256>, subscribers: UInt32, auto_update: Bool, stable: Bool }
+struct Patch { id: Hash256, ver: String, from: String, to: String, changes: List<String>, size_mb: Float32, delta: Bool, mandatory: Bool, released: UInt64 }
+struct Rollback { id: Hash256, from: String, to: String, reason: String, timestamp: UInt64, affected: UInt32 }
+struct VerInfo { ver: String, build: Hash256, released: Bool, date: UInt64 }
+
+pub fn create_build(f, ver, platform) -> Hash256 { let bid = Crypto::sha256(serialize(ver, platform, Chain::timestamp())); f.builds[bid] = Build { id: bid, ver: ver, platform: platform, status: BStatus::Queued, size_mb: 0, checksum: Hash256::zero(), build_time: 0, created: Chain::timestamp() }; return bid }
+pub fn update_build(f, bid, status, size, checksum, time) -> Bool { require(f.builds.contains(bid)); f.builds[bid].status = status; f.builds[bid].size_mb = size; f.builds[bid].checksum = checksum; f.builds[bid].build_time = time; return true }
+pub fn create_pkg(f, bid, store, name, ver, price) -> Hash256 { let pid = Crypto::sha256(serialize(bid, Chain::timestamp())); f.packages[pid] = Pkg { id: pid, build: bid, store: store, name: name, ver: ver, status: "draft", price: price, submitted: 0, approved: 0, released: 0 }; return pid }
+pub fn submit_pkg(f, pid) -> Bool { require(f.packages.contains(pid)); f.packages[pid].status = "submitted"; f.packages[pid].submitted = Chain::timestamp(); let cid = Crypto::sha256(serialize(pid, Chain::timestamp())); f.certs[cid] = Cert { id: cid, pkg: pid, status: CertStatus::Pending, submitted: Chain::timestamp(), completed: 0, notes: "" }; return true }
+pub fn complete_cert(f, cid, status, notes) -> Bool { require(f.certs.contains(cid)); f.certs[cid].status = status; f.certs[cid].completed = Chain::timestamp(); f.certs[cid].notes = notes; if status == CertStatus::Passed { f.packages[f.certs[cid].pkg].status = "approved"; f.packages[f.certs[cid].pkg].approved = Chain::timestamp() }; return true }
+pub fn create_channel(f, name, stable, auto) -> Bool { f.channels[name] = Channel { name: name, builds: [], subscribers: 0, auto_update: auto, stable: stable }; return true }
+pub fn publish(f, bid, channel) -> Bool { require(f.builds.contains(bid)); require(f.channels.contains(channel)); f.channels[channel].builds.append(bid); f.builds[bid].status = BStatus::Ready; let v = f.builds[bid].ver; f.versions[v] = VerInfo { ver: v, build: bid, released: true, date: Chain::timestamp() }; return true }
+pub fn create_patch(f, from, to, changes, size, delta, mandatory) -> Hash256 { let pid = Crypto::sha256(serialize(to, Chain::timestamp())); f.patches[pid] = Patch { id: pid, ver: to, from: from, to: to, changes: changes, size_mb: size, delta: delta, mandatory: mandatory, released: Chain::timestamp() }; return pid }
+pub fn rollback(f, from, to, reason, affected) -> Hash256 { let rid = Crypto::sha256(serialize(from, to, Chain::timestamp())); f.rollbacks.append(Rollback { id: rid, from: from, to: to, reason: reason, timestamp: Chain::timestamp(), affected: affected }); return rid }
