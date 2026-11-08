@@ -1,0 +1,61 @@
+# ATC Standard Kategorien / ID-Raeder (ATC-STD-000 §7, AD-034)
+categories:
+  000:   {name: governance,     range: "ATC-STD-000",        description: "Standard Governance (Verfassung)"}
+  100:   {name: architecture,   range: "ATC-STD-100–199",    description: "Architektur-Standards"}
+  200:   {name: repository,     range: "ATC-STD-200–299",    description: "Repository & Git"}
+  300:   {name: development,    range: "ATC-STD-300–399",    description: "Development / Coding"}
+  400:   {name: security,       range: "ATC-STD-400–499",    description: "Security"}
+  500:   {name: protocol,       range: "ATC-STD-500–599",    description: "Protocol"}
+  600:   {name: blockchain,     range: "ATC-STD-600–699",    description: "Blockchain"}
+  700:   {name: ai,             range: "ATC-STD-700–799",    description: "AI"}
+  800:   {name: os,             range: "ATC-STD-800–899",    description: "OS / Runtime"}
+  900:   {name: infrastructure, range: "ATC-STD-900–999",    description: "Infrastructure"}
+  1000:  {name: applications,   range: "ATC-STD-1000+",      description: "Applications / Ecosystem"}
+
+bug:   {name: bug,          range: "ATC-STD-BUG-001-499", fam: FAM-53,  description: "Bug- & Konsistenz-Lebenszyklus (Owner-Mandat 07.09., AD-040)"}
+zkp:    {name: zkp,          range: "ATC-STD-ZKP-001-999", fam: FAM-54,  description: "ZKP-Layer: Zero-Knowledge Proof Layer (Owner-Entwurf 07.09., AD-045)"}
+ai-dev: {name: ai-dev,       range: "ATC-STD-AI-DEV-001-012", fam: FAM-55,  description: "AI Development Governance Family (Agenten-Entwicklung, Freigabe 07.09.)"}
+aas:    {name: aas,          range: "ATC-AAS-001-025", fam: FAM-56,         description: "AI Agent Standards (Agentenbetrieb, Freigabe 07.09.)"}
+enterprise: {name: enterprise, range: "ATC-ENT-001-015 + ATC-STD-034-039 + ATC-GATE-SEC-001 + ATC-ORG-BASELINE-001", fam: FAM-57,       description: "Enterprise Standards Layer (Org-Governance, Freigabe 07.09.)"}
+readme: {name: readme,       range: "ATC-STD-README-001-999", fam: FAM-58, description: "README & Documentation Entry Standard (Owner-Entwurf 07.09.)"}
+md:      {name: md,          range: "ATC-STD-MD-001-999", fam: FAM-59,       description: "ATC Markdown & Documentation Standard (Owner-Entwurf 07.09.)"}
+sc:      {name: sc,          range: "ATC-STD-SC-001-999", fam: FAM-60,       description: "ATC Smart Contract Standards Framework (Owner-Entwurf 07.09., SC-001..020 + Deep-Standards)"}
+net:    {name: net,          range: "ATC-STD-NET-001-899", fam: FAM-61,  description: "Netzwerk-Umgebungen Devnet/Testnet/Mainnet & Promotion (Owner-Mandat AD-041)"}
+# Zusatz-Serie (Owner-Mandat 07.09., AD-040): ATC-STD-BUG-001…004
+# Bug- & Konsistenz-Lebenszyklus — Dateien: standards/bug/ · Kategorie: bug
+desc:   {name: desc,        range: "ATC-STD-DESC-001-999", fam: FAM-62,  description: "Standard-Description-Familie: Struktur, Metadaten, Lifecycle und Auditierung von Standards (Owner-Entwurf 07.09., SCR-0008)"}
+version: {name: version,     range: "ATC-STD-VERSION-001-999", fam: FAM-63, description: "Versioning-Familie: einheitliche Versionierung von Software, Standards, APIs, Smart Contracts, Protokollen, Dokumentation und Releases (Owner-Entwurf 07.09., SCR-0009)"}
+audit: {name: audit,        range: "ATC-STD-AUDIT-001-999", fam: FAM-64, description: "Audit-Familie: Completeness & Audit, Traceability, Cross-System Integrity — Kontrollschicht über allen Standards (Owner-Entwurf 07.09., SCR-0013)"}
+ai-decision: {name: ai-decision, range: "ATC-STD-AI-DECISION-001-999", fam: FAM-65, description: "AI-Decision-Familie: Agent Decision-Making — Entscheidungsmodell, Autonomie-Level, Evidence-First, Risk/Authority, Decision Records ÜBER den AAS-Betriebsstandards (Owner-Entwurf 07.09., SCR-0014)"}
+update: {name: update,        range: "ATC-STD-UPDATE-001-999", fam: FAM-66, description: "Update-Familie: Change Control — Update-Kategorien, Lifecycle, Impact/Dependency, Gates, Rollback, Emergency, Manifeste (Owner-Entwurf 07.09., SCR-0015)"}
+
+repo-audit: {name: repo-audit,  range: "ATC-STD-REPO-AUDIT-001-999", description: "Repository-Audit-Familie: Verbindlicher Repository Health Check — 16 Pruefbereiche, Pruefmatrix, SOLL/IST, Gap Analysis, Findings, Health Score A-E (Owner-Entwurf 07.09., SCR-0020)", fam: FAM-41}
+repo-maint: {name: repo-maint,  range: "ATC-STD-REPO-MAINT-001-999", description: "Repository-Maintenance-Familie: Verbindlicher Repository-Pflegezyklus — Code, Dependencies, Doku, Standards, CI/CD, Security, Versionen, Altlasten (Owner-Entwurf 08.09., SCR-0043)", fam: FAM-46}
+err: {name: err,  range: "ATC-STD-ERR-000-999", description: "Error-Propagation-Familie: Error Detection, Propagation, Regression & Prevention — No Local Fix Without System Verification (Owner-Entwurf 08.09., SCR-0044)", fam: FAM-47}
+implementation: {name: implementation,  range: "ATC-STD-IMPLEMENTATION-000-999", description: "Standard Implementation Matrix — Applicability, Implementierung, Test, CI-Gate, Evidence, Coverage-KPIs (Owner-Re-Audit 08.09., SCR-0045)", fam: FAM-48}
+repo-discovery: {name: repo-discovery,  range: "ATC-STD-REPO-DISCOVERY-001-999", description: "Repository-Discovery-Familie: Content Discovery & Change Detection — kein neuer Repository-Inhalt unbewertet; Standard-Kandidaten, Duplikat-/Cross-Repo-Pruefung, Impact, maschinenlesbare Reports (Owner-Entwurf 08.09., SCR-0046)", fam: FAM-49}
+
+governance-core: {name: governance-core,  range: "ATC-STD-STDDEV-001 + ATC-STD-REGISTRY-001 + ATC-STD-CHANGE-001", fam: FAM-43, description: "Standards Governance Core (FAM-43): Standards-Development, Registry-Management, Change-Control-Dachnorm (Owner-Direktive 08.09., SCR-0025)"}
+
+taxonomy: {name: taxonomy,  range: "ATC-STD-TAXONOMY-001-999", description: "Standards Taxonomy & Family Creation (Meta-Governance, ATC-FAM-REQ/ATC-CAT-REQ/ATC-TCR, TAX-CHECK-001..018; Owner-Entwurf 08.09., SCR-0024)", fam: FAM-43}
+
+protocol: {name: protocol,  range: "ATC-STD-PROTOCOL-001-999", description: "Protocol-Standards-Familie: Dachstandard oberhalb der Einzelprotokolle — Identitaet, Versionierung, Nachrichten, Sicherheit, Fehler, Kompatibilitaet, Governance, Auditing (Owner-Entwurf 08.09., SCR-0023)", fam: FAM-42}
+
+agent-operating: {name: agent-operating,  range: "ATC-STD-AOS-001-999", description: "Agent-Operating-Familie: Verbindliches 14-Fragen-Session-Mandat fuer alle KI-Agenten, Session-Records, Audit-Nachweis (Owner-Entwurf 07.09., SCR-0022)", fam: FAM-20}
+
+master-audit: {name: master-audit,  range: "ATC-STD-999", fam: FAM-40, description: "Master-Audit-Familie: Enterprise Completeness & Consistency Audit — 16-Stufen-Kette, 13 Change-Nachweis-Fragen, MAUD-Records, Orchestrierung (Owner-Entwurf 07.09., SCR-0022)"}
+
+framework: {name: framework,  range: "ATC-STD-FRAMEWORK-001-999", fam: FAM-67, description: "Framework-Familie: ATC Enterprise Standards Framework — Master-Dokument, Katalog, einheitliche Governance-Modelle (Owner-Entwurf 07.09., SCR-0019)"}
+
+milestone: {name: milestone,  range: "ATC-STD-MILESTONE-001-999", fam: FAM-68, description: "Milestone-Familie: Meilenstein-Governance — Zustandsnachweis, Lebenszyklus, Acceptance Gates, Evidence Packs, maschinenlesbare Registry (Owner-Entwurf 07.09., SCR-0018)"}
+
+compat: {name: compat,        range: "ATC-STD-COMPAT-001-999", fam: FAM-69, description: "Compat-Familie: Major Version Compatibility & Recovery — Kompatibilitätsprüfung, -Wiederherstellung, -Migration nach MAJOR-Updates (Owner-Entwurf 07.09.; Pflicht-Gate UPD-G04 in UPDATE-001)"}
+license: {name: license,  range: "ATC-STD-LICENSE-001-999", description: "ATC License System — Lizenz- & Nutzungsrechte-Governance (FAM-44, Owner-Direktive 08.09., SCR-0037)", fam: FAM-44}
+v2s:   {name: v2s,          range: "ATC-STD-V2S-000-999", fam: FAM-45, description: "Vision-to-Software Lifecycle-Familie: End-to-End VISION bis EOL (Owner-Entwurf 08.09., SCR-0042)"}
+cicd: {name: cicd,        range: "ATC-STD-CI-001-999", description: "CI/CD-Standards-Familie: Reproducible Dependencies, Workflow-Governance, Validation, Regression, Failure Propagation, Release Gate (Owner-Entwurf 08.09., SCR-0054)", fam: FAM-50}
+improvement: {name: improvement,  range: "ATC-STD-IMPROVEMENT-001-999", fam: FAM-70, description: "Improvement-Familie: Continuous Improvement Management System — Zyklus, Quellen, Klassen, Priorisierung, ATC-IMP-Records/Board, Root-Cause, Regression Prevention, Standards-Selbstverbesserung, Automatisierungsleiter, DoD (Owner-Entwurf 08.09., SCR-0056)"}
+ai-gov: {name: ai-gov,  range: "ATC-AI-GOV-001-999", fam: FAM-71, description: "ATC Agent Governance Framework: Organisationsweite Arbeitsregeln, Agent Identity & Scope, maschinenlesbare Policies (ATC-POL), versionierter CHECK-Katalog (AGOV-CHECK, MUST/SHOULD/MAY + PASS/FAIL/WARN/N/A), Auditverfahren, Handoff, Incident, Governance Change Management (Owner-Entwurf 09.09., SCR-0061)"}
+eng:    {name: eng,          range: "ATC-STD-ENG-001-999", fam: FAM-72,    description: "Software Engineering & Code Quality (Owner-Entwurf 11.09.2026, SCR-0092)"}
+legal:  {name: legal,        range: "ATC-STD-LEGAL-001-999", fam: FAM-73, description: "Legal & Compliance-Familie: Impressum/Anbieterkennzeichnung, Datenschutz, ToS, Lizenzen, Notices (Owner-Mandat 13.09., SCR-0117)"}
+maint:  {name: maint,        range: "ATC-STD-MAINT-000-999", fam: FAM-52, description: "Maintenance-Familie (FAM-52): Vollstaendige normative Betriebs-Disziplin (praeventiv/korrektiv/adaptiv/sicherheitkritisch, maschinenpruefbar) — MAINT-000 Governance-Dach mit Maintenance-Readiness-Gate (Maintenance Capability = Release-Voraussetzung), 001 Klassifikation M0-M3, 002 Lifecycle, 003-020 Spezialstandards, 021-024 fest eingeplant (Emergency/EOL/Vendor-Supply-Chain/Cross-Ecosystem), ab 025 frei via SCR (Owner-Direktive 14.09., SCR-0120)"}
+aurora-swarm: {name: aurora-swarm, range: "ATC-AURORA-SWARM-001-999", fam: FAM-76, description: "Aurora Swarm Network — Neuronales KI-Schwarmnetzwerk (Owner-Entwurf 07.10., SCR-0138, CANDIDATE)"}
