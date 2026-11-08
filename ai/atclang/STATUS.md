@@ -16,7 +16,7 @@ standard: ATC-STD-MD-001
 | Version | 1.0.0 development |
 | Production implementation | Rust canonical core — incomplete |
 | Reference implementation | None — Python reference implementation removed; Rust-only canonical implementation |
-| Tests | 493 Tests im Monorepo-Wurzel-Workspace, 2155 Tests ueber alle sieben Workspaces gruen (2026-11-08) |
+| Tests | 498 Tests im Monorepo-Wurzel-Workspace, 2160 Tests ueber alle sieben Workspaces gruen (2026-11-08) |
 | Security | S4 / audit in progress |
 | Conformance | Not verified for production |
 | Release | development / NOT PRODUCTION_READY |
@@ -24,8 +24,8 @@ standard: ATC-STD-MD-001
 
 ## Parser and semantics — state 2026-11-08
 
-Verified by `cargo test --workspace` (493 tests) and `./tools/ecosystem.sh test`
-(2155 tests, 0 failed):
+Verified by `cargo test --workspace` (498 tests) and `./tools/ecosystem.sh test`
+(2160 tests, 0 failed):
 
 - Contract bodies are parsed into real syntax trees. Declarations: `state`
   (single and block form, with defaults), `event`, `fn`/`function`, `const`,
@@ -71,6 +71,16 @@ Verified by `cargo test --workspace` (493 tests) and `./tools/ecosystem.sh test`
   Regression binds the ABI to the contract registry: every non-archived entry
   must yield at least one contract with functions and a stable 64-hex hash, an
   archived entry must yield none.
+- Import resolution (stage 3, part of `atc check <verzeichnis>`): every `use`
+  path must name a symbol that is declared somewhere in the project (struct,
+  enum, contract, top-level function) or a canonical builtin type/function —
+  `Address`, `Hash`, `Bytes`, `Signature`, `PublicKey`, `Timestamp`, `Amount`,
+  `TokenId` and the host functions `sha256`, `keccak256`, `msg_sender`, `now`,
+  `ed25519_verify`, `secp256k1_verify` and friends. The root namespace must be
+  `ATC`, and an import that shadows a declaration of the same file is reported.
+  Imported symbols never confirm themselves: a typo in the path cannot satisfy
+  its own resolution. Both real imports (`ATC::Types::Address`,
+  `ATC::Crypto::sha256`) resolve, so the contract sources stay at 56 warnings.
 - Contract registry gate A8 (SC-019): GATE PASS, 16 entries, 16 sources, 0 findings.
 
 Open: 38 `emit` calls in existing contracts without an event declaration; type
