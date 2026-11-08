@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ATC-EVD-001",
+  "title": "ATC Engineering Evidence Record",
+  "type": "object",
+  "required": [
+    "schema",
+    "schema_version",
+    "id",
+    "type",
+    "repository",
+    "commit",
+    "producer",
+    "status",
+    "integrity",
+    "immutable"
+  ],
+  "properties": {
+    "schema": { "const": "ATC-EVD-001" },
+    "schema_version": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^EVD-[0-9]{4}-[0-9]{1,6}$" },
+    "type": { "type": "string", "minLength": 1 },
+    "repository": { "type": "string", "minLength": 1 },
+    "commit": { "type": "string", "minLength": 1 },
+    "producer": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["PASS", "FAIL", "UNKNOWN", "MISSING"] },
+    "standards": { "type": "array", "items": { "type": "string" } },
+    "artifacts": { "type": "array", "items": { "type": "string" } },
+    "provenance": { "type": "string" },
+    "integrity": {
+      "type": "object",
+      "required": ["algorithm", "digest"],
+      "properties": {
+        "algorithm": { "type": "string", "minLength": 1 },
+        "digest": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "immutable": { "const": true }
+  },
+  "additionalProperties": false
+}
