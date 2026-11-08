@@ -14,7 +14,7 @@ const CHAR_WIDTH: usize = get_raster_width(FontWeight::Regular, CHAR_HEIGHT);
 const LINE_SPACING: usize = 2;
 
 pub struct FbWriter {
-    framebuffer: &'static mut [u8],
+    framebuffer: FrameBuffer,
     info: FrameBufferInfo,
     x: usize,
     y: usize,
@@ -23,10 +23,10 @@ pub struct FbWriter {
 unsafe impl Send for FbWriter {}
 
 impl FbWriter {
-    pub fn new(buffer: &'static mut FrameBuffer) -> Self {
-        let info = buffer.info();
+    pub fn new(framebuffer: FrameBuffer) -> Self {
+        let info = framebuffer.info();
         Self {
-            framebuffer: buffer.buffer_mut(),
+            framebuffer,
             info,
             x: 0,
             y: 0,
@@ -55,8 +55,9 @@ impl FbWriter {
             PixelFormat::U8 => [((r as u16 + g as u16 + b as u16) / 3) as u8, 0, 0, 0],
             _ => [r, g, b, 0],
         };
-        if offset + bpp <= self.framebuffer.len() {
-            self.framebuffer[offset..offset + bpp].copy_from_slice(&color[..bpp]);
+        let buffer = self.framebuffer.buffer_mut();
+        if offset + bpp <= buffer.len() {
+            buffer[offset..offset + bpp].copy_from_slice(&color[..bpp]);
         }
     }
 
@@ -99,8 +100,8 @@ impl fmt::Write for FbWriter {
 
 pub static WRITER: Mutex<Option<FbWriter>> = Mutex::new(None);
 
-pub fn init(buffer: &'static mut FrameBuffer) {
-    let mut writer = FbWriter::new(buffer);
+pub fn init(framebuffer: FrameBuffer) {
+    let mut writer = FbWriter::new(framebuffer);
     writer.clear(0, 20, 0); // dunkelgrün = "Kernel laeuft"
     *WRITER.lock() = Some(writer);
 }
@@ -120,4 +121,17 @@ pub fn _print(args: fmt::Arguments) {
 macro_rules! println {
     () => ($crate::framebuffer::_print(format_args!("\n")));
     ($($arg:tt)*) => ($crate::framebuffer::_print(format_args!("{}\n", format_args!($($arg)*))));
+}
+
+/// Boot-Meldung auf beiden Ausgängen: seriell (vollständig) und Bildschirm.
+#[macro_export]
+macro_rules! kprintln {
+    () => {{
+        $crate::serial_println!();
+        $crate::framebuffer::_print(format_args!("\n"));
+    }};
+    ($($arg:tt)*) => {{
+        $crate::serial_println!($($arg)*);
+        $crate::framebuffer::_print(format_args!("{}\n", format_args!($($arg)*)));
+    }};
 }
