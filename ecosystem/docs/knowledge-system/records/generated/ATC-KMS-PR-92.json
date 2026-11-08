@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-92",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #92: fix(node): make block timestamps deterministic",
+  "context": "Pull request 92 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/92",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Root cause\nThe canonical node producer derived block timestamps from `SystemTime::now()`, making block contents depend on wall-clock state.\n\n## Fix\n- Remove runtime wall-clock input from block production.\n- Use the canonical 360-second block interval.\n- Derive the next block timestamp from `parent.timestamp + 360` with checked overflow handling.\n\nThis preserves deterministic block construction and does not weaken any gate."
+}
