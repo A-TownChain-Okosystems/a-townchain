@@ -1,0 +1,11 @@
+id: AUD-006
+agent_id: ATC-AI-ARCH-001
+task_id: ATC-TASK-0047
+repository: atc-standards
+action: "Agent-Manifest erweitert: Voll-Compliance-Mandat (ALLE 81 Standards einhalten + umsetzen), dynamische Registry-Bindung, Konfliktregel, Nachweispflicht; agent.yaml required_standards auf alle 81 erweitert; AGENTS.md Vollmandat; CI-Gate check_agent_manifest.py (A1-A4) in naming-governance.yml"
+files_changed: "AGENT_MANIFEST.md, .github/ai/agent.yaml, AGENTS.md, tools/atc-std-validator/check_agent_manifest.py, .github/workflows/naming-governance.yml"
+result: COMPLETED
+tests: {agent_manifest_gate: "GATE PASS (A1-A4)", validator: "ALL COMPLIANT 81/81"}
+commit: "(dieser Commit)"
+timestamp: "2026-09-07T20:29:00+02:00"
+human_approval: "Owner-Auftrag 'Agent Manifest erweitern, Agent muss alle Standards einhalten und umsetzen' 07.09.2026"
