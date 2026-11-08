@@ -1,0 +1,31 @@
+{
+  "id": "ATC-KMS-PR-189",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #189: fix(registry): enforce R3 runtime entry accounting",
+  "context": "Pull request 189 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/189",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-187"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-187"
+    }
+  ],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Summary\n\nCorrect the tautological R3 runtime-entry guard by comparing actual registry entries per repository against the independently declared `RUNTIME_SYMBOL` classification count.\n\n## Regression coverage\n\nAdds a test that removes a runtime entry while leaving the summary unchanged and asserts that R3 fails closed.\n\n## Scope and limitations\n\n- Based directly on the PR #187 base commit; no PR #187 commits are included.\n- Does not modify the canonical runtime-symbol registry or resolve the 70-entry reconciliation.\n- Keep Draft until CI and exact Run → Job → Step → exit-code evidence are reviewed."
+}
