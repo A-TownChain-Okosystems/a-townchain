@@ -1,0 +1,31 @@
+// ATCLang v0.3 — World Registry
+// Registrierung und Verwaltung aller Welten im GlobusOS
+// ATC-Standard: ATC-45
+
+module world_registry {
+    struct World {
+        world_id: string,
+        name: string,
+        seed: string,
+        created_at: int,
+        active: bool,
+        player_count: int,
+        civilization_count: int,
+    }
+    
+    fn register_world(name: string, seed: string) {
+        // Neue Welt registrieren
+    }
+    
+    fn get_world(world_id: string) {
+        // Welt-Daten abrufen
+    }
+    
+    fn list_worlds() {
+        // Alle aktiven Welten auflisten
+    }
+    
+    fn deactivate_world(world_id: string) {
+        // Welt deaktivieren
+    }
+}
