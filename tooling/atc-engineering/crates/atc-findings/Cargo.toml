@@ -1,0 +1,10 @@
+[package]
+name = "atc-findings"
+description = "Fail-closed machine-readable engineering finding registry"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+atc-core = { path = "../atc-core" }
