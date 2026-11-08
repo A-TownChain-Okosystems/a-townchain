@@ -1,0 +1,96 @@
+15-  CheckCircle,
+16-  ArrowRight,
+17:  Database,
+18-  Terminal,
+19-  Activity,
+--
+315-        message: `${e.detail.source || 'API'} Error: ${e.detail.message || 'Check Diagnostics'}`,
+316-        type: "error",
+317:        link: { label: "View Diagnostics", tab: "settings", settingsTab: "sync-diagnostics" }
+318-      });
+319-      setTimeout(() => setToastMessage(null), 5000);
+--
+611-            <div className="flex items-center gap-2">
+612-              <div className="bg-atc-purple p-1.5 rounded-md">
+613:                <Database className="w-4 h-4 text-white" />
+614-              </div>
+615-              <span className="font-bold text-slate-100 tracking-tight hidden sm:inline-block">
+--
+1132-              bereich: "Monitoring & Ops",
+1133-            },
+1134:          ].map((tab) => (
+1135-            <button
+1136:              key={tab.id}
+1137:              onClick={() => setActiveTab(tab.id as any)}
+1138-              className={`flex flex-col items-start px-4 py-2 transition-all rounded-lg shrink-0 ${
+1139:                activeTab === tab.id
+1140-                  ? "bg-atc-card shadow-[0_0_15px_rgba(6,182,212,0.15)] ring-1 ring-atc-cyan/50"
+1141-                  : "hover:bg-atc-card/50"
+--
+1144-              <span
+1145-                className={`text-[9px] uppercase tracking-widest font-mono mb-0.5 ${
+1146:                  activeTab === tab.id ? "text-atc-cyan/80" : "text-slate-500"
+1147-                }`}
+1148-              >
+1149:                {tab.bereich}
+1150-              </span>
+1151-              <span
+1152-                className={`text-[11px] font-mono tracking-widest uppercase ${
+1153:                  activeTab === tab.id
+1154-                    ? "text-atc-cyan font-bold"
+1155-                    : "text-slate-400 font-medium"
+1156-                }`}
+1157-              >
+1158:                {tab.label}
+1159-              </span>
+1160-            </button>
+--
+1208-              {
+1209-                id: "3",
+1210:                text: "Borrow Checker: Mutabilität via `&mut` einschränken",
+1211-                completed: true,
+1212-                createdAt: Date.now() - 800000,
+--
+1391-            bookmarks={bookmarks}
+1392-            removeBookmark={removeBookmark}
+1393:            onNavigate={(tab) => setActiveTab(tab)}
+1394-            conflictItems={conflictItems}
+1395-            onResolveConflict={(id, resolution) => {
+--
+1530-                />
+1531-                <StatCard
+1532:                  icon={Database}
+1533-                  title="Subsysteme"
+1534-                  current={TARGET_STATE.subsystems.current.toString()}
+--
+1566-                <div className="lg:col-span-5 flex flex-col gap-3 h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+1567-                  {LAYERS.map((layer) => {
+1568:                    const Icon = ICON_MAP[layer.iconName] || Database;
+1569-                    const isActive = activeLayer === layer.id;
+1570-                    return (
+--
+1622-                            {(() => {
+1623-                              const Icon =
+1624:                                ICON_MAP[selectedLayer.iconName] || Database;
+1625-                              return <Icon className="w-6 h-6" />;
+1626-                            })()}
+--
+4665-  addBookmark
+4666-}: {
+4667:  setActiveTab: (tab: any) => void;
+4668-  wikiContent?: any[];
+4669-  addBookmark?: (title: string, type: string, path: string) => void;
+--
+4704-            if (target.startsWith("wiki:")) {
+4705-              setActiveSection(target.split(":")[1]);
+4706:            } else if (target.startsWith("tab:")) {
+4707-              setActiveTab(target.split(":")[1] as any);
+4708-            }
+--
+4865-                )}
+4866-
+4867:                {selectedData.table && (
+4868-                  <div className="flex flex-col gap-3 font-mono relative z-10">
+4869:                    {selectedData.table.map((row, idx) => (
+4870-                      <div
+4871-                        key={idx}
