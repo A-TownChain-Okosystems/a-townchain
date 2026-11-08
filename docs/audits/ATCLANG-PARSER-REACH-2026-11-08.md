@@ -164,3 +164,60 @@ Clippy `-D warnings` weiter sauber.
 | 11 | `a..b` |
 | 8 | `type X = …` (kein Schlüsselwort im Lexer) |
 | Rest | Einzelfälle: Slices `data[:120]`, `Fn` als Typ, Ausdrücke wie `Rarity::COMMON`, `if` ohne Klammern |
+
+---
+
+## 9. Vierter Schritt: Spaltenmodell, eingerückte Rümpfe, `func`
+
+**Datum:** 08.11.2026, aufbauend auf `140003d`
+
+### Spaltenmodell im Lexer
+
+Bis hierher trug ein Token keine Position; damit war eine eingerückte Blockausdehnung
+nicht bestimmbar. Jetzt:
+
+- `Pos { line, col }`, 1-basiert, und `tokenize_pos(src) -> (Vec<Token>, Vec<Pos>)`.
+- `tokenize` bleibt unverändert und delegiert an `scan`; jeder der 53 Ablagepunkte merkt
+  sich den Zeichenindex über einen `push`-Helfer, daraus wird die Zeile/Spalte über eine
+  Tabelle gerechnet. `Token` selbst ist unberührt, also auch jeder Vergleich im Parser.
+- Das `Eof`-Token bekommt die Endposition des Textes.
+
+### Eingerückte Rümpfe (`struct X:` / `enum X:`)
+
+`at_indented_line(base)` beantwortet genau die DEDENT-Frage aus SPEC §3.2: ein Feld
+gehört zum Rumpf, solange seine Spalte größer ist als die Spalte der Deklaration.
+Beim Rücksprung endet der Block, das nächste Token gehört wieder dem umgebenden
+Kontext. Ohne Positionen antwortet die Funktion `false` und der Parser **rät nicht**,
+sondern lehnt ab (eigener Test).
+
+`enum X:` versteht zusätzlich `VARIANT = wert` und Varianten mit `(…)`.
+
+### `func` als zweite Schreibweise für `fn`
+
+32 Korpusdateien schreiben `func`. Es ist dieselbe Deklaration, kein eigener Knoten.
+
+### Der Korpuszähler bleibt bei 1095 — und das ist der Befund
+
+1645 Dateien, weiterhin **1095 angenommen**. Die eingerückten Rümpfe verschwinden aus
+der Fehlerliste, aber die betroffenen Dateien werden dadurch nicht angenommen: sie
+tragen mehrere unbelegte Formen **gleichzeitig**. Die Dateizahl ist damit kein
+Fortschrittsmaß mehr, die Blockergruppen sind es:
+
+| Anzahl | Erstrfehler der aktiven Ablehnungen |
+|--------|--------------------------------------|
+| 32 | `func` (in diesem Schritt behoben, greift erst, wenn der nächste Blocker fällt) |
+| 24 | Fortsetzungszeilen / führender Punkt |
+| 11 | `a..b` / doppelter Punkt |
+| 5 | `type X = …` |
+| Rest | Einzelfälle |
+
+Aktive Ablehnungen ohne `/archive/`: 270 (unverändert). Der nächste sinnvolle Schritt ist
+deshalb **eine frühere Fehlersammlung** statt eines Abbruchs beim ersten Fund: erst wenn
+alle Blocker einer Datei bekannt sind, lässt sich sagen, wie viele Formen wirklich fehlen.
+
+### Stand
+
+`atc-core`: **151 Tests**, Clippy `-D warnings` ohne Befund, `lexer.rs` fmt-sauber,
+`parser.rs` mit den 4 vorbestehenden Diffs (meine Zeilen sauber und formatiert).
+Invarianten: `apps/atc-contracts` 50/33/0/18, `components/contracts` 46/29/0/18,
+Registry-Gate PASS 16/16, EXEC-CHAIN 20/20.
