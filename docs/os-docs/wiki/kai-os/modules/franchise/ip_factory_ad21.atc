@@ -1,0 +1,147 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-21 — IP Factory: Verwaltet geistiges Eigentum einer Marke
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct IPFactory {
+    ips: Map<Hash256, IP>,
+    by_universe: Map<String, List<Hash256>>,
+    trademarks: Map<String, Trademark>,
+    licensing: Map<Hash256, License>,
+}
+
+struct IP {
+    id: Hash256,
+    franchise_id: Hash256,
+    name: String,
+    ip_type: IPType,
+    universe: String,
+    timeline: String,
+    factions: List<Faction>,
+    characters: List<Hash256>,
+    logos: List<String>,
+    symbols: List<String>,
+    naming_rights: List<String>,
+    status: String,
+    created_at: UInt64,
+}
+
+enum IPType { Universe, Character, Faction, Location, Artifact, Event, Organization }
+
+struct Faction {
+    id: Hash256,
+    name: String,
+    description: String,
+    alignment: String,
+    colors: List<String>,
+    symbol: String,
+    leader: String,
+    members: UInt32,
+}
+
+struct Trademark {
+    name: String,
+    category: String,
+    registered: Bool,
+    registration_date: UInt64,
+    jurisdictions: List<String>,
+}
+
+struct License {
+    id: Hash256,
+    ip_id: Hash256,
+    licensee: String,
+    terms: String,
+    revenue_split: Float32,
+    duration_months: UInt32,
+    active: Bool,
+}
+
+// IP Factory: IP erstellen
+pub fn create_ip(factory: IPFactory, franchise_id: Hash256, name: String, ip_type: IPType, universe: String) -> Hash256 {
+    let ip_id = Crypto::sha256(serialize(name, ip_type, Chain::timestamp()))
+    factory.ips[ip_id] = IP {
+        id: ip_id,
+        franchise_id: franchise_id,
+        name: name,
+        ip_type: ip_type,
+        universe: universe,
+        timeline: "Default Timeline",
+        factions: [],
+        characters: [],
+        logos: [],
+        symbols: [],
+        naming_rights: [name],
+        status: "active",
+        created_at: Chain::timestamp(),
+    }
+    if not factory.by_universe.contains(universe) {
+        factory.by_universe[universe] = []
+    }
+    factory.by_universe[universe].append(ip_id)
+    emit IPCreated(ip_id, name, ip_type)
+    return ip_id
+}
+
+// IP Factory: Fraktion hinzufügen
+pub fn add_faction(factory: IPFactory, ip_id: Hash256, name: String, desc: String, alignment: String, symbol: String) -> Hash256 {
+    require(factory.ips.contains(ip_id), "IP not found")
+    let fid = Crypto::sha256(serialize(name, ip_id, Chain::timestamp()))
+    let faction = Faction {
+        id: fid,
+        name: name,
+        description: desc,
+        alignment: alignment,
+        colors: [],
+        symbol: symbol,
+        leader: "",
+        members: 0,
+    }
+    factory.ips[ip_id].factions.append(faction)
+    emit FactionAdded(ip_id, name)
+    return fid
+}
+
+// IP Factory: Logo registrieren
+pub fn register_logo(factory: IPFactory, ip_id: Hash256, logo_path: String) -> Bool {
+    require(factory.ips.contains(ip_id), "IP not found")
+    factory.ips[ip_id].logos.append(logo_path)
+    return true
+}
+
+// IP Factory: Trademark registrieren
+pub fn register_trademark(factory: IPFactory, name: String, category: String, jurisdictions: List<String>) -> Bool {
+    factory.trademarks[name] = Trademark {
+        name: name,
+        category: category,
+        registered: true,
+        registration_date: Chain::timestamp(),
+        jurisdictions: jurisdictions,
+    }
+    return true
+}
+
+// IP Factory: Lizenz vergeben
+pub fn grant_license(factory: IPFactory, ip_id: Hash256, licensee: String, terms: String, split: Float32, months: UInt32) -> Hash256 {
+    let lid = Crypto::sha256(serialize(ip_id, licensee, Chain::timestamp()))
+    factory.licensing[lid] = License {
+        id: lid,
+        ip_id: ip_id,
+        licensee: licensee,
+        terms: terms,
+        revenue_split: split,
+        duration_months: months,
+        active: true,
+    }
+    return lid
+}
+
+// IP Factory: Alle IPs eines Universums
+pub fn ips_by_universe(factory: IPFactory, universe: String) -> List<Hash256> {
+    return factory.by_universe.get(universe, [])
+}
+
+event IPCreated(id: Hash256, name: String, ip_type: IPType)
+event FactionAdded(ip_id: Hash256, name: String)
