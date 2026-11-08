@@ -1,0 +1,27 @@
+// ATCLang v0.3 — Cross-Chain Message Bus
+// Generic Message-Passing zwischen Chains
+// ATC-Standard: ATC-91
+
+module message_bus {
+    struct Message {
+        message_id: string,
+        source_chain: int,
+        target_chain: int,
+        sender: string,
+        recipient: string,
+        payload: string,
+        nonce: int,
+    }
+    
+    fn send_message(target_chain: int, recipient: string, payload: string) {
+        // Message an andere Chain senden
+    }
+    
+    fn receive_message(message: Message, proof: string) {
+        // Message von anderer Chain empfangen und ausführen
+    }
+    
+    fn get_message_status(message_id: string) {
+        // Status: pending, delivered, executed, failed
+    }
+}
