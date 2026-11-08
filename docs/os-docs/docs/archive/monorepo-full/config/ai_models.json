@@ -1,0 +1,26 @@
+{
+  "models": [
+    {
+      "model": "google/gemma-2-2b-it",
+      "likes": 0,
+      "status": "\u2705"
+    },
+    {
+      "model": "mistralai/Mistral-7B-Instruct-v0.2",
+      "likes": 0,
+      "status": "\u2705"
+    },
+    {
+      "model": "microsoft/phi-2",
+      "likes": 0,
+      "status": "\u2705"
+    },
+    {
+      "model": "meta-llama/Llama-3.2-3B-Instruct",
+      "likes": 0,
+      "status": "\u2705"
+    }
+  ],
+  "updated": "2026-08-04 06:05 UTC",
+  "source": "hugging_face"
+}
