@@ -1,0 +1,35 @@
+{
+  "id": "ATC-KMS-PR-226",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #226: [DRAFT] Consolidate canonical SHA-bound organization census gate — conventional history",
+  "context": "Pull request 226 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/226",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-224"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-221"
+    },
+    {
+      "relation": "references",
+      "target": "ATC-KMS-PR-226"
+    }
+  ],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Purpose\n\nNon-destructive replacement for PR #224 to remediate its V-16 Conventional Commits failure without rewriting or force-pushing the original branch. This branch is the active integration target for the engineering-evidence handoff. PR #221 and #224 remain open pending a human decision on supersession.\n\n## Canonical census baseline\n\n- Base / merge-base: `c9699e468d2291b7d1b18cc4e9db41acba99b80c`.\n- Original census baseline was verified at `51f84238dfafb726360c05839ba31f635e3d81a9`; its prior green runs apply only to that SHA.\n- Integration changes below modify the tree. All prior checks are historical evidence and must not be reused as verification of the current head.\n\n## Engineering evidence handoff — 2026-10-23\n\n- Added `catalog/schema/atc-build-evidence-handoff.schema.json` for `atc.build-evidence/v1`.\n- Added `catalog/scripts/validate_engineering_handoff.py`: fail-closed schema, event identity, digest-shape, expected-SHA and canonical census HEAD binding. A stale source SHA blocks.\n- Added regression tests for stale SHA, source/checkout mismatch, missing/invalid digest, incorrect event semantics, and schema compliance.\n- Added `docs/architecture/ATC-ENGINEERING-EVIDENCE-HANDOFF-001.md`.\n- Added `.github/workflows/consume-engineering-evidence.yml` with manual inputs for the independently inspected source run ID and expected SHA. It accepts only a successful `push` run on `atc-engineering/main`, downloads the named artifact, compares the ZIP digest to GitHub's artifact digest, checks `SHA256SUMS`, independently checks binary/report hashes, and binds the manifest to this repository's census.\n- The consumer requires `ATC_FLEET_READ_TOKEN` with read access to `atc-engineering`; missing token/access fails closed.\n- The census gate now runs when the handoff workflow or contract document changes.\n\n## Source-side implementation\n\n- `atc-engineering` PR #33 adds `scripts/validate_ecosystem_handoff.py`, regression tests, and an engineering CI step that validates manifest identity and uploaded binary/report integrity.\n- PR #33 head: `2c5e6e33c07e9e42c277caff98f659f672cbbb3d`.\n- PR-event run [#39976331710](https://github.com/A-TownChain-Okosystems/atc-engineering/actions/runs/39976331710) passed both `verify` and `Engineering self-test`; its tested checkout was merge-ref SHA `e713bd93dcab5f6a09706986ca354cd3d9ffdd35`, while the PR head was `2c5e6e33c07e9e42c277caff98f659f672cbbb3d`.\n- Artifact ZIP digest: `sha256:ba432d5660140df6658b8dcd6bbb3fcd220aacfcc47a7582ff89b5f1a0817ca9`. The ZIP was downloaded and all eight `SHA256SUMS` entries independently matched.\n- **This PR-event artifact is not accepted as exact-head push evidence.** A successful push run on `refs/heads/main` at the independently inspected expected SHA is required for the cross-repository consumer.\n\n## Current acceptance state\n\n- Current PR #226 head: `fa023423f283b9819c32dcf448c495b22a7156a7`.\n- The integration commits invalidate the previously green baseline. An intermediate run at `9dfabb784b4ee08c97d4abc979ca348c88edaf21` exposed three test assertions that expected pre-schema-validator error text; the assertions were updated to accept the schema-first fail-closed messages. Current-head CI for `fa023423f283b9819c32dcf448c495b22a7156a7` has been queued (including Canonical organization census gate run [#39977137490](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39977137490) and File Catalog run [#39977137485](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/actions/runs/39977137485)); inspect terminal job/step results before status promotion.\n- The census still needs to be refreshed to the exact `atc-engineering/main` SHA after source-side changes land; until the manifest SHA matches the census head, the handoff must remain `BLOCKED`.\n- Structural/schema validity does not imply functional verification. No merge or release is authorized by this change; keep Draft pending exact-head CI, evidence review, and human decision on superseding #221/#224."
+}
