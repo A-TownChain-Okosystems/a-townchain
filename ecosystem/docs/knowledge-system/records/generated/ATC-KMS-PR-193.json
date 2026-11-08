@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-193",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #193: docs(architecture): summarize existing layer commits",
+  "context": "Pull request 193 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "completed",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/193",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: closed\nMerged: True\nDraft: False\n\n## Zusammenfassung\n- Verweist auf bereits vorhandene Architektur-/Layer-Commits statt Layer-Beschreibungen erneut zu definieren.\n- Fasst Registry, L0/L1/L2-Funktionskataloge, Source-Bindings, Runtime-Symbol-Registry und Roadmap-Commit zusammen.\n- Trennt dokumentierte Architektur, Source-Mapping, Implementierung und Verifikation.\n\n## Governance\n- Nur kuratierter Commit-Index; keine Behauptung vollständiger Commit-/Issue-Reconciliation.\n- SSOT-Zuordnungen bleiben bestehen; Produktionscode bleibt in kanonischen Owner-Repositories.\n- Statuspromotion zu VERIFIED erfordert vollständige Evidenz am exakten SHA.\n\n## Evidenz\n- Commit: c802be8143c7c568f10beb3caa90ac661b9a938e\n- Zielbranch: main\n- Bitte vor Merge vollständige Commit-/Issue-Reconciliation und Review durchführen."
+}
