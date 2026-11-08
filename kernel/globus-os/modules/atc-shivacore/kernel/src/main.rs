@@ -42,10 +42,24 @@ pub static BOOTLOADER_CONFIG: BootloaderConfig = {
 entry_point!(kernel_main, config = &BOOTLOADER_CONFIG);
 
 fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
-    serial_println!("ShivaCore: Kernel-Einstiegspunkt erreicht.");
+    // Framebuffer so frueh wie moeglich uebernehmen: ab hier gehen alle
+    // Boot-Meldungen sowohl seriell als auch auf den Bildschirm.
+    let fb_available = match boot_info.framebuffer.take() {
+        Some(fb) => {
+            framebuffer::init(fb);
+            true
+        }
+        None => false,
+    };
+
+    kprintln!("ShivaCore Kernel v0.0.3 -- K-Sprint 2");
+    kprintln!("Kernel-Einstiegspunkt erreicht (Handoff vom Bootloader).");
+    if !fb_available {
+        serial_println!("ShivaCore: WARNUNG -- kein Framebuffer vom Bootloader erhalten.");
+    }
 
     let cpu = hal::CpuInfo::detect();
-    serial_println!(
+    kprintln!(
         "ShivaCore: CPU vendor={} family={} model={} stepping={} apic={} x2apic={} nx={} invariant_tsc={}",
         cpu.vendor_name(), cpu.family, cpu.model, cpu.stepping,
         cpu.features.apic, cpu.features.x2apic, cpu.features.nx, cpu.features.invariant_tsc
@@ -53,7 +67,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     if !cpu.boot_compatible() {
         panic!("ShivaCore: CPU lacks required x86-64 boot features (SSE2/NX/APIC)");
     }
-    serial_println!("ShivaCore: CPU HAL compatibility check OK.");
+    kprintln!("CPU HAL compatibility check OK.");
 
     let phys_mem_offset_raw = boot_info
         .physical_memory_offset
@@ -61,25 +75,17 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         .expect("Bootloader hat physical_memory_offset nicht gesetzt (Config fehlt?)");
     let validated_tables = validate_acpi_boot_tables(boot_info, phys_mem_offset_raw)
         .unwrap_or_else(|error| panic!("ShivaCore: ACPI validation failed: {}", error));
-    serial_println!(
-        "ShivaCore: ACPI RSDP/root/table checksums validated; tables={}",
+    kprintln!(
+        "ACPI RSDP/root/table checksums validated; tables={}",
         validated_tables
     );
     let phys_mem_offset = x86_64::VirtAddr::new(phys_mem_offset_raw);
-
-    if let Some(fb) = boot_info.framebuffer.as_mut() {
-        framebuffer::init(fb);
-        println!("ShivaCore Kernel v0.0.3 -- K-Sprint 2");
-        println!("Boot: OK | Serial: OK | Framebuffer: OK");
-    } else {
-        serial_println!("ShivaCore: WARNUNG -- kein Framebuffer vom Bootloader erhalten.");
-    }
 
     gdt::init();
     interrupts::init_idt();
     x86_64::instructions::interrupts::int3();
     interrupts::init_pics();
-    serial_println!("ShivaCore: GDT/IDT/PIC OK (K-Sprint 1).");
+    kprintln!("GDT/IDT/PIC OK (K-Sprint 1).");
 
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
     let mut frame_allocator =
@@ -87,7 +93,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
 
     allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("Heap-Initialisierung fehlgeschlagen");
-    serial_println!("ShivaCore: Paging-Mapper + Heap initialisiert (100 KiB).");
+    kprintln!("Paging-Mapper + Heap initialisiert (100 KiB).");
 
     // Heap live testen: Box + Vec muessen funktionieren, ohne zu crashen.
     let boxed = Box::new(41);
@@ -102,7 +108,7 @@ fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
         vec.iter().sum::<i32>()
     );
 
-    println!("K-Sprint 2: Paging/Heap OK (Box+Vec getestet)");
+    kprintln!("K-Sprint 2: Paging/Heap OK (Box+Vec getestet)");
     // Real kernel integration gate: execute the canonical kernel initialization
     // from the same UEFI -> kernel_main path after paging/heap are live.
     let kernel_state = shivacore::kernel_init::KernelState::boot()
