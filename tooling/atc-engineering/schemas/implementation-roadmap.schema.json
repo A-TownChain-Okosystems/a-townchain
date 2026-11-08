@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "A-TownChain Implementation Roadmap",
+  "type": "object",
+  "required": ["roadmap_id", "schema_version", "status", "phases"],
+  "properties": {
+    "roadmap_id": { "const": "ATC-IMPLEMENTATION-ROADMAP" },
+    "schema_version": { "type": "string" },
+    "status": {
+      "enum": ["PLANNED_NOT_EXECUTED", "IN_PROGRESS", "BLOCKED", "COMPLETE"]
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["phase_id", "priority", "execution_order", "work_items"],
+        "properties": {
+          "phase_id": { "type": "string" },
+          "priority": { "enum": ["P0", "P1", "P2", "P3", "P4"] },
+          "execution_order": { "type": "integer", "minimum": 1 },
+          "work_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["work_id", "title", "status", "depends_on", "completion_evidence"],
+              "properties": {
+                "work_id": { "type": "string" },
+                "title": { "type": "string" },
+                "status": {
+                  "enum": ["PLANNED", "IN_PROGRESS", "BLOCKED", "IMPLEMENTED", "VERIFIED", "RESIDUAL"]
+                },
+                "depends_on": { "type": "array", "items": { "type": "string" } },
+                "completion_evidence": { "type": "array", "items": { "type": "string" } }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
