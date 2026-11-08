@@ -1,0 +1,47 @@
+# ATC Code Quality Matrix — SSOT (ATC-STD-ENG-001 REQ-ENG-011)
+# Eintrag je Repository: Sprache, Layer, Determinismus-Klasse, Dependency-Budget,
+# Test-Anforderungen, CI-Gates. Automatisiert zu erheben: tools/code_quality_matrix.py
+# Abweichungen erzeugen Findings (ATC-STD-BUG-001). Owner-Entwurf 11.09.2026.
+
+schema_version: "1.0"
+standard_ref: ATC-STD-ENG-001
+generated: "2026-09-11"
+
+determinism_classes:
+  D-CRITICAL: "Konsens-/VM-/Krypto-/Kernel-Code — Determinismus MUST-STRICT (REQ-ENG-002)"
+  D-HIGH:     "State-beeinflussende Peripherie (Storage, Indexer, Interop)"
+  D-STANDARD: "UI, AI-Interpretation, Docs — keine Konsens-Relevanz"
+
+dependency_budgets:
+  B-ZERO:       "keine externen Abhängigkeiten"
+  B-MINIMAL:    "< 5, alle kryptografisch geprüft"
+  B-CONTROLLED: "< 15, version-locked, auditierbar"
+  B-LIBERAL:    "UI-Ebene, frei"
+
+repositories:
+  atclang:            {layer: L0, language: [rust, python], determinism: D-CRITICAL, dep_budget: B-MINIMAL,    tests: [unit, property, conformance, fuzzing], ci_gates: [format, lint, build, unit, integration, security, dependency-audit, determinism], notes: "ATCLang Compiler/Toolchain — Rust kanonisch (REQ-ENG-008)"}
+  atc-vm:            {layer: L0, language: [rust],         determinism: D-CRITICAL, dep_budget: B-CONTROLLED, tests: [unit, property, conformance, differential, fuzzing, formal-candidate], ci_gates: [format, lint, build, unit, integration, security, dependency-audit, determinism], notes: "Determinism Layer verpflichtend (REQ-ENG-002)"}
+  atc-shivacore:     {layer: L1, language: [rust],         determinism: D-CRITICAL, dep_budget: B-MINIMAL,    tests: [unit, property, fuzzing], ci_gates: [format, lint, build, unit, integration, security, dependency-audit, determinism], notes: "no_std, Kernel-Isolation (REQ-ENG-007)"}
+  atc-zkp:           {layer: L1, language: [rust],         determinism: D-CRITICAL, dep_budget: B-MINIMAL,    tests: [unit, property, fuzzing], ci_gates: [format, lint, build, unit, security, dependency-audit, determinism], notes: "Krypto: Independent Implementation prüfen (REQ-ENG-005)"}
+  aurora-ai:         {layer: L2, language: [typescript],    determinism: D-STANDARD, dep_budget: B-LIBERAL,    tests: [unit, integration], ci_gates: [format, lint, build, unit, integration, security, dependency-audit], notes: "AI schlägt vor — ATC-Kette entscheidet (REQ-ENG-001)"}
+  a-townchain:       {layer: L3, language: [rust, python],  determinism: D-CRITICAL, dep_budget: B-CONTROLLED, tests: [unit, property, integration, differential, fuzzing], ci_gates: [format, lint, build, unit, integration, security, dependency-audit, determinism], notes: "Blockchain/Consensus/State; Rust kanonisch"}
+  atc-algorithm:     {layer: L3, language: [rust],          determinism: D-CRITICAL, dep_budget: B-CONTROLLED, tests: [unit, property, fuzzing], ci_gates: [format, lint, build, unit, security, dependency-audit, determinism], notes: "Algorithmen-Kern"}
+  globus-os:         {layer: L4, language: [rust],          determinism: D-HIGH,     dep_budget: B-CONTROLLED, tests: [unit, integration], ci_gates: [format, lint, build, unit, integration, security, dependency-audit], notes: "OS/Plattform"}
+  atc-contracts:     {layer: L5, language: [atclang, python, javascript], determinism: D-CRITICAL, dep_budget: B-CONTROLLED, tests: [unit, property, conformance], ci_gates: [format, lint, build, unit, security, dependency-audit, determinism], notes: "Smart Contracts: ATCLang verpflichtend"}
+  atc-sdk:           {layer: L5, language: [rust],          determinism: D-HIGH,     dep_budget: B-CONTROLLED, tests: [unit, integration], ci_gates: [format, lint, build, unit, security, dependency-audit], notes: "Public API: SemVer + Stability Gates (REQ-ENG-009)"}
+  atc-wallet:        {layer: L5, language: [python],        determinism: D-CRITICAL, dep_budget: B-MINIMAL,    tests: [unit, property, fuzzing], ci_gates: [format, lint, build, unit, security, dependency-audit, determinism], notes: "Key-Hygiene verpflichtend (REQ-ENG-004)"}
+  atc-explorer:      {layer: L5, language: [typescript],     determinism: D-STANDARD, dep_budget: B-LIBERAL,    tests: [unit, integration], ci_gates: [format, lint, build, unit, security, dependency-audit], notes: "UI"}
+  atc-indexer:       {layer: L5, language: [typescript],     determinism: D-HIGH,     dep_budget: B-CONTROLLED, tests: [unit, integration, property], ci_gates: [format, lint, build, unit, security, dependency-audit], notes: "State-Spiegel — kanonische Sortierung"}
+  atc-interop:       {layer: L5, language: [rust],          determinism: D-HIGH,     dep_budget: B-CONTROLLED, tests: [unit, integration, fuzzing], ci_gates: [format, lint, build, unit, security, dependency-audit, determinism], notes: "Cross-Chain"}
+  atc-node:          {layer: L5, language: [rust],          determinism: D-CRITICAL, dep_budget: B-CONTROLLED, tests: [unit, property, integration, differential, fuzzing], ci_gates: [format, lint, build, unit, integration, security, dependency-audit, determinism], notes: "Full Node"}
+  atc-storage:       {layer: L5, language: [rust, python],          determinism: D-CRITICAL, dep_budget: B-CONTROLLED, tests: [unit, property, integration, fuzzing], ci_gates: [format, lint, build, unit, integration, security, dependency-audit, determinism], notes: "Storage Core: API-Trait-first (REQ-ENG-009)"}
+  atc-compute:       {layer: L5, language: [rust],          determinism: D-HIGH,     dep_budget: B-CONTROLLED, tests: [unit, integration], ci_gates: [format, lint, build, unit, security, dependency-audit], notes: "Compute-Ressourcen"}
+  atc-mining:        {layer: L5, language: [rust],          determinism: D-CRITICAL, dep_budget: B-CONTROLLED, tests: [unit, property, fuzzing], ci_gates: [format, lint, build, unit, security, dependency-audit, determinism], notes: "Mining/Consensus-nah"}
+  atc-oracle:        {layer: L5, language: [rust],          determinism: D-HIGH,     dep_budget: B-MINIMAL,    tests: [unit, property], ci_gates: [format, lint, build, unit, security, dependency-audit], notes: "Oracle: Signatur-Verifikation verpflichtend"}
+  atc-launchpad:     {layer: L5, language: [rust],          determinism: D-STANDARD, dep_budget: B-CONTROLLED, tests: [unit, integration], ci_gates: [format, lint, build, unit, security, dependency-audit], notes: "Launchpad"}
+  atc-marketplace:   {layer: L5, language: [rust],    determinism: D-STANDARD, dep_budget: B-LIBERAL,    tests: [unit, integration], ci_gates: [format, lint, build, unit, security, dependency-audit], notes: "UI/Backend"}
+  genesis-engine:    {layer: L6, language: [python, rust],        determinism: D-CRITICAL, dep_budget: B-CONTROLLED, tests: [unit, property, conformance], ci_gates: [format, lint, build, unit, security, dependency-audit, determinism], notes: "Genesis: Determinismus der Genesis-Datei (SCR-0114)"}
+  genesis-chronicles: {layer: L6, language: [python],        determinism: D-STANDARD, dep_budget: B-LIBERAL,    tests: [unit], ci_gates: [format, lint, build, unit, security, dependency-audit], notes: "Narrativ/Content"}
+  a-townchain-os:    {layer: L7, language: [atclang, python, rust], determinism: D-HIGH,   dep_budget: B-CONTROLLED, tests: [unit, integration, conformance], ci_gates: [format, lint, build, unit, integration, security, dependency-audit], notes: "Integration/Orchestrierung (INFRA)"}
+  a-townchain-os-docs: {layer: L7, language: [typescript],   determinism: D-STANDARD, dep_budget: B-LIBERAL,    tests: [docs-check], ci_gates: [format, build, docs], notes: "Wiki/Docs — MD-001/README-001"}
+  atc-standards:     {layer: L7, language: [python],        determinism: D-STANDARD, dep_budget: B-CONTROLLED, tests: [unit, registry-validation], ci_gates: [format, lint, build, unit, cross-registry, security, dependency-audit], notes: "Standards-Registry; Validator S-01..S-19"}
