@@ -1,0 +1,20 @@
+# GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Phase 1) - NICHT MANUELL BEARBEITEN
+authority: A-TownChain-Okosystems
+category: audit
+conformance:
+  required: true
+dependencies:
+- ATC-STD-000
+- ATC-STD-BUG-001
+- ATC-STD-BUG-003
+- ATC-STD-VERSION-001
+id: ATC-STD-AUDIT-001
+implementation:
+  status: specification_only
+normative: true
+owner: Michael (Owner-Entwurf)
+source_file: standards/audit/ATC-STD-AUDIT-001.md
+status: approved
+title: 'ATC Completeness & Audit Standard — Vollständigkeitsprüfung & Audit: Kontrollschicht
+  über allen Standards (20 Domänen, Traceability, Cross-System Integrity, Release-Gates)'
+version: 1.0.0
