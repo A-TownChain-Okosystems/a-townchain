@@ -1,0 +1,15 @@
+# atc-engineering.toml — Phase-0-Subset (SPEC-001 §5 atc-config, §25 Version Pinning)
+# Fail-closed: unbekannte Sektionen/Keys sind Fehler; keine Defaults für Pflichtfelder.
+
+[repository]
+name = "atc-engineering"
+phase = "DEVELOPMENT"
+
+[standards]
+source = "A-TownChain-Okosystems/atc-standards"
+version = "1.0.0"
+minimum = "1.0.0"
+maximum = "1.x"
+
+[evidence]
+required = true
