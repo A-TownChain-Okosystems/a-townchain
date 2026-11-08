@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-220",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #220: feat(ci): add catalog-driven ecosystem build loop",
+  "context": "Pull request 220 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/220",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Ziel\n\nErste kontrollierte Automatisierungsstufe für den A-TownChain-Ecosystem-Katalog: Katalog, Dependency-Graph und Build-Manifest fail-closed einlesen, pro Lauf höchstens ein kanonisches Build-Ziel auswählen und Build-/Test-Evidenz als GitHub-Actions-Artefakt sichern.\n\n## Änderungen\n\n- `tools/ecosystem_build_loop.py`: prüft die erwarteten Schema-IDs, Duplikate und Manifest-/Graph-Grundstruktur; wählt höchstens ein Ziel in der definierten Abhängigkeitsreihenfolge.\n- `.github/workflows/ecosystem-build-loop.yml`: manuell, täglich und bei Änderungen an den maßgeblichen Katalog-/Manifestdateien ausführbar.\n- Exkludiert Demo-/Fixture- und als Referenz markierte Quell-Repositories; führt keine beliebigen Shell-Befehle aus dem Manifest aus.\n- Erfasst den tatsächlich ausgecheckten Quell-SHA und lädt Logs/Ergebnisdateien als Artefakte hoch.\n- Kein Auto-Merge und keine Änderungen an kanonischen Implementierungsdateien.\n\n## Grenzen / offene Verifikation\n\n- Draft bis der Workflow am exakten PR-Head erfolgreich gelaufen ist und die Plan-/Build-Artefakte geprüft wurden.\n- Dies ist zunächst ein kataloggesteuerter Build-/Test-Orchestrator. Er generiert noch keine neue Implementierung aus offenen Funktionsverträgen und schreibt keine Codeänderungen in Komponenten-Repositories.\n- Die vorhandenen Build-Profile müssen mit jedem kanonischen Repository und dessen tatsächlichen Build-Einstiegspunkten abgeglichen werden; nicht unterstützte Profile dürfen nicht als erfolgreich gelten.\n- Ein erfolgreicher Build ist kein Nachweis für funktionale Korrektheit oder Produktionsreife.\n\n## Sicherheits- und Governance-Regeln\n\n- Ecosystem-Repository bleibt Integrations-/Compliance-/Evidenz-Control-Plane, kein zweiter SSOT.\n- Kanonische Implementierungs-Repositories bleiben Eigentümer des Produktionscodes.\n- Keine automatische Freigabe, kein automatischer Merge, keine Hochstufung zu `VERIFIED` ohne exakte Run-/Job-/Step-/Exitcode-/Log-Evidenz."
+}
