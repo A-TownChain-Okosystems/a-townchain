@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-96",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #96: ci: enable organization Markdown linting",
+  "context": "Pull request 96 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/96",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: False\n\nEnable the centralized organization Markdown lint workflow, pinned to policy commit 1c198f3c6a73105f7e68f69e59c21f502362dbe1. Markdown violations remain fail-closed; no auto-fix or gate weakening."
+}
