@@ -1,0 +1,21 @@
+standard: ATC-STD-REPO-001
+standard_version: "1.0.0"
+repository:
+  name: <REPO-NAME>
+  classification: <CORE|SPEC|SDK|APPLICATION|INFRA|AI|OS|GAME>
+  maturity: <R0|R1|R2|R3|R4>
+  status: <experimental|development|beta|production>
+project:
+  organization: A-TownChain-Okosystems
+  domain: <domain>
+  component: <component>
+language:
+  primary: <rust|python|typescript|markdown>
+license:
+  type: proprietary
+security:
+  criticality: <public|standard|important|critical|protocol-critical>
+api:
+  stability: <experimental|alpha|beta|stable|frozen|deprecated>
+protocol:
+  compatibility: <required|none>
