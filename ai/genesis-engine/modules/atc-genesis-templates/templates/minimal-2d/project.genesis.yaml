@@ -1,0 +1,6 @@
+engine: genesis-engine
+version: 0.1.0
+name: minimal-2d
+rendering: 2d
+simulation: fixed
+entry_scene: scenes/main.scene
