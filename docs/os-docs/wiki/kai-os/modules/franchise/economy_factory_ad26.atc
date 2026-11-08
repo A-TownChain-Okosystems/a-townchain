@@ -1,0 +1,200 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-26 — Economy Factory: Währungen, Crafting, Handel, Balancing
+// Genesis Franchise Factory (GFF) — Component
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+struct EconomyFactory {
+    currencies: Map<Hash256, Currency>,
+    crafting: Map<Hash256, CraftingRecipe>,
+    auction_listings: List<AuctionListing>,
+    trade_routes: Map<Hash256, TradeRoute>,
+    rewards: Map<Hash256, RewardTable>,
+    inflation_index: Float32,
+    balance_log: List<BalanceEntry>,
+}
+
+struct Currency {
+    id: Hash256,
+    name: String,
+    symbol: String,
+    type: CurrencyType,
+    total_supply: UInt64,
+    circulating: UInt64,
+    exchange_rate: Float32,
+    decimals: UInt8,
+    mintable: Bool,
+    burnable: Bool,
+}
+
+enum CurrencyType { Primary, Premium, Faction, Event, Crafting, Reputation }
+
+struct CraftingRecipe {
+    id: Hash256,
+    result: String,
+    result_count: UInt16,
+    ingredients: List<CraftIngredient>,
+    crafting_time_ms: UInt32,
+    success_rate: Float32,
+    category: String,
+    unlocks_at_level: UInt16,
+}
+
+struct CraftIngredient {
+    item: String,
+    quantity: UInt16,
+}
+
+struct AuctionListing {
+    id: Hash256,
+    seller: String,
+    item: String,
+    quantity: UInt16,
+    starting_price: UInt64,
+    current_bid: UInt64,
+    buyout_price: UInt64,
+    expires_at: UInt64,
+    active: Bool,
+}
+
+struct TradeRoute {
+    id: Hash256,
+    from_city: String,
+    to_city: String,
+    goods: List<String>,
+    profit_margin: Float32,
+    risk_level: UInt8,
+    travel_time_min: UInt32,
+}
+
+struct RewardTable {
+    id: Hash256,
+    name: String,
+    entries: List<RewardEntry>,
+}
+
+struct RewardEntry {
+    item: String,
+    probability: Float32,
+    min_qty: UInt16,
+    max_qty: UInt16,
+}
+
+struct BalanceEntry {
+    timestamp: UInt64,
+    metric: String,
+    value: Float32,
+    target: Float32,
+    deviation: Float32,
+    action: String,
+}
+
+// Economy Factory: Währung erstellen
+pub fn create_currency(factory: EconomyFactory, name: String, symbol: String, ctype: CurrencyType, supply: UInt64) -> Hash256 {
+    let cid = Crypto::sha256(serialize(name, symbol, Chain::timestamp()))
+    factory.currencies[cid] = Currency {
+        id: cid, name: name, symbol: symbol, type: ctype,
+        total_supply: supply, circulating: 0, exchange_rate: 1.0,
+        decimals: 2, mintable: ctype != CurrencyType::Premium, burnable: true,
+    }
+    return cid
+}
+
+// Economy Factory: Crafting-Rezept erstellen
+pub fn create_recipe(factory: EconomyFactory, result: String, count: UInt16, ingredients: List<CraftIngredient>, time_ms: UInt32, success: Float32) -> Hash256 {
+    let rid = Crypto::sha256(serialize(result, Chain::timestamp()))
+    factory.crafting[rid] = CraftingRecipe {
+        id: rid, result: result, result_count: count,
+        ingredients: ingredients, crafting_time_ms: time_ms,
+        success_rate: success, category: "general", unlocks_at_level: 1,
+    }
+    return rid
+}
+
+// Economy Factory: Auktions-Listing erstellen
+pub fn create_auction(factory: EconomyFactory, seller: String, item: String, qty: UInt16, start_price: UInt64, buyout: UInt64, duration_h: UInt32) -> Hash256 {
+    let aid = Crypto::sha256(serialize(seller, item, Chain::timestamp()))
+    factory.auction_listings.append(AuctionListing {
+        id: aid, seller: seller, item: item, quantity: qty,
+        starting_price: start_price, current_bid: start_price,
+        buyout_price: buyout, expires_at: Chain::timestamp() + duration_h * 3600,
+        active: true,
+    })
+    return aid
+}
+
+// Economy Factory: Gebot abgeben
+pub fn place_bid(factory: EconomyFactory, auction_id: Hash256, bid: UInt64, bidder: String) -> Bool {
+    for listing in factory.auction_listings {
+        if listing.id == auction_id and listing.active {
+            if bid > listing.current_bid {
+                listing.current_bid = bid
+                emit BidPlaced(auction_id, bidder, bid)
+                return true
+            }
+        }
+    }
+    return false
+}
+
+// Economy Factory: Handelsroute erstellen
+pub fn create_trade_route(factory: EconomyFactory, from: String, to: String, goods: List<String>, margin: Float32, risk: UInt8) -> Hash256 {
+    let tid = Crypto::sha256(serialize(from, to, Chain::timestamp()))
+    factory.trade_routes[tid] = TradeRoute {
+        id: tid, from_city: from, to_city: to, goods: goods,
+        profit_margin: margin, risk_level: risk, travel_time_min: 60,
+    }
+    return tid
+}
+
+// Economy Factory: Belohnungstabelle erstellen
+pub fn create_reward_table(factory: EconomyFactory, name: String, entries: List<RewardEntry>) -> Hash256 {
+    let rtid = Crypto::sha256(serialize(name, Chain::timestamp()))
+    factory.rewards[rtid] = RewardTable { id: rtid, name: name, entries: entries }
+    return rtid
+}
+
+// Economy Factory: Inflation überwachen
+pub fn check_inflation(factory: EconomyFactory, target: Float32) -> BalanceEntry {
+    let deviation = factory.inflation_index - target
+    let action = if deviation > 0.02 then "reduce_mint" else if deviation < -0.02 then "increase_rewards" else "no_action"
+    let entry = BalanceEntry {
+        timestamp: Chain::timestamp(),
+        metric: "inflation",
+        value: factory.inflation_index,
+        target: target,
+        deviation: deviation,
+        action: action,
+    }
+    factory.balance_log.append(entry)
+    return entry
+}
+
+// Economy Factory: Währung ausgeben
+pub fn mint_currency(factory: EconomyFactory, currency_id: Hash256, amount: UInt64) -> Bool {
+    require(factory.currencies.contains(currency_id), "Currency not found")
+    let c = factory.currencies[currency_id]
+    require(c.mintable, "Currency not mintable")
+    c.circulating = c.circulating + amount
+    return true
+}
+
+// Economy Factory: Währung verbrennen
+pub fn burn_currency(factory: EconomyFactory, currency_id: Hash256, amount: UInt64) -> Bool {
+    require(factory.currencies.contains(currency_id), "Currency not found")
+    let c = factory.currencies[currency_id]
+    require(c.burnable, "Currency not burnable")
+    require(c.circulating >= amount, "Insufficient circulating supply")
+    c.circulating = c.circulating - amount
+    return true
+}
+
+// Economy Factory: Wechselkurs setzen
+pub fn set_exchange_rate(factory: EconomyFactory, currency_id: Hash256, rate: Float32) -> Bool {
+    require(factory.currencies.contains(currency_id), "Currency not found")
+    factory.currencies[currency_id].exchange_rate = rate
+    return true
+}
+
+event BidPlaced(auction_id: Hash256, bidder: String, amount: UInt64)
