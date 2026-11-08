@@ -1,0 +1,43 @@
+// ============================================================================
+// Module: governance_agent
+// Description: Governance agent
+// ATC-Standard: ATC-97
+// Sprint: 3.2
+// Language: ATCLang v0.3
+// Created: 2026-08-08
+// Agent: Aurora (MasterBrain · Base44)
+// ============================================================================
+
+module governance_agent {
+
+// Primary struct
+struct Governance {
+    id: UInt64,
+    name: String,
+    active: Bool,
+    created_at: UInt64,
+    updated_at: UInt64,
+}
+
+// Initialize module
+fn init() -> Bool {
+    return true
+}
+
+// Get status
+fn status() -> String {
+    return "governance_agent ready"
+}
+
+// Create proposal
+fn propose(text: String) -> Bool {
+    // TODO: Implement
+    return Bool:default()
+}
+// Vote on proposal
+fn vote(id: UInt64, support: Bool) -> Bool {
+    // TODO: Implement
+    return Bool:default()
+}
+
+} // module governance_agent
