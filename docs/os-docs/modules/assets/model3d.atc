@@ -1,0 +1,168 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+# ATC AD-77 — 3D Model Support
+# Genesis Engine — glTF / GLB / FBX / OBJ Loader
+# Standard: AD-77
+
+enum ModelFormat:
+    GLTF            # glTF JSON + extern
+    GLB             # glTF Binary
+    FBX             # Autodesk FBX
+    OBJ             # Wavefront OBJ
+    USD             # Pixar USD
+
+struct Model3D:
+    name: String
+    format: ModelFormat
+    meshes: Array<Mesh3D>
+    materials: Array<Material3D>
+    skeletons: Array<Skeleton>
+    animations: Array<Animation3D>
+    node_tree: SceneNode
+    bounding_box: BoundingBox
+    vertex_count: Int32
+    index_count: Int32
+    file_size: Int64
+
+struct Mesh3D:
+    name: String
+    vertices: Array<Float>       # x,y,z interleaved
+    normals: Array<Float>
+    uvs: Array<Float>
+    tangents: Array<Float>
+    indices: Array<Int32>
+    material_index: Int32
+    primitive_type: String       # "triangles" | "lines" | "points"
+
+struct Material3D:
+    name: String
+    base_color: Vec4
+    metallic: Float
+    roughness: Float
+    normal_texture: String
+    emissive: Vec3
+    alpha_mode: String           # "opaque" | "mask" | "blend"
+    double_sided: Bool
+    textures: Map<String, String>  # "baseColor", "normal", "emissive", "occlusion"
+
+struct Skeleton:
+    name: String
+    bones: Array<Bone>
+    root_bone: Int32
+
+struct Bone:
+    name: String
+    parent: Int32               # -1 = root
+    children: Array<Int32>
+    offset_matrix: Mat4          # Inverse bind pose
+    local_transform: Transform
+
+struct Animation3D:
+    name: String
+    duration: Float
+    channels: Array<AnimChannel>
+
+struct AnimChannel:
+    target_node: Int32
+    target_path: String          # "translation" | "rotation" | "scale" | "weights"
+    keyframes: Array<Keyframe>
+    interpolation: String        # "linear" | "step" | "cubicspline"
+
+func load_gltf(path: String) -> Model3D:
+    data = read_file(path)
+    json = parse_json(data)
+    model = Model3D {
+        name: get_filename(path),
+        format: GLTF,
+        meshes: [], materials: [], skeletons: [],
+        animations: [], node_tree: SceneNode{},
+        bounding_box: BoundingBox{},
+        vertex_count: 0, index_count: 0,
+        file_size: len(data)
+    }
+    # Parse buffers
+    for buffer in json.buffers:
+        load_buffer(buffer)
+    # Parse meshes
+    for mesh in json.meshes:
+        m3d = parse_gltf_mesh(mesh, json)
+        model.meshes.append(m3d)
+        model.vertex_count += len(m3d.vertices) / 3
+        model.index_count += len(m3d.indices)
+    # Parse materials
+    for mat in json.materials:
+        model.materials.append(parse_gltf_material(mat, json))
+    # Parse skeletons und Skinning
+    if "skins" in json:
+        for skin in json.skins:
+            model.skeletons.append(parse_gltf_skeleton(skin, json))
+    # Parse Animationen
+    if "animations" in json:
+        for anim in json.animations:
+            model.animations.append(parse_gltf_animation(anim, json))
+    # Berechne Bounding Box
+    model.bounding_box = compute_bounding_box(model.meshes)
+    log_info(f"Loaded glTF: {model.name} — {model.vertex_count} verts, {len(model.meshes)} meshes")
+    return model
+
+func load_glb(path: String) -> Model3D:
+    # GLB = Binary glTF, alles in einer Datei
+    data = read_binary(path)
+    # Parse GLB Header (12 bytes magic + version + length)
+    # Parse JSON chunk + Binary chunk
+    json_chunk, bin_chunk = parse_glb_chunks(data)
+    return parse_gltf_binary(json_chunk, bin_chunk, path)
+
+func load_fbx(path: String) -> Model3D:
+    # FBX — Autodesk Format, benötigt Konverter
+    # Option 1: Interner Parser (komplex)
+    # Option 2: Konvertierung zu glTF via Assimp/cgltf
+    log_info(f"Converting FBX to glTF: {path}")
+    gltf_path = convert_fbx_to_gltf(path)
+    return load_gltf(gltf_path)
+
+func load_obj(path: String) -> Model3D:
+    # OBJ — einfaches Text-Format
+    data = read_file(path)
+    vertices = []
+    normals = []
+    uvs = []
+    indices = []
+    for line in data.split("\n"):
+        parts = line.strip().split(" ")
+        if parts[0] == "v":
+            vertices.extend([float(parts[1]), float(parts[2]), float(parts[3])])
+        elif parts[0] == "vn":
+            normals.extend([float(parts[1]), float(parts[2]), float(parts[3])])
+        elif parts[0] == "vt":
+            uvs.extend([float(parts[1]), float(parts[2])])
+        elif parts[0] == "f":
+            # Face indices (1-based → 0-based)
+            for p in parts[1:]:
+                idx = int(p.split("/")[0]) - 1
+                indices.append(idx)
+    mesh = Mesh3D {
+        name: get_filename(path),
+        vertices: vertices, normals: normals, uvs: uvs,
+        tangents: [], indices: indices,
+        material_index: 0, primitive_type: "triangles"
+    }
+    model = Model3D {
+        name: get_filename(path), format: OBJ,
+        meshes: [mesh], materials: [], skeletons: [],
+        animations: [], node_tree: SceneNode{},
+        bounding_box: compute_bounding_box([mesh]),
+        vertex_count: len(vertices) / 3,
+        index_count: len(indices),
+        file_size: len(data)
+    }
+    log_info(f"Loaded OBJ: {model.name} — {model.vertex_count} verts")
+    return model
+
+# LOD-Generierung für 3D-Modelle
+func generate_lods(model: Model3D, levels: Array<Float>) -> Array<Model3D>:
+    lods = [model]  # LOD0 = Original
+    for ratio in levels:  # z.B. [0.5, 0.25, 0.1]
+        lod = simplify_mesh(model, ratio)
+        lods.append(lod)
+        log_debug(f"LOD {ratio}: {lod.vertex_count} verts (from {model.vertex_count})")
+    return lods
