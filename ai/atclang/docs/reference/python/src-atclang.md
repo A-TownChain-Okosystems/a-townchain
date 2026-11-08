@@ -664,7 +664,7 @@
   - `abi(self) -> list[str]` —
 - **`class ContractEngine`** — Deploy- und Call-Engine ueber CompiledModule-Artefakte.
   - `__init__(self, chain_id: int=658467, codec: ABICodec | None=None)` —
-  - `deploy(self, name: str, functions: dict[str, list[str]], standards: list[str] | None=None, block_number: int=0, artifact_id: str | None=None) -> ContractInstance` — Contract registrieren; Adresse = sha3-256[artifact|name|nonce](12:32).
+  - `deploy(self, name: str, functions: dict[str, list[str]], standards: list[str] | None=None, block_number: int=0, artifact_id: str | None=None) -> ContractInstance` — Contract registrieren; Adresse = sha3-256[`artifact|name|nonce](12:32)`.
   - `call(self, contract: str, selector: str, args: dict[str, Any] | None=None, caller: str='0x' + '00' * 20, value: int=0, block_number: int=0) -> dict[str, Any]` — Methodenaufruf mit ABI-Dispatch: setzt Caller/Kontext ins Storage-Fundament.
   - `transfer(self, contract: str, state_key: str, frm: str, to: str, amount: int) -> bool` — Kanonischer ATC-8300-Transfer auf Map-State (Modellebene).
   - `balance_of(self, contract: str, state_key: str, holder: str) -> int` —
@@ -1322,7 +1322,7 @@
   - `ecdsa_sign(data, priv_key) -> str` — Deterministische Signatur-Simulation: sig = H(data|H(priv)) —
   - `ecdsa_verify(data, sig: str, pub_key) -> bool` — Prueft die deterministische Bindung sig <-> (data, pub_key) im
   - `bip39_mnemonic(seed: bytes, word_count: int=24) -> list[str]` —
-  - `generate_atc_address(pub_key_data=None) -> str` — Deterministische Adress-Ableitung: ATC + H[pub_key_data](:32).
+  - `generate_atc_address(pub_key_data=None) -> str` — Deterministische Adress-Ableitung: ATC + `H[pub_key_data](:32)`.
   - `verify_jwt(token: str) -> bool` — Strukturelle JWT-Referenz-Pruefung: 3 Base64url-Segmente,
   - `net_send(addr: str, port: int, data) -> bool` — Referenz-VM ohne Transport: fail-closed — KEIN virtueller Erfolg.
   - `kademlia_find_node(node_id: str, addr: str, port: int, k: int) -> list[dict]` —
