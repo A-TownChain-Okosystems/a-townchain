@@ -1,0 +1,13 @@
+# GENERIERT aus registry/standards.yaml (Allokations-SSOT) — nicht manuell pflegen
+# ATC-STD-002 §3/§6: family_id != standard_id
+category: enterprise
+family: GOVERNANCE / META
+family_id: '000'
+file: standards/enterprise/ATC-STD-023.md
+mandate: Owner-Entwurf 11.09. (SCR-0094 Continuous Assurance)
+registry_version: 1
+standard_id: ATC-STD-023
+status: approved
+title: Technology Lifecycle Management Standard (8-Status-Zyklus PROPOSED..REMOVED,
+  9-Kriterien-Adoption-Gate, 5 Entscheidungen, Registry-Kopplung)
+version: 1.0.0
