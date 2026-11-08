@@ -1,0 +1,162 @@
+{
+  "specification_id": "ATC-COMPONENT-FUNCTION-SPECIFICATION-001",
+  "schema_version": "1.0.0",
+  "date": "2026-10-12",
+  "status": "NORMATIVE_CATALOG_REQUIREMENTS_RESIDUAL",
+  "purpose": "Define the minimum auditable specification contract required for every component and function listed in ATC-COMPONENT-FUNCTION-CATALOG-001.",
+  "authority": {
+    "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+    "role": "Architecture, integration, ownership, specification and evidence registry only",
+    "implementation_rule": "This specification does not move or duplicate canonical implementations."
+  },
+  "function_contract_required_fields": [
+    {
+      "field": "id",
+      "type": "string",
+      "requirement": "Stable, globally unique function identifier; never recycle retired IDs."
+    },
+    {
+      "field": "name",
+      "type": "string",
+      "requirement": "Concise capability name matching the canonical source/API terminology where known."
+    },
+    {
+      "field": "purpose",
+      "type": "string",
+      "requirement": "Observable responsibility and explicit non-goals; avoid claims inferred only from filenames."
+    },
+    {
+      "field": "canonical_owner",
+      "type": "repository/path reference",
+      "requirement": "Exactly one canonical implementation owner; shared or support repositories must not be presented as implementation owners."
+    },
+    {
+      "field": "source_binding",
+      "type": "object",
+      "requirement": "Repository, source path, symbol/entry point, exact 40-character source SHA, file blob SHA where available, and evidence URL; lexical matches remain unverified."
+    },
+    {
+      "field": "inputs",
+      "type": "array",
+      "requirement": "Name, type/encoding, required/optional status, valid range/size, normalization rules and validation behavior for each input."
+    },
+    {
+      "field": "outputs",
+      "type": "array",
+      "requirement": "Name, type/encoding, success semantics, determinism guarantees and externally observable side effects."
+    },
+    {
+      "field": "preconditions",
+      "type": "array",
+      "requirement": "Required state, authority/capability, initialization phase, caller constraints and environmental assumptions."
+    },
+    {
+      "field": "postconditions",
+      "type": "array",
+      "requirement": "State changes, invariants preserved, resource ownership and guarantees after success or failure."
+    },
+    {
+      "field": "failure_modes",
+      "type": "array",
+      "requirement": "Typed errors, invalid input, unavailable dependency, permission failure, timeout, corruption and partial-failure behavior; no silent success."
+    },
+    {
+      "field": "resource_limits",
+      "type": "object",
+      "requirement": "Applicable maximum sizes, operation/gas budgets, memory/stack limits, timeouts, concurrency bounds and exhaustion response; use an explicit not-applicable rationale when irrelevant."
+    },
+    {
+      "field": "security_boundary",
+      "type": "object",
+      "requirement": "Trust boundary, required authorization/capability, untrusted data handling, sensitive state and threat assumptions."
+    },
+    {
+      "field": "versioning_compatibility",
+      "type": "object",
+      "requirement": "Contract/API/ABI version, compatibility rules, deprecation policy and migration behavior. Cross-repository contracts must be versioned."
+    },
+    {
+      "field": "dependencies",
+      "type": "array",
+      "requirement": "Stable component/function IDs, required interface version and failure propagation; dependency cycles must be identified."
+    },
+    {
+      "field": "acceptance",
+      "type": "array",
+      "requirement": "Measurable pass/fail criteria, including positive, negative, boundary and regression behavior."
+    },
+    {
+      "field": "test_classes",
+      "type": "array",
+      "requirement": "Applicable unit, property/fuzz, golden/vector, integration, compatibility, security and end-to-end tests."
+    },
+    {
+      "field": "verification_evidence",
+      "type": "object",
+      "requirement": "Exact source SHA plus workflow run, job, step, terminal conclusion, exit code and immutable log/artifact reference for any VERIFIED claim."
+    },
+    {
+      "field": "readiness",
+      "type": "enum",
+      "requirement": "Use the catalog's readiness vocabulary. Missing contract fields, missing evidence, pending/skipped checks or unresolved critical residuals must not be promoted to VERIFIED or PRODUCTION_READY."
+    }
+  ],
+  "component_contract_required_fields": [
+    "id",
+    "name",
+    "layer",
+    "canonical_owner",
+    "canonical_path",
+    "role_and_non_goals",
+    "criticality",
+    "dependencies_with_interface_versions",
+    "public_interfaces",
+    "security_and_trust_boundaries",
+    "resource_and_operational_limits",
+    "source_inventory_with_exact_head_and_tree_sha",
+    "functions",
+    "test_and_ci_gates",
+    "known_conflicts_and_residuals",
+    "readiness",
+    "verification_evidence"
+  ],
+  "cross_component_interface_requirements": {
+    "required": [
+      "stable_interface_id",
+      "provider_component_id",
+      "consumer_component_ids",
+      "contract_version",
+      "request_and_response_schema_or_abi",
+      "error_and_timeout_semantics",
+      "authorization_and_capability_requirements",
+      "compatibility_policy",
+      "contract_tests",
+      "exact_sha_evidence"
+    ],
+    "rule": "An inferred dependency or source symbol is not sufficient proof of a working interface. Unspecified or untested edges remain RESIDUAL."
+  },
+  "status_rules": {
+    "SOURCE_MAPPED_NOT_FUNCTIONALLY_VERIFIED": "Source path/symbol association only; correctness and completeness not proven.",
+    "IMPLEMENTED": "Implementation exists at the referenced source revision; does not imply tests pass.",
+    "TESTED": "Required test set has terminal successful results bound to the exact source SHA.",
+    "VERIFIED": "Contract, source, tests, required CI evidence and applicable security/integration review are complete.",
+    "RESIDUAL": "Any required specification, source, test, interface, evidence or review item is missing or unresolved.",
+    "PRODUCTION_READY": "Allowed only after all applicable production gates pass with terminal evidence and no unresolved critical residual."
+  },
+  "fail_closed_rules": [
+    "Do not infer implementation from names, documentation, source file presence or lexical symbol matches alone.",
+    "Do not mark unknown or unscanned functions as absent; record them as unresolved inventory coverage.",
+    "Do not claim catalog completeness until all active repositories and public/exported entry points are reconciled against exact source SHAs.",
+    "Pending, queued, skipped, inaccessible or non-terminal checks do not count as passing.",
+    "No automatic merge authorization, gate weakening, repository lifecycle change or implementation ownership transfer is implied by this specification."
+  ],
+  "current_application_status": {
+    "catalog_reference": "docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.json",
+    "catalog_functions_reported": 71,
+    "catalog_components_reported": 30,
+    "specification_contract_defined": true,
+    "all_existing_entries_fully_checked_against_this_contract": false,
+    "unverified_items_remain": "RESIDUAL",
+    "release_decision": "BLOCKED"
+  }
+}
