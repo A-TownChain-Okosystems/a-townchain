@@ -1,0 +1,2124 @@
+# ATC-L0-FUNCTION-CATALOG-001 — L0 Hardware & Compute Function Contracts
+# SSOT: a-townchain-ecosystem
+# Layer: L0 (ATC-LAYER-L0-HARDWARE-COMPUTE)
+# Status: DRAFT (Sollstruktur — owner specification 2026-10-15)
+# Version: 0.1.0
+#
+# These are PROPOSED stable catalog IDs defining function contracts, NOT
+# existing implementations. Every function starts as UNRESOLVED until a
+# canonical implementation is mapped and verified. No function receives
+# VERIFIED without traceable evidence (fail-closed).
+#
+# IMPORTANT: L0 provides capabilities but grants NO permissions. Device
+# access control, DMA, memory isolation, and privileged operations are
+# governed by kernel (L2), HAL (L1), and security (X1) contracts.
+
+schema_id: ATC-L0-FUNCTION-CATALOG-001
+schema_version: 0.3.0
+generated: '2026-10-15'
+status: DRAFT
+layer_id: L0
+architecture_id: ATC-LAYER-L0-HARDWARE-COMPUTE
+registry_reference: docs/architecture/layers/ATC-LAYER-REGISTRY-001.yaml
+# Dependency matrix: L0 capabilities required by higher layers
+
+layer_dependencies:
+- target_layer: L1
+  required_l0_capabilities: Prozessorarchitektur, Firmware-Plattform, Geraete- und Speichermerkmale
+- target_layer: L2
+  required_l0_capabilities: CPU, Speicher, Interrupt-Controller, sichere Isolation, DMA/IOMMU
+- target_layer: L3
+  required_l0_capabilities: Geraete, persistenter Speicher, Netzwerk und verfuegbare Ressourcen
+- target_layer: L4
+  required_l0_capabilities: GPU, Display-Hardware, Eingabegeraete und Grafikbeschleunigung
+- target_layer: L5
+  required_l0_capabilities: Sichere Rechenumgebung, Speicher, Netzwerk und Kryptografiebeschleunigung
+- target_layer: L6
+  required_l0_capabilities: CPU, Speicher und Ressourcenmerkmale fuer deterministische Ausfuehrung
+- target_layer: L7
+  required_l0_capabilities: Zielarchitektur, unterstuetzte Instruktionen und Build-Zielmerkmale
+- target_layer: L8
+  required_l0_capabilities: GPU, NPU, RAM, VRAM, Modellbeschleunigung und Leistungsmerkmale
+- target_layer: L10
+  required_l0_capabilities: Hardwarekompatibilitaet, Mindestanforderungen und Installationsfaehigkeit
+# Principle: L0 provides capabilities, grants no permissions. Device access
+# control, DMA, memory isolation, and privileged operations are governed by
+# L2 kernel, L1 HAL, and X1 security contracts.
+
+functions:
+- function_id: ATC-L0-CPU-001
+  name: Capture processor identity and vendor characteristics
+  name_de: Prozessoridentität und Herstellermerkmale erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - vendor_id
+    - model
+    - family
+    - stepping
+    - brand_string
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - CPU reachable; boot stage sufficient for the CPU instruction set to be executable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: processor
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: CPUID instruction (x86-64) / ID_AA64* system registers (ARM64)
+    trust_level: hardware-reported
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/hal/cpu.rs
+    symbol: CpuInfo::detect, CpuInfo::vendor_name
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 1719d3ae99108138c74b64c14c9c57e4d2418595
+    note: Implementation mapped at exact SHA; functional verification at this binding SHA still pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/hal/cpu.rs::detects_current_cpu_without_panicking
+    - modules/atc-shivacore/kernel/src/hal/cpu.rs::vendor_parser_accepts_intel_and_amd
+    workflow_runs:
+    - run_type: local_cargo_test_workspace
+      commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+      result: 1298 passed, 0 failed
+      exit_code: 0
+      date: '2026-10-15'
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+    - VERIFIED requires CI runs and artifact hashes bound to exact SHA
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: CpuInfo::detect + vendor parsing proven by inline tests at binding SHA 3bf0001 (workspace
+    suite 1298/1298, exit 0).'
+- function_id: ATC-L0-CPU-002
+  name: Determine architecture and instruction set capabilities
+  name_de: Architektur und Befehlssatzfaehigkeiten feststellen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - isa (x86-64/aarch64)
+    - instruction_set_extensions
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - CPU reachable; boot stage sufficient for the CPU instruction set to be executable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: processor
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: CPUID instruction (x86-64) / ID_AA64* system registers (ARM64)
+    trust_level: hardware-reported
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/hal/cpu.rs
+    symbol: CpuInfo::detect, features_from_leaves
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 1719d3ae99108138c74b64c14c9c57e4d2418595
+    note: Implementation mapped at exact SHA; functional verification at this binding SHA still pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/hal/cpu.rs::absent_feature_leaves_decode_as_unsupported
+    - modules/atc-shivacore/kernel/src/hal/cpu.rs::detects_current_cpu_without_panicking
+    workflow_runs:
+    - run_type: local_cargo_test_workspace
+      commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+      result: 1298 passed, 0 failed
+      exit_code: 0
+      date: '2026-10-15'
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+    - VERIFIED requires CI runs and artifact hashes bound to exact SHA
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: leaf-based ISA detection proven by inline tests at binding SHA 3bf0001 (workspace
+    suite 1298/1298, exit 0). x86-64 only.'
+- function_id: ATC-L0-CPU-003
+  name: Provide core, thread and topology information
+  name_de: Kern-, Thread- und Topologieinformationen bereitstellen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - core_count
+    - thread_count
+    - topology (sockets/cores/threads/cache sharing)
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - CPU reachable; boot stage sufficient for the CPU instruction set to be executable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: processor
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: CPUID instruction (x86-64) / ID_AA64* system registers (ARM64)
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No topology/core-count detection in kernel HAL (CpuInfo has no core/thread fields).'
+- function_id: ATC-L0-CPU-004
+  name: Capture SIMD and cryptographic acceleration features
+  name_de: SIMD- und kryptografische Beschleunigungsmerkmale erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - simd_support (SSE/AVX/AVX-512/NEON/SVE)
+    - crypto_acceleration (AES-NI/SHA extensions/PAC)
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - CPU reachable; boot stage sufficient for the CPU instruction set to be executable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: processor
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: CPUID instruction (x86-64) / ID_AA64* system registers (ARM64)
+    trust_level: hardware-reported
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/hal/cpu.rs
+    symbol: CpuFeatures (sse2)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 1719d3ae99108138c74b64c14c9c57e4d2418595
+    note: Implementation mapped at exact SHA; functional verification at this binding SHA still pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/hal/cpu.rs::absent_feature_leaves_decode_as_unsupported
+    workflow_runs:
+    - run_type: local_cargo_test_workspace
+      commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+      result: 1298 passed, 0 failed
+      exit_code: 0
+      date: '2026-10-15'
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+    - VERIFIED requires CI runs and artifact hashes bound to exact SHA
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: CpuFeatures/SIMD decode proven by inline test at binding SHA 3bf0001 (suite 1298/1298).
+    Partial: sse2 only, no AVX/crypto flags.'
+- function_id: ATC-L0-CPU-005
+  name: Detect virtualization and security features
+  name_de: Virtualisierungs- und Sicherheitsfunktionen erkennen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - virtualization_support (VT-x/AMD-V)
+    - security_features (SMAP/SMEP/CET/PAC)
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - CPU reachable; boot stage sufficient for the CPU instruction set to be executable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: processor
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: CPUID instruction (x86-64) / ID_AA64* system registers (ARM64)
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No virtualization/security feature flags (VT-x/AMD-V, SMAP/SMEP) in CpuFeatures.'
+- function_id: ATC-L0-CPU-006
+  name: Capture cache, NUMA and memory controller capabilities
+  name_de: Cache-, NUMA- und Speichercontroller-Faehigkeiten erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.1
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - cache_hierarchy (L1/L2/L3 sizes)
+    - numa_topology
+    - memory_controller_capabilities
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - CPU reachable; boot stage sufficient for the CPU instruction set to be executable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: processor
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: CPUID instruction (x86-64) / ID_AA64* system registers (ARM64)
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No cache hierarchy/NUMA/memory-controller detection.'
+- function_id: ATC-L0-GPU-001
+  name: Capture GPU device identity
+  name_de: GPU-Geraeteidentitaet erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - vendor_id
+    - device_id
+    - model
+    - pcie_location
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - PCIe enumeration completed or device query interface available
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: gpu
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe configuration space + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No implementation. modules/atc-drivers/src/gpu.rs is a PLANNED stub ("noch nicht implementiert",
+    blob b2184d63c).'
+- function_id: ATC-L0-GPU-002
+  name: Detect compute and graphics capabilities
+  name_de: Compute- und Grafikfaehigkeiten erkennen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - graphics_capabilities
+    - compute_capability
+    - shader_model
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - PCIe enumeration completed or device query interface available
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: gpu
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe configuration space + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No implementation (gpu.rs PLANNED stub).'
+- function_id: ATC-L0-GPU-003
+  name: Capture VRAM capacity and memory characteristics
+  name_de: VRAM-Kapazitaet und Speichermerkmale erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - vram_capacity
+    - memory_type (GDDR6/HBM)
+    - bus_width
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - PCIe enumeration completed or device query interface available
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: gpu
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe configuration space + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No implementation (gpu.rs PLANNED stub).'
+- function_id: ATC-L0-GPU-004
+  name: Report supported compute APIs and features
+  name_de: Unterstuetzte Compute-APIs und Faehigkeiten melden
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - supported_apis (Vulkan/DirectX/Metal/CUDA/ROCm/OpenCL)
+    - feature_flags
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - PCIe enumeration completed or device query interface available
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: gpu
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe configuration space + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No implementation (gpu.rs PLANNED stub).'
+- function_id: ATC-L0-GPU-005
+  name: Capture DMA and IOMMU relevant device properties
+  name_de: DMA- und IOMMU-relevante Geraeteeigenschaften erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - dma_capabilities
+    - iommu_support (ACS/PRI/ATC)
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - PCIe enumeration completed or device query interface available
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: gpu
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe configuration space + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No implementation (gpu.rs PLANNED stub).'
+- function_id: ATC-L0-GPU-006
+  name: Provide hardware error and status characteristics
+  name_de: Hardwarebasierte Fehler- und Zustandsmerkmale bereitstellen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.2
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - ecc_support
+    - error_detection
+    - telemetry (temperature/power)
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - PCIe enumeration completed or device query interface available
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: gpu
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe configuration space + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No implementation (gpu.rs PLANNED stub).'
+- function_id: ATC-L0-NPU-001
+  name: Capture NPU identity and hardware generation
+  name_de: NPU-Identitaet und Hardwaregeneration erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - vendor
+    - model
+    - hardware_generation
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - device enumeration completed; accelerator interface reachable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: ai-accelerator
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe/ACPI device enumeration + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No NPU code in any repo (grep hits were false positives).'
+- function_id: ATC-L0-NPU-002
+  name: Determine supported datatypes and numeric precision
+  name_de: Unterstuetzte Datentypen und numerische Praezision feststellen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - supported_datatypes (INT8/FP16/BF16/FP32)
+    - quantization_support
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - device enumeration completed; accelerator interface reachable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: ai-accelerator
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe/ACPI device enumeration + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No implementation.'
+- function_id: ATC-L0-NPU-003
+  name: Report matrix and tensor compute capabilities
+  name_de: Matrix- und Tensor-Rechenfaehigkeiten melden
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - tops_rating
+    - tensor_dimensions
+    - sparse_support
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - device enumeration completed; accelerator interface reachable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: ai-accelerator
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe/ACPI device enumeration + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No implementation.'
+- function_id: ATC-L0-NPU-004
+  name: Capture on-chip and local memory capacity
+  name_de: Verfuegbare On-Chip- und lokale Speicherkapazitaet erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - on_chip_memory
+    - local_memory_bandwidth
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - device enumeration completed; accelerator interface reachable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: ai-accelerator
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe/ACPI device enumeration + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No implementation.'
+- function_id: ATC-L0-NPU-005
+  name: Provide acceleration and energy characteristics
+  name_de: Hardwarebeschleunigungs- und Energiemerkmale bereitstellen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.3
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - acceleration_class
+    - energy_efficiency (TOPS/W)
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - device enumeration completed; accelerator interface reachable
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: ai-accelerator
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe/ACPI device enumeration + vendor capability query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No implementation.'
+- function_id: ATC-L0-MEM-001
+  name: Capture physical memory capacity and type
+  name_de: Physische Speicherkapazitaet und Typ erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.4
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - total_capacity
+    - memory_type (DDR4/DDR5)
+    - speed
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - firmware memory map available (L1 handoff)
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: memory
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: SMBIOS/SPD/EEC memory descriptors, ACPI SRAT/SLIT
+    trust_level: hardware-reported
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/mmap.rs
+    symbol: MemoryMap (firmware memory regions)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 0340c1a069abcfb4da7e433925231b2aceff8ae2
+    note: Implementation mapped at exact SHA; functional verification at this binding SHA still pending.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - functional verification at binding SHA pending (prior globus-os workspace suite 1298/1298 green at 2682d49f,
+      not at 3bf0001)
+  status: MAPPED
+  status_reason: 'MAPPED (unchanged): firmware memory-map regions exist, but no capacity/type fields are captured;
+    the inline test covers region membership only (evidence counted for MEM-002). No direct test for this contract.'
+- function_id: ATC-L0-MEM-002
+  name: Detect memory ranges, NUMA and ECC capabilities
+  name_de: Speicherbereiche, NUMA und ECC-Faehigkeiten erkennen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.4
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - memory_ranges
+    - numa_topology
+    - ecc_support
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - firmware memory map available (L1 handoff)
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: memory
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: SMBIOS/SPD/EEC memory descriptors, ACPI SRAT/SLIT
+    trust_level: hardware-reported
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-bootloader/src/mmap.rs
+    symbol: MemoryMap::is_in_kernel, memory regions
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 0340c1a069abcfb4da7e433925231b2aceff8ae2
+    note: Implementation mapped at exact SHA; functional verification at this binding SHA still pending.
+  verification:
+    test_references:
+    - modules/atc-bootloader/src/mmap.rs::test_mmap
+    workflow_runs:
+    - run_type: local_cargo_test_workspace
+      commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+      result: 1298 passed, 0 failed
+      exit_code: 0
+      date: '2026-10-15'
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+    - VERIFIED requires CI runs and artifact hashes bound to exact SHA
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: MemoryMap region membership (is_in_kernel) proven by inline test at binding SHA 3bf0001
+    (suite 1298/1298). NUMA/ECC absent.'
+- function_id: ATC-L0-MEM-003
+  name: Report hardware-side cache and memory characteristics
+  name_de: Hardwareseitige Cache- und Speichermerkmale melden
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.4
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - hardware_cache_features
+    - memory_channels
+    - interleave_capabilities
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - firmware memory map available (L1 handoff)
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: memory
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: SMBIOS/SPD/EEC memory descriptors, ACPI SRAT/SLIT
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No hardware cache/memory-controller characteristics reported.'
+- function_id: ATC-L0-STO-001
+  name: Identify storage devices and controllers
+  name_de: Speichergeraete und Controller identifizieren
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.5
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - device_list
+    - controller_model
+    - interface (NVMe/SATA/USB)
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - storage controller enumerated; identify command supported
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: storage
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: NVMe identify / ATA IDENTIFY / SCSI INQUIRY, SMART health data
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No hardware identification. Block-device abstraction exists (kernel/src/block.rs,
+    blob f23225c8), storage driver (atc-drivers/src/storage.rs) is a PLANNED stub.'
+- function_id: ATC-L0-STO-002
+  name: Capture capacity, sector sizes and device properties
+  name_de: Kapazitaet, Sektorgroessen und Geraeteeigenschaften erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.5
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - capacity
+    - sector_sizes
+    - rotational_vs_ssd
+    - device_properties
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - storage controller enumerated; identify command supported
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: storage
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: NVMe identify / ATA IDENTIFY / SCSI INQUIRY, SMART health data
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No NVMe/ATA identify implementation (storage.rs PLANNED stub).'
+- function_id: ATC-L0-STO-003
+  name: Report encryption and device security capabilities
+  name_de: Verschluesselungs- und Geraetesicherheitsfaehigkeiten melden
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.5
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - self_encryption (TCG Opal)
+    - secure_erase
+    - write_protection
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - storage controller enumerated; identify command supported
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: storage
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: NVMe identify / ATA IDENTIFY / SCSI INQUIRY, SMART health data
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No device encryption/security capability detection.'
+- function_id: ATC-L0-SEC-001
+  name: Detect TPM and security device capabilities
+  name_de: TPM- und Security-Device-Faehigkeiten erkennen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.6
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - tpm_version (2.0)
+    - supported_commands
+    - attached_security_devices
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - security device interface reachable from a trusted boot context
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: security-hardware
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: TPM interface (TCG TBS/TPM2), CPU feature flags, device enumeration
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No TPM presence detection. IdentityKeyHal trait (service_space/src/identity_key_hal.rs,
+    blob 29182996) references TPM/TEE only as abstract key backends.'
+- function_id: ATC-L0-SEC-002
+  name: Report presence of supported TEE functions
+  name_de: Vorhandensein unterstuetzter TEE-Funktionen melden
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.6
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - tee_presence (SGX/TrustZone/SEV-SNP/TDX)
+    - enclave_capabilities
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - security device interface reachable from a trusted boot context
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: security-hardware
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: TPM interface (TCG TBS/TPM2), CPU feature flags, device enumeration
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No TEE presence detection (no SGX/TrustZone/SEV code).'
+- function_id: ATC-L0-SEC-003
+  name: Capture hardware cryptography capabilities
+  name_de: Hardware-Kryptografiefaehigkeiten erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.6
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - crypto_engines (RNG/AES/SHA/PKA)
+    - secure_elements
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - security device interface reachable from a trusted boot context
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: security-hardware
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: TPM interface (TCG TBS/TPM2), CPU feature flags, device enumeration
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No hardware crypto engine detection.'
+- function_id: ATC-L0-IO-001
+  name: Inventory PCIe and other device connections
+  name_de: PCIe- und sonstige Geraeteverbindungen inventarisieren
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.7
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - pcie_topology
+    - device_inventory
+    - bus_slot_function
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - bus enumeration completed
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: io-device
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe config space, USB descriptors, ACPI devices, network device query
+    trust_level: hardware-reported
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-drivers/kernel/src/hw_drivers.rs
+    symbol: PciBus::scan, PciDevice (bdf, BARs)
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 532a700712765fd34ca6e7700b0be74b2987594b
+    note: Implementation mapped at exact SHA; functional verification at this binding SHA still pending.
+  verification:
+    test_references:
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_bus_scan
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_bus_register
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_bus_simulated
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_bus_find_by_id
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_device_bdf
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_device_add_bar
+    workflow_runs:
+    - run_type: local_cargo_test_workspace
+      commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+      result: 1298 passed, 0 failed
+      exit_code: 0
+      date: '2026-10-15'
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+    - VERIFIED requires CI runs and artifact hashes bound to exact SHA
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: PciBus::scan + PciDevice inventory proven by inline tests at binding SHA 3bf0001
+    (suite 1298/1298).'
+- function_id: ATC-L0-IO-002
+  name: Detect DMA and IOMMU capabilities
+  name_de: DMA- und IOMMU-Faehigkeiten erkennen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.7
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - iommu_presence (VT-d/AMD-Vi/SMMU)
+    - dma_capabilities
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - bus enumeration completed
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: io-device
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe config space, USB descriptors, ACPI devices, network device query
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No IOMMU presence query (VT-d/AMD-Vi/SMMU). PciBar captured, but no DMA/IOMMU capability
+    detection.'
+- function_id: ATC-L0-IO-003
+  name: Classify network and peripheral devices
+  name_de: Netzwerk- und Peripheriegeraete klassifizieren
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.7
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - network_devices (Ethernet/Wi-Fi)
+    - peripheral_classification
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - bus enumeration completed
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: io-device
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: PCIe config space, USB descriptors, ACPI devices, network device query
+    trust_level: hardware-reported
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-drivers/kernel/src/hw_drivers.rs
+    symbol: PCI_CLASS_NETWORK, PciBus::find_by_class, VirtioNetDevice
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 532a700712765fd34ca6e7700b0be74b2987594b
+    note: Implementation mapped at exact SHA; functional verification at this binding SHA still pending.
+  verification:
+    test_references:
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_bus_find_by_class
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_pci_bus_find_virtio
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_virtio_net_new
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_virtio_net_init
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_virtio_net_link_control
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_virtio_net_mac
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_virtio_net_mtu
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_virtio_net_send
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_virtio_net_send_link_down
+    - modules/atc-drivers/kernel/src/hw_drivers.rs::test_virtio_net_network_device_impl
+    workflow_runs:
+    - run_type: local_cargo_test_workspace
+      commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+      result: 1298 passed, 0 failed
+      exit_code: 0
+      date: '2026-10-15'
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+    - VERIFIED requires CI runs and artifact hashes bound to exact SHA
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: network classification (PCI class 0x02) + virtio-net device proven by inline tests
+    at binding SHA 3bf0001 (suite 1298/1298). Partial: virtio backend only.'
+- function_id: ATC-L0-PWR-001
+  name: Capture supported power and performance characteristics
+  name_de: Unterstuetzte Energie- und Leistungsmerkmale erfassen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.8
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - power_profiles
+    - sleep_states (S-states)
+    - c_p_state_support
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - ACPI tables available (L1 handoff)
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: power-thermal
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: ACPI FADT/DSDT, thermal zones, P-state/C-state interfaces
+    trust_level: hardware-reported
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/power.rs
+    symbol: Rsdp, Fadt, PowerManager
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 717daef9bf8ad527902c7603f19eb084fbd16224
+    note: Implementation mapped at exact SHA; functional verification at this binding SHA still pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/power.rs::test_rsdp_new
+    - modules/atc-shivacore/kernel/src/power.rs::test_rsdp_v1
+    - modules/atc-shivacore/kernel/src/power.rs::test_rsdp_invalid_sig
+    - modules/atc-shivacore/kernel/src/power.rs::test_fadt_new
+    - modules/atc-shivacore/kernel/src/power.rs::test_acpi_header_new
+    - modules/atc-shivacore/kernel/src/power.rs::test_acpi_header_matches
+    - modules/atc-shivacore/kernel/src/power.rs::test_acpi_header_name
+    - modules/atc-shivacore/kernel/src/power.rs::test_power_state_s_numbers
+    workflow_runs:
+    - run_type: local_cargo_test_workspace
+      commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+      result: 1298 passed, 0 failed
+      exit_code: 0
+      date: '2026-10-15'
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+    - VERIFIED requires CI runs and artifact hashes bound to exact SHA
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: Rsdp/Fadt parsing + power states proven by inline tests at binding SHA 3bf0001 (suite
+    1298/1298). Partial: no full C/P-state enumeration.'
+- function_id: ATC-L0-THM-001
+  name: Detect available temperature and thermal sensors
+  name_de: Verfuegbare Temperatur- und Thermalsensoren erkennen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.8
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - thermal_zones
+    - sensor_count
+    - trip_points
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - ACPI tables available (L1 handoff)
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: power-thermal
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: ACPI thermal zones, embedded sensor interfaces
+    trust_level: hardware-reported
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/power.rs
+    symbol: ThermalZone, PowerManager::check_thermal, thermal_zone_count
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 717daef9bf8ad527902c7603f19eb084fbd16224
+    note: Implementation mapped at exact SHA; functional verification at this binding SHA still pending.
+  verification:
+    test_references:
+    - modules/atc-shivacore/kernel/src/power.rs::test_pm_add_thermal
+    - modules/atc-shivacore/kernel/src/power.rs::test_pm_check_thermal_critical
+    - modules/atc-shivacore/kernel/src/power.rs::test_pm_check_thermal_hot
+    - modules/atc-shivacore/kernel/src/power.rs::test_thermal_new
+    - modules/atc-shivacore/kernel/src/power.rs::test_thermal_temp_celsius
+    - modules/atc-shivacore/kernel/src/power.rs::test_thermal_critical
+    workflow_runs:
+    - run_type: local_cargo_test_workspace
+      commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+      result: 1298 passed, 0 failed
+      exit_code: 0
+      date: '2026-10-15'
+    exit_code: 0
+    artifacts: []
+    result: LOCAL_SUITE_PASS
+    open_gaps:
+    - CI evidence at binding SHA pending (local suite only)
+    - VERIFIED requires CI runs and artifact hashes bound to exact SHA
+  status: IMPLEMENTED
+  status_reason: 'IMPLEMENTED: ThermalZone + check_thermal + thermal_zone_count proven by inline tests at binding
+    SHA 3bf0001 (suite 1298/1298).'
+- function_id: ATC-L0-DISC-001
+  name: Provide hardware inventory from trusted sources
+  name_de: Hardwareinventar aus vertrauenswuerdigen Quellen bereitstellen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.9
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - consolidated_inventory
+    - source_registry
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - at least one trusted hardware source is available
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: aggregation of L0.1-L0.8 trusted sources
+    trust_level: hardware-reported
+  ssot:
+    repository: A-TownChain-Okosystems/globus-os
+    path: modules/atc-shivacore/kernel/src/main.rs
+    symbol: 'boot path: CpuInfo::detect + MemoryMap + ACPI table validation'
+    commit_sha: 3bf000143ec9bfad79d0bacc36b99b8111178b95
+    blob_sha: 15123f08bfee471e17eb6eb5f4be00ca2e926be3
+    note: Implementation mapped at exact SHA; functional verification at this binding SHA still pending.
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - functional verification at binding SHA pending (prior globus-os workspace suite 1298/1298 green at 2682d49f,
+      not at 3bf0001)
+  status: MAPPED
+  status_reason: 'MAPPED (unchanged): boot-time inventory exists in kernel/src/main.rs, but main.rs has no #[cfg(test)]
+    region and validate_acpi_boot_tables is not test-referenced. IMPLEMENTED requires test evidence.'
+- function_id: ATC-L0-DISC-002
+  name: Represent device capabilities in a versioned schema
+  name_de: Geraetefaehigkeiten in einem versionierten Schema darstellen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.9
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - capability_schema_version
+    - serialization_format
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - at least one trusted hardware source is available
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: aggregation of L0.1-L0.8 trusted sources
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No versioned capability schema.'
+- function_id: ATC-L0-DISC-003
+  name: Mark missing, unknown and unsupported capabilities
+  name_de: Fehlende, unbekannte und nicht unterstuetzte Faehigkeiten kennzeichnen
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.9
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - capability_classification (present/optional/unsupported/unknown)
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - at least one trusted hardware source is available
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: aggregation of L0.1-L0.8 trusted sources
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No unknown/unsupported capability classification. CpuInfo::boot_compatible provides
+    only a binary boot gate.'
+- function_id: ATC-L0-DISC-004
+  name: Document hardware characteristics with provenance and trust level
+  name_de: Hardwaremerkmale mit Herkunft und Vertrauensstufe dokumentieren
+  version: 0.1.0
+  layer_id: L0
+  sub_layer_id: L0.9
+  component_id: null
+  parent_id: null
+  contract:
+    inputs:
+    - platform query context (L1 HAL handle or trusted inventory source)
+    outputs:
+    - provenance_per_capability
+    - trust_level
+    errors:
+    - hardware_not_present
+    - capability_unsupported
+    - source_untrusted
+    - query_failed
+    preconditions:
+    - at least one trusted hardware source is available
+    postconditions:
+    - returned descriptor conforms to the versioned capability schema (ATC-L0-DISC-002)
+    - unknown capabilities marked as unknown, never as present
+  hardware:
+    vendor: any
+    architecture:
+    - x86-64
+    - ARM64
+    device_class: platform
+    required_capabilities:
+    - physical presence of the device class
+  security:
+    trust_boundary: hardware root of trust
+    dma_iommu_requirements: reported, not enforced (enforcement in L2/X1)
+    provenance: aggregation of L0.1-L0.8 trusted sources
+    trust_level: hardware-reported
+  ssot:
+    repository: null
+    path: null
+    symbol: null
+    commit_sha: null
+    blob_sha: null
+    note: Sollstruktur contract from owner L0 specification (2026-10-15); no canonical implementation mapped yet
+  verification:
+    test_references: []
+    workflow_runs: []
+    exit_code: null
+    artifacts: []
+    result: NOT_RUN
+    open_gaps:
+    - no implementation mapped
+    - no tests
+    - no CI evidence
+  status: UNRESOLVED
+  status_reason: 'UNRESOLVED: No per-capability provenance metadata. Partial: ACPI checksum validation exists (kernel/src/main.rs
+    acpi_checksum_valid) as table-level provenance check.'
+acceptance_criteria:
+- All nine sub-layers are registered in the catalog (L0.1-L0.9).
+- Every function has a stable ID and a defined contract.
+- Hardware dependencies to ShivaCore, GlobusOS, ATC-VM and Aurora AI are traceable.
+- Vendor-specific characteristics are separated from cross-architecture contracts.
+- Non-existent hardware is classified as optional, unsupported or not detected, never as a present capability.
+- Security-critical functions carry a concrete trust boundary and verification requirement.
+- No function receives VERIFIED without traceable evidence.
+mapping_note: 'Functional upgrade pass at binding SHA 3bf0001 (workspace suite 1298/1298, exit 0): 8 contracts IMPLEMENTED
+  (CPU-001/002/004, MEM-002, THM-001, PWR-001, IO-001/003) with inline test references per symbol. 2 contracts remain
+  MAPPED honestly (MEM-001: no capacity/type fields tested; DISC-001: boot inventory not test-referenced). 25 UNRESOLVED
+  with evidence-based reasons. No contract VERIFIED: CI evidence at binding SHA pending.'
