@@ -1,0 +1,8 @@
+# ATC Network Registry (ATC-STD-NET-001…004, AD-041)
+# Chain-ID-Allokation zentral (SCR-0001-Prozess). Mainnet 658467 reserviert (AD-004).
+networks:
+  - {tier: devnet,  network: ATC-DEVNET,  chain_id: 658469, token: DEV-ATC,  value: none, genesis: mutable,   reset: allowed,    consensus: experimental,        validators: flexible,          status: planned}
+  - {tier: testnet, network: ATC-TESTNET, chain_id: 658468, token: TEST-ATC, value: none, genesis: versioned, reset: controlled, consensus: mainnet_compatible, validators: registered,      status: planned}
+  - {tier: mainnet, network: ATC-MAINNET, chain_id: 658467, token: ATC,     value: real,  genesis: immutable, reset: forbidden,  consensus: frozen,                 validators: protocol_defined, status: planned}
+# Hinweise: Devnet/Testnet-IDs bis Genesis-Erstellung aenderbar (SCR).
+# Gates: GATE-011 Devnet->Testnet, GATE-012 Testnet->RC, GATE-013 RC->Mainnet (ATC-STD-NET-004).
