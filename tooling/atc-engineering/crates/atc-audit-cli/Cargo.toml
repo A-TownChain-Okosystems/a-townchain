@@ -1,0 +1,13 @@
+[package]
+name = "atc-audit-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+atc-atclang = { path = "../atc-atclang" }
+atc-core = { path = "../atc-core" }
+atc-gates = { path = "../atc-gates" }
+atc-maintenance = { path = "../atc-maintenance" }
+atc-requirements = { path = "../atc-requirements" }
