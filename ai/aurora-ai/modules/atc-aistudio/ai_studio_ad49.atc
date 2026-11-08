@@ -1,0 +1,310 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═══════════════════════════════════════════════════════════
+// AD-49 — Autonomous AI Studio (MetaFactory v3.0)
+// Mehrere spezialisierte KI-Agenten arbeiten zusammen:
+// Game Designer, Level Designer, Story Designer, Economy Designer,
+// QA-Agent, Audio-Agent, Animation-Agent, Marketing-Agent
+// ═══════════════════════════════════════════════════════════
+module MetaFactory.AutonomousAIStudio[AD-49] {
+
+    import GCL.Core[AD-00]
+    import GCL.AIBus[AD-13]
+    import GCL.EventBus[AD-01]
+    import GCL.CommandBus[AD-02]
+
+    struct AIAgent {
+        id: String
+        name: String
+        role: AgentRole            // GameDesigner, LevelDesigner, StoryDesigner, EconomyDesigner, QAAgent, AudioAgent, AnimationAgent, MarketingAgent
+        model: String              // LLM model identifier
+        capabilities: List<String>
+        current_task: Option<Task>
+        status: AgentStatus        // Idle, Working, Reviewing, Blocked, Error
+        performance: AgentPerformance
+        knowledge: AgentKnowledge
+        collaboration_graph: Map<String, CollaborationType>
+    }
+
+    struct AgentPerformance {
+        tasks_completed: U32
+        tasks_failed: U32
+        avg_quality_score: Float
+        avg_completion_time: Float
+        tokens_consumed: U64
+        cost_total: Decimal
+        rating_trend: List<Float>
+    }
+
+    struct AgentKnowledge {
+        domain: String
+        context_files: List<String>
+        learned_patterns: Map<String, Pattern>
+        feedback_history: List<Feedback>
+        style_preferences: Map<String, PropertyValue>
+    }
+
+    struct Task {
+        id: String
+        title: String
+        description: String
+        assigned_to: String        // Agent ID
+        priority: Priority
+        status: TaskStatus         // Pending, InProgress, Review, Completed, Rejected
+        dependencies: List<String> // Task IDs
+        output: Option<TaskOutput>
+        created_date: Timestamp
+        deadline: Option<Timestamp>
+    }
+
+    struct TaskOutput {
+        task_id: String
+        artifacts: List<Artifact>
+        quality_score: Float
+        review_notes: Option<String>
+        iterations: U32
+    }
+
+    struct Artifact {
+        id: String
+        type: ArtifactType         // Code, Design, Audio, Animation, Text, Config, Test, Asset
+        content: String
+        metadata: Map<String, PropertyValue>
+        version: U32
+    }
+
+    struct StudioSession {
+        id: String
+        project_id: String
+        agents: Map<String, AIAgent>
+        task_queue: PriorityQueue<Task>
+        completed: List<Task>
+        collaboration_log: List<CollaborationEvent>
+        budget: SessionBudget
+        start_time: Timestamp
+    }
+
+    struct SessionBudget {
+        max_tokens: U64
+        used_tokens: U64
+        max_cost: Decimal
+        used_cost: Decimal
+        max_duration: Duration
+        elapsed: Duration
+    }
+
+    struct CollaborationEvent {
+        id: String
+        from_agent: String
+        to_agent: String
+        type: CollaborationType    // Delegate, Review, Feedback, Handoff, Brainstorm
+        task_id: Option<String>
+        message: String
+        timestamp: Timestamp
+    }
+
+    interface IAutonomousAIStudio {
+        fn create_session(project_id: String, agent_configs: List<AgentConfig>) -> Result<StudioSession>
+        fn assign_task(session_id: String, task: TaskSpec) -> Result<Task>
+        fn delegate_task(from: String, to: String, task_id: String) -> Result<()>
+        fn request_review(session_id: String, task_id: String, reviewer: String) -> Result<TaskOutput>
+        fn provide_feedback(agent_id: String, feedback: Feedback) -> Result<()>
+        fn get_session_status(session_id: String) -> SessionStatus
+        fn get_agent_performance(agent_id: String) -> AgentPerformance
+        fn run_autonomous_cycle(session_id: String) -> Result<AutonomousResult>
+        fn terminate_session(session_id: String) -> Result<()>
+    }
+
+    class AutonomousAIStudio implements IAutonomousAIStudio {
+
+        gcl: GCLCore
+        ai_bus: AIBus
+        sessions: Map<String, StudioSession>
+
+        fn init(gcl: GCLCore, ai_bus: AIBus) {
+            self.gcl = gcl
+            self.ai_bus = ai_bus
+            self.sessions = Map::new()
+            self.gcl.subscribe("ai.studio.cmd", self.handle_command)
+        }
+
+        fn create_session(project_id: String, configs: List<AgentConfig>) -> Result<StudioSession> {
+            let mut agents = Map::new()
+            for config in configs {
+                let agent = AIAgent {
+                    id: generate_id("AI"),
+                    name: config.name,
+                    role: config.role,
+                    model: config.model,
+                    capabilities: config.capabilities,
+                    current_task: None,
+                    status: AgentStatus::Idle,
+                    performance: AgentPerformance::new(),
+                    knowledge: AgentKnowledge {
+                        domain: config.role.to_domain(),
+                        context_files: config.context_files,
+                        learned_patterns: Map::new(),
+                        feedback_history: List::new(),
+                        style_preferences: Map::new()
+                    },
+                    collaboration_graph: Map::new()
+                }
+                agents.insert(agent.id, agent)
+            }
+
+            let session = StudioSession {
+                id: generate_id("SES"),
+                project_id,
+                agents,
+                task_queue: PriorityQueue::new(),
+                completed: List::new(),
+                collaboration_log: List::new(),
+                budget: SessionBudget {
+                    max_tokens: 10_000_000,
+                    used_tokens: 0,
+                    max_cost: 100.0,
+                    used_cost: 0.0,
+                    max_duration: Duration::hours(8),
+                    elapsed: Duration::zero()
+                },
+                start_time: now()
+            }
+            self.sessions.insert(session.id, session)
+            self.gcl.emit("ai.studio.created", {session_id: session.id})
+            Ok(session)
+        }
+
+        fn assign_task(session_id: String, spec: TaskSpec) -> Result<Task> {
+            let session = self.sessions.get(session_id)
+            let agent = self.find_best_agent(session, spec)
+            let task = Task {
+                id: generate_id("TSK"),
+                title: spec.title,
+                description: spec.description,
+                assigned_to: agent.id,
+                priority: spec.priority,
+                status: TaskStatus::Pending,
+                dependencies: spec.dependencies,
+                output: None,
+                created_date: now(),
+                deadline: spec.deadline
+            }
+            session.task_queue.push(task)
+            agent.current_task = Some(task)
+            agent.status = AgentStatus::Working
+            self.gcl.emit("ai.task_assigned", {task_id: task.id, agent: agent.id})
+            Ok(task)
+        }
+
+        fn run_autonomous_cycle(session_id: String) -> Result<AutonomousResult> {
+            let session = self.sessions.get(session_id)
+            let mut results = List::new()
+
+            // Process task queue
+            while !session.task_queue.is_empty() and session.budget.used_tokens < session.budget.max_tokens {
+                let task = session.task_queue.pop()
+
+                // Check dependencies
+                if !self.dependencies_met(session, task) {
+                    session.task_queue.push(task)
+                    break
+                }
+
+                let agent = session.agents.get(task.assigned_to)
+                agent.status = AgentStatus::Working
+
+                // Execute via AI bus
+                let prompt = self.build_prompt(agent, task)
+                let response = self.ai_bus.execute(agent.model, prompt)
+                let artifact = self.parse_response(response, task)
+
+                // Quality check
+                let quality = self.assess_quality(artifact, agent.role)
+                let output = TaskOutput {
+                    task_id: task.id,
+                    artifacts: [artifact],
+                    quality_score: quality,
+                    review_notes: None,
+                    iterations: 1
+                }
+
+                if quality >= 0.7 {
+                    task.status = TaskStatus::Completed
+                    task.output = Some(output)
+                    session.completed.push(task)
+                    agent.performance.tasks_completed += 1
+                    agent.performance.avg_quality_score = (agent.performance.avg_quality_score * 0.9 + quality * 0.1)
+                } else {
+                    // Request review or retry
+                    task.status = TaskStatus::Review
+                    let reviewer = self.find_reviewer(session, agent)
+                    if reviewer.is_some() {
+                        self.request_review(session_id, task.id, reviewer.unwrap().id)
+                    }
+                }
+
+                agent.status = AgentStatus::Idle
+                agent.current_task = None
+
+                // Budget tracking
+                session.budget.used_tokens += response.tokens
+                session.budget.used_cost += response.cost
+
+                results.push(output)
+            }
+
+            // Agent collaboration opportunities
+            let collabs = self.identify_collaborations(session)
+            for collab in collabs {
+                self.delegate_task(session_id, collab.from, collab.to, collab.task_id)
+            }
+
+            Ok(AutonomousResult {
+                tasks_completed: results.len(),
+                outputs: results,
+                budget_used: session.budget.used_tokens,
+                budget_remaining: session.budget.max_tokens - session.budget.used_tokens,
+                active_agents: session.agents.values().filter(|a| a.status == AgentStatus::Working).count()
+            })
+        }
+
+        fn find_best_agent(session: StudioSession, spec: TaskSpec) -> AIAgent {
+            session.agents.values()
+                .filter(|a| a.status == AgentStatus::Idle and a.capabilities.contains(spec.required_capability))
+                .max_by(|a, b| a.performance.avg_quality_score.cmp(b.performance.avg_quality_score))
+        }
+
+        fn find_reviewer(session: StudioSession, author: AIAgent) -> Option<AIAgent> {
+            session.agents.values()
+                .filter(|a| a.id != author.id and a.role != author.role)
+                .max_by(|a, b| a.performance.avg_quality_score.cmp(b.performance.avg_quality_score))
+        }
+
+        fn identify_collaborations(session: StudioSession) -> List<CollaborationSpec> {
+            let mut collabs = List::new()
+            // Find agents that could benefit from each other's output
+            for task in session.completed {
+                for agent in session.agents.values() {
+                    if agent.knowledge.domain != task.assigned_to_role {
+                        // Check if this agent's future tasks could use the artifact
+                        if self.could_use(agent, task) {
+                            collabs.push(CollaborationSpec {
+                                from: task.assigned_to,
+                                to: agent.id,
+                                task_id: task.id,
+                                type: CollaborationType::Handoff
+                            })
+                        }
+                    }
+                }
+            }
+            collabs
+        }
+
+        fn build_prompt(agent: AIAgent, task: Task) -> String {
+            format!(
+                "You are a {} working on: {}\n\nTask: {}\n\nContext: {}\n\nProduce high-quality output for this task.",
+                agent.role, agent.knowledge.domain, task.title, task.description
+            )
+        }
+    }
+}
