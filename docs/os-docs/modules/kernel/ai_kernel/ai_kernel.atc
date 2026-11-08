@@ -1,0 +1,228 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ─────────────────────────────────────────────────────────────
+// ATC-45 — KAI-OS AI Kernel
+// Sprint 3.2 | AI Layer | Chain-ID 9000
+// Migrated from: modules/kernel/ai_kernel/ai_kernel.py
+// LLM Router, Reasoning Engine, Decision Engine, On-Chain Audit
+// Wiki: Kap. 61
+// ─────────────────────────────────────────────────────────────
+
+enum ModelType { Gemma, Mistral, Phi, Llama }
+enum TaskType { TextGeneration, CodeReview, Summarize, QA, Reasoning, Code }
+enum DecisionStatus { Pending, Approved, Rejected, Executed }
+
+const HF_API_BASE: String = "https://api-inference.huggingface.co/models"
+const MAX_TOKENS_GEMMA: u32 = 2048
+const MAX_TOKENS_MISTRAL: u32 = 4096
+const MAX_TOKENS_PHI: u32 = 2048
+const MAX_TOKENS_LLAMA: u32 = 4096
+
+struct ModelConfig {
+    model_id: String,
+    max_tokens: u32,
+    supported_tasks: List<TaskType>,
+}
+
+struct DecisionRecord {
+    decision_id: Hash,
+    agent: Address,
+    task: String,
+    input_hash: Hash,
+    output_hash: Hash,
+    model: ModelType,
+    status: DecisionStatus,
+    timestamp: u64,
+    reasoning: String,
+}
+
+struct AuditEntry {
+    entry_id: Hash,
+    decision_id: Hash,
+    data_hash: Hash,
+    timestamp: u64,
+    block_height: u64,
+}
+
+contract AIKernel {
+    state models: Map<ModelType, ModelConfig>
+    state decisions: Map<Hash, DecisionRecord>
+    state audit_log: List<AuditEntry>
+    state total_requests: u64
+    state total_tokens_used: u64
+    state hf_token: String
+    state owner: Address
+    state last_model: ModelType
+
+    event ModelRequest(model: ModelType, task: TaskType, tokens: u32)
+    event DecisionMade(decision_id: Hash, agent: Address, status: DecisionStatus)
+    event AuditLogged(entry_id: Hash, decision_id: Hash, block_height: u64)
+
+    fn init() {
+        self.owner = msg_sender()
+        self.hf_token = ""
+        self.total_requests = 0
+        self.total_tokens_used = 0
+        self.last_model = ModelType::Mistral
+        self.models = {}
+        self.decisions = {}
+        self.audit_log = []
+        // Register models
+        self.models[ModelType::Gemma] = ModelConfig {
+            model_id: "google/gemma-2-2b-it",
+            max_tokens: MAX_TOKENS_GEMMA,
+            supported_tasks: [TaskType::TextGeneration, TaskType::CodeReview, TaskType::Summarize],
+        }
+        self.models[ModelType::Mistral] = ModelConfig {
+            model_id: "mistralai/Mistral-7B-Instruct-v0.2",
+            max_tokens: MAX_TOKENS_MISTRAL,
+            supported_tasks: [TaskType::TextGeneration, TaskType::CodeReview, TaskType::QA, TaskType::Reasoning],
+        }
+        self.models[ModelType::Phi] = ModelConfig {
+            model_id: "microsoft/phi-2",
+            max_tokens: MAX_TOKENS_PHI,
+            supported_tasks: [TaskType::TextGeneration, TaskType::Code],
+        }
+        self.models[ModelType::Llama] = ModelConfig {
+            model_id: "meta-llama/Llama-3.2-3B-Instruct",
+            max_tokens: MAX_TOKENS_LLAMA,
+            supported_tasks: [TaskType::TextGeneration, TaskType::QA, TaskType::Summarize, TaskType::Reasoning],
+        }
+    }
+
+    // ── Route model based on task ────────────────────
+    fn route_model(task: TaskType) -> ModelType {
+        if task == TaskType::Reasoning {
+            return ModelType::Mistral
+        } else if task == TaskType::Code || task == TaskType::CodeReview {
+            return ModelType::Phi
+        } else if task == TaskType::Summarize {
+            return ModelType::Llama
+        }
+        return ModelType::Gemma
+    }
+
+    // ── Inference request ────────────────────────────
+    fn infer(task: TaskType, input: String, max_tokens: u32) -> (String, u32) {
+        let model = self.route_model(task)
+        let config = self.models.get(model)
+        if config == null {
+            return ("Model not found", 0)
+        }
+        let effective_tokens = max_tokens
+        if effective_tokens > config.max_tokens {
+            effective_tokens = config.max_tokens
+        }
+        // Call HuggingFace API
+        let url = HF_API_BASE + "/" + config.model_id
+        let body = JSON::encode({
+            "inputs": input,
+            "parameters": {
+                "max_new_tokens": effective_tokens,
+                "return_full_text": false
+            }
+        })
+        let resp = HTTP::post(url, body, "Bearer " + self.hf_token)
+        self.total_requests += 1
+        self.total_tokens_used += effective_tokens
+        self.last_model = model
+        emit ModelRequest(model, task, effective_tokens)
+        return (resp.body, effective_tokens)
+    }
+
+    // ── Create decision record ───────────────────────
+    fn create_decision(agent: Address, task: String, input: String, output: String, model: ModelType, reasoning: String) -> Hash {
+        let id_input = Address::to_hex(agent) + task + Int::to_string(Time::now())
+        let decision_id = Hash::sha256(id_input)
+        let input_hash = Hash::sha256(input)
+        let output_hash = Hash::sha256(output)
+        let decision = DecisionRecord {
+            decision_id: decision_id,
+            agent: agent,
+            task: task,
+            input_hash: input_hash,
+            output_hash: output_hash,
+            model: model,
+            status: DecisionStatus::Pending,
+            timestamp: Time::now(),
+            reasoning: reasoning,
+        }
+        self.decisions[decision_id] = decision
+        emit DecisionMade(decision_id, agent, DecisionStatus::Pending)
+        return decision_id
+    }
+
+    // ── Approve decision ─────────────────────────────
+    fn approve_decision(decision_id: Hash) -> bool {
+        let d = self.decisions.get(decision_id)
+        if d == null {
+            return false
+        }
+        if d.status != DecisionStatus::Pending {
+            return false
+        }
+        d.status = DecisionStatus::Approved
+        emit DecisionMade(decision_id, d.agent, DecisionStatus::Approved)
+        return true
+    }
+
+    // ── Execute decision ─────────────────────────────
+    fn execute_decision(decision_id: Hash, block_height: u64) -> bool {
+        let d = self.decisions.get(decision_id)
+        if d == null {
+            return false
+        }
+        if d.status != DecisionStatus::Approved {
+            return false
+        }
+        d.status = DecisionStatus::Executed
+        // Log to audit trail
+        let audit = AuditEntry {
+            entry_id: Hash::sha256(Hash::to_hex(decision_id) + Int::to_string(Time::now())),
+            decision_id: decision_id,
+            data_hash: d.output_hash,
+            timestamp: Time::now(),
+            block_height: block_height,
+        }
+        self.audit_log.push(audit)
+        emit AuditLogged(audit.entry_id, decision_id, block_height)
+        emit DecisionMade(decision_id, d.agent, DecisionStatus::Executed)
+        return true
+    }
+
+    // ── Reject decision ──────────────────────────────
+    fn reject_decision(decision_id: Hash) -> bool {
+        let d = self.decisions.get(decision_id)
+        if d == null {
+            return false
+        }
+        d.status = DecisionStatus::Rejected
+        emit DecisionMade(decision_id, d.agent, DecisionStatus::Rejected)
+        return true
+    }
+
+    // ── Set HF token ─────────────────────────────────
+    fn set_hf_token(token: String) {
+        if msg_sender() == self.owner {
+            self.hf_token = token
+        }
+    }
+
+    // ── Get audit log ────────────────────────────────
+    fn get_audit_log() -> List<AuditEntry> {
+        return self.audit_log
+    }
+
+    // ── Kernel stats ─────────────────────────────────
+    fn stats() -> (u64, u64, u32, u32) {
+        return (self.total_requests, self.total_tokens_used, self.decisions.len(), self.audit_log.len())
+    }
+
+    // ── Get decision ─────────────────────────────────
+    fn get_decision(decision_id: Hash) -> (Address, String, ModelType, DecisionStatus, u64) {
+        let d = self.decisions.get(decision_id)
+        if d == null {
+            return (Address::zero(), "", ModelType::Gemma, DecisionStatus::Pending, 0)
+        }
+        return (d.agent, d.task, d.model, d.status, d.timestamp)
+    }
+}
