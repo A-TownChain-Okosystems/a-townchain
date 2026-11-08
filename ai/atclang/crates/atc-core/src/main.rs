@@ -43,9 +43,11 @@ fn main() -> ExitCode {
     let strict = args.iter().skip(1).any(|a| a == "--strict");
     let hashes_only = args.iter().skip(1).any(|a| a == "--hash");
     let digest_only = args.iter().skip(1).any(|a| a == "--digest");
+    // Alle Blocker einer Datei sammeln statt beim ersten Fehler abzubrechen.
+    let all_blockers = args.iter().skip(1).any(|a| a == "--all");
     let positional: Vec<&String> = args
         .iter()
-        .filter(|a| *a != "--strict" && *a != "--hash" && *a != "--digest")
+        .filter(|a| *a != "--strict" && *a != "--hash" && *a != "--digest" && *a != "--all")
         .collect();
     if positional.len() != 2 {
         eprintln!("{USAGE}");
@@ -55,7 +57,7 @@ fn main() -> ExitCode {
     let path = positional[1].as_str();
     // Verzeichnisse werden projektweit geprueft, bevor eine Datei gelesen wird.
     if mode == "check" && std::path::Path::new(path).is_dir() {
-        return check_project_dir(path, strict);
+        return check_project_dir(path, strict, all_blockers);
     }
     if mode == "abi" {
         return emit_abi(path, hashes_only, digest_only);
@@ -70,6 +72,17 @@ fn main() -> ExitCode {
             return ExitCode::from(2);
         }
     };
+    if mode == "check" && all_blockers {
+        let (_, blockers) = atc_core::parser::parse_program_collecting(&src);
+        for blocker in &blockers {
+            eprintln!("Kompilierfehler in {path}: {}", blocker.message);
+        }
+        return if blockers.is_empty() {
+            ExitCode::SUCCESS
+        } else {
+            ExitCode::from(1)
+        };
+    }
     let program = match parse_program(&src) {
         Ok(p) => p,
         Err(e) => {
@@ -193,7 +206,7 @@ fn file_report(program: &atc_core::ast::Program) -> atc_core::semantics::Report 
 }
 
 /// Projektweite Pruefung ueber alle .atc eines Verzeichnisses.
-fn check_project_dir(dir: &str, strict: bool) -> ExitCode {
+fn check_project_dir(dir: &str, strict: bool, all_blockers: bool) -> ExitCode {
     let mut paths = Vec::new();
     scan_atc(std::path::Path::new(dir), &mut paths);
     paths.sort();
@@ -209,6 +222,23 @@ fn check_project_dir(dir: &str, strict: bool) -> ExitCode {
     for p in &paths {
         let label = p.to_string_lossy().to_string();
         match fs::read_to_string(p) {
+            Ok(src) if all_blockers => {
+                let (program, blockers) = atc_core::parser::parse_program_collecting(&src);
+                errors.extend(
+                    blockers
+                        .iter()
+                        .map(|e| format!("{label}: Parse-Fehler: {}", e.message)),
+                );
+                // Ein Teilstand traegt keine Aussage; nur die Blocker zaehlen.
+                if let Some(program) = program {
+                    if blockers.is_empty() {
+                        let report = file_report(&program);
+                        errors.extend(report.errors.iter().map(|e| format!("{label}: {e}")));
+                        warnings.extend(report.warnings.iter().map(|w| format!("{label}: {w}")));
+                        parsed.push((label.clone(), program));
+                    }
+                }
+            }
             Ok(src) => match parse_program(&src) {
                 Ok(program) => {
                     let report = file_report(&program);
