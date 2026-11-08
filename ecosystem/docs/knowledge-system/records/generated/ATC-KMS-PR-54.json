@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-54",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #54: feat(aurora): establish capability and tool execution foundation",
+  "context": "Pull request 54 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/54",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: False\n\n## Summary\n\n- add Rust capability, permission, approval, policy, and audit primitives\n- add typed Aurora Tool, ToolRegistry, and Policy-gated ToolExecutor\n- wire policy/tools crates into the workspace and Aurora runtime\n- enforce scoped resources and declared permissions before execution\n- record successful tool execution as an audit event\n\n## Architecture\n\nAurora follows the frozen 1.0 boundary:\n\nAgent → ToolRequest → PolicyEngine → Approval → ToolExecutor → Tool → Audit\n\nUndeclared capabilities, mismatched permissions, out-of-scope resources, and missing explicit approval are denied.\n\nThis PR does not grant kernel, filesystem, chain, wallet, or release authority implicitly."
+}
