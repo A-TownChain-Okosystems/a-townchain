@@ -1,0 +1,7 @@
+# shivaos-kernel — Dependencies
+# Teil des A-TownChain Ökosystems
+
+flask>=3.0
+cryptography>=42.0
+python-dotenv>=1.0
+pytest>=8.0
