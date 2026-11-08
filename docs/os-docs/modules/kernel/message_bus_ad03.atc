@@ -1,0 +1,240 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// AD-03 — MessageBus: Asynchrone Engine-Nachrichten
+// Layer 3 der Genesis Engine Bus-Architektur
+// Sprint 2.4 Extension — Issue #77
+
+import "std/crypto.atc" as Crypto
+import "std/chain.atc" as Chain
+
+// ── Message-Struktur ─────────────────────────────────
+struct Message {
+    id: Hash256,
+    channel: String,
+    priority: MessagePriority,
+    payload: Any,
+    timestamp: UInt64,
+    ttl: UInt32,           // Time-to-live in ms
+    retry_count: UInt8,
+    max_retries: UInt8,
+    ack_required: Bool,
+    acked: Bool,
+    sender: String,
+    tags: List<String>,
+}
+
+enum MessagePriority {
+    Low,      // 0
+    Normal,   // 1
+    High,     // 2
+    Critical, // 3
+}
+
+struct MessageQueue {
+    messages: List<Message>,
+    max_size: UInt32,
+    processed: UInt64,
+    dropped: UInt64,
+}
+
+struct MessageBus {
+    queues: Map<String, MessageQueue>,
+    subscribers: Map<String, List<MessageSubscriber>>,
+    dead_letter: List<Message>,
+    processing: Bool,
+    batch_size: UInt16,
+}
+
+struct MessageSubscriber {
+    id: Hash256,
+    channel: String,
+    callback: fn(Message) -> Bool,  // returns true = ack
+    filter_tags: List<String>,
+    active: Bool,
+}
+
+// MessageBus: Subscribe
+pub fn subscribe(bus: MessageBus, channel: String, callback: fn(Message) -> Bool, tags: List<String>) -> Hash256 {
+    let sub_id = Crypto::sha256(serialize(channel, Chain::timestamp(), bus.subscribers.len()))
+    let sub = MessageSubscriber {
+        id: sub_id,
+        channel: channel,
+        callback: callback,
+        filter_tags: tags,
+        active: true,
+    }
+    if not bus.subscribers.contains(channel) {
+        bus.subscribers[channel] = []
+    }
+    bus.subscribers[channel].append(sub)
+    return sub_id
+}
+
+// MessageBus: Publish (asynchron — in Queue legen)
+pub fn publish_message(bus: MessageBus, channel: String, payload: Any, priority: MessagePriority, sender: String, tags: List<String>) -> Hash256 {
+    if not bus.queues.contains(channel) {
+        bus.queues[channel] = MessageQueue { messages: [], max_size: 10000, processed: 0, dropped: 0 }
+    }
+
+    let queue = bus.queues[channel]
+    let msg = Message {
+        id: Crypto::sha256(serialize(channel, payload, Chain::timestamp(), queue.messages.len())),
+        channel: channel,
+        priority: priority,
+        payload: payload,
+        timestamp: Chain::timestamp(),
+        ttl: 30000,  // 30s default
+        retry_count: 0,
+        max_retries: 3,
+        ack_required: true,
+        acked: false,
+        sender: sender,
+        tags: tags,
+    }
+
+    if queue.messages.len() >= queue.max_size {
+        // Priority-basiertes Eviction: niedrigste Priority zuerst droppen
+        let lowest_idx = find_lowest_priority(queue.messages)
+        queue.messages.pop(lowest_idx)
+        queue.dropped = queue.dropped + 1
+    }
+
+    // Nach Priority sortiert einfügen (Critical zuerst)
+    insert_by_priority(queue.messages, msg)
+    return msg.id
+}
+
+// MessageBus: Process (Batch-Verarbeitung)
+pub fn process_messages(bus: MessageBus, channel: String) -> UInt16 {
+    if not bus.queues.contains(channel) {
+        return 0
+    }
+    let queue = bus.queues[channel]
+    let processed = 0
+
+    let batch = min(bus.batch_size, queue.messages.len())
+    for i in 0..batch {
+        if queue.messages.len() == 0 {
+            break
+        }
+        let msg = queue.messages.pop(0)
+
+        // TTL prüfen
+        if Chain::timestamp_ms() - msg.timestamp > msg.ttl {
+            bus.dead_letter.append(msg)
+            continue
+        }
+
+        // Subscriber benachrichtigen
+        let delivered = false
+        if bus.subscribers.contains(channel) {
+            for sub in bus.subscribers[channel] {
+                if not sub.active {
+                    continue
+                }
+                // Tag-Filter prüfen
+                if sub.filter_tags.len() > 0 {
+                    let matches = false
+                    for tag in msg.tags {
+                        if sub.filter_tags.contains(tag) {
+                            matches = true
+                            break
+                        }
+                    }
+                    if not matches {
+                        continue
+                    }
+                }
+                let ack = sub.callback(msg)
+                if ack and msg.ack_required {
+                    msg.acked = true
+                }
+                delivered = true
+            }
+        }
+
+        if delivered {
+            queue.processed = queue.processed + 1
+            processed = processed + 1
+        } else if msg.retry_count < msg.max_retries {
+            msg.retry_count = msg.retry_count + 1
+            queue.messages.append(msg)
+        } else {
+            bus.dead_letter.append(msg)
+        }
+    }
+    return processed
+}
+
+// MessageBus: Process all channels
+pub fn process_all(bus: MessageBus) -> UInt16 {
+    let total = 0
+    for channel in bus.queues.keys() {
+        total = total + process_messages(bus, channel)
+    }
+    return total
+}
+
+// MessageBus: Unsubscribe
+pub fn unsubscribe_bus(bus: MessageBus, sub_id: Hash256) -> Bool {
+    for channel in bus.subscribers.keys() {
+        bus.subscribers[channel] = bus.subscribers[channel].filter(fn s => s.id != sub_id)
+    }
+    return true
+}
+
+// MessageBus: Dead Letter Queue abrufen
+pub fn get_dead_letters(bus: MessageBus) -> List<Message> {
+    return bus.dead_letter
+}
+
+// MessageBus: Queue-Statistiken
+pub fn queue_stats(bus: MessageBus, channel: String) -> QueueStats {
+    if not bus.queues.contains(channel) {
+        return QueueStats { channel: channel, pending: 0, processed: 0, dropped: 0, dead: 0 }
+    }
+    let q = bus.queues[channel]
+    return QueueStats {
+        channel: channel,
+        pending: q.messages.len(),
+        processed: q.processed,
+        dropped: q.dropped,
+        dead: bus.dead_letter.len(),
+    }
+}
+
+// Helper: Niedrigste Priority finden
+pub fn find_lowest_priority(msgs: List<Message>) -> UInt32 {
+    if msgs.len() == 0 {
+        return 0
+    }
+    let lowest = 0
+    for i in 1..msgs.len() {
+        if msgs[i].priority < msgs[lowest].priority {
+            lowest = i
+        }
+    }
+    return lowest
+}
+
+// Helper: Nach Priority sortiert einfügen
+pub fn insert_by_priority(msgs: List<Message>, msg: Message) {
+    let inserted = false
+    for i in 0..msgs.len() {
+        if msg.priority > msgs[i].priority {
+            msgs.insert(i, msg)
+            inserted = true
+            break
+        }
+    }
+    if not inserted {
+        msgs.append(msg)
+    }
+}
+
+struct QueueStats {
+    channel: String,
+    pending: UInt32,
+    processed: UInt64,
+    dropped: UInt64,
+    dead: UInt32,
+}
