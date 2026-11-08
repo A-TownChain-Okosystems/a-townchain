@@ -1,0 +1,22 @@
+{
+  "id": "ATC-KMS-PR-211",
+  "timestamp": "2026-11-04T09:22:10.789453Z",
+  "category": "change",
+  "title": "PR #211: [Draft] GlobusOS: Boot-Metrik-Grundlage",
+  "context": "Pull request 211 in A-TownChain-Okosystems/a-townchain-ecosystem.",
+  "priority": "P2",
+  "status": "active",
+  "version": "v1.0.0",
+  "source": {
+    "type": "pr",
+    "ref": "https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/211",
+    "commit": "3d41ed283921d50eff6ac3df95568343cb9eada2"
+  },
+  "tags": [
+    "generated",
+    "github",
+    "pull-request"
+  ],
+  "links": [],
+  "content": "State: open\nMerged: False\nDraft: True\n\n## Ziel\nErster Implementierungsschritt für reproduzierbare Boot- und Komponenten-Laufzeitmessungen in ShivaCore/GlobusOS.\n\n## Umgesetzt\n- Neues `boot_metrics`-Modul mit Start-/Ende-Erfassung pro Komponente.\n- Explizite Statuswerte für `Ready`, `Failed` und `TimedOut`; ein Start wird nicht automatisch als Bereitschaft gewertet.\n- Dauerberechnung aus caller-supplied monotonen Nanosekunden-Zeitstempeln.\n- Fehlerbehandlung für doppelte Starts, unbekannte Komponenten und rückwärts laufende Zeitstempel.\n- Unit-Tests für Dauer, Status und fehlerhafte Messfolgen.\n- Modul in `lib.rs` registriert.\n\n## Wichtige Abgrenzung\nDieser Draft liefert die wiederverwendbare Messprimitive, noch keine vollständige Boot-Pfad-Instrumentierung. Der Kernel-Einstiegspunkt verwendet derzeit nicht nachweislich eine durchgehend kalibrierte Hardware-Zeitquelle für alle Boot-Phasen; deshalb werden keine realen Boot-Zeiten behauptet. Nächster Schritt ist die Integration in `main.rs`/ `kernel_init.rs` mit einer verifizierten monotonen Zeitquelle, danach QEMU-Benchmarks und CI-Regressions-Gates.\n\n## Validierung\n- Unit-Tests sind im Quelltext enthalten.\n- Build, Tests und CI-Ergebnis müssen nach dem PR-Lauf geprüft werden.\n- Keine Performance-Baseline oder Boot-Zeit wird vor realen Messläufen als verifiziert ausgewiesen.\n\n## Review-Status\nDraft – nicht zum Mergen freigegeben."
+}
