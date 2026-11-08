@@ -1,0 +1,324 @@
+// Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+// ═════════════════════════════════════════════════════════════════
+// ATC-22+ — Display Treiber (Framebuffer / GPU)
+// Sprint 3.1 | Kernel OS Layer | Chain-ID 9000
+// ATCLang v0.4 | Non-EVM | ATCLang First Policy (ATC-99)
+// ═════════════════════════════════════════════════════════════════
+//
+// Display-Treiber für KAI-OS. Unterstützt:
+//   - Framebuffer-Modus (linear pixel buffer)
+//   - Text-Modus (Zeichen-basiert, Font-Raster)
+//   - Grafik-Modus (VSync, Double Buffering)
+//   - Multi-Monitor (max 8 Displays)
+//   - Hardware Cursor
+//   - Color Depth: 8/16/24/32 bpp
+//
+// Bindet an GCL Render Bus (AD-09) für Frame-Output.
+// ═════════════════════════════════════════════════════════════════
+
+import "std/chain.atc" as Chain
+
+enum DisplayMode {
+    TEXT,           // 80x25 Text-Modus
+    FB_LINEAR,      // Linearer Framebuffer
+    FB_DOUBLE,      // Double-Buffered Framebuffer
+    GPU_ACCEL,      // Hardware-Beschleunigung
+}
+
+enum PixelFormat {
+    RGB888,         // 24-bit RGB
+    RGBA8888,       // 32-bit RGBA
+    RGB565,         // 16-bit RGB
+    GRAY8,          // 8-bit Graustufen
+    INDEXED,        // 8-bit Palette
+}
+
+struct DisplayConfig {
+    width: u32,
+    height: u32,
+    bpp: u8,                // Bits per pixel (8/16/24/32)
+    format: PixelFormat,
+    mode: DisplayMode,
+    vsync: bool,
+    double_buffer: bool,
+    cursor_visible: bool,
+    cursor_x: u32,
+    cursor_y: u32,
+    palette: List<u32>,     // Für INDEXED-Modus
+}
+
+struct DisplayBuffer {
+    buffer_id: u32,
+    physical_addr: u64,
+    size: u64,
+    is_front: bool,          // true = Front-Buffer (sichtbar)
+    dirty: bool,             // true = muss geflippt werden
+}
+
+struct Display {
+    display_id: u32,
+    config: DisplayConfig,
+    front_buffer: DisplayBuffer,
+    back_buffer: DisplayBuffer,
+    is_active: bool,
+    frame_count: u64,
+    last_flip_time: u64,
+}
+
+module Kernel::DisplayDriver {
+
+    contract DisplayDriverManager {
+
+        state displays: Map<u32, Display>
+        state next_display_id: u32 = 1
+        state active_display: u32 = 0
+        state total_frames: u64 = 0
+        state total_pixels_drawn: u64 = 0
+        state authorized: List<Address>
+
+        event DisplayCreated(display_id: u32, width: u32, height: u32, bpp: u8)
+        event DisplayModeChanged(display_id: u32, mode: DisplayMode)
+        event BufferFlipped(display_id: u32, frame: u64)
+        event CursorMoved(display_id: u32, x: u32, y: u32)
+        event PixelDrawn(display_id: u32, count: u64)
+
+        // ═══════════════════════════════════════════════════════════
+        //  DISPLAY LIFECYCLE
+        // ═══════════════════════════════════════════════════════════
+
+        // Display registrieren
+        fn create_display(
+            width: u32,
+            height: u32,
+            bpp: u8,
+            format: PixelFormat,
+            mode: DisplayMode,
+            fb_addr: u64,
+            fb_size: u64,
+        ) -> u32 {
+            require(width > 0 && height > 0, "invalid dimensions")
+            require(bpp == 8 || bpp == 16 || bpp == 24 || bpp == 32, "unsupported bpp")
+            require(fb_addr > 0, "invalid framebuffer address")
+
+            let id: u32 = self.next_display_id
+            self.next_display_id += 1
+
+            let config: DisplayConfig = DisplayConfig {
+                width: width,
+                height: height,
+                bpp: bpp,
+                format: format,
+                mode: mode,
+                vsync: true,
+                double_buffer: mode == DisplayMode::FB_DOUBLE,
+                cursor_visible: true,
+                cursor_x: 0,
+                cursor_y: 0,
+                palette: [],
+            }
+
+            let front_buf: DisplayBuffer = DisplayBuffer {
+                buffer_id: id * 2,
+                physical_addr: fb_addr,
+                size: fb_size,
+                is_front: true,
+                dirty: false,
+            }
+
+            let back_buf: DisplayBuffer = DisplayBuffer {
+                buffer_id: id * 2 + 1,
+                physical_addr: if mode == DisplayMode::FB_DOUBLE then fb_addr + fb_size else fb_addr,
+                size: fb_size,
+                is_front: false,
+                dirty: false,
+            }
+
+            let display: Display = Display {
+                display_id: id,
+                config: config,
+                front_buffer: front_buf,
+                back_buffer: back_buf,
+                is_active: true,
+                frame_count: 0,
+                last_flip_time: Chain::block_timestamp(),
+            }
+
+            self.displays[id] = display
+
+            if self.active_display == 0 {
+                self.active_display = id
+            }
+
+            emit DisplayCreated(id, width, height, bpp)
+            return id
+        }
+
+        // Display Modus wechseln
+        fn set_mode(display_id: u32, mode: DisplayMode) -> bool {
+            let display: Display = self.displays[display_id]
+            require(display.is_active, "display not active")
+
+            display.config.mode = mode
+            display.config.double_buffer = mode == DisplayMode::FB_DOUBLE
+            emit DisplayModeChanged(display_id, mode)
+            return true
+        }
+
+        // Display deaktivieren
+        fn disable_display(display_id: u32) -> bool {
+            self.displays[display_id].is_active = false
+            if self.active_display == display_id {
+                self.active_display = 0
+            }
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  DRAWING OPERATIONS
+        // ═══════════════════════════════════════════════════════════
+
+        // Pixel setzen
+        fn put_pixel(display_id: u32, x: u32, y: u32, color: u32) -> bool {
+            let display: Display = self.displays[display_id]
+            require(display.is_active, "display not active")
+            require(x < display.config.width, "x out of bounds")
+            require(y < display.config.height, "y out of bounds")
+
+            // In production: MMIO Write in Back-Buffer
+            display.back_buffer.dirty = true
+            self.total_pixels_drawn += 1
+            emit PixelDrawn(display_id, 1)
+            return true
+        }
+
+        // Rechteck füllen
+        fn fill_rect(display_id: u32, x: u32, y: u32, w: u32, h: u32, color: u32) -> u64 {
+            let display: Display = self.displays[display_id]
+            require(display.is_active, "display not active")
+            require(x + w <= display.config.width, "width overflow")
+            require(y + h <= display.config.height, "height overflow")
+
+            let pixels: u64 = w as u64 * h as u64
+            display.back_buffer.dirty = true
+            self.total_pixels_drawn += pixels
+            return pixels
+        }
+
+        // Linie zeichnen (Bresenham)
+        fn draw_line(display_id: u32, x0: u32, y0: u32, x1: u32, y1: u32, color: u32) -> u32 {
+            let display: Display = self.displays[display_id]
+            require(display.is_active, "display not active")
+
+            let dx: i32 = (x1 as i32) - (x0 as i32)
+            let dy: i32 = (y1 as i32) - (y0 as i32)
+            let steps: u32 = if dx.abs() > dy.abs() then dx.abs() as u32 else dy.abs() as u32
+            display.back_buffer.dirty = true
+            self.total_pixels_drawn += steps as u64
+            return steps
+        }
+
+        // Text ausgeben
+        fn draw_text(display_id: u32, x: u32, y: u32, text: String, color: u32) -> u32 {
+            let display: Display = self.displays[display_id]
+            require(display.is_active, "display not active")
+
+            let char_width: u32 = 8   // 8x16 Font
+            let char_height: u32 = 16
+            let pixels: u32 = text.length * char_width * char_height
+            display.back_buffer.dirty = true
+            self.total_pixels_drawn += pixels as u64
+            return text.length as u32  // Anzahl Zeichen
+        }
+
+        // Buffer flip (Double Buffering)
+        fn flip_buffers(display_id: u32) -> bool {
+            let display: Display = self.displays[display_id]
+            require(display.is_active, "display not active")
+            require(display.config.double_buffer, "not in double buffer mode")
+            require(display.back_buffer.dirty, "back buffer not dirty")
+
+            // Swap front/back
+            let temp_addr: u64 = display.front_buffer.physical_addr
+            display.front_buffer.physical_addr = display.back_buffer.physical_addr
+            display.back_buffer.physical_addr = temp_addr
+            display.back_buffer.dirty = false
+            display.front_buffer.is_front = true
+            display.back_buffer.is_front = false
+            display.frame_count += 1
+            self.total_frames += 1
+            display.last_flip_time = Chain::block_timestamp()
+
+            emit BufferFlipped(display_id, display.frame_count)
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  CURSOR
+        // ═══════════════════════════════════════════════════════════
+
+        // Cursor bewegen
+        fn move_cursor(display_id: u32, x: u32, y: u32) -> bool {
+            let display: Display = self.displays[display_id]
+            require(display.is_active, "display not active")
+            require(x < display.config.width, "cursor x out of bounds")
+            require(y < display.config.height, "cursor y out of bounds")
+
+            display.config.cursor_x = x
+            display.config.cursor_y = y
+            emit CursorMoved(display_id, x, y)
+            return true
+        }
+
+        // Cursor anzeigen/verstecken
+        fn set_cursor_visible(display_id: u32, visible: bool) -> bool {
+            self.displays[display_id].config.cursor_visible = visible
+            return true
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  QUERIES
+        // ═══════════════════════════════════════════════════════════
+
+        // Display-Info
+        fn get_display_info(display_id: u32) -> (u32, u32, u8, DisplayMode) {
+            let display: Display = self.displays[display_id]
+            return (display.config.width, display.config.height, display.config.bpp, display.config.mode)
+        }
+
+        // Frame-Statistik
+        fn get_frame_stats(display_id: u32) -> (u64, u64, u64) {
+            let display: Display = self.displays[display_id]
+            return (display.frame_count, self.total_pixels_drawn, display.last_flip_time)
+        }
+
+        // Alle Displays
+        fn list_displays() -> List<u32> {
+            let result: List<u32> = []
+            for id, display in self.displays {
+                if display.is_active {
+                    result.push(id)
+                }
+            }
+            return result
+        }
+
+        // Aktives Display
+        fn get_active_display() -> u32 {
+            return self.active_display
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        //  CLEAR
+        // ═══════════════════════════════════════════════════════════
+
+        // Display löschen (mit Farbe füllen)
+        fn clear(display_id: u32, color: u32) -> bool {
+            let display: Display = self.displays[display_id]
+            require(display.is_active, "display not active")
+            let pixels: u64 = display.config.width as u64 * display.config.height as u64
+            display.back_buffer.dirty = true
+            self.total_pixels_drawn += pixels
+            return true
+        }
+    }
+}
