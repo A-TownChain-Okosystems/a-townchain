@@ -267,6 +267,32 @@ einschließlich Schutz gegen Umgehungsversuche.
 
 ---
 
+## 12a. Referenz-Durchsetzung (Stand 09.11.2026)
+
+Die Prüfreihenfolge aus Abschnitt 4 ist als eigenständiges Crate ausführbar:
+`components/exec-admission` (Paket `atc-exec-admission`, 21 Tests). Damit ist die
+Entscheidungslogik prüfbar, **bevor** eine Grenze verdrahtet wird.
+
+**Was das Crate ist:** kanonisches Encoding der `ExecutionPolicy`, Registry,
+Prüfreihenfolge 1–11 mit `ADM-001`–`ADM-011`, fail-closed ohne Rückfall, und ein
+append-only Protokoll, das jede Entscheidung mit Code festhält.
+
+**Was es ausdrücklich nicht ist:** keine Kernel-Bindung, kein Loader, keine
+VM-Anbindung, keine ABI-Änderung, keine Kryptografie. Die Signaturprüfung kommt
+über den Trait `SignatureVerifier` von der Runtime; das Crate behauptet keine
+kryptografische Sicherheit, es ordnet Entscheidungen zu. Die Enforcement-Schritte
+in Abschnitt 5 bleiben unverändert offen und brauchen weiterhin einen
+Owner-Beschluss zur Wurzel des Vertrauens.
+
+Abgedeckte Fälle: gültige Freigabe, unbekannter Hash, abweichende Codierung,
+Integritätsbruch, fehlende/ungültige Signatur, fremder Signer, fremde Komponente,
+Rechte über Freigabe, Freigabe über Komponenten-Obergrenze, Ablauf, Rollback,
+Widerruf, fehlende Provenance, generierter Code ohne Nachweis, fehlende Isolation,
+nicht initialisierte Authority, Protokollpflicht, Reihenfolge der Fehlercodes sowie
+die Kollisionsprobe ohne Längenpräfix.
+
+---
+
 ## 13. Implementierungsreihenfolge (Vorschlag, unverbindlich)
 
 1. Standard ratifizieren (dieses Dokument, mit Entscheidungen aus §12).
