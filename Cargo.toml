@@ -19,6 +19,7 @@ members = [
     "apps/atc-compute",
     "apps/atc-launchpad",
     "components/algorithm",
+    "components/exec-admission",
     "components/interop/modules/atc-bridge",
     "components/mining",
     "components/node",
