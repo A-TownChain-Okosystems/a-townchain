@@ -383,6 +383,13 @@ Verbindliche Regeln:
   Ausfuehrungskontext. Ein beliebiger Aufrufer darf sie nicht als Parameter
   setzen; ein Aufruferparameter waere eine Umgehung der Abrechnung.
 
+**Bindung an den Protokollzustand:** Die Auswahl der Gastabelle wird an die
+Blockhoehe beziehungsweise den verbindlichen Protokollzustand gebunden, nach
+demselben Aktivierungsplan wie eine Versionsumstellung (Abschnitt 11 A). Bei
+gleicher Blockhoehe muss jeder Validator dieselbe Tabelle anwenden. Ohne diese
+Bindung koennten Validatoren identischen Bytecode mit unterschiedlichen
+Kostenmodellen abrechnen und sich uneinig werden, obwohl derselbe Code laeuft.
+
 **Umsetzungsstand:** Im Crate existiert genau eine Tabelle als benannte
 Konstante `GAS_TABLE_ID` mit `GAS_TABLE_V1`. Es gibt heute keinen Auswahlpunkt,
 an dem ein Aufrufer eine andere Tabelle vorgeben koennte. Die Anbindung an
