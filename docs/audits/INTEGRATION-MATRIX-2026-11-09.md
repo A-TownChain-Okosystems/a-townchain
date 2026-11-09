@@ -74,6 +74,7 @@ In a-townchain sind unter anderem alle `atc-aurora-*`, alle `atc-genesis-*`,
    (`boot <kernel> <out> [ramdisk-elf]`); der CI-Workflow baut `-p shivacore` und
    ruft `boot` ohne Programm. Der Ramdisk-Pfad existiert und ist getestet, wird im
    Image aber nicht benutzt.
+   **Geschlossen am 09.11.2026** (siehe Abschnitt „B4 geschlossen" unten).
 6. **KI → Ausführung.** `system/aurora-core` sind Verträge (contracts/errors/state/
    types), erreicht von `globus-runtime`, das selbst niemand startet. Die
    `atc-aurora-*`-Crates in a-townchain haben null Zulieferer. Es gibt keine
@@ -131,6 +132,55 @@ Quelltextsuche belegt, nicht per Trace eines laufenden Systems; ein dynamisch
 geladenes Modul oder ein Aufruf über einen String wäre damit nicht erfasst.
 QEMU-Bootläufe zeigen: der Kernel bootet und startet Ring-3-Code — aber nur
 eingebauten, nicht aus der Ramdisk des Images.
+
+---
+
+## Anhang B — B4 geschlossen: Ramdisk traegt Nutzlast (09.11.2026)
+
+Der Befund aus Abschnitt 4 Nr. 5 ist erledigt, mit Beleg statt Behauptung.
+
+**Was geaendert wurde** (globus-os, `5e4bd43`):
+`scripts/qemu_boot.sh` baut jetzt `modules/atc-shivacore/init_program` und uebergibt
+das ELF als Ramdisk-Eintrag an den Boot-Builder; derselbe Schritt steht im
+Workflow `shivacore-kernel.yml`, und die BIOS-Smoke-Pruefung schlaegt fehl, wenn
+das Programm nicht aus dem Image geladen wird.
+
+**Beleg aus dem Gast** (QEMU BIOS, Log `/tmp/boot-fresh.log`, Zeilen 55, 56, 85):
+
+```
+ShivaCore: Ramdisk-Verzeichnis: 1 Programme (init)
+ShivaCore: Programm 'init' aus Ramdisk: 6608 Bytes ELF, Einstieg 0x400000, Code 121 Bytes
+ShivaCore: USER-001 mapped PID=1000 RIP=0x400000 RSP=0x7ffff000 (Quelle: Ramdisk)
+```
+
+Vorher stand dort `(Quelle: eingebaut)`: PID 1000 lief aus einem im Kernel
+einkompilierten Abbild. Jetzt laedt der Kernel ein echtes ELF aus dem
+Ramdisk-Verzeichnis, bildet es im Prozessadressraum ab und startet es.
+
+**Drei Befunde aus dem Weg dorthin** (jeder haette den Schritt still scheitern
+lassen):
+
+1. **Das ELF war PIE.** Ohne die Crate-Konfiguration baut Rust nach `ET_DYN`; der
+   Kernel verlangt `ET_EXEC` (`elf_loader.rs:150`) und meldete
+   `Programm 'init' ist kein lesbares ELF: InvalidType`.
+2. **Die Umgebungsvariable hat die Crate-Konfiguration ersetzt.** `init_program`
+   traegt `.cargo/config.toml` mit `-Tlinker.ld` (feste Ladeadresse `0x400000`)
+   und `relocation-model=static`. Ein gesetztes `RUSTFLAGS` verdraengt
+   `target.*.rustflags` — das ELF landete bei `0x2011c0`, und das Abbilden brach
+   mit `USER-001 user page mapping failed: InvalidAddress` ab. Der Bau des Init
+   laeuft deshalb mit `env -u RUSTFLAGS`.
+3. **Ein blosses `boot <kernel> <out>` laesst die Ramdisk leer.** Der Eintrag muss
+   als `name=pfad` uebergeben werden (`init=...`), sonst bleibt `ramdisk.len = 0`.
+
+**Gate-Stand:** `tools/integration_graph.py` meldet `B4 VERBUNDEN`. Die Probe
+wurde dabei verschaerft: sie verlangt jetzt **Bau und Uebergabe**, nicht mehr die
+blosse Erwaehnung des Pfads `init_program` — sonst haette ein Pfadnamen-Fund das
+Gate gruen gefaerbt. Neuer Test
+`test_b4_verlangt_bau_und_uebergabe` haelt beide Richtungen fest.
+
+**Was weiterhin offen ist:** `globus-runtime` (VFS, Netz, Pakete, Update, Identity)
+wird von `init` noch nicht gestartet. Die Kette endet heute beim Init-ELF; der
+naechste Schritt ist der Aufruf des Runtimes aus dem Init-Prozess.
 
 ---
 
