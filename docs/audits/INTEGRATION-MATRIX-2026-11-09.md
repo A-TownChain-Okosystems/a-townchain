@@ -131,3 +131,36 @@ Quelltextsuche belegt, nicht per Trace eines laufenden Systems; ein dynamisch
 geladenes Modul oder ein Aufruf über einen String wäre damit nicht erfasst.
 QEMU-Bootläufe zeigen: der Kernel bootet und startet Ring-3-Code — aber nur
 eingebauten, nicht aus der Ramdisk des Images.
+
+---
+
+## Anhang A — Das Gate ist wiederholbar (09.11.2026)
+
+Die Matrix oben war ein Einmalbefund. Ab jetzt zaehlt ein Werkzeug:
+
+```bash
+python3 tools/integration_graph.py --repo ../a-townchain --repo ../globus-os \
+    --baseline tools/integration_graph_baseline.json
+```
+
+- `tools/integration_graph.py` baut den internen Crate-Graphen aus den Manifesten
+  beider Repos, klassifiziert nach Bereich und prueft sechs Bruecken
+  (`B1` Compiler→Artefakt, `B2` Artefakt→VM, `B3` Vertrag→Kette, `B4`
+  OS→Userland, `B5` KI→Tool-Grenze, `B6` Admission→Durchsetzung).
+- **dev-dependencies zaehlen nicht als Produktkante.** Eine Testabhaengigkeit
+  verbindet nichts im Betrieb; solche Crates werden separat als „nur per Test
+  erreicht" ausgewiesen.
+- `tools/integration_graph_baseline.json` haelt den Stand fest (111 Crates,
+  97 Kanten, 62 Inseln, 37 doppelte Paketnamen). **Eine neue Insel laesst den
+  Lauf mit Exit 1 scheitern**; eine verschwundene Insel ist kein Fehler und
+  verlangt nur eine neue Baseline.
+- 6 Tests in `tools/tests/test_integration_graph.py` (Kanten, Inseln,
+  dev-Abgrenzung, Brueckenerkennung, Baseline-Regression, Spiegel-Kollaps).
+
+Befund beim ersten echten Lauf: **alle sechs Bruecken OFFEN.** Das Gate
+beschreibt den Ist-Stand, es erzwingt ihn noch nicht — die Bruecken sind
+Vorschlaege der Architektur, nicht Beschluesse.
+
+Zaehlweise: der Graph ist ueber **Paketnamen** definiert, deshalb kollabieren
+Spiegelkopien (37 doppelte Namen, u. a. die 44 Crates unter
+`kernel/globus-os`). 111 Crates sind also 111 Pakete, nicht 111 Verzeichnisse.
