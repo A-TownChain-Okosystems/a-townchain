@@ -239,7 +239,7 @@ def main() -> int:
     if args.update_baseline:
         Path(args.update_baseline).write_text(
             json.dumps(
-                {"repos": sorted(roots), "islands": result["islands"], "crates": result["crates"]},
+                {"crates": result["crates"], "islands": result["islands"]},
                 indent=2,
                 ensure_ascii=False,
             )
@@ -250,10 +250,12 @@ def main() -> int:
     new_islands, healed = [], []
     if args.baseline:
         base = json.loads(Path(args.baseline).read_text(encoding="utf-8"))
-        recorded = set(base.get("repos", []))
-        if recorded and recorded != set(roots):
+        # Die Baseline haengt am Baumzustand, nicht am Verzeichnisnamen: eine
+        # abweichende Crate-Zahl heisst "anderer Ausschnitt", nicht "Regression".
+        recorded_crates = base.get("crates")
+        if recorded_crates is not None and recorded_crates != result["crates"]:
             print(
-                f"Warnung: Baseline wurde mit {sorted(recorded)} erzeugt, Lauf mit {sorted(roots)}",
+                f"Hinweis: Baseline kennt {recorded_crates} Crates, Lauf sieht {result['crates']}",
                 file=sys.stderr,
             )
         known = set(base.get("islands", []))
