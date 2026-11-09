@@ -157,22 +157,31 @@ def evaluate_bridges(crates: dict[str, dict], roots: dict[str, Path]) -> list[di
         node_evidence.append("atc-node haengt nicht an atc-vm")
     findings.append({"id": "B3", "status": "VERBUNDEN" if node_ok else "OFFEN", "evidence": node_evidence})
 
+    # B4 verlangt BEIDES: das Init wird gebaut UND als Ramdisk-Eintrag an den
+    # Boot-Builder uebergeben. Eine blosse Erwaehnung von "init_program" genuegt
+    # nicht, sonst faerbt ein Pfadnamen-Fund das Gate gruen.
     ci_evidence = []
     ci_ok = False
     for root in roots.values():
         wf = root / ".github" / "workflows"
-        if not wf.is_dir():
-            continue
-        for yml in sorted(wf.glob("*.yml")):
-            text = yml.read_text(encoding="utf-8", errors="replace")
-            builds_init = "init_program" in text or "shivacore-init" in text
-            boot_call = re.search(r"target/release/boot\s+\S+\s+\S+\s+\S+", text) or "ramdisk" in text
-            if builds_init:
-                ci_evidence.append(f"{root.name}/{yml.name}: baut den Init")
-                ci_ok = True
-            if boot_call:
-                ci_evidence.append(f"{root.name}/{yml.name}: Boot-Aufruf mit Ramdisk-Argument")
-                ci_ok = ci_ok and bool(builds_init)
+        if wf.is_dir():
+            for yml in sorted(wf.glob("*.yml")):
+                text = yml.read_text(encoding="utf-8", errors="replace")
+                builds_init = bool(re.search(r"init_program[\s\S]{0,200}?cargo", text))
+                passes_init = bool(re.search(r'"init=[^"]*shivacore-init"', text))
+                if builds_init:
+                    ci_evidence.append(f"{root.name}/{yml.name}: baut das Init-Programm")
+                if passes_init:
+                    ci_evidence.append(f"{root.name}/{yml.name}: uebergibt init=... an den Boot-Builder")
+                if builds_init and passes_init:
+                    ci_ok = True
+        script = root / "scripts" / "qemu_boot.sh"
+        if script.is_file():
+            stext = script.read_text(encoding="utf-8", errors="replace")
+            if 'init=$INIT_ELF' in stext:
+                ci_evidence.append(
+                    f"{root.name}/scripts/qemu_boot.sh: baut den Init und legt ihn in die Ramdisk"
+                )
     findings.append({"id": "B4", "status": "VERBUNDEN" if ci_ok else "OFFEN", "evidence": ci_evidence or ["kein Workflow baut den Init und uebergibt ihn dem Image"]})
 
     ai_crates = [c for c, d in crates.items() if area_of(d["path"]).startswith(("ai/aurora", "ai/genesis"))]
