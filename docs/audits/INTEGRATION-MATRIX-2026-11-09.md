@@ -150,8 +150,11 @@ python3 tools/integration_graph.py --repo ../a-townchain --repo ../globus-os \
 - **dev-dependencies zaehlen nicht als Produktkante.** Eine Testabhaengigkeit
   verbindet nichts im Betrieb; solche Crates werden separat als „nur per Test
   erreicht" ausgewiesen.
-- `tools/integration_graph_baseline.json` haelt den Stand fest (111 Crates,
-  97 Kanten, 62 Inseln, 37 doppelte Paketnamen). **Eine neue Insel laesst den
+- `tools/integration_graph_baseline.json` haelt den Stand fest (112 Crates,
+  63 Inseln; Stand beim ersten sauberen Lauf: 37 doppelte Paketnamen).
+  **Selbstbezug beachten:** die Baseline muss im selben Commit erzeugt werden,
+  in dem sie liegt, sonst meldet der naechste Lauf eine Scheinregression
+  (genau das ist beim ersten Anlauf passiert: 111/62 gegen 112/63). **Eine neue Insel laesst den
   Lauf mit Exit 1 scheitern**; eine verschwundene Insel ist kein Fehler und
   verlangt nur eine neue Baseline.
 - 6 Tests in `tools/tests/test_integration_graph.py` (Kanten, Inseln,
