@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-09 10:33 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `3a1be90` (letzter Commit 2026-11-09)
+> **Erzeugt:** 2026-11-09 10:40 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `5146a27` (letzter Commit 2026-11-09)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,9 +13,9 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 12364 |
+| **Total Dateien** | 12367 |
 | **Bereiche** | 15 |
-| **Verzeichnisse** | 2191 |
+| **Verzeichnisse** | 2192 |
 
 ### Nach Dateityp
 
@@ -24,9 +24,9 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `.md` | 4256 |
 | `.atc` | 1645 |
 | `.yaml` | 1488 |
-| `.json` | 1414 |
+| `.json` | 1415 |
 | `.rs` | 853 |
-| `.py` | 804 |
+| `.py` | 806 |
 | `.tsx` | 535 |
 | `(keine)` | 405 |
 | `.yml` | 303 |
@@ -73,7 +73,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `tooling` | 164 | Werkzeuge und Engineering-Gates |
 | `(root)` | 21 | Wurzeldateien |
 | `.github` | 16 | CI- und Repository-Konfiguration |
-| `tools` | 13 | Einstiegspunkte |
+| `tools` | 16 | Einstiegspunkte |
 | `"docs` | 6 | — |
 | `.atc` | 6 | Repository-Evidenz |
 | `specs` | 5 | Spezifikationen |
@@ -108,4 +108,4 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `docs/os-docs/aistudio` | 44 |
 | `kernel/globus-os/modules/atc-shivacore/kernel/src` | 42 |
 
-… insgesamt 2191 Verzeichnisse.
+… insgesamt 2192 Verzeichnisse.
