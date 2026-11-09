@@ -1,0 +1,12 @@
+[package]
+name = "atc-exec-admission"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "ATC-SEC-EXEC-001 (Kandidat) — Referenz-Durchsetzung der Code-Admission-Entscheidung"
+
+[lib]
+name = "atc_exec_admission"
+path = "src/lib.rs"
+
+[dependencies]
