@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-09 10:23 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `ff736a2` (letzter Commit 2026-11-09)
+> **Erzeugt:** 2026-11-09 10:26 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `0ed678d` (letzter Commit 2026-11-09)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,9 +13,9 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 12361 |
+| **Total Dateien** | 12363 |
 | **Bereiche** | 15 |
-| **Verzeichnisse** | 2189 |
+| **Verzeichnisse** | 2191 |
 
 ### Nach Dateityp
 
@@ -25,13 +25,13 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `.atc` | 1645 |
 | `.yaml` | 1488 |
 | `.json` | 1414 |
-| `.rs` | 852 |
+| `.rs` | 853 |
 | `.py` | 804 |
 | `.tsx` | 535 |
 | `(keine)` | 405 |
 | `.yml` | 303 |
 | `.ts` | 241 |
-| `.toml` | 148 |
+| `.toml` | 149 |
 | `.js` | 69 |
 | `.txt` | 53 |
 | `.cjs` | 33 |
@@ -66,7 +66,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `standards` | 2163 | Normative Standards und Werkzeuge |
 | `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
 | `ai` | 978 | KI-, Sprach- und Engine-Schicht |
-| `components` | 872 | Chain-Komponenten (kanonischer Code) |
+| `components` | 874 | Chain-Komponenten (kanonischer Code) |
 | `apps` | 857 | Produkt-Anwendungen |
 | `kernel` | 720 | Kernel- und OS-Ebenen |
 | `modules` | 208 | Module ohne eigene Produktschicht |
@@ -108,4 +108,4 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `docs/os-docs/aistudio` | 44 |
 | `kernel/globus-os/modules/atc-shivacore/kernel/src` | 42 |
 
-… insgesamt 2189 Verzeichnisse.
+… insgesamt 2191 Verzeichnisse.
