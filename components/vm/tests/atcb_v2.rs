@@ -287,3 +287,75 @@ fn snapshot_gilt_ohne_gasbudget() {
     assert_eq!(vm.run(), Err(VmError::StackUnderflow));
     assert!(vm.state().is_empty());
 }
+
+// Paket A / P0-3-F3: Rollback mit bereits gefuelltem Ausgangszustand.
+// Aufbau ohne Aenderung an der VM: dieselbe Instanz laeuft zweimal. Der erste
+// Lauf fuellt und bestaetigt den Speicher, der zweite scheitert mit gefuelltem
+// Ausgangszustand. Das Vorher-Bild wird vor dem zweiten Lauf abgenommen.
+//
+// Programm: Load(9); JumpIfNotZero(7); Push(1); Store(0); Push(7); Store(9);
+//           Halt; [7] Push(42); Store(<neu>); [..]; Push(0); Assert
+// Kein HALT vor dem Fehlblock: in v2 ist Code nach HALT unerreichbar und wird
+// vom Verifier abgelehnt. Der erste Lauf springt ueber den Fehlblock hinweg.
+fn zweilauf_programm(fehlblock: Vec<Op>) -> Vec<Op> {
+    let mut p = vec![
+        Op::Load(9),
+        Op::JumpIfNotZero(7),
+        Op::Push(1),
+        Op::Store(0),
+        Op::Push(7),
+        Op::Store(9),
+        Op::Jump(0), // wird unten auf das HALT-Ziel gesetzt
+    ];
+    p.extend(fehlblock);
+    let halt = p.len();
+    p[6] = Op::Jump(halt);
+    p.push(Op::Halt);
+    p
+}
+
+#[test]
+fn rollback_assert_nach_store_mit_gefuelltem_ausgangszustand() {
+    // Fehlblock: 42 nach Slot 12 schreiben, dann ASSERT absichtlich scheitern.
+    let prog = zweilauf_programm(vec![Op::Push(42), Op::Store(12), Op::Push(0), Op::Assert]);
+    let mut vm = v2(prog);
+
+    // Lauf 1: fuellt Slot 0 und Slot 9, bestaetigt den Zustand.
+    assert!(vm.run().is_ok(), "erster Lauf muss bestaetigen");
+    let vorher = vm.state().to_vec();
+    assert_eq!(vorher.len(), 10, "Ausgangszustand muss gefuellt sein: {vorher:?}");
+    assert_eq!(vorher[0], 1);
+    assert_eq!(vorher[9], 7);
+
+    // Lauf 2: schreibt Slot 12 und scheitert an ASSERT.
+    assert_eq!(vm.run(), Err(VmError::AssertFailed));
+    assert_eq!(vm.state(), vorher.as_slice(), "Zustand muss exakt dem Ausgangszustand entsprechen");
+    assert_eq!(vm.state().len(), 10, "Slot 12 darf nicht uebrig bleiben");
+    assert_eq!(vm.state()[0], 1, "bestehender Eintrag 0 veraendert");
+    assert_eq!(vm.state()[9], 7, "bestehender Eintrag 9 veraendert");
+}
+
+#[test]
+fn rollback_revert_nach_speicherwachstum_mit_gefuelltem_ausgangszustand() {
+    // Fehlblock: drei neue Slots schreiben (10, 11, 12), dann REVERT.
+    let prog = zweilauf_programm(vec![
+        Op::Push(100),
+        Op::Store(10),
+        Op::Push(200),
+        Op::Store(11),
+        Op::Push(300),
+        Op::Store(12),
+        Op::Revert(0x0100),
+    ]);
+    let mut vm = v2(prog);
+
+    assert!(vm.run().is_ok(), "erster Lauf muss bestaetigen");
+    let vorher = vm.state().to_vec();
+    assert_eq!(vorher.len(), 10, "Ausgangszustand muss gefuellt sein: {vorher:?}");
+
+    assert_eq!(vm.run(), Err(VmError::Reverted(0x0100)));
+    assert_eq!(vm.state(), vorher.as_slice(), "neue Eintraege muessen verschwunden sein");
+    assert_eq!(vm.state().len(), 10, "Speicher darf nicht gewachsen sein");
+    assert_eq!(vm.state()[0], 1);
+    assert_eq!(vm.state()[9], 7);
+}

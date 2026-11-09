@@ -85,10 +85,10 @@ Ergebnis machen.
 **Korrektur:** keine. Als Grenze im Standard festhalten.
 
 ### P0-3-F3 — Zwei Rollback-Faelle ohne eigenen Test
-**Prioritaet:** P2 · **Status:** RESIDUAL
-`ASSERT` nach `Store` und Speicherwachstum mit anschliessendem Fehler sind durch
-den gemeinsamen Pfad gedeckt, aber nicht einzeln belegt. Zwei Tests schliessen
-die Luecke ohne Codeaenderung.
+**Prioritaet:** P2 · **Status:** CLOSED (Paket A, Tests ohne Codeaenderung)
+`ASSERT` nach `Store` und Speicherwachstum mit anschliessendem Fehler waren durch
+den gemeinsamen Pfad gedeckt, aber nicht einzeln belegt. Beide Faelle sind jetzt
+mit gefuelltem Ausgangszustand getestet, siehe Abschnitt 7.
 
 ### P0-3-F4 — Snapshot ist eine Vollkopie
 **Prioritaet:** P3 · **Status:** VERIFIED (Kosten, keine Sicherheitsluecke)
@@ -108,3 +108,27 @@ kuenstlich unterstuetzt, was es nicht gibt.
 **Status P0-3:** dokumentiert und abgegrenzt; zwei Testluecken offen (F3).
 Die Garantie lautet: Transaktions-Rollback fuer Stack und Storage. Sie lautet
 nicht: vollstaendiger Rollback einer Transaktion im Sinne der Blockchain.
+
+## 7. Nachtrag Paket A — F3 geschlossen (2026-11-09)
+
+**Art:** ausschliesslich Tests, keine Aenderung an VM, Verifier oder Spezifikation.
+**Datei:** `components/vm/tests/atcb_v2.rs`
+
+| Fall | Test | Nachweis |
+| --- | --- | --- |
+| `ASSERT` nach `Store`, gefuellter Ausgangszustand | `rollback_assert_nach_store_mit_gefuelltem_ausgangszustand` | Zustand exakt wie vor dem Lauf, Slot 12 nicht uebrig |
+| Speicherwachstum + `REVERT`, gefuellter Ausgangszustand | `rollback_revert_nach_speicherwachstum_mit_gefuelltem_ausgangszustand` | drei neue Slots verschwunden, bestehende Eintraege 0 und 9 unveraendert |
+
+**Wie der gefuellte Ausgangszustand entsteht, ohne die VM zu aendern:** Ein
+Artefakt startet immer mit leerem Speicher. Die Tests lassen deshalb dieselbe
+Instanz zweimal laufen. Der erste Lauf schreibt Slot 0 und Slot 9 und
+bestaetigt; das Vorher-Bild wird danach abgenommen. Der zweite Lauf erkennt
+Slot 9, springt in den Fehlblock, schreibt weitere Slots und scheitert.
+
+**Beobachtung beim Bau der Tests:** Der erste Entwurf hatte ein `HALT` vor dem
+Fehlblock und wurde vom Verifier abgelehnt, weil Code nach `HALT` in v2 als
+unerreichbar gilt. Die Tests springen jetzt ueber den Fehlblock hinweg. Das ist
+Regelkonformitaet, kein Testtrick.
+
+**Stand:** 101 Tests im Crate gruen (31 + 32 + 26 + 12). Clippy meldet
+unveraendert nur die beiden Altlasten im Bin-Ziel.
