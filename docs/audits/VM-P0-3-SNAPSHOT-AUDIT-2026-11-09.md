@@ -92,8 +92,10 @@ die Luecke ohne Codeaenderung.
 
 ### P0-3-F4 — Snapshot ist eine Vollkopie
 **Prioritaet:** P3 · **Status:** VERIFIED (Kosten, keine Sicherheitsluecke)
-`clone()` kopiert Stack und Storage vollstaendig. Bei 65536 Speicherplaetzen
-sind das rund 512 KB je Aufruf. Korrekt, aber teuer; fuer Nested Execution mit
+`clone()` kopiert Stack und Storage vollstaendig. Bei Volllast: Storage
+65536 x 8 B = 512 KiB, Stack 4096 x 8 B = 32 KiB, zusammen 544 KiB je Aufruf
+(Korrektur nach P0-Gesamtaudit: die frueheren "rund 512 KB" waren nur der
+Storage-Anteil). Korrekt, aber teuer; fuer Nested Execution mit
 Teilbudgets wird das zum Thema.
 
 ## 6. Urteil
