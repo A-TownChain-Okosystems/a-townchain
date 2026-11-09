@@ -299,3 +299,77 @@ verwendet werden.
 **Abgrenzung zu Ruecklauf-Codes:** Vertrags-Ruecklaufcodes bleiben im Raum 0 und
 0x0100-0x01FF und sind von diesen Kennungen getrennt. Ruecklauf ist ein
 behandelbares Ergebnis, ein Abbruch wie NEU-01 nicht.
+
+**Praeisierung NEU-01 (Ladephase, nicht Laufzeit):** Ein unbekannter Befehl kann
+waehrend der Ausfuehrung nicht auftreten. Die Instruktion ist ein typisierter
+Wert; unbekannte Bytes werden beim Lesen des Artefakts abgelehnt, bevor ein
+Programm entsteht. NEU-01 bezeichnet deshalb die Ablehnung bei Annahme und
+Ladung, nicht einen Laufzeitfehler, und gehoert nicht in die Ruecklauf-Kennungen
+der Ausfuehrung.
+
+## 18. Gastabelle GAS_TABLE_V1 (normativ, 2026-11-09)
+
+Verbindliche Kosten der Generationen 1 und 2. Die Tabelle ist unveraenderlich;
+jede Aenderung erzeugt eine neue Kennung (GAS_TABLE_V2 und so fort).
+
+| Opcode | Kosten | Anmerkung |
+| --- | --- | --- |
+| Push | 1 | |
+| Dup | 1 | |
+| Swap | 1 | |
+| Caller | 1 | |
+| Add | 2 | |
+| Sub | 2 | |
+| Mul | 2 | |
+| Div | 2 | Division durch 0 ist Laufzeitfehler, Belastung bleibt |
+| Eq | 2 | |
+| Lt | 2 | |
+| Load | 3 | |
+| Store | 3 | flach, unabhaengig vom Speicherwachstum |
+| Jump | 2 | |
+| JumpIfZero | 2 | |
+| JumpIfNotZero | 2 | |
+| Halt | 0 | ausdruecklich kostenlos, kein impliziter Wert |
+| Assert | 2 | ab v2 |
+| Revert | 1 | ab v2, codeunabhaengig |
+| RevertIf | 3 | ab v2 |
+
+**G-01 Vollstaendigkeit:** Alle 19 Varianten haben genau einen Kostenwert. Ein
+neuer Befehl ohne Eintrag ist unzulaessig; die Tabelle ist erschoepfend.
+
+**G-02 Versionierung:** Die Kennung ist `GAS_TABLE_V1`. Sie ist unveraenderlich
+und wird bei jeder Kostenentscheidung fortgeschrieben, nie ueberschrieben.
+
+**G-03 Abrechnung:** Gas wird vor der Wirkung der jeweiligen Instruktion
+belastet. Eine Instruktion, deren Kosten nicht gedeckt sind, wirkt nicht.
+
+**G-04 Fehlerverhalten:** Unzureichendes Gas ergibt E03. Die Zustandsänderung
+wird zurueckgenommen; das Budget gilt als verbraucht. Die derzeitige
+Implementierung meldet `required` und `remaining`, nullt das Budget aber nicht.
+Beobachtbar ist der Unterschied nicht, weil das Budget lokal ist; festgelegt ist
+der Verbrauch.
+
+**G-05 Keine impliziten Kosten:** `Halt` ist mit 0 und `Store` mit 3 ausdruecklich
+bepreist. Speicherwachstum ist in dieser Fassung **nicht** bepreist; eine
+Bepreisung ist eine neue Tabellenversion (GAS_TABLE_V2) und keine stille
+Ergaenzung.
+
+**G-06 Regression:** Jede der 19 Varianten erhaelt einen eigenen Kostentest
+sowie einen Test des Belastungszeitpunkts. Die Testsuite ist Teil des Nachweises,
+nicht die Tabelle allein.
+
+**G-07 Aenderungsschutz:** Eine Kostenänderung erfordert eine neue
+Tabellenkennung, einen neuen Nachweis und eine Festlegung, ab welcher Blockhoehe
+sie gilt. Bestehende Ausfuehrungsergebnisse duerfen nicht stillschweigend
+abweichen.
+
+**Nicht Teil dieser Tabelle:** Die Schrittobergrenze fuer budgetfreie Ausfuehrung.
+Sie ist ein eigener Sicherheitsblocker (SB-01 in
+`docs/audits/VM-SECURITY-BLOCKERS.md`) und wird nicht durch die Gastabelle
+geloest. Ein Gasbudget begrenzt nur, wo eines uebergeben wird.
+
+**Offener Punkt BC2-011:** Wo die Tabellenkennung fuer eine Ausfuehrung
+verbindlich festgehalten wird, ist nicht entschieden. Empfehlung: als
+Kettenparameter neben der Protokollversion, ohne Aenderung des Artefaktformats,
+weil dessen Hashbindung sonst gebrochen wuerde. Diese Entscheidung ist vor der
+Implementierung zu treffen.
