@@ -368,8 +368,23 @@ Sie ist ein eigener Sicherheitsblocker (SB-01 in
 `docs/audits/VM-SECURITY-BLOCKERS.md`) und wird nicht durch die Gastabelle
 geloest. Ein Gasbudget begrenzt nur, wo eines uebergeben wird.
 
-**Offener Punkt BC2-011:** Wo die Tabellenkennung fuer eine Ausfuehrung
-verbindlich festgehalten wird, ist nicht entschieden. Empfehlung: als
-Kettenparameter neben der Protokollversion, ohne Aenderung des Artefaktformats,
-weil dessen Hashbindung sonst gebrochen wuerde. Diese Entscheidung ist vor der
-Implementierung zu treffen.
+**BC2-011 (entschieden 2026-11-09):** Die Gastabellenkennung ist ein
+**Protokollparameter der Kettenkonfiguration** und gehoert nicht in das
+Artefakt. Damit bleiben Artefaktformat und Hashbindung unveraendert; die
+Abrechnung ergibt sich aus dem verbindlichen Protokollzustand, nicht aus dem
+Bytecode.
+
+Verbindliche Regeln:
+- Validatoren verwenden fuer denselben Block dieselbe Tabellenkennung. Zwei
+  Validatoren mit verschiedenen Tabellen sind keine gueltige Konfiguration.
+- Eine Aenderung der Gastabelle ist eine Protokollaktivierung, keine lokale
+  Einstellung. Sie erfolgt explizit, nie implizit.
+- Die VM uebernimmt die Kennung ausschliesslich aus dem verbindlichen
+  Ausfuehrungskontext. Ein beliebiger Aufrufer darf sie nicht als Parameter
+  setzen; ein Aufruferparameter waere eine Umgehung der Abrechnung.
+
+**Umsetzungsstand:** Im Crate existiert genau eine Tabelle als benannte
+Konstante `GAS_TABLE_ID` mit `GAS_TABLE_V1`. Es gibt heute keinen Auswahlpunkt,
+an dem ein Aufrufer eine andere Tabelle vorgeben koennte. Die Anbindung an
+`ChainContext` und die Kettenintegration sind **nicht** nachgewiesen und bleiben
+offen; sie sind Voraussetzung fuer eine zweite Tabellenversion.

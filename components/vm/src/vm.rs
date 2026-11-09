@@ -66,6 +66,41 @@ pub fn gueltiger_ruecklauf_code(code: u64) -> bool {
     code == 0 || (0x0100..=0x01FF).contains(&code)
 }
 
+/// Kennung der normativen Gastabelle (ATC-BC-002, Abschnitt 18). Die Kennung
+/// ist Teil des Protokollzustands, nicht des Artefakts (BC2-011).
+pub const GAS_TABLE_ID: &str = "GAS_TABLE_V1";
+
+/// Normative Kosten der Fassung `GAS_TABLE_V1`, alle 19 Befehlscodes.
+///
+/// `gas_cost` ist die ausfuehrende Quelle; diese Konstante ist der benannte,
+/// unveraenderliche Spiegel fuer Nachweis und Dokumentation. Beide werden durch
+/// Tests deckungsgleich gehalten, in beide Richtungen: fehlt ein Befehl hier
+/// oder weicht ein Wert ab, wird die Suite rot. Eine Kostenänderung erfordert
+/// eine neue Kennung (GAS_TABLE_V2), nie eine stille Aenderung dieser Liste.
+pub const GAS_TABLE_V1: &[(&str, u64)] = &[
+    ("Push", 1),
+    ("Add", 2),
+    ("Sub", 2),
+    ("Mul", 2),
+    ("Div", 2),
+    ("Dup", 1),
+    ("Swap", 1),
+    ("Eq", 2),
+    ("Lt", 2),
+    ("Load", 3),
+    ("Store", 3),
+    ("Caller", 1),
+    ("Jump", 2),
+    ("JumpIfZero", 2),
+    ("JumpIfNotZero", 2),
+    ("Halt", 0),
+    ("Assert", 2),
+    ("Revert", 1),
+    ("RevertIf", 3),
+];
+
+/// Kosten eines Befehls nach `GAS_TABLE_V1`. Erschoepfend: jeder Befehl ohne
+/// Eintrag bricht den Build.
 fn gas_cost(op: &Op) -> u64 {
     match op {
         Op::Push(_) | Op::Dup | Op::Swap | Op::Caller => 1,

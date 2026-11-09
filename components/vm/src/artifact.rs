@@ -487,3 +487,24 @@ mod tests {
         assert_eq!(crate::vm::Vm::from_artifact(&b).generation(), GENERATION_V1);
     }
 }
+
+#[cfg(test)]
+mod hash_stabilitaet {
+    use super::*;
+    use crate::vm::Op;
+
+    /// Die Gastabellen-Versionierung darf den Bytecode und seinen Hash nicht
+    /// veraendern. Dieser Test fixiert den Hash fuer ein festes Programm: eine
+    /// Aenderung an Container, Opcode-Kodierung oder Hashverfahren wird rot.
+    #[test]
+    fn gastabellen_version_aendert_den_bytecode_hash_nicht() {
+        let a = Artifact::new(GENERATION_V2, vec![Op::Push(1), Op::Halt]).unwrap();
+        let hex: String = a.hash().iter().map(|b| format!("{:02x}", b)).collect();
+        assert_eq!(
+            hex, "0dee103620709f6113425f657a4e48197ba5f69757dca7a20e4d4a116c13a2b4",
+            "Bytecode-Hash hat sich geaendert; das Artefaktformat ist eingefroren"
+        );
+        // Derselbe Hash entsteht aus den Bytes, nicht nur aus dem Feld.
+        assert_eq!(Artifact::parse(&a.to_bytes()).unwrap().hash(), a.hash());
+    }
+}
