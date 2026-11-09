@@ -122,12 +122,7 @@ impl<'a> FnLowerer<'a> {
     ///
     /// `a && b` wertet `b` nur aus, wenn `a` wahr ist; `a || b` nur, wenn `a`
     /// falsch ist. Ergebnis ist immer 1 (wahr) oder 0 (falsch).
-    fn lower_logical(
-        &mut self,
-        op: &str,
-        left: &Expr,
-        right: &Expr,
-    ) -> Result<(), LowerError> {
+    fn lower_logical(&mut self, op: &str, left: &Expr, right: &Expr) -> Result<(), LowerError> {
         if op == "&&" {
             self.lower_expr(left)?;
             let j_left = self.out.len();
@@ -241,6 +236,53 @@ impl<'a> FnLowerer<'a> {
                 }
                 Ok(())
             }
+            Stmt::For { var, iter, body } => {
+                // SPEC 3.2: for ueber einen Bereich. Ohne neuen Opcode als
+                // gezaehlte Schleife: Kopf vergleicht, Fuss zaehlt hoch.
+                let Expr::Range {
+                    start,
+                    end,
+                    inclusive,
+                } = iter
+                else {
+                    return Err(LowerError::new(format!(
+                        "for erwartet einen Bereich a..b (in {})",
+                        self.function_name
+                    )));
+                };
+                let (Some(start), Some(end)) = (start, end) else {
+                    return Err(LowerError::new(format!(
+                        "for braucht einen Bereich mit Start und Ende (in {})",
+                        self.function_name
+                    )));
+                };
+                let slot = self.local_slot(var)?;
+                self.lower_expr(start)?;
+                self.out.push(Instruction::StoreLocal(slot));
+                let head = self.out.len();
+                self.out.push(Instruction::LoadLocal(slot));
+                self.lower_expr(end)?;
+                self.out.push(if *inclusive {
+                    Instruction::Le
+                } else {
+                    Instruction::Lt
+                });
+                let jif = self.out.len();
+                self.out.push(Instruction::JumpIfFalse(0));
+                for s in body {
+                    self.lower_stmt(s, top_level)?;
+                }
+                // Schritt: var = var + 1
+                self.out.push(Instruction::LoadLocal(slot));
+                self.out.push(Instruction::ConstI64(1));
+                self.out.push(Instruction::Add);
+                self.out.push(Instruction::StoreLocal(slot));
+                let d_back = self.disp(self.out.len(), head)?;
+                self.out.push(Instruction::Jump(d_back));
+                let d_fwd = self.disp(jif, self.out.len())?;
+                self.out[jif] = Instruction::JumpIfFalse(d_fwd);
+                Ok(())
+            }
             Stmt::While { cond, body } => {
                 let start = self.out.len();
                 self.lower_expr(cond)?;
@@ -281,11 +323,27 @@ impl<'a> FnLowerer<'a> {
 
     fn lower_expr(&mut self, e: &Expr) -> Result<(), LowerError> {
         match e {
-            Expr::Field { .. } | Expr::Index { .. } | Expr::Array(_) | Expr::StructLiteral { .. }
+            Expr::Field { .. }
+            | Expr::Index { .. }
+            | Expr::Array(_)
+            | Expr::StructLiteral { .. }
             | Expr::MapLiteral(_)
             | Expr::Tuple(_) => {
                 return Err(LowerError::new(
                     "Feld-/Index-/Array-Ausdruck ausserhalb des ausfuehrbaren Subsets",
+                ))
+            }
+            Expr::Range { .. } => {
+                return Err(LowerError::new(
+                    "Bereich ist nur in for oder als Index erlaubt",
+                ))
+            }
+            // SPEC 3.4 nennt SliceExpr; das Codegen braucht einen eigenen
+            // Opcode und ist bewusst nicht Teil dieses Schritts (siehe
+            // Dokumentation: Konformitaet P0, Codegen offen).
+            Expr::Slice { .. } => {
+                return Err(LowerError::new(
+                    "Slice-Ausdruck: Codegen ist nicht implementiert (eigener Opcode noetig)",
                 ))
             }
             Expr::Int(v) => self.out.push(Instruction::ConstI64(*v)),
@@ -666,5 +724,56 @@ mod tests {
         let err = crate::parser::parse_program("fn main() -> i64 { return 1 % 2; }")
             .expect_err("Frontend muss ablehnen");
         assert!(err.message.contains("unterst"), "{err:?}");
+    }
+
+    fn run_src(src: &str) -> i64 {
+        let prog = crate::parser::parse_program(src).expect("Parse-Fehler");
+        let compiled = lower_program(&prog).expect("Lower-Fehler");
+        crate::vm::execute(&compiled).expect("Run-Fehler")
+    }
+
+    #[test]
+    fn for_schleife_zaehlt_und_endet() {
+        // Exklusives Ende: 0..5 laeuft bis 4.
+        assert_eq!(
+            run_src("fn main() -> int {\n    for i in 0..5 {\n        if i == 4 {\n            return i\n        }\n    }\n    return -1\n}"),
+            4
+        );
+    }
+
+    #[test]
+    fn for_inklusiv_erreicht_das_ende() {
+        assert_eq!(
+            run_src("fn main() -> int {\n    for i in 0..=4 {\n        if i == 4 {\n            return 40\n        }\n    }\n    return -1\n}"),
+            40
+        );
+    }
+
+    #[test]
+    fn for_ueber_leeren_bereich_laeuft_nie() {
+        assert_eq!(
+            run_src(
+                "fn main() -> int {\n    for i in 0..0 {\n        return 1\n    }\n    return 7\n}"
+            ),
+            7
+        );
+    }
+
+    #[test]
+    fn for_schleife_ist_verschachtelbar() {
+        assert_eq!(
+            run_src("fn main() -> int {\n    for i in 0..3 {\n        for j in 0..3 {\n            if j == 2 {\n                if i == 2 {\n                    return 22\n                }\n            }\n        }\n    }\n    return -1\n}"),
+            22
+        );
+    }
+
+    #[test]
+    fn slice_ohne_codegen_meldet_sich_klar() {
+        let prog = crate::parser::parse_program(
+            "fn f(xs: List<u8>) -> int {\n    let a = xs[0..2]\n    return 1\n}",
+        )
+        .expect("Parse-Fehler");
+        let err = lower_program(&prog).expect_err("Slice-Codegen fehlt");
+        assert!(format!("{err:?}").contains("Slice"), "{err:?}");
     }
 }
