@@ -402,6 +402,11 @@ offen; sie sind Voraussetzung fuer eine zweite Tabellenversion.
 Abschnitt wird vor jeder Codeaenderung geprueft. Er entscheidet D1 und D2 nach
 Owner-Vorgabe und schlaegt den Grenzwert mit Begruendung vor.
 
+**Fundstelle dieses Dokuments:** Repository `A-TownChain-Okosystems/a-townchain`,
+Pfad `standards/atc/candidates/ATC-BC-002-CANDIDATE.md`. Es liegt **nicht** im
+Repository `a-townchain-ecosystem` und nicht in `atc-standards`; dort ist der
+Commit nicht aufloesbar.
+
 ### 19.1 Zwei getrennte Schutzaufgaben
 
 | Mechanismus | Aufgabe | Reichweite |
@@ -421,7 +426,10 @@ ein Budget existiert; die Schrittobergrenze begrenzt immer.
   nicht lokal konfigurierbar.
 - Ein lokaler Timeout oder eine CPU-Zeitbegrenzung ist kein Ersatz. Zeit ist
   nicht deterministisch und damit nicht konsensfaehig.
-- Die Pruefung erfolgt **vor** der Wirkung der jeweiligen Instruktion.
+- Die Pruefung erfolgt **vor** der Wirkung der jeweiligen Instruktion, in der
+  Reihenfolge aus Abschnitt 19.4.
+- **HALT zaehlt als Schritt.** Die Schrittzahl umfasst jede ausgefuehrte
+  Instruktion einschliesslich HALT. HALT kostet 0 Gas, wird aber mitgezaehlt.
 - Ein Dev-Modus darf keine unbegrenzte Ausfuehrung anbieten. Hoechstens eine
   explizit gekennzeichnete, protokollfest definierte Grenze.
 - Konsensrelevante Ausfuehrung verlangt zusaetzlich ein gueltiges Gasbudget.
@@ -449,29 +457,58 @@ darf **nicht** als E03 gemeldet werden, auch wenn gleichzeitig Gas fehlt.
 - Bereits erfolgte Zustandsänderungen werden zurueckgenommen.
 - Es entstehen keine teilweise bestaetigten Zustandsänderungen.
 - Das Verhalten ist fuer gaslose und gasgebundene Ausfuehrung identisch.
-- Bei gleichzeitigem Erreichen beider Grenzen gilt die zuerst gepruefte. Die
-  Reihenfolge wird festgelegt: Schrittzaehlung vor Gasbelastung, damit der Befund
-  nicht vom Kostensatz des Befehls abhaengt. Gas bleibt in diesem Fall
-  unbelastet, weil die Instruktion nicht wirkte. *(Diese Festlegung ist Teil der
-  Pruefung; sie ist die einzige Stelle, an der die Reihenfolge beobachtbar wird.)*
+**Verbindliche Reihenfolge je Instruktion** (vier Schritte, in dieser Ordnung):
+
+1. Pruefen, ob noch ein Ausfuehrungsschritt verfuegbar ist.
+2. Schrittzaehler nach dem Zaehlmodell fortschreiben.
+3. Gasbelastung pruefen und durchfuehren.
+4. Instruktion ausfuehren.
+
+**Fehlerprioritaet bei gleichzeitiger Erschoepfung:** Es gewinnt die
+Schrittobergrenze. Das ist eine bewusst gewaehlte Prioritaet, kein Zufall der
+Implementierung: Der Befund darf nicht vom Kostensatz des jeweiligen Befehls
+abhaengen, und die Schrittgrenze ist die Grenze, die unabhaengig von jeder
+Gasannahme gilt. Gas bleibt in diesem Fall unbelastet, weil die Instruktion nicht
+wirkte. Diese Prioritaet ist zu testen (Abschnitt 19.7).
 
 ### 19.5 Grenzwert — Vorschlag 1 000 000 Schritte
 
 **Begruendung, drei unabhaengige Argumente:**
 
-1. **Kompatibilitaet (harte Untergrenze).** Im gesamten Crate wird heute
-   hoechstens ein Gasbudget von 100 000 verwendet (gemessen ueber alle Aufrufe
-   von `run_with_gas` und `execute_state_transition_with_gas` im Repo). Jede
-   Instruktion ausser HALT kostet mindestens 1 Gas, und HALT beendet die
-   Ausfuehrung, also gilt fuer gasgebundene Ausfuehrung `Schritte <= Gas + 1`. Ein Wert ab 100 000 veraendert damit **kein** bestehendes
-   Ergebnis; 1 000 000 liegt zehnmal darueber.
-2. **Kosten des schlimmsten Falls (Messung).** Gemessen in einem Release-Build
-   auf dieser Maschine: 4,1 bis 5,0 x 10^8 Schritte pro Sekunde, ermittelt mit
-   Gas als Schrittzaehler (Gas geteilt durch Kostensatz), weil es keinen
-   Schrittzaehler gibt. 1 000 000 Schritte kosten damit rund 2 bis 2,5 ms.
+1. **Kompatibilitaet (harte Untergrenze).** Repo-weite Inventur (nicht nur
+   `components/vm`): alle Aufrufe von `run_with_gas` und
+   `execute_state_transition_with_gas` liegen in `components/vm`, es gibt keinen
+   Aufrufer ausserhalb. Groesstes Budget: **100 000** (zwei Aufrufe in
+   `tests/atcb_v2.rs`); die uebrigen liegen bei 0, 1, 2, 3, 4, 5, 10 und 100.
+
+   Die Formel gilt unter drei ausdruecklichen Voraussetzungen:
+   (i) jede ausgefuehrte Instruktion ausser HALT kostet mindestens 1 Gas;
+   (ii) HALT kostet 0 Gas und wird hoechstens einmal ausgefuehrt;
+   (iii) die Schrittzahl umfasst auch HALT.
+
+   Daraus folgt `Schritte <= Gasverbrauch + 1`. Bei einem Hoechstbudget von
+   100 000 ist die Obergrenze **100 001 Schritte**; 1 000 000 veraendert damit
+   keine bestehende gasgebundene Ausfuehrung.
+
+   **Grenze der Aussage:** Die Inventur deckt dieses Repository. Das VM-Crate hat
+   heute ausserhalb seiner eigenen Tests keine Nutzer, also gibt es auch keine
+   groesseren Budgets aus Vertraegen. Sobald die Kette die VM produktiv aufruft,
+   ist die Inventur zu wiederholen; der Wert ist dann gegen die tatsaechlichen
+   Budgets erneut zu pruefen.
+2. **Kosten einer einzelnen Ausfuehrung (Messung).** Gemessen in einem
+   Release-Build auf dieser Maschine: 4,1 bis 5,0 x 10^8 Schritte pro Sekunde,
+   ermittelt mit Gas als Schrittzaehler (Gas geteilt durch Kostensatz), weil es
+   keinen Schrittzaehler gibt. 1 000 000 Schritte kosten damit rund 2 bis 2,5 ms.
    Bei einem hundertfach langsameren Ziel (Debug-Build, schwache Hardware,
-   unguenstige Verzweigung) bleiben es 200 bis 250 ms. Das ist fuer ein
-   Sicherheitsnetz vertretbar und fuer den Angreifer unrentabel.
+   unguenstige Verzweigung) bleiben es 200 bis 250 ms.
+
+   **Was die Messung nicht belegt:** Sie gilt fuer diese Maschine und diesen
+   Build. Sie ist kein Nachweis der Sicherheit unter unguenstigen
+   Validatorbedingungen. Sie belegt **nicht**, dass 1 000 000 Schritte fuer einen
+   Angreifer unrentabel sind. Diese Aussage wird hiermit zurueckgenommen: Ein
+   Angreifer kann viele begrenzte Ausfuehrungen hintereinander ausloesen; die
+   Grenze pro Ausfuehrung sagt darueber nichts. Was eine solche Aussage stuetzen
+   wuerde, steht in Abschnitt 19.8.
 3. **Verhaeltnis zur Programmobergrenze.** Ein Artefakt fasst hoechstens 65 536
    Befehle. 1 000 000 Schritte erlauben rund 15 vollstaendige Durchlaeufe eines
    maximalen Programms. Wer mehr braucht, braucht echtes Gas und ist in der
@@ -515,7 +552,33 @@ einzige Verhaltensunterschied.
 | gleiche Grenze auf allen Einstiegen | `run`, `run_with_gas`, Kettenpfad | identische Schrittzaehlung |
 | zwei Laeufe, gleiches Programm | alle | identisches Ergebnis und identische Schrittzahl |
 | Grenze nicht als OutOfGas gemeldet | beide | eigene Kennung, auch bei gleichzeitig fehlendem Gas |
+| gleichzeitige Erschoepfung beider Grenzen | beide | Schrittgrenze gewinnt (Fehlerprioritaet 19.4), Gas bleibt unbelastet |
+| HALT als letzter Schritt | beide | HALT wird mitgezaehlt, ein Programm mit genau `S` Instruktionen inklusive HALT laeuft durch |
 
 Zusaetzlich: Der Grenzwert wird als benannte Konstante gefuehrt (analog
 `GAS_TABLE_ID`), damit eine Aenderung sichtbar und nur per
 Protokollaktivierung moeglich ist.
+
+### 19.8 Abgrenzung: Ausfuehrungslimit und aggregiertes Blocklimit
+
+Die Schrittobergrenze aus 19.2 ist ein **Limit pro Ausfuehrung**. Sie begrenzt
+nicht die Rechenlast eines Blocks. Ein Block mit vielen gueltigen Transaktionen
+kann die Grenze je Transaktion beliebig oft ausschoepfen; die Summe ist durch
+diese Norm nicht gedeckt.
+
+**Nicht durch SB-01 gedeckt und ausdruecklich offen (SB-02):**
+- Blockgaslimit beziehungsweise Blockschrittlimit als Obergrenze je Block.
+- Wechselwirkung mit Transaktionsrate und Mempool-Annahme.
+- Admission-Control: welche Transaktionen werden ueberhaupt angenommen.
+- Angreiferkosten als Produkt aus Grenze, Rate, Gebuehren und Validatorleistung.
+
+**Was eine Aussage ueber Angreiferrentabilitaet braucht:** eine Rechnung ueber
+die genannten Groessen mit gemessenen Werten je Validator-Klasse, nicht eine
+Messung einer einzelnen Ausfuehrung. Bis dahin gilt: SB-01 verhindert
+Endlosschleifen und begrenzt eine einzelne Ausfuehrung; es ist kein
+Doors-Schutz gegen Lastvielfache.
+
+**Konsequenz fuer den Grenzwert:** Der Vorschlag 1 000 000 bleibt davon
+unberuehrt, weil er nur die Einzelausfuehrung betrifft. Das Blocklimit ist eine
+eigene Entscheidung mit eigener Norm und wird nicht durch die Wahl dieser Zahl
+mitentschieden.

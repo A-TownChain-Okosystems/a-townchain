@@ -37,3 +37,20 @@ ExecutionStepLimitExceeded, getrennt von E03 und E06, numerische Vergabe erst
 nach vollstaendiger Inventur. Grenzwertvorschlag mit Begruendung: 1 000 000
 Schritte (Abschnitt 19.5). Der Blocker bleibt OFFEN, bis der Wert geprueft und
 die Grenze auf allen drei Einstiegen implementiert und getestet ist.
+
+## SB-02 — Kein aggregiertes Blocklimit fuer Ausfuehrungslast
+
+**Status:** OFFEN · **Prioritaet:** P1 · **Quelle:** SB-01-Vorpruefung (Owner)
+
+**Befund:** Die Schrittobergrenze aus ATC-BC-002 Abschnitt 19 begrenzt eine
+einzelne Ausfuehrung. Sie begrenzt nicht die Rechenlast eines Blocks: viele
+gueltige Transaktionen duerfen die Grenze je Transaktion ausschoepfen, die Summe
+ist ungedeckt. Ebenso ungedeckt sind Transaktionsrate, Mempool-Annahme und
+Admission-Control.
+
+**Konsequenz:** Die Aussage "fuer den Angreifer unrentabel" ist mit SB-01 allein
+nicht belegbar und wurde in Abschnitt 19.5 zurueckgenommen.
+
+**Erforderlich:** Blockschritt- beziehungsweise Blockgaslimit, Regeln fuer die
+Annahme, und eine Rechnung ueber Grenze, Rate, Gebuehren und Validatorleistung.
+Das ist eine eigene Norm, nicht Teil von SB-01.
