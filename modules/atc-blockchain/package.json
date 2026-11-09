@@ -14,7 +14,7 @@
     "react-dom": "^19.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "lucide-react": "^1.61",
+    "lucide-react": "^1.70",
     "motion": "^14"
   }
 }
