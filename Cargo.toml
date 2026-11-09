@@ -20,6 +20,7 @@ members = [
     "apps/atc-launchpad",
     "components/algorithm",
     "components/exec-admission",
+    "components/update-authority",
     "components/interop/modules/atc-bridge",
     "components/mining",
     "components/node",

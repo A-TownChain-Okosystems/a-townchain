@@ -1,0 +1,12 @@
+[package]
+name = "atc-update-authority"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "ATC Update System — Referenz-Durchsetzung fuer signierte Updates, Anti-Rollback und Quarantaene"
+
+[lib]
+name = "atc_update_authority"
+path = "src/lib.rs"
+
+[dependencies]
