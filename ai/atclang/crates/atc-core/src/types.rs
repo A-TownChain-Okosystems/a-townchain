@@ -91,9 +91,9 @@ fn ty_from_name(raw: &str) -> Ty {
     };
     let low = head.trim().to_ascii_lowercase();
     match low.as_str() {
-        "list" | "vec" | "array" => Ty::List(Box::new(
-            inner.map(ty_from_name).unwrap_or(Ty::Unknown),
-        )),
+        "list" | "vec" | "array" => {
+            Ty::List(Box::new(inner.map(ty_from_name).unwrap_or(Ty::Unknown)))
+        }
         "map" | "hashmap" | "dict" | "mapping" => Ty::Map,
         "bool" => Ty::Bool,
         "string" | "str" => Ty::Str,
@@ -165,7 +165,10 @@ fn collect_scope(body: &[Stmt]) -> Scope {
             )),
             Stmt::Struct { name, fields } => scope.structs.push((
                 name.clone(),
-                fields.iter().map(|(n, t)| (n.clone(), ty_from_hint(t))).collect(),
+                fields
+                    .iter()
+                    .map(|(n, t)| (n.clone(), ty_from_hint(t)))
+                    .collect(),
             )),
             Stmt::Fn(f) => scope.fns.push((f.name.clone(), signature(f))),
             _ => {}
@@ -176,7 +179,11 @@ fn collect_scope(body: &[Stmt]) -> Scope {
 
 fn signature(f: &FunctionDef) -> FnSig {
     FnSig {
-        params: f.params.iter().map(|p| ty_from_hint(&p.type_hint)).collect(),
+        params: f
+            .params
+            .iter()
+            .map(|p| ty_from_hint(&p.type_hint))
+            .collect(),
         ret: f
             .return_type
             .as_ref()
@@ -306,6 +313,12 @@ fn check_block(
                     check_block(contract, func, ret, eb, scope, locals, report);
                 }
             }
+            Stmt::For { var, body, .. } => {
+                // Schleifenvariable ist im Rumpf ein Int (SPEC 3.2: for_stmt).
+                locals.push((var.clone(), Ty::Int));
+                check_block(contract, func, ret, body, scope, locals, report);
+                locals.pop();
+            }
             Stmt::While { cond, body } => {
                 let ty = expr_ty(cond, scope, locals);
                 if !ty.compatible(&Ty::Bool) {
@@ -376,6 +389,8 @@ fn expr_ty(expr: &Expr, scope: &Scope, locals: &[(String, Ty)]) -> Ty {
         Expr::Int(_) | Expr::BigInt(_) => Ty::Int,
         Expr::String(_) => Ty::Str,
         Expr::Ident(name) => lookup(name, scope, locals),
+        // Ein Bereich hat im Kern keinen eigenen Werttyp (siehe Semantik).
+        Expr::Range { .. } | Expr::Slice { .. } => Ty::Unknown,
         Expr::Unary { op, operand } => match op.as_str() {
             "!" => Ty::Bool,
             "-" | "+" => {
@@ -506,6 +521,12 @@ fn walk_calls(stmt: &Stmt, scope: &Scope, contract: &str, func: &str, out: &mut 
                 walk_calls(s, scope, contract, func, out);
             }
         }
+        Stmt::For { iter, body, .. } => {
+            visit_expr(iter, out);
+            for s in body {
+                walk_calls(s, scope, contract, func, out);
+            }
+        }
         _ => {}
     }
 }
@@ -523,7 +544,11 @@ mod tests {
     fn falscher_rueckgabetyp_wird_abgelehnt() {
         let r = report(r#"contract T { fn f() -> int { return "text"; } }"#);
         assert_eq!(r.errors.len(), 1, "{:?}", r.errors);
-        assert!(r.errors[0].contains("return erwartet integer"), "{:?}", r.errors);
+        assert!(
+            r.errors[0].contains("return erwartet integer"),
+            "{:?}",
+            r.errors
+        );
     }
 
     #[test]
@@ -543,15 +568,27 @@ mod tests {
     fn require_braucht_bool() {
         let r = report("contract T { fn f() -> int { require(1); return 1; } }");
         assert_eq!(r.errors.len(), 1, "{:?}", r.errors);
-        assert!(r.errors[0].contains("require braucht bool"), "{:?}", r.errors);
+        assert!(
+            r.errors[0].contains("require braucht bool"),
+            "{:?}",
+            r.errors
+        );
     }
 
     #[test]
     fn if_und_while_brauchen_bool() {
         let r = report("contract T { fn f() -> int { if 5 { return 1; } return 0; } }");
-        assert!(r.errors.iter().any(|e| e.contains("if braucht bool")), "{:?}", r.errors);
+        assert!(
+            r.errors.iter().any(|e| e.contains("if braucht bool")),
+            "{:?}",
+            r.errors
+        );
         let r = report("contract T { fn f() -> int { while 1 { } return 0; } }");
-        assert!(r.errors.iter().any(|e| e.contains("while braucht bool")), "{:?}", r.errors);
+        assert!(
+            r.errors.iter().any(|e| e.contains("while braucht bool")),
+            "{:?}",
+            r.errors
+        );
     }
 
     #[test]
@@ -578,7 +615,13 @@ mod tests {
                 fn f() -> int { emit Moved(self.owner, "viel"); return 1; }
             }"#,
         );
-        assert!(r.warnings.iter().any(|w| w.contains("emit Moved Argument 2")), "{:?}", r.warnings);
+        assert!(
+            r.warnings
+                .iter()
+                .any(|w| w.contains("emit Moved Argument 2")),
+            "{:?}",
+            r.warnings
+        );
     }
 
     #[test]
