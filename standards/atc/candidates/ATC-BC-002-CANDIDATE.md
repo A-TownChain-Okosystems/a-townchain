@@ -395,3 +395,127 @@ Konstante `GAS_TABLE_ID` mit `GAS_TABLE_V1`. Es gibt heute keinen Auswahlpunkt,
 an dem ein Aufrufer eine andere Tabelle vorgeben koennte. Die Anbindung an
 `ChainContext` und die Kettenintegration sind **nicht** nachgewiesen und bleiben
 offen; sie sind Voraussetzung fuer eine zweite Tabellenversion.
+
+## 19. Ausfuehrungsgrenzen SB-01 (zur Pruefung vorgelegt, 2026-11-09)
+
+**Status: normativ ausgearbeitet, Implementierung NICHT freigegeben.** Dieser
+Abschnitt wird vor jeder Codeaenderung geprueft. Er entscheidet D1 und D2 nach
+Owner-Vorgabe und schlaegt den Grenzwert mit Begruendung vor.
+
+### 19.1 Zwei getrennte Schutzaufgaben
+
+| Mechanismus | Aufgabe | Reichweite |
+| --- | --- | --- |
+| Gasbudget | normative Ressourcenabrechnung | konsensrelevante Ausfuehrung ohne gueltiges Budget ist unzulaessig |
+| Schrittobergrenze | harte Grenze gegen Endlosschleifen und fehlerhafte Gasannahmen | gilt unabhaengig davon, ob Gas abgerechnet wird |
+
+Die Schrittobergrenze ist **kein Ersatz** fuer das Pflichtbudget und das
+Pflichtbudget **kein Ersatz** fuer die Schrittobergrenze. Gas begrenzt nur, wo
+ein Budget existiert; die Schrittobergrenze begrenzt immer.
+
+### 19.2 D1 — Regeln
+
+- Jede Ausfuehrung besitzt eine deterministische Schrittobergrenze, auch `run()`
+  ohne Gasbudget, `run_with_gas()` und `execute_state_transition_with_gas()`.
+- Die Grenze ist protokollweit identisch. Sie ist kein Aufruferparameter und
+  nicht lokal konfigurierbar.
+- Ein lokaler Timeout oder eine CPU-Zeitbegrenzung ist kein Ersatz. Zeit ist
+  nicht deterministisch und damit nicht konsensfaehig.
+- Die Pruefung erfolgt **vor** der Wirkung der jeweiligen Instruktion.
+- Ein Dev-Modus darf keine unbegrenzte Ausfuehrung anbieten. Hoechstens eine
+  explizit gekennzeichnete, protokollfest definierte Grenze.
+- Konsensrelevante Ausfuehrung verlangt zusaetzlich ein gueltiges Gasbudget.
+
+### 19.3 D2 — Kennung
+
+| Kennung | Bedeutung | Verhalten |
+| --- | --- | --- |
+| E03 | OutOfGas | Ruecklauf, Gas vollstaendig verbraucht |
+| E04 | StackLimitExceeded | Ruecklauf |
+| E06 | CallDepthExceeded | Ruecklauf |
+| NEU-01 | Unbekannter Opcode beim Artefaktladen | Ladefehler, kein Laufzeitfehler |
+| NEU-02 (Platzhalter, **nicht vergeben**) | ExecutionStepLimitExceeded | Abbruch mit Rollback |
+
+Regeln: eigene Kennung, getrennt von E03 und E06. Die numerische Kennung wird
+erst nach vollstaendiger Inventur aller bestehenden Codes vergeben, ohne
+Umnummerierung und ohne Wiederverwendung. Das Erreichen der Schrittobergrenze
+darf **nicht** als E03 gemeldet werden, auch wenn gleichzeitig Gas fehlt.
+
+### 19.4 Verhalten beim Erreichen der Grenze
+
+- Die Instruktion, welche die Grenze ueberschreiten wuerde, wird nicht
+  ausgefuehrt.
+- Die Ausfuehrung endet deterministisch mit ExecutionStepLimitExceeded.
+- Bereits erfolgte Zustandsänderungen werden zurueckgenommen.
+- Es entstehen keine teilweise bestaetigten Zustandsänderungen.
+- Das Verhalten ist fuer gaslose und gasgebundene Ausfuehrung identisch.
+- Bei gleichzeitigem Erreichen beider Grenzen gilt die zuerst gepruefte. Die
+  Reihenfolge wird festgelegt: Schrittzaehlung vor Gasbelastung, damit der Befund
+  nicht vom Kostensatz des Befehls abhaengt. Gas bleibt in diesem Fall
+  unbelastet, weil die Instruktion nicht wirkte. *(Diese Festlegung ist Teil der
+  Pruefung; sie ist die einzige Stelle, an der die Reihenfolge beobachtbar wird.)*
+
+### 19.5 Grenzwert — Vorschlag 1 000 000 Schritte
+
+**Begruendung, drei unabhaengige Argumente:**
+
+1. **Kompatibilitaet (harte Untergrenze).** Im gesamten Crate wird heute
+   hoechstens ein Gasbudget von 100 000 verwendet (gemessen ueber alle Aufrufe
+   von `run_with_gas` und `execute_state_transition_with_gas` im Repo). Jede
+   Instruktion ausser HALT kostet mindestens 1 Gas, und HALT beendet die
+   Ausfuehrung, also gilt fuer gasgebundene Ausfuehrung `Schritte <= Gas + 1`. Ein Wert ab 100 000 veraendert damit **kein** bestehendes
+   Ergebnis; 1 000 000 liegt zehnmal darueber.
+2. **Kosten des schlimmsten Falls (Messung).** Gemessen in einem Release-Build
+   auf dieser Maschine: 4,1 bis 5,0 x 10^8 Schritte pro Sekunde, ermittelt mit
+   Gas als Schrittzaehler (Gas geteilt durch Kostensatz), weil es keinen
+   Schrittzaehler gibt. 1 000 000 Schritte kosten damit rund 2 bis 2,5 ms.
+   Bei einem hundertfach langsameren Ziel (Debug-Build, schwache Hardware,
+   unguenstige Verzweigung) bleiben es 200 bis 250 ms. Das ist fuer ein
+   Sicherheitsnetz vertretbar und fuer den Angreifer unrentabel.
+3. **Verhaeltnis zur Programmobergrenze.** Ein Artefakt fasst hoechstens 65 536
+   Befehle. 1 000 000 Schritte erlauben rund 15 vollstaendige Durchlaeufe eines
+   maximalen Programms. Wer mehr braucht, braucht echtes Gas und ist in der
+   Abrechnung sichtbar, nicht im Sicherheitsnetz.
+
+**Verworfene Alternativen:** 100 000 (zu nah an der heutigen Obergrenze, kein
+Sicherheitsabstand); 10 000 000 (rund 24 ms im Release, ohne Gewinn, weil
+legitime Ausfuehrung ohnehin durch Gas begrenzt ist); 65 536 (Programmlaenge ist
+keine Schrittzahl, Schleifen vervielfachen sie); kein Wert, nur Pflichtbudget
+(laesst `run()` unbegrenzt und damit SB-01 offen).
+
+**Was der Wert nicht ist:** keine Laufzeitgarantie. Die Schrittzahl ist
+deterministisch und konsensfaehig; die Laufzeit haengt von der Maschine ab und
+ist kein Konsensgegenstand. Die Messung begruendet nur, dass die Grenze
+operativ tragbar ist.
+
+**Vorbehalt zur Messmethode:** Der Durchsatz wurde mit Gas als Zaehler
+bestimmt, nicht mit einem Schrittzaehler, den es noch nicht gibt. Fuer die drei
+verwendeten Programme mit einheitlichen Kostensaetzen ist die Umrechnung exakt;
+fuer gemischte Programme ist sie eine Abschaetzung.
+
+### 19.6 Auswirkung auf bestehende Vertraege
+
+Keine. Gueltige Programme, die heute terminieren, terminieren weiter, weil die
+Grenze oberhalb jedes im Repo verwendeten Budgets liegt und fuer gasgebundene
+Ausfuehrung ohnehin `Schritte <= Gas + 1` gilt. Ein Programm, das heute innerhalb
+von 100 000 Gas durchlaeuft, kann die Grenze nicht erreichen. Ausdruecklich
+ausgenommen und als Risiko benannt: Programme, die heute endlos laufen
+(`Jump(0)` ohne Budget) werden kuenftig abgewiesen. Das ist die Absicht und der
+einzige Verhaltensunterschied.
+
+### 19.7 Testmatrix (verbindlich fuer die spaetere Umsetzung)
+
+| Fall | Pfad | Erwartung |
+| --- | --- | --- |
+| `Jump(0)` ohne Budget | `run()` | begrenzter Abbruch mit ExecutionStepLimitExceeded |
+| `Jump(0)` mit Budget | `run_with_gas()` | Abbruch durch die zuerst erreichte Grenze |
+| genau erlaubte Schrittzahl | beide | Erfolg, wenn das Programm regulaer endet |
+| ein Schritt darueber | beide | Abbruch vor der Wirkung der naechsten Instruktion |
+| Fehler nach `Store` | beide | vollstaendiger Rollback, kein Teilzustand |
+| gleiche Grenze auf allen Einstiegen | `run`, `run_with_gas`, Kettenpfad | identische Schrittzaehlung |
+| zwei Laeufe, gleiches Programm | alle | identisches Ergebnis und identische Schrittzahl |
+| Grenze nicht als OutOfGas gemeldet | beide | eigene Kennung, auch bei gleichzeitig fehlendem Gas |
+
+Zusaetzlich: Der Grenzwert wird als benannte Konstante gefuehrt (analog
+`GAS_TABLE_ID`), damit eine Aenderung sichtbar und nur per
+Protokollaktivierung moeglich ist.

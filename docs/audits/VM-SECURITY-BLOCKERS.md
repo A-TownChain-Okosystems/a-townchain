@@ -6,7 +6,9 @@ vorliegt, nicht durch eine Spezifikationsentscheidung.
 
 ## SB-01 — Ausfuehrung ohne Gasbudget ist unbegrenzt
 
-**Status:** OFFEN · **Prioritaet:** P1 · **Quelle:** GAS-AUD-003
+**Status:** NORMATIV AUSGEARBEITET, Implementierung gesperrt (wartet auf Pruefung
+von ATC-BC-002 Abschnitt 19, Stand 2026-11-09) · **Prioritaet:** P0
+· **Quelle:** GAS-AUD-003
 
 **Befund:** `Vm::run_loop` zaehlt nur, wenn ein Budget uebergeben wurde. Ohne
 Budget gibt es weder Schrittobergrenze noch Zaehler; `Jump(0)` laeuft endlos.
@@ -26,3 +28,12 @@ Transaktion gleich bewerten; ein lokaler Dev-Wert ist unzulaessig. Zusaetzlich
 darf ein Dev-Modus keine unbegrenzte Ausfuehrung anbieten.
 
 **Blockiert:** Nested Execution (Mitbedingung), Freigabe der VM.
+
+## Nachtrag SB-01 (2026-11-09)
+
+D1 und D2 sind entschieden: Pflichtbudget fuer konsensrelevante Ausfuehrung plus
+feste deterministische Schrittobergrenze als Sicherheitsnetz; eigene Kennung
+ExecutionStepLimitExceeded, getrennt von E03 und E06, numerische Vergabe erst
+nach vollstaendiger Inventur. Grenzwertvorschlag mit Begruendung: 1 000 000
+Schritte (Abschnitt 19.5). Der Blocker bleibt OFFEN, bis der Wert geprueft und
+die Grenze auf allen drei Einstiegen implementiert und getestet ist.
