@@ -47,9 +47,13 @@ Speicherzugriffe, die nie geschrieben wurden, erzeugen keinen Eintrag.
 | E03 | Gas erschoepft | Ruecklauf, Gas vollstaendig verbraucht |
 | E04 | Stapelgrenze | Ruecklauf |
 | E05 | Speichergrenze | Ruecklauf |
-| E06 | Unbekannter Befehl | Abbruch, gilt als ungueltig |
+| E06 | Aufruftiefe ueberschritten (Grenze 64) | Ruecklauf |
+| NEU-01 | Unbekannter Befehl | Abbruch, gilt als ungueltig. Kennung wird nach vollstaendiger Code-Inventur vergeben (siehe Abschnitt 17) |
 
 Codes sind Teil des Ergebnisses und werden im Beleg mitgeschrieben.
+Ein unbekannter Befehl ist kein Ruecklauf, sondern ein Abbruch: Das Programm ist
+ungueltig, es gibt nichts zurueckzunehmen. Deshalb erhaelt er eine eigene
+Kennung und nicht E06.
 
 ## 6. Gas auf Fehlerpfaden
 
@@ -121,7 +125,7 @@ verworfen, nie halb ausgeliefert.
 ### C. Gas
 
 - Gas wird vor der Wirkung belastet; bei Ruecklauf keine Erstattung.
-- Unzureichendes Gas: Ruecklauf mit E04, kein Teilzustand, kein Teilereignis.
+- Unzureichendes Gas: Ruecklauf mit E03, kein Teilzustand, kein Teilereignis.
 - Verifier-Kosten sind deterministisch, fallen bei Deployment an und werden
   nicht aus dem Ausfuehrungsbudget gedeckt.
 - Verschachtelte Aufrufe erhalten ein Teilbudget; nicht verbrauchtes Budget
@@ -260,3 +264,38 @@ Regeln beim Lesen:
 
 Offen (BC2-010, nicht Teil von P0-2): Signaturbindung des Artefakts. Der Hash
 ist die Grundlage; die Signatur ueber den Hash folgt mit ATC-SEC-EXEC-001.
+
+## 17. Fehlercode-Zuordnung (normativ, 2026-11-09)
+
+Verbindliche Entscheidung des Owners. Diese Zuordnung ist normative Grundlage
+fuer die spaetere Umsetzung. Sie ist **kein Nachweis** einer implementierten
+Fehlerklassifikation: Im VM-Crate existiert derzeit keine numerische Kennung,
+und es wurde in diesem Schritt kein Code geaendert.
+
+| Kennung | Bedeutung | Verhalten | Stand |
+| --- | --- | --- | --- |
+| E01 | Pruefung fehlgeschlagen | Ruecklauf | bestehend |
+| E02 | Ruecklauf angefordert | Ruecklauf | bestehend |
+| E03 | Gasbudget reicht nicht aus | Ruecklauf, Gas vollstaendig verbraucht | bestehend, bestaetigt |
+| E04 | Stapelgrenze ueberschritten | Ruecklauf | bestehend, bestaetigt, ausschliesslich Stapelgrenze |
+| E05 | Speichergrenze ueberschritten | Ruecklauf | bestehend |
+| E06 | Maximale Aufruftiefe ueberschritten (Grenze 64) | Ruecklauf | bestehend, ausschliesslich Aufruftiefe |
+| NEU-01 | Unbekannter Befehl | Abbruch, ungueltiges Programm | Kennung noch nicht vergeben |
+
+**Korrigierte Fehlzuordnungen:** Abschnitt 11 C ordnete unzureichendes Gas der
+Kennung E04 zu. Das war falsch, weil E04 die Stapelgrenze bezeichnet; richtig ist
+E03. Die fruehere Bedeutung von E06 als "unbekannter Befehl" war ebenfalls
+falsch, weil E06 unveraenderlich fuer die Aufruftiefe reserviert ist.
+
+**Nicht umnummeriert:** Keine bereits vergebene Kennung wurde verschoben. E01,
+E02, E03, E04 und E05 behalten ihre Bedeutung; E06 behaelt seine Reservierung,
+nur die zweite, widerspruechliche Zuordnung entfaellt.
+
+**Offen (NEU-01):** Fuer den unbekannten Befehl wird eine eigene Kennung erst
+nach vollstaendiger Inventur aller vergebenen Codes festgelegt. Solange das
+nicht geschehen ist, darf keine Nummer vergeben und keine Kennung im Code
+verwendet werden.
+
+**Abgrenzung zu Ruecklauf-Codes:** Vertrags-Ruecklaufcodes bleiben im Raum 0 und
+0x0100-0x01FF und sind von diesen Kennungen getrennt. Ruecklauf ist ein
+behandelbares Ergebnis, ein Abbruch wie NEU-01 nicht.
