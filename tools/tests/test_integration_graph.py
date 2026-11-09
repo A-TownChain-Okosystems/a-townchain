@@ -31,6 +31,10 @@ def manifest(root: Path, rel: str, name: str, deps: dict[str, str] | None = None
     (d / "Cargo.toml").write_text("\n".join(lines), encoding="utf-8")
 
 
+def bridge(data: dict, bridge_id: str) -> dict:
+    return next(b for b in data["bridges"] if b["id"] == bridge_id)
+
+
 def run(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run([sys.executable, str(TOOL), *args], capture_output=True, text=True)
 
@@ -121,3 +125,23 @@ def test_doppelte_namen_werden_gemeldet():
         data = json.loads(run("--repo", str(root), "--json").stdout)
         assert data["crates"] == 1  # Name gewinnt, Spiegel kollabiert
         assert "atc-wallet" in data["duplicate_names"]
+
+def test_b4_verlangt_bau_und_uebergabe(tmp_path):
+    """B4 ist nur verbunden, wenn gebaut UND uebergeben wird, nicht bei Erwaehnung."""
+    root = tmp_path / "repo"
+    manifest(root, "components/node", "atc-node")
+    (root / ".github" / "workflows").mkdir(parents=True)
+    workflow = root / ".github" / "workflows" / "boot.yml"
+    # Nur Erwaehnung des Pfads, kein Bau und keine Uebergabe:
+    workflow.write_text("run: ls modules/atc-shivacore/init_program\n", encoding="utf-8")
+    data = json.loads(run("--repo", str(root), "--json").stdout)
+    assert bridge(data, "B4")["status"] == "OFFEN"
+
+    # Jetzt bauen und uebergeben:
+    workflow.write_text(
+        "( cd modules/atc-shivacore/init_program && cargo build --release )\n"
+        'boot kernel image "init=/w/init_program/target/shivacore-init"\n',
+        encoding="utf-8",
+    )
+    data = json.loads(run("--repo", str(root), "--json").stdout)
+    assert bridge(data, "B4")["status"] == "VERBUNDEN"
