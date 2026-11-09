@@ -1,9 +1,9 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-09 10:18 UTC+2 aus `origin/main` @ `92792c6`.
+> Vollständige Dateiliste. Erzeugt 2026-11-09 10:23 UTC+2 aus `origin/main` @ `ff736a2`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 12360 Dateien**
+**Total: 12361 Dateien**
 
 ## docs (5069)
 
@@ -5077,7 +5077,7 @@
 - `docs/os-docs/wiki/windows-edition-wiki/STATUS.md`
 - `docs/zkp/PROOF_SYSTEM_SELECTION_MATRIX.md`
 
-## standards (2162)
+## standards (2163)
 
 - `standards/.atc/compliance.yaml`
 - `standards/.atc/discovery/baseline.json`
@@ -5259,6 +5259,7 @@
 - `standards/atc/ATC_ECOSYSTEM_STANDARDS.md`
 - `standards/atc/ATC_STANDARDS.md`
 - `standards/atc/ATC_TOKEN_STANDARD.md`
+- `standards/atc/candidates/ATC-SEC-EXEC-001-CANDIDATE.md`
 - `standards/ats/ATS-LIC-SYSTEM_HARDWARE_LICENSE.md`
 - `standards/ats/ATS_STANDARDS.md`
 - `standards/audits/AUD-2026-0001.md`
