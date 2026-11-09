@@ -35,6 +35,19 @@ pub enum Expr {
         base: Box<Expr>,
         index: Box<Expr>,
     },
+    /// Bereich `a..b`, `a..=b`, `a..` — SPEC 3.4: RangeExpr.
+    Range {
+        start: Option<Box<Expr>>,
+        end: Option<Box<Expr>>,
+        inclusive: bool,
+    },
+    /// Index-Bereich `xs[a..b]`, `xs[a..]` — SPEC 3.4: SliceExpr.
+    Slice {
+        base: Box<Expr>,
+        start: Option<Box<Expr>>,
+        end: Option<Box<Expr>>,
+        inclusive: bool,
+    },
     /// Array-Literal: `[]`, `[1, 2]`.
     Array(Vec<Expr>),
     /// Tupel: `(a, b)`.
@@ -167,6 +180,12 @@ pub enum Stmt {
         cond: Expr,
         body: Vec<Stmt>,
     },
+    /// for-Schleife (SPEC 3.2: for_stmt), `iter` ist ein Bereich.
+    For {
+        var: String,
+        iter: Expr,
+        body: Vec<Stmt>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -226,6 +245,35 @@ fn expr_json(e: &Expr, out: &mut String) {
             expr_json(index, out);
             out.push_str(",\"kind\":\"IndexAccess\",\"base\":");
             expr_json(base, out);
+            out.push('}');
+        }
+        Expr::Range {
+            start,
+            end,
+            inclusive,
+        } => {
+            out.push_str("{\"end\":");
+            opt_expr_json(end.as_deref(), out);
+            out.push_str(",\"inclusive\":");
+            out.push_str(if *inclusive { "true" } else { "false" });
+            out.push_str(",\"kind\":\"RangeExpr\",\"start\":");
+            opt_expr_json(start.as_deref(), out);
+            out.push('}');
+        }
+        Expr::Slice {
+            base,
+            start,
+            end,
+            inclusive,
+        } => {
+            out.push_str("{\"base\":");
+            expr_json(base, out);
+            out.push_str(",\"end\":");
+            opt_expr_json(end.as_deref(), out);
+            out.push_str(",\"inclusive\":");
+            out.push_str(if *inclusive { "true" } else { "false" });
+            out.push_str(",\"kind\":\"SliceExpr\",\"start\":");
+            opt_expr_json(start.as_deref(), out);
             out.push('}');
         }
         Expr::Array(items) => {
@@ -600,6 +648,23 @@ fn stmt_json(s: &Stmt, out: &mut String) {
             expr_json(cond, out);
             out.push_str(",\"kind\":\"WhileStatement\"}");
         }
+        Stmt::For { var, iter, body } => {
+            out.push_str("{\"body\":");
+            stmt_list_json(body, out);
+            out.push_str(",\"iter\":");
+            expr_json(iter, out);
+            out.push_str(",\"kind\":\"ForStatement\",\"var\":\"");
+            out.push_str(&esc(var));
+            out.push_str("\"}");
+        }
+    }
+}
+
+/// Serialisiert einen optionalen Teilausdruck (`null` bei offenem Bereichsende).
+fn opt_expr_json(expr: Option<&Expr>, out: &mut String) {
+    match expr {
+        None => out.push_str("null"),
+        Some(e) => expr_json(e, out),
     }
 }
 
