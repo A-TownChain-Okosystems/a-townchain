@@ -1,8 +1,5 @@
 {
-  "repos": [
-    "a-townchain",
-    "globus-os"
-  ],
+  "crates": 112,
   "islands": [
     "a-townchain-sdk",
     "atc-audit-cli",
@@ -58,6 +55,7 @@
     "kai-os-integration",
     "kai-os-pkg",
     "kai-os-syncd",
+    "shivacore-init",
     "shivacore-sdk",
     "zkp-circuits",
     "zkp-core",
@@ -66,6 +64,5 @@
     "zkp-sdk",
     "zkp-verifier",
     "zkp-vm"
-  ],
-  "crates": 111
+  ]
 }
