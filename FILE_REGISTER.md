@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-09 10:18 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `92792c6` (letzter Commit 2026-11-09)
+> **Erzeugt:** 2026-11-09 10:23 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `ff736a2` (letzter Commit 2026-11-09)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,15 +13,15 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 12360 |
+| **Total Dateien** | 12361 |
 | **Bereiche** | 15 |
-| **Verzeichnisse** | 2188 |
+| **Verzeichnisse** | 2189 |
 
 ### Nach Dateityp
 
 | Endung | Dateien |
 |--------|---------|
-| `.md` | 4254 |
+| `.md` | 4255 |
 | `.atc` | 1645 |
 | `.yaml` | 1488 |
 | `.json` | 1414 |
@@ -63,7 +63,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | Bereich | Dateien | Inhalt |
 |---------|---------|--------|
 | `docs` | 5069 | Dokumentation und Archive |
-| `standards` | 2162 | Normative Standards und Werkzeuge |
+| `standards` | 2163 | Normative Standards und Werkzeuge |
 | `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
 | `ai` | 978 | KI-, Sprach- und Engine-Schicht |
 | `components` | 872 | Chain-Komponenten (kanonischer Code) |
@@ -108,4 +108,4 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `docs/os-docs/aistudio` | 44 |
 | `kernel/globus-os/modules/atc-shivacore/kernel/src` | 42 |
 
-… insgesamt 2188 Verzeichnisse.
+… insgesamt 2189 Verzeichnisse.
