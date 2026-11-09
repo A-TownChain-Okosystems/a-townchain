@@ -28,8 +28,8 @@ aber nichts erzwingt das.
 `run_with_gas(u64::MAX)` abbilden, damit eine Grenze gilt.
 
 ### VM-AUD-001-A — Generation ist Aufruferangabe, nicht Artefakteigenschaft
-**Prioritaet:** P0 · **Status:** RESIDUAL
-**Stelle:** `Vm::with_generation` (Zeile ~75), `Vm::verify` (v2-Gate)
+**Prioritaet:** P0 · **Status:** FIXED (1aa0e76)
+**Stelle:** `artifact::Artifact`, `Vm::from_artifact`
 **Beschreibung:** Die Generation kommt aus dem Aufrufer, nicht aus dem Artefakt.
 `run()` prueft sie gar nicht: ein v1-Programm mit `Assert` liefert dort `Ok([])`,
 waehrend derselbe Baum ueber `run_with_gas` korrekt `Err(V2OpInV1)` gibt.
@@ -41,8 +41,8 @@ Pfad nicht durchgesetzt.
 setzen; `with_generation` nur fuer Tests, nicht `pub`.
 
 ### VM-AUD-001-B — Generation ohne Wertebereich
-**Prioritaet:** P1 · **Status:** RESIDUAL
-**Stelle:** `Vm::verify`, Bedingung `self.generation < 2`
+**Prioritaet:** P1 · **Status:** FIXED mit P0-2 (1aa0e76)
+**Stelle:** `Artifact::new`/`Artifact::parse`
 **Beschreibung:** Jeder Wert ungleich 1 gilt als v2. `with_generation(9)` ist
 erlaubt und schaltet die v2-Befehle frei.
 **Reproduktion (ausgefuehrt):** Generation 9 mit `Assert` -> `Ok([])`.
@@ -229,3 +229,36 @@ Gueltige v1-Programme laufen unveraendert; v1-Semantik nicht angetastet.
   P0-1 vermischt.
 - `cargo fmt` ueber den ganzen Crate wuerde sieben fremde Dateien umformatieren;
   das wurde bewusst nicht mitgeliefert. Geaenderte Dateien sind formatiert.
+
+## Nachtrag P0-2 — VM-AUD-001-A/B geschlossen (2026-11-09)
+
+**Commit:** 1aa0e768a3 · **Tests:** 99 im Crate gruen · **clippy --lib/--tests:** 0 Warnungen
+
+**Umbau:** Neues Modul `components/vm/src/artifact.rs` mit dem kanonischen
+Container (magic, Containerformat, Generation, Op-Zahl, Op-Strom, SHA-256).
+Die VM baut sich nur noch ueber `Vm::from_artifact`; `with_generation` wurde
+entfernt, es gibt keinen oeffentlichen Setter mehr.
+
+| Abnahmekriterium (Owner) | Nachweis | Test |
+| --- | --- | --- |
+| Generation Teil des Artefakts | Feld im Kopf, gelesen von `parse` | `roundtrip_erhaelt_generation_und_programm` |
+| Verifier liest nur aus dem Artefakt | `from_artifact` uebernimmt die Generation | `vm_uebernimmt_generation_aus_artefakt` |
+| Aufrufer kann nicht ueberschreiben | kein Setter, `with_generation` entfernt | kompiliert nur ueber Artefakt |
+| Fehlende/ungueltige Generation abgelehnt | 0 und 3 abgelehnt | `unbekannte_generation_abgelehnt` |
+| Hashing schliesst Generation ein | v1/v2 mit gleichen Ops haben andere Hashes | `generation_ist_hashgebunden` |
+| Manipulation erkannt | Generationsbyte geaendert -> BadHash | `generation_ist_hashgebunden` |
+| v1/v2-Semantik getrennt | v2-Opcode in v1 beim Lesen abgelehnt | `v2_befehl_in_v1_artefakt_abgelehnt` |
+| Keine automatische Konvertierung | keine API vorhanden, parse liefert Original | `keine_automatische_konvertierung` |
+| Robuste Ablehnung | magic, Laenge, Opcode, Restbytes | `zu_kurz_und_falsche_magic_abgelehnt`, `unbekannter_opcode_abgelehnt`, `ueberzaehlige_bytes_abgelehnt` |
+
+**Kontrollpunkte des Owners als Dauertests:**
+- `jeder_oeffentliche_einstieg_verifiziert` prueft `run`, `run_with_gas` und
+  `execute_state_transition_with_gas` gegen dasselbe ungueltige Programm.
+- `gasoption_deaktiviert_keine_sicherheitsgrenze` prueft Verifikation,
+  Stapelgrenze, Speichergrenze und Codepruefung mit und ohne Budget.
+- `snapshot_gilt_ohne_gasbudget` prueft den Ruecklauf ohne Budget.
+
+**Restrisiko nach P0-2:** Der Hash ist die Grundlage, die Signatur ueber den Hash
+fehlt noch (ATC-SEC-EXEC-001, offen). Ein Angreifer koennte ein Artefakt mit
+gueltigem Hash erzeugen, aber nicht mit fremder Identitaet signieren — ohne
+Signatur ist beides derzeit gleichwertig. Das ist als BC2-010 vermerkt.

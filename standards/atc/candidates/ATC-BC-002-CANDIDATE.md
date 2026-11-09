@@ -228,3 +228,35 @@ verschiedene Waechter, keine doppelte Instruktion.
 Code-Raum: 0 = allgemein, 0x0100..=0x01FF = reserviert, alles andere unzulaessig
 (0x00FF, 0x0200 und hoeher werden von Verifier UND Interpreter abgelehnt,
 auch wenn ein Programmpfad den Verifier umgeht).
+
+## 16. Kanonisches Artefakt (Umsetzung P0-2)
+
+Die Generation ist Teil des Artefakts und Teil seines Hashes. Ein Aufrufer kann
+sie nicht setzen. Aufbau, alles Little Endian:
+
+| Feld | Bytes | Inhalt |
+| --- | --- | --- |
+| magic | 4 | `ATCB` |
+| Containerformat | 1 | 0x01 |
+| Generation | 1 | 1 = ATCB-v1, 2 = ATCB-v2 |
+| Operationszahl | 4 | u32 |
+| Operationsstrom | n | siehe Tabelle |
+| Hash | 32 | SHA-256 ueber alle vorhergehenden Bytes |
+
+Befehlscodes: 0x01 Push(u64), 0x02 Add, 0x03 Sub, 0x04 Mul, 0x05 Div, 0x06 Dup,
+0x07 Swap, 0x08 Eq, 0x09 Lt, 0x0A Load(u32), 0x0B Store(u32), 0x0C Caller,
+0x0D Jump(u32), 0x0E JumpIfZero(u32), 0x0F JumpIfNotZero(u32), 0x10 Halt,
+0x11 Assert, 0x12 Revert(u32), 0x13 RevertIf (v2 ab 0x11).
+
+Regeln beim Lesen:
+1. Nur Generation 1 und 2. Jeder andere Wert wird abgelehnt.
+2. v2-Befehle in einem v1-Artefakt werden beim Lesen abgelehnt, nicht erst bei
+   der Ausfuehrung.
+3. Unbekannter Befehlscode, zu kurze Eingabe, falsche Kennung und ueberzaehlige
+   Bytes werden abgelehnt.
+4. Der Hash deckt Generation und Befehlscodes ab. Ein geaendertes
+   Generationsbyte ergibt einen anderen Hash und damit ein ungueltiges Artefakt.
+5. Es gibt keine Konvertierung zwischen Generationen.
+
+Offen (BC2-010, nicht Teil von P0-2): Signaturbindung des Artefakts. Der Hash
+ist die Grundlage; die Signatur ueber den Hash folgt mit ATC-SEC-EXEC-001.
