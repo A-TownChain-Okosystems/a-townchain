@@ -341,3 +341,54 @@ Teil dieser Lücke.
 
 Nächster Schritt bleibt die Reihenfolge des Owners: Spezifikation der generischen
 Structs (siehe `specs/language/GENERIC-STRUCTS-CANDIDATE.md`), danach Implementierung.
+
+---
+
+## 12. Sechster Schritt: `..` spezifikationskonform (P0/P1)
+
+**Datum:** 08.11.2026, aufbauend auf `4e84d04`. Owner-Freigabe: P0 `..`-Konformität, P1 Range-/Slice-Regression. Generics bleiben Kandidat.
+
+### Was die Untersuchung vorher ergab
+
+`..` ist kein Entwurf, sondern **spezifiziert und nicht implementiert**: Token `DOTDOT`/`DOTDOTEQ` (SPEC §2.1), Produktion `Range` (§3.4 Stufe 7), AST-Knoten `RangeExpr`/`SliceExpr` (§3.4, §4). Zusätzlich fehlte die **`for`-Schleife vollständig** — SPEC §3.2 definiert `for_stmt`, der Rust-Kern hatte weder Token noch Statement.
+
+### Implementiert (fünf Schichten)
+
+| Schicht | Änderung |
+|---|---|
+| **Lexer** | `..` → `Token::DotDot`, `..=` → `Token::DotDotEq`. Eigene Token, **kein** parser-seitiger Sonderfall für zwei Punkte. `Token::Dot` bleibt Feldzugriff. |
+| **AST** | `Expr::Range { start, end, inclusive }`, `Expr::Slice { base, start, end, inclusive }`, `Stmt::For { var, iter, body }`; JSON mit `RangeExpr`, `SliceExpr`, `ForStatement`. |
+| **Parser** | Bereichsstufe, `Slice` im Index, `for IDENT in <bereich> block`. `for`/`in` bleiben **Bezeichner** (wie `event`), damit Quellen mit diesen Namen nicht brechen. |
+| **Typprüfung** | Neue Regel für **jeden** Funktionskörper: ein Bereich ist nur als `for`-Iterator und als Index zulässig, als Wert Fehler. `for` mit offenem Ende ist Fehler. |
+| **Lowering** | `for` als gezählte Schleife aus vorhandenen Opcodes (`ConstI64`/`LoadLocal`/`StoreLocal`/`Lt`/`Le`/`Add`/`Jump`/`JumpIfFalse`) — **kein neuer Opcode**, damit Bytecode-Spezifikation und Determinismus unberührt bleiben. |
+
+### Zwei Auslegungen, offen dokumentiert
+
+1. **Präzedenz:** Die SPEC nennt `Range` unter `parse_primary`. Für `0..cids.len()` muss der Bereich aber schwächer binden als der Postfix-Zugriff, sonst wird das Ende abgeschnitten. Die Stufe liegt deshalb direkt über `||` (wie in Rust). Die **Knotenform** folgt der SPEC; die Einordnung der Stufe ist eine Auslegung.
+2. **Feldform:** SPEC und `registry.json` legen die **Namen** der Knoten fest, nicht ihre Felder. Gewählt wurde die Form analog zu `IndexAccess` (`base`, `start`, `end`, `inclusive`). Auch das ist eine Auslegung, keine Spec-Aussage.
+
+### Qualitätsmatrix (Owner-Anforderung) — Nachweis je Punkt
+
+| Anforderung | Nachweis |
+|---|---|
+| Lexer erkennt die Form | `lexer::tests::bereichs_token_sind_unterscheidbar` |
+| Parser erzeugt den richtigen AST | `for_ueber_bereich`, `inklusiver_bereich`, `index_bereich_ist_slice`, `offenes_bereichsende_parst` |
+| Typprüfung akzeptiert gültige Ausdrücke | `for_bereich_wird_akzeptiert`, `slice_index_wird_akzeptiert` |
+| Typprüfung verwirft ungültige Ausdrücke | `bereich_als_wert_wird_abgelehnt`, `for_mit_offenem_ende_wird_abgelehnt` |
+| Compiler verarbeitet die Form | `for_schleife_zaehlt_und_endet` (4), `for_inklusiv_erreicht_das_ende` (40), `for_ueber_leeren_bereich_laeuft_nie` (7), `for_schleife_ist_verschachtelbar` (22) — über die echte VM |
+| ABI-/Hash-Verträge unverändert | Registry-Gate PASS 16/16, `apps/atc-contracts` 50/33/0/18, `components/contracts` 46/29/0/18 |
+| Tests auf aktuellem `main`-HEAD | frischer Klon, 170 Tests grün |
+
+Negativtests Parser: `for_ohne_in_ist_ein_fehler`, `for_ohne_bereich_ist_ein_fehler`.
+
+### Ausdrücklich NICHT implementiert
+
+**`SliceExpr`-Codegen.** Ein Slice braucht einen eigenen Opcode; das ist eine Bytecode-Änderung und damit ein eigener Entscheid (die SPEC nennt fehlendes `SliceExpr`-Codegen bereits als Backlog, `semantics/SPEC.md` §9.3). Das Lowering meldet das klar: „Slice-Ausdruck: Codegen ist nicht implementiert (eigener Opcode noetig)". Test: `slice_ohne_codegen_meldet_sich_klar`.
+
+### Nebenbefund, wichtig für die künftige Messung
+
+Ein **Top-Level-`fn` mit nicht parsebarem Rumpf** wird still zur `NativeFunction` (Tokens konserviert). Deshalb war ein Negativtest im freien Funktionskontext grün, obwohl der Code falsch ist; der Test läuft jetzt im Contract-Kontext, wo es keinen Fallback gibt. Für „Parser-Akzeptanz" heißt das: top-level zählt nur eingeschränkt als Nachweis.
+
+### Stand
+
+Korpus: **1113 von 1645** angenommen (vorher 1095, +18). `atc-core`: **170 Tests**, Clippy `-D warnings` ohne Befund, alle geänderten Dateien fmt-sauber. EXEC-CHAIN 20/20, Gate PASS 16/16.
