@@ -63,6 +63,10 @@ pub enum Token {
     Eof,
     At,
     Dot,
+    /// `..` — SPEC 2.1: DOTDOT.
+    DotDot,
+    /// `..=` — SPEC 2.1: DOTDOTEQ.
+    DotDotEq,
     Question,
     String(String),
 }
@@ -199,7 +203,21 @@ fn scan(src: &str) -> Result<(Vec<Token>, Vec<usize>), LexError> {
             '&' => push(&mut tokens, &mut marks, pos, Token::Ampersand),
             ':' => push(&mut tokens, &mut marks, pos, Token::Colon),
             '@' => push(&mut tokens, &mut marks, pos, Token::At),
-            '.' => push(&mut tokens, &mut marks, pos, Token::Dot),
+            '.' => {
+                // SPEC 2.1: `..` und `..=` sind eigene Token, kein Sonderfall
+                // von zwei Punkten im Parser.
+                if chars.peek().is_some_and(|&(_, c)| c == '.') {
+                    chars.next();
+                    if chars.peek().is_some_and(|&(_, c)| c == '=') {
+                        chars.next();
+                        push(&mut tokens, &mut marks, pos, Token::DotDotEq);
+                    } else {
+                        push(&mut tokens, &mut marks, pos, Token::DotDot);
+                    }
+                } else {
+                    push(&mut tokens, &mut marks, pos, Token::Dot);
+                }
+            }
             '?' => push(&mut tokens, &mut marks, pos, Token::Question),
             '(' => push(&mut tokens, &mut marks, pos, Token::LParen),
             ')' => push(&mut tokens, &mut marks, pos, Token::RParen),
@@ -486,5 +504,26 @@ mod tests {
         let ts = tokenize("pub fn f() -> int { return 1; }").unwrap();
         assert_eq!(ts.first(), Some(&Token::Pub));
         assert!(ts.contains(&Token::Fn));
+    }
+
+    #[test]
+    fn bereichs_token_sind_unterscheidbar() {
+        // SPEC 2.1: DOTDOT und DOTDOTEQ sind eigene Token, kein Sonderfall
+        // von zwei Punkten im Parser.
+        let ts = tokenize("0..n").unwrap();
+        assert_eq!(
+            ts,
+            vec![
+                Token::Int(0),
+                Token::DotDot,
+                Token::Ident("n".to_string()),
+                Token::Eof,
+            ]
+        );
+        let ts = tokenize("0..=n").unwrap();
+        assert_eq!(ts[1], Token::DotDotEq);
+        // Ein einzelner Punkt bleibt Feldzugriff.
+        let ts = tokenize("a.b").unwrap();
+        assert_eq!(ts[1], Token::Dot);
     }
 }
