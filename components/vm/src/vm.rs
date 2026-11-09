@@ -104,10 +104,16 @@ impl Vm {
         self.caller
     }
 
-    /// Generation 2 aktivieren (ATCB-v2). v1-Verhalten bleibt unveraendert.
-    pub fn with_generation(mut self, generation: u8) -> Self {
-        self.generation = generation;
-        self
+    /// Baut eine VM aus einem kanonischen Artefakt. Die Generation kommt
+    /// ausschliesslich aus dem Artefakt, nie aus einem Aufruferparameter.
+    pub fn from_artifact(artifact: &crate::artifact::Artifact) -> Self {
+        Vm {
+            program: artifact.program().to_vec(),
+            stack: Vec::new(),
+            caller: 0,
+            storage: Vec::new(),
+            generation: artifact.generation(),
+        }
     }
 
     pub fn generation(&self) -> u8 {

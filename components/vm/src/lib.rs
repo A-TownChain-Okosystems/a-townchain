@@ -2,5 +2,6 @@
 //! ATC-VM — Stack-Maschine MVP plus ATC-STD-600 execution gate.
 
 pub mod vm;
+pub mod artifact;
 pub mod ops;
 pub mod context;

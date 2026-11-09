@@ -4,6 +4,7 @@
 //! AD-008: ATVM is the execution boundary — native Rust infrastructure.
 //! The EXEC-GATE assembler replaces the former Python production path.
 
+mod artifact;
 mod assembler;
 mod context;
 mod ops;

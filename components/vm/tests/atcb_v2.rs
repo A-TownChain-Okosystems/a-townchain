@@ -1,10 +1,12 @@
 // Copyright (c) 2026 A-TownChain-Okosystems — Apache-2.0
 //! ATCB-v2 (ATC-BC-002 Kandidat): ASSERT, REVERT, REVERTIF und Verifier-Regeln.
 
+use atc_vm::artifact::Artifact;
 use atc_vm::vm::{Op, Vm, VmError};
 
 fn v2(program: Vec<Op>) -> Vm {
-    Vm::new(program).with_generation(2)
+    let artefakt = Artifact::new(2, program).expect("v2-Artefakt");
+    Vm::from_artifact(&artefakt)
 }
 
 #[test]
@@ -204,4 +206,84 @@ fn p0_1_ungueltiges_sprungziel_wird_vor_ausfuehrung_abgelehnt() {
     );
     assert!(vm.state().is_empty());
     assert!(vm.run_with_gas(100).is_err());
+}
+
+// Kontrollpunkt 1: Jeder oeffentliche Einstieg verifiziert. Wird ein neuer
+// Einstieg ergaenzt, der das nicht tut, faellt dieser Test.
+#[test]
+fn jeder_oeffentliche_einstieg_verifiziert() {
+    let ungueltig = vec![Op::Push(1), Op::Jump(99)];
+    let mut a = Vm::new(ungueltig.clone());
+    assert_eq!(
+        a.run(),
+        Err(VmError::InvalidProgram("jump target out of range"))
+    );
+    let mut b = Vm::new(ungueltig.clone());
+    assert_eq!(
+        b.run_with_gas(100),
+        Err(VmError::InvalidProgram("jump target out of range"))
+    );
+    let mut c = Vm::new(ungueltig);
+    let ctx = atc_vm::context::ChainContext {
+        chain_id: "atc".into(),
+        network_id: "devnet".into(),
+        genesis_id: "a".repeat(64),
+        protocol_version: "1.0.0".into(),
+        vm_version: "1.0.0".into(),
+    };
+    assert_eq!(
+        c.execute_state_transition_with_gas(&ctx, &"a".repeat(64), "1.0.0", "1.0.0", 100),
+        Err(VmError::InvalidProgram("jump target out of range"))
+    );
+}
+
+// Kontrollpunkt 2: Die Gas-Option beeinflusst ausschliesslich die Abrechnung.
+// Verifikation, Stapelgrenze, Speichergrenze, Snapshot und Generation gelten
+// ohne Budget genauso.
+#[test]
+fn gasoption_deaktiviert_keine_sicherheitsgrenze() {
+    let faelle: Vec<(Vec<Op>, VmError)> = vec![
+        (
+            vec![Op::Push(1), Op::Jump(99)],
+            VmError::InvalidProgram("jump target out of range"),
+        ),
+        (
+            vec![Op::Push(1), Op::Store(70_000), Op::Halt],
+            VmError::StorageLimitExceeded {
+                requested: 70_001,
+                limit: 65_536,
+            },
+        ),
+        (
+            {
+                let mut p = vec![Op::Push(1); 5000];
+                p.push(Op::Halt);
+                p
+            },
+            VmError::StackLimitExceeded,
+        ),
+        (vec![Op::Revert(0x00FF)], VmError::InvalidRevertCode(0x00FF)),
+    ];
+    for (prog, erwartet) in faelle {
+        let mut ohne_gas = Vm::from_artifact(&Artifact::new(2, prog.clone()).expect("v2"));
+        assert_eq!(
+            ohne_gas.run(),
+            Err(erwartet.clone()),
+            "ohne Gas: {:?}",
+            prog
+        );
+        assert!(ohne_gas.state().is_empty());
+        let mut mit_gas = Vm::from_artifact(&Artifact::new(2, prog).expect("v2"));
+        assert_eq!(mit_gas.run_with_gas(100_000), Err(erwartet), "mit Gas");
+        assert!(mit_gas.state().is_empty());
+    }
+}
+
+// Snapshot gilt auch ohne Gasbudget: kein Teilzustand nach Abbruch.
+#[test]
+fn snapshot_gilt_ohne_gasbudget() {
+    let mut vm =
+        Vm::from_artifact(&Artifact::new(2, vec![Op::Push(9), Op::Store(1), Op::Add]).expect("v2"));
+    assert_eq!(vm.run(), Err(VmError::StackUnderflow));
+    assert!(vm.state().is_empty());
 }
