@@ -1,9 +1,9 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-09 10:23 UTC+2 aus `origin/main` @ `ff736a2`.
+> Vollständige Dateiliste. Erzeugt 2026-11-09 10:26 UTC+2 aus `origin/main` @ `0ed678d`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 12361 Dateien**
+**Total: 12363 Dateien**
 
 ## docs (5069)
 
@@ -9490,7 +9490,7 @@
 - `ai/genesis-franchise-factory/tests/test_spec_loader.py`
 - `ai/genesis-franchise-factory/tools/validate_specs.py`
 
-## components (872)
+## components (874)
 
 - `components/algorithm/.atc/compliance.yaml`
 - `components/algorithm/.atc/evidence/evidence.yaml`
@@ -9669,6 +9669,8 @@
 - `components/contracts/standards/atc-20_wrapped_synthetic_assets.atc`
 - `components/contracts/tests/run_atclang_conformance.sh`
 - `components/contracts/tsconfig.json`
+- `components/exec-admission/Cargo.toml`
+- `components/exec-admission/src/lib.rs`
 - `components/explorer/.atc/compliance.yaml`
 - `components/explorer/.atc/evidence/evidence.yaml`
 - `components/explorer/.atc/lifecycle.yaml`
