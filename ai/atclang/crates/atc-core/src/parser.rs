@@ -340,7 +340,11 @@ impl Parser {
             }
             other => {
                 return Err(ParseError {
-                    message: format!("Typ erwartet, fand {:?} (Umfeld: {})", other, self.context_window()),
+                    message: format!(
+                        "Typ erwartet, fand {:?} (Umfeld: {})",
+                        other,
+                        self.context_window()
+                    ),
                 })
             }
         };
@@ -414,6 +418,8 @@ impl Parser {
             Token::If => "if".into(),
             Token::Else => "else".into(),
             Token::While => "while".into(),
+            Token::DotDot => "..".into(),
+            Token::DotDotEq => "..=".into(),
             Token::Contract => "contract".into(),
             Token::State => "state".into(),
             Token::Function => "function".into(),
@@ -1207,6 +1213,10 @@ impl Parser {
         match self.cur() {
             Token::Let | Token::Const => Ok(Stmt::Let(self.let_stmt()?)),
             Token::If => self.if_stmt(),
+            // `for` bleibt Bezeichner (wie `event`), damit Quellen mit `for`
+            // als Namen nicht brechen; an Statement-Position ist es die
+            // Schleife aus SPEC 3.2.
+            Token::Ident(name) if name == "for" => self.for_stmt(),
             Token::While => self.while_stmt(),
             Token::Return => {
                 self.pos += 1;
@@ -1343,8 +1353,92 @@ impl Parser {
         Ok(Stmt::While { cond, body })
     }
 
+    /// `for IDENT in <bereich> { ... }` — SPEC 3.2: for_stmt.
+    fn for_stmt(&mut self) -> Result<Stmt, ParseError> {
+        self.pos += 1; // 'for'
+        let var = self.expect_name("Schleifenvariable nach 'for'")?;
+        // `in` bleibt ebenfalls Bezeichner (SPEC-Keywords, aber im Korpus auch
+        // als Name verwendet).
+        match self.cur() {
+            Token::Ident(name) if name == "in" => self.pos += 1,
+            _ => {
+                return Err(ParseError {
+                    message: "'in' nach for-Variable erwartet".into(),
+                })
+            }
+        }
+        let iter = self.expr()?;
+        let iter = match iter {
+            Expr::Range { .. } => iter,
+            other => {
+                return Err(ParseError {
+                    message: format!("for erwartet einen Bereich a..b, fand {other:?}"),
+                })
+            }
+        };
+        if self.cur() != Token::LBrace {
+            return Err(ParseError {
+                message: "'{' nach for-Bereich erwartet".into(),
+            });
+        }
+        self.pos += 1;
+        let body = self.block()?;
+        Ok(Stmt::For { var, iter, body })
+    }
+
     fn expr(&mut self) -> Result<Expr, ParseError> {
-        self.logic_or()
+        self.range_expr()
+    }
+
+    /// Bereich `a..b`, `a..=b`, `a..`, `..b` — SPEC 3.4: RangeExpr.
+    ///
+    /// Die SPEC nennt `Range` unter `parse_primary`. Fuer `0..n` muss der
+    /// Bereich aber schwaecher binden als `n.len()`, sonst wird das Ende
+    /// abgeschnitten; deshalb liegt die Stufe hier auf `expr`-Ebene, direkt
+    /// ueber `||`. Die Knotenform selbst folgt der SPEC.
+    fn range_expr(&mut self) -> Result<Expr, ParseError> {
+        let starts_with_range = matches!(self.cur(), Token::DotDot | Token::DotDotEq);
+        let start = if starts_with_range {
+            None
+        } else {
+            Some(Box::new(self.logic_or()?))
+        };
+        let inclusive = match self.cur() {
+            Token::DotDot => false,
+            Token::DotDotEq => true,
+            _ if starts_with_range => {
+                return Err(ParseError {
+                    message: "Bereich '..' ohne Start und Ende ist nicht erlaubt".into(),
+                })
+            }
+            _ => return Ok(*start.expect("Start vorhanden")),
+        };
+        self.pos += 1;
+        // Offenes Ende: `xs[a..]`, `for i in a..` (dort unten abgelehnt).
+        let end = if matches!(
+            self.cur(),
+            Token::RBracket
+                | Token::RParen
+                | Token::RBrace
+                | Token::Comma
+                | Token::Semi
+                | Token::LBrace
+                | Token::Eof
+        ) {
+            None
+        } else {
+            Some(Box::new(self.logic_or()?))
+        };
+        if start.is_none() && end.is_none() {
+            return Err(ParseError {
+                message: "Bereich '..' ohne Start und Ende ist nicht erlaubt".into(),
+            });
+        }
+        Ok(Expr::Range {
+            start,
+            end,
+            inclusive,
+        })
     }
 
     /// `||` (und einzelnes `|` als bitor) — unterster Rang, linksassoziativ.
@@ -1484,7 +1578,12 @@ impl Parser {
         loop {
             match self.cur() {
                 // Pfad `A::b` — wird als ein Name "A::b" gefuehrt.
-                Token::Colon if self.toks.get(self.pos + 1).is_some_and(|t| *t == Token::Colon) => {
+                Token::Colon
+                    if self
+                        .toks
+                        .get(self.pos + 1)
+                        .is_some_and(|t| *t == Token::Colon) =>
+                {
                     let Some(base) = path_text(&node) else {
                         return Err(ParseError {
                             message: "Pfadoperator '::' nur nach einem Namen erlaubt".into(),
@@ -1511,9 +1610,23 @@ impl Parser {
                         });
                     }
                     self.pos += 1;
-                    node = Expr::Index {
-                        base: Box::new(node),
-                        index: Box::new(index),
+                    // SPEC 3.4: ein Bereich im Index ist eine SliceExpr,
+                    // kein IndexAccess mit Bereichsindex.
+                    node = match index {
+                        Expr::Range {
+                            start,
+                            end,
+                            inclusive,
+                        } => Expr::Slice {
+                            base: Box::new(node),
+                            start,
+                            end,
+                            inclusive,
+                        },
+                        index => Expr::Index {
+                            base: Box::new(node),
+                            index: Box::new(index),
+                        },
                     };
                 }
                 // Struct-Literal `Name { feld: wert }` — nur wenn der Lookahead
@@ -1528,7 +1641,9 @@ impl Parser {
                         let field = self.expect_field_name("Feldname im Struct-Literal")?;
                         if self.cur() != Token::Colon {
                             return Err(ParseError {
-                                message: format!("':' nach Feld {field} im Struct-Literal erwartet"),
+                                message: format!(
+                                    "':' nach Feld {field} im Struct-Literal erwartet"
+                                ),
                             });
                         }
                         self.pos += 1;
@@ -1654,7 +1769,10 @@ impl Parser {
                     }
                     if self.cur() != Token::RParen {
                         return Err(ParseError {
-                            message: format!("\")\" nach Tupel erwartet (Umfeld: {})", self.context_window()),
+                            message: format!(
+                                "\")\" nach Tupel erwartet (Umfeld: {})",
+                                self.context_window()
+                            ),
                         });
                     }
                     self.pos += 1;
@@ -2083,5 +2201,67 @@ mod tests {
         let (program, errors) = parse_program_collecting("fn f() -> int { return 1; }");
         assert!(errors.is_empty(), "{errors:?}");
         assert_eq!(program.unwrap().statements.len(), 1);
+    }
+
+    #[test]
+    fn for_ueber_bereich() {
+        let j = parse_program(
+            "fn f() -> int {\n    for i in 0..3 {\n        return i\n    }\n    return 0\n}",
+        )
+        .unwrap()
+        .to_json();
+        assert!(j.contains("\"kind\":\"ForStatement\""), "{j}");
+        assert!(j.contains("\"kind\":\"RangeExpr\""), "{j}");
+        assert!(j.contains("\"inclusive\":false"), "{j}");
+    }
+
+    #[test]
+    fn inklusiver_bereich() {
+        let j = parse_program(
+            "fn f() -> int {\n    for i in 0..=3 {\n        return i\n    }\n    return 0\n}",
+        )
+        .unwrap()
+        .to_json();
+        assert!(j.contains("\"inclusive\":true"), "{j}");
+    }
+
+    #[test]
+    fn index_bereich_ist_slice() {
+        let j = parse_program("fn f(xs: List<u8>) -> int {\n    let a = xs[0..2]\n    return 1\n}")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"SliceExpr\""), "{j}");
+        // Einzelindex bleibt IndexAccess — keine Sonderbehandlung von Punkten.
+        let j = parse_program("fn f(xs: List<u8>) -> int {\n    let a = xs[1]\n    return 1\n}")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"IndexAccess\""), "{j}");
+        assert!(!j.contains("SliceExpr"), "{j}");
+    }
+
+    #[test]
+    fn offenes_bereichsende_parst() {
+        let j = parse_program("fn f(xs: List<u8>) -> int {\n    let a = xs[1..]\n    return 1\n}")
+            .unwrap()
+            .to_json();
+        assert!(j.contains("\"kind\":\"SliceExpr\""), "{j}");
+        assert!(j.contains("\"start\":{\"kind\":\"IntLiteral\""), "{j}");
+        assert!(j.contains("\"end\":null"), "{j}");
+    }
+
+    #[test]
+    fn for_ohne_in_ist_ein_fehler() {
+        assert!(parse_program(
+            "fn f() -> int {\n    for i 0..3 {\n        return i\n    }\n    return 0\n}"
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn for_ohne_bereich_ist_ein_fehler() {
+        // Im Contract gibt es keinen Native-Fallback: der Koerper MUSS parsen.
+        let src = "contract C {\n    fn f() -> int {\n        for i in xs {\n            return i\n        }\n        return 0\n    }\n}";
+        let err = parse_program(src).expect_err("for ohne Bereich");
+        assert!(err.message.contains("Bereich"), "{err:?}");
     }
 }
