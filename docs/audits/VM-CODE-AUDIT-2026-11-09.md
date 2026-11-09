@@ -12,8 +12,8 @@ nach dem Lauf geloescht wurde (Baum unveraendert).
 ## Befunde
 
 ### VM-AUD-003-A — Roher `run()`-Pfad umgeht fuenf Sicherheitsgrenzen
-**Prioritaet:** P0 · **Status:** RESIDUAL
-**Stelle:** `components/vm/src/vm.rs`, `Vm::run` (Zeile ~362)
+**Prioritaet:** P0 · **Status:** FIXED (b0940d5)
+**Stelle:** `components/vm/src/vm.rs`, `Vm::execute_transactional`
 **Beschreibung:** `run()` ist `pub`, ruft `verify()` nicht auf, kennt kein Gas,
 prueft weder `MAX_STACK_ITEMS` (Push/Dup/Load schreiben direkt in den Stapel)
 noch `MAX_STORAGE_SLOTS`, und sichert keinen Snapshot.
@@ -49,8 +49,8 @@ erlaubt und schaltet die v2-Befehle frei.
 **Korrektur:** Nur 1 und 2 zulassen, sonst `InvalidProgram`.
 
 ### VM-AUD-002-A — Verifier akzeptiert nicht ausfuehrbare Speicherplaetze
-**Prioritaet:** P1 · **Status:** RESIDUAL
-**Stelle:** `Vm::verify` prueft `self.storage.len()`, nicht die Slots im Programm
+**Prioritaet:** P1 · **Status:** FIXED mit P0-1 (b0940d5)
+**Stelle:** `Vm::verify` prueft jetzt den hoechsten Slot im Programm
 **Beschreibung:** `Store(70000)` uebersteht `verify()` (`Ok(())`), scheitert erst
 in der Ausfuehrung mit `StorageLimitExceeded`.
 **Reproduktion (ausgefuehrt):** `verify() = Ok(())`, `run_with_gas` =
@@ -75,8 +75,8 @@ v1-Programme mit Code nach `HALT` laufen weiter (`Ok([])`, Test
 `v1_ignoriert_v2_strenge_nach_halt`). Das ist gewollt und getestet.
 
 ### VM-AUD-003-B — Zwei kopierte Interpreter-Schleifen
-**Prioritaet:** P2 · **Status:** RESIDUAL
-**Stelle:** `run_with_gas_inner` und `run`
+**Prioritaet:** P2 · **Status:** RESOLVED (b0940d5)
+**Stelle:** eine Schleife `Vm::run_loop` statt zwei
 **Beschreibung:** Beide Schleifen enthalten dieselben 20+ Arme, doppelt gepflegt.
 Die v2-Pruefungen wurden zweimal eingebaut; jede kuenftige Aenderung muss beide
 treffen. Die Divergenz aus VM-AUD-003-A ist genau so entstanden.
@@ -195,3 +195,37 @@ Verifier, der tote Slots durchlaesst, und Fehler ohne Codes.
 2. VM-AUD-001-A/B (Generation aus Artefakt, Wertebereich), 3. VM-AUD-005-A
 (Snapshot-Abgrenzung dokumentieren), 4. VM-AUD-002-A, 5. VM-AUD-007-A,
 6. VM-AUD-006-A, danach Nested Execution.
+
+## Nachtrag P0-1 — VM-AUD-003-A geschlossen (2026-11-09)
+
+**Commit:** b0940d5 · **Branch:** main · **Tests:** 74 im Crate gruen
+(20 exec_chain, 21, 21 atcb_v2, 12) · **clippy --lib -D warnings:** 0
+
+**Umbau:** Es gibt genau eine Ausfuehrungsschleife (`run_loop`). Jeder
+oeffentliche Einstieg (`run`, `run_with_gas`) geht ueber `execute_transactional`:
+`verify()` -> Snapshot -> Ausfuehrung -> bei Fehler Ruecknahme. Gas ist optional
+(`None` = kein Budget), alle anderen Grenzen gelten immer. Eine zweite,
+schwaechere Schleife existiert nicht mehr.
+
+| Abnahmefall (vorher reproduziert) | Verhalten jetzt | Test |
+| --- | --- | --- |
+| 5000 Stapelwerte | `StackLimitExceeded` auf beiden Pfaden | `p0_1_stapelgrenze_gilt_auch_ohne_gasbudget` |
+| `Store(70000)` | `StorageLimitExceeded` im Verifier und im Interpreter | `p0_1_speichergrenze_gilt_auf_beiden_pfaden` |
+| Fehler nach `Store` | Zustand leer, kein `[7]` | `p0_1_kein_teilzustand_nach_fehler_ohne_gasbudget` |
+| Sprungziel ausserhalb | `InvalidProgram` vor jeder Ausfuehrung | `p0_1_ungueltiges_sprungziel_wird_vor_ausfuehrung_abgelehnt` |
+
+**Bewusste Verhaltensaenderung:** Ein ungueltiges Sprungziel meldet jetzt
+`InvalidProgram("jump target out of range")` statt `InvalidJump(99)`, weil der
+Verifier vor der Ausfuehrung greift. Gleiche Ablehnung, anderer Befund.
+Gueltige v1-Programme laufen unveraendert; v1-Semantik nicht angetastet.
+
+**Restrisiken nach P0-1:**
+- Die Generation ist weiter Aufruferangabe (VM-AUD-001-A, offen bis P0-2).
+- Der Snapshot deckt weiterhin nur Stapel und Speicher (VM-AUD-005-A, P0-3).
+- `verify()` prueft keine Stapeltiefe je Pfad (VM-AUD-002-B, offen).
+- Clippy: `--lib` ist mit `-D warnings` sauber. `--all-targets` meldet
+  weiterhin Altlasten ausserhalb dieses Umbaus (toter Code im Bin-Ziel,
+  "items after a test module" in `assembler.rs`) — bewusst nicht mit
+  P0-1 vermischt.
+- `cargo fmt` ueber den ganzen Crate wuerde sieben fremde Dateien umformatieren;
+  das wurde bewusst nicht mitgeliefert. Geaenderte Dateien sind formatiert.
