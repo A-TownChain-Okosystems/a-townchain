@@ -61,6 +61,11 @@ pub struct Vm {
     generation: u8,
 }
 
+/// Erlaubter Ruecklauf-Code: 0 = allgemein, 0x0100..=0x01FF = reserviert.
+pub fn gueltiger_ruecklauf_code(code: u64) -> bool {
+    code == 0 || (0x0100..=0x01FF).contains(&code)
+}
+
 fn gas_cost(op: &Op) -> u64 {
     match op {
         Op::Push(_) | Op::Dup | Op::Swap | Op::Caller => 1,
@@ -180,7 +185,7 @@ impl Vm {
         // Fehlercodes ausserhalb des reservierten Raums sind unzulaessig.
         for op in &self.program {
             if let Op::Revert(code) = op {
-                if !(0x0100..=0x01FF).contains(code) {
+                if !gueltiger_ruecklauf_code(*code) {
                     return Err(VmError::InvalidRevertCode(*code));
                 }
             }
@@ -320,15 +325,21 @@ impl Vm {
                     }
                 }
                 Op::Revert(code) => {
+                    if !gueltiger_ruecklauf_code(code) {
+                        return Err(VmError::InvalidRevertCode(code));
+                    }
                     return Err(VmError::Reverted(code));
                 }
                 Op::RevertIf => {
+                    // Wahrheitstabelle (ATC-BC-002 15): Bedingung != 0 -> Ruecklauf,
+                    // Code ist der Grund (0 = allgemeiner Ruecklauf).
+                    // Bedingung == 0 -> weiterlaufen, Code verfaellt.
                     let code = self.stack.pop().ok_or(VmError::StackUnderflow)?;
                     let bedingung = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if !(0x0100..=0x01FF).contains(&code) {
+                    if !gueltiger_ruecklauf_code(code) {
                         return Err(VmError::InvalidRevertCode(code));
                     }
-                    if bedingung == 0 {
+                    if bedingung != 0 {
                         return Err(VmError::Reverted(code));
                     }
                 }
@@ -412,15 +423,21 @@ impl Vm {
                     }
                 }
                 Op::Revert(code) => {
+                    if !gueltiger_ruecklauf_code(code) {
+                        return Err(VmError::InvalidRevertCode(code));
+                    }
                     return Err(VmError::Reverted(code));
                 }
                 Op::RevertIf => {
+                    // Wahrheitstabelle (ATC-BC-002 15): Bedingung != 0 -> Ruecklauf,
+                    // Code ist der Grund (0 = allgemeiner Ruecklauf).
+                    // Bedingung == 0 -> weiterlaufen, Code verfaellt.
                     let code = self.stack.pop().ok_or(VmError::StackUnderflow)?;
                     let bedingung = self.stack.pop().ok_or(VmError::StackUnderflow)?;
-                    if !(0x0100..=0x01FF).contains(&code) {
+                    if !gueltiger_ruecklauf_code(code) {
                         return Err(VmError::InvalidRevertCode(code));
                     }
-                    if bedingung == 0 {
+                    if bedingung != 0 {
                         return Err(VmError::Reverted(code));
                     }
                 }

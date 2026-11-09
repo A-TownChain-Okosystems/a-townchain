@@ -23,7 +23,7 @@ Semantische Vertragstreue zwischen Sprache und VM ist damit verletzt.
 | --- | --- | --- |
 | ASSERT | zieht Bedingung | Bedingung 0 -> Ruecklauf mit Fehlercode |
 | REVERT | zieht Code | sofortiger Ruecklauf mit uebergebenem Code |
-| REVERTIF | zieht Bedingung, Code | Ruecklauf nur bei 0 |
+| REVERTIF | zieht Bedingung, Code | Ruecklauf bei Bedingung ungleich 0 (Abschnitt 15) |
 
 Bewusst klein: keine Ausnahmen, keine Fehlerobjekte auf dem Stapel.
 Ruecklauf ist ein Abbruch, kein Sprungziel.
@@ -131,9 +131,8 @@ verworfen, nie halb ausgeliefert.
 ### D. REVERTIF-Semantik (eindeutig)
 
 Stapellage vor Ausfuehrung: `[..., Bedingung, Code]`, Code oben.
-1. Code wird gezogen, dann Bedingung.
-2. Bedingung ungleich 0: Ausfuehrung laeuft weiter, Code verfaellt.
-3. Bedingung gleich 0: sofortiger Ruecklauf mit dem gezogenen Code.
+Die Bedingung entscheidet, ob zurueckgelaufen wird; der Code liefert den Grund.
+Die verbindliche Wahrheitstabelle steht in Abschnitt 15.
 REVERTIF springt nie. Es gibt keinen bedingten Kontrollfluss und kein Ziel.
 
 ### E. Verifier (erweitert)
@@ -205,3 +204,27 @@ Abgelehnt werden: Stapelunterlauf, ungueltige Fehlercodes ausserhalb des
 reservierten Raums, nicht erreichbare Kontrollflussbereiche nach HALT oder
 Ruecklauf. Eine Abweichung zwischen Verifier und Interpreter ist ein Fehler,
 kein Auslegungsspielraum.
+
+## 15. REVERTIF — verbindliche Wahrheitstabelle
+
+Befund aus der Code-Pruefung (09.11.): Die erste Umsetzung lief bei Bedingung
+gleich 0 zurueck. Damit war REVERTIF ein ASSERT mit Fehlercode, also redundant,
+und der Name traf das Verhalten nicht.
+
+Entscheidung: Die Bedingung entscheidet, der Code ist der Grund.
+Stapellage `[..., Bedingung, Code]`, Code oben, erst Code, dann Bedingung.
+
+| Bedingung | Code | Verhalten |
+| --- | --- | --- |
+| 0 | 0 | weiterlaufen, Code verfaellt |
+| 0 | 0x0100..0x01FF | weiterlaufen, Code verfaellt |
+| ungleich 0 | 0 | Ruecklauf, allgemeiner Grund (E02) |
+| ungleich 0 | 0x0100..0x01FF | Ruecklauf mit angegebenem Grund |
+
+Abgrenzung: ASSERT bricht bei falscher Bedingung ab und kennt keinen Code.
+REVERTIF bricht bei wahrer Bedingung ab und nennt einen Grund. Zwei
+verschiedene Waechter, keine doppelte Instruktion.
+
+Code-Raum: 0 = allgemein, 0x0100..=0x01FF = reserviert, alles andere unzulaessig
+(0x00FF, 0x0200 und hoeher werden von Verifier UND Interpreter abgelehnt,
+auch wenn ein Programmpfad den Verifier umgeht).
