@@ -167,3 +167,41 @@ Kompatibilitaet ist keine Sicherheitsfreigabe. Bis zur Bewertung gilt:
 | BC2-007 | Legacy-Kompatibilitaet | Test: v1-Artefakt behaelt Semantik |
 | BC2-008 | Aktivierung und Migration | Test: vor/nach Hoehe, kein Auto-Umzug |
 | BC2-009 | Differential und Negativ | Test: zwei Laeufe byte-gleich |
+
+## 14. Vier Konsistenzpruefungen vor der Implementierung (Owner, 2026-11-09)
+
+### 14.1 Aktivierung und Konsens
+
+`atcb_v2_activation_height` ist Kettenparameter und fuer alle Validatoren
+identisch; abweichender Wert = Konsensbruch, nicht Konfigurationsfrage.
+Prueffaelle (Nachweis BC2-008):
+- Block hoehe-1: v2-Artefakt wird abgelehnt.
+- Aktivierungsblock: v2-Deployment zulaessig, v1-Deployment abgelehnt.
+- Block hoehe+1: v1-Vertraege laufen unveraendert weiter.
+- Reorganisation unter die Hoehe: v2-Effekte werden mit dem Block verworfen.
+- Wiederherstellung aus Snapshot ueber die Hoehe hinweg: gleiche Entscheidung.
+
+### 14.2 Verschachteltes Rollback
+
+Fehlschlag im inneren Aufruf rollt zuerst den eigenen Frame zurueck.
+Der Fehler wird als Rueckgabewert an den Aufrufer gereicht und ist dort
+behandelbar. Wird er nicht behandelt, rollt die gesamte Transaktion zurueck.
+Kein Zustand eines fehlgeschlagenen Frames darf nach aussen sichtbar sein,
+auch nicht teilweise. Unbehandelter Fehler ist kein Erfolg mit Beigabe.
+
+### 14.3 Gas und Fehlercodes
+
+E06 ist fest reserviert fuer Aufruftiefe 64 und unveraenderlich.
+Gas wird weder erstattet noch doppelt verbucht, auch nicht durch
+Fehlerbehandlung: einmal belastet bleibt belastet. Rueckgabe nicht
+verbrauchten Teilbudgets ist keine Erstattung, sondern Rueckfluss an den
+Aufrufer, und die Gesamtsumme ueberschreitet nie das Startbudget.
+
+### 14.4 REVERTIF und Stapelsicherheit
+
+Verifier und Interpreter setzen die Reihenfolge identisch um:
+`[..., Bedingung, Code]`, Code oben, erst Code, dann Bedingung.
+Abgelehnt werden: Stapelunterlauf, ungueltige Fehlercodes ausserhalb des
+reservierten Raums, nicht erreichbare Kontrollflussbereiche nach HALT oder
+Ruecklauf. Eine Abweichung zwischen Verifier und Interpreter ist ein Fehler,
+kein Auslegungsspielraum.
