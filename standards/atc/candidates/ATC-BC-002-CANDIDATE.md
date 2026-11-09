@@ -91,10 +91,79 @@ sicherheitsrelevanten Konstrukte.
 11. Abbruch an jeder Schreibposition (Fault-Injection) -> konsistenter Zustand
 12. Sprachseitig: jede akzeptierte Bedingung erscheint im Bytecode
 
-## 10. Offene Entscheidungen
+## 10. Entscheidungsstand
 
-1. Fehlercodes: feste Liste (oben) oder offener Zahlenraum mit Registrierung?
-2. Ruecklauf-Ebene als Vertragsattribut oder je Aufruf deklariert?
-3. Schreib-Set je Frame oder globale Liste mit Frame-Marken?
-4. Gas-Vorabberechnung: je Befehl konstant oder abhaengig von Operanden?
-5. Migrationspolitik der Kette: Zwangsumstellung je Blockhoehe oder je Vertrag?
+Die zuvor offenen Punkte (Fehlercode-Raum, Ruecklauf-Ebene, Schreib-Set-Form,
+Gebuehrenberechnung, Migrationspolitik) sind am 2026-11-09 vom Owner entschieden
+und in Abschnitt 11 (Entscheidungen) sowie 11 (Legacy) und 12 (Nachweise)
+verbindlich festgehalten. Es bleiben keine offenen Semantikfragen.
+
+## 11. Entscheidungen (Owner, 2026-11-09)
+
+### A. Aktivierung und Migration
+
+- Aktivierung ab einer festen Blockhoehe `atcb_v2_activation_height` (Kettenparameter).
+- Ab Aktivierung: neue Deployments ausschliesslich v2. v2-Artefakt vor der Hoehe
+  wird abgelehnt, v1-Artefakt nach der Hoehe ebenfalls.
+- Bestehende v1-Vertraege behalten ihre Generation und Semantik unveraendert.
+- Keine automatische Umwandlung v1 -> v2. Migration nur ueber einen expliziten,
+  autorisierten Vorgang mit nachvollziehbarem Zustandsuebergang.
+- Die Generation ist je Vertrag unveraenderlich; ein Wechsel ist ein neuer Vertrag.
+
+### B. Schreib-Set und atomarer Abschluss
+
+Das Schreib-Set erfasst: Storage-Schreibvorgaenge, Guthabenaenderungen,
+Ereignisse, Wirkungen verschachtelter Aufrufe und Rueckgabewerte.
+Uebernahme in den Transaktionszustand erst nach erfolgreichem Abschluss des
+gesamten Aufrufs. Ereignisse werden je Rahmen gepuffert und bei Ruecklauf
+verworfen, nie halb ausgeliefert.
+
+### C. Gas
+
+- Gas wird vor der Wirkung belastet; bei Ruecklauf keine Erstattung.
+- Unzureichendes Gas: Ruecklauf mit E04, kein Teilzustand, kein Teilereignis.
+- Verifier-Kosten sind deterministisch, fallen bei Deployment an und werden
+  nicht aus dem Ausfuehrungsbudget gedeckt.
+- Verschachtelte Aufrufe erhalten ein Teilbudget; nicht verbrauchtes Budget
+  faellt an den Aufrufer zurueck, die Summe ueberschreitet nie das Startbudget.
+- Maximale Aufruftiefe 64; Ueberschreitung ist Ruecklauf mit E06.
+
+### D. REVERTIF-Semantik (eindeutig)
+
+Stapellage vor Ausfuehrung: `[..., Bedingung, Code]`, Code oben.
+1. Code wird gezogen, dann Bedingung.
+2. Bedingung ungleich 0: Ausfuehrung laeuft weiter, Code verfaellt.
+3. Bedingung gleich 0: sofortiger Ruecklauf mit dem gezogenen Code.
+REVERTIF springt nie. Es gibt keinen bedingten Kontrollfluss und kein Ziel.
+
+### E. Verifier (erweitert)
+
+Zusaetzlich zu den sechs Regeln aus Abschnitt 7:
+- Statische Typen je Stapelstelle (I64, ADDR, BYTES, BOOL); Typfehler = ungueltig.
+- Maximale Aufruftiefe 64 und maximale Stapeltiefe 4096.
+- Speichergrenzen: 65536 Speicherplaetze, 65536 Operationen je Artefakt.
+- Gas-Gueltigkeit: jeder erreichbare Pfad endet in HALT oder Ruecklauf.
+- Kein erreichbarer Befehl nach Ruecklauf; Ruecklauf ist kein Sprungziel.
+
+## 12. Legacy-Vertraege (v1)
+
+Kompatibilitaet ist keine Sicherheitsfreigabe. Bis zur Bewertung gilt:
+- v1-Vertraege werden inventarisiert (ID, Deployer, Artefakt-Hash, Hoehe).
+- Vertraege mit sicherheitsrelevanten Bedingungen werden gekennzeichnet.
+- Gekennzeichnete Vertraege werden geprueft; unsichere werden stillgelegt
+  (Quarantaene) statt weiter ausgefuehrt.
+- Migration nach v2 nur mit ausdruecklicher Autorisierung.
+
+## 13. BC2-Nachweisliste
+
+| ID | Anforderung | Nachweis |
+| --- | --- | --- |
+| BC2-001 | Versionserkennung und Kopfpruefung | Test: v2 im v1-Kopf abgelehnt |
+| BC2-002 | ASSERT/REVERT/REVERTIF | Test: drei Wege, je ein Fehlercode |
+| BC2-003 | Schreib-Set und atomarer Abschluss | Test: Abbruch laesst Zustand gleich |
+| BC2-004 | Verschachtelte Aufrufe | Test: innerer Ruecklauf, aeusserer Erfolg |
+| BC2-005 | Gas deterministisch | Test: gleicher Pfad, gleiches Gas |
+| BC2-006 | Stapel- und Kontrollflusspruefung | Test: ungueltige Sprungziele abgelehnt |
+| BC2-007 | Legacy-Kompatibilitaet | Test: v1-Artefakt behaelt Semantik |
+| BC2-008 | Aktivierung und Migration | Test: vor/nach Hoehe, kein Auto-Umzug |
+| BC2-009 | Differential und Negativ | Test: zwei Laeufe byte-gleich |
