@@ -86,11 +86,20 @@ contracts:
       - apps/atc-sdk/modules/atc-cli/ecdsa_impl.atc
       - components/sdk/modules/atc-cli/ecdsa_impl.atc
   FederatedLearningCoordinator:
-    kind: divergent
-    copies: 5
-    variants: 2
+    # 11.11.2026 (K2/AD-052): Die frueher hier gefuehrte fuenfte Kopie
+    #   ai/aurora-ai/modules/atc-aistudio/federated_learning.atc
+    # lag in der Zweitkopie ai/aurora-ai und wurde mit dieser entfernt. Die Datei
+    # selbst ist im Produkt-Repository aurora-ai unter demselben relativen Pfad
+    # erhalten. Der Verweis wird hier als Kommentar bewahrt, damit er nicht
+    # verschwindet, aber die maschinenlesbare Dateiliste bleibt korrekt.
+    # OFFEN (Owner): ob die zusaetzlichen Funktionen (register_model, aggregate,
+    # update_accuracy, stats, find_round) in den kanonischen Vertrag gehoeren, ist
+    # eine Protokoll-API-Entscheidung. Bis dahin ist dieser Eintrag NICHT als
+    # kanonische Quelle zu lesen, siehe canonical_sources.yaml.
+    kind: identical
+    copies: 4
+    variants: 1
     files:
-      - ai/aurora-ai/modules/atc-aistudio/federated_learning.atc
       - apps/atc-contracts/modules/atc-contracts/smart_contracts.atc
       - apps/atc-contracts/smart_contracts.atc
       - components/contracts/modules/atc-contracts/smart_contracts.atc
