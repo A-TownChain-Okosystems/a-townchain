@@ -75,7 +75,15 @@ contracts:
     open: >-
       Ob die zusaetzlichen Funktionen in den kanonischen Vertrag gehoeren, ist
       eine Spezifikationsentscheidung. Die Alternativdatei bleibt als Quelle
-      erhalten und ist nicht kanonisch.
+      erhalten und ist nicht kanonisch. STAND 11.11.2026: Der oben genannte
+      abweichende Pfad lag in der Zweitkopie a-townchain/ai/aurora-ai, die als
+      zweite Implementierungsquelle entfernt wurde (AD-052). Dieser Eintrag
+      bleibt absichtlich unveraendert und wird NICHT auf die Implementierungs-
+      quelle in aurora-ai umgebogen, weil die Zuordnung der Funktionen eine
+      offene Protokollentscheidung des Owners ist. Die Alternativdatei selbst
+      ist im Produkt-Repository aurora-ai unter demselben relativen Pfad
+      erhalten. Bis zur Entscheidung gilt dieser Eintrag als OFFEN und nicht als
+      kanonische Quelle.
 
   GovernanceDAO:
     canonical: apps/atc-contracts/smart_contracts.atc
