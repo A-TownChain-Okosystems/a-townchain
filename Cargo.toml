@@ -10,11 +10,6 @@
 resolver = "2"
 members = [
     "ai/atclang/crates/atc-core",
-    "ai/aurora-ai/modules/atc-aurora-agents",
-    "ai/aurora-ai/modules/atc-aurora-core",
-    "ai/aurora-ai/modules/atc-aurora-localization",
-    "ai/aurora-ai/modules/atc-aurora-memory",
-    "ai/aurora-ai/sdk",
     "ai/genesis-chronicles/modules/atc-game",
     "apps/atc-compute",
     "apps/atc-launchpad",
@@ -39,6 +34,10 @@ members = [
     "standards/sdk",
 ]
 exclude = [
+    # K2/AD-052 (11.11.2026): aurora-ai ist eigenstaendige Implementierungs-
+    # autoritaet (L2). Die Zweitkopie ai/aurora-ai wurde entfernt; ausgeschlossen,
+    # damit waehrend der Migration kein Paket sich im falschen Workspace glaubt.
+    "ai/aurora-ai",
     "ai/genesis-engine",
     "apps/atc-interop",
     "apps/atc-marketplace",
