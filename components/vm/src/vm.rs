@@ -154,6 +154,24 @@ impl Vm {
     pub fn generation(&self) -> u8 {
         self.generation
     }
+    /// Baut eine VM aus einem Artefakt UND setzt den Zustand, wie ihn die Kette
+    /// liefert (Aufrufer-Kennung, Speicherwoerter). Die Generation kommt
+    /// weiterhin ausschliesslich aus dem Artefakt: dieser Einstieg hat keinen
+    /// Generationsparameter und kann sie deshalb nicht ueberschreiben.
+    pub fn from_artifact_with_context(
+        artifact: &crate::artifact::Artifact,
+        caller: u64,
+        storage: Vec<u64>,
+    ) -> Self {
+        Vm {
+            program: artifact.program().to_vec(),
+            stack: Vec::new(),
+            caller,
+            storage,
+            generation: artifact.generation(),
+        }
+    }
+
     pub fn state(&self) -> &[u64] {
         &self.storage
     }
@@ -456,6 +474,16 @@ mod tests {
             protocol_version: "1.0.0".into(),
             vm_version: "1.0.0".into(),
         }
+    }
+
+    #[test]
+    fn from_artifact_with_context_haelt_die_generation_des_artefakts() {
+        use crate::artifact::{Artifact, GENERATION_V1};
+        let art = Artifact::new(GENERATION_V1, vec![Op::Push(1), Op::Halt]).unwrap();
+        let vm = Vm::from_artifact_with_context(&art, 7, vec![41, 42]);
+        assert_eq!(vm.generation(), GENERATION_V1);
+        assert_eq!(vm.caller(), 7);
+        assert_eq!(vm.state(), &[41, 42]);
     }
 
     #[test]
