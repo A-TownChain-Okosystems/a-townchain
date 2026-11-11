@@ -1,7 +1,7 @@
 # KAI-OS-READINESS-001 — Reifegradkatalog Betriebssystem, Ausführungsplattform und Node (KANDIDAT)
 
 > **Status:** `CANDIDATE`, nicht registriert (atc-standards main ist branchgeschützt, PR blockiert durch unbestätigte Committer-Adresse)
-> **Datum:** 11.11.2026
+> **Datum:** 11.11.2026 · Rev. 2 (Rev. 2: Kernel-SSOT und IPC-Modul eingeordnet, gemeinsamer Registrierungsblocker, Regel der getrennt prüfbaren Admission-Schritte, Architekturgrenzen)
 > **Evidenzbasis:** `globus-os` main `4fccb823` (Commit 2026-11-11T00:23Z), `a-townchain` main `c2785d649`
 > **Methode:** Lesen der Repos über GitHub-API und Baumlisten, kein Ausführen, kein Bauen, keine Messung
 > **Zweck:** verhindern, dass ein funktionierender Kernel als fertiges Betriebssystem oder ein laufender Devnet-Node als Mainnet-Fähigkeit gilt
@@ -44,6 +44,9 @@ Kerneltest ist kein Nachweis für einen Node und umgekehrt.
 **R-4 (MUSS)** `CI_VERIFIED` ersetzt kein `E2E_VERIFIED` und umgekehrt.
 **R-5 (MUSS)** Ein Statuswechsel trägt Commithash und Prüfdatum; ältere Nachweise bleiben
 mit ihrem Datum stehen.
+**R-6 (MUSS)** Eine fachliche Einordnung ohne Einsicht in den Kandidaten oder die
+Repository-Dateien ist kein Status. Verbindlich sind ausschließlich die Zeilen dieses
+Katalogs; jede abweichende Tabelle ist Diskussionsbeitrag, nicht Freigabe.
 
 ---
 
@@ -55,8 +58,9 @@ mit ihrem Datum stehen.
 | 2 | Boot BIOS/UEFI | `globus-os` `modules/atc-shivacore/boot` | Kernel, Ramdisk | beide Images booten bis Scheduler | `TESTED` (QEMU) | `4fccb823`, Ramdisk-Start bestätigt |
 | 3 | Prozessisolation | Kernel `paging`, `scheduler` | CR3-Wechsel je Prozess | eigener Adressraum je Prozess | `TESTED` | Gegenprobe: Fremdzugriff endet im Seitenfehler, andere Prozesse laufen weiter |
 | 4 | Fehlerpfade | Kernel `fault`, `syscall` | IDT, Ring 3 | Page Fault, Protection Violation, Invalid Opcode behandelt | `TESTED` | Fehler beendet den Prozess, nicht die Maschine |
-| 5 | Capabilities / Syscall-ABI 2.0 | Kernel `capability.rs` | Prozessraum | Capability-Prüfung vorhanden | `RESIDUAL` | Prüfung wirkt nach der Ausführungserlaubnis, nicht davor (siehe 8) |
-| 6 | IPC | Kernel `ipc.rs`, `service_space` | Service Space im Image | Syscall-Seite vorhanden, kein Transport | `BLOCKED` | `service_space` ist keine Abhängigkeit des Kernel-Crates; Kernel hängt nicht an ihm |
+| 5 | Capabilities / Syscall-ABI 2.0 | Kernel `capability.rs` | Prozessraum | Capability-Prüfung vorhanden | `IMPLEMENTED` | Modul vorhanden und im Syscall-Pfad wirksam; eine vollständige Admission ist damit **nicht** belegt |
+| 6 | IPC-Modul (Syscall-Seite) | Kernel `ipc.rs` | Capability-Prüfung | Modul vorhanden | `IMPLEMENTED` | Rechteprüfung vor der Zustellung; `IpcReceive` meldet fehlenden Transport statt Bytes zu behaupten |
+| 6a | IPC-Transport / Service Space im Image | `globus-os` `service_space` | Ramdisk, ELF-Loader, Init | kein Transport | `BLOCKED` | `service_space` ist keine Abhängigkeit des Kernel-Crates; die Ramdisk trägt kein Programm, das ihn startet |
 | 7 | Persistenz / Block-Device | **keine** | – | kein Treiber im Baum | `BLOCKED` | 48 `kernel/src`-Dateien, kein `ata`, `ahci`, `nvme`, `virtio-blk`, `block` |
 | 8 | Dateisystem | Kernel `vfs.rs`, `atcfs.rs` | Block-Device (7) | Struktur vorhanden | `RESIDUAL` | Quelle für Bytes fehlt, damit ist `vfs`/`atcfs` nicht nutzbar |
 | 9 | `globus-init` | **keine** | Dateisystem (8), Prozessstart | nicht vorhanden | `BLOCKED` | kein Pfad im Baum; was läuft, ist `init_program` aus der Ramdisk, gestartet vom Kernel |
@@ -64,7 +68,7 @@ mit ihrem Datum stehen.
 | 11 | Code-Admission | **keine** | Kernel, Artefaktformat | nicht vorhanden | `BLOCKED` | kein Modul für `tpm`, `attest`, `measure`, `verify`, `sign` in `kernel/src` |
 | 12 | Secure Update / Rollback | **keine** | Admission (11), Persistenz (7) | nicht vorhanden | `BLOCKED` | keine Updatekomponente im Baum |
 | 13 | Attestation / Measured Boot | **keine** | Messkette, TPM oder gleichwertig | nicht vorhanden | `BLOCKED` | siehe 11, keine Messstelle |
-| 14 | Kernel-SSOT | `globus-os` | – | Monorepo ohne Kernelkopie | `TESTED` (Konsolidierung) | `a-townchain` Baum: 13 487 Dateien, 0 Treffer für `kernel/globus-os/` oder `kernel/kai-os/` |
+| 14 | Kernel-SSOT | `globus-os` | – | Monorepo ohne Kernelkopie | `IMPLEMENTED` | `a-townchain` Baum: 13 487 Dateien, 0 Treffer für `kernel/globus-os/` oder `kernel/kai-os/`; Doku-Drift im Spiegel ist davon getrennt und keine zweite Implementierungswahrheit |
 | 15 | ATC-VM (Crate) | `a-townchain` `components/vm` | Gasmodell, Fehlercodes | Workspace-Member vorhanden | `PENDING EVIDENCE` | letzter grüner Lauf 09./10.11., heute nicht erneut ausgeführt |
 | 16 | Node-Transaktionspipeline | `a-townchain` `components/node` | VM (15), System, Konsens | speichert Transaktionen ohne Ausführung | `BLOCKED` | Node-Abhängigkeiten: `atc-algorithm`, `atc_wallet`, `secp256k1`, `serde`, `serde_json`, `sha2`; keine VM, kein Zustandsspeicher |
 | 17 | Node-Konsens / Persistenz | `a-townchain` `components/node` | Kette im Speicher | Devnet-Konsens im Prozess | `RESIDUAL` | Kette nur im `Vec`, Grenze 64 Blöcke, kein Storage-Dep |
@@ -79,6 +83,27 @@ Bis zur Bestätigung bleibt jede Aussage auf lokale Läufe beschränkt (`TESTED`
 `CI_VERIFIED`).
 
 ---
+
+## 2a. Gemeinsamer Registrierungsblocker (administrativ, nicht technisch)
+
+Zwei Kandidaten warten auf denselben Vorgang. Das ist **ein** Blocker, nicht zwei Fehler.
+
+| Kandidat | Technischer Stand | Registrierung | Ursache |
+|---|---|---|---|
+| `ATC-HASH-002` Rev. 3.2 | Normtext auf `a-townchain` main | `BLOCKED` | PR-Anlage 403, Committer-Adresse unbestätigt |
+| `KAI-OS-READINESS-001` | Kandidat auf `a-townchain` main | `BLOCKED` | derselbe |
+
+Belege: `atc-standards` main ist branchgeschützt (direktes Schreiben 409, „Changes must be made
+through a pull request, 14 of 14 required status checks"). PR-Anlage liefert 403, „At least one
+email address must be verified". Die push-getriggerten Workflows enden deshalb in
+`startup_failure`, damit kann keiner der 14 Checks grün werden. Der Deadlock ist
+administrativ und wird durch die Kontoverifizierung gelöst, nicht durch Code.
+
+**B-1 (MUSS)** Nach der Verifizierung: beide vorhandenen Branches prüfen, je einen PR mit genau
+der vorgesehenen Änderung, Checks dokumentieren, Review und Merge nach Branchschutz, danach
+Merge-Commit und tatsächlichen Registereintrag auf `atc-standards/main` prüfen.
+**B-2 (MUSS)** Keine vorgezogene Statusänderung auf `VERIFIED` oder `REGISTERED`. Ein grüner
+CI-Lauf allein ist keine Registrierung.
 
 ## 3. Abhängigkeitskette
 
@@ -127,6 +152,19 @@ signiertes Artefakt eines widerrufenen Erzeugers wird abgelehnt.
 Stille Ablehnung ist unzulässig.
 **A-4 (MUSS)** Der Admission-Pfad liegt vor dem ersten Instruktionsabruf, nicht danach.
 Eine Prüfung nach dem Start ist keine Admission.
+**A-5 (MUSS) — getrennt prüfbar und auditierbar.** Die sechs Schritte dürfen nicht in einem
+einzigen generischen `verify()` verschwinden. Jeder Schritt hat eine eigene Funktion, ein
+eigenes Ergebnis und einen eigenen Grund im Protokoll, damit eine Ablehnung sagt, **welcher**
+Schritt sie verursacht hat. Ein Sammelaufruf, der nur „ungültig" zurückgibt, ist nicht
+konform, auch wenn er formal alle Prüfungen enthält.
+**A-6 (GRUNDSATZ, dauerhaft in der Sicherheitsarchitektur).** Eine gültige Signatur ist keine
+Ausführungsberechtigung. Herkunft, Integrität, Vertrauenskette, Widerruf,
+Capability-Autorisierung und Ausführungsentscheidung bleiben getrennte Fragen.
+**A-7 (MUSS) — Architekturgrenzen.** ShivaCore entscheidet über die Zulässigkeit der
+Ausführung. GlobusOS stellt den kontrollierten Prozess- und Service-Lifecycle bereit. Aurora AI
+und Genesis Engine bleiben eigenständige Domänen ohne privilegierte Sonderfreigabe. Externe
+Kryptografie- oder Attestierungs-Frameworks dürfen Referenz und Adapter sein, aber nicht
+unbemerkt zur maßgeblichen Sicherheitsinstanz werden.
 
 ---
 
@@ -194,6 +232,10 @@ Unzulässiges nicht funktioniert. Beide sind nötig.
 | Bereich | Status | Begründung |
 |---|---|---|
 | Kernel | `TESTED` | QEMU-Nachweise, 733 Tests, Commithash `4fccb823` |
+| Kernel-SSOT | `IMPLEMENTED` | keine zweite Kernelkopie im Monorepo; Doku-Drift im Spiegel separat |
+| Kernel-IPC-Modul | `IMPLEMENTED` | Modul vorhanden, Rechteprüfung vor Zustellung; Transportintegration offen |
+| Capability-Infrastruktur | `IMPLEMENTED` | Modul vorhanden; vollständige Admission nicht belegt |
+| IPC-Transport | `BLOCKED` | Service Space nicht im Image, Ramdisk ohne Programm |
 | Prozessisolation | `TESTED` | konkrete negative Gegenprobe vorhanden |
 | GlobusOS als Betriebssystem | `RESIDUAL` | wesentliche Betriebssystemfunktionen fehlen (7, 8, 9, 10) |
 | Code-Admission | `BLOCKED` | kein nativer Admission-Pfad |
@@ -214,7 +256,11 @@ Reifegrads. Jede Komponente trägt ihren eigenen Status; die Summe ergibt keinen
 2. Statuszeile für `components/vm` und `components/wallet` heute neu erheben (Testlauf fehlt für 11.11.).
 3. Mirror-Doku-Drift `a-townchain-os-docs` gegen Kanon schließen.
 4. Kompatibilitätsmatrix für Hardware (CPU, Chipsatz, Firmware) als eigenes Dokument.
-5. Definition, ab welchem Nachweis `E2E_VERIFIED` vergeben werden darf (Vorschlag: verkettete Zustandswurzeln über mindestens zehn Blöcke plus reproduzierbarer Bau).
+5. Erster Implementierungsschnitt für Code-Admission, ohne ABI-Vorgriff: Artefaktbeschreibung
+   (Format, Version, Hash, Erzeuger), getrennte Prüfstufen nach A-5, Protokollsatz je Stufe.
+   Vorbedingung ist eine Owner-Entscheidung über Ablageort und ABI-Bezug, weil eine
+   Admission-Schnittstelle die Syscall-Oberfläche berührt.
+6. Definition, ab welchem Nachweis `E2E_VERIFIED` vergeben werden darf (Vorschlag: verkettete Zustandswurzeln über mindestens zehn Blöcke plus reproduzierbarer Bau).
 
 ---
 
