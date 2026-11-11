@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-11 12:07 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `7aeb08a` (letzter Commit 2026-11-11)
+> **Erzeugt:** 2026-11-11 12:36 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `0a1858b` (letzter Commit 2026-11-11)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,25 +13,25 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 11345 |
+| **Total Dateien** | 11359 |
 | **Bereiche** | 15 |
-| **Verzeichnisse** | 2010 |
+| **Verzeichnisse** | 2014 |
 
 ### Nach Dateityp
 
 | Endung | Dateien |
 |--------|---------|
-| `.md` | 4068 |
+| `.md` | 4070 |
 | `.atc` | 1514 |
 | `.yaml` | 1473 |
 | `.json` | 1395 |
 | `.py` | 801 |
-| `.rs` | 541 |
+| `.rs` | 552 |
 | `.tsx` | 377 |
 | `(keine)` | 363 |
 | `.yml` | 285 |
 | `.ts` | 196 |
-| `.toml` | 98 |
+| `.toml` | 99 |
 | `.js` | 52 |
 | `.txt` | 50 |
 | `.sh` | 24 |
@@ -62,10 +62,10 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Bereich | Dateien | Inhalt |
 |---------|---------|--------|
-| `docs` | 5077 | Dokumentation und Archive |
+| `docs` | 5079 | Dokumentation und Archive |
 | `standards` | 2166 | Normative Standards und Werkzeuge |
 | `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
-| `components` | 879 | Chain-Komponenten (kanonischer Code) |
+| `components` | 891 | Chain-Komponenten (kanonischer Code) |
 | `apps` | 857 | Produkt-Anwendungen |
 | `ai` | 504 | KI-, Sprach- und Engine-Schicht |
 | `modules` | 208 | Module ohne eigene Produktschicht |
@@ -108,4 +108,4 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `docs/os-docs/docs/archive/monorepo-full/src/modules/atc-franchise` | 40 |
 | `standards/standards/sc` | 40 |
 
-… insgesamt 2010 Verzeichnisse.
+… insgesamt 2014 Verzeichnisse.
