@@ -173,6 +173,21 @@ berechnen" beschreibt derzeit keine Gefahr, weil der Zustand nicht in die
 Blockgueltigkeit eingeht. Sobald Vertragsausfuehrung Teil der Blockgueltigkeit wird,
 ist die Frage sofort scharf, und dann fehlt die Zustandswurzel im Block.
 
+### Der zweite Ausfuehrungspfad: EXEC-GATE
+
+Neben atclang gibt es einen aelteren, im Betrieb benutzten Weg:
+`components/contracts/exec_chain/*.atc` wird durch `assemble.py` in ein Textformat
+`.ops` uebersetzt und von `atc-vm-runner --ops` auf der ATVM ausgefuehrt
+(`components/vm/src/main.rs:1-12`, `components/vm/tests/exec_chain_e2e.rs:1-12`).
+Der `.ops`-Parser liegt in `components/vm/src/ops.rs:31`; 12 Tests in
+`exec_chain_e2e.rs` decken ihn ab.
+
+Bedeutung fuer die Fragen 1 bis 3: Die VM wird real benutzt, aber von einer
+zweiten, aelteren Sprachfront. Der Compiler aus Frage 1 ist daran nicht beteiligt.
+Damit gibt es drei Traeger fuer denselben Vertragsbegriff: `ATCA`
+(atclang-Kompilat), `ATCB` (VM-Container) und `.ops` (Assembler-Text). Nur der
+letzte Weg ist heute durchgehend in Benutzung, und er ist textuell.
+
 ## 2. Befunde
 
 | ID | Befund | Schwere | Ort |
@@ -189,6 +204,8 @@ ist die Frage sofort scharf, und dann fehlt die Zustandswurzel im Block.
 | IV-10 | Konsens prueft keine Ausfuehrung, Blockimport rechnet nicht nach. Keine Zustandswurzel im Block. | hoch | `consensus.rs:116`, `chain.rs:177-200` |
 | IV-11 | Offene Semantikdivergenz: `i64` geprueft gegen `u64` umlaufend, `Lt` vorzeichenbehaftet gegen vorzeichenlos. Maschinenlesbar in `DIVERGENZEN`. | mittel, bewusst offen | `components/system/src/backend.rs:32` |
 | IV-12 | Keine Ereignisse: `emit` wird im Lowering verworfen, das Receipt hat kein Ereignisfeld. Fuer Token-Standards fehlt die Spur. | mittel | Anlass von `standards/atc/candidates/ATC-BC-002-CANDIDATE.md` Abschnitt 1 |
+
+| IV-13 | Drei Vertragsfronten statt einer: `atclang` (ATCA), VM-Container (ATCB) und EXEC-GATE (`.ops`). Nur der `.ops`-Weg ist heute durchgehend benutzt, und er umgeht den Compiler. | hoch | `components/contracts/exec_chain`, `components/vm/src/ops.rs:31` |
 
 Was **traegt** und nicht in Frage gestellt wird:
 
@@ -266,6 +283,10 @@ fuehrt seine Fachlogik aus.
 6. **D6 Identitaet.** `caller` als `u64` gegen DID: entweder eine kanonische,
    kollisionsfreie Abbildung, oder `caller` wird ein ABI-Wert und die VM bekommt
    einen Identity-Host-Aufruf.
+
+7. **D7 Ein Frontend.** Welcher Weg ist der kanonische Vertragspfad: `atclang`
+   oder EXEC-GATE (`.ops`)? Zwei Frontends nebeneinander bedeuten zwei Semantiken,
+   zwei Testkoerper und zwei Wahrheiten fuer denselben Vertrag.
 
 ## 6. Status nach Evidenzstufe
 
