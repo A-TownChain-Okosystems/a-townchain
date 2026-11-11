@@ -1,0 +1,22 @@
+[package]
+name = "atc-system"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "ATC-System — ein durchgehender Pfad: Quelle -> Kompilat -> Artefakt -> Admission -> VM -> Kette"
+
+[[bin]]
+name = "atc-system"
+path = "src/main.rs"
+
+[lib]
+name = "atc_system"
+path = "src/lib.rs"
+
+[dependencies]
+atc-core = { path = "../../ai/atclang/crates/atc-core" }
+atc-vm = { path = "../vm" }
+atc-exec-admission = { path = "../exec-admission" }
+atc-node = { path = "../node" }
+atc_wallet = { path = "../wallet" }
+secp256k1 = "0.31"
