@@ -1,7 +1,7 @@
 # ATC-HASH-002 — SHA-256 Cryptographic Hash Standard (KANDIDAT Rev. 3)
 
 > **Status:** `CANDIDATE`
-> **Normative Registrierung:** eingetragen als `status: candidate` in `registry/standards.yaml` (atc-standards), verifiziert am 11.11.2026
+> **Normative Registrierung:** `BLOCKED` — Branchschutz auf `atc-standards` verlangt Pull Request und 14 Statusprüfungen; die Prüfungen können wegen der unbestätigten Committer-Adresse nicht starten (siehe 0.1)
 > **Unabhängige ATC-Testvektoren:** ERHOBEN (Abschnitt 8), erzeugt mit OpenSSL/Hashlib, nicht mit dem geprüften Code
 > **Hashinventar:** PENDING
 > **Code-Migration:** BLOCKED
@@ -27,9 +27,28 @@ Konsequenz: Die Regel des Registers „Kein Eintrag = kein Standard" galt für T
 schon immer. Der Code hat eine Kennung erfunden, die nie ein Standard war. Dieses Dokument
 schließt die Lücke, statt eine Behauptung zu erben.
 
-Registrierung erfolgt mit zwei Einträgen: `ATC-HASH-002` als `candidate`, `ATC-HASH-001` als
-`retired` mit `supersedes`-Verweis, damit die Kennung künftig auffindbar und als nicht
-konsensfähig markiert ist.
+Registrierung ist vorbereitet, aber nicht wirksam. Der Versuch eines direkten Commits auf
+`atc-standards` wurde abgewiesen.
+
+### 0.1 Warum die Registrierung nicht wirksam ist (verifiziert 11.11.2026)
+
+```
+PUT /repos/.../atc-standards/contents/standards/atc/candidates/ATC-HASH-002-CANDIDATE.md
+HTTP 409: "Could not create file: Changes must be made through a pull request.
+          14 of 14 required status checks are expected."
+```
+
+Der Branchschutz ist korrekt und wird nicht umgangen. Der Pull-Request-Weg ist ebenfalls
+versperrt: Alle push-getriggerten Workflows enden wegen der unbestätigten
+Committer-Adresse in `startup_failure`, damit kann keine der 14 erwarteten Prüfungen grün
+werden. Ergebnis: `ATC-HASH-002` bleibt **nicht registriert**, bis die Adresse bestätigt ist.
+
+Die zwei vorbereiteten Registerzeilen (einzufügen nach `ATC-STD-NET-009`):
+
+```yaml
+  - {id: ATC-HASH-002, title: "SHA-256 Cryptographic Hash Standard (Konsenshashgrundlage: Blockhash, Merkle, State, Receipt, Tx-ID)", version: "1.0.0", status: candidate, category: crypto, authority: "A-TownChain-Okosystems", owner: "Michael (Owner-Entwurf) / Standards Governance", normative: true, file: standards/atc/candidates/ATC-HASH-002-CANDIDATE.md, mandate: "Owner-Entscheidung 11.11.2026 (SHA-256 als Konsenshashgrundlage); Vektoren unabhaengig erhoben"}
+  - {id: ATC-HASH-001, title: "TownHash-256 (Devnet-Algorithmus, nicht kryptoanalysiert; ersetzt durch ATC-HASH-002)", version: "0.9.0", status: retired, category: crypto, authority: "A-TownChain-Okosystems", owner: "Michael (Owner-Entwurf) / Standards Governance", normative: true, file: standards/atc/candidates/ATC-HASH-002-CANDIDATE.md}
+```
 
 ---
 
@@ -415,7 +434,7 @@ Rückfallpfad.
 ```
 ATC-HASH-002
   CANDIDATE
-  Normative Registrierung: EINGETRAGEN (candidate, 11.11.2026)
+  Normative Registrierung: BLOCKED (Branchschutz + 14 Checks, CI tot)
   Unabhängige ATC-Testvektoren: ERHOBEN (Abschnitt 8)
   Grenzlängen-Vektoren: PENDING
   Hashinventar: PENDING
