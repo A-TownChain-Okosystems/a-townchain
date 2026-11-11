@@ -5,7 +5,7 @@ version: 1.2.0
 status: active
 owner: A-TownChain-Okosystems
 created: 2026-09-08
-updated: 2026-09-29
+updated: 2026-11-11
 standard: ATC-STD-MD-001
 ---
 
@@ -40,6 +40,25 @@ This work is NOT yet a mainnet release. SDK/Node integration, Rust↔TypeScript 
 Purpose separation is mandatory: Transaction Key ≠ Consensus Key ≠ Node Identity ≠ Service Identity ≠ Aurora Agent Identity.
 
 Ed25519 is not globally removed; it remains available only where explicitly defined by a purpose-bound identity contract.
+
+## Integrationspfad (11.11.2026)
+
+`components/system` verbindet Quelle, Compiler, Artefakt, Freigabe, VM und Block zu einem
+Pfad. Die Stufen werden getrennt gefuehrt und nicht vermischt:
+
+| Stufe | Stand |
+|---|---|
+| IMPLEMENTED | ja, Crate `atc-system` im Workspace |
+| TESTED (lokal) | 46 Tests im Crate, 662 im Workspace, 0 Fehler, clippy/fmt sauber |
+| GATES A-E | nachgewiesen, siehe `docs/audits/SYSTEM-INTEGRATION-2026-11-11.md` |
+| CI_VERIFIED | **offen** (kein Actions-Lauf, Committer-Mail unbetaetigt) |
+| E2E_VERIFIED | **offen** (ein Prozess, keine zwei Validatoren) |
+| VERIFIED | **nicht erreicht** |
+
+Bekannte Abweichungen, die ausdruecklich offen bleiben: Ueberlauf und Vorzeichen
+(Entwurf in `docs/decisions/VM-INTEGER-SEMANTICS-DRAFT.md`), keine Aufrufkonvention,
+Lokale als Speicherplaetze, kein Nonce, kein Gasverbrauch im Beleg, keine persistente
+Authority. Lokale Tests sind `TESTED`, nie `CI_VERIFIED`.
 
 ## Mainnet release gate
 
