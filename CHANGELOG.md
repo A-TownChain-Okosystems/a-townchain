@@ -2,6 +2,51 @@
 
 ## [Unreleased] — 2026-11-11
 
+### Added (Integrationspfad: Quelle -> Artefakt -> Freigabe -> VM -> Kette)
+- Neues Crate `components/system` (Paket `atc-system`, Workspace-Mitglied): verbindet die
+  bisher getrennten Stufen zu **einem** Pfad und ist ausdruecklich Integrations- und
+  Kontrollschicht, keine zweite VM und kein zweiter Compiler.
+  - `backend.rs` — Uebersetzer von ATCLang-Bytecode (`atc-core`) auf ATCB-Operationen
+    (`atc-vm`). Sprungziele werden absolut umgerechnet, die PC-Zuordnung wird
+    mitgeliefert. Alles, was nicht exakt abbildbar ist, wird abgelehnt: `call` (die VM
+    hat keine Aufrufkonvention), `Neg`, `Pop`, negative Konstanten, Sprungziele
+    ausserhalb des Programms, Programme ueber 65 536 Operationen.
+  - `seal.rs` — Freigabe mit echter Signatur: secp256k1-ECDSA ueber den SHA-256 der
+    kanonischen Policy-Bytes, Pruefung gegen den oeffentlichen Schluessel. Eine gueltige
+    Signatur bleibt von der Autorisierung des Signierers getrennt.
+  - `state.rs` — Vertragszustand und Zustandswurzel (Domain, Code-Hash, Woerter).
+  - `system.rs` — Deployment (kompilieren, abbilden, Artefakt, Freigabe, Registrierung)
+    und Ausfuehrung (Artefakt aus den Bytes, Freigabe, Zustand aus der Kette, Gas,
+    Blockbuchung). Faellt eine Stufe aus, entsteht kein Block und keine
+    Zustandsaenderung.
+  - `main.rs` — CLI `atc-system demo | run <datei.atc> [--gas N]`.
+- `components/vm/src/vm.rs`: `Vm::from_artifact_with_context(artifact, caller, storage)`.
+  Die Kette liefert den Zustand, die Generation kommt weiterhin ausschliesslich aus dem
+  Artefakt; ein eigener Test haelt beides gleichzeitig fest.
+- Evidenz: `docs/audits/SYSTEM-INTEGRATION-2026-11-11.md` (Gates A-E, Messwerte,
+  Evidenzstufen, offene Punkte) und `docs/decisions/VM-INTEGER-SEMANTICS-DRAFT.md`.
+
+### Verified (lokal, 11.11.2026 — Stufe TESTED, nicht CI_VERIFIED)
+- `cargo test --workspace`: 662 bestanden, 0 fehlgeschlagen; davon 46 in `atc-system`
+  (13 Striktheit, 11 Differential, 11 E2E, 11 Signatur).
+- `cargo test -p atc-vm`: 132 Tests in fuenf Suiten.
+- `cargo clippy -p atc-system --all-targets --no-deps -- -D warnings`: 0;
+  `rustfmt --check`: 0.
+- `atc-system demo`: 19 ATCLang-Instruktionen -> 20 ATCB-Operationen, 138-Byte-Artefakt,
+  Ergebnis 10, Blockhoehe 2, `Chain::verify` gruen.
+
+### Known limits (nicht behoben, bewusst benannt)
+- **Ueberlauf und Vorzeichen**: der Referenzweg rechnet `i64` geprueft, die VM `u64`
+  umlaufend. Der Entwurf fuer die verbindliche Semantik liegt als
+  `docs/decisions/VM-INTEGER-SEMANTICS-DRAFT.md`; nichts davon ist umgesetzt, beide
+  Faelle sind als Test festgehalten und maschinenlesbar als Divergenz markiert.
+- Keine Aufrufkonvention: nur die Einstiegsfunktion wird uebersetzt, weitere Funktionen
+  sind unerreichbar.
+- Lokale werden Speicherplaetze (offenes Speichermodell), kein Nonce, kein
+  Gasverbrauch im Beleg, keine persistente Authority.
+- **Keine CI-Evidenz**: `git push` scheitert an der unbetaetigten Committer-Mail,
+  Uebertragung ueber die API; `CI_VERIFIED` bleibt offen.
+
 ### Changed (Doppelungsaufloesung der Kernel-Ebene)
 - `kernel/globus-os` entfernt: 482 Dateien, 54 davon abweichend vom Kanon `globus-os`,
   18 Dateien, die dort nicht existieren (14 davon byte-gleich zu
