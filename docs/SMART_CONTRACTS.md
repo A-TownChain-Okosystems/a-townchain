@@ -155,6 +155,12 @@ fehlendem Compiler-Binary.
   keine Invariante tragen, die nur in einem `require` steht — die Zusicherung
   muss als Rechnung im Rückgabewert liegen (so halten es t14–t16). Ein
   Assert-Opcode ist eine ATCB-v2-Entscheidung.
+- **Ausfuehrung auf der Kette ist noch nicht vorhanden.** Ein Vertrag aus
+  `atclang` erreicht die Kette nur ueber `atc-system`, und dort nur seine
+  Einstiegsfunktion; `call`, Calldata und Rueckgabedaten fehlen, der Knoten selbst
+  ruft keine VM auf. Belegt am 11.11.2026 in
+  [`audits/ATCLANG-VM-CHAIN-INTEGRATION-2026-11-11.md`](audits/ATCLANG-VM-CHAIN-INTEGRATION-2026-11-11.md),
+  Befunde IV-01 bis IV-13.
 - **CI-Anbindung fehlt.** Das Gate läuft lokal; die Integration als CI-Schritt ist
   durch fehlenden workflow-Scope des Agent-Tokens blockiert (bekannte
   Owner-Aktion, F-009/F-010).
@@ -168,3 +174,7 @@ fehlendem Compiler-Binary.
    (SC-005), dann `audited: true` setzen.
 3. Deploy-Record-Format beim ersten Devnet-Deploy befüllen (SC-006).
 4. Registry-Gate in CI verankern, sobald der workflow-Scope verfügbar ist.
+5. Integrationsbefunde IV-01 bis IV-13 abarbeiten, beginnend mit den
+   Entscheidungen D1 bis D7 aus dem Integration-Audit (Bytecode-Kopf,
+   Aufrufkonvention, Speichermodell, Gas und Gebuehren, Konsens, Identitaet,
+   kanonisches Frontend).
