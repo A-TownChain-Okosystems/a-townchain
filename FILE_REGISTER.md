@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-11 01:42 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `4395eae` (letzter Commit 2026-11-11)
+> **Erzeugt:** 2026-11-11 12:07 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `7aeb08a` (letzter Commit 2026-11-11)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,30 +13,30 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 11908 |
+| **Total Dateien** | 11345 |
 | **Bereiche** | 15 |
-| **Verzeichnisse** | 2144 |
+| **Verzeichnisse** | 2010 |
 
 ### Nach Dateityp
 
 | Endung | Dateien |
 |--------|---------|
-| `.md` | 4190 |
-| `.atc` | 1565 |
-| `.yaml` | 1479 |
-| `.json` | 1404 |
-| `.rs` | 826 |
+| `.md` | 4068 |
+| `.atc` | 1514 |
+| `.yaml` | 1473 |
+| `.json` | 1395 |
 | `.py` | 801 |
-| `(keine)` | 390 |
-| `.tsx` | 378 |
-| `.yml` | 296 |
-| `.ts` | 198 |
-| `.toml` | 145 |
+| `.rs` | 541 |
+| `.tsx` | 377 |
+| `(keine)` | 363 |
+| `.yml` | 285 |
+| `.ts` | 196 |
+| `.toml` | 98 |
 | `.js` | 52 |
 | `.txt` | 50 |
 | `.sh` | 24 |
 | `.cjs` | 22 |
-| `.lock` | 19 |
+| `.lock` | 17 |
 | `.ops` | 16 |
 | `.html` | 11 |
 | `.example` | 10 |
@@ -67,10 +67,10 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
 | `components` | 879 | Chain-Komponenten (kanonischer Code) |
 | `apps` | 857 | Produkt-Anwendungen |
-| `kernel` | 720 | Kernel- und OS-Ebenen |
 | `ai` | 504 | KI-, Sprach- und Engine-Schicht |
 | `modules` | 208 | Module ohne eigene Produktschicht |
 | `tooling` | 164 | Werkzeuge und Engineering-Gates |
+| `kernel` | 157 | Kernel- und OS-Ebenen |
 | `(root)` | 21 | Wurzeldateien |
 | `.github` | 16 | CI- und Repository-Konfiguration |
 | `tools` | 16 | Einstiegspunkte |
@@ -104,8 +104,8 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `standards/standards/security` | 50 |
 | `standards/standards/repository` | 48 |
 | `docs/os-docs/aistudio` | 44 |
-| `kernel/globus-os/modules/atc-shivacore/kernel/src` | 42 |
 | `docs/os-docs` | 41 |
 | `docs/os-docs/docs/archive/monorepo-full/src/modules/atc-franchise` | 40 |
+| `standards/standards/sc` | 40 |
 
-… insgesamt 2144 Verzeichnisse.
+… insgesamt 2010 Verzeichnisse.
