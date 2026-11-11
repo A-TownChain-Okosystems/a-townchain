@@ -6,7 +6,7 @@
 > **Hashinventar:** PENDING
 > **Code-Migration:** BLOCKED
 > **Ersetzt:** ATC-HASH-001 (TownHash-256) für alle Konsensflächen
-> **Datum:** 11.11.2026 · Rev. 3 (Rev. 2: Kodierung; Rev. 3: Merkle-Eindeutigkeit, Signaturbindung, Längengrenzen, Vektoren, Registry)
+> **Datum:** 11.11.2026 · Rev. 3.1 (Rev. 2: Kodierung; Rev. 3: Merkle-Eindeutigkeit, Signaturbindung, Längengrenzen, Vektoren, Registry; **Rev. 3.1: Tiefenformel, Prüfreihenfolge vor Allokation, Signatur-Prüfordnung, ATC-HASH-001 als nicht registrierte Referenz statt als abgelöster Standard**)
 > **Grundlage:** Owner-Entscheidung 11.11.2026 (SHA-256 als Konsenshashgrundlage)
 
 ---
@@ -43,16 +43,15 @@ versperrt: Alle push-getriggerten Workflows enden wegen der unbestätigten
 Committer-Adresse in `startup_failure`, damit kann keine der 14 erwarteten Prüfungen grün
 werden. Ergebnis: `ATC-HASH-002` bleibt **nicht registriert**, bis die Adresse bestätigt ist.
 
-Die zwei vorbereiteten Registerzeilen (einzufügen nach `ATC-STD-NET-009`):
+Die vorbereitete Registerzeile (einzufügen nach `ATC-STD-NET-009`), **eine** Zeile:
 
 ```yaml
-  - {id: ATC-HASH-002, title: "SHA-256 Cryptographic Hash Standard (Konsenshashgrundlage: Blockhash, Merkle, State, Receipt, Tx-ID)", version: "1.0.0", status: candidate, category: crypto, authority: "A-TownChain-Okosystems", owner: "Michael (Owner-Entwurf) / Standards Governance", normative: true, file: standards/atc/candidates/ATC-HASH-002-CANDIDATE.md, mandate: "Owner-Entscheidung 11.11.2026 (SHA-256 als Konsenshashgrundlage); Vektoren unabhaengig erhoben"}
-  - {id: ATC-HASH-001, title: "TownHash-256 (Devnet-Algorithmus, nicht kryptoanalysiert; ersetzt durch ATC-HASH-002)", version: "0.9.0", status: retired, category: crypto, authority: "A-TownChain-Okosystems", owner: "Michael (Owner-Entwurf) / Standards Governance", normative: true, file: standards/atc/candidates/ATC-HASH-002-CANDIDATE.md}
+  - {id: ATC-HASH-002, title: "SHA-256 Cryptographic Hash Standard (Konsenshashgrundlage: Blockhash, Merkle, State, Receipt, Tx-ID)", version: "1.0.0", status: candidate, category: crypto, authority: "A-TownChain-Okosystems", owner: "Michael (Owner-Entwurf) / Standards Governance", normative: true, file: standards/atc/candidates/ATC-HASH-002-CANDIDATE.md, mandate: "Owner-Entscheidung 11.11.2026 (SHA-256 als Konsenshashgrundlage); Vektoren unabhaengig erhoben; Hinweis: der Code referenziert ATC-HASH-001, das nie registriert war und keine normative Autoritaet besitzt"}
 ```
 
 ---
 
-## 1. Ablösung von ATC-HASH-001
+## 1. Verhältnis zu ATC-HASH-001 (nie registriert, keine Ablösung)
 
 | Feld | ATC-HASH-001 | ATC-HASH-002 |
 |---|---|---|
@@ -60,10 +59,21 @@ Die zwei vorbereiteten Registerzeilen (einzufügen nach `ATC-STD-NET-009`):
 | Kryptoanalyse | keine, ausdrücklich nicht kryptoanalysiert | umfangreich, jahrzehntelang öffentlich geprüft |
 | Ausgabe | 32 Byte | 32 Byte |
 | Konsensflächen | **verboten** | **vorgeschrieben** |
-| Status | `retired` (nie registriert, jetzt nachgetragen) | `candidate` |
+| Status | **nie registriert, kein Registereintrag, ungültige Referenz** | `candidate` |
 
 **H-1.1 (MUSS)** ATC-HASH-001 darf nicht als normative Grundlage für Blockhashes,
 Transaktions-IDs, Merkle-Wurzeln, Zustandswurzeln oder Belegwurzeln referenziert werden.
+
+**H-1.1a (MUSS)** ATC-HASH-001 wird **nicht** als Standard geführt, auch nicht als
+zurückgezogener. Es gibt keinen gültigen alten Registereintrag, der formal ersetzt werden
+könnte; ein nachgetragener `retired`-Eintrag würde die Behauptung erzeugen, es habe ihn
+gegeben. Die Kennung ist stattdessen an jeder Stelle, die sie nennt, als **nicht registrierte
+normative Referenz** zu kennzeichnen, und die Referenz ist zu entfernen.
+
+Grundlage: Register mit 536 Einträgen, keine `ATC-HASH`-Kennung, Regel „kein Eintrag = kein
+Standard". Damit ist die Governance-Lücke benannt: Der Code hat eine normative Autorität
+zitiert, die nie erteilt wurde. Das ist kein Dokumentationsfehler, sondern ein
+Autoritätsverlust, der nur durch eine echte Registrierung geheilt wird.
 
 **H-1.2 (MUSS)** Die Implementierung bleibt erhalten, gekennzeichnet als „nicht
 kryptografisch validierte Eigenentwicklung". Historische Testergebnisse gelten nur für
@@ -215,6 +225,30 @@ gegen einen mitgelieferten Wert. Weicht der mitgelieferte Hash ab, wird der Bloc
 **H-5.7 (MUSS)** Ein Block mit ungültiger Signatur wird verworfen und gezählt, nicht
 repariert. Eine Signatur, die nur nach Normalisierung gültig wäre, gilt als ungültig.
 
+**H-5.8 (MUSS) — Prüfordnung, fail-closed.** Ein eingehender Block wird in genau dieser
+Reihenfolge geprüft; jeder Schritt darf ablehnen, keiner darf einen späteren vorwegnehmen
+oder einen früheren überspringen:
+
+| # | Prüfung | Ablehnung wenn |
+|---|---|---|
+| 1 | Längen | Header nicht exakt 195 Byte, Signatur nicht exakt 64 Byte |
+| 2 | `version`, `chain_id` | unbekannt oder fremdes Netz |
+| 3 | Höhe und `prev_hash` | nicht `best.height + 1` oder Vorgänger unbekannt |
+| 4 | Wurzeln nachrechnen | `tx_root`, `receipt_root`, `state_root` weichen ab |
+| 5 | Blockhash neu berechnen | mitgelieferter Hash ≠ neu berechnet |
+| 6 | Proposer im Validator-Set | Schlüssel unbekannt, inaktiv oder nicht eindeutig zugeordnet |
+| 7 | Kanonizität der Signatur | High-S, `r = 0`, `s = 0`, DER oder abweichende Kodierung |
+| 8 | Signatur gegen den **neu berechneten** Hash | Verifikation schlägt fehl |
+
+**H-5.9 (MUSS)** Der Blockhash ist die **einzige** Größe, die signiert wird. Es gibt keinen
+zweiten signierten Gegenstand, der denselben Block autorisiert, und keinen Weg, die Signatur
+auf einen anderen Header zu übertragen: jede Änderung eines Headerfeldes ändert den Hash und
+damit die Signaturbasis.
+
+**H-5.10 (MUSS)** Die Proposer-Zuordnung ist eindeutig: ein Konsensschlüssel gehört genau
+einem Validator, und ein Validator hat genau einen aktiven Konsensschlüssel. Doppelte
+Zuordnungen machen das Validator-Set ungültig, nicht den Block reparierbar.
+
 ---
 
 ## 6. Längen, Grenzen, Überläufe (neu in Rev. 3)
@@ -276,8 +310,35 @@ als `(a,b,c,c)` (Abschnitt 8, Vektoren M3 und M4).
 Transaktionen, wie sie in der Blockauswahl festgelegt wurde. Die Wurzel ist
 reihenfolgeabhängig; eine Sortierung nach ID ist unzulässig.
 
-**H-7.7 (MUSS) — Maximale Tiefe.** Höchstens 2²⁰ Blätter, damit höchstens Tiefe 20. Eine
-Implementierung, die tiefer baut, hat die Grenze aus H-6.4 verletzt.
+**H-7.7 (MUSS) — Maximale Blattzahl und Tiefe, exakt bezogen.** Die Grenze ist die
+**Blattzahl**, nicht die Tiefe:
+
+| Blätter `n` | Tiefe (= Ebenen über den Blättern) |
+|---|---|
+| 0 | keine (Leerwurzel nach H-7.3) |
+| 1 | 0 (Wurzel ist das Blatt) |
+| 2 | 1 |
+| 3 | 2 |
+| 4 | 2 |
+| 5 … 8 | 3 |
+| `n` | `ceil(log2(n))` für `n ≥ 2` |
+| 2²⁰ (1 048 576) | **20 (Obergrenze)** |
+
+**H-7.7a (MUSS)** Die Tiefe ist eine **Folge** der Blattzahl, kein eigenständiger Parameter.
+Wer die Tiefe begrenzt, ohne die Blattzahl zu begrenzen, hat nichts begrenzt. Umgekehrt gilt:
+`n ≤ 2²⁰` ist die einzige normative Grenze, Tiefe 20 ist ihre Rechnung.
+
+**H-7.7b (MUSS) — Prüfung vor der Allokation.** Die Reihenfolge ist verbindlich:
+
+1. Blattzahl gegen `2²⁰` prüfen (Ablehnung, bevor irgendein Puffer wächst).
+2. Summe der Payload-Längen gegen 4 MiB prüfen.
+3. Erst danach Puffer für die nächste Ebene allokieren, größenbeschränkt auf `ceil(n/2)`.
+4. Bei jeder Ebene erneut prüfen, dass die Zahl der Knoten nicht größer wird als die der
+   vorigen (Invariante gegen Endlosschleifen und gegen Aufblähung durch fehlerhafte
+   Hochzieh-Logik).
+
+Eine Implementierung, die zuerst allokiert und danach prüft, ist nicht konform, auch wenn sie
+das richtige Ergebnis liefert.
 
 **H-7.8 (MUSS) — Darstellung der Wurzel.** 32 rohe Bytes. Hex nur zur Anzeige. Die Wurzel
 ist eine Bytefolge, keine Zahl; es gibt keine Big-Endian-Interpretation der Wurzel selbst.
@@ -373,6 +434,34 @@ Einträge `alice → "50"`, `bob → "100"`.
 | gleiche Einträge in anderer Einfügereihenfolge | `02af7debe4171f10d83046f7517fa7f341233fde1f37c2b6eebc3ba13b84539e` |
 | leer | `51f8d7e3912a7e7c7627d5a684181aab813f5bac17f382e9df29a1371ea37502` |
 
+### 8.8 Tiefe und Grenzprüfung (Rev. 3.1, unabhängig gerechnet)
+
+Ausgabe des Skripts, Abschnitt `checks_rev31()`:
+
+| `n` Blätter | Tiefe |
+|---|---|
+| 0 | Leerwurzel (eigener Fall) |
+| 1 | 0 |
+| 2 | 1 |
+| 3, 4 | 2 |
+| 5 … 8 | 3 |
+| 9 … 12 | 4 |
+| 1 048 576 | **20** |
+
+Die Hochzieh-Konstruktion wurde über alle Blattzahlen 1 bis 12 durchgerechnet; jede Ebene
+schrumpft, jede Wurzel ist 32 Byte, kein Fall läuft über. Die Grenzprüfung vor der Allokation
+verhält sich an der Kante wie festgelegt:
+
+| Blätter | Payload | Ergebnis |
+|---|---|---|
+| 1 048 576 | 0 | akzeptiert |
+| 1 048 577 | 0 | abgelehnt, `ADM-LEN-01` |
+| 1 | 4 194 304 | akzeptiert |
+| 1 | 4 194 305 | abgelehnt, `ADM-LEN-02` |
+
+Damit ist die Tiefengrenze nicht nur behauptet, sondern als Folge der Blattzahl belegt: die
+Prüfung sitzt **vor** der Allokation und lehnt genau an der Kante ab.
+
 ### 8.7 Grenzlängen
 
 Für die Padding-Kanten sind zusätzlich die Längen 0, 1, 55, 56, 57, 63, 64, 65, 119, 120,
@@ -442,7 +531,8 @@ ATC-HASH-002
   Implementierungsfreigabe: BLOCKED
 
 ATC-HASH-001
-  RETIRED (nachgetragen, war nie registriert)
+  NICHT REGISTRIERT, keine normative Autorität
+  Referenz im Code = ungültig, zu entfernen
   Für Konsensflächen ausgeschlossen
   Implementierung unter Bestandsschutz, gekennzeichnet
 ```
