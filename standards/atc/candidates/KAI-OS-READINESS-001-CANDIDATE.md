@@ -65,8 +65,10 @@ Katalogs; jede abweichende Tabelle ist Diskussionsbeitrag, nicht Freigabe.
 | 8 | Dateisystem | Kernel `vfs.rs`, `atcfs.rs` | Block-Device (7) | Struktur vorhanden | `RESIDUAL` | Quelle für Bytes fehlt, damit ist `vfs`/`atcfs` nicht nutzbar |
 | 9 | `globus-init` | **keine** | Dateisystem (8), Prozessstart | nicht vorhanden | `BLOCKED` | kein Pfad im Baum; was läuft, ist `init_program` aus der Ramdisk, gestartet vom Kernel |
 | 10 | Service-Lifecycle | – | `globus-init` (9) | nicht vorhanden | `BLOCKED` | ohne Init kein Start, Stopp, Neustart, Abhängigkeitsordnung |
-| 11 | Code-Admission | **keine** | Kernel, Artefaktformat | nicht vorhanden | `BLOCKED` | kein Modul für `tpm`, `attest`, `measure`, `verify`, `sign` in `kernel/src` |
-| 12 | Secure Update / Rollback | **keine** | Admission (11), Persistenz (7) | nicht vorhanden | `BLOCKED` | keine Updatekomponente im Baum |
+| 11 | Code-Admission im Betriebssystem | **keine** | Kernel, Artefaktformat | kein Durchsetzungspunkt | `BLOCKED` | im Kernel kein Modul für `tpm`, `attest`, `measure`, `verify`, `sign`; der ELF-Loader prüft weder Signatur noch Herkunft |
+| 11a | Admission-Entscheidungslogik (Userspace) | `a-townchain` `components/exec-admission` | Artefaktformat, Signaturprüfer | 21 Tests, 12 unterscheidbare Fehlercodes | `IMPLEMENTED` | Stufen liefern getrennte Codes (AuthorityUnavailable, CapabilityNotGranted, ComponentNotAllowed, ExpiredOrRolledBack, IntegrityMismatch, IsolationUnavailable…); genutzt von `components/system` |
+| 11b | Durchsetzungspunkt (Enforcement) | **keine** | 11a, Kernel, Bootpfad | keiner vorhanden | `BLOCKED` | keine Aufrufstelle vor dem ersten Instruktionsabruf; ein grünes Entscheidungsergebnis ohne Aufrufer verhindert nichts |
+| 12 | Secure Update / Rollback | **keine** | Admission (11b), Persistenz (7) | nicht vorhanden | `BLOCKED` | keine Updatekomponente im Baum |
 | 13 | Attestation / Measured Boot | **keine** | Messkette, TPM oder gleichwertig | nicht vorhanden | `BLOCKED` | siehe 11, keine Messstelle |
 | 14 | Kernel-SSOT | `globus-os` | – | Monorepo ohne Kernelkopie | `IMPLEMENTED` | `a-townchain` Baum: 13 487 Dateien, 0 Treffer für `kernel/globus-os/` oder `kernel/kai-os/`; Doku-Drift im Spiegel ist davon getrennt und keine zweite Implementierungswahrheit |
 | 15 | ATC-VM (Crate) | `a-townchain` `components/vm` | Gasmodell, Fehlercodes | Workspace-Member vorhanden | `PENDING EVIDENCE` | letzter grüner Lauf 09./10.11., heute nicht erneut ausgeführt |
