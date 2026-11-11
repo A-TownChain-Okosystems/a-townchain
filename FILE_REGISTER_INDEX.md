@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-11 12:07 UTC+2 aus `origin/main` @ `7aeb08a`.
+> Vollständige Dateiliste. Erzeugt 2026-11-11 12:36 UTC+2 aus `origin/main` @ `0a1858b`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11345 Dateien**
+**Total: 11359 Dateien**
 
-## docs (5077)
+## docs (5079)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -20,6 +20,7 @@
 - `docs/audits/INTEGRATION-MATRIX-2026-11-09.md`
 - `docs/audits/REPOSITORY-AUDIT-2026-09-16.md`
 - `docs/audits/SB-01-SCHRITTOBERGRENZE-ENTWURF-2026-11-09.md`
+- `docs/audits/SYSTEM-INTEGRATION-2026-11-11.md`
 - `docs/audits/VM-CODE-AUDIT-2026-11-09.md`
 - `docs/audits/VM-P0-3-SNAPSHOT-AUDIT-2026-11-09.md`
 - `docs/audits/VM-P0-FINAL-AUDIT-2026-11-09.md`
@@ -29,6 +30,7 @@
 - `docs/audits/ZERO-TRUST-CODE-EXECUTION-BASELINE-2026-11-09.md`
 - `docs/boot/2026-11-08-uefi-screen.png`
 - `docs/boot/BOOT-EVIDENCE.md`
+- `docs/decisions/VM-INTEGER-SEMANTICS-DRAFT.md`
 - `docs/demo/.atc/compliance.yaml`
 - `docs/demo/.atc/evidence/evidence.yaml`
 - `docs/demo/.atc/lifecycle.yaml`
@@ -8520,7 +8522,7 @@
 - `ecosystem/tools/validate_privacy_policy.py`
 - `ecosystem/tools/validate_runtime_symbol_registry.py`
 
-## components (879)
+## components (891)
 
 - `components/algorithm/.atc/compliance.yaml`
 - `components/algorithm/.atc/evidence/evidence.yaml`
@@ -9222,6 +9224,18 @@
 - `components/storage/tests/TESTPLAN.md`
 - `components/storage/tests/storage_new_tests.rs`
 - `components/storage/tools/determinism_check.py`
+- `components/system/Cargo.toml`
+- `components/system/src/backend.rs`
+- `components/system/src/compile.rs`
+- `components/system/src/lib.rs`
+- `components/system/src/main.rs`
+- `components/system/src/seal.rs`
+- `components/system/src/state.rs`
+- `components/system/src/system.rs`
+- `components/system/tests/backend.rs`
+- `components/system/tests/differential.rs`
+- `components/system/tests/e2e.rs`
+- `components/system/tests/signature.rs`
 - `components/update-authority/Cargo.toml`
 - `components/update-authority/src/lib.rs`
 - `components/vm/.atc/compliance.yaml`
