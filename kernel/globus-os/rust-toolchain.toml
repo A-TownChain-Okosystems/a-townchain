@@ -1,6 +1,0 @@
-# GlobusOS enthaelt einen UEFI-Bootloader (`bootloader` 0.11), dessen Build-Skript
-# unstable Cargo-Flags (-Z) benoetigt. Der Workspace ist deshalb an Nightly gebunden;
-# alle uebrigen Crates des Monorepos bauen weiterhin auf stable.
-[toolchain]
-channel = "nightly"
-components = ["rust-src"]

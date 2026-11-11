@@ -14,15 +14,21 @@ set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+# Doppelungsaufloesung 11.11.2026: Die Kernel-Ebene hat je Repository genau eine
+# Quelle. Die frueheren Kopien kernel/globus-os und kernel/kai-os sind entfernt;
+# gebaut und gebootet wird aus dem kanonischen Auschecken, dessen Pfad hier steht.
+KERNEL_DIR="${GLOBUS_OS_DIR:-$ROOT/../globus-os}"
+OS_DIR="${A_TOWNCHAIN_OS_DIR:-$ROOT/../a-townchain-os}"
 BIN="$ROOT/target/debug"
 WS_ROOT="."
+# Unter-Workspaces im Monorepo. Die Kernel-Workspaces liegen nicht mehr hier:
+# a-townchain-os (kai-os) und globus-os sind eigene Repositories mit eigenem
+# Workspace und eigener CI.
 WS_SUB=(
-  "kernel/kai-os"
   "components/zkp"
   "tooling/atc-engineering"
   "apps/atc-marketplace"
   "ai/genesis-engine"
-  "kernel/globus-os"
 )
 WS_ALL=("$WS_ROOT" "${WS_SUB[@]}")
 CORE_BINS=(atc atc-node atc_wallet atc-vm-runner atc_cli)
@@ -80,10 +86,14 @@ build_kernel() {
   printf '  %-26s ' "globus-os/shivacore"
   local log=/tmp/atc_build_kernel.log
   local bin=target/x86_64-unknown-none/release/shivacore
-  if ( cd kernel/globus-os && cargo +nightly build --release -p shivacore \
+  if [ ! -d "$KERNEL_DIR" ]; then
+    echo "uebersprungen (globus-os nicht ausgecheckt: $KERNEL_DIR, GLOBUS_OS_DIR setzen)"
+    return 0
+  fi
+  if ( cd "$KERNEL_DIR" && cargo +nightly build --release -p shivacore \
         --features x86-boot --target x86_64-unknown-none \
-        -Z build-std=core,alloc ) >"$log" 2>&1 && [ -f "kernel/globus-os/$bin" ]; then
-    local sz; sz=$(du -h "kernel/globus-os/$bin" | cut -f1)
+        -Z build-std=core,alloc ) >"$log" 2>&1 && [ -f "$KERNEL_DIR/$bin" ]; then
+    local sz; sz=$(du -h "$KERNEL_DIR/$bin" | cut -f1)
     echo "ok (bare metal, $sz)"
   else
     echo "FEHLER (Log: $log)"
@@ -113,12 +123,16 @@ cmd_test() {
 cmd_boot() {
   require_cargo
   echo "ShivaCore-Kernel booten (QEMU, UEFI)"
-  local elf=kernel/globus-os/target/x86_64-unknown-none/release/shivacore
+  local elf="$KERNEL_DIR/target/x86_64-unknown-none/release/shivacore"
+  if [ ! -d "$KERNEL_DIR" ]; then
+    echo "  $KERNEL_DIR fehlt: globus-os auschecken oder GLOBUS_OS_DIR setzen"
+    return 1
+  fi
   local out=/tmp/atc_boot; local serial=/tmp/atc_boot_serial.log
   local code=223
   if [ ! -f "$elf" ]; then
     printf '  %-26s ' "Kernel-ELF"
-    if ! ( cd kernel/globus-os && cargo +nightly build --release -p shivacore \
+    if ! ( cd "$KERNEL_DIR" && cargo +nightly build --release -p shivacore \
            --features x86-boot --target x86_64-unknown-none \
            -Z build-std=core,alloc ) >/tmp/atc_boot_kernel.log 2>&1; then
       echo "FEHLER (Log: /tmp/atc_boot_kernel.log)"; return 1
@@ -127,7 +141,7 @@ cmd_boot() {
   fi
 
   printf '  %-26s ' "Boot-Image"
-  if ( cd kernel/globus-os && cargo build -q -p boot && \
+  if ( cd "$KERNEL_DIR" && cargo build -q -p boot && \
        ./target/debug/boot target/x86_64-unknown-none/release/shivacore "$out" ) \
        >/tmp/atc_boot_image.log 2>&1; then
     echo "ok ($out/shivacore-uefi.img)"

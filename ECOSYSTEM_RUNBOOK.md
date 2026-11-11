@@ -22,12 +22,14 @@ tools/ecosystem.sh status    # Übersicht
 | Workspace | Crates | Programme | Rolle |
 | --- | --- | --- | --- |
 | Root (`Cargo.toml`) | 26 | `atc`, `atc-node`, `atc_wallet`, `atc-vm-runner`, `atc_cli` | Kette, Sprache, VM, Wallet, SDK |
-| `kernel/kai-os` | 11 | `kai-os-cli`, `kai-os-node`, `kai-sync-node` | Kernel-Runtime, Node, Netzwerk, State |
-| `kernel/globus-os` | 31 | `boot`, `shivacore`, `atc-linux-edition`, `atc-windows-edition` | OS-Schicht mit UEFI-Bootloader |
 | `ai/genesis-engine` | 19 | `genesis` | Spiel-Engine (Renderer, Physik, ECS) |
 | `tooling/atc-engineering` | 13 | `atc-audit-cli` | Gates, Findings, Verifikation |
 | `components/zkp` | 7 | — | ZKP: Prover, Verifier, Circuits, VM |
 | `apps/atc-marketplace` | 2 | — | Marktplatz |
+
+Kernel-Ebene: `a-townchain-os` (kai-os) und `globus-os` sind **eigene Repositories**
+mit eigenem Workspace und eigener CI. Bis 11.11.2026 lagen Kopien unter `kernel/`;
+sie wichen vom Kanon ab und sind deshalb entfernt (siehe CHANGELOG).
 
 ### ShivaCore-Kernel (Bare Metal)
 
@@ -36,14 +38,16 @@ tools/ecosystem.sh status    # Übersicht
 Ziel und `build-std`:
 
 ```bash
-cd kernel/globus-os
+cd ../globus-os   # kanonisches Auschecken, nicht Teil dieses Monorepos
 cargo +nightly build -p shivacore --features x86-boot \
   --target x86_64-unknown-none -Z build-std=core,alloc
 ```
 
-`./tools/ecosystem.sh build` führt diesen Schritt als achte Zeile aus und
-schreibt `target/x86_64-unknown-none/release/shivacore` (ELF64, x86-64,
-Einstieg `_start`, ~121 KB).
+`./tools/ecosystem.sh build` führt diesen Schritt aus, wenn `GLOBUS_OS_DIR` (Vorgabe
+`../globus-os`) auf ein Auschecken zeigt, und schreibt
+`target/x86_64-unknown-none/release/shivacore` (ELF64, x86-64, Einstieg `_start`,
+~121 KB). Ohne Auschecken meldet der Schritt `uebersprungen` statt aus einer Kopie
+zu bauen.
 
 **Aufgelöst am 08.11.2026.** Der Bau brach zuvor in `sha2` und
 `curve25519-dalek` ab (Debug: `rustc-LLVM ERROR: Do not know how to split the
@@ -79,7 +83,7 @@ Der Kernel spricht über die serielle Schnittstelle, nicht in den Framebuffer �
 ein Bildschirm-Screenshot zeigt nur den Hintergrund. Ein Lauf auf echter
 Hardware ist nicht geprüft, nur QEMU mit TCG-Emulation.
 
-Toolchains: alles baut auf stable. `kernel/globus-os` ist per
+Toolchains: alles baut auf stable. `globus-os` ist per
 `rust-toolchain.toml` an Nightly gebunden, weil das Build-Skript des
 UEFI-Bootloaders unstable Cargo-Flags (`-Z`) setzt. Die Datei gilt nur für
 diesen Unterbaum; alle anderen Workspaces bleiben unberührt.

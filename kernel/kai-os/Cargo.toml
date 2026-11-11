@@ -1,4 +1,0 @@
-[workspace]
-members = ["node", "runtime", "network", "state",
-    "syncd", "ai", "keyring", "health", "cli", "pkg", "integration"]
-resolver = "2"

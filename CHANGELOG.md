@@ -1,5 +1,31 @@
 # Changelog — a-townchain
 
+## [Unreleased] — 2026-11-11
+
+### Changed (Doppelungsaufloesung der Kernel-Ebene)
+- `kernel/globus-os` entfernt: 482 Dateien, 54 davon abweichend vom Kanon `globus-os`,
+  18 Dateien, die dort nicht existieren (14 davon byte-gleich zu
+  `globus-os/modules/atc-shivacore/legacy/kernel-src-uncompiled`), 58 kanonische
+  Dateien fehlten. Die Kopie war nicht baubar (nicht im Workspace, seit dem
+  07.11. ohne `init_program`, ohne die integrierten Treiber) und wurde von
+  `tools/ecosystem.sh` dennoch still gebaut. Kanonisch ist allein das Repo `globus-os`.
+- `kernel/kai-os` entfernt: 81 Dateien, bis auf `README.md` datei-identisch zu
+  `a-townchain-os/kai-os`. Kanonisch ist allein das Repo `a-townchain-os`.
+- `Cargo.toml`: die beiden `exclude`-Eintraege entfallen, weil die Pfade nicht mehr
+  existieren; `kernel/atc-shivacore` bleibt Workspace-Mitglied (einziger Kernel-Pfad,
+  der hier gebaut wird).
+- `tools/consolidate_monorepo.py`: beide Repos in `NOT_CONSOLIDATED` mit Begruendung,
+  damit die Kopien nicht durch einen Lauf wiederkehren.
+- `tools/ecosystem.sh`: Kernel-Bau und -Boot laufen ueber `GLOBUS_OS_DIR`
+  (Vorgabe `../globus-os`) und melden `uebersprungen`, wenn kein Auschecken da ist,
+  statt aus einer Kopie zu bauen.
+
+### Verified
+- Keine Datei mit eigenem Inhalt verloren: die 14 Kernel-Legacy-Dateien sind
+  byte-gleich im Kanon vorhanden, `system/media/src/sync.rs` war die am 07.11.
+  bewusst geloeschte Dublette, `service_space/src/ai.rs` der am 11.11. nach
+  `atc-aurora-tensor` extrahierte Tensor-Kern. Die Monorepo-Historie behaelt alles.
+
 ## [Unreleased] — 2026-11-08
 
 ### Fixed

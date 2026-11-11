@@ -45,9 +45,7 @@ LAYOUT = {
     "atc-contracts": "apps/atc-contracts",
     "atc-mining": "apps/atc-mining",
     # kernel/ — Betriebssystem- und Kernel-Ebene
-    "a-townchain-os": "kernel/kai-os",
     "atc-shivacore": "kernel/atc-shivacore",
-    "globus-os": "kernel/globus-os",
     # ai/
     "atclang": "ai/atclang",
     "genesis-engine": "ai/genesis-engine",
@@ -72,6 +70,14 @@ SKIP = {"a-townchain"}
 # a-townchain-ecosystem (scripts/sync_modules.py), nicht ueber dieses Skript.
 NOT_CONSOLIDATED = {
     "aurora-ai": "eigene Implementierungsautoritaet (AD-052), Mirror via sync_modules.py",
+    # Doppelungsaufloesung 11.11.2026: Die Kernel-Ebene hat genau eine Quelle je
+    # Repository. Beide Kopien unter kernel/ waren veraltet und nicht baubar:
+    # kernel/globus-os wich in 54 Dateien ab und trug 18 Dateien, die im Kanon
+    # unter legacy/kernel-src-uncompiled liegen; kernel/kai-os war bis auf die
+    # README datei-identisch zu a-townchain-os/kai-os. Damit gab es zwei
+    # Kernel-Wahrheiten und einen stillen Bau aus dem falschen Baum.
+    "globus-os": "kanonisch im Repo globus-os, Kopie kernel/globus-os am 11.11.2026 entfernt",
+    "a-townchain-os": "kanonisch im Repo a-townchain-os, Kopie kernel/kai-os am 11.11.2026 entfernt",
 }
 
 # ecosystem: nur die produktiven Teile, nicht die 26 Spiegel unter components/

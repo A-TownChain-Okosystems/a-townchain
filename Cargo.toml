@@ -47,8 +47,6 @@ exclude = [
     "apps/atc-storage",
     "components/zkp",
     "ecosystem/integration",
-    "kernel/globus-os",
-    "kernel/kai-os",
     "modules/atc-blockchain/kernel",
     "tooling/atc-engineering",
 ]

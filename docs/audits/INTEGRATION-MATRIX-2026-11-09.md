@@ -90,7 +90,9 @@ In a-townchain sind unter anderem alle `atc-aurora-*`, alle `atc-genesis-*`,
 
 ## 5. Zwei Kernel-Wahrheiten
 
-`a-townchain/kernel/globus-os` ist ein Spiegel von `globus-os`. Er ist **keine
+`a-townchain/kernel/globus-os` ist ein Spiegel von `globus-os`. **Nachtrag
+11.11.2026: die Kopie ist entfernt, kanonisch ist allein das Repo `globus-os`.**
+Er ist **keine
 Kopie**: `kernel/src/main.rs` (`ec569ca5…` gegen `f86002ff…`) und
 `kernel/src/capability.rs` (`66158d3a…` gegen `36400977…`) unterscheiden sich.
 Zwei Kernel-Bäume, zwei Stände, ein Name.

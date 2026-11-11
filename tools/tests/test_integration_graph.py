@@ -121,7 +121,7 @@ def test_doppelte_namen_werden_gemeldet():
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp) / "repo"
         manifest(root, "components/a", "atc-wallet")
-        manifest(root, "kernel/globus-os/components/wallet", "atc-wallet")
+        manifest(root, "vendor/wallet-copy", "atc-wallet")
         data = json.loads(run("--repo", str(root), "--json").stdout)
         assert data["crates"] == 1  # Name gewinnt, Spiegel kollabiert
         assert "atc-wallet" in data["duplicate_names"]

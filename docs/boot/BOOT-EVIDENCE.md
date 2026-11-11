@@ -9,7 +9,7 @@ summary: Belege, dass der Bare-Metal-Kernel unter QEMU ueber UEFI und BIOS start
 
 ## Gegenstand
 
-`kernel/globus-os/target/x86_64-unknown-none/release/shivacore` — ELF64, x86-64,
+`globus-os/target/x86_64-unknown-none/release/shivacore` (damals aus der Monorepo-Kopie gebaut, die am 11.11.2026 entfernt wurde) — ELF64, x86-64,
 Einstiegspunkt `_start` bei `0x7030`, 123 016 Bytes. Gebaut mit
 `cargo +nightly build --release -p shivacore --features x86-boot
 --target x86_64-unknown-none -Z build-std=core,alloc`.
