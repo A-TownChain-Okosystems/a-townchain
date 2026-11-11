@@ -6,7 +6,7 @@
 > **Hashinventar:** PENDING
 > **Code-Migration:** BLOCKED
 > **Ersetzt:** ATC-HASH-001 (TownHash-256) für alle Konsensflächen
-> **Datum:** 11.11.2026 · Rev. 3.1 (Rev. 2: Kodierung; Rev. 3: Merkle-Eindeutigkeit, Signaturbindung, Längengrenzen, Vektoren, Registry; **Rev. 3.1: Tiefenformel, Prüfreihenfolge vor Allokation, Signatur-Prüfordnung, ATC-HASH-001 als nicht registrierte Referenz statt als abgelöster Standard**)
+> **Datum:** 11.11.2026 · Rev. 3.2 (Rev. 3.2 ergänzt vier Klarstellungen: ganzzahlige Tiefenberechnung, Überlaufprüfung vor der Operation, Eindeutigkeit der Schlüsselzuordnung, Proposer-Berechtigung je Höhe und Kontext; keine neuen Themen) · Rev. 3.1 (Rev. 2: Kodierung; Rev. 3: Merkle-Eindeutigkeit, Signaturbindung, Längengrenzen, Vektoren, Registry; **Rev. 3.1: Tiefenformel, Prüfreihenfolge vor Allokation, Signatur-Prüfordnung, ATC-HASH-001 als nicht registrierte Referenz statt als abgelöster Standard**)
 > **Grundlage:** Owner-Entscheidung 11.11.2026 (SHA-256 als Konsenshashgrundlage)
 
 ---
@@ -240,6 +240,14 @@ oder einen früheren überspringen:
 | 7 | Kanonizität der Signatur | High-S, `r = 0`, `s = 0`, DER oder abweichende Kodierung |
 | 8 | Signatur gegen den **neu berechneten** Hash | Verifikation schlägt fehl |
 
+**H-5.10b (MUSS) — Berechtigung je Höhe und Kontext, nicht nur Mitgliedschaft.** Die
+Mitgliedschaft im Validator-Set genügt nicht. Geprüft wird zusätzlich, ob dieser Validator
+für **diese** Höhe und **diesen** Konsenskontext proposer-berechtigt ist: aktive Mitgliedschaft
+zum Zeitpunkt der Höhe (nicht eine frühere oder spätere Set-Version), Einhaltung der
+Proposer-Auswahlregel der Runde, und keine Suspendierung oder Äquivokation im laufenden
+Kontext. Ein Block eines Mitglieds, das für diese Höhe nicht berechtigt war, wird abgelehnt,
+auch wenn Signatur und Wurzeln stimmen.
+
 **H-5.9 (MUSS)** Der Blockhash ist die **einzige** Größe, die signiert wird. Es gibt keinen
 zweiten signierten Gegenstand, der denselben Block autorisiert, und keinen Weg, die Signatur
 auf einen anderen Header zu übertragen: jede Änderung eines Headerfeldes ändert den Hash und
@@ -248,6 +256,13 @@ damit die Signaturbasis.
 **H-5.10 (MUSS)** Die Proposer-Zuordnung ist eindeutig: ein Konsensschlüssel gehört genau
 einem Validator, und ein Validator hat genau einen aktiven Konsensschlüssel. Doppelte
 Zuordnungen machen das Validator-Set ungültig, nicht den Block reparierbar.
+
+**H-5.10a (MUSS) — Invariante der Schlüsseleindeutigkeit.** Das Validator-Set wird beim Laden
+auf Eindeutigkeit geprüft: dieselbe Schlüsselkodierung darf nicht zwei Validatoren
+zugeordnet sein, und zwei verschiedene Schlüssel dürfen nicht dieselbe Validator-Identität
+tragen. Bei Verletzung wird das Set **als Ganzes** abgelehnt (Start verweigert), nicht der
+einzelne Block. Grund: Eine mehrdeutige Zuordnung würde zwei verschiedene Schlüssel zu
+derselben Stimme machen und die Quorum-Zählung verfälschen.
 
 ---
 
@@ -259,6 +274,13 @@ Feld `u32::MAX`, wird die Operation abgelehnt, nicht gekürzt.
 **H-6.2 (MUSS)** Es gibt keine Wraparound-Arithmetik in Kodierung oder Längenrechnung. Alle
 Additionen von Längen und Offsets sind geprüft (`checked_add`, `checked_mul`), Fehler führen
 zur Ablehnung.
+
+**H-6.2a (MUSS) — Prüfung vor der Operation, nicht danach.** Die Grenzprüfung erfolgt, **bevor**
+addiert oder multipliziert wird, nicht als Nachkontrolle des Ergebnisses. Praktisch heißt das:
+Schwellenwert gegen den Operanden prüfen, dann rechnen. Ein Überlauf, der erst durch
+Vergleich des Ergebnisses auffällt, ist bereits ein Überlauf. Verboten sind damit auch
+Konstruktionen der Form „Summe bilden, dann gegen `u32::MAX` vergleichen", wenn die Summe
+selbst überlaufen kann.
 
 **H-6.3 (MUSS)** Kein impliziter Cast zwischen `usize` und `u32`/`u64`. Die Kodierung
 verwendet ausschließlich feste Breiten, damit das Ergebnis nicht von der Wortbreite der
@@ -323,6 +345,15 @@ reihenfolgeabhängig; eine Sortierung nach ID ist unzulässig.
 | 5 … 8 | 3 |
 | `n` | `ceil(log2(n))` für `n ≥ 2` |
 | 2²⁰ (1 048 576) | **20 (Obergrenze)** |
+
+**H-7.7c (MUSS) — Tiefenberechnung ganzzahlig.** `ceil(log2 n)` ist die **Definition**, nicht
+die Rechenvorschrift. Die Implementierung darf keinen Gleitkomma-Logarithmus verwenden und
+keine Rundung von Gleitkomma-Ergebnissen. Zulässig sind ganzzahlige Verfahren, etwa
+Verdopplung mit Zähler (`leaves = 1; while leaves < n { leaves *= 2; depth += 1 }`) oder die
+Bestimmung der höchsten gesetzten Bitposition. Verboten: `log2` auf Gleitkommazahlen,
+`round`/`ceil` auf Gleitkomma-Ergebnissen, jede Rechnung, deren Ergebnis von der
+Gleitkomma-Präzision abhängt. Belegt: die Referenz in `ATC-HASH-002-VECTORS.py` zählt
+ausschließlich ganzzahlig und liefert für 2²⁰ genau 20.
 
 **H-7.7a (MUSS)** Die Tiefe ist eine **Folge** der Blattzahl, kein eigenständiger Parameter.
 Wer die Tiefe begrenzt, ohne die Blattzahl zu begrenzen, hat nichts begrenzt. Umgekehrt gilt:
