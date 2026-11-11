@@ -24,6 +24,7 @@ members = [
     "components/sdk/modules/atc-cli",
     "components/sdk/modules/atc-sdk/rust",
     "components/storage",
+    "components/system",
     "components/vm",
     "components/wallet",
     "kernel/atc-shivacore/modules/atc-security",
