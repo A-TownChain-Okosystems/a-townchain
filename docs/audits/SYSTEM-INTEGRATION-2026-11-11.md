@@ -15,6 +15,12 @@ standard: ATC-STD-MD-001
 **Nicht in diesem Scope:** M-03 / `aurora-ai` (unveraendert), Konsens, Netzwerk, Kernel,
 Abrechnung, CI.
 
+**Ergaenzung, gleicher Tag:** dieser Bericht beschreibt den Pfad, den `components/system`
+baut. Die Gegenprobe am Knoten und an den Vertragsquellen steht in
+[`ATCLANG-VM-CHAIN-INTEGRATION-2026-11-11.md`](ATCLANG-VM-CHAIN-INTEGRATION-2026-11-11.md):
+der Knoten ruft die VM nicht auf, `atc8300.atc` laeuft als 2 Instruktionen leer, und die
+Offen-Punkte 2 bis 6 unten sind dort als Befunde IV-04 bis IV-13 mit Codebelegen gefuehrt.
+
 ## 1 — Was vorher fehlte
 
 Die Integrationsmatrix vom 09.11.2026 hat vier Universen ohne Ausfuehrungskante
