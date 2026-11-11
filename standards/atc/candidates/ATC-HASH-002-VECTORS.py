@@ -80,5 +80,60 @@ def main():
     for n in (0, 1, 55, 56, 57, 63, 64, 65, 119, 120, 121):
         print(f"len={n:3d} {hx(H(d('ATC-TXID-V1') + b'k'*n))}")
 
+
+# --- Rev. 3.1: Tiefen- und Grenzpruefungen (unabhaengig, referenzseitig) ---
+MAX_LEAVES = 1 << 20
+
+def depth_of(n):
+    """Tiefe nach H-7.7: 0 fuer ein Blatt, ceil(log2(n)) ab zwei Blaettern."""
+    if n == 0:
+        return None            # Leerwurzel, eigener Fall (H-7.3)
+    if n == 1:
+        return 0
+    d, leaves = 0, 1
+    while leaves < n:
+        leaves *= 2
+        d += 1
+    return d
+
+def promote_root(leaves):
+    """Merkle nach H-6.4/H-7.5: je Ebene paarweise, letzter Knoten wird hochgezogen."""
+    level = list(leaves)
+    while len(level) > 1:
+        nxt = [node(level[i], level[i + 1]) for i in range(0, len(level) - 1, 2)]
+        if len(level) % 2:
+            nxt.append(level[-1])          # hochziehen, nicht duplizieren
+        level = nxt
+    return level[0]
+
+def guard(count, payload_bytes):
+    """H-7.7b: Pruefung VOR der Allokation."""
+    if count > MAX_LEAVES:
+        raise ValueError(f"ADM-LEN-01: {count} Blaetter ueberschreiten 2^20")
+    if payload_bytes > 4 * 1024 * 1024:
+        raise ValueError(f"ADM-LEN-02: {payload_bytes} Byte ueberschreiten 4 MiB")
+    return True
+
+def checks_rev31():
+    print("\n# Rev. 3.1 Tiefenformel")
+    for n in (0, 1, 2, 3, 4, 5, 8, 9, MAX_LEAVES):
+        print(f"n={n:>8} -> Tiefe {depth_of(n)}")
+    assert depth_of(MAX_LEAVES) == 20
+    assert all(depth_of(n) <= 20 for n in range(1, 2000))
+
+    print("# Rev. 3.1 Hochziehen ueber alle Blattzahlen 1..12 (Invariante: je Ebene schrumpft)")
+    for n in range(1, 13):
+        twigs = [leaf(i.to_bytes(32, "big")) for i in range(n)]
+        r = promote_root(twigs)
+        assert len(r) == 32
+        print(f"n={n:2d} Tiefe {depth_of(n)} Wurzel {hx(r)[:16]}…")
+
+    print("# Rev. 3.1 Grenzpruefung vor Allokation")
+    for count, payload in ((MAX_LEAVES, 0), (MAX_LEAVES + 1, 0), (1, 4 * 1024 * 1024), (1, 4 * 1024 * 1024 + 1)):
+        try:
+            guard(count, payload); print(f"count={count} payload={payload}: akzeptiert")
+        except ValueError as e:
+            print(f"count={count} payload={payload}: abgelehnt ({e})")
+
 if __name__ == "__main__":
-    main()
+    checks_rev31()
