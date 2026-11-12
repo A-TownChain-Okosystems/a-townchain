@@ -29,8 +29,8 @@ aktualisiert, wenn eine der drei Voraussetzungen eintritt:
 | `FAILED` | 0 |
 | `BLOCKED` | 1 |
 | `EMPTY` | 0 |
-| `OPEN` | 52 |
-| **Summe** | **54** |
+| `OPEN` | 53 |
+| **Summe** | **55** |
 
 Ein Test ist `TESTED`: S1-T-18, und zwar als **Statustest**, nicht als
 Konformitaetsnachweis. Grund ist die in Abschnitt 1 festgelegte Bedingung "ein reiner
@@ -39,7 +39,7 @@ Referenzdekoder existiert seit dem 12.11.2026. P1a bleibt offen, P2 bleibt an B-
 gesperrt, eine Produktionsfreigabe ist nicht erteilt. Der Status `OPEN` heisst: die
 Entscheidung liegt vor, die Umsetzung nicht.
 
-Sechzehn Tests (S1-T-39 bis S1-T-54) sind am 12.11.2026 mit §19 und §19.2a des
+Siebzehn Tests (S1-T-39 bis S1-T-55) sind am 12.11.2026 mit §19, §19.2a und §19.7 des
 Kandidaten hinzugekommen: Parser-Fehlersemantik, Stromgrenze, Tail-Integritaet,
 Versionsisolation und Differentialtest. Sie erweitern die Matrix, ohne einen
 Konformitaetsbefund zu erzeugen.
@@ -102,6 +102,7 @@ Konformitaetsbefund zu erzeugen.
 | S1-T-52 | Struktur vor Integritaet: beschaedigter Strom mit veraltetem Tail ergibt den Strukturcode, nicht `E-006` | S1-1 | `OPEN` | Code-Test + Korpus |
 | S1-T-53 | Terminierung und Groesstwert: `c = 0xFFFFFFFF` ergibt `E-005` in einem Schritt, `E-012` nur bei konfiguriertem Wert | S1-1 | `OPEN` | Code-Test |
 | S1-T-54 | Korpus C-1 bis C-8 mit mindestens 30 Eingaben, Sollwerte aus der Konstruktion, `tools/check_parser_corpus.py` ohne Abweichung; ein Dekoder allein begruendet keine Konformitaet | S1-1 | `OPEN` | Datei + Gate |
+| S1-T-55 | Container-Bytegrenze wirkt vor dem Hashing: eine Eingabe oberhalb des Werts wird abgelehnt, ohne dass Hash- oder Dekodierarbeit anfaellt; derselbe Wert auf allen Validatoren; `E-012` bleibt davon getrennt | S1-1 | `OPEN` | Code-Test + Grenzwerttest |
 
 ## 3.1 Wirkung der Ratifikation auf den Nachweisstand
 
@@ -188,8 +189,10 @@ Drei Befunde aus diesem Lauf, alle am Byte nachpruefbar:
    Stromlaenge. `C-8-GV1-MAX` ergibt nach Vertrag `E-005`, in der VM `ProgramTooLarge`.
 5. Kein Aufwandsschutz vor dem Dekodieren: es gibt keine verbindliche Obergrenze fuer
    Container-Bytes, und `Artifact::parse` hasht die gesamte Eingabe vor jeder
-   Grenzpruefung (`artifact.rs:311-319`). Vorschlag: Grenze im Admission-Layer,
-   Wert aus P1b; offener Punkt an D1, keine Anforderung (Abschnitt 6 des Vermerks).
+   Grenzpruefung (`artifact.rs:311-319`). Der Owner hat D1 deshalb in drei getrennte
+   Teilauflagen gegliedert (Register: D1-A Admission-Grenze, D1-B fehlende
+   Fehlervarianten, D1-C Groessenpruefung); Kandidat §19.7 haelt den Rahmen als
+   Vorschlag fest, der Wert bleibt offen bis P1b (S1-T-55, Abschnitt 6 des Vermerks).
 
 Die Einzelheiten, Aufrufe und Ausgaben stehen in
 `docs/decisions/EXEC-STAGE1-PARSER-EVIDENCE-2026-11-12.md`.
