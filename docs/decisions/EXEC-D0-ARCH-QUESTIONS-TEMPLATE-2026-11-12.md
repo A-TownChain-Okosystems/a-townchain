@@ -1,9 +1,11 @@
 # Vier Architekturfragen vor dem Abschluss der Integration (D-0)
 
-> **Status:** Vorlage, **keine Entscheidung**. Die vier Fragen sind offen und
-> muessen vor dem Abschluss der Systemintegration beantwortet werden
-> (Owner-Vorgabe 12.11.2026). Bis dahin bleibt `ATCE/0x02` `OPEN`.
-> Je Frage: Ist-Stand am Code, Optionen, Empfehlung, Folge einer Nichtentscheidung.
+> **Status: beantwortet.** Die vier Fragen sind am 12.11.2026 je mit Option **A**
+> entschieden; die Antworten, Folgen und abgeleiteten Anforderungen stehen in
+> [AD-EXEC-D0-FOUR-DECISIONS-2026-11-12.md](AD-EXEC-D0-FOUR-DECISIONS-2026-11-12.md).
+> Dieses Dokument bleibt als Vorlage erhalten (Ist-Stand, Optionen, Empfehlung).
+> `ATCE/0x02` bleibt trotzdem `OPEN`: Abschluss verlangt P1a (Blockimport) und
+> einen CI-Lauf, nicht nur die Entscheidung.
 
 ## F-1 Containergrenze
 
