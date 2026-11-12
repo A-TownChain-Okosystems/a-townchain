@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-12 18:05 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `15948a24` (letzter Commit 2026-11-12)
+> **Erzeugt:** 2026-11-12 18:16 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `47a807a` (letzter Commit 2026-11-12)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,20 +13,20 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 11410 |
-| **Bereiche** | 15 |
-| **Verzeichnisse** | 2016 |
+| **Total Dateien** | 11422 |
+| **Bereiche** | 16 |
+| **Verzeichnisse** | 2017 |
 
 ### Nach Dateityp
 
 | Endung | Dateien |
 |--------|---------|
-| `.md` | 4097 |
+| `.md` | 4102 |
 | `.atc` | 1514 |
-| `.yaml` | 1474 |
+| `.yaml` | 1475 |
 | `.json` | 1399 |
-| `.py` | 812 |
-| `.rs` | 560 |
+| `.py` | 814 |
+| `.rs` | 564 |
 | `.tsx` | 377 |
 | `(keine)` | 363 |
 | `.yml` | 285 |
@@ -62,21 +62,22 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Bereich | Dateien | Inhalt |
 |---------|---------|--------|
-| `docs` | 5103 | Dokumentation und Archive |
+| `docs` | 5108 | Dokumentation und Archive |
 | `standards` | 2175 | Normative Standards und Werkzeuge |
 | `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
-| `components` | 899 | Chain-Komponenten (kanonischer Code) |
+| `components` | 903 | Chain-Komponenten (kanonischer Code) |
 | `apps` | 857 | Produkt-Anwendungen |
 | `ai` | 504 | KI-, Sprach- und Engine-Schicht |
 | `modules` | 208 | Module ohne eigene Produktschicht |
 | `tooling` | 164 | Werkzeuge und Engineering-Gates |
 | `kernel` | 157 | Kernel- und OS-Ebenen |
-| `tools` | 26 | Einstiegspunkte |
+| `tools` | 28 | Einstiegspunkte |
 | `(root)` | 21 | Wurzeldateien |
 | `.github` | 16 | CI- und Repository-Konfiguration |
 | `"docs` | 6 | — |
 | `.atc` | 6 | Repository-Evidenz |
 | `specs` | 5 | Spezifikationen |
+| `registry` | 1 | — |
 
 ## Verzeichnisse mit den meisten Dateien
 
@@ -108,4 +109,4 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `docs/os-docs/docs/archive/monorepo-full/src/modules/atc-franchise` | 40 |
 | `standards/standards/sc` | 40 |
 
-… insgesamt 2016 Verzeichnisse.
+… insgesamt 2017 Verzeichnisse.
