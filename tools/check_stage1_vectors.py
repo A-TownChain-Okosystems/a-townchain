@@ -69,6 +69,7 @@ def main() -> int:
     p2 = bytes.fromhex(p2m.group(1))
 
     digests: dict[str, str] = {}
+    segments_by_id: dict[str, list[bytes]] = {}
     failures = 0
     count = 0
     for line in sec.splitlines():
@@ -86,6 +87,7 @@ def main() -> int:
             elif args.verbose:
                 print(f"OK     {gid}: gleich {ref}")
         else:
+            segments_by_id[gid] = parsed
             data = b"".join(parsed)
             actual = hashlib.sha256(data).hexdigest()
             if actual != expected:
@@ -101,11 +103,12 @@ def main() -> int:
         if nid == "NV-1":
             data = bytes.fromhex("4154432d41525449464143542d563100") + bytes.fromhex(p1)
         else:
-            data = (
-                bytes.fromhex("4154432d53545245414d2d563100")
-                + bytes.fromhex("41544342020102000000")
-                + bytes.fromhex(p1)
-            )
+            # Huelle aus GV-1 uebernehmen, damit das Magic nur an einer Stelle steht
+            gv1 = segments_by_id.get("GV-1")
+            if not gv1 or len(gv1) != 2:
+                print("FEHLER NV-2: Huelle aus GV-1 nicht ableitbar")
+                return 1
+            data = bytes.fromhex("4154432d53545245414d2d563100") + gv1[1]
         actual = hashlib.sha256(data).hexdigest()
         if actual != digest:
             failures += 1
