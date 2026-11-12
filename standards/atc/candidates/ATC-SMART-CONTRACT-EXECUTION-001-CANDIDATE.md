@@ -5,7 +5,7 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.4.0-draft
+> **Version:** 1.5.0-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
@@ -26,6 +26,7 @@
 | 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
 | 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
 | 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
+| 1.5.0-draft | 2026-11-12 | REQ-SCE-060 praezisiert: lokaler Knotenfehler und Konsensresultat strikt getrennt (kein Beleg, kein Blockstatus, keine Belastung, deterministische Wiederaufnahme); Reproduzierbarkeit entscheidet ueber die Einordnung. REQ-SCE-054 fuehrt zwei getrennte Code-Raeume (Beleg-Status `0x00` bis `0x03`, Knotenfehler `ATC-NODE-INFRA-001`). Testmatrix T-42 bis T-44. |
 | 1.4.0-draft | 2026-11-12 | Drei Spezifikationsluecken geschlossen: Domainlaenge auf 15 Byte und Eingabe auf 75 Byte korrigiert (vorher 16/76, war falsch); IdentityValue mit einem kanonischen 32-Byte-Layout (Kennzeichen 0..3, reservierte Nullbytes 4..11, Adresse 12..31) und fail-closed-Regeln, REQ-SCE-057 bis 059; vierte Fehlerklasse fuer interne Infrastrukturfehler ohne Nutzerbelastung, REQ-SCE-060; Erstattungsformeln als ausdruecklicher Vorschlag. Testmatrix T-31 bis T-41. |
 | 1.3.0-draft | 2026-11-12 | Vier Befunde der Owner-Pruefung eingearbeitet: SCX-003 beschreibt Strom plus getrennte Huelle SCE-ARTIFACT (ATCB nicht mehr als Magic des VM-Containers); Verantwortungsmatrix trennt Knoten-Orchestrierung von VM-Interpretation und ergaenzt den Validator; Identitaeten `origin`, `caller` und Vertragsadresse getrennt (REQ-SCE-051 bis 053); Fehlerklassen und Erstattung getrennt (REQ-SCE-047, 054, 055); Grundregel SCE-P1 eine Wahrheit je Funktionalitaet; Kanonisierung der Signatur praezisiert; Adressableitung mit Bytebreiten und Kollisionsregel; Grenzwerte mit eigener Begruendung und Grenzwerttests T-21 bis T-30, Status weiterhin Vorschlag. |
 | 1.2.0-draft | 2026-11-12 | Owner-Entscheidung P1 erfasst: D1, D3, D5, D7 freigegeben, D2, D4, D6 bedingt freigegeben, alle sieben DECIDED. Auflagen als REQ-SCE-039 bis REQ-SCE-050 aufgenommen, Entscheidungs-Slots durch das Register ersetzt, Zustandsleiter DECIDED/SPECIFIED/IMPLEMENTED ergaenzt. Zahlen und Gates bleiben offen. |
@@ -278,7 +279,12 @@ eigene Formatentscheidung und ist hier ausdruecklich nicht enthalten.
   unzulaessig, damit kein Kennzeichen durch Rechnung entstehen kann. Fuer Kodierung
   und Dekodierung existiert genau eine Implementierung (Modul `identity`), die
   Wallet, VM und Knoten gemeinsam nutzen; jede Kopie waere eine zweite Wahrheit
-  (SCE-P1).
+  (SCE-P1). Die gemeinsamen Testvektoren liegen versioniert in
+  `standards/atc/conformance/identity-value-vectors.json` (T-31 bis T-39, Status
+  candidate, Schema `atc.conformance.identity-value.v1`); alle drei Komponenten
+  pruefen gegen dieselbe Datei. Die Datei wird mit `tools/identity_vectors_check.py`
+  geprueft (Exitcode 0/1); der Pruefer ist kein Produktionsdekoder und ersetzt die
+  gemeinsame Implementierung nicht.
 
 **Gas (D4)**
 
@@ -303,16 +309,38 @@ eigene Formatentscheidung und ist hier ausdruecklich nicht enthalten.
 | Interner Fehler der Ausfuehrungsinfrastruktur (Loader, Backend, VM-Interna) | kein Nutzeranteil | keine Belastung des Urhebers |
 
 **Korrektur 12.11.2026 (Befund C):** Die vierte Klasse fehlte. Ein Fehler der
-Infrastruktur ist weder Revert noch Erschoepfung. Wuerde er als eines von beiden
+Infrastruktur ist weder Revert noch Erschoepfung; wuerde er als eines von beiden
 abgerechnet, erzeugten identische Transaktionen je nach Zustand der Infrastruktur
 unterschiedliche Gebuehren, und der Nutzer zahlt fuer einen Fehler, den er nicht
-verursacht hat. Regel (REQ-SCE-060): Ein interner Infrastrukturfehler fuehrt zu
-keiner Belastung, zu keiner Zustandsaenderung und zu keinem Beleg; die Transaktion
-gilt als nicht ausgefuehrt, und ein Block, der sie trotzdem als ausgefuehrt
-ausweist, ist ungueltig. Der Vorfall wird mit eigenem Statuscode gemeldet und als
-Knotenfehler gefuehrt, nicht als Vertragsfehler. Die Behandlung muss deterministisch
-sein: Zwei Validatoren, die denselben Fehler antreffen, treffen dieselbe
-Entscheidung.
+verursacht hat.
+
+**REQ-SCE-060 (praezisiert 12.11.2026): lokaler Knotenfehler und Konsensresultat
+sind strikt getrennt.**
+
+1. **Lokal.** Tritt der Fehler nur auf einem Knoten auf, bricht dieser Knoten die
+   Verarbeitung ab. Er erzeugt keinen Konsensbeleg, schreibt keinen Beleg-Status und
+   nimmt den Block nicht als erfolgreich verarbeitet an. Fuer ihn gilt der Block als
+   **nicht verarbeitet**, nicht als verarbeitet mit Fehler.
+2. **Konsens.** Ein Infrastrukturfehler darf niemals als deterministisches
+   Vertragsergebnis in den Block geschrieben werden. Er ist kein vierter erzeugbarer
+   Beleg-Status, sondern ein Knotenfehlercode (`ATC-NODE-INFRA-001`): kein Beleg,
+   keine Zustandsaenderung, kein Einfluss auf Gasfelder.
+3. **Gebuehren und Zustand.** Keine lokale Belastung, keine lokale
+   Zustandsaenderung. Die Transaktion wird nicht deshalb als erfolgreich oder
+   fehlgeschlagen abgerechnet; ueber sie ist noch nicht entschieden.
+4. **Wiederaufnahme.** Nach Behebung des Fehlers muss der Knoten denselben Block auf
+   demselben Ausgangszustand deterministisch erneut ausfuehren und zum selben
+   Ergebnis und derselben Zustandswurzel kommen wie ein Knoten ohne Fehler. Kein
+   Teilergebnis des abgebrochenen Laufs darf weiterwirken.
+
+**Reproduzierbarkeit entscheidet ueber die Einordnung.** Tritt derselbe Fehler bei
+wiederholter Ausfuehrung auf demselben Ausgangszustand erneut auf, ist er kein
+Infrastrukturfehler, sondern ein Defekt in Spezifikation oder Implementierung: Der
+Block wird von keinem Knoten angenommen, es wird nichts abgerechnet, und der Defekt
+ist mit Vorfallmeldung zu beheben. Ein Fehler, der nur einmal und nur lokal auftritt,
+ist ein Betriebsfehler. Ohne diese Unterscheidung koennte ein einzelner Knoten den
+Status einer Transaktion bestimmen, also genau die zweite Wahrheit erzeugen, die
+SCE-P1 verbietet.
 
 
   Die Erstattungsregel ist normativ festzulegen und zu testen; ohne sie waere jede
@@ -333,8 +361,18 @@ Entscheidung.
   ebenfalls nichts. Kein prozentualer Abzug, keine Mindestgebuehr. Die Formeln
   gelten erst, wenn T-28, T-29 und T-40 gruen sind.
 - **REQ-SCE-054:** Die Fehlerklassen nach REQ-SCE-047 sind im Ergebnis und im Beleg
-  unterscheidbar (eigener Statuscode je Klasse), damit ein Validator die Abrechnung
-  nachrechnen kann, ohne die Absicht zu raten.
+  unterscheidbar, damit ein Validator die Abrechnung nachrechnen kann, ohne die
+  Absicht zu raten. Es gibt genau zwei Code-Raeume, und sie duerfen sich nicht
+  vermischen:
+
+| Raum | Codes | Wo erlaubt |
+|---|---|---|
+| Beleg-Status (deterministisch, Konsensbestandteil) | `0x00` SUCCESS, `0x01` REVERT, `0x02` OUT_OF_GAS, `0x03` REJECTED_PRE_EXECUTION | nur im Beleg |
+| Lokaler Knotenfehler (nicht deterministisch, nicht im Block) | `ATC-NODE-INFRA-001` | nur in der Knotenablage und im Betriebsprotokoll |
+
+  Ein Beleg mit einem Statuscode ausserhalb von `0x00` bis `0x03` ist ungueltig.
+  `ATC-NODE-INFRA-001` ist kein Beleg-Status und darf niemals in einen Beleg oder in
+  die Zustandswurzel gelangen.
 - **REQ-SCE-055:** `gas_refund` ist eine Anzahl Gaseinheiten, kein Geldbetrag. Der
   zurueckerstattete Betrag ist `gas_refund * gas_price` und traegt einen eigenen
   Namen; die beiden Groessen duerfen nicht in einem Feld vermischt werden.
@@ -686,7 +724,10 @@ keinem Punkt CI_VERIFIED oder E2E_VERIFIED.
 | T-37 | Adressbytes alle null bei gueltigem Kennzeichen | abgelehnt |
 | T-38 | gleiche 20 Adressbytes, einmal Wallet-, einmal Vertragskennzeichen | zwei verschiedene Identitaeten, keine Eskalation |
 | T-39 | Vertrag ruft Vertrag: `caller` traegt Vertragskennzeichen, `origin` bleibt Wallet | gueltig (erst nach BC-002) |
-| T-40 | Loaderfehler nach 500 Gas bei Budget 10 000 | keine Belastung, kein Beleg, Erfolgsbeleg macht den Block ungueltig |
+| T-40 | Loaderfehler nach 500 Gas bei Budget 10 000 | kein Beleg, keine Belastung, kein Zustandswechsel, `ATC-NODE-INFRA-001` nur lokal |
+| T-42 | Wiederaufnahme: derselbe Block nach behobenem Infrastrukturfehler | identisches Ergebnis und identische Zustandswurzel wie ohne Fehler |
+| T-43 | Reproduzierbarer Fehler bei zwei Laeufen auf demselben Zustand | kein Infrastrukturfehler; kein Knoten nimmt den Block an, Defektmeldung |
+| T-44 | Beleg mit Statuscode ausserhalb `0x00` bis `0x03` | Block abgelehnt |
 | T-41 | Adressableitung: Domain 15 Byte, Eingabe 75 Byte | reproduzierbar; 16-Byte-Domain wird abgelehnt |
 
 ## 17. Offene Entscheidungen vor Ratifizierung
@@ -718,8 +759,10 @@ keinem Punkt CI_VERIFIED oder E2E_VERIFIED.
 17. `caller`-Semantik bei Vertrag-zu-Vertrag mit ATC-BC-002 abstimmen (REQ-SCE-052).
 18. Eigenen Statuscode fuer Infrastrukturfehler vergeben (REQ-SCE-060); er darf nicht
     mit Revert oder Erschoepfung kollidieren.
-19. Testvektoren fuer `IdentityValue` als Datei ablegen, damit Wallet, VM und Knoten
-    gegen dieselben Bytes pruefen (REQ-SCE-059, T-31 bis T-38).
+19. Testvektoren fuer `IdentityValue` liegen als Datei vor
+    (`standards/atc/conformance/identity-value-vectors.json`). Offen bleibt die
+    Umsetzung gegen diese Datei: eine Implementierung fuer Wallet, VM und Knoten
+    (REQ-SCE-059).
 
 Der Referenzwert 100 000 Gas aus `ATC-BC-002-CANDIDATE` §19.5 (groesstes im Repo
 verwendetes Budget, zwei Aufrufe in `tests/atcb_v2.rs`) ist ein Mess- und
