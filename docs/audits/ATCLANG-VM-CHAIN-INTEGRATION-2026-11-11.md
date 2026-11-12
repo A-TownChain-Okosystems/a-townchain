@@ -309,3 +309,18 @@ fuehrt seine Fachlogik aus.
 - Keine Aussage ueber `aurora-ai`, Kernel oder Produkt-Apps.
 - Keine CI-Evidenz. Alle Testzahlen sind lokale Laeufe am genannten Stand.
 - Keine Aussage darueber, dass der Pfad produktionsreif ist. Er ist es nicht.
+
+## 8. Fortsetzung (12.11.2026)
+
+Dieser Audit beschreibt den Ist-Stand. Die Arbeit daraus liegt in vier Dokumenten:
+
+- [`CONTRACT-EXECUTION-INVENTORY-2026-11-12.md`](CONTRACT-EXECUTION-INVENTORY-2026-11-12.md):
+  Implementierungsstellen, konkurrierende Wahrheiten und die Konfliktmatrix K-01 bis K-12.
+- [`../decisions/AD-EXEC-D1-D7.md`](../decisions/AD-EXEC-D1-D7.md): die sieben
+  Entscheidungen ausgearbeitet, mit Optionen, Empfehlung, Folgen und Gates.
+- [`../../standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md`](../../standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md):
+  der Integrationsvertrag als Kandidat, 38 Anforderungen, 10 Gates.
+- [`../EXECUTION-INTEGRATION-PLAN.md`](../EXECUTION-INTEGRATION-PLAN.md): Phasen P0 bis P8
+  mit Eingangs- und Ausgangskriterien.
+
+Kein Punkt dieses Audits ist damit behoben. Er ist geordnet.
