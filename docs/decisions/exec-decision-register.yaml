@@ -39,6 +39,8 @@ decisions:
       - "eindeutige Laengenangabe"
       - "kanonische Serialisierung"
       - "keine Aenderung am bestehenden Transaktionsformat"
+      - "SCX-003 und SCE-ARTIFACT verwenden dieselbe Formatdefinition; ATCB ist nicht das Magic des VM-Containers"
+      - "Magic der Huelle: Vorschlag ATCE, Bestaetigung offen"
     open_items: []
 
   - id: D2
@@ -58,6 +60,7 @@ decisions:
       - "Vertrag-zu-Vertrag-Aufrufe bis BC-002 gesperrt"
     open_items:
       - "Vertrag-zu-Vertrag-Aufruf (haengt an ATC-BC-002 Ratifizierung)"
+      - "Grenzwerte 8192/4096 Byte und Tiefe 8: eigene Begruendung liegt vor, Bestaetigung erst nach T-21 bis T-24"
 
   - id: D3
     specified_in: "Kandidat §5.4 (nicht ratifiziert)"
@@ -89,6 +92,9 @@ decisions:
       - "fehlgeschlagener Vertrag verbraucht Rechenzeit nicht kostenlos"
       - "Gebuehren und Verbrauch im Transaktionsbeleg"
       - "keine Gebuehrenumgehung ueber Backend oder Loader"
+      - "Fehlerklassen getrennt: Erschoepfung volles Budget, Revert nur verbrauchtes Gas, Ablehnung ohne Ausfuehrung ohne Gas (REQ-SCE-047, 054)"
+      - "gas_refund in Gaseinheiten, Geldbetrag getrennt benannt (REQ-SCE-055)"
+      - "Erstattungsregel normativ festlegen und mit T-28 belegen"
     open_items:
       - "numerische Instruktionskosten (Messung je Instruktionsklasse)"
       - "Transaktionsgaslimit, Blockgaslimit, Dynamik nach Auslastung"
@@ -125,6 +131,8 @@ decisions:
       - "Nachweis: Signaturpruefung authentifiziert die Identitaet"
       - "Nachweis: interne Vertragsaufrufe bilden den unmittelbaren Aufrufer korrekt ab"
       - "keine Vertrauensluecke zwischen Wallet, Blockchain und VM"
+      - "origin, caller und Vertragsadresse getrennt definiert (REQ-SCE-051 bis 053)"
+      - "caller bei Vertrag-zu-Vertrag ist die Vertragsadresse, nicht die Wallet (REQ-SCE-052)"
     open_items:
       - "interne Aufrufe: erst nach BC-002 pruefbar"
 
