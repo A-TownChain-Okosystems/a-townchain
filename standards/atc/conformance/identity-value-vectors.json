@@ -1,0 +1,147 @@
+{
+  "schema": "atc.conformance.identity-value.v1",
+  "version": "1.0.0",
+  "status": "candidate",
+  "standard": "ATC-SMART-CONTRACT-EXECUTION-001",
+  "standard_version": "1.5.0-draft",
+  "subject": "IdentityValue, 32 Byte, kanonisches Layout",
+  "layout": {
+    "total_bytes": 32,
+    "tag": {
+      "bytes": [
+        0,
+        3
+      ],
+      "encoding": "u32 big-endian",
+      "values": {
+        "wallet": "0x00000001",
+        "contract": "0x00000002"
+      }
+    },
+    "reserved": {
+      "bytes": [
+        4,
+        11
+      ],
+      "must_be": "0x00"
+    },
+    "address": {
+      "bytes": [
+        12,
+        31
+      ],
+      "encoding": "raw 20 bytes, SEC-P0-005 (wallet) bzw. REQ-SCE-041 (contract)"
+    }
+  },
+  "invalid_reasons": [
+    "TAG_ZERO",
+    "TAG_UNKNOWN",
+    "RESERVED_NOT_ZERO",
+    "WORD_ZERO",
+    "ADDRESS_ZERO"
+  ],
+  "rules": [
+    "Unbekannte Kennzeichen werden zurueckgewiesen, niemals als Wallet gelesen (fail-closed).",
+    "Das Kennzeichen setzt der Frame, nicht der Aufrufer.",
+    "Identitaeten werden als Bytes verglichen, nicht als Zahl; Arithmetik ist unzulaessig.",
+    "Fuer Kodierung und Dekodierung existiert genau eine Implementierung, gemeinsam genutzt von Wallet, VM und Knoten."
+  ],
+  "vectors": [
+    {
+      "id": "T-31",
+      "name": "wallet_valid",
+      "hex": "0000000100000000000000001111111111111111111111111111111111111111",
+      "valid": true,
+      "tag": "wallet",
+      "address": "ATC:1111111111111111111111111111111111111111",
+      "note": "Kennzeichen 0x00000001, reservierte Bytes null"
+    },
+    {
+      "id": "T-32",
+      "name": "contract_valid",
+      "hex": "000000020000000000000000abababababababababababababababababababab",
+      "valid": true,
+      "tag": "contract",
+      "address": "ATC:abababababababababababababababababababab",
+      "note": "Kennzeichen 0x00000002, reservierte Bytes null"
+    },
+    {
+      "id": "T-33",
+      "name": "tag_zero",
+      "hex": "0000000000000000000000001111111111111111111111111111111111111111",
+      "valid": false,
+      "reason": "TAG_ZERO",
+      "note": "Kennzeichen null ist ungueltig"
+    },
+    {
+      "id": "T-34",
+      "name": "tag_unknown",
+      "hex": "0000000300000000000000001111111111111111111111111111111111111111",
+      "valid": false,
+      "reason": "TAG_UNKNOWN",
+      "note": "unbekanntes Kennzeichen; darf niemals als Wallet gelesen werden"
+    },
+    {
+      "id": "T-35",
+      "name": "reserved_not_zero",
+      "hex": "0000000100000000000000ff1111111111111111111111111111111111111111",
+      "valid": false,
+      "reason": "RESERVED_NOT_ZERO",
+      "note": "ein Nicht-Nullbyte in 4..11 macht das Wort ungueltig"
+    },
+    {
+      "id": "T-36",
+      "name": "word_zero",
+      "hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "valid": false,
+      "reason": "WORD_ZERO",
+      "note": "das Wort insgesamt null"
+    },
+    {
+      "id": "T-37",
+      "name": "address_zero",
+      "hex": "0000000100000000000000000000000000000000000000000000000000000000",
+      "valid": false,
+      "reason": "ADDRESS_ZERO",
+      "note": "gueltiges Kennzeichen, aber 20 Adressbytes null"
+    },
+    {
+      "id": "T-38a",
+      "name": "same_address_wallet",
+      "hex": "0000000100000000000000001111111111111111111111111111111111111111",
+      "valid": true,
+      "tag": "wallet",
+      "address": "ATC:1111111111111111111111111111111111111111",
+      "note": "gleiche Adressbytes wie T-38b"
+    },
+    {
+      "id": "T-38b",
+      "name": "same_address_contract",
+      "hex": "0000000200000000000000001111111111111111111111111111111111111111",
+      "valid": true,
+      "tag": "contract",
+      "address": "ATC:1111111111111111111111111111111111111111",
+      "note": "gleiche Adressbytes wie T-38a; muss von T-38a als verschieden verglichen werden"
+    },
+    {
+      "id": "T-39a",
+      "name": "origin_wallet",
+      "hex": "0000000100000000000000001111111111111111111111111111111111111111",
+      "valid": true,
+      "tag": "wallet",
+      "address": "ATC:1111111111111111111111111111111111111111",
+      "role": "origin",
+      "note": "Urheber, bleibt ueber den gesamten Aufrufstapel unveraendert"
+    },
+    {
+      "id": "T-39b",
+      "name": "caller_contract",
+      "hex": "000000020000000000000000abababababababababababababababababababab",
+      "valid": true,
+      "tag": "contract",
+      "address": "ATC:abababababababababababababababababababab",
+      "role": "caller",
+      "note": "bei Vertrag-zu-Vertrag ist caller die Vertragsadresse; muss von T-39a verschieden sein (erst nach BC-002 verbindlich)"
+    }
+  ]
+}
