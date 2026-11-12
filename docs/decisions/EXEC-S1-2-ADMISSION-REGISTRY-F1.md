@@ -1,10 +1,11 @@
 # S1-2 / F-1 isoliert: Policy-Ueberschreibung in der Admission Registry
 
-> **Status:** Analyse und Regelvorschlag. **Keine Umsetzung.** Die Aenderung
-> beruehrt die Annahme signierter Policies und braucht eine ausdrueckliche
-> Freigabe. Die Korrektur gehoert ausschliesslich nach
-> `components/exec-admission` (Owner 12.11.2026); die Containerintegration wird
-> dafuer **nicht** erneut umgebaut. **Datum:** 2026-11-12.
+> **Status:** drei Entscheidungen getroffen (Owner, 12.11.2026), Compare-and-Insert
+> **umgesetzt** und lokal geprueft. `ADM-012` ist **gesperrt**, bis der Standard
+> normativ registriert ist; bis dahin traegt der Konflikt **keine**
+> Fehleridentitaet (kein provisorischer Code). Kein `CI_VERIFIED`.
+> Die Korrektur liegt ausschliesslich in `components/exec-admission`; die
+> Containerintegration wurde dafuer **nicht** umgebaut. **Datum:** 2026-11-12.
 
 ## 1 Befund, am Code belegt
 
@@ -42,6 +43,21 @@ gueltig signiert** und beschreiben **dasselbe Programm**. Es geht also nicht um
 Sicherheitsverlust, sondern um eine zweite Wahrheit ueber denselben
 `code_hash` — genau das, was die Architekturregel ausschliesst.
 
+## 2a Entscheidungen (Owner, 12.11.2026)
+
+| # | Entscheidung | Inhalt |
+|---|---|---|
+| 1 | **Option A** | Die zuerst erfolgreich registrierte Policy bleibt unveraendert. Unbekannt = registrieren, bytegleich = idempotent, abweichend = `PolicyConflict`, niemals ueberschreiben, bei Konflikt keine Zustandsaenderung. Vergleich ueber die **vollstaendigen** kanonischen Policy-Bytes, atomar (Compare-and-Insert), keine implizite Aktualisierung, kein Last-Write-Wins, Konflikt reproduzierbar protokolliert. |
+| 2 | **`ADM-012` genehmigt, aber an die Standardaenderung gebunden** | Der Konflikt erhaelt eine eigene Fehleridentitaet; `ADM-009` wird **nicht** umgedeutet. Vor der Implementierung: normative Codeliste, Admission-Fehlerdefinition, Rust, Referenzimplementierung, Testkorpus/Differentialtests, Dokumentation und Registry-Nachweis. Bis dahin bleibt `ADM-012` gesperrt. |
+| 3 | **`source_provenance` bleibt signiert** | Herkunft ist sicherheitsrelevante Information und bleibt kryptografisch gebunden. Unterschiedliche Herkunft erzeugt unterschiedliche Policy-Identitaeten, also einen Konflikt. Keine Migration auf Option C, keine Entfernung des Herkunftsnachweises aus bestehenden Formaten. |
+
+**Zusatzauflage (Owner).** Die Erstregistrierung muss deterministisch und
+nachvollziehbar sein: unterschiedliche Registrierungsreihenfolgen auf
+verschiedenen Knoten duerfen nicht zu unterschiedlichen Konsensentscheidungen
+fuehren. Umgesetzt als Anforderung **R4** (Abschnitt 4a der Spezifikation) und als
+Dokumentation an `Registry::register`: die Registry ist eine reine Funktion der
+**bestaetigten** Deployment-Reihenfolge, nicht der lokalen Ankunftsreihenfolge.
+
 ## 3 Optionen
 
 | Option | Inhalt | Folge |
@@ -73,15 +89,10 @@ eigener Migrationsfrage und nicht Teil dieses Schritts.
 7. Keine zweite Registry, keine zweite Aufloesung, kein Ausweichpfad: `Registry`
    bleibt die einzige SSOT, `Authority` bleibt die einzige Pruefinstanz.
 
-**Zu entscheiden vor der Umsetzung** (deshalb keine Code-Aenderung in diesem
-Schritt):
-
-* Gewinnt bei einem Konflikt **immer** die zuerst eingetragene Policy (Vorschlag),
-  oder soll die Ablehnung auch die vorhandene Freigabe sperren?
-* Ist `ADM-012` als neuer Code zulaessig? Das erweitert die Codeliste von
-  `ATC-SEC-EXEC-001`, also eine Spezifikationsaenderung, keine Code-Kosmetik.
-* Bleibt `source_provenance` Teil der signierten Policy (dann bleibt der Konflikt
-  dauerhaft moeglich und A ist die Dauerloesung) oder wird C vorgezogen?
+**Entschieden** (12.11.2026): die zuerst registrierte Policy gewinnt immer; eine
+Ablehnung sperrt die vorhandene Freigabe **nicht**; `ADM-012` ist genehmigt, aber
+erst nach normativer Registrierung zu implementieren; `source_provenance` bleibt
+Teil der signierten Policy, Option C ist nicht freigegeben.
 
 ## 5 Abnahmekriterien (S1-2-T)
 
@@ -91,14 +102,40 @@ Schritt):
 | S1-2-T-02 | gleicher `code_hash`, andere `source_provenance` | `Err(PolicyConflict)`, `len()` unveraendert |
 | S1-2-T-03 | nach T-02: erste Freigabe ausfuehren | autorisiert, Block entsteht, **kein** `ADM-009` |
 | S1-2-T-04 | Reihenfolge umgekehrt (Container zuerst) | derselbe Fehler, symmetrisch, kein Zustandsunterschied |
-| S1-2-T-05 | Konflikt ueber `System::deploy` | `SystemError::Admission` mit `ADM-012`, kein Deployment, kein Registry-Eintrag |
-| S1-2-T-06 | Konflikt ueber `System::deploy_container` | derselbe Code, keine Zustandsaenderung, kein Block |
+| S1-2-T-05 | Konflikt ueber `System::deploy` | `SystemError::Admission` mit `ADM-012`; **bis zur Registrierung** mit `code: None` (keine provisorische Kennung), kein Deployment, kein Registry-Eintrag |
+| S1-2-T-06 | Konflikt ueber `System::deploy_container` | derselbe Fehler, keine Zustandsaenderung, kein Block |
 | S1-2-T-07 | zwei verschiedene Programme | beide werden eingetragen, kein Fehler (Abgrenzung: Konflikt nur je `code_hash`) |
 | S1-2-T-08 | Audit | der abgewiesene Eintrag erscheint im Audit-Log mit Code und `code_hash` |
 
-## 6 Was ausdruecklich nicht geaendert wird
+## 6 Umsetzung und Evidenz
+
+| Gegenstand | Ort | Status |
+|---|---|---|
+| Compare-and-Insert, First-Write-Wins, idempotente Registrierung, `PolicyConflict` | `components/exec-admission/src/lib.rs` (`Registry::register`, `RegistryError`) | umgesetzt |
+| `ADM-009`-Text berichtigt (Anfrage weicht von der registrierten Policy ab) | `Authority::evaluate` | umgesetzt |
+| Codeliste an einer Stelle maschinenlesbar | `standards/atc/conformance/admission-codes.json` (11 aktiv, `ADM-012` proposed) | umgesetzt |
+| Bindung Spezifikation ↔ SSOT ↔ Rust, inkl. Sperre fuer `ADM-012` | `tools/check_admission_codes.py`, `tools/tests/test_admission_codes.py` | umgesetzt |
+| Registrierungsregel R1–R5 | `ATC-SEC-EXEC-001` Kandidat 0.1.1-draft, Abschnitt 4a | spezifiziert |
+| T-01, T-02, T-04, T-07, T-08 | `components/exec-admission/tests/registry_conflict.rs` | 5 Tests gruen |
+| T-03, T-05, T-06 | `components/system/tests/registry_conflict.rs` | 3 Tests gruen |
+| `ADM-012` in der Implementierung | `AdmCode` | **gesperrt** (Pruefer meldet einen Verstoss) |
+
+**Registry-Nachweis.** Der Pruefer vergleicht drei Quellen und schlaegt fehl, wenn
+ein aktiver Code fehlt, ein nicht registrierter Code implementiert ist, die
+Reihenfolge abweicht oder ein vorgeschlagener Code vorzeitig auftaucht. Damit ist
+die Sperre fuer `ADM-012` nicht Prosa, sondern ein Testfall.
+
+**Offen (Governance).** Der Standard selbst ist weiterhin ein Kandidat, nicht
+normativ registriert: `ATC-SEC-EXEC-001` steht nicht in
+`atc-standards/registry/standards.yaml`, und eine ID-Vergabe fuer eine
+Standardfassung ist eine Owner-Entscheidung, keine Agenten-Entscheidung. Deshalb
+bleibt die Fehleridentitaet `ADM-012` gesperrt: der Systempfad meldet den Konflikt
+mit `code: None`, ohne provisorische Kennung.
+
+## 7 Was ausdruecklich nicht geaendert wird
 
 * Keine zweite Implementierung der Registry oder der Authority.
 * Keine Aenderung an `code_hash`-Bindung, Signaturpruefung, Widerruf, Ablauf.
-* Keine Aenderung an Huelle, VM oder Systemeingang.
+* Keine Aenderung an Huelle, VM oder Systemeingang (`ATCE`/`ATCB` unveraendert).
+* Keine Aenderung an `source_provenance` oder an bestehenden Signaturformaten.
 * Kein `CI_VERIFIED`, keine Statusaufwertung aus lokalen Tests.
