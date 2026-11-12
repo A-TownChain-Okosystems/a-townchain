@@ -47,23 +47,40 @@ Transaktionsgaslimit, Blockgaslimit, Implementierungs- und CI-Gates.
 **P2 ist nicht freigegeben.** Die Sperre gilt, bis P1a und die Konsistenz des
 Registers erfuellt sind; P1b (Zahlen) blockiert die Gasphase, nicht den Beginn von P2.
 
-## P1a — Auflagen spezifizieren
+## P1a — Auflagen spezifizieren und schliessen
 
-**Arbeit.** Die Bedingungen der bedingten Freigaben in Anforderungen ueberfuehren,
-sodass sie pruefbar sind statt verhandelbar.
+**Arbeit.** Die Bedingungen der bedingten Freigaben in pruefbare Anforderungen
+ueberfuehren und die vier Befunde der Owner-Pruefung vom 12.11.2026 als Korrektur
+in die bestehenden Dokumente einarbeiten, nicht als neue Entscheidung daneben
+stellen.
 
-| Auflage | Anforderung | Stand |
-|---|---|---|
-| Selektor, Wortgroesse, Encoding, Groessen, Adressableitung | REQ-SCE-039 bis REQ-SCE-041 | geschrieben, Werte zur Bestaetigung |
-| atomare Rueckabwicklung | REQ-SCE-043 | geschrieben |
-| fuenf Gasfelder, Abrechnung unabhaengig vom Rollback | REQ-SCE-045 bis REQ-SCE-047 | geschrieben |
-| Identitaetsnachweise (vier Punkte) | REQ-SCE-048 | geschrieben, Nachweise offen |
-| VM-Versionierung, Rollback, Replay | REQ-SCE-042 bis REQ-SCE-044 | geschrieben |
-| deterministische Reihenfolge, reproduzierbare Receipts | REQ-SCE-049, REQ-SCE-050 | geschrieben |
+### Abschlusskriterien (verbindlich vor dem Schliessen von P1a)
 
-**Ausgang.** Keine Anforderung der Auflagen mehr ohne Prueffall, und die
-Vorschlagswerte (Calldata 8 192 Byte, Rueckgabe 4 096 Byte, Aufruftiefe 8)
-bestaetigt oder ersetzt.
+| Punkt | Abschlusskriterium | Stand | Beleg |
+|---|---|---|---|
+| D1 | SCX-003 und SCE-ARTIFACT verwenden dieselbe Formatdefinition; `ATCB` ist nicht das Magic des VM-Containers | erledigt | Kandidat §5, Klarstellung zu SCX-003 |
+| D1 | Magic der Huelle bestaetigt (`ATCE` oder anderer Name) | **offen** | Vorschlag im Kandidaten |
+| D2 | 8 192 Byte Calldata, 4 096 Byte Rueckgabe, Tiefe 8 ausdruecklich bestaetigen oder ersetzen | **offen** | Begruendung in REQ-SCE-040, Grenzwerttests T-21 bis T-24 |
+| D2 | Adressableitung inklusive Bytebreiten, Serialisierung und Code-Hash eindeutig; Kollisionsbehandlung geregelt | erledigt | REQ-SCE-041, Tabelle 76 Byte, T-27 |
+| D2 | Kanonisierung der Signatur eindeutig, inklusive Parametertypen und verschachtelter Typen | erledigt | REQ-SCE-039, T-25, T-26 |
+| D4 | Fehlerklassen und Erstattungsregel unterscheiden | Klassen erledigt, Regel **offen** | REQ-SCE-047, REQ-SCE-054, T-28, T-29 |
+| D4 | Einheiten von `gas_refund` und Geldbetrag getrennt | erledigt | REQ-SCE-055 |
+| D6 | `origin`, `caller` und Vertragsidentitaet getrennt definiert | erledigt | REQ-SCE-051 bis REQ-SCE-053 |
+| D6 | `caller`-Semantik bei Vertrag-zu-Vertrag mit ATC-BC-002 abgestimmt | **offen** (haengt an BC-002) | REQ-SCE-052 |
+| D5 | Validator-Orchestrierung und VM-Ausfuehrungsverantwortung getrennt | erledigt | Matrix §4, REQ-SCE-056 |
+| Alle | Register-Generator und Konsistenzpruefung erfolgreich | erledigt | `tools/decision_register.py --check` PASS |
+
+### Zwei Regeln fuer die Grenzwerte
+
+1. **Keine Ableitung aus bestehenden Grenzen.** Dass ein Wert zu
+   `MAX_STACK_ITEMS` oder zu einem Testbudget passt, ist kein Argument. Jeder
+   Grenzwert braucht eine eigene Begruendung (Speicher je Frame, Belegroesse,
+   Kostenverhaeltnis) und einen Grenzwerttest, der genau an der Kante scheitert.
+2. **Ein Wert ohne Test ist ein Vorschlag.** 8 192 / 4 096 Byte und Tiefe 8 bleiben
+   als Vorschlag gekennzeichnet, bis T-21 bis T-24 gruen sind.
+
+**Ausgang.** Alle Zeilen der Tabelle auf "erledigt" oder mit benanntem Eigentuemer
+und Termin. Erst dann ist P2 freigegeben.
 
 ## P1b — Messung und Zahlen
 
