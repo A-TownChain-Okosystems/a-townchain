@@ -1,0 +1,247 @@
+# Build-Abdeckung aller Cargo-Manifeste (Governance-Regel G-01)
+#
+# Regel (Owner-Entscheidung 12.11.2026, P1d-A): Kein sicherheitsrelevanter
+# Rust-Code darf unbemerkt ausserhalb der Build- und Pruefabdeckung liegen.
+# Deshalb ist jedes Cargo.toml hier klassifiziert. Ein neues Manifest ohne
+# Eintrag laesst `tools/check_build_coverage.py` fehlschlagen.
+#
+# status:
+#   workspace_member     wird im Haupt-Workspace gebaut und getestet
+#   nested_workspace     eigener [workspace] in einem Unterbaum (eigener Build)
+#   duplicate_retired    Dublette, stillgelegt, kein Build mehr
+#   unverified_build     KEIN Build-/Testnachweis -> offener Befund
+#
+# `python3 tools/check_build_coverage.py --write` ergaenzt neue Manifeste,
+# ohne vorhandene Gruende zu ueberschreiben.
+manifests:
+  - path: "ai/atclang/crates/atc-core"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "ai/genesis-chronicles/modules/atc-game"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "ai/genesis-engine"
+    status: nested_workspace
+    reason: "eigener Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-ai"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-animation"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-assets"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-audio"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-build"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-cli"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-ecs"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-editor"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-gameplay"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-input"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-network"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-physics"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-platform"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-renderer"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-runtime"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-sdk"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-tools"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-ui"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "ai/genesis-engine/modules/atc-genesis-world"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: ai/genesis-engine"
+  - path: "apps/atc-compute"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "apps/atc-interop/modules/atc-bridge"
+    status: unverified_build
+    reason: "kein Build- und Testnachweis; Pruefstrategie festzulegen (Governance-Befund G-01)"
+  - path: "apps/atc-launchpad"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "apps/atc-marketplace"
+    status: nested_workspace
+    reason: "eigener Build-Wurzelbaum: apps/atc-marketplace"
+  - path: "apps/atc-marketplace/modules/atc-assets"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: apps/atc-marketplace"
+  - path: "apps/atc-marketplace/modules/atc-marketplace"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: apps/atc-marketplace"
+  - path: "apps/atc-mining"
+    status: unverified_build
+    reason: "kein Build- und Testnachweis; Pruefstrategie festzulegen (Governance-Befund G-01)"
+  - path: "apps/atc-node"
+    status: duplicate_retired
+    reason: "Dublette von components/node; ungepruefte Adoption in P1d-A entfernt, kein Build (Befund F4)"
+  - path: "apps/atc-sdk/modules/atc-cli"
+    status: unverified_build
+    reason: "kein Build- und Testnachweis; Pruefstrategie festzulegen (Governance-Befund G-01)"
+  - path: "apps/atc-sdk/modules/atc-sdk/rust"
+    status: unverified_build
+    reason: "kein Build- und Testnachweis; Pruefstrategie festzulegen (Governance-Befund G-01)"
+  - path: "apps/atc-storage"
+    status: unverified_build
+    reason: "kein Build- und Testnachweis; Pruefstrategie festzulegen (Governance-Befund G-01)"
+  - path: "components/algorithm"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/exec-admission"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/interop/modules/atc-bridge"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/mining"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/node"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/oracle"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/sdk"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/sdk/modules/atc-cli"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/sdk/modules/atc-sdk/rust"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/storage"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/system"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/update-authority"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/vm"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/wallet"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "components/zkp"
+    status: nested_workspace
+    reason: "eigener Build-Wurzelbaum: components/zkp"
+  - path: "components/zkp/crates/zkp-circuits"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: components/zkp"
+  - path: "components/zkp/crates/zkp-core"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: components/zkp"
+  - path: "components/zkp/crates/zkp-crypto"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: components/zkp"
+  - path: "components/zkp/crates/zkp-prover"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: components/zkp"
+  - path: "components/zkp/crates/zkp-sdk"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: components/zkp"
+  - path: "components/zkp/crates/zkp-verifier"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: components/zkp"
+  - path: "components/zkp/crates/zkp-vm"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: components/zkp"
+  - path: "ecosystem/integration"
+    status: unverified_build
+    reason: "kein Build- und Testnachweis; Pruefstrategie festzulegen (Governance-Befund G-01)"
+  - path: "kernel/atc-shivacore/modules/atc-security"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "kernel/atc-shivacore/sdk"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "modules/atc-blockchain/kernel"
+    status: unverified_build
+    reason: "kein Build- und Testnachweis; Pruefstrategie festzulegen (Governance-Befund G-01)"
+  - path: "modules/atc-dns"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "modules/atc-governance"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "modules/atc-zkp"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "standards/sdk"
+    status: workspace_member
+    reason: "Mitglied der Workspace-Liste; wird gebaut und getestet"
+  - path: "tooling/atc-engineering"
+    status: nested_workspace
+    reason: "eigener Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-atclang"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-audit-cli"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-config"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-core"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-evidence"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-findings"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-gates"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-graph"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-integration"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-maintenance"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-requirements"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-standards"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
+  - path: "tooling/atc-engineering/crates/atc-verification"
+    status: nested_workspace_member
+    reason: "Build-Wurzelbaum: tooling/atc-engineering"
