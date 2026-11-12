@@ -23,8 +23,6 @@
 //! Erst danach wird angehaengt. Ein abgelehnter Block aendert weder Chain-State
 //! noch irgendeine Registry.
 
-use crate::chain::{Block, Chain};
-
 /// Ein Validator lehnt eine Payload ab. `(stage, code, offset)` ist die
 /// Fehleridentitaet; Meldungstexte sind nicht normativ.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -115,46 +113,3 @@ impl std::fmt::Display for ImportError {
 }
 
 impl std::error::Error for ImportError {}
-
-impl Chain {
-    /// Nimmt einen fremden Block an — nur ueber diesen Weg, nur mit Validator.
-    pub fn import_block(
-        &mut self,
-        block: Block,
-        validator: Option<&dyn ContainerValidator>,
-    ) -> Result<(), ImportError> {
-        let recomputed = block.recompute_hash();
-        if recomputed != block.hash {
-            return Err(ImportError::BlockHash {
-                expected: recomputed,
-                found: block.hash,
-            });
-        }
-
-        let (best_height, best_hash) = {
-            let b = self.best();
-            (b.height, b.hash)
-        };
-        if block.height != best_height + 1 {
-            return Err(ImportError::Linkage(
-                "Hoehe springt gegenueber dem Best-Block",
-            ));
-        }
-        if block.prev_hash != best_hash {
-            return Err(ImportError::Linkage(
-                "Vorgaenger-Hash passt nicht zum Best-Block",
-            ));
-        }
-        if !self.has_capacity() {
-            return Err(ImportError::Capacity);
-        }
-
-        let validator = validator.ok_or(ImportError::NoValidator)?;
-        validator
-            .validate_block_payload(&block.payload)
-            .map_err(ImportError::Payload)?;
-
-        self.append_validated(block);
-        Ok(())
-    }
-}
