@@ -58,7 +58,11 @@ vom Gate respektiert.
   `verified`/`audited` brauchen Evidence, `archived` einen Archivmarker
 - **A6** ID-Format `ATC-SC-<KATEGORIE>-<NNN>`, eindeutig, Kategorie passt zur ID
 - **A7** Kategorie im Enum nach SC-001
-- **A8** jede registrierte Quelle besteht `atc check`; `--skip-compile` setzt das Gate
+- **A8** jede registrierte Quelle besteht die Strukturpruefung `atc check <verzeichnis>`
+  (`apps/atc-contracts`), Exit 0; `--skip-compile` setzt das Gate. Seit E1
+  (12.11.2026) gilt: `atc check <datei>` auf eine Vertragsquelle endet bewusst mit
+  Exit 1 (Compiler-Erfolg ist kein ausfuehrbarer Vertrag,
+  `ai/atclang/docs/EXECUTION_STATE_MODEL.md`)
 - **A9** `abi_sha256` stimmt mit der abgeleiteten ABI der Quelle (`atc abi --digest`);
   archivierte Einträge tragen keinen Wert, `--write-abis` zieht nach
   aus, ein fehlendes Binary ist ein Fehler und kein Pass.
@@ -122,7 +126,10 @@ fehlendem Compiler-Binary.
 
 ## 4. Evidenz der Implementierungen
 
-- Alle 16 registrierten Contract-Quellen bestehen `atc check`, Exit 0 (Gate A8).
+- Alle 16 registrierten Contract-Quellen bestehen die Strukturpruefung
+  `atc check apps/atc-contracts` (Projektmodus), Exit 0 (Gate A8). Der Dateimodus
+  `atc check <datei>` lehnt dieselben Quellen seit E1 (12.11.2026) mit Exit 1 ab:
+  ein Vertrag ist nicht ausfuehrbar.
   Das ist eine Strukturprüfung: ein Typfehler (`return "text"` in einer `-> int`-Funktion),
   ein Aufruf einer nicht existierenden Funktion und selbst `let = ;` innerhalb eines
   Vertrags werden von `atc check` akzeptiert. Die Vertragslogik ist damit ungeprüft.
