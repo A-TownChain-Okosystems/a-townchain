@@ -94,18 +94,19 @@ decisions:
         title: "Dekoderfehler: EMPTY_STREAM (E-004) und COUNT_MISMATCH (E-005) ergaenzen"
         owner: "VM-Parser"
         goal: "ArtifactError fuehrt alle zwoelf Codes aus §19.1; beide fehlenden Varianten sind vorhanden und tragen dieselbe Bedingung wie der Vertrag"
-        status: OPEN
-        open_because: "notwendige Konformitaetskorrektur, Implementierung und Freigabe stehen aus"
+        status: IMPLEMENTED
+        open_because: "Code-Test am Commit 6a164080 (Blob 75e881e4), 684 Tests gruen; CI_VERIFIED offen, keine Konformitaet ohne Korpuslauf (Nachweis EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md)"
       - id: D1-C
         title: "Groessenpruefung: dekodierte Laenge statt deklarierter Anzahl"
         owner: "VM-Parser / Admission-Vertrag"
         goal: "Die Groessenpruefung bewertet die dekodierte Stromlaenge (p - 10); die deklarierte Anzahl c ist Obergrenze und kein Ausloeser von E-012. C-8-GV1-MAX ergibt E-005, nicht ProgramTooLarge"
-        status: OPEN
-        open_because: "notwendige Konformitaetskorrektur; die VM prueft heute c > MAX_PROGRAM_OPS (artifact.rs:322)"
+        status: IMPLEMENTED
+        open_because: "Code-Test am Commit 6a164080: c ist nur Obergrenze, gemessen wird die dekodierte Laenge; E-012 prueft die Protokollkonstante MAX_PROGRAM_OPS, der Betreiberwert bleibt P1b (Nachweis EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md)"
     open_items:
       - "Groesstwert fuer E-012: kein Wert festgelegt, deshalb kein Korpusfall; haengt an T-21 bis T-24"
       - "Differentialtest offen: ein Referenzdekoder vorhanden (tools/atc_reference_decoder.py), zweiter Dekoder fehlt"
       - "D1-A bis D1-C sind getrennt zu implementieren und zu testen; keine lokale Sonderbehandlung darf die Unterschiede kaschieren"
+      - "D-0 Huelle: Kandidat §18/§19 und der Korpus beschreiben ATCE/0x02, die Freigabe zu D1-B/D1-C verlangt ATCB/0x01. Bis zur Entscheidung bleibt der Code bei ATCB/0x01 und der Korpus ist nicht gegen die VM lauffaehig (Nachweis EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md, Abschnitt 8)"
 
   - id: D2
     ratification: "nicht ratifiziert (Kandidat)"
