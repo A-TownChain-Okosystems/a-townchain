@@ -30,7 +30,23 @@ Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** (vollstae
 
 Drei Ebenen: **Owner-Entscheidung** ist intern verbindlich, auch wenn der zugehoerige Standard nicht ratifiziert ist. **Ratifikation** sagt, ob der Standard in Kraft ist; "nicht ratifiziert (Kandidat)" bindet niemanden. Ein Wert im Kandidaten bleibt **Vorschlag**, solange der Owner ihn nicht ausdruecklich beschliesst.
 
-Offen und nicht Teil dieser Freigabe: Numerische Gaspreise (Messung je Instruktionsklasse und Vertragsbenchmark); Endgueltiges Transaktionsgaslimit; Endgueltiges Blockgaslimit; Implementierungs- und CI-Gates; Konflikt Aufruftiefe: Owner-Entscheidung 64 vom 09.11.2026 in ATC-BC-002 (Kandidat, nicht ratifiziert) gegen SCE-Vorschlag 8 (R-901); Artefaktidentitaet: Container-Magic ATCB gegen SCE-D1, zwei Hashumfaenge ohne getrennte Namen (R-903); Fehlende CALL-Instruktion und Identitaetstyp auf dem u64-Stapel (R-902, R-907); Zirkularitaet P1a/P2: Grenzwerttests brauchen den Aufrufmechanismus (R-905); Autoritaet der beiden Instruktionssaetze (R-906).
+Offen und nicht Teil dieser Freigabe: Numerische Gaspreise (Messung je Instruktionsklasse und Vertragsbenchmark); Endgueltiges Transaktionsgaslimit; Endgueltiges Blockgaslimit; Implementierungs- und CI-Gates; Konflikt Aufruftiefe: Owner-Entscheidung 64 vom 09.11.2026 in ATC-BC-002 (Kandidat, nicht ratifiziert) gegen SCE-Vorschlag 8 (R-901); Fehlende CALL-Instruktion und Identitaetstyp auf dem u64-Stapel (R-902, R-907); Autoritaet der beiden Instruktionssaetze (R-906).
+
+**Stufe-1-Ratifikation** (Owner, 2026-11-12; Quelle: `docs/decisions/exec-decision-register.yaml`)
+
+| ID | Gegenstand | Option | ratifiziert | Basis | Wirkung |
+|---|---|---|---|---|---|
+| S1-1 | Drei getrennte Identitaeten: artifact_hash, code_hash, state_root | A mit Domaenenvariante 1b | 2026-11-12 | `a63e41a93` | zweite Hashidentitaet wird berechnet, nicht nur benannt; neue Containerfassung ist Teil derselben Entscheidung; ATC-STATE-V2 unabhaengig von der Variante |
+| S1-2 | Policy-Bindung: welche Identitaet Freigabe, Widerruf, Mindestversion bindet | C, asymmetrisch | 2026-11-12 | `a63e41a93` | Freigabe und Mindestversion am code_hash, Widerruf getrennt fuer Code und Artefakt; getypte Schluesselraeume, zwei Abfragen, nur als vollstaendige Einheit (S1-T-38) |
+| S1-3 | Erstattung: Grundsatz | A, ausschliesslich Gasrueckgabe | 2026-11-12 | `a63e41a93` | gas_refund in Gaseinheiten, kein Geldbetrag; ungenutztes Budget verfaellt, auch nach Einfuehrung einer Kontobelastung |
+| S1-4 | Testschichtung L1/L2/L3 | B, nur L1 zaehlt fuer P1a | 2026-11-12 | `a63e41a93` | L1 muss nicht ausfuehrbar sein, um zu zaehlen; L2 und L3 bleiben bis B-1 gesperrt; L1 ist heute EMPTY, P1a bleibt offen |
+
+Durch die Stufe-1-Ratifikation entfallen: B-2 Artefaktidentitaet im Identitaetsteil (R-903); die Frage des Container-Magic bleibt Auflage in D1; B-3 Verfahren (R-905): Schichtung entschieden, L2 und L3 bleiben bis B-1 gesperrt.
+
+Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard: der Kandidat bleibt Kandidat, P1a bleibt offen und P2 bleibt gesperrt.
+
+Nicht freigegeben sind weiterhin Implementierung und Release.
+
 
 <!-- END DECISION-REGISTER -->
 
