@@ -137,6 +137,13 @@ Produktionspfad aus ATCLang entsteht.
 
 **DECIDED — bedingt freigegeben (12.11.2026).** Auflagen: Selektor-Hashverfahren und Breite, Wortgroesse und Calldata-Encoding, maximale Rueckgabepuffergroesse, deterministische Vertragsadressableitung, atomare Rueckabwicklung fehlgeschlagener Transaktionen. Vertrag-zu-Vertrag-Aufrufe bleiben bis BC-002 gesperrt. Spezifiziert in REQ-SCE-039 bis REQ-SCE-041 sowie REQ-SCE-043.
 
+**Nachtrag 12.11.2026 (Spezifikationsluecke A):** Die Adressableitung nannte 16
+Byte Domain und 76 Byte Gesamtlaenge. `ATC-CONTRACT-V1` ist 15 Byte lang, die
+Eingabe ist 75 Byte. Die Laengen sind jetzt bytegenau festgelegt, mit
+Pflichtpruefung `len(domain) == 15` und `len(input) == 75`; ein zusaetzliches Byte
+waere eine eigene Formatentscheidung und ist nicht enthalten. Ohne diese Korrektur
+haetten zwei Implementierungen verschiedene Vertragsadressen berechnet.
+
 **Ist-Stand.** Es gibt keinen Aufruf. `Instruction::Call` wird abgelehnt
 (`components/system/src/backend.rs:156`), es gibt keine Calldata, keinen
 Selektor, keinen Rueckgabepuffer und keine Vertragsadresse. `ATC-8300` wird zu
@@ -233,6 +240,16 @@ Implementierung, die `caller` dauerhaft auf `origin` stehen laesst, hebelt jede
 Berechtigungspruefung aus. REQ-SCE-051 bis REQ-SCE-053; die `caller`-Semantik wird
 mit ATC-BC-002 abgestimmt, bevor Vertrag-zu-Vertrag freigegeben wird.
 
+**Nachtrag 12.11.2026 (Spezifikationsluecke B):** Das Typkennzeichen war gefordert,
+aber nicht kodiert. Es gibt jetzt genau ein kanonisches 32-Byte-Layout: Bytes 0..3
+Kennzeichen (`0x00000001` Wallet, `0x00000002` Vertrag), Bytes 4..11 reserviert und
+zwingend null, Bytes 12..31 die 20 Adressbytes. Ungueltig sind Kennzeichen null,
+unbekannte Kennzeichen, nicht-null reservierte Bytes, Nulladresse und Nullwort;
+unbekannte Kennzeichen werden niemals als Wallet gelesen. Das Kennzeichen setzt der
+Frame, nicht der Aufrufer. Identitaeten sind Bytes, keine Zahlen; Arithmetik auf
+ihnen ist unzulaessig. Eine Implementierung fuer Wallet, VM und Knoten (REQ-SCE-057
+bis 059, T-31 bis T-39).
+
 **Ist-Stand.** Die VM kennt `caller: u64` (`components/system/src/system.rs:266`,
 `components/vm/src/vm.rs:58`). Die Kette kennt `ATC:`-Adressen, und die DID ist
 dieselbe Ableitung: `address_from_pubkey` = `ATC:` plus 20-Byte-Prefix von
@@ -267,13 +284,23 @@ aendert die aktuelle Adresse nicht, Aufruf ohne gueltige Bindung wird abgelehnt.
 **DECIDED — bedingt freigegeben (12.11.2026).** Fuenf getrennte Felder `gas_limit`, `gas_used`, `gas_price`, `fee_charged`, `gas_refund`; Abrechnung unabhaengig vom Rollback; ein fehlgeschlagener Vertrag verbraucht Rechenzeit nicht kostenlos; keine Gebuehrenumgehung ueber Backend oder Loader. Zahlen bleiben offen (P1b). Siehe REQ-SCE-045 bis REQ-SCE-047.
 
 **Nachtrag 12.11.2026 (Befund 4):** "Fehlgeschlagen" ist nicht gleich "Budget
-weg". Drei Klassen sind zu trennen: Gaserschoepfung (volles Budget, keine
+weg". Vier Klassen sind zu trennen: Gaserschoepfung (volles Budget, keine
 Erstattung), Revert oder logischer Fehler (nur `gas_used`, ungenutztes Budget nach
 Erstattungsregel), Ablehnung vor der Ausfuehrung (kein Gas, keine
 Zustandsaenderung). `gas_refund` zaehlt Gaseinheiten, der Geldbetrag traegt einen
 eigenen Namen. REQ-SCE-047 ist entsprechend praezisiert, REQ-SCE-054 und
 REQ-SCE-055 sind neu, T-28 und T-29 sind die Pflichtfaelle. Die Erstattungsregel
 selbst ist noch nicht normativ festgelegt.
+
+**Nachtrag 12.11.2026 (Spezifikationsluecke C):** Die vierte Fehlerklasse fehlte:
+der interne Fehler der Ausfuehrungsinfrastruktur. Er ist weder Revert noch
+Erschoepfung und darf nicht als eines von beiden abgerechnet werden, sonst erzeugen
+identische Transaktionen je nach Infrastrukturzustand unterschiedliche Gebuehren.
+Regel: keine Belastung, keine Zustandsaenderung, kein Beleg; ein Block, der einen
+Erfolgsbeleg traegt, ist ungueltig; eigener Statuscode, Fuehrung als Knotenfehler.
+REQ-SCE-060. Die Erstattungsformeln (`gas_refund = gas_limit - gas_used`,
+`refund_amount = gas_refund * gas_price`, `fee_charged = gas_used * gas_price`)
+stehen als Vorschlag im Kandidaten und sind nicht beschlossen.
 
 **Ist-Stand.** Vier Quellen ohne Verbindung: `GAS_TABLE_V1` mit 19 Befehlen
 (`components/vm/src/vm.rs:71-80`), `DEFAULT_GAS = 50_000`
