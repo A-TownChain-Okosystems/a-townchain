@@ -29,11 +29,20 @@ pending_globally:
   - "ATC-STD-410: Reservierung ist Registry-Zeile (atc-standards Branch reserve/atc-std-410, PR offen wegen unverifizierter E-Mail); normative Freigabe (Technical/Security/Architecture Review + Owner-Approval) fehlt"
   - "ATC-STD-410: Familien-Verkabelung offen — kein FAM-Range bildet eine Security-Familie im 4xx-Bereich ab (ALLOC-12; Befund docs/audits/GOVERNANCE-FINDING-FAMILY-400-2026-11-12.md, Entscheidung Option A/B/C offen)"
   - "S1-2/F-1: Policy-Ueberschreibung in der Registry; Regel, neuer Code ADM-012 und Verbleib von source_provenance in der signierten Policy sind offen (EXEC-S1-2-ADMISSION-REGISTRY-F1.md)"
-  - "P1a: Block.payload und Blockimport transportieren keinen Container; die Containergrenze ist bisher nur im Deploy-Weg durchgesetzt"
+  - "P1a: Blockimport im Knoten verdrahten — validate_payload/admit_payload sind gebaut und getestet, aber atc-node ruft sie nicht auf (atc-node darf nicht von atc-system abhaengen; Richtung offen)"
 
 # Stufe-1-Ratifikation vom 12.11.2026 (Owner-Wortlaut im Chat, Basis HEAD a63e41a93).
 # Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard.
 stage1:
+  - id: P1A
+    title: "Block-Payload transportiert die ATCE-Huelle, Import prueft an der Systemgrenze"
+    option: "A (Transportform atce:<hex>, Pruefung in atc-system, keine ATCB-Route)"
+    ratified_at: "2026-11-12"
+    basis_head: "5dae394b (vor diesem Paket)"
+    effect: "Block-Payload kann die Huelle transportieren; eine ausfuehrbare Payload laeuft durch dieselbe Systemgrenze, ATCB bleibt ohne externe Route"
+    state: IMPLEMENTED
+    verified_by: "11 Tests in components/system/tests/block_payload_container.rs; Workspace 727 gruen; CI_VERIFIED offen"
+    evidence: "docs/decisions/EXEC-P1A-BLOCKPAYLOAD-EVIDENCE-2026-11-12.md"
   - id: S1-1
     title: "Drei getrennte Identitaeten: artifact_hash, code_hash, state_root"
     option: "A mit Domaenenvariante 1b"
