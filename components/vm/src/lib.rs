@@ -3,5 +3,6 @@
 
 pub mod vm;
 pub mod artifact;
+pub mod envelope;
 pub mod ops;
 pub mod context;
