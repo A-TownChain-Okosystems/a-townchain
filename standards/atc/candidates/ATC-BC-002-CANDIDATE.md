@@ -195,6 +195,12 @@ auch nicht teilweise. Unbehandelter Fehler ist kein Erfolg mit Beigabe.
 ### 14.3 Gas und Fehlercodes
 
 E06 ist fest reserviert fuer Aufruftiefe 64 und unveraenderlich.
+
+**Hinweis 12.11.2026 (keine Aenderung dieser Entscheidung, R-901):** Der
+SCE-Kandidat schlaegt in REQ-SCE-040 die Aufruftiefe 8 vor. Dieser Wert wuerde die
+Owner-Entscheidung von 64 nur durch eine ausdrueckliche Aenderung ersetzen; die
+Aufloesung ist offen. Bis dahin gilt hier unveraendert 64, und der SCE-Vorschlag
+ist als Vorschlag zu lesen. Siehe `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md`, E-1.
 Gas wird weder erstattet noch doppelt verbucht, auch nicht durch
 Fehlerbehandlung: einmal belastet bleibt belastet. Rueckgabe nicht
 verbrauchten Teilbudgets ist keine Erstattung, sondern Rueckfluss an den
