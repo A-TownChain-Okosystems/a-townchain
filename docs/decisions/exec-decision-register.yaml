@@ -61,6 +61,7 @@ decisions:
     open_items:
       - "Vertrag-zu-Vertrag-Aufruf (haengt an ATC-BC-002 Ratifizierung)"
       - "Grenzwerte 8192/4096 Byte und Tiefe 8: eigene Begruendung liegt vor, Bestaetigung erst nach T-21 bis T-24"
+      - "Adresseingabe bytegenau: Domain 15 Byte, Gesamtlaenge 75 Byte, Laengenpruefung Pflicht (T-41)"
 
   - id: D3
     specified_in: "Kandidat §5.4 (nicht ratifiziert)"
@@ -94,7 +95,8 @@ decisions:
       - "keine Gebuehrenumgehung ueber Backend oder Loader"
       - "Fehlerklassen getrennt: Erschoepfung volles Budget, Revert nur verbrauchtes Gas, Ablehnung ohne Ausfuehrung ohne Gas (REQ-SCE-047, 054)"
       - "gas_refund in Gaseinheiten, Geldbetrag getrennt benannt (REQ-SCE-055)"
-      - "Erstattungsregel normativ festlegen und mit T-28 belegen"
+      - "Erstattungsregel normativ festlegen und mit T-28 belegen; Formeln bisher ausdruecklicher Vorschlag"
+      - "Vierte Fehlerklasse: interner Infrastrukturfehler ohne Nutzerbelastung, deterministisch, eigener Statuscode (REQ-SCE-060)"
     open_items:
       - "numerische Instruktionskosten (Messung je Instruktionsklasse)"
       - "Transaktionsgaslimit, Blockgaslimit, Dynamik nach Auslastung"
@@ -133,6 +135,7 @@ decisions:
       - "keine Vertrauensluecke zwischen Wallet, Blockchain und VM"
       - "origin, caller und Vertragsadresse getrennt definiert (REQ-SCE-051 bis 053)"
       - "caller bei Vertrag-zu-Vertrag ist die Vertragsadresse, nicht die Wallet (REQ-SCE-052)"
+      - "IdentityValue: ein kanonisches 32-Byte-Layout (Kennzeichen 0..3, reservierte Nullbytes 4..11, Adresse 12..31), fail-closed, eine Implementierung (REQ-SCE-057 bis 059)"
     open_items:
       - "interne Aufrufe: erst nach BC-002 pruefbar"
 
