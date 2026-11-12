@@ -1,80 +1,84 @@
-# Ratifikationsvermerk Stufe 1 — ENTWURF, NICHT IN KRAFT
+# Ratifikation Stufe 1 — in Kraft
 
-**Status:** Entwurf. Dieses Dokument ist **keine** Ratifikation. Es beschreibt, was
-eine Ratifikation aendern wuerde, und wird erst gueltig, wenn der Owner sie
-ausdruecklich ausspricht und der Wortlaut unten mit dem Datum bestaetigt ist.
-**Datum:** 2026-11-12 · **Basis:** `a-townchain` main `45f9d9093`
-**Register:** unveraendert, Blob `9b76813663`
+**Status:** Ratifikation des Owners, erklaert am 12.11.2026, 08:32 (Europe/Berlin).
+**Basis:** `a-townchain` main `a63e41a93`
+**Eingetragen in:** `docs/decisions/exec-decision-register.yaml` (SSOT), Registerblock
+in `docs/decisions/AD-EXEC-D1-D7.md` und im Kandidaten
+`standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md`
+**Wirkung:** Entscheidung der vier Optionen. **Keine** Implementierungs- oder
+Releasefreigabe. Der Standard bleibt Kandidat.
 
-## 1. Warum dieser Entwurf existiert
+## 1. Was ratifiziert ist
 
-Der Owner hat am 12.11.2026 eine Kombination als **technische Empfehlung**
-bestaetigt und ausdruecklich festgehalten, dass damit **keine**
-Eigentuemer-Ratifikation erfolgt ist. Eine Ratifikation ist ein Akt des Owners, den
-der Agent weder vorwegnehmen noch ersetzen kann. Dieser Entwurf haelt fest, was auf
-ein Wort des Owners hin eingetragen wird, damit die Uebernahme selbst nachpruefbar
-bleibt und nicht aus einer Empfehlung abgeleitet wird.
+| Gegenstand | Option |
+|---|---|
+| S1-1 | A, drei getrennte Identitaeten (`artifact_hash`, `code_hash`, `state_root`) mit Domaenenvariante **1b** |
+| S1-2 | C, asymmetrische Policy-Bindung mit typisierten Schluesselraeumen und vollstaendiger Doppelpruefung |
+| S1-3 | A, ausschliesslich Gasrueckgabe; nicht verbrauchtes Budget verfaellt |
+| S1-4 | B, ausschliesslich L1 zaehlt fuer P1a; L2 bleibt von B-1 abhaengig |
 
-## 2. Zwei Ebenen, die nicht dasselbe sind
+## 2. Wortlaut des Owners
 
-| Ebene | Gegenstand | wer | Stand |
-|---|---|---|---|
-| 1 | Owner-Entscheidung S1-1 bis S1-4 (Optionen, Domaenenvariante) | Owner | offen |
-| 2 | Ratifikation des Standards `ATC-SMART-CONTRACT-EXECUTION-001` nach §9 | Owner | offen, davon unabhaengig |
+> Ich ratifiziere auf Basis des von dir angegebenen `main`-HEAD `a63e41a93`:
+> S1-1: Option A – drei getrennte Identitäten (`artifact_hash`, `code_hash`,
+> `state_root`), mit Domänenvariante 1b. S1-2: Option C – asymmetrische
+> Policy-Bindung, einschließlich typisierter Schlüsselräume und vollständiger
+> Doppelprüfung. S1-3: Option A – ausschließlich Gasrückgabe. Nicht verbrauchtes
+> Budget verfällt; diese Regel gilt ausdrücklich auch dann, wenn künftig eine
+> tatsächliche Kontobelastung eingeführt wird. S1-4: Option B – ausschließlich L1
+> zählt für P1a. L2 bleibt von B-1 abhängig.
 
-Ebene 1 legt fest, **welche** Werte gelten. Ebene 2 entscheidet, ob der Standard
-als Ganzes in Kraft tritt. Eine Entscheidung auf Ebene 1 macht den Kandidaten nicht
-zum ratifizierten Standard, und eine spaetere Ratifikation auf Ebene 2 kann die
-Werte aus Ebene 1 nicht ersetzen, ohne sie ausdruecklich zu aendern.
+## 3. Verbindliche Bedingungen dieser Ratifikation
 
-## 3. Was eingetragen wird, wenn der Owner bestaetigt
+1. **Containerfassung.** Die neue Containerfassung ist Bestandteil von S1-1/1b und
+   darf nicht als unabhaengige spaetere Aenderung behandelt werden.
+2. **Zustandswurzel.** `ATC-STATE-V2` ist unabhaengig von der Hash-Variante
+   erforderlich, sobald der State-Root auf dem Stream-Hash statt dem Artefakt-Hash
+   basiert.
+3. **Keine Teilumsetzung.** S1-2 wird ausschliesslich als vollstaendige Einheit
+   umgesetzt. Teilumsetzungen bestehen das Gate S1-T-38 nicht.
+4. **Altbestand.** S1-T-37 bleibt zwingend: flache 32-Byte-Altschluessel werden
+   nicht interpretiert; ein solcher Altbestand fuehrt zur Startverweigerung.
 
-| Gegenstand | Option | Wirkung im Register | Wirkung in der Spezifikation |
-|---|---|---|---|
-| S1-1 | A, drei Identitaeten | `artifact_hash`, `code_hash`, `state_root` getrennt gefuehrt | REQ-SCE-041 erhaelt eine zweite Identitaet, SCX-003 wird praezisiert |
-| S1-1 Variante | 1b, beide Hashes mit Praefix | Domaenen-Strings und Containerfassung werden Pflicht | neue Fassung des Containers, Goldvektoren fuer beide Hashes |
-| S1-2 | C, asymmetrisch | D2 traegt Widerruf auf zwei Identitaeten | getypte Schluesselraeume, zwei Abfragen, zwei Statuscodes |
-| S1-3 | A, nur Gasrueckgabe | D4 bleibt bei Gas | `gas_refund` in Gas, kein Geldbetrag |
-| S1-4 | B, nur L1 fuer P1a | keine Registeraenderung | L2 und L3 bleiben ausserhalb von P1a |
+## 4. Was die Ratifikation nicht ist
 
-Zusaetzlich wird im Register von `pending_globally` entfernt, was durch die
-Entscheidung entfaellt: **B-2** (Artefaktidentitaet). **B-1** und **B-3** bleiben
-offen; B-3 nur, solange die Testschichtung nicht beschlossen ist.
+> Der Standard bleibt Kandidat und wird durch diese Entscheidung nicht automatisch
+> normativ freigegeben.
 
-## 4. Was auch nach einer Ratifikation nicht gilt
+Damit bleiben zwei Ebenen getrennt: die **Option** ist entschieden (Ebene 1), der
+**Standard** ist nicht ratifiziert (Ebene 2). Ein Wert im Kandidaten bleibt
+Vorschlag, bis er normativ spezifiziert ist; die Zustandsleiter DECIDED →
+SPECIFIED → IMPLEMENTED bleibt bei SPECIFIED 0 und IMPLEMENTED 0.
 
-1. **P1a bleibt offen.** L1 ist `EMPTY`, weil der reine Dekoder fehlt. Eine
-   Entscheidung ueber die Testschichtung erzeugt keinen Test.
-2. **P2 bleibt gesperrt.** Die Aufrufarchitektur B-1 ist nicht entschieden; ohne
-   sie gibt es keine `CALL`-Instruktion und keine Frame-Semantik.
-3. **Keine Produktionsfreigabe.** Die Ratifikation von Entscheidungen ist keine
-   Freigabe von Code.
-4. **Kein Containerformat in Kraft.** 1b verlangt eine neue Containerfassung; sie
-   muss spezifiziert, mit Goldvektoren belegt und erst dann umgesetzt werden.
-5. **Der Standard bleibt Kandidat**, solange Ebene 2 offen ist.
+## 5. Ausgefuehrte Eintragungen
 
-## 5. Bedingungen, die mit der Ratifikation verbunden sind
+| Ort | Eintragung |
+|---|---|
+| `exec-decision-register.yaml`, `stage1` | S1-1 bis S1-4 mit Option, Datum, Basis-HEAD und Wirkung |
+| `exec-decision-register.yaml`, `resolved_by_ratification` | B-2 (Identitaetsteil) und B-3 entfallen; Container-Magic bleibt Auflage in D1 |
+| D1, Auflagen | drei Identitaeten ratifiziert, Containerfassung und Domaenen-Praefixe als Pflicht |
+| D2, Auflagen | getypte Schluesselraeume, zwei Abfragen, zwei Statuscodes, S1-T-37, S1-T-38 |
+| D4, Auflagen | Grundsatz S1-3 A, Verfall des ungenutzten Budgets auch nach Kontoeinfuehrung |
+| Registerblock in beiden Dokumenten | Abschnitt "Stufe-1-Ratifikation", erzeugt aus derselben Quelle |
 
-1. `ATC-STATE-V2` ist unabhaengig von der Domaenenvariante erforderlich, weil die
-   Wurzel kuenftig den Strom-Hash bindet und damit eine andere Commitment-Semantik
-   hat. V1 wird nie stillschweigend als V2 gelesen.
-2. S1-2 gilt nur als Ganzes: getypte Schluesselraeume, zwei Abfragen, zwei
-   Statuscodes, Ablehnung bei Treffer auf einer der Sperren, keine Deutung flacher
-   Altschluessel (S1-T-29 bis S1-T-32, S1-T-37, S1-T-38).
-3. 1b aendert jeden Artefakt-Hash. Weil kein Artefakt-Hash gespeichert ist, ist die
-   Neuverifikation vollstaendig; sobald einer gespeichert wird, gilt das nicht mehr.
-4. Bei S1-3 ist "ungenutztes Budget verfaellt" heute folgenlos, weil kein Konto
-   belastet wird. Der Wortlaut muss sagen, dass die Regel greift, sobald eine
-   Belastung existiert.
+## 6. Statusgrenze nach der Ratifikation
 
-## 6. Wortlaut, der zur Ratifikation fuehrt
+| Punkt | Stand |
+|---|---|
+| Optionswahl und Ratifikation der vier Stufe-1-Entscheidungen | erklaert |
+| Eintragung in Git, Tracking-Matrix, Register | ausgefuehrt (dieser Commit) |
+| Standard `ATC-SMART-CONTRACT-EXECUTION-001` | Kandidat, nicht normativ freigegeben |
+| P1a | offen |
+| P2 | gesperrt |
+| Implementierungs- und Releasefreigabe | nicht erteilt |
+| periodische Ueberwachung | nicht eingerichtet |
 
-Eine Ratifikation liegt vor, wenn der Owner diese vier Entscheidungen und die
-Variante ausdruecklich als Entscheidung (nicht als Empfehlung) bestaetigt und dabei
-Datum und Fassung nennt, zum Beispiel:
+P1a bleibt offen, weil L1 heute `EMPTY` ist: der reine Dekoder fehlt. Die
+Entscheidung ueber die Schichtung erzeugt keinen Test. P2 bleibt gesperrt, weil B-1
+(Aufrufarchitektur, R-902/R-906/R-907) nicht entschieden ist.
 
-> Ich ratifiziere am 12.11.2026 auf Basis von main `45f9d9093`: S1-1 Option A mit
-> Domaenenvariante 1b, S1-2 Option C, S1-3 Option A, S1-4 Option B.
+## 7. Naechster Schritt
 
-Ohne einen solchen Satz bleibt dieses Dokument Entwurf, das Register unveraendert
-und Aufgabe 910 offen.
+Spezifikation der drei Identitaeten und der Domaenen-Strings, der neuen
+Containerfassung, der getypten Schluesselraeume und des Erstattungswortlauts im
+Kandidaten, danach Konformitaetstests. Kein Code vor der Spezifikation.
