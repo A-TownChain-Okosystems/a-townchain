@@ -97,6 +97,8 @@ decisions:
       - "gas_refund in Gaseinheiten, Geldbetrag getrennt benannt (REQ-SCE-055)"
       - "Erstattungsregel normativ festlegen und mit T-28 belegen; Formeln bisher ausdruecklicher Vorschlag"
       - "Vierte Fehlerklasse: interner Infrastrukturfehler ohne Nutzerbelastung, deterministisch, eigener Statuscode (REQ-SCE-060)"
+      - "Zwei getrennte Code-Raeume: Beleg-Status 0x00 bis 0x03, Knotenfehler ATC-NODE-INFRA-001 nie im Beleg (REQ-SCE-054)"
+      - "Wiederaufnahme: derselbe Block nach behobenem Fehler deterministisch identisch (REQ-SCE-060 Punkt 4)"
     open_items:
       - "numerische Instruktionskosten (Messung je Instruktionsklasse)"
       - "Transaktionsgaslimit, Blockgaslimit, Dynamik nach Auslastung"
@@ -136,6 +138,7 @@ decisions:
       - "origin, caller und Vertragsadresse getrennt definiert (REQ-SCE-051 bis 053)"
       - "caller bei Vertrag-zu-Vertrag ist die Vertragsadresse, nicht die Wallet (REQ-SCE-052)"
       - "IdentityValue: ein kanonisches 32-Byte-Layout (Kennzeichen 0..3, reservierte Nullbytes 4..11, Adresse 12..31), fail-closed, eine Implementierung (REQ-SCE-057 bis 059)"
+      - "Testvektoren als gemeinsame Datei standards/atc/conformance/identity-value-vectors.json"
     open_items:
       - "interne Aufrufe: erst nach BC-002 pruefbar"
 
