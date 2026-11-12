@@ -25,20 +25,24 @@ aktualisiert, wenn eine der drei Voraussetzungen eintritt:
 
 | Status | Anzahl |
 |---|---|
-| `TESTED` | 0 |
+| `TESTED` | 1 |
 | `FAILED` | 0 |
 | `BLOCKED` | 1 |
 | `EMPTY` | 0 |
-| `OPEN` | 47 |
-| **Summe** | **48** |
+| `OPEN` | 52 |
+| **Summe** | **54** |
 
-Kein Test ist `TESTED`. P1a ist offen, P2 ist gesperrt, eine Produktionsfreigabe ist
-nicht erteilt. Der Status `OPEN` heisst: es fehlt die Entscheidung, nicht nur die
-Ausfuehrung.
+Ein Test ist `TESTED`: S1-T-18, und zwar als **Statustest**, nicht als
+Konformitaetsnachweis. Grund ist die in Abschnitt 1 festgelegte Bedingung "ein reiner
+Dekoder entsteht, dann kann L1 von `EMPTY` nach `OPEN` wechseln": der
+Referenzdekoder existiert seit dem 12.11.2026. P1a bleibt offen, P2 bleibt an B-1
+gesperrt, eine Produktionsfreigabe ist nicht erteilt. Der Status `OPEN` heisst: die
+Entscheidung liegt vor, die Umsetzung nicht.
 
-Zehn Tests (S1-T-39 bis S1-T-48) sind am 12.11.2026 mit §19 des Kandidaten
-hinzugekommen: Parser-Fehlersemantik, Tail-Integritaet, Versionsisolation und
-Differentialtest. Sie erweitern die Matrix, ohne einen Befund zu aendern.
+Sechzehn Tests (S1-T-39 bis S1-T-54) sind am 12.11.2026 mit §19 und §19.2a des
+Kandidaten hinzugekommen: Parser-Fehlersemantik, Stromgrenze, Tail-Integritaet,
+Versionsisolation und Differentialtest. Sie erweitern die Matrix, ohne einen
+Konformitaetsbefund zu erzeugen.
 
 ## 3. Nachweisstand je Test
 
@@ -61,7 +65,7 @@ Differentialtest. Sie erweitern die Matrix, ohne einen Befund zu aendern.
 | S1-T-15 | jeder Fall T-21 bis T-24 genau einer Schicht zugeordnet | S1-4 | `OPEN` | Matrix + Gate |
 | S1-T-16 | L2 laeuft ohne Produktionsfreigabe und ohne Netz | S1-4 | `BLOCKED` | Harness (B-1) |
 | S1-T-17 | kein L3-Fall als `TESTED` solange B-1 offen ist | S1-4 | `OPEN` | Gate |
-| S1-T-18 | L1 ohne Dekoder ist `EMPTY` | S1-4 | `OPEN` | Statusbericht |
+| S1-T-18 | L1-Status folgt der Definition: `EMPTY` ohne Dekoder, `OPEN` mit ausfuehrbarem Dekoder | S1-4 | `TESTED` | Statusbericht + Lauf 12.11.2026 |
 | S1-T-19 | getrennte Domaenen, Generation aendert nur `artifact_hash` | S1-1 | `OPEN` | Code-Test |
 | S1-T-20 | Determinismus ueber zwei Prozesse, keine Host-Zeit, kein Zufall | S1-1 | `OPEN` | Code-Test |
 | S1-T-21 | gleicher Strom, andere Metadaten: `code_hash` gleich | S1-1 | `OPEN` | Code-Test |
@@ -92,6 +96,12 @@ Differentialtest. Sie erweitern die Matrix, ohne einen Befund zu aendern.
 | S1-T-46 | Unbekannte Versionen `0x03` und `0xFF` bei Magic `ATCE` ergeben `E-003`, ohne spekulatives Parsen | S1-1 | `OPEN` | Code-Test |
 | S1-T-47 | Opcodes `0x11` bis `0x13` bei Generation `0x01` ergeben `E-011`; Generation `0x03` ergibt `E-009` | S1-1 | `OPEN` | Code-Test |
 | S1-T-48 | Korpusauswahl: nur vollstaendige Container sind Parser-Eingaben; GV-5 erscheint ausschliesslich als C-3-Ablehnungsfall (`E-007`, Offset `0`) | S1-1 | `OPEN` | Reviewtest |
+| S1-T-49 | `E-005` gilt genau an der Instruktionsgrenze: Strom endet vor `c`, `p = tail_start`; ein um ein Byte gekuerzter Strom an derselben Stelle ergibt `E-002` | S1-1 | `OPEN` | Code-Test + Korpus |
+| S1-T-50 | `E-008` gilt genau nach `c` Instruktionen, Offset ist das erste Restbyte; eine zu kleine Anzahl ergibt an derselben Grenze `E-008`, nicht `E-005` | S1-1 | `OPEN` | Code-Test + Korpus |
+| S1-T-51 | `E-004` gilt nur bei `c = 0` und leerem Strom; `c = 0` mit Bytes ergibt `E-008` | S1-1 | `OPEN` | Code-Test |
+| S1-T-52 | Struktur vor Integritaet: beschaedigter Strom mit veraltetem Tail ergibt den Strukturcode, nicht `E-006` | S1-1 | `OPEN` | Code-Test + Korpus |
+| S1-T-53 | Terminierung und Groesstwert: `c = 0xFFFFFFFF` ergibt `E-005` in einem Schritt, `E-012` nur bei konfiguriertem Wert | S1-1 | `OPEN` | Code-Test |
+| S1-T-54 | Korpus C-1 bis C-8 mit mindestens 30 Eingaben, Sollwerte aus der Konstruktion, `tools/check_parser_corpus.py` ohne Abweichung; ein Dekoder allein begruendet keine Konformitaet | S1-1 | `OPEN` | Datei + Gate |
 
 ## 3.1 Wirkung der Ratifikation auf den Nachweisstand
 
@@ -123,22 +133,61 @@ Fehlerreaktion und Testbezug:
 | Policy-Schluesselraeume | §18.4 | REQ-SCE-070 bis 074 | achtstufige Pruefsequenz, Startverweigerung |
 | Gasrueckgabe | §18.5 | REQ-SCE-075 bis 077 | vier Faelle, Wortlaut fuer kuenftige Kontobelastung |
 | Parser-Fehlersemantik | §19.1 bis 19.2 | REQ-SCE-078 bis 079 | Codeliste `E-001` bis `E-012`, zehnstufige Praezedenz |
+| Stromgrenze und Prozedur | §19.2a | REQ-SCE-085 bis 089 | `tail_start = L - 32`, vier paarweise disjunkte Stromcodes, `E-005` an der Grenze |
 | Tail-Integritaet | §19.3 | REQ-SCE-080 | exakter Offset `10+n`, 32 Byte, keine Bytes danach |
 | Versionsisolation | §19.4 | REQ-SCE-081 bis 083 | keine Vermischung, reine Funktion, Generation vor Opcode |
-| Differentialtest | §19.5 | REQ-SCE-084 | acht Korpusklassen, Vergleich von `(Code, Offset)` |
+| Differentialtest | §19.5 | REQ-SCE-084 | acht Korpusklassen, 40 Eingaben, Vergleich von `(Code, Offset)` |
+| Parser-Korpus | §19.5 | REQ-SCE-084 | `standards/atc/conformance/stage1-parser-corpus.json`, erzeugt aus `tools/build_parser_corpus.py` |
 
 Der Sollwert ist ohne Projektcode pruefbar: `python3 tools/check_stage1_vectors.py`
 liest die Vektoren aus dem Dokument und rechnet sie mit reinem SHA-256 nach. Damit
-ist die Spezifikation gegen sich selbst pruefbar, aber **kein** Test gegen eine
-Implementierung: die Matrix bleibt unveraendert, weil kein Test ausgefuehrt wurde.
+ist die Spezifikation gegen sich selbst pruefbar. Ein ausgefuehrter Dekoder ist
+etwas anderes: er zeigt, dass die Prozedur ausfuehrbar und eindeutig ist, nicht dass
+zwei unabhaengige Dekoder uebereinstimmen. Deshalb aendert der Lauf aus 3.3 keinen
+Teststatus ausser dem Statustest S1-T-18.
 
 **Korpusgrenze (12.11.2026).** Nur GV-1, GV-3 und GV-7 beschreiben vollstaendige
 Container und taugen als Parser-Eingaben; GV-5 ist Altformat und gehoert als
 Ablehnungsfall nach C-3; GV-2, GV-4, GV-6, GV-8 und GV-9 sind Hash-Eingaben ohne
-Container. Test S1-T-48 haelt das fest.
+Container. Test S1-T-48 haelt das fest. GV-7 war dafuer erst nach der Korrektur des
+P2-Stroms geeignet (Abschnitt 3.3).
 
-Was weiterhin fehlt, ist ausdruecklich kein Spezifikationsrest: L1 braucht einen
-reinen Dekoder (S1-T-18), und die Aufrufarchitektur B-1 ist nicht entschieden.
+Was weiterhin fehlt, ist ausdruecklich kein Spezifikationsrest: L1 ist mit dem
+Referenzdekoder `OPEN`, aber die Konformitaet braucht einen zweiten Dekoder, und die
+Aufrufarchitektur B-1 ist nicht entschieden.
+
+## 3.3 Lauf vom 12.11.2026: Stromgrenze, Korpus und Referenzdekoder
+
+| Schritt | Ergebnis |
+|---|---|
+| Spezifikation §19.2a | Stromgrenze `tail_start = L - 32`, Dekodierprozedur, vier disjunkte Stromcodes (REQ-SCE-085 bis 089) |
+| Korpus | 40 Eingaben in C-1 bis C-8, Sollwerte aus der Konstruktion |
+| Referenzdekoder | `tools/atc_reference_decoder.py`, reine Funktion, unabhaengig von der VM |
+| Abgleich | `tools/check_parser_corpus.py`: 40 Eingaben, 0 Abweichungen |
+| Werkzeugtests | `pytest tools/tests/test_parser_corpus.py`: 11 Tests gruen |
+| Vektoren | `check_stage1_vectors.py`: 9 Gold- und 2 Negativvektoren nach der P2-Korrektur neu berechnet |
+| L1 | `EMPTY` -> `OPEN` (S1-T-18 `TESTED`) |
+| Konformitaet | **nicht** erreicht: ein Dekoder ist kein Differentialtest |
+
+Drei Befunde aus diesem Lauf, alle am Byte nachpruefbar:
+
+1. `E-005` und `E-008` waren ohne Stromgrenze nicht trennbar. Mit `tail_start = L - 32`
+   sind sie paarweise disjunkt; der Korpus enthaelt beide Faelle bei **demselben
+   Offset 19** (`C-8-GV1-ZU-KLEIN` -> `E-008`, `C-5-GV1-K1` -> `E-005`). Genau diese
+   Nachbarschaft war vorher mehrdeutig.
+2. Die VM prueft den Digest **vor** dem Strom (`artifact.rs:316-318`) und meldet bei
+   zwei Defekten `BadHash` statt des Strukturcodes. Das ist die dritte Abweichung vom
+   Vertrag und der Grund, warum sie im Differentialtest heute durchfaellt.
+3. Der dokumentierte P2-Strom war nicht dekodierbar: `Store(u32)` braucht vier
+   Operandenbytes, dokumentiert war eines. GV-7 ergab `E-002` bei Offset 31, obwohl
+   der Digest stimmte. Ein Hash-Nachweis belegt also keine Dekodierbarkeit. P2 ist
+   berichtigt, GV-6 und GV-7 sind nach S1-T-27 neu berechnet.
+
+Die Einzelheiten, Aufrufe und Ausgaben stehen in
+`docs/decisions/EXEC-STAGE1-PARSER-EVIDENCE-2026-11-12.md`.
+
+Offen bleibt bewusst: kein `E-012`-Korpusfall (kein Groesstwert festgelegt), kein
+zweiter Dekoder (VM nicht konform), keine Aussage ueber P1a und P2.
 
 ## 4. Bereits belegte Befunde
 
@@ -158,10 +207,12 @@ bleiben gueltig, auch wenn alle Tests `OPEN` sind.
 
 | Frage | Gegenstand | Empfehlung des Owners |
 |---|---|---|
-| S1-1 | drei Identitaeten | A |
+| S1-1 | drei Identitaeten | A, mit Domaenenvariante 1b |
 | S1-1a/1b/1c | wie die Domaenen getrennt werden | 1b (beide mit Praefix) |
-| S1-2 | Policy-Bindung mit getypten Schluesselraeumen | C |
+| S1-2 | Policy-Bindung mit getypten Schluesselraeumen | C, asymmetrisch |
 | S1-3 | Erstattung | A, nur Gas-Rueckfluss |
 | S1-4 | Testschichtung | B, nur L1 zaehlt fuer P1a |
 
-Alle fuenf Punkte sind offen. Die Empfehlungen sind keine Beschluesse.
+Alle fuenf Punkte sind am 12.11.2026 entschieden und im Register als `stage1`
+eingetragen (Vermerk: `EXEC-STAGE1-RATIFICATION-2026-11-12.md`). Die Spalte
+`Empfehlung des Owners` ist damit der Beschluss; die Umsetzung ist es nicht.
