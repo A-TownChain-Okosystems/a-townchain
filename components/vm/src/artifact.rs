@@ -9,9 +9,15 @@
 //!   0..4   magic  "ATCB"
 //!   4      Containerformat (0x01)
 //!   5      Generation (1 = ATCB-v1, 2 = ATCB-v2)
-//!   6..10  Anzahl Operationen (u32)
+//!   6..10  Anzahl Operationen (u32, Obergrenze, kein Endmarker)
 //!   10..   Operationsstrom
 //!   -32..  SHA-256 ueber alle vorhergehenden Bytes
+//!
+//! Pruefreihenfolge (D1-B/D1-C, §19.2a): Laenge, Magic, Format, Generation,
+//! Strom, ueberzaehlige Bytes, leerer Strom, Integritaet, Groesstwert. Ein
+//! Strukturfehler wird also **vor** dem Digest erkannt, und die Groessenpruefung
+//! misst die **dekodierte** Laenge, nicht die deklarierte Anzahl. Fehleridentitaet
+//! ist das Paar (Code, Offset); die Offsets zaehlen ab dem ersten Byte.
 //!
 //! Es gibt keine Konvertierung zwischen Generationen. Ein v1-Artefakt bleibt
 //! v1, ein v2-Artefakt bleibt v2.
@@ -22,6 +28,8 @@ use crate::vm::Op;
 pub const MAGIC: [u8; 4] = *b"ATCB";
 /// Unterstuetztes Containerformat.
 pub const CONTAINER_VERSION: u8 = 1;
+/// Laenge des Kopfes bis zum Strom.
+pub const HEAD_LEN: usize = 10;
 /// Laenge des angehaengten Hashes.
 pub const HASH_LEN: usize = 32;
 /// Generation ATCB-v1.
@@ -29,18 +37,83 @@ pub const GENERATION_V1: u8 = 1;
 /// Generation ATCB-v2 (Kandidat).
 pub const GENERATION_V2: u8 = 2;
 
+/// Fehler beim Bauen oder Lesen eines Artefakts.
+///
+/// Jede Variante traegt den Offset des ersten nicht akzeptierten Bytes. Bei
+/// Fehlern aus `new` stehen die Kopfpositionen (5 fuer die Generation, 0 sonst),
+/// weil dort noch keine Eingabebytes existieren.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ArtifactError {
-    TooShort,
-    BadMagic,
-    UnsupportedContainer(u8),
-    UnknownGeneration(u8),
-    BadHash,
-    UnknownOpcode(u8),
-    GenerationMismatch { opcode: u8, generation: u8 },
-    TruncatedOperand,
-    TrailingBytes,
-    ProgramTooLarge { size: usize },
+    /// `E-001` Eingabe kuerzer als Kopf plus Hash. Offset: Eingabelaenge.
+    TooShort { offset: usize },
+    /// `E-007` Magic ist nicht `ATCB`. Offset: `0`.
+    BadMagic { offset: usize },
+    /// `E-003` Containerformat wird nicht unterstuetzt. Offset: `4`.
+    UnsupportedContainer { version: u8, offset: usize },
+    /// `E-009` Generation ist unbekannt. Offset: `5`.
+    UnknownGeneration { generation: u8, offset: usize },
+    /// `E-004` Die Anzahl ist `0` und der Strom ist leer. Offset: `10`.
+    EmptyStream { offset: usize },
+    /// `E-005` Der Strom endet an einer Instruktionsgrenze, bevor die
+    /// deklarierte Anzahl erreicht ist. Offset: `tail_start`.
+    CountMismatch { offset: usize },
+    /// `E-006` Der Tail passt nicht zum Inhalt. Offset: `tail_start`.
+    BadHash { offset: usize },
+    /// `E-010` Opcode ist unbekannt. Offset: Position des Opcodes.
+    UnknownOpcode { opcode: u8, offset: usize },
+    /// `E-011` Opcode gehoert zu Generation 2, das Artefakt ist Generation 1.
+    /// Offset: Position des Opcodes.
+    GenerationMismatch {
+        opcode: u8,
+        generation: u8,
+        offset: usize,
+    },
+    /// `E-002` Ein Operand reicht nicht bis `tail_start`. Offset: `tail_start`.
+    TruncatedOperand { offset: usize },
+    /// `E-008` Nach der deklarierten Anzahl bleiben Bytes vor dem Hash.
+    /// Offset: Position des ersten ueberzaehligen Bytes.
+    TrailingBytes { offset: usize },
+    /// `E-012` Mehr Operationen als `MAX_PROGRAM_OPS`. Gemessen werden die
+    /// **dekodierten** Operationen, nicht die deklarierte Anzahl (D1-C).
+    ProgramTooLarge { ops: usize, offset: usize },
+}
+
+impl ArtifactError {
+    /// Normativer Fehlercode aus `REQ-SCE-081`.
+    pub fn code(&self) -> &'static str {
+        match self {
+            ArtifactError::TooShort { .. } => "E-001",
+            ArtifactError::TruncatedOperand { .. } => "E-002",
+            ArtifactError::UnsupportedContainer { .. } => "E-003",
+            ArtifactError::EmptyStream { .. } => "E-004",
+            ArtifactError::CountMismatch { .. } => "E-005",
+            ArtifactError::BadHash { .. } => "E-006",
+            ArtifactError::BadMagic { .. } => "E-007",
+            ArtifactError::TrailingBytes { .. } => "E-008",
+            ArtifactError::UnknownGeneration { .. } => "E-009",
+            ArtifactError::UnknownOpcode { .. } => "E-010",
+            ArtifactError::GenerationMismatch { .. } => "E-011",
+            ArtifactError::ProgramTooLarge { .. } => "E-012",
+        }
+    }
+
+    /// Offset des ersten nicht akzeptierten Bytes.
+    pub fn offset(&self) -> usize {
+        match self {
+            ArtifactError::TooShort { offset }
+            | ArtifactError::BadMagic { offset }
+            | ArtifactError::UnsupportedContainer { offset, .. }
+            | ArtifactError::UnknownGeneration { offset, .. }
+            | ArtifactError::EmptyStream { offset }
+            | ArtifactError::CountMismatch { offset }
+            | ArtifactError::BadHash { offset }
+            | ArtifactError::UnknownOpcode { offset, .. }
+            | ArtifactError::GenerationMismatch { offset, .. }
+            | ArtifactError::TruncatedOperand { offset }
+            | ArtifactError::TrailingBytes { offset }
+            | ArtifactError::ProgramTooLarge { offset, .. } => *offset,
+        }
+    }
 }
 
 // --- SHA-256 (FIPS 180-4), ohne Fremdbibliothek -------------------------------
@@ -168,42 +241,45 @@ fn schreibe_op(buf: &mut Vec<u8>, op: &Op) {
     }
 }
 
-fn lies_op(bytes: &[u8], pos: &mut usize, generation: u8) -> Result<Op, ArtifactError> {
-    if *pos >= bytes.len() {
-        return Err(ArtifactError::TruncatedOperand);
-    }
-    let code = bytes[*pos];
-    *pos += 1;
+/// Operandenbreite je Opcode (ATC-BC-002 §16). `None` = unbekannter Opcode.
+fn operandenbreite(code: u8) -> Option<usize> {
+    Some(match code {
+        0x01 => 8, // Push(u64)
+        0x02 | 0x03 | 0x04 | 0x05 | 0x06 | 0x07 | 0x08 | 0x09 | 0x0C | 0x10 | 0x11 | 0x13 => 0,
+        0x0A | 0x0B | 0x0D | 0x0E | 0x0F | 0x12 => 4,
+        _ => return None,
+    })
+}
+
+/// Dekodiert genau eine Instruktion. `tail_start` ist die einzige Stromgrenze.
+fn dekodiere_op(rumpf: &[u8], pos: &mut usize, generation: u8) -> Result<Op, ArtifactError> {
+    let tail_start = rumpf.len();
+    let start = *pos;
+    let code = rumpf[start];
+    let Some(breite) = operandenbreite(code) else {
+        return Err(ArtifactError::UnknownOpcode {
+            opcode: code,
+            offset: start,
+        });
+    };
     if ist_v2_opcode(code) && generation != GENERATION_V2 {
         return Err(ArtifactError::GenerationMismatch {
             opcode: code,
             generation,
+            offset: start,
         });
     }
-    let operand32 = |pos: &mut usize| -> Result<u32, ArtifactError> {
-        if *pos + 4 > bytes.len() {
-            return Err(ArtifactError::TruncatedOperand);
-        }
-        let v = u32::from_le_bytes([
-            bytes[*pos],
-            bytes[*pos + 1],
-            bytes[*pos + 2],
-            bytes[*pos + 3],
-        ]);
-        *pos += 4;
-        Ok(v)
-    };
-    let operand64 = |pos: &mut usize| -> Result<u64, ArtifactError> {
-        if *pos + 8 > bytes.len() {
-            return Err(ArtifactError::TruncatedOperand);
-        }
-        let mut b = [0u8; 8];
-        b.copy_from_slice(&bytes[*pos..*pos + 8]);
-        *pos += 8;
-        Ok(u64::from_le_bytes(b))
-    };
+    if start + 1 + breite > tail_start {
+        return Err(ArtifactError::TruncatedOperand { offset: tail_start });
+    }
+    let operand = &rumpf[start + 1..start + 1 + breite];
+    *pos = start + 1 + breite;
     Ok(match code {
-        0x01 => Op::Push(operand64(pos)?),
+        0x01 => {
+            let mut b = [0u8; 8];
+            b.copy_from_slice(operand);
+            Op::Push(u64::from_le_bytes(b))
+        }
         0x02 => Op::Add,
         0x03 => Op::Sub,
         0x04 => Op::Mul,
@@ -212,17 +288,36 @@ fn lies_op(bytes: &[u8], pos: &mut usize, generation: u8) -> Result<Op, Artifact
         0x07 => Op::Swap,
         0x08 => Op::Eq,
         0x09 => Op::Lt,
-        0x0A => Op::Load(operand32(pos)? as usize),
-        0x0B => Op::Store(operand32(pos)? as usize),
+        0x0A => {
+            Op::Load(u32::from_le_bytes([operand[0], operand[1], operand[2], operand[3]]) as usize)
+        }
+        0x0B => {
+            Op::Store(u32::from_le_bytes([operand[0], operand[1], operand[2], operand[3]]) as usize)
+        }
         0x0C => Op::Caller,
-        0x0D => Op::Jump(operand32(pos)? as usize),
-        0x0E => Op::JumpIfZero(operand32(pos)? as usize),
-        0x0F => Op::JumpIfNotZero(operand32(pos)? as usize),
+        0x0D => {
+            Op::Jump(u32::from_le_bytes([operand[0], operand[1], operand[2], operand[3]]) as usize)
+        }
+        0x0E => Op::JumpIfZero(
+            u32::from_le_bytes([operand[0], operand[1], operand[2], operand[3]]) as usize,
+        ),
+        0x0F => {
+            Op::JumpIfNotZero(
+                u32::from_le_bytes([operand[0], operand[1], operand[2], operand[3]]) as usize,
+            )
+        }
         0x10 => Op::Halt,
         0x11 => Op::Assert,
-        0x12 => Op::Revert(operand32(pos)? as u64),
+        0x12 => {
+            Op::Revert(u32::from_le_bytes([operand[0], operand[1], operand[2], operand[3]]) as u64)
+        }
         0x13 => Op::RevertIf,
-        other => return Err(ArtifactError::UnknownOpcode(other)),
+        other => {
+            return Err(ArtifactError::UnknownOpcode {
+                opcode: other,
+                offset: start,
+            })
+        }
     })
 }
 
@@ -240,11 +335,15 @@ impl Artifact {
     /// die Ausfuehrung liest sie ausschliesslich aus Bytes.
     pub fn new(generation: u8, program: Vec<Op>) -> Result<Self, ArtifactError> {
         if generation != GENERATION_V1 && generation != GENERATION_V2 {
-            return Err(ArtifactError::UnknownGeneration(generation));
+            return Err(ArtifactError::UnknownGeneration {
+                generation,
+                offset: 5,
+            });
         }
         if program.len() > crate::vm::MAX_PROGRAM_OPS {
             return Err(ArtifactError::ProgramTooLarge {
-                size: program.len(),
+                ops: program.len(),
+                offset: 0,
             });
         }
         if generation == GENERATION_V1 {
@@ -254,6 +353,7 @@ impl Artifact {
                     return Err(ArtifactError::GenerationMismatch {
                         opcode: code,
                         generation,
+                        offset: 0,
                     });
                 }
             }
@@ -273,7 +373,7 @@ impl Artifact {
     }
 
     fn ohne_hash(&self) -> Vec<u8> {
-        let mut buf = Vec::with_capacity(10 + self.program.len() * 9);
+        let mut buf = Vec::with_capacity(HEAD_LEN + self.program.len() * 9);
         buf.extend_from_slice(&MAGIC);
         buf.push(CONTAINER_VERSION);
         buf.push(self.generation);
@@ -284,7 +384,7 @@ impl Artifact {
         buf
     }
 
-    /// Kanonische Bytes inklusive angehaengtem SHA-256.
+    /// Kanonische Bytes inklusive angehaengtem Hash.
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut buf = self.ohne_hash();
         let hash = sha256_daten(&buf);
@@ -292,44 +392,74 @@ impl Artifact {
         buf
     }
 
-    /// SHA-256 ueber Kopf und Operationsstrom. Die Generation ist enthalten,
-    /// eine Versionsaenderung aendert damit den Hash.
+    /// Hash ueber Kopf und Strom. Genau dieser Wert steht im Tail.
     pub fn hash(&self) -> [u8; 32] {
         sha256_daten(&self.ohne_hash())
     }
 
-    /// Liest ein Artefakt aus Bytes. Jede Abweichung wird abgelehnt.
+    /// Liest ein Artefakt nach der Pruefreihenfolge aus dem Modulkopf.
+    ///
+    /// Die Struktur wird **vor** der Integritaet geprueft, die Groessenpruefung
+    /// misst die dekodierte Laenge, und `c` ist eine Obergrenze ohne
+    /// Endmarkerfunktion.
     pub fn parse(bytes: &[u8]) -> Result<Self, ArtifactError> {
-        if bytes.len() < 10 + HASH_LEN {
-            return Err(ArtifactError::TooShort);
+        let total = bytes.len();
+
+        // Stufe 1..4: Laenge, Magic, Format, Generation.
+        if total < HEAD_LEN + HASH_LEN {
+            return Err(ArtifactError::TooShort { offset: total });
         }
         if bytes[0..4] != MAGIC {
-            return Err(ArtifactError::BadMagic);
+            return Err(ArtifactError::BadMagic { offset: 0 });
         }
         if bytes[4] != CONTAINER_VERSION {
-            return Err(ArtifactError::UnsupportedContainer(bytes[4]));
+            return Err(ArtifactError::UnsupportedContainer {
+                version: bytes[4],
+                offset: 4,
+            });
         }
         let generation = bytes[5];
         if generation != GENERATION_V1 && generation != GENERATION_V2 {
-            return Err(ArtifactError::UnknownGeneration(generation));
+            return Err(ArtifactError::UnknownGeneration {
+                generation,
+                offset: 5,
+            });
         }
-        let rumpf = &bytes[..bytes.len() - HASH_LEN];
-        let erwarteter_hash = &bytes[bytes.len() - HASH_LEN..];
-        if sha256_daten(rumpf) != erwarteter_hash {
-            return Err(ArtifactError::BadHash);
+
+        // Die Stromgrenze folgt aus der Laenge, nie aus der Anzahl.
+        let rumpf = &bytes[..total - HASH_LEN];
+        let tail_start = rumpf.len();
+        let declared = u32::from_le_bytes([bytes[6], bytes[7], bytes[8], bytes[9]]) as usize;
+
+        // Stufen 5..8: ein Durchlauf. Keine Vorabreservierung ueber `c`.
+        let mut program: Vec<Op> = Vec::with_capacity(declared.min(tail_start - HEAD_LEN));
+        let mut pos = HEAD_LEN;
+        while program.len() < declared && pos < tail_start {
+            program.push(dekodiere_op(rumpf, &mut pos, generation)?);
         }
-        let count = u32::from_le_bytes([bytes[6], bytes[7], bytes[8], bytes[9]]) as usize;
-        if count > crate::vm::MAX_PROGRAM_OPS {
-            return Err(ArtifactError::ProgramTooLarge { size: count });
+        if program.len() < declared {
+            return Err(ArtifactError::CountMismatch { offset: tail_start });
         }
-        let mut pos = 10usize;
-        let mut program = Vec::with_capacity(count);
-        for _ in 0..count {
-            program.push(lies_op(rumpf, &mut pos, generation)?);
+        if pos < tail_start {
+            return Err(ArtifactError::TrailingBytes { offset: pos });
         }
-        if pos != rumpf.len() {
-            return Err(ArtifactError::TrailingBytes);
+        if program.is_empty() {
+            return Err(ArtifactError::EmptyStream { offset: HEAD_LEN });
         }
+
+        // Stufe 9: Integritaet nach der Struktur.
+        if sha256_daten(rumpf) != bytes[tail_start..] {
+            return Err(ArtifactError::BadHash { offset: tail_start });
+        }
+
+        // Stufe 10: dekodierte Laenge, nicht die deklarierte Anzahl (D1-C).
+        if program.len() > crate::vm::MAX_PROGRAM_OPS {
+            return Err(ArtifactError::ProgramTooLarge {
+                ops: program.len(),
+                offset: HEAD_LEN,
+            });
+        }
+
         Ok(Artifact {
             generation,
             program,
@@ -343,6 +473,26 @@ mod tests {
 
     fn hex(bytes: &[u8]) -> String {
         bytes.iter().map(|b| format!("{:02x}", b)).collect()
+    }
+
+    /// Baut einen Container mit neu berechnetem Hash (fuer Strukturpruefungen).
+    fn mit_hash(mut rumpf: Vec<u8>) -> Vec<u8> {
+        let hash = sha256_daten(&rumpf);
+        rumpf.extend_from_slice(&hash);
+        rumpf
+    }
+
+    fn fehler(bytes: &[u8]) -> ArtifactError {
+        Artifact::parse(bytes).expect_err("Artefakt wurde akzeptiert")
+    }
+
+    fn kopf(generation: u8, count: u32) -> Vec<u8> {
+        let mut buf = Vec::new();
+        buf.extend_from_slice(&MAGIC);
+        buf.push(CONTAINER_VERSION);
+        buf.push(generation);
+        buf.extend_from_slice(&count.to_le_bytes());
+        buf
     }
 
     #[test]
@@ -394,6 +544,15 @@ mod tests {
     }
 
     #[test]
+    fn huelle_bleibt_atcb_fassung_1() {
+        // D1-B/D1-C aendern das Format nicht: Magic und Fassung bleiben.
+        let a = Artifact::new(GENERATION_V1, vec![Op::Halt]).unwrap();
+        let bytes = a.to_bytes();
+        assert_eq!(&bytes[0..4], b"ATCB");
+        assert_eq!(bytes[4], 1);
+    }
+
+    #[test]
     fn generation_ist_hashgebunden() {
         let prog = vec![Op::Push(1), Op::Halt];
         let v1 = Artifact::new(GENERATION_V1, prog.clone()).unwrap();
@@ -403,22 +562,38 @@ mod tests {
             v2.hash(),
             "gleiche Ops, andere Generation: Hash muss abweichen"
         );
-        // Manipulation des Generationsbytes faellt auf.
+        // Manipulation des Generationsbytes faellt auf (Integritaet, E-006).
         let mut bytes = v1.to_bytes();
         bytes[5] = GENERATION_V2;
-        assert_eq!(Artifact::parse(&bytes), Err(ArtifactError::BadHash));
+        let err = fehler(&bytes);
+        assert_eq!(
+            (err.code(), err.offset()),
+            ("E-006", bytes.len() - HASH_LEN)
+        );
     }
 
     #[test]
     fn unbekannte_generation_abgelehnt() {
         assert_eq!(
             Artifact::new(3, vec![Op::Halt]),
-            Err(ArtifactError::UnknownGeneration(3))
+            Err(ArtifactError::UnknownGeneration {
+                generation: 3,
+                offset: 5
+            })
         );
         assert_eq!(
             Artifact::new(0, vec![Op::Halt]),
-            Err(ArtifactError::UnknownGeneration(0))
+            Err(ArtifactError::UnknownGeneration {
+                generation: 0,
+                offset: 5
+            })
         );
+        let mut bytes = Artifact::new(GENERATION_V1, vec![Op::Halt])
+            .unwrap()
+            .to_bytes();
+        bytes[5] = 0x07;
+        let err = fehler(&bytes);
+        assert_eq!((err.code(), err.offset()), ("E-009", 5));
     }
 
     #[test]
@@ -427,34 +602,51 @@ mod tests {
             Artifact::new(GENERATION_V1, vec![Op::Push(1), Op::Assert]),
             Err(ArtifactError::GenerationMismatch {
                 opcode: 0x11,
-                generation: 1
+                generation: 1,
+                offset: 0
             })
         );
+        // Aus Bytes: E-011 an der Position des Opcodes, vor dem Digest.
+        let bytes = Artifact::new(GENERATION_V2, vec![Op::Push(1), Op::Assert])
+            .unwrap()
+            .to_bytes();
+        let mut rumpf = bytes[..bytes.len() - HASH_LEN].to_vec();
+        rumpf[5] = GENERATION_V1;
+        let err = fehler(&mit_hash(rumpf));
+        assert_eq!((err.code(), err.offset()), ("E-011", 19));
     }
 
     #[test]
     fn unbekannter_opcode_abgelehnt() {
         let a = Artifact::new(GENERATION_V1, vec![Op::Halt]).unwrap();
-        let mut bytes = a.to_bytes();
-        let pos = 10;
-        bytes[pos] = 0x99;
-        let laenge = bytes.len() - HASH_LEN;
-        let hash = super::sha256_daten(&bytes[..laenge]);
-        bytes.truncate(laenge);
-        bytes.extend_from_slice(&hash);
-        assert_eq!(
-            Artifact::parse(&bytes),
-            Err(ArtifactError::UnknownOpcode(0x99))
-        );
+        let bytes = a.to_bytes();
+        let mut rumpf = bytes[..bytes.len() - HASH_LEN].to_vec();
+        rumpf[HEAD_LEN] = 0x99;
+        let err = fehler(&mit_hash(rumpf));
+        assert_eq!((err.code(), err.offset()), ("E-010", HEAD_LEN));
     }
 
     #[test]
     fn zu_kurz_und_falsche_magic_abgelehnt() {
-        assert_eq!(Artifact::parse(&[0u8; 5]), Err(ArtifactError::TooShort));
+        let err = fehler(&[0u8; 5]);
+        assert_eq!((err.code(), err.offset()), ("E-001", 5));
         let a = Artifact::new(GENERATION_V1, vec![Op::Halt]).unwrap();
         let mut bytes = a.to_bytes();
         bytes[0] = b'X';
-        assert_eq!(Artifact::parse(&bytes), Err(ArtifactError::BadMagic));
+        let err = fehler(&bytes);
+        assert_eq!((err.code(), err.offset()), ("E-007", 0));
+    }
+
+    #[test]
+    fn fremdes_containerformat_abgelehnt() {
+        for fassung in [0x02u8, 0x03, 0xFF] {
+            let mut bytes = Artifact::new(GENERATION_V1, vec![Op::Halt])
+                .unwrap()
+                .to_bytes();
+            bytes[4] = fassung;
+            let err = fehler(&bytes);
+            assert_eq!((err.code(), err.offset()), ("E-003", 4), "Format {fassung}");
+        }
     }
 
     #[test]
@@ -462,10 +654,104 @@ mod tests {
         let a = Artifact::new(GENERATION_V1, vec![Op::Halt]).unwrap();
         let mut rumpf = a.ohne_hash();
         rumpf.push(0x10); // ein Op mehr als im Kopf steht
-        let hash = super::sha256_daten(&rumpf);
-        let mut bytes = rumpf;
-        bytes.extend_from_slice(&hash);
-        assert_eq!(Artifact::parse(&bytes), Err(ArtifactError::TrailingBytes));
+        let err = fehler(&mit_hash(rumpf));
+        assert_eq!((err.code(), err.offset()), ("E-008", 11));
+    }
+
+    #[test]
+    fn zu_kleine_anzahl_ergibt_trailing_bytes() {
+        // Anzahl 2 -> 1, beide Instruktionen vorhanden: E-008 bei 19.
+        let a = Artifact::new(GENERATION_V1, vec![Op::Push(0), Op::Halt]).unwrap();
+        let mut rumpf = a.ohne_hash();
+        rumpf[6..10].copy_from_slice(&1u32.to_le_bytes());
+        let err = fehler(&mit_hash(rumpf));
+        assert_eq!((err.code(), err.offset()), ("E-008", 19));
+    }
+
+    #[test]
+    fn zu_grosse_anzahl_an_der_grenze_ergibt_count_mismatch() {
+        // Anzahl 2 bei einer Instruktion: E-005 an tail_start, nicht E-002.
+        let a = Artifact::new(GENERATION_V1, vec![Op::Push(0), Op::Halt]).unwrap();
+        let mut rumpf = a.ohne_hash();
+        rumpf.truncate(rumpf.len() - 1); // Halt entfernen, Anzahl bleibt 2
+        let tail_start = rumpf.len();
+        let err = fehler(&mit_hash(rumpf));
+        assert_eq!((err.code(), err.offset()), ("E-005", tail_start));
+    }
+
+    #[test]
+    fn abgeschnittener_operand_ergibt_e_002() {
+        // Push braucht acht Operandenbytes; drei bleiben bis tail_start.
+        let mut rumpf = kopf(GENERATION_V1, 1);
+        rumpf.push(0x01);
+        rumpf.extend_from_slice(&[0, 0, 0]);
+        let tail_start = rumpf.len();
+        let err = fehler(&mit_hash(rumpf));
+        assert_eq!((err.code(), err.offset()), ("E-002", tail_start));
+    }
+
+    #[test]
+    fn anzahl_null_mit_bytes_ergibt_e_008() {
+        // c = 0, aber der Strom ist nicht leer: E-008, nicht E-004.
+        let mut rumpf = kopf(GENERATION_V1, 0);
+        rumpf.push(0x10);
+        let err = fehler(&mit_hash(rumpf));
+        assert_eq!((err.code(), err.offset()), ("E-008", HEAD_LEN));
+    }
+
+    #[test]
+    fn leerer_strom_ergibt_e_004() {
+        let rumpf = kopf(GENERATION_V1, 0);
+        let err = fehler(&mit_hash(rumpf));
+        assert_eq!((err.code(), err.offset()), ("E-004", HEAD_LEN));
+    }
+
+    #[test]
+    fn deklarierte_anzahl_wird_nicht_als_groesse_benutzt() {
+        // c = 0xFFFFFFFF bei zwei Instruktionen: E-005, nicht E-012 (D1-C).
+        let a = Artifact::new(GENERATION_V1, vec![Op::Push(0), Op::Halt]).unwrap();
+        let mut rumpf = a.ohne_hash();
+        rumpf[6..10].copy_from_slice(&u32::MAX.to_le_bytes());
+        let tail_start = rumpf.len();
+        let err = fehler(&mit_hash(rumpf));
+        assert_eq!((err.code(), err.offset()), ("E-005", tail_start));
+    }
+
+    #[test]
+    fn groesstwert_misst_die_dekodierte_laenge() {
+        // Mehr als MAX_PROGRAM_OPS dekodierte Operationen: E-012, Offset 10.
+        let zu_viele = crate::vm::MAX_PROGRAM_OPS + 1;
+        let mut rumpf = kopf(GENERATION_V1, zu_viele as u32);
+        rumpf.extend(std::iter::repeat(0x10u8).take(zu_viele)); // Halt je Instruktion
+        let err = fehler(&mit_hash(rumpf));
+        assert_eq!((err.code(), err.offset()), ("E-012", HEAD_LEN));
+        assert_eq!(
+            err,
+            ArtifactError::ProgramTooLarge {
+                ops: zu_viele,
+                offset: HEAD_LEN
+            }
+        );
+    }
+
+    #[test]
+    fn struktur_vor_digest() {
+        // Strukturmutation mit altem (jetzt falschem) Tail: Strukturcode gewinnt.
+        let a = Artifact::new(GENERATION_V1, vec![Op::Push(0), Op::Halt]).unwrap();
+        let mut bytes = a.to_bytes();
+        bytes[HEAD_LEN] = 0x99;
+        let err = fehler(&bytes);
+        assert_eq!((err.code(), err.offset()), ("E-010", HEAD_LEN));
+
+        // Reine Integritaetsverletzung ergibt E-006.
+        let mut nur_tail = a.to_bytes();
+        let letzte = nur_tail.len() - 1;
+        nur_tail[letzte] ^= 0xFF;
+        let err = fehler(&nur_tail);
+        assert_eq!(
+            (err.code(), err.offset()),
+            ("E-006", bytes.len() - HASH_LEN)
+        );
     }
 
     #[test]
@@ -486,6 +772,45 @@ mod tests {
         let b = Artifact::new(GENERATION_V1, vec![Op::Push(1), Op::Halt]).unwrap();
         assert_eq!(crate::vm::Vm::from_artifact(&b).generation(), GENERATION_V1);
     }
+
+    #[test]
+    fn fehlercodes_sind_die_geschlossene_liste() {
+        let alle = [
+            ArtifactError::TooShort { offset: 0 },
+            ArtifactError::TruncatedOperand { offset: 0 },
+            ArtifactError::UnsupportedContainer {
+                version: 3,
+                offset: 4,
+            },
+            ArtifactError::EmptyStream { offset: 0 },
+            ArtifactError::CountMismatch { offset: 0 },
+            ArtifactError::BadHash { offset: 0 },
+            ArtifactError::BadMagic { offset: 0 },
+            ArtifactError::TrailingBytes { offset: 0 },
+            ArtifactError::UnknownGeneration {
+                generation: 9,
+                offset: 5,
+            },
+            ArtifactError::UnknownOpcode {
+                opcode: 0x99,
+                offset: 0,
+            },
+            ArtifactError::GenerationMismatch {
+                opcode: 0x11,
+                generation: 1,
+                offset: 0,
+            },
+            ArtifactError::ProgramTooLarge { ops: 0, offset: 0 },
+        ];
+        let codes: Vec<&str> = alle.iter().map(|e| e.code()).collect();
+        assert_eq!(
+            codes,
+            vec![
+                "E-001", "E-002", "E-003", "E-004", "E-005", "E-006", "E-007", "E-008", "E-009",
+                "E-010", "E-011", "E-012"
+            ]
+        );
+    }
 }
 
 #[cfg(test)]
@@ -496,6 +821,7 @@ mod hash_stabilitaet {
     /// Die Gastabellen-Versionierung darf den Bytecode und seinen Hash nicht
     /// veraendern. Dieser Test fixiert den Hash fuer ein festes Programm: eine
     /// Aenderung an Container, Opcode-Kodierung oder Hashverfahren wird rot.
+    /// D1-B/D1-C aendern nur Pruefungen, nicht das Format; der Wert bleibt.
     #[test]
     fn gastabellen_version_aendert_den_bytecode_hash_nicht() {
         let a = Artifact::new(GENERATION_V2, vec![Op::Push(1), Op::Halt]).unwrap();
