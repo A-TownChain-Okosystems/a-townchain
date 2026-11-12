@@ -175,6 +175,21 @@ Wahrheiten dauerhaft weiter.
 | S1-T-27 | Wertwechsel | aendert sich der Artefakt-Hash, sind alte Werte als ueberholt dokumentiert und der Goldvektor ist erneuert |
 | S1-T-28 | Benennung | kein Codepfad und kein Dokument verwendet `hash` ohne Qualifizierung (`code_hash`, `artifact_hash`, `state_root`) |
 
+**Stand 12.11.2026: Praeferenz des Owners fuer 1b, nicht entschieden.** Der Owner
+bevorzugt 1b (beide Hashes mit Domaenen-Praefix, neue Artefakt-Werte, neue
+Containerfassung), weil die Trennung dann nicht von der zufaelligen Bytebelegung
+des Instruktionssatzes abhaengt. Das ist eine Praeferenz, keine Entscheidung; die
+Variante bleibt offen.
+
+Daraus folgen vier weitere Pruefungen:
+
+| ID | Pruefung | Bestehen |
+|---|---|---|
+| S1-T-33 | Domaenen-Strings | beide Domaenen sind fest, im Standard benannt und byte-exakt dokumentiert, nicht im Code verstreut |
+| S1-T-34 | Bytevektoren | fuer beide Hashes existieren Goldvektoren (Eingabe als Hexdump, erwarteter Digest) |
+| S1-T-35 | Versionsbindung | die Containerfassung ist an die Domaenenfassung gebunden; eine Fassung ohne passende Domaene wird abgewiesen |
+| S1-T-36 | keine Verwechslung | Registry und Zustandswurzel koennen einen Strom-Hash nicht als Artefakt-Hash lesen und umgekehrt; die Eingabe ist benannt und geprueft |
+
 **Zum Zustandsbaum.** `ATC-STATE-V2` ist nicht wegen des Praefixes noetig, sondern
 weil sich die **Eingabe** der Wurzel aendert: heute der Artefakt-Hash, kuenftig der
 Strom-Hash (`state.rs:43-52`). Auch bei S1-1a, das den Artefakt-Hash unveraendert
@@ -267,6 +282,7 @@ wird, und die Zurueckweisung ungetypter Altbelegungen beim Start.
 | S1-T-30 | beide Abfragen | Code- und Artefakt-Sperre werden beide geprueft; ein Treffer auf einer davon blockiert |
 | S1-T-31 | Trennung der Wirkung | eine Artefakt-Sperre sperrt nicht den Code in anderer Verpackung, eine Code-Sperre nicht das Artefakt einer anderen Fassung, wie entschieden |
 | S1-T-32 | Begruendung | der Ablehnungsgrund nennt die Sperre, die getroffen hat, und nicht die andere |
+| S1-T-37 | Migration | ein alter flacher 32-Byte-Schluessel wird nicht als typisierter Eintrag gelesen; der Start verweigert die Deutung, statt sie zu raten |
 
 ## 3. S1-3 — Erstattung: Grundsatz
 
@@ -392,6 +408,7 @@ Sie stehen hier als Pruefungen, nicht als gewaehlte Option.
 | `BLOCKED` | ausfuehrbar, aber Voraussetzung fehlt (z. B. B-1) |
 | `EXCLUDED` | bewusst nicht im Umfang dieser Stufe |
 | `EMPTY` | die Schicht enthaelt keine ausfuehrbaren Faelle (z. B. L1 ohne Dekoder) |
+| `OPEN` | noch nicht begonnen; es fehlt die Entscheidung, nicht nur die Ausfuehrung |
 
 Ein nicht ausfuehrbarer Fall wird **nie** als `TESTED` oder "teilweise bestanden"
 gefuehrt, sondern als `BLOCKED`, `EXCLUDED` oder `EMPTY`. Damit ist S1-1 nicht
@@ -480,3 +497,21 @@ unveraendert, Aufgabe 910 bleibt offen, P1a bleibt offen und P2 gesperrt.
    testbar; erst ein reiner Dekoder und ausgefuehrte Tests erzeugen `TESTED`.
 
 Bis zur Bestaetigung durch den Owner gilt: keine Option gewaehlt, keine Umsetzung.
+
+### 9.1 Nachverfolgung bestaetigt, Ratifikation nicht
+
+Der Owner hat am 12.11.2026 die **Nachverfolgung** der vier Empfehlungen und ihrer
+Akzeptanzbedingungen bestaetigt und ausdruecklich festgehalten, dass daraus keine
+Ratifikation, keine Implementierung und keine Freigabe folgt. Eine periodische
+Ueberwachung ist damit **nicht** eingerichtet.
+
+| Gegenstand | Stand | Praeferenz des Owners |
+|---|---|---|
+| S1-1 | Entscheidung offen; zusaetzliche Wahl 1a/1b/1c erforderlich | A, drei Identitaeten; Variante 1b |
+| S1-2 | Entscheidung offen; getypte Schluesselraeume und doppelte Sperrpruefung gefordert | C |
+| S1-3 | Entscheidung offen | A, nur Gas-Rueckfluss |
+| S1-4 | als Empfehlung uebernommen | B, nur L1 zaehlt fuer P1a |
+
+Der Nachweisstand je Akzeptanztest steht in
+`docs/decisions/EXEC-STAGE1-TRACKING.md`. Dort ist jeder Test mit Status gefuehrt;
+kein Test ist heute `TESTED`.
