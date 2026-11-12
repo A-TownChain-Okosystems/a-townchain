@@ -2,7 +2,15 @@
 
 **Status:** Inventur und Abgleich. Trifft **keine** Entscheidung.
 **Datum:** 2026-11-12 · **Basis:** `a-townchain` main `995948b5`
-**Bezug:** `docs/audits/EXEC-OPEN-POINTS-2026-11-12.md` (Befunde R-901 bis R-907)
+**Bezug:** `docs/audits/EXEC-OPEN-POINTS-2026-11-12.md` (Befunde R-901 bis R-907);
+Stufe-1-Vorlage mit Optionen und Akzeptanztests:
+`docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md`
+
+**Nachtrag 12.11.2026.** Abschnitt 2 zeigt elf Stellen, aber nur **eine**
+Hashfunktion: `Artifact::hash()` (`artifact.rs:297-298`). Der Strom-Hash existiert
+im Code nicht, auch nicht als Hilfsfunktion. Ein lokaler Demo-Lauf gibt Code-Hash
+und Artefakt-Hash mit demselben Wert aus (`5f2c38c8…`). Die Trennung aus S1-1 ist
+damit keine Umbenennung, sondern das Hinzufuegen einer zweiten Identitaet.
 
 Diese Inventur beantwortet nicht, welcher Wert richtig ist, sondern **wo** die
 sieben Befunde im Code und in den Dokumenten haengen und **was sich aendert**,
