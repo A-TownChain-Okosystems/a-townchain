@@ -50,8 +50,19 @@ def test_check_laeuft_ueber_die_echte_datei() -> None:
 
 
 def test_d1_hat_drei_getrennte_teilauflagen(data: dict) -> None:
-    ids = [sub["id"] for dec in data["decisions"] for sub in (dec.get("sub_gates") or [])]
+    ids = [sub["id"] for sub in (d1(data).get("sub_gates") or [])]
     assert ids == ["D1-A", "D1-B", "D1-C"]
+
+
+def test_d0_hat_vier_entschiedene_teilauflagen(data: dict) -> None:
+    """Die vier Architekturfragen sind je mit Option A entschieden."""
+    d0 = next(d for d in data["decisions"] if d["id"] == "D-0")
+    ids = [sub["id"] for sub in d0["sub_gates"]]
+    assert ids == ["D0-1", "D0-2", "D0-3", "D0-4"]
+    assert all(sub["status"] == "DECIDED" for sub in d0["sub_gates"])
+    assert all(sub["open_because"] for sub in d0["sub_gates"]), (
+        "jede Teilauflage muss den offenen Umsetzungspunkt nennen"
+    )
 
 
 def test_teilauflagen_haben_eigene_zustaendigkeit(data: dict) -> None:
