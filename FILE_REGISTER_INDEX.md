@@ -1,9 +1,9 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 10:33 UTC+2 aus `origin/main` @ `2c345975`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 10:37 UTC+2 aus `origin/main` @ `ae539301`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11387 Dateien**
+**Total: 11388 Dateien**
 
 ## docs (5093)
 
@@ -11342,7 +11342,7 @@
 - `kernel/atc-shivacore/sdk/src/syscall.rs`
 - `kernel/atc-shivacore/tools/determinism_check.py`
 
-## tools (23)
+## tools (24)
 
 - `tools/atc-sc-validator/audit_contract_copies.py`
 - `tools/atc-sc-validator/check_contract_registry.py`
@@ -11365,6 +11365,7 @@
 - `tools/integration_graph.py`
 - `tools/integration_graph_baseline.json`
 - `tools/linkcheck.py`
+- `tools/tests/test_decision_register.py`
 - `tools/tests/test_integration_graph.py`
 - `tools/tests/test_parser_corpus.py`
 
