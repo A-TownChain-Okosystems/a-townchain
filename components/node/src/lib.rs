@@ -3,13 +3,14 @@
 
 pub mod bootstrap;
 pub mod chain;
-pub mod consensus;
 pub mod config;
+pub mod consensus;
 pub mod did;
 pub mod discovery;
 pub mod gossip;
-pub mod mempool;
 pub mod identity;
+pub mod import;
+pub mod mempool;
 pub mod peers;
 pub mod rpc;
 pub mod validator;
