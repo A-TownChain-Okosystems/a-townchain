@@ -131,20 +131,15 @@ nicht der Korpus selbst. Sie belegen die Semantik, nicht die Konformitaet.
 
 ## 8 Offene Punkte
 
-**D-0 Huelle: zwei Aussagen, eine muss fallen.** Kandidat §18/§19 und der Korpus
-beschreiben die Huelle `ATCE` mit Format `0x02` (Entscheidung vom 12.11.2026).
-Die Freigabe zu D1-B/D1-C legt fest, dass `ATCB` das kanonische VM-Magic bleibt
-und `0x01` dem normativen Contract entspricht. Beides zugleich ist eine zweite
-Wahrheit ueber dasselbe Format. Entscheidung noetig, eine von zwei:
-
-1. Huelle `ATCE`/`0x02` umsetzen (eigenes Paket, nicht freigegeben). Dann wird der
-   Korpus gegen die VM lauffaehig und S1-T-54 ueberhaupt pruefbar.
-2. Kandidat und Korpus auf `ATCB`/`0x01` umstellen. Dann entfaellt die Huelle als
-   eigenes Format, und §18.1/§18.3 sowie der Korpus sind fortzuschreiben.
-
-Bis zur Entscheidung bleibt der Code bei `ATCB`/`0x01` (ausdrueckliche
-Owner-Bedingung) und der Kandidat unveraendert. Es wird hier **keine** der beiden
-Varianten stillschweigend in die Spezifikation geschrieben.
+**D-0 Huelle: entschieden am 12.11.2026 (Option 1).** Kandidat §18/§19 und der
+Korpus bleiben maszgeblich: `ATCE`/`0x02` ist die aeussere Artefakt-Huelle,
+`ATCB`/`0x01` bleibt das ausfuehrbare Bytecodeformat. Der Kandidat wird **nicht**
+auf `ATCB`/`0x01` umgeschrieben. Die Huelle ist als eigene Schicht umgesetzt
+(`components/vm/src/envelope.rs`, Commit `a0ea77f3`, Blob `b253ffc3`); der Korpus
+laeuft lokal 40 von 40 durch beide Implementierungen. `ATCE/0x02` bleibt `OPEN`
+(Integration in den System-Deploypfad fehlt), der Differentialtest bleibt `BLOCKED`
+bis zur vollstaendigen Integration und unabhaengigen Pruefung. Einzelheiten:
+[EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md](EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md).
 
 **D1-A** (Bytegrenze vor dem Hashing) bleibt offen, Wert aus P1b.
 **`E-012`-Betriebswert** bleibt offen (P1b); die VM prueft weiterhin die
@@ -160,7 +155,7 @@ Warnung `CI_VERIFIED` gilt ausdruecklich **nicht** fuer den lokalen Lauf oben.
 | D1-B Pruefreihenfolge (Struktur vor Integritaet) | `TESTED` (lokal) |
 | D1-C Groessenpruefung auf dekodierter Laenge | `TESTED` (lokal) |
 | Format `ATCB`/`0x01` unveraendert | `TESTED` (fixierter Hash gruen) |
-| Differentialtest gegen den Korpus | nicht ausgefuehrt, blockiert durch D-0 |
+| Differentialtest gegen den Korpus | lokal 40/40 gleich; Status `BLOCKED` per Owner (Integration und unabhaengige Pruefung offen) |
 | CI-Evidenz am Commit | nicht vorhanden |
 | `CI_VERIFIED`, `VERIFIED` | nicht vergeben |
 | Matrix S1-T-49 bis S1-T-52 | `TESTED` (Code-Test; Korpusanteil offen) |
