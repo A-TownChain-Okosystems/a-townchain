@@ -423,3 +423,7 @@ Huelle, eine Gastabelle je Generation, eine Zustandswurzel. Die Arbeitsteilung
 bleibt: ATCLang erzeugt, ATC-VM verifiziert und fuehrt aus, A-TownChain verarbeitet
 und bestaetigt, Validatoren rechnen deterministisch nach, der Konsens bestaetigt
 ausschliesslich einen nachvollziehbaren Zustand.
+
+**Pruefstand der offenen Auflagen:** `docs/audits/EXEC-OPEN-POINTS-2026-11-12.md`
+(fuer D1, D2, D4 und D6 gegen ATC-BC-002 und die vorhandenen Vektoren, ohne
+Entscheidung).
