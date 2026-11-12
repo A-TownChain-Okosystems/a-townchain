@@ -59,6 +59,27 @@ resolved_by_ratification:
   - "B-3 Verfahren (R-905): Schichtung entschieden, L2 und L3 bleiben bis B-1 gesperrt"
 
 decisions:
+  - id: D-0
+    ratification: "nicht ratifiziert (Kandidat)"
+    specified_in: "Kandidat §18.1-18.3, §19.1-19.5 und §19.2a (nicht ratifiziert); Korpus standards/atc/conformance/stage1-parser-corpus.json"
+    title: "Zwei getrennte Formate: Huelle ATCE/0x02 aussen, Bytecode ATCB/0x01 innen"
+    decision_status: DECIDED
+    decision: FREIGEGEBEN
+    specification_status: SPECIFIED
+    implementation_status: OPEN
+    gate: SCE-G1
+    conditions:
+      - "ATCE/0x02 kapselt das Artefakt; ATCB/0x01 bleibt das ausfuehrbare Bytecodeformat"
+      - "Die Huelle veraendert weder Opcodes noch Bytecode-Semantik; der Bytecode-Hash bleibt unveraendert"
+      - "Kein Parser akzeptiert das Magic des anderen; keine unkontrollierte Vermischung der Formate"
+      - "Digest der Huelle erst nach erfolgreicher Strukturpruefung, Laengen und Stromgrenzen strikt"
+      - "Keine doppelte Implementierung von VM-Logik: Opcode-Tabelle und Stromprozedur sind gemeinsam"
+      - "Kandidat und Korpus bleiben maszgeblich; keine nachtraegliche Umschreibung auf ATCB/0x01"
+    open_items:
+      - "ATCE/0x02: Schicht implementiert (components/vm/src/envelope.rs, Commit a0ea77f3, Blob b253ffc3), Integration in den System-Deploypfad und unabhaengige Pruefung offen; Status OPEN"
+      - "Differentialtest: lokaler Lauf 40 von 40 Eingaben gleich (Huelle gegen den unabhaengigen Referenzdekoder); Status bleibt BLOCKED bis zur vollstaendigen Integration und unabhaengigen Pruefung (Owner 12.11.2026); Nachweis EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md"
+      - "CI_VERIFIED nicht vergeben; kein CI-Lauf am exakten HEAD"
+
   - id: D1
     ratification: "nicht ratifiziert (Kandidat)"
     specified_in: "Kandidat §5.1, §18.1-18.3, §19.1-19.5 und §19.2a (nicht ratifiziert)"
