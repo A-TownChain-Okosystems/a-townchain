@@ -17,12 +17,17 @@
 //! Codebezug. Hier ist die Kante gebaut, und zwar nur in dieser Richtung.
 
 pub mod backend;
+pub mod block_payload;
 pub mod compile;
 pub mod seal;
 pub mod state;
 pub mod system;
 
 pub use backend::{translate, BackendError, Translation, DIVERGENZEN};
+pub use block_payload::{
+    admit_payload, container_bytes, encode_container, is_container_payload, validate_payload,
+    BlockPayloadError, PayloadKind, CONTAINER_TAG, INNER_TAG,
+};
 pub use compile::{compile, CompileError};
 pub use seal::{AuthorizedKeyVerifier, SealError, SealKey};
 pub use state::ContractState;
