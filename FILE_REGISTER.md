@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-12 10:03 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `08e6fe5b` (letzter Commit 2026-11-12)
+> **Erzeugt:** 2026-11-12 10:28 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `27c6999e` (letzter Commit 2026-11-12)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,7 +13,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 11381 |
+| **Total Dateien** | 11387 |
 | **Bereiche** | 15 |
 | **Verzeichnisse** | 2015 |
 
@@ -21,11 +21,11 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Endung | Dateien |
 |--------|---------|
-| `.md` | 4085 |
+| `.md` | 4086 |
 | `.atc` | 1514 |
 | `.yaml` | 1474 |
-| `.json` | 1397 |
-| `.py` | 805 |
+| `.json` | 1398 |
+| `.py` | 809 |
 | `.rs` | 552 |
 | `.tsx` | 377 |
 | `(keine)` | 363 |
@@ -62,8 +62,8 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Bereich | Dateien | Inhalt |
 |---------|---------|--------|
-| `docs` | 5092 | Dokumentation und Archive |
-| `standards` | 2172 | Normative Standards und Werkzeuge |
+| `docs` | 5093 | Dokumentation und Archive |
+| `standards` | 2173 | Normative Standards und Werkzeuge |
 | `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
 | `components` | 891 | Chain-Komponenten (kanonischer Code) |
 | `apps` | 857 | Produkt-Anwendungen |
@@ -71,8 +71,8 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `modules` | 208 | Module ohne eigene Produktschicht |
 | `tooling` | 164 | Werkzeuge und Engineering-Gates |
 | `kernel` | 157 | Kernel- und OS-Ebenen |
+| `tools` | 23 | Einstiegspunkte |
 | `(root)` | 21 | Wurzeldateien |
-| `tools` | 19 | Einstiegspunkte |
 | `.github` | 16 | CI- und Repository-Konfiguration |
 | `"docs` | 6 | — |
 | `.atc` | 6 | Repository-Evidenz |
