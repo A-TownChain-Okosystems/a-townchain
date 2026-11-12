@@ -106,6 +106,26 @@ identifiers, and their specs state "nicht implementiert", so no
 category-specific invariant can be tested yet; the ATCoin supply cap differs
 between the canonical source (360M) and its mirror (21M). Roadmap G3-G10 remains open and the release status is unchanged.
 
+## E1 — Contract-Lowering fail-closed (2026-11-12)
+
+- Befund F1: `lower_program` uebersprang `Stmt::Contract` und erzeugte ein
+  Ersatzprogramm; `atc run` gab `0` aus (Exit 0), `System::deploy` nahm den Vertrag
+  an. Die Vertragslogik war verloren, der Status meldete Erfolg.
+- Umsetzung: `lower::executable_subset_gate` (ein Gate fuer `lower_program`,
+  `atc run`, `atc check <datei>`) und `lower::require_entry_point` (Entry-Point
+  fuer `run`). Meldung nennt Vertrag, Basen, Funktionen, Zustandsfelder, Events und
+  `require`-Guards. Kein Ersatzprogramm, kein Artefakt fuer abgelehnte Vertraege.
+- Nachweis: `cargo test -p atc-core` 219 Tests gruen, `-p atc-system` gruen,
+  clippy ohne Warnung; Regressionen in `tests/contract_e1_failclosed.rs`
+  (14 Tests) und `tests/contract_lowering.rs`.
+- Status: **IMPLEMENTED / TESTED lokal**. Vertragsunterstuetzung bleibt bei null;
+  die Ablehnung ist eine Sicherheitsmassnahme, keine Fehlerbehebung.
+- Konsequenz fuer Gate A8: `atc check <datei>` lehnt Vertragsquellen jetzt ab
+  (Exit 1). Die Strukturpruefung des Korpus laeuft ueber
+  `atc check <verzeichnis>`; `docs/SMART_CONTRACTS.md` ist entsprechend praezisiert.
+- Offen (E2/E3/E4/E5): Opcode-SSOT ATC-BC-001, VM-Decoder-Abgleich,
+  End-to-End-Deploy/Execute, CI-Build fuer `atc-core` und Typkonsistenz i64/u128.
+
 ## Current verified facts
 
 - The ATC standards profile is bound to the canonical atc-standards profile.
