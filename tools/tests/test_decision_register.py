@@ -20,6 +20,9 @@ def data() -> dict:
     return dr.load()
 
 
+STATUSE = {"DECIDED", "SPECIFIED", "IMPLEMENTED", "OPEN"}
+
+
 def sub_gate(entry: dict, sid: str) -> dict:
     for dec in entry["decisions"]:
         for sub in dec.get("sub_gates") or []:
@@ -53,10 +56,22 @@ def test_teilauflagen_haben_eigene_zustaendigkeit(data: dict) -> None:
     assert sub_gate(data, "D1-C")["owner"] == "VM-Parser / Admission-Vertrag"
 
 
-def test_teilauflagen_sind_offen_solange_kein_nachweis(data: dict) -> None:
-    for sid in ("D1-A", "D1-B", "D1-C"):
-        assert sub_gate(data, sid)["status"] == "OPEN"
-    assert "P1b" in sub_gate(data, "D1-A")["open_because"]
+def test_teilauflagen_ohne_nachweis_bleiben_offen(data: dict) -> None:
+    """OPEN braucht einen Offen-Grund, IMPLEMENTED einen Nachweis.
+
+    D1-A haengt an der Messung in P1b und bleibt offen. D1-B und D1-C sind
+    umgesetzt; ihr Eintrag muss den Nachweis nennen, sonst ist der Status eine
+    Behauptung ohne Beleg.
+    """
+    a = sub_gate(data, "D1-A")
+    assert a["status"] == "OPEN"
+    assert "P1b" in a["open_because"]
+
+    for sid in ("D1-B", "D1-C"):
+        sub = sub_gate(data, sid)
+        assert sub["status"] in STATUSE
+        assert "EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md" in sub["open_because"]
+        assert "CI_VERIFIED offen" in sub["open_because"] or "P1b" in sub["open_because"]
 
 
 def test_teilauflagen_werden_gerendert(data: dict) -> None:
