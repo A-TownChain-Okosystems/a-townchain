@@ -80,13 +80,32 @@ decisions:
       - "Neue Containerfassung ist Teil von S1-1b, nicht eine spaetere unabhaengige Aenderung"
       - "Beide Hashes tragen feste, byte-exakte Domaenen-Praefixe (S1-T-33, S1-T-34)"
       - "Magic der Huelle: ATCE, Fassung 0x02 (Owner 12.11.2026); ATCB bleibt ausschliesslich der Strom"
-      - "Zweiter Dekoder: die VM fuehrt EMPTY_STREAM und COUNT_MISMATCH noch nicht, liest ATCB/0x01 und prueft den Digest vor dem Strom; sie gilt erst nach allen drei Punkten als konformer zweiter Dekoder (S1-T-52)"
-      - "Vierte Abweichung: die VM begrenzt die deklarierte Anzahl (MAX_PROGRAM_OPS 65536, artifact.rs:322), der Vertrag die dekodierte Stromlaenge; C-8-GV1-MAX ergibt nach Vertrag E-005, in der VM ProgramTooLarge"
+      - "Zweiter Dekoder: die VM ist erst nach D1-B und D1-C und nach zwei weiteren Korrekturen konform (ATCB/0x01 nicht mehr annehmen, Struktur vor Integritaet pruefen, S1-T-52)"
+      - "Container-Bytegrenze (D1-A) und E-012 sind zwei Mechanismen: die Grenze bewertet die gesamte Eingabe vor dem Hashing, E-012 die dekodierte Stromlaenge (S1-T-55)"
       - "Stromgrenze und Dekodierprozedur sind verbindlich (§19.2a): tail_start = L - 32, E-005 nur an der Instruktionsgrenze, E-002 im Operanden, E-008 nach c Instruktionen (S1-T-49 bis S1-T-51)"
+    sub_gates:
+      - id: D1-A
+        title: "Container-Admission: verbindliche Byteobergrenze vor dem Hashing"
+        owner: "Admission-Layer"
+        goal: "Die gesamte Eingabe wird gegen eine konsensweit identische Obergrenze geprueft, bevor Hash-, Dekodier- oder Allokationsarbeit anfaellt; der Dekoder bleibt eine reine Funktion ohne eigene Groessenpolitik"
+        status: OPEN
+        open_because: "Wert offen bis zur Messung in P1b und darf nicht aus bestehenden VM-Grenzen abgeleitet werden (Kandidat §19.7, S1-T-55)"
+      - id: D1-B
+        title: "Dekoderfehler: EMPTY_STREAM (E-004) und COUNT_MISMATCH (E-005) ergaenzen"
+        owner: "VM-Parser"
+        goal: "ArtifactError fuehrt alle zwoelf Codes aus §19.1; beide fehlenden Varianten sind vorhanden und tragen dieselbe Bedingung wie der Vertrag"
+        status: OPEN
+        open_because: "notwendige Konformitaetskorrektur, Implementierung und Freigabe stehen aus"
+      - id: D1-C
+        title: "Groessenpruefung: dekodierte Laenge statt deklarierter Anzahl"
+        owner: "VM-Parser / Admission-Vertrag"
+        goal: "Die Groessenpruefung bewertet die dekodierte Stromlaenge (p - 10); die deklarierte Anzahl c ist Obergrenze und kein Ausloeser von E-012. C-8-GV1-MAX ergibt E-005, nicht ProgramTooLarge"
+        status: OPEN
+        open_because: "notwendige Konformitaetskorrektur; die VM prueft heute c > MAX_PROGRAM_OPS (artifact.rs:322)"
     open_items:
       - "Groesstwert fuer E-012: kein Wert festgelegt, deshalb kein Korpusfall; haengt an T-21 bis T-24"
       - "Differentialtest offen: ein Referenzdekoder vorhanden (tools/atc_reference_decoder.py), zweiter Dekoder fehlt"
-      - "Laengengrenze vor dem Dekodieren: keine verbindliche Obergrenze fuer Container-Bytes vorhanden (Stand 57fce3e3); Vorschlag ist eine Pruefung im Admission-Layer mit einem Wert aus P1b, ausdruecklich nicht aus bestehenden VM-Grenzen abgeleitet"
+      - "D1-A bis D1-C sind getrennt zu implementieren und zu testen; keine lokale Sonderbehandlung darf die Unterschiede kaschieren"
 
   - id: D2
     ratification: "nicht ratifiziert (Kandidat)"
