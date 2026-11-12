@@ -66,9 +66,16 @@ def validate(data: dict) -> list[str]:
             errors.append(f"{did}: decision '{dec.get('decision')}' ungueltig")
         if dec.get("decision") == "BEDINGT_FREIGEGEBEN" and not dec.get("conditions"):
             errors.append(f"{did}: bedingt freigegeben ohne Auflagen")
-    expected = [f"D{i}" for i in range(1, 8)]
-    if sorted(ids) != sorted(expected):
-        errors.append(f"erwartete IDs D1..D7, gefunden {sorted(ids)}")
+    # D1 bis D7 sind Pflicht. D-0 (Formatentscheidung) ist zusaetzlich zulaessig,
+    # weitere IDs nicht: das Register soll nicht unbemerkt wachsen.
+    pflicht = [f"D{i}" for i in range(1, 8)]
+    zulaessig = set(pflicht) | {"D-0"}
+    fehlend = sorted(set(pflicht) - ids)
+    unbekannt = sorted(ids - zulaessig)
+    if fehlend:
+        errors.append(f"erwartete IDs D1..D7, fehlend: {fehlend}")
+    if unbekannt:
+        errors.append(f"unbekannte IDs: {unbekannt} (zulaessig sind D-0 und D1..D7)")
 
     sub_ids = set()
     for dec in data["decisions"]:
