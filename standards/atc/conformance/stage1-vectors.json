@@ -2,11 +2,11 @@
   "quelle": "standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md",
   "abschnitt": "18.2",
   "standard": "ATC-SMART-CONTRACT-EXECUTION-001",
-  "fassung": "1.7.0-draft",
+  "fassung": "1.10.0-draft",
   "hinweis": "Erzeugt aus dem Dokument; nicht von Hand aendern.",
   "stroeme": {
     "P1": "01010000000000000010",
-    "P2": "010700000000000000012a00000000000000020b10"
+    "P2": "010700000000000000012a00000000000000020b0000000010"
   },
   "goldvektoren": [
     {
@@ -31,11 +31,11 @@
     },
     {
       "id": "GV-6",
-      "sollwert": "c829629e93d97b464b58a1a5004c7a17700f482a08fb34caae59a83ef39e30d8"
+      "sollwert": "3c506eaadcb21b1887cfd1c92135e6804644dd1c087ccb1edfcb09744de96636"
     },
     {
       "id": "GV-7",
-      "sollwert": "79c1a77bb66101277cd1fe4d38d66b7c7fb11869a694fbc77771e8fc93caaa17"
+      "sollwert": "0133d7a63a529a9de8848e2db1efa436121c7bb0691a7927cc459d366d6449b3"
     },
     {
       "id": "GV-8",
