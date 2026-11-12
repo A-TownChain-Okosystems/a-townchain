@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 10:03 UTC+2 aus `origin/main` @ `08e6fe5b`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 10:28 UTC+2 aus `origin/main` @ `27c6999e`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11381 Dateien**
+**Total: 11387 Dateien**
 
-## docs (5092)
+## docs (5093)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -40,6 +40,7 @@
 - `docs/decisions/AD-EXEC-KERNEL-ENFORCEMENT.md`
 - `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md`
 - `docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md`
+- `docs/decisions/EXEC-STAGE1-PARSER-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-STAGE1-RATIFICATION-2026-11-12.md`
 - `docs/decisions/EXEC-STAGE1-TRACKING.md`
 - `docs/decisions/VM-INTEGER-SEMANTICS-DRAFT.md`
@@ -5100,7 +5101,7 @@
 - `docs/os-docs/wiki/windows-edition-wiki/STATUS.md`
 - `docs/zkp/PROOF_SYSTEM_SELECTION_MATRIX.md`
 
-## standards (2172)
+## standards (2173)
 
 - `standards/.atc/compliance.yaml`
 - `standards/.atc/discovery/baseline.json`
@@ -5291,6 +5292,7 @@
 - `standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md`
 - `standards/atc/candidates/KAI-OS-READINESS-001-CANDIDATE.md`
 - `standards/atc/conformance/identity-value-vectors.json`
+- `standards/atc/conformance/stage1-parser-corpus.json`
 - `standards/atc/conformance/stage1-vectors.json`
 - `standards/ats/ATS-LIC-SYSTEM_HARDWARE_LICENSE.md`
 - `standards/ats/ATS_STANDARDS.md`
@@ -11340,6 +11342,32 @@
 - `kernel/atc-shivacore/sdk/src/syscall.rs`
 - `kernel/atc-shivacore/tools/determinism_check.py`
 
+## tools (23)
+
+- `tools/atc-sc-validator/audit_contract_copies.py`
+- `tools/atc-sc-validator/check_contract_registry.py`
+- `tools/atc-sc-validator/tests/test_contract_copies.py`
+- `tools/atc-sc-validator/tests/test_contract_registry_gate.py`
+- `tools/atc-sc-validator/tests/test_links.py`
+- `tools/atc-sc-validator/tests/test_supply_cap_invariant.py`
+- `tools/atc_reference_decoder.py`
+- `tools/build_parser_corpus.py`
+- `tools/check_parser_corpus.py`
+- `tools/check_stage1_vectors.py`
+- `tools/consensus_boundary_check.py`
+- `tools/consolidate_monorepo.py`
+- `tools/decision_register.py`
+- `tools/dependency_review.py`
+- `tools/determinism_check.py`
+- `tools/ecosystem.sh`
+- `tools/file_register.py`
+- `tools/identity_vectors_check.py`
+- `tools/integration_graph.py`
+- `tools/integration_graph_baseline.json`
+- `tools/linkcheck.py`
+- `tools/tests/test_integration_graph.py`
+- `tools/tests/test_parser_corpus.py`
+
 ## (root) (21)
 
 - `.gitignore`
@@ -11363,28 +11391,6 @@
 - `STATUS.md`
 - `determinism_allowlist.yaml`
 - `ruff.toml`
-
-## tools (19)
-
-- `tools/atc-sc-validator/audit_contract_copies.py`
-- `tools/atc-sc-validator/check_contract_registry.py`
-- `tools/atc-sc-validator/tests/test_contract_copies.py`
-- `tools/atc-sc-validator/tests/test_contract_registry_gate.py`
-- `tools/atc-sc-validator/tests/test_links.py`
-- `tools/atc-sc-validator/tests/test_supply_cap_invariant.py`
-- `tools/check_stage1_vectors.py`
-- `tools/consensus_boundary_check.py`
-- `tools/consolidate_monorepo.py`
-- `tools/decision_register.py`
-- `tools/dependency_review.py`
-- `tools/determinism_check.py`
-- `tools/ecosystem.sh`
-- `tools/file_register.py`
-- `tools/identity_vectors_check.py`
-- `tools/integration_graph.py`
-- `tools/integration_graph_baseline.json`
-- `tools/linkcheck.py`
-- `tools/tests/test_integration_graph.py`
 
 ## .github (16)
 
