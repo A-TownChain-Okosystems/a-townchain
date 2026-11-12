@@ -2,7 +2,7 @@
   "quelle": "standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md",
   "abschnitt": "18.2",
   "standard": "ATC-SMART-CONTRACT-EXECUTION-001",
-  "fassung": "1.6.0-draft",
+  "fassung": "1.7.0-draft",
   "hinweis": "Erzeugt aus dem Dokument; nicht von Hand aendern.",
   "stroeme": {
     "P1": "01010000000000000010",
