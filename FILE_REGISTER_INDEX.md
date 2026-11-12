@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 18:05 UTC+2 aus `origin/main` @ `15948a24`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 18:16 UTC+2 aus `origin/main` @ `47a807a`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11410 Dateien**
+**Total: 11422 Dateien**
 
-## docs (5103)
+## docs (5108)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -41,6 +41,7 @@
 - `docs/decisions/AD-EXEC-D1-D7.md`
 - `docs/decisions/AD-EXEC-KERNEL-ENFORCEMENT.md`
 - `docs/decisions/AD-GOV-FAMILY-400-OPTION-B-2026-11-12.md`
+- `docs/decisions/AD-P1D-B2-FOUR-DECISIONS-2026-11-12.md`
 - `docs/decisions/EXEC-D0-ARCH-QUESTIONS-TEMPLATE-2026-11-12.md`
 - `docs/decisions/EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-D0A-SYSTEM-INGRESS-EVIDENCE-2026-11-12.md`
@@ -48,6 +49,10 @@
 - `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md`
 - `docs/decisions/EXEC-P1A-BLOCKPAYLOAD-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-P1B-NODE-IMPORT-DESIGN-2026-11-12.md`
+- `docs/decisions/EXEC-P1C-MUTATION-AUDIT-2026-11-12.md`
+- `docs/decisions/EXEC-P1D-A-PARALLEL-GOSSIP-2026-11-12.md`
+- `docs/decisions/EXEC-P1D-B-CHAIN-AUTHORITY-2026-11-12.md`
+- `docs/decisions/EXEC-P1D-B1-OWNERSHIP-INVENTORY-2026-11-12.md`
 - `docs/decisions/EXEC-S1-2-ADMISSION-REGISTRY-F1.md`
 - `docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md`
 - `docs/decisions/EXEC-STAGE1-PARSER-EVIDENCE-2026-11-12.md`
@@ -8555,7 +8560,7 @@
 - `ecosystem/tools/validate_privacy_policy.py`
 - `ecosystem/tools/validate_runtime_symbol_registry.py`
 
-## components (899)
+## components (903)
 
 - `components/algorithm/.atc/compliance.yaml`
 - `components/algorithm/.atc/evidence/evidence.yaml`
@@ -9032,6 +9037,7 @@
 - `components/node/src/discovery.rs`
 - `components/node/src/gossip.rs`
 - `components/node/src/identity.rs`
+- `components/node/src/import.rs`
 - `components/node/src/lib.rs`
 - `components/node/src/main.rs`
 - `components/node/src/mempool.rs`
@@ -9040,6 +9046,7 @@
 - `components/node/src/validator.rs`
 - `components/node/tests/TESTPLAN.md`
 - `components/node/tests/block_hash_tests.rs`
+- `components/node/tests/block_import.rs`
 - `components/node/tests/did_registry_tests.rs`
 - `components/node/tests/two_node_devnet.rs`
 - `components/node/tests/tx_block_tests.rs`
@@ -9264,6 +9271,7 @@
 - `components/system/src/compile.rs`
 - `components/system/src/lib.rs`
 - `components/system/src/main.rs`
+- `components/system/src/node_import.rs`
 - `components/system/src/seal.rs`
 - `components/system/src/state.rs`
 - `components/system/src/system.rs`
@@ -9272,6 +9280,7 @@
 - `components/system/tests/container_admission.rs`
 - `components/system/tests/differential.rs`
 - `components/system/tests/e2e.rs`
+- `components/system/tests/node_import.rs`
 - `components/system/tests/registry_conflict.rs`
 - `components/system/tests/signature.rs`
 - `components/update-authority/Cargo.toml`
@@ -11362,7 +11371,7 @@
 - `kernel/atc-shivacore/sdk/src/syscall.rs`
 - `kernel/atc-shivacore/tools/determinism_check.py`
 
-## tools (26)
+## tools (28)
 
 - `tools/atc-sc-validator/audit_contract_copies.py`
 - `tools/atc-sc-validator/check_contract_registry.py`
@@ -11373,6 +11382,7 @@
 - `tools/atc_reference_decoder.py`
 - `tools/build_parser_corpus.py`
 - `tools/check_admission_codes.py`
+- `tools/check_build_coverage.py`
 - `tools/check_parser_corpus.py`
 - `tools/check_stage1_vectors.py`
 - `tools/consensus_boundary_check.py`
@@ -11387,6 +11397,7 @@
 - `tools/integration_graph_baseline.json`
 - `tools/linkcheck.py`
 - `tools/tests/test_admission_codes.py`
+- `tools/tests/test_build_coverage.py`
 - `tools/tests/test_decision_register.py`
 - `tools/tests/test_integration_graph.py`
 - `tools/tests/test_parser_corpus.py`
@@ -11459,3 +11470,7 @@
 - `specs/ATC-NETWORK-ID-001-NETWORK-IDENTITY.md`
 - `specs/ATC-STATE-001-STATE-TRANSITION.md`
 - `specs/ATC-VM-CONF-001-VM-CONFORMANCE.md`
+
+## registry (1)
+
+- `registry/build_coverage.yaml`
