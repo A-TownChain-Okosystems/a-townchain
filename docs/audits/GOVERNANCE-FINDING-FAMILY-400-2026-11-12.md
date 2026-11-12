@@ -1,6 +1,9 @@
 # Governance-Befund: Familie 400 — normative Definition und gelebte Belegung
 
 > **Typ:** Befund, keine Änderung. **Datum:** 2026-11-12.
+> **Nachtrag 12.11.2026:** entschieden als **Option B** (Owner) — 400–499 bleibt
+> SECURITY, die 51 Nicht-Security-Standards sind einzeln grandfatherte Ausnahmen.
+> Umsetzung und Nachweis: [AD-GOV-FAMILY-400-OPTION-B](AD-GOV-FAMILY-400-OPTION-B-2026-11-12.md).
 > **Anlass:** Reservierung von `ATC-STD-410` (Owner-Entscheidung 12.11.2026).
 > **Quellen:** `atc-standards` Commit `f540835` (Registry 533 Standards),
 > `governance/ATC-STD-002.md` §1/§2/§3, `registry/families/FAMILY-400.yaml`,
