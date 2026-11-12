@@ -2,9 +2,8 @@
 
 > **Status:** Nachweis. Kein Standard, keine Konformitaetsaussage, keine
 > Implementierungs- oder Releasefreigabe.
-> **Datum:** 2026-11-12 · **Gebunden an:** die sechs Blobs in Abschnitt 5,
-> erhoben bei `a-townchain` main `57fce3e3`
-> **Gegenstand:** §19.2a und §19.5 des Kandidaten
+> **Datum:** 2026-11-12 · **Gebunden an:** die sechs Blobs in Abschnitt 5
+> **Gegenstand:** §19.2a, §19.5 und §19.7 des Kandidaten
 > `ATC-SMART-CONTRACT-EXECUTION-001` (v1.10.0-draft), Korpus
 > `standards/atc/conformance/stage1-parser-corpus.json`
 
@@ -14,7 +13,7 @@ Diese Nachweise beantworten die Frage, ob die Parserprozedur aus §19.2a
 **ausfuehrbar und eindeutig** ist. Sie beantworten **nicht**, ob ein Dekoder
 konform ist: REQ-SCE-084 verlangt zwei unabhaengige Dekoder, die auf demselben
 Korpus dasselbe Paar `(Code, Offset)` liefern. Hier laeuft genau einer, der
-Referenzdekoder; die VM ist kein konformer zweiter Dekoder (Abschnitt 4.2 und 4.4).
+Referenzdekoder; die VM ist kein konformer zweiter Dekoder (Abschnitt 4.2 bis 4.4).
 
 Daraus folgt: kein Test der Matrix wechselt durch dieses Dokument den Status,
 ausser S1-T-18, der den L1-Status fuehrt (`EMPTY` ohne Dekoder, `OPEN` mit
@@ -38,9 +37,6 @@ python3 tools/atc_reference_decoder.py --selftest
 python3 -m pytest tools/tests/test_parser_corpus.py -q   # 11 passed
 ```
 
-Alle fuenf Aufrufe wurden am Stand `57fce3e3` mit den in Abschnitt 5 genannten
-Blobs ausgefuehrt.
-
 ## 3. Korpus
 
 | Klasse | Eingaben | Gegenstand | erwartete Codes |
@@ -62,8 +58,9 @@ Jede Zeile traegt ihre Konstruktion im Feld `hinweis` und ihren Sollwert in
 Betreiberwert; ein Wert ist nicht festgelegt (T-21 bis T-24). Ein Korpusfall wuerde
 eine Zahl festschreiben, die nicht entschieden ist. Der Dekoder kennt den Parameter
 `max_stream_bytes`; `test_e012_nur_mit_konfiguriertem_grenzwert` zeigt, dass `E-012`
-ohne Wert nicht erreichbar und mit Wert wirksam ist. Siehe auch Abschnitt 6: `E-012`
-begrenzt den Aufwand **nicht**, weil er am Ende der Pruefreihenfolge steht.
+ohne Wert nicht erreichbar und mit Wert wirksam ist. Siehe Abschnitt 6: `E-012`
+begrenzt den Aufwand **nicht**, weil es am Ende der Pruefreihenfolge steht und eine
+andere Groesse misst.
 
 ## 4. Befunde aus diesem Lauf
 
@@ -98,9 +95,9 @@ Vertrag den Strukturcode. Der Korpus fuehrt jede Strukturmutation doppelt, mit
 belassenem und mit neu berechnetem Tail, und zeigt damit, dass der Strukturcode in
 beiden Faellen gleich bleibt.
 
-Das ist die **dritte** Abweichung der VM vom Vertrag, nach den zwei fehlenden
-Fehlervarianten (`EMPTY_STREAM` = `E-004`, `COUNT_MISMATCH` = `E-005`) und der Annahme
-von `ATCB`/`0x01`.
+Zusammen mit der Annahme von `ATCB`/`0x01` und den zwei fehlenden Fehlervarianten
+(`EMPTY_STREAM` = `E-004`, `COUNT_MISMATCH` = `E-005`) sind das drei Korrekturen am
+Dekodierpfad, bevor die VM als zweiter Dekoder gelten kann.
 
 ### 4.3 Der dokumentierte P2-Strom war nicht dekodierbar
 
@@ -118,53 +115,67 @@ kanonische Kodierung `0b 00000000` berichtigt (25 Byte); GV-6 und GV-7 sind nach
 S1-T-27 neu berechnet, alle anderen Vektoren bleiben unveraendert. Der Regressionstest
 `test_p2_korrektur_ist_wirklich_noetig` haelt beide Fassungen fest.
 
-### 4.4 Die VM begrenzt die deklarierte Anzahl, der Vertrag die dekodierte Laenge
+### 4.4 Vier Groessen, die nicht dasselbe sind
 
-`artifact.rs:322` prueft direkt nach dem Digest `count > MAX_PROGRAM_OPS`
-(65 536, `vm.rs:7`), also die **deklarierte Anzahl** und damit vor dem Strom.
-REQ-SCE-089 legt das Gegenteil fest: gemessen wird die dekodierte Stromlaenge, die
-Anzahl ist ausdruecklich nur eine Obergrenze und **kein** Ausloeser fuer `E-012`.
+Der vierte Unterschied ist keine Namensfrage, sondern eine andere Pruefbasis mit anderer
+Fehlerpraezedenz:
 
-Fuer dieselbe Eingabe ergibt das zwei verschiedene Ergebnisse:
+| Groesse | Bedeutung |
+|---|---|
+| `c` | im Container deklarierte Instruktionsanzahl (4 Byte im Kopf) |
+| `p - 10` | tatsaechlich dekodierte Stromlaenge in Bytes, bis `tail_start` |
+| `i` | tatsaechlich dekodierte Instruktionsanzahl |
+| `MAX_PROGRAM_OPS` | bisherige VM-Grenze, 65 536, heute gegen `c` geprueft |
+
+`artifact.rs:322` prueft `c > MAX_PROGRAM_OPS` direkt nach dem Digest, also die
+**deklarierte Anzahl** und damit vor dem Strom. REQ-SCE-089 legt das Gegenteil fest:
+gemessen wird die dekodierte Stromlaenge, die Anzahl ist ausdruecklich nur eine
+Obergrenze und **kein** Ausloeser fuer `E-012`.
 
 | Eingabe | Vertrag | VM |
 |---|---|---|
-| `C-8-GV1-MAX` (Anzahl `0xFFFFFFFF`, 25-Byte-Strom, gueltiger Tail) | `E-005` bei 20 nach einem Schritt | `ProgramTooLarge` |
+| `C-8-GV1-MAX` (`c = 0xFFFFFFFF`, 25-Byte-Strom, gueltiger Tail) | `E-005` bei 20 nach einem Schritt | `ProgramTooLarge` |
 
-Das ist die **vierte** Abweichung. Beide Regeln sind vereinbar, wenn die
-Anzahlpruefung dort bleibt, wo sie hingehoert — beim Erzeugen und beim Ausfuehren — und
-der Dekodierpfad der Praezedenz des Vertrags folgt. Sie sind es heute nicht.
+Die VM begrenzt damit eine andere Groesse an einer anderen Stelle der Reihenfolge. Beide
+Regeln sind vereinbar, wenn die Anzahlpruefung dort bleibt, wo sie hingehoert — beim
+Erzeugen und beim Ausfuehren — und der Dekodierpfad der Praezedenz des Vertrags folgt.
+Sie sind es heute nicht. Owner-Auflage: **D1-C**.
 
 ## 5. Bindung an den Repositorystand
 
-Jede Aussage dieses Vermerks gilt fuer genau die folgenden Blobs. Aendert sich einer
-davon, ist die Aussage **nicht** mehr belegt und muss neu erhoben werden (dasselbe
-Verfahren wie S1-T-27 bei Wertwechseln); eine Fortschreibung ohne erneuten Lauf ist
-unzulaessig.
+Die Bindung sind die Blob-SHAs, nicht der Kopf-HEAD. Der HEAD ist nur der
+Erhebungszeitpunkt; er bewegt sich mit jedem Commit, die Blobs nicht. Drei Zeitpunkte
+und ein Inhaltsvergleich:
 
-Der Kopf-HEAD ist der **Erhebungszeitpunkt**, nicht die Bindung: er bewegt sich mit
-jedem weiteren Commit, die Blobs nicht. Dieser Vermerk wurde mit einem spaeteren
-Commit veroeffentlicht, der nur ihn, die Registerdatei und die Matrix aendert; die
-sechs Blobs sind dabei unveraendert geblieben und wurden danach erneut geprueft.
-
-| Gegenstand | Pfad | Blob bei `57fce3e3` |
+| Zeitpunkt | HEAD | Vorgang |
 |---|---|---|
-| Kandidat v1.10.0-draft | `standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md` | `337bc21b` |
-| Parser-Korpus | `standards/atc/conformance/stage1-parser-corpus.json` | `3563869b` |
-| Referenzdekoder | `tools/atc_reference_decoder.py` | `10e504d1` |
-| Korpus-Pruefwerkzeug | `tools/check_parser_corpus.py` | `b13d6d3f` |
-| Werkzeugtests | `tools/tests/test_parser_corpus.py` | `8fa2de49` |
-| VM-Dekodierpfad | `components/vm/src/artifact.rs` | `9a1c3bf9` |
+| Erhebung | `57fce3e3` | Korpus, Dekoder, Werkzeuge angelegt und geprueft |
+| Nachtrag | `2c345975` | Vermerk veroeffentlicht, Blobs unveraendert |
+| Gegenpruefung | `0cf3b9df` | Blobs erneut verglichen, unveraendert |
+| Nachtrag §19.7 | `7a6fc634` | Kandidat geaendert (§19.7, Teilauflagen), fuenf Blobs unveraendert; alle Pruefungen erneut ausgefuehrt |
 
-Der Vermerk nennt seinen eigenen Blob nicht; das waere ein Zirkel. Er ist ueber Pfad
-und Kopf-HEAD adressiert, die Nachverfolgungsmatrix verweist auf ihn.
+| Gegenstand | Pfad | Blob bei `57fce3e3` | Blob bei `7a6fc634` |
+|---|---|---|---|
+| Kandidat v1.10.0-draft | `standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md` | `337bc21b` | `b1789921` |
+| Parser-Korpus | `standards/atc/conformance/stage1-parser-corpus.json` | `3563869b` | `3563869b` |
+| Referenzdekoder | `tools/atc_reference_decoder.py` | `10e504d1` | `10e504d1` |
+| Korpus-Pruefwerkzeug | `tools/check_parser_corpus.py` | `b13d6d3f` | `b13d6d3f` |
+| Werkzeugtests | `tools/tests/test_parser_corpus.py` | `8fa2de49` | `8fa2de49` |
+| VM-Dekodierpfad | `components/vm/src/artifact.rs` | `9a1c3bf9` | `9a1c3bf9` |
 
-## 6. Ressourcenobergrenze vor dem Dekodieren (offen)
+Der Kandidat hat sich geaendert, und deshalb wurde die Regel angewandt, statt sie zu
+umgehen: alle Pruefungen wurden am neuen Blob `b1789921` erneut ausgefuehrt
+(Vektoren, Korpus, Register, Werkzeugtests), alle `PASS`. Die Aenderung ist additiv
+(§19.7 und die Teilauflagentabelle), die Aussagen zu §19.1 bis §19.5 sind unberuehrt.
+Aendert sich kuenftig einer der fuenf uebrigen Blobs, gilt dasselbe: neu erheben, nicht
+fortschreiben. Dieser Vermerk nennt seinen eigenen Blob nicht; das waere ein Zirkel.
 
-**Frage.** Gibt es eine verbindliche Obergrenze fuer die Groesse einer
-Transaktion beziehungsweise eines Containers, die **vor** dem Dekodieren wirkt?
+## 6. Ressourcenobergrenze vor dem Dekodieren (offen, D1-A)
 
-**Befund am Stand `57fce3e3`: nein, fuer Container nicht.** Es gibt Grenzen, aber keine
+**Frage.** Gibt es eine verbindliche Obergrenze fuer die Groesse einer Transaktion
+beziehungsweise eines Containers, die **vor** dem Hashing wirkt?
+
+**Befund am Stand `7a6fc634`: nein, fuer Container nicht.** Es gibt Grenzen, aber keine
 davon begrenzt die Eingabe des Dekoders:
 
 | Grenze | Wert | Ort | Gegenstand |
@@ -178,31 +189,48 @@ davon begrenzt die Eingabe des Dekoders:
 | Block-Payload | keine | `node/src/chain.rs:17` (`String`) | beliebig lang |
 | Mempool/Konfiguration | keine | `node/src/config.rs` (nur `max_peers`) | keine Groessengrenze |
 
-`Artifact::parse` prueft als erstes nur `bytes.len() < 42` und hasht danach die
-**gesamte** Eingabe (`artifact.rs:311-319`). Jede Grenzpruefung kommt spaeter. Eine
-uebergrosse Eingabe kostet daher vollstaendige SHA-256-Arbeit, bevor irgendetwas
-abgelehnt wird; die Kosten wachsen linear mit der Eingabe und sind pro Aufruf
-wiederholbar. `E-012` hilft dabei nicht, weil es nach Vertrag Stufe 10 ist und die
-dekodierte Laenge misst.
+Der Ablauf im Transaktionspfad ist heute: Container annehmen, Mindestlaenge pruefen,
+SHA-256 ueber die gesamte Eingabe, danach erst Struktur- und Groessenpruefungen. Die
+Hash-Arbeit skaliert mit der Eingabe und ist pro Aufruf wiederholbar; eine uebergrosse
+Eingabe verbraucht also Ressourcen, bevor sie als unzulaessig erkannt wird.
 
-**Vorschlag (keine Entscheidung).** Die Laengengrenze gehoert zum Aufrufer, nicht in
-den Dekoder: der Dekoder bleibt eine reine Funktion, und der Admission-Layer ruft ihn
-nicht mit Eingaben oberhalb eines konfigurierten Hoechstwertes auf. `E-012` bleibt
-dann die semantische Programmgrenze, und es entsteht kein neuer Fehlercode und keine
-Aenderung der Praezedenz. Der Zahlenwert ist aus den Messungen in P1b abzuleiten und
-nicht aus bestehenden VM-Grenzen; solange er fehlt, bleibt das Ressourcenrisiko offen.
-Eingetragen als offener Punkt an D1, nicht als Anforderung.
+**Zielarchitektur (Owner, 12.11.2026).** Der Admission-Layer prueft die
+Container-Bytegrenze **vor** dem Hashing und moeglichst vor jeder Allokation oder
+Dekodierung; der Dekoder bleibt eine reine, deterministische Funktion ohne eigene
+Groessenpolitik. Drei Bedingungen sind dabei ausdruecklich festgehalten (Kandidat
+§19.7, REQ-SCE-090 bis 093, Vorschlag):
 
-## 7. Was daraus nicht folgt
+1. Der Wert ist **konsensweit identisch**. Ein bloss lokal konfigurierbarer Grenzwert
+   waere auf dem Konsenspfad gefaehrlich: zwei Validatoren koennten dieselbe Transaktion
+   unterschiedlich annehmen oder ablehnen.
+2. Die Grenze wirkt auf die **tatsaechlichen Container-Bytes**, vor dem Hashing.
+3. **Getrennte Schutzschichten bleiben getrennt:** RPC-Rumpf und Block-Payload begrenzen
+   Transport und Block, nicht das Artefakt. Und die Bytegrenze darf nicht mit `E-012`
+   verschmolzen werden: die Grenze bewertet die gesamte Eingabe (Kopf, Strom, Tail) vor
+   dem Hashing, `E-012` die dekodierte Stromlaenge ohne Kopf und Tail. Zwei Messgroessen,
+   zwei Zustaendigkeiten; ein gemeinsamer Fehlercode wuerde sie verdecken.
 
-| Aussage | gilt nicht, weil |
+Der Zahlenwert ist aus P1b abzuleiten und nicht aus bestehenden VM-Grenzen; solange er
+fehlt, bleibt **D1-A** offen und `S1-T-55` `OPEN`.
+
+## 7. Status
+
+| Bereich | Status |
 |---|---|
-| "D1 ist implementiert" | `implementation_status` bleibt `OPEN`; die Projektimplementierung ist unveraendert |
-| "der Parser ist konform" | ein Dekoder ist kein Differentialtest (REQ-SCE-084) |
-| "die VM ist der zweite Dekoder" | vier Abweichungen: `ATCB`/`0x01`, zwei fehlende Fehlervarianten, Digest vor Struktur, Anzahl statt Stromlaenge |
-| "L2 oder L3 sind pruefbar" | B-1 ist unentschieden; nur L1 zaehlt fuer P1a |
-| "E-012 ist geklaert" | der Groesstwert ist offen (T-21 bis T-24) |
-| "uebergrosse Eingaben sind abgewehrt" | keine Laengengrenze vor dem Dekodieren (Abschnitt 6) |
-| "die Grenzwerte gelten" | 8.192/4.096 Byte und Tiefe 8 bleiben Vorschlag |
+| Blob-basierte Evidenzbindung | stabil (Abschnitt 5) |
+| Parser-Fehlersemantik §19.1 bis 19.2a | spezifiziert |
+| Referenzdekoder und Korpus | vorhanden, 0 Abweichungen |
+| Container-Byteobergrenze | offen, D1-A, Wert aus P1b |
+| VM-Fehlercodes `E-004`, `E-005` | nicht konform, D1-B |
+| Digest-Pruefreihenfolge | nicht konform, D1 (S1-T-52) |
+| Groessenpruefung `c` gegen `p - 10` | nicht konform, D1-C |
+| Differentialtest | nicht bestanden |
+| S1-T-18 (L1-Status) | `TESTED` als Statustest |
+| Matrix | 55 Tests: 53 `OPEN`, 1 `BLOCKED`, 1 `TESTED` |
+| P1a | `OPEN` |
+| P2 | `BLOCKED` durch B-1 |
+| Normstatus | Kandidat, nicht normativ |
 
-P1a bleibt offen, P2 bleibt an B-1 gesperrt, der Standard bleibt Kandidat.
+Nicht abgeleitet ist daraus: keine Implementierungsfreigabe, keine Konformitaet, keine
+Aussage ueber L2 und L3 (B-1 unentschieden), und die Grenzwerte 8.192/4.096 Byte sowie
+Tiefe 8 bleiben Vorschlag.
