@@ -569,6 +569,7 @@ keine auf **IMPLEMENTED**.
 
 | ID | Entscheidung (Titel) | Owner-Entscheidung | Ratifikation | Spezifikation | spezifiziert in | Umsetzung | Gate |
 |---|---|---|---|---|---|---|---|
+| D-0 | Zwei getrennte Formate: Huelle ATCE/0x02 aussen, Bytecode ATCB/0x01 innen | freigegeben | nicht ratifiziert (Kandidat) | SPECIFIED | Kandidat §18.1-18.3, §19.1-19.5 und §19.2a (nicht ratifiziert); Korpus standards/atc/conformance/stage1-parser-corpus.json | OPEN | SCE-G1 |
 | D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | SPECIFIED | Kandidat §5.1, §18.1-18.3, §19.1-19.5 und §19.2a (nicht ratifiziert) | OPEN | SCE-G1 |
 | D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.3, §5.10 (nicht ratifiziert) | OPEN | SCE-G3 |
 | D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.4 (nicht ratifiziert) | OPEN | SCE-G4 |
