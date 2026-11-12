@@ -1,9 +1,9 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 15:15 UTC+2 aus `origin/main` @ `33bc51d1`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 15:22 UTC+2 aus `origin/main` @ `7efbadd1`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11398 Dateien**
+**Total: 11403 Dateien**
 
 ## docs (5099)
 
@@ -5107,7 +5107,7 @@
 - `docs/os-docs/wiki/windows-edition-wiki/STATUS.md`
 - `docs/zkp/PROOF_SYSTEM_SELECTION_MATRIX.md`
 
-## standards (2173)
+## standards (2174)
 
 - `standards/.atc/compliance.yaml`
 - `standards/.atc/discovery/baseline.json`
@@ -5297,6 +5297,7 @@
 - `standards/atc/candidates/ATC-SEC-EXEC-001-CANDIDATE.md`
 - `standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md`
 - `standards/atc/candidates/KAI-OS-READINESS-001-CANDIDATE.md`
+- `standards/atc/conformance/admission-codes.json`
 - `standards/atc/conformance/identity-value-vectors.json`
 - `standards/atc/conformance/stage1-parser-corpus.json`
 - `standards/atc/conformance/stage1-vectors.json`
@@ -8549,7 +8550,7 @@
 - `ecosystem/tools/validate_privacy_policy.py`
 - `ecosystem/tools/validate_runtime_symbol_registry.py`
 
-## components (895)
+## components (897)
 
 - `components/algorithm/.atc/compliance.yaml`
 - `components/algorithm/.atc/evidence/evidence.yaml`
@@ -8730,6 +8731,7 @@
 - `components/contracts/tsconfig.json`
 - `components/exec-admission/Cargo.toml`
 - `components/exec-admission/src/lib.rs`
+- `components/exec-admission/tests/registry_conflict.rs`
 - `components/explorer/.atc/compliance.yaml`
 - `components/explorer/.atc/evidence/evidence.yaml`
 - `components/explorer/.atc/lifecycle.yaml`
@@ -9263,6 +9265,7 @@
 - `components/system/tests/container_admission.rs`
 - `components/system/tests/differential.rs`
 - `components/system/tests/e2e.rs`
+- `components/system/tests/registry_conflict.rs`
 - `components/system/tests/signature.rs`
 - `components/update-authority/Cargo.toml`
 - `components/update-authority/src/lib.rs`
@@ -11352,7 +11355,7 @@
 - `kernel/atc-shivacore/sdk/src/syscall.rs`
 - `kernel/atc-shivacore/tools/determinism_check.py`
 
-## tools (24)
+## tools (26)
 
 - `tools/atc-sc-validator/audit_contract_copies.py`
 - `tools/atc-sc-validator/check_contract_registry.py`
@@ -11362,6 +11365,7 @@
 - `tools/atc-sc-validator/tests/test_supply_cap_invariant.py`
 - `tools/atc_reference_decoder.py`
 - `tools/build_parser_corpus.py`
+- `tools/check_admission_codes.py`
 - `tools/check_parser_corpus.py`
 - `tools/check_stage1_vectors.py`
 - `tools/consensus_boundary_check.py`
@@ -11375,6 +11379,7 @@
 - `tools/integration_graph.py`
 - `tools/integration_graph_baseline.json`
 - `tools/linkcheck.py`
+- `tools/tests/test_admission_codes.py`
 - `tools/tests/test_decision_register.py`
 - `tools/tests/test_integration_graph.py`
 - `tools/tests/test_parser_corpus.py`
