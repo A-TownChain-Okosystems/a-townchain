@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 13:15 UTC+2 aus `origin/main` @ `d9144f9e`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 15:11 UTC+2 aus `origin/main` @ `d6dc1222`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11393 Dateien**
+**Total: 11396 Dateien**
 
-## docs (5095)
+## docs (5097)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -38,7 +38,9 @@
 - `docs/boot/BOOT-EVIDENCE.md`
 - `docs/decisions/AD-EXEC-D1-D7.md`
 - `docs/decisions/AD-EXEC-KERNEL-ENFORCEMENT.md`
+- `docs/decisions/EXEC-D0-ARCH-QUESTIONS-TEMPLATE-2026-11-12.md`
 - `docs/decisions/EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md`
+- `docs/decisions/EXEC-D0A-SYSTEM-INGRESS-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md`
 - `docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md`
@@ -8545,7 +8547,7 @@
 - `ecosystem/tools/validate_privacy_policy.py`
 - `ecosystem/tools/validate_runtime_symbol_registry.py`
 
-## components (894)
+## components (895)
 
 - `components/algorithm/.atc/compliance.yaml`
 - `components/algorithm/.atc/evidence/evidence.yaml`
@@ -9256,6 +9258,7 @@
 - `components/system/src/state.rs`
 - `components/system/src/system.rs`
 - `components/system/tests/backend.rs`
+- `components/system/tests/container_admission.rs`
 - `components/system/tests/differential.rs`
 - `components/system/tests/e2e.rs`
 - `components/system/tests/signature.rs`
