@@ -5,7 +5,7 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.3.0-draft
+> **Version:** 1.4.0-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
@@ -26,6 +26,7 @@
 | 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
 | 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
 | 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
+| 1.4.0-draft | 2026-11-12 | Drei Spezifikationsluecken geschlossen: Domainlaenge auf 15 Byte und Eingabe auf 75 Byte korrigiert (vorher 16/76, war falsch); IdentityValue mit einem kanonischen 32-Byte-Layout (Kennzeichen 0..3, reservierte Nullbytes 4..11, Adresse 12..31) und fail-closed-Regeln, REQ-SCE-057 bis 059; vierte Fehlerklasse fuer interne Infrastrukturfehler ohne Nutzerbelastung, REQ-SCE-060; Erstattungsformeln als ausdruecklicher Vorschlag. Testmatrix T-31 bis T-41. |
 | 1.3.0-draft | 2026-11-12 | Vier Befunde der Owner-Pruefung eingearbeitet: SCX-003 beschreibt Strom plus getrennte Huelle SCE-ARTIFACT (ATCB nicht mehr als Magic des VM-Containers); Verantwortungsmatrix trennt Knoten-Orchestrierung von VM-Interpretation und ergaenzt den Validator; Identitaeten `origin`, `caller` und Vertragsadresse getrennt (REQ-SCE-051 bis 053); Fehlerklassen und Erstattung getrennt (REQ-SCE-047, 054, 055); Grundregel SCE-P1 eine Wahrheit je Funktionalitaet; Kanonisierung der Signatur praezisiert; Adressableitung mit Bytebreiten und Kollisionsregel; Grenzwerte mit eigener Begruendung und Grenzwerttests T-21 bis T-30, Status weiterhin Vorschlag. |
 | 1.2.0-draft | 2026-11-12 | Owner-Entscheidung P1 erfasst: D1, D3, D5, D7 freigegeben, D2, D4, D6 bedingt freigegeben, alle sieben DECIDED. Auflagen als REQ-SCE-039 bis REQ-SCE-050 aufgenommen, Entscheidungs-Slots durch das Register ersetzt, Zustandsleiter DECIDED/SPECIFIED/IMPLEMENTED ergaenzt. Zahlen und Gates bleiben offen. |
 
@@ -208,11 +209,18 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
 
 | Feld | Laenge | Kodierung |
 |---|---|---|
-| `domain` | 16 Byte | ASCII `ATC-CONTRACT-V1`, keine Laengenvorspannung |
+| `domain` | **15 Byte** | ASCII `ATC-CONTRACT-V1` (`ATC` 3 + `-` 1 + `CONTRACT` 8 + `-V1` 3), keine Laengenvorspannung, kein Nullbyte, kein Auffuellzeichen |
 | `deployer_20` | 20 Byte | Adresse nach SEC-P0-005, rohe Bytes ohne `ATC:`-Praefix |
 | `nonce_u64_le` | 8 Byte | unsigned, little-endian, Monotonie je Deployer |
 | `code_hash_32` | 32 Byte | SHA-256 ueber den kanonischen Instruktionsstrom (nicht ueber die Huelle) |
-| Eingabe gesamt | 76 Byte | Verkettung in dieser Reihenfolge, keine Trenner |
+| Eingabe gesamt | **75 Byte** | Verkettung in dieser Reihenfolge, keine Trenner |
+
+**Korrektur 12.11.2026 (Befund A):** Die vorherige Fassung gab 16 Byte Domain und
+76 Byte Gesamtlaenge an. `ATC-CONTRACT-V1` ist 15 Byte lang; die Eingabe ist 75 Byte.
+Eine Implementierung MUSS beide Laengen pruefen (`len(domain) == 15`,
+`len(input) == 75`) und bei Abweichung abbrechen, damit kein Byte stillschweigend
+entsteht. Ein zusaetzliches Byte (etwa eine Version oder ein Trenner) waere eine
+eigene Formatentscheidung und ist hier ausdruecklich nicht enthalten.
 
 
   **Kollision:** Ist die abgeleitete Adresse bereits belegt, wird das Deployment
@@ -246,6 +254,31 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
   eines Vertrags erscheinen, und eine Vertragsadresse darf sich nicht als Wallet
   ausgeben. Die Unterscheidung ist im Identitaetswort sichtbar (Typkennzeichen),
   nicht nur in der Dokumentation.
+- **REQ-SCE-057:** `IdentityValue` hat genau ein kanonisches Layout von 32 Byte.
+  Es gibt keine zweite Form und keine je Komponente verschiedene Kodierung.
+
+| Byte | Inhalt | Regel |
+|---|---|---|
+| 0..3 (4 Byte) | Typkennzeichen, unsigned 32 Bit big-endian | `0x00000001` Wallet, `0x00000002` Vertrag |
+| 4..11 (8 Byte) | reserviert | MUSS `0x00` sein; ein einziges Nicht-Nullbyte macht das Wort ungueltig |
+| 12..31 (20 Byte) | Adresse | rohe Bytes nach SEC-P0-005 (Wallet) bzw. REQ-SCE-041 (Vertrag), ohne Praefix |
+
+  Damit ist die fruehere Beschreibung "20-Byte-Adresse mit linksseitiger
+  Nullauffuellung" ersetzt: die linke Seite ist kein undefinierter Fuellraum mehr,
+  sondern besteht aus Typkennzeichen und reservierten Nullbytes. Eine Kollision
+  zwischen Kennzeichen und Auffuellung ist strukturell ausgeschlossen.
+- **REQ-SCE-058:** Ungueltige Woerter werden zurueckgewiesen, nicht umgedeutet:
+  Kennzeichen `0x00000000`, unbekanntes Kennzeichen, nicht-null reservierte Bytes,
+  20 Adressbytes alle null, oder das Wort insgesamt null. Ein unbekanntes
+  Kennzeichen wird niemals als Wallet behandelt (fail-closed). Das Kennzeichen setzt
+  der Frame, nicht der Aufrufer: Deployment setzt `Vertrag`, die Signaturpruefung
+  setzt `Wallet`. Ein Aufrufer kann seinen Typ nicht waehlen.
+- **REQ-SCE-059:** Identitaetswoerter werden als Bytes verglichen, nicht als Zahl
+  behandelt. Arithmetik, Inkrement, Dekrement und Ueberlauf sind auf ihnen
+  unzulaessig, damit kein Kennzeichen durch Rechnung entstehen kann. Fuer Kodierung
+  und Dekodierung existiert genau eine Implementierung (Modul `identity`), die
+  Wallet, VM und Knoten gemeinsam nutzen; jede Kopie waere eine zweite Wahrheit
+  (SCE-P1).
 
 **Gas (D4)**
 
@@ -259,7 +292,7 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
 - **REQ-SCE-047:** Ein fehlgeschlagener Vertrag verbraucht mindestens die tatsaechlich
   geleistete Rechenzeit. Rechenzeit ohne Belastung ist unzulaessig; das gilt auch
   fuer Fehlschlaege im Loader und im Backend. **Praezisierung 12.11.2026 (Befund 4):
-  "fehlgeschlagen" ist nicht gleich "Budget weg".** Es gelten drei Klassen:
+  "fehlgeschlagen" ist nicht gleich "Budget weg".** Es gelten vier Klassen:
 
 
 | Klasse | Verbrauch | Erstattung |
@@ -267,11 +300,38 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
 | Gaserschoepfung | volles `gas_limit` | keine, `gas_refund = 0` |
 | Revert oder logischer Vertragsfehler | nur `gas_used` | ungenutztes Budget, nach der Erstattungsregel |
 | Ablehnung vor der Ausfuehrung (Struktur, Aufnahme, Signatur) | kein Gas, keine Zustandsaenderung | nicht anwendbar; die Transaktion wird nicht gebucht |
+| Interner Fehler der Ausfuehrungsinfrastruktur (Loader, Backend, VM-Interna) | kein Nutzeranteil | keine Belastung des Urhebers |
+
+**Korrektur 12.11.2026 (Befund C):** Die vierte Klasse fehlte. Ein Fehler der
+Infrastruktur ist weder Revert noch Erschoepfung. Wuerde er als eines von beiden
+abgerechnet, erzeugten identische Transaktionen je nach Zustand der Infrastruktur
+unterschiedliche Gebuehren, und der Nutzer zahlt fuer einen Fehler, den er nicht
+verursacht hat. Regel (REQ-SCE-060): Ein interner Infrastrukturfehler fuehrt zu
+keiner Belastung, zu keiner Zustandsaenderung und zu keinem Beleg; die Transaktion
+gilt als nicht ausgefuehrt, und ein Block, der sie trotzdem als ausgefuehrt
+ausweist, ist ungueltig. Der Vorfall wird mit eigenem Statuscode gemeldet und als
+Knotenfehler gefuehrt, nicht als Vertragsfehler. Die Behandlung muss deterministisch
+sein: Zwei Validatoren, die denselben Fehler antreffen, treffen dieselbe
+Entscheidung.
 
 
-  Die Erstattungsregel ist normativ festzulegen (Vorschlag: volles ungenutztes
-  Budget, kein prozentualer Abzug) und zu testen; ohne sie waere jede einfache
-  Vertragsablehnung so teuer wie eine Erschoepfung, was den Anreiz verzerrt.
+  Die Erstattungsregel ist normativ festzulegen und zu testen; ohne sie waere jede
+  einfache Vertragsablehnung so teuer wie eine Erschoepfung, was den Anreiz
+  verzerrt.
+
+  **Vorschlag zur Erstattungsregel (Status: VORSCHLAG, nicht beschlossen,
+  Owner-Entscheidung offen).** Fuer den regulaeren Revert:
+
+  ```
+  gas_refund    = gas_limit - gas_used
+  refund_amount = gas_refund * gas_price
+  fee_charged   = gas_used * gas_price
+  ```
+
+  Bei Gaserschoepfung gilt `gas_used = gas_limit`, damit `gas_refund = 0`. Bei
+  Ablehnung vor der Ausfuehrung wird nichts gebucht, bei einem Infrastrukturfehler
+  ebenfalls nichts. Kein prozentualer Abzug, keine Mindestgebuehr. Die Formeln
+  gelten erst, wenn T-28, T-29 und T-40 gruen sind.
 - **REQ-SCE-054:** Die Fehlerklassen nach REQ-SCE-047 sind im Ergebnis und im Beleg
   unterscheidbar (eigener Statuscode je Klasse), damit ein Validator die Abrechnung
   nachrechnen kann, ohne die Absicht zu raten.
@@ -617,6 +677,17 @@ keinem Punkt CI_VERIFIED oder E2E_VERIFIED.
 | T-28 | Revert nach 1 000 Gas bei Budget 10 000 | `gas_used` 1 000, Erstattung nach Regel, Zustand unveraendert |
 | T-29 | Gaserschoepfung bei Budget 10 000 | `gas_used` 10 000, `gas_refund` 0, Zustand unveraendert |
 | T-30 | Aufruf mit falschem Statuscode fuer den Beleg | Block abgelehnt |
+| T-31 | Wallet-Wort: Kennzeichen `00000001`, reserviert 0, Adresse A | gueltig, dekodiert zu A |
+| T-32 | Vertragswort: Kennzeichen `00000002`, reserviert 0, Adresse A | gueltig, dekodiert zu A |
+| T-33 | Kennzeichen `00000000` | abgelehnt |
+| T-34 | unbekanntes Kennzeichen `00000003` | abgelehnt, nicht als Wallet behandelt |
+| T-35 | reservierte Bytes 4..11 nicht null | abgelehnt |
+| T-36 | Wort vollstaendig null | abgelehnt |
+| T-37 | Adressbytes alle null bei gueltigem Kennzeichen | abgelehnt |
+| T-38 | gleiche 20 Adressbytes, einmal Wallet-, einmal Vertragskennzeichen | zwei verschiedene Identitaeten, keine Eskalation |
+| T-39 | Vertrag ruft Vertrag: `caller` traegt Vertragskennzeichen, `origin` bleibt Wallet | gueltig (erst nach BC-002) |
+| T-40 | Loaderfehler nach 500 Gas bei Budget 10 000 | keine Belastung, kein Beleg, Erfolgsbeleg macht den Block ungueltig |
+| T-41 | Adressableitung: Domain 15 Byte, Eingabe 75 Byte | reproduzierbar; 16-Byte-Domain wird abgelehnt |
 
 ## 17. Offene Entscheidungen vor Ratifizierung
 
@@ -645,6 +716,10 @@ keinem Punkt CI_VERIFIED oder E2E_VERIFIED.
 16. Erstattungsregel nach Revert normativ festlegen (Vorschlag: volles ungenutztes
     Budget) und mit T-28 belegen.
 17. `caller`-Semantik bei Vertrag-zu-Vertrag mit ATC-BC-002 abstimmen (REQ-SCE-052).
+18. Eigenen Statuscode fuer Infrastrukturfehler vergeben (REQ-SCE-060); er darf nicht
+    mit Revert oder Erschoepfung kollidieren.
+19. Testvektoren fuer `IdentityValue` als Datei ablegen, damit Wallet, VM und Knoten
+    gegen dieselben Bytes pruefen (REQ-SCE-059, T-31 bis T-38).
 
 Der Referenzwert 100 000 Gas aus `ATC-BC-002-CANDIDATE` §19.5 (groesstes im Repo
 verwendetes Budget, zwei Aufrufe in `tests/atcb_v2.rs`) ist ein Mess- und
