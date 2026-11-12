@@ -1,61 +1,105 @@
-# P1b — Node-Importintegration: Entwurf ohne Gegenkante
+# P1b — Node-Import: Trait-Position anhand des echten Abhängigkeitsgraphen
 
 > **Status:** `DESIGN` (Entwurf, keine Umsetzung). **Datum:** 2026-11-12.
-> **Bedingung (Owner):** Die Abhängigkeitsrichtung darf nicht durch einen
-> Zyklus beschädigt werden. **Nicht** Teil von P1b: eine zweite Payload-Prüfung.
+> **Anlass:** Design-Review des Owners. **Nicht** implementiert, solange die
+> Trait-Position nicht entschieden ist. **Nicht** Teil von P1b: eine zweite
+> Payload-Prüfung, eine eigene ATCE/ATCB-Dekodierung im Knoten.
 
-## 1 Ausgangslage
+## 1 Befund am Graphen (gemessen, nicht angenommen)
 
-`atc-system` hängt bereits von `atc-node` ab (`components/system/Cargo.toml`).
-Eine Kante `atc-node -> atc-system` wäre ein Zyklus. P1a hat die Prüfung deshalb
-in `atc-system` gelegt und die Verdrahtung offen gelassen.
+`cargo metadata --no-deps` im Workspace `a-townchain`:
 
-## 2 Optionen für die Grenze
+| Crate | hängt ab von |
+|---|---|
+| `atc-node` | `atc-algorithm`, `atc_wallet` |
+| `atc-system` | `atc-core`, `atc-exec-admission`, `atc-node`, `atc-vm`, `atc_wallet` |
+| `atc_cli` | `atc-node` |
 
-| Option | Form | Bewertung |
-|---|---|---|
-| A | Trait in `atc-node` (`ContainerValidator`), Implementierung in `atc-system`, Injektion beim Start | keine neue Kante, Richtung bleibt; der Knoten kennt nur den Vertrag, nicht die Umsetzung |
-| B | Neues kleines Crate `atc-payload-boundary` unter beiden | sauber, aber ein drittes Crate für eine Funktion, die schon existiert; mehr Pflegefläche |
-| C | Prüfung in `atc-node` duplizieren | verboten: zweite Wahrheit, zweite Dekodierung |
+Damit gilt: **`atc-system -> atc-node` existiert bereits.**
 
-**Empfehlung: A.** Der Knoten bekommt eine Port-Definition, keinen Import.
+## 2 Korrektur einer Annahme im Review
 
-## 3 Entwurf A
+Im Review stand, ein Trait in `atc-node`, den `atc-system` implementiert, erzeuge
+einen Zyklus, weil `atc-system` dafür `atc-node` kennen müsste. `atc-system`
+kennt `atc-node` bereits (Tabelle oben), und ein Trait wird in der Kiste
+**implementiert, die ihn sieht** — das ist keine neue Kante. Es entsteht also
+**kein** Zyklus: die Kante zeigt weiter `system -> node`.
+
+Der Zyklus entstünde in der **umgekehrten** Richtung: Trait in `atc-system`, den
+`atc-node` konsumiert, verlangt `node -> system`. Genau diese Variante ist die im
+Review bevorzugte Variante A — sie ist mit dem heutigen Graphen **nicht** baubar.
+
+## 3 Die drei Varianten, gegen den Graphen geprüft
+
+| Variante | Aufbau | Kante | Bewertung |
+|---|---|---|---|
+| A | Trait in `atc-system`, `atc-node` konsumiert | `node -> system` (neu) | **nicht möglich**: Zyklus mit `system -> node` |
+| B | Trait in einem neutral vorhandenen Contract-Crate, beide konsumieren | zwei bestehende Kanten | Durchschnitt der Abhängigkeiten von `node` und `system` ist `{atc-algorithm, atc_wallet}`. Beide sind fachlich nicht der Ort für eine Container-/Payload-Grenze (`atc_wallet` = Tx/Signatur nach WAL-SIGN-001, `atc-algorithm` = Hash-/PoH-Bausteine). Ein **neues** Crate nur für diesen Port ist durch die Review-Vorgabe ausgeschlossen. |
+| C | Port (Trait) in `atc-node`, Implementierung in `atc-system`, Injektion beim Start | keine neue Kante | **empfohlen**: Richtung bleibt, Abhängigkeitsumkehr (Ports & Adapters), Knoten kennt nur den Vertrag |
+
+Damit ist die im Review als „bevorzugt, sofern fachlich passend" genannte
+Variante A am Graphen ausgeschlossen und Variante B ohne passendes Crate; übrig
+bleibt C — der ursprüngliche Vorschlag, jetzt mit Beleg statt Behauptung.
+
+## 4 Entwurf (Variante C)
 
 ```rust
-// components/node/src/import.rs (Entwurf)
+// components/node/src/import.rs (Entwurf, keine Implementierung)
+pub struct PayloadRejection {
+    pub stage: &'static str,   // "block_payload" | "container" | "admission"
+    pub code: &'static str,    // "P-002", "E-007", ...
+    pub offset: Option<usize>,
+}
+
 pub trait ContainerValidator {
-    /// Prüft eine Block-Payload; Fehleridentitaet bleibt beim Aufrufer sichtbar.
-    fn validate_block_payload(&self, payload: &str) -> Result<(), String>;
+    fn validate_block_payload(&self, payload: &str) -> Result<(), PayloadRejection>;
+}
+
+impl Chain {
+    /// Prüft Hash, dann Payload über den Validator, dann erst anhängen.
+    pub fn import_block(&mut self, block: Block, v: &dyn ContainerValidator)
+        -> Result<(), ImportError>;
 }
 ```
 
-* `Chain::import_block(&mut self, block: Block, v: &dyn ContainerValidator)`:
-  1. Blockhash prüfen (`Block::compute_hash`, unverändert),
-  2. `v.validate_block_payload(&block.payload)`,
-  3. erst danach anhängen; bei Ablehnung bleibt der Chain-State **unverändert**
-     (kein Teilzustand, keine Höhenänderung).
-* `atc-system` implementiert den Trait über `block_payload::validate_payload`
-  (eine Dekodierung, `System::check_container`), optional `admit_payload` für
-  die Freigabe im selben Schritt.
-* Der Devnet-Start verdrahtet die Implementierung; ein Knoten ohne Validator
-  (**fail-closed**) lehnt ausführbare Payloads ab, statt sie durchzulassen.
+* Der Trait nennt **kein** ATCE, ATCB oder Opcode: der Knoten kennt nur die
+  Frage „darf diese Payload als ausführbarer Code angenommen werden?".
+* `atc-system` implementiert ihn über `block_payload::validate_payload`
+  (eine Dekodierung, `System::check_container`); optional `admit_payload` für die
+  Freigabe im selben Schritt.
+* Kein Validator verdrahtet: **expliziter Fehler** `ImportError::NoValidator` für
+  ausführbare Payloads, kein stiller Durchlauf. Kein Startabbruch.
+* `atc_cli` hängt an `atc-node` und kann die Implementierung aus `atc-system`
+  einsetzen (die Kante existiert dort ohnehin).
 
-## 4 Testmatrix (vor Umsetzung festgelegt)
+## 5 Invarianten des Owners, je mit Umsetzungsort
+
+| Invariante | Ort |
+|---|---|
+| `atc-node` implementiert keine ATCE-/ATCB-Dekodierung | Trait enthält keine Formatbegriffe; Dekodierung nur in `atc-vm`/`atc-system` |
+| `atc-system` bleibt Eigentümer von Validierung und Admission | Implementierung des Traits ruft `validate_payload`/`admit_payload` |
+| Import prüft vor der Blockannahme | `Chain::import_block`: Hash, Payload, dann Anhängen |
+| Ohne Validator kein Fremdblock | `ImportError::NoValidator`, fail-closed |
+| Fehlender Validator = expliziter Fehler | eigener Fehlervariante, kein `Option::unwrap_or` |
+| Derselbe `code_hash` unabhängig vom Pfad | Test: Import gegen `deploy_container` |
+| Abgelehnter Block ändert weder Chain-State noch Registry | Prüfung vor jeder Mutation; Test vergleicht Höhe, Best-Hash und Registry |
+| Keine zyklische Crate-Abhängigkeit | Trait liegt in `atc-node`, die Kante `system -> node` bleibt die einzige |
+
+## 6 Testmatrix (vor Umsetzung festgelegt)
 
 | Fall | Erwartung |
 |---|---|
 | Fremdblock mit `atce:`-Payload | angenommen, `code_hash` identisch zum lokalen Deployment |
-| Fremdblock mit `atcb:`-Payload | abgelehnt `P-002`, Höhe und letzter Blockhash unverändert |
-| Fremdblock mit manipulierter Hülle | abgelehnt `E-006`/`E-007`, kein Zustand |
-| Fremdblock mit falschem Blockhash | abgelehnt vor jeder Payload-Prüfung |
-| kein Validator verdrahtet | ausführbare Payload abgelehnt (fail-closed) |
+| Fremdblock mit `atcb:`-Payload | abgelehnt `P-002`, Höhe/Best-Hash unverändert |
+| Fremdblock mit manipulierter Hülle | abgelehnt `E-006`/`E-007`, kein Zustand, keine Registry-Änderung |
+| Fremdblock mit falschem Blockhash | abgelehnt vor der Payload-Prüfung |
+| kein Validator verdrahtet | `NoValidator`, Block nicht angenommen |
 | Datenpayload (Zustandswurzel) | unverändert angenommen |
+| zwei Importe desselben Blocks | zweiter Import ohne Zustandsänderung (idempotent oder abgelehnt, festzulegen) |
 
-## 5 Reihenfolge
+## 7 Offene Entscheidung
 
-1. Trait und Import-Signatur in `atc-node` (ohne Verhaltensänderung an
-   bestehenden Blöcken; Blockhash-Formel unberührt).
-2. Implementierung in `atc-system`, Injektion im Devnet-Start.
-3. Testmatrix, dann `IMPLEMENTED`/`TESTED`; `CI_VERIFIED` erst mit Actions-Lauf
-   auf dem Default-Branch-HEAD.
+Variante C ist am Graphen die einzige, die alle Invarianten erfüllt. Soll der
+Port dennoch nicht in `atc-node` liegen, bleibt nur, den Knoten von
+`atc-system` zu entkoppeln (Validierung in ein eigenes Crate ziehen). Das wäre
+ein eigener Architekturschnitt mit eigenem Nachweis, nicht Teil von P1b.
