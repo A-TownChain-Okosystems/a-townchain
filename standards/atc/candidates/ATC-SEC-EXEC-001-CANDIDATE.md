@@ -4,8 +4,8 @@
 > **Kategorie:** Security / Execution Control
 > **Tier:** 0 (Kandidat für foundational)
 > **Status:** KANDIDAT — **nicht normativ.** Keine Implementierungspflicht, keine Registry-Bindung, keine Ratifizierung.
-> **Version:** 0.1.0-draft
-> **Datum:** 09.11.2026
+> **Version:** 0.1.1-draft
+> **Datum:** 09.11.2026, geaendert 12.11.2026 (ADM-012, Registrierungsregel, ADM-009 berichtigt)
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Entscheidung:** offen (Ratifizierung durch Owner, danach Übernahme nach `atc-standards`)
 > **Grundlage:** `docs/audits/ZERO-TRUST-CODE-EXECUTION-BASELINE-2026-11-09.md` (Ist-Stand, read-only)
@@ -122,6 +122,33 @@ fehlende Registry, unlesbare Revocation-Liste: `BLOCKED`, niemals `AUTHORIZED`.
 Es gibt keinen „Trust on first use"-Pfad und keinen stillen Rückfall auf
 „unsigniert, aber lokal vorhanden".
 
+### 4a. Registrierung (vorgelagerte Stufe, normativ)
+
+Die Registry führt **genau eine** Policy je `code_hash`. Registrierung ist eine
+Compare-and-Insert-Operation und **kein** Teil der Prüfreihenfolge 1–11: sie
+entscheidet, *welche* Policy später geprüft wird.
+
+| Situation | Verhalten |
+|---|---|
+| Noch kein Eintrag für `code_hash` | Policy registrieren |
+| Bytegleiche Policy (vollständige kanonische Bytes) | idempotent akzeptieren, nichts schreiben |
+| Abweichende Policy | `ADM-012` `POLICY_CONFLICT`, nichts schreiben |
+| Bereits registrierte Policy | niemals überschreiben, keine implizite Aktualisierung |
+| Konflikt | keine Zustandsänderung, vorhandene Policy bleibt gültig und entscheidungsfähig |
+
+**R1** Verglichen werden die vollständigen kanonischen Policy-Bytes, nicht
+einzelne Felder.
+**R2** Es gibt keinen Last-Write-Wins-Pfad und keinen stillen Ersatz.
+**R3** Der Konflikt wird reproduzierbar belegt: Code, `code_hash` und beide
+Bytefolgen; ohne Zeitstempel und ohne Zufall.
+**R4** Die Registrierungsreihenfolge muss deterministisch und konsensgeordnet
+sein (bestätigte Deployment-Reihenfolge). Lokale Ankunftsreihenfolge darf nicht
+zu unterschiedlichen Konsensentscheidungen führen; die Registry ist eine reine
+Funktion der bestätigten Registrierungsfolge.
+**R5** `ADM-009` beschreibt ausschließlich „Policy weicht von der registrierten
+Policy ab" (Anfrage ≠ Registry) und wird **nicht** für Registrierungskonflikte
+verwendet. Die beiden Sachverhalte bleiben getrennt.
+
 ---
 
 ## 5. Durchsetzungspunkte (Soll) und Ist-Stand
@@ -207,6 +234,7 @@ Jeder Admission- und jeder Execution-Vorgang erzeugt genau einen Datensatz:
 | 13 | Policy in abweichender Codierung | BLOCKED `ADM-009` |
 | 14 | Isolation nicht verfügbar | BLOCKED `ADM-011` |
 | 15 | Protokolldatensatz für jeden Vorgang vorhanden | vollständig, append-only |
+| 16 | Registrierung einer abweichenden Policy für bekannten `code_hash` | BLOCKED `ADM-012`, Registry unverändert |
 
 **Regression:** bestehende Vertrags-ABI-Hashes, `EXEC-CHAIN`-Vektoren und
 Kernel-Boot-Evidenz bleiben unverändert.
@@ -274,7 +302,8 @@ Die Prüfreihenfolge aus Abschnitt 4 ist als eigenständiges Crate ausführbar:
 Entscheidungslogik prüfbar, **bevor** eine Grenze verdrahtet wird.
 
 **Was das Crate ist:** kanonisches Encoding der `ExecutionPolicy`, Registry,
-Prüfreihenfolge 1–11 mit `ADM-001`–`ADM-011`, fail-closed ohne Rückfall, und ein
+Prüfreihenfolge 1–11 mit `ADM-001`–`ADM-011`, fail-closed ohne Rückfall, die
+vorgelagerte Registrierung mit `ADM-012`, und ein
 append-only Protokoll, das jede Entscheidung mit Code festhält.
 
 **Was es ausdrücklich nicht ist:** keine Kernel-Bindung, kein Loader, keine
