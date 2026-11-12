@@ -142,22 +142,62 @@ fn zustand_wird_ueber_die_kette_weitergegeben() {
 }
 
 #[test]
-fn manipulierte_artefaktbytes_werden_abgelehnt() {
+fn manipulierte_huelle_wird_abgelehnt() {
+    // Die Huelle ist die Wahrheit: ein veraendertes Byte im Strom faellt am
+    // Digest der Huelle auf, bevor Ausfuehrung stattfindet.
     let (mut system, mut deployment) = system_mit_vertrag();
-    let laenge = deployment.artifact_bytes.len();
-    deployment.artifact_bytes[laenge - 40] ^= 0x01; // im Operationsstrom
+    let laenge = deployment.container_bytes.len();
+    deployment.container_bytes[laenge - 40] ^= 0x01; // im Operationsstrom
 
     let mut state = ContractState::new();
     let error = system
         .execute(&deployment, &mut state, DEFAULT_GAS, NOW_US, 1)
-        .expect_err("veraenderte Bytes muessen abgelehnt werden");
+        .expect_err("veraenderte Huelle muss abgelehnt werden");
 
-    assert_eq!(
-        error.stage(),
-        "artifact",
-        "der Containerhash faengt es vor der Freigabe: {error}"
+    assert_eq!(error.stage(), "container", "Huelle vor Freigabe: {error}");
+    assert!(
+        matches!(error, SystemError::Container(ref e) if e.code() == "E-006"),
+        "der Digest der Huelle faengt es: {error}"
     );
     assert_eq!(state, ContractState::new());
+    assert_eq!(system.chain().height(), 0);
+}
+
+#[test]
+fn manipulierte_innere_bytes_werden_abgelehnt() {
+    // Die inneren Bytes sind eine Ableitung der Huelle. Weichen sie ab, gibt es
+    // zwei Aussagen ueber dasselbe Artefakt: das System lehnt ab, statt eine
+    // davon stillschweigend zu bevorzugen.
+    let (mut system, mut deployment) = system_mit_vertrag();
+    let laenge = deployment.artifact_bytes.len();
+    deployment.artifact_bytes[laenge - 40] ^= 0x01;
+
+    let mut state = ContractState::new();
+    let error = system
+        .execute(&deployment, &mut state, DEFAULT_GAS, NOW_US, 1)
+        .expect_err("abweichende innere Bytes muessen abgelehnt werden");
+
+    assert_eq!(error.stage(), "admission", "{error}");
+    assert_eq!(state, ContractState::new());
+    assert_eq!(system.chain().height(), 0);
+}
+
+#[test]
+fn deployment_ohne_huelle_ist_nicht_ausfuehrbar() {
+    // Kein Pfad an der Huelle vorbei: ein Deployment ohne Huelle wird nicht
+    // ausgefuehrt, auch wenn die inneren Bytes gueltig waeren.
+    let (mut system, mut deployment) = system_mit_vertrag();
+    deployment.container_bytes.clear();
+
+    let mut state = ContractState::new();
+    let error = system
+        .execute(&deployment, &mut state, DEFAULT_GAS, NOW_US, 1)
+        .expect_err("ohne Huelle darf nicht ausgefuehrt werden");
+    assert_eq!(error.stage(), "container", "{error}");
+    assert!(
+        matches!(error, SystemError::Container(ref e) if e.code() == "E-001"),
+        "leere Huelle ergibt TOO_SHORT: {error}"
+    );
     assert_eq!(system.chain().height(), 0);
 }
 
