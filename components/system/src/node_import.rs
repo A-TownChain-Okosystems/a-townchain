@@ -58,3 +58,49 @@ impl<'a> ContainerValidator for SystemPayloadValidator<'a> {
             .map_err(|e| rejection(&e))
     }
 }
+
+/// Devnet-Knoten: Kompositionswurzel, die System und Kette verbindet.
+///
+/// Hier wird der Validator **einmal beim Start** gesetzt. Es gibt keine Methode,
+/// die einen Block ohne ihn annimmt, und keinen permissiven Entwicklungsmodus:
+/// `import_block` nimmt keinen Validator-Parameter, er ist Teil des Knotens.
+pub struct DevnetNode {
+    system: System,
+    chain: atc_node::chain::Chain,
+}
+
+impl DevnetNode {
+    /// Startet den Knoten. Schlaegt die Systeminitialisierung fehl, gibt es
+    /// keinen Knoten (kein Start mit halber Sicherheitskette).
+    pub fn start() -> Result<Self, SystemError> {
+        let system = System::devnet()?;
+        let chain = atc_node::chain::Chain::from_genesis(system.genesis());
+        Ok(DevnetNode { system, chain })
+    }
+
+    pub fn system(&self) -> &System {
+        &self.system
+    }
+
+    pub fn chain(&self) -> &atc_node::chain::Chain {
+        &self.chain
+    }
+
+    /// Nimmt einen fremden Block an — immer ueber den Validator dieses Knotens.
+    pub fn import_block(
+        &mut self,
+        block: atc_node::chain::Block,
+    ) -> Result<(), atc_node::import::ImportError> {
+        let validator = SystemPayloadValidator::new(&self.system);
+        self.chain.import_block(block, Some(&validator))
+    }
+
+    /// Uebernimmt eine Peer-Kette — ebenfalls nur nach Payload-Pruefung.
+    pub fn adopt_chain(
+        &mut self,
+        blocks: Vec<atc_node::chain::Block>,
+    ) -> Result<(), atc_node::import::ImportError> {
+        let validator = SystemPayloadValidator::new(&self.system);
+        self.chain.adopt_verified(blocks, Some(&validator))
+    }
+}
