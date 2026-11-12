@@ -23,6 +23,10 @@ def data() -> dict:
 STATUSE = {"DECIDED", "SPECIFIED", "IMPLEMENTED", "OPEN"}
 
 
+def d1(data: dict) -> dict:
+    return next(d for d in data["decisions"] if d["id"] == "D1")
+
+
 def sub_gate(entry: dict, sid: str) -> dict:
     for dec in entry["decisions"]:
         for sub in dec.get("sub_gates") or []:
@@ -81,19 +85,27 @@ def test_teilauflagen_werden_gerendert(data: dict) -> None:
         assert f"| {sid} |" in block
 
 
+def test_d0_ist_eigene_entscheidung(data: dict) -> None:
+    """D-0 (Formate) steht als eigene Entscheidung im Register und ist entschieden."""
+    d0 = next(d for d in data["decisions"] if d["id"] == "D-0")
+    assert d0["decision_status"] == "DECIDED"
+    assert d0["implementation_status"] == "OPEN", "ATCE/0x02 bleibt OPEN bis Integration"
+    assert any("ATCE" in c for c in d0["conditions"])
+
+
 def test_doppelte_teilauflagen_id_wird_erkannt(data: dict) -> None:
     broken = copy.deepcopy(data)
-    broken["decisions"][0]["sub_gates"].append(copy.deepcopy(broken["decisions"][0]["sub_gates"][0]))
+    d1(broken)["sub_gates"].append(copy.deepcopy(d1(broken)["sub_gates"][0]))
     assert any("doppelte ID in sub_gates" in e for e in dr.validate(broken))
 
 
 def test_ungueltiger_teilauflagen_status_wird_erkannt(data: dict) -> None:
     broken = copy.deepcopy(data)
-    broken["decisions"][0]["sub_gates"][0]["status"] = "DONE"
+    d1(broken)["sub_gates"][0]["status"] = "DONE"
     assert any("status 'DONE' ungueltig" in e for e in dr.validate(broken))
 
 
 def test_fehlende_zustaendigkeit_wird_erkannt(data: dict) -> None:
     broken = copy.deepcopy(data)
-    del broken["decisions"][0]["sub_gates"][0]["owner"]
+    del d1(broken)["sub_gates"][0]["owner"]
     assert any("Feld 'owner' fehlt" in e for e in dr.validate(broken))
