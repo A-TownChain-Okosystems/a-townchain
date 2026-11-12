@@ -22,9 +22,15 @@ pending_globally:
   - "Endgueltiges Transaktionsgaslimit"
   - "Endgueltiges Blockgaslimit"
   - "Implementierungs- und CI-Gates"
+  - "Konflikt Aufruftiefe: Owner-Entscheidung 64 vom 09.11.2026 in ATC-BC-002 (Kandidat, nicht ratifiziert) gegen SCE-Vorschlag 8 (R-901)"
+  - "Artefaktidentitaet: Container-Magic ATCB gegen SCE-D1, zwei Hashumfaenge ohne getrennte Namen (R-903)"
+  - "Fehlende CALL-Instruktion und Identitaetstyp auf dem u64-Stapel (R-902, R-907)"
+  - "Zirkularitaet P1a/P2: Grenzwerttests brauchen den Aufrufmechanismus (R-905)"
+  - "Autoritaet der beiden Instruktionssaetze (R-906)"
 
 decisions:
   - id: D1
+    ratification: "nicht ratifiziert (Kandidat)"
     specified_in: "Kandidat §5.1 (nicht ratifiziert)"
     title: "Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert"
     decision_status: DECIDED
@@ -44,6 +50,7 @@ decisions:
     open_items: []
 
   - id: D2
+    ratification: "nicht ratifiziert (Kandidat)"
     specified_in: "Kandidat §5.3, §5.10 (nicht ratifiziert)"
     title: "Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer"
     decision_status: DECIDED
@@ -64,6 +71,7 @@ decisions:
       - "Adresseingabe bytegenau: Domain 15 Byte, Gesamtlaenge 75 Byte, Laengenpruefung Pflicht (T-41)"
 
   - id: D3
+    ratification: "nicht ratifiziert (Kandidat)"
     specified_in: "Kandidat §5.4 (nicht ratifiziert)"
     title: "Storage: Frame-lokal und persistente S1-Slots"
     decision_status: DECIDED
@@ -80,6 +88,7 @@ decisions:
       - "Map-Schluesselcodierung und Storage-Proofs (eigene Normung)"
 
   - id: D4
+    ratification: "nicht ratifiziert (Kandidat)"
     specified_in: "Kandidat §5.6, §5.10 (nicht ratifiziert)"
     title: "Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung"
     decision_status: DECIDED
@@ -104,6 +113,7 @@ decisions:
       - "Transaktionsgaslimit, Blockgaslimit, Dynamik nach Auslastung"
 
   - id: D5
+    ratification: "nicht ratifiziert (Kandidat)"
     specified_in: "Kandidat §5.7, §5.10 (nicht ratifiziert)"
     title: "Blockausfuehrung: deterministische Validator-Ausfuehrung"
     decision_status: DECIDED
@@ -122,6 +132,7 @@ decisions:
     open_items: []
 
   - id: D6
+    ratification: "nicht ratifiziert (Kandidat)"
     specified_in: "Kandidat §5.5, §5.10 (nicht ratifiziert)"
     title: "Identitaet: 32-Byte-Identitaetswort"
     decision_status: DECIDED
@@ -143,6 +154,7 @@ decisions:
       - "interne Aufrufe: erst nach BC-002 pruefbar"
 
   - id: D7
+    ratification: "nicht ratifiziert (Kandidat)"
     specified_in: "Kandidat §5.2 (nicht ratifiziert)"
     title: "Frontend: ATCLang kanonisch, .ops nur Testwerkzeug"
     decision_status: DECIDED
