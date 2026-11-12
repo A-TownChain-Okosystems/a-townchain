@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-12 10:33 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `2c345975` (letzter Commit 2026-11-12)
+> **Erzeugt:** 2026-11-12 10:37 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `ae539301` (letzter Commit 2026-11-12)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,7 +13,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 11387 |
+| **Total Dateien** | 11388 |
 | **Bereiche** | 15 |
 | **Verzeichnisse** | 2015 |
 
@@ -25,7 +25,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `.atc` | 1514 |
 | `.yaml` | 1474 |
 | `.json` | 1398 |
-| `.py` | 809 |
+| `.py` | 810 |
 | `.rs` | 552 |
 | `.tsx` | 377 |
 | `(keine)` | 363 |
@@ -71,7 +71,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `modules` | 208 | Module ohne eigene Produktschicht |
 | `tooling` | 164 | Werkzeuge und Engineering-Gates |
 | `kernel` | 157 | Kernel- und OS-Ebenen |
-| `tools` | 23 | Einstiegspunkte |
+| `tools` | 24 | Einstiegspunkte |
 | `(root)` | 21 | Wurzeldateien |
 | `.github` | 16 | CI- und Repository-Konfiguration |
 | `"docs` | 6 | — |
