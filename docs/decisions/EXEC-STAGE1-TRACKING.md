@@ -25,19 +25,26 @@ aktualisiert, wenn eine der drei Voraussetzungen eintritt:
 
 | Status | Anzahl |
 |---|---|
-| `TESTED` | 1 |
+| `TESTED` | 5 |
 | `FAILED` | 0 |
 | `BLOCKED` | 1 |
 | `EMPTY` | 0 |
-| `OPEN` | 53 |
+| `OPEN` | 49 |
 | **Summe** | **55** |
 
-Ein Test ist `TESTED`: S1-T-18, und zwar als **Statustest**, nicht als
-Konformitaetsnachweis. Grund ist die in Abschnitt 1 festgelegte Bedingung "ein reiner
-Dekoder entsteht, dann kann L1 von `EMPTY` nach `OPEN` wechseln": der
-Referenzdekoder existiert seit dem 12.11.2026. P1a bleibt offen, P2 bleibt an B-1
-gesperrt, eine Produktionsfreigabe ist nicht erteilt. Der Status `OPEN` heisst: die
-Entscheidung liegt vor, die Umsetzung nicht.
+Fuenf Tests sind `TESTED`. S1-T-18 als **Statustest**, nicht als
+Konformitaetsnachweis: die in Abschnitt 1 festgelegte Bedingung "ein reiner Dekoder
+entsteht, dann kann L1 von `EMPTY` nach `OPEN` wechseln" ist erfuellt, der
+Referenzdekoder existiert seit dem 12.11.2026. S1-T-49 bis S1-T-52 sind seit dem
+12.11.2026 durch Code-Tests am VM-Parser gedeckt, freigegeben als Paket D1-B/D1-C
+([Nachweis](EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md), Commit `6a164080`,
+Blobs `75e881e4` und `c9f1da42`, lokale Suite 684 Tests gruen). Bei diesen vier
+ist der **Korpusanteil offen**: die VM verarbeitet `ATCB`/`0x01`, der Korpus
+beschreibt `ATCE`/`0x02`; der Differentialtest S1-T-43/S1-T-54 bleibt deshalb
+unveraendert offen (offener Punkt D-0 im Nachweis). P1a bleibt offen, P2 bleibt an
+B-1 gesperrt, eine Produktionsfreigabe ist nicht erteilt und `CI_VERIFIED` ist
+nirgends vergeben. Der Status `OPEN` heisst: die Entscheidung liegt vor, die
+Umsetzung nicht.
 
 Siebzehn Tests (S1-T-39 bis S1-T-55) sind am 12.11.2026 mit §19, §19.2a und §19.7 des
 Kandidaten hinzugekommen: Parser-Fehlersemantik, Stromgrenze, Tail-Integritaet,
@@ -96,10 +103,10 @@ Konformitaetsbefund zu erzeugen.
 | S1-T-46 | Unbekannte Versionen `0x03` und `0xFF` bei Magic `ATCE` ergeben `E-003`, ohne spekulatives Parsen | S1-1 | `OPEN` | Code-Test |
 | S1-T-47 | Opcodes `0x11` bis `0x13` bei Generation `0x01` ergeben `E-011`; Generation `0x03` ergibt `E-009` | S1-1 | `OPEN` | Code-Test |
 | S1-T-48 | Korpusauswahl: nur vollstaendige Container sind Parser-Eingaben; GV-5 erscheint ausschliesslich als C-3-Ablehnungsfall (`E-007`, Offset `0`) | S1-1 | `OPEN` | Reviewtest |
-| S1-T-49 | `E-005` gilt genau an der Instruktionsgrenze: Strom endet vor `c`, `p = tail_start`; ein um ein Byte gekuerzter Strom an derselben Stelle ergibt `E-002` | S1-1 | `OPEN` | Code-Test + Korpus |
-| S1-T-50 | `E-008` gilt genau nach `c` Instruktionen, Offset ist das erste Restbyte; eine zu kleine Anzahl ergibt an derselben Grenze `E-008`, nicht `E-005` | S1-1 | `OPEN` | Code-Test + Korpus |
-| S1-T-51 | `E-004` gilt nur bei `c = 0` und leerem Strom; `c = 0` mit Bytes ergibt `E-008` | S1-1 | `OPEN` | Code-Test |
-| S1-T-52 | Struktur vor Integritaet: beschaedigter Strom mit veraltetem Tail ergibt den Strukturcode, nicht `E-006` | S1-1 | `OPEN` | Code-Test + Korpus |
+| S1-T-49 | `E-005` gilt genau an der Instruktionsgrenze: Strom endet vor `c`, `p = tail_start`; ein um ein Byte gekuerzter Strom an derselben Stelle ergibt `E-002` | S1-1 | `TESTED` | Code-Test (VM, `ATCB`-Huelle; Korpusanteil offen, D-0) |
+| S1-T-50 | `E-008` gilt genau nach `c` Instruktionen, Offset ist das erste Restbyte; eine zu kleine Anzahl ergibt an derselben Grenze `E-008`, nicht `E-005` | S1-1 | `TESTED` | Code-Test (VM, `ATCB`-Huelle; Korpusanteil offen, D-0) |
+| S1-T-51 | `E-004` gilt nur bei `c = 0` und leerem Strom; `c = 0` mit Bytes ergibt `E-008` | S1-1 | `TESTED` | Code-Test (VM, `ATCB`-Huelle) |
+| S1-T-52 | Struktur vor Integritaet: beschaedigter Strom mit veraltetem Tail ergibt den Strukturcode, nicht `E-006` | S1-1 | `TESTED` | Code-Test (VM, `ATCB`-Huelle; Korpusanteil offen, D-0) |
 | S1-T-53 | Terminierung und Groesstwert: `c = 0xFFFFFFFF` ergibt `E-005` in einem Schritt, `E-012` nur bei konfiguriertem Wert | S1-1 | `OPEN` | Code-Test |
 | S1-T-54 | Korpus C-1 bis C-8 mit mindestens 30 Eingaben, Sollwerte aus der Konstruktion, `tools/check_parser_corpus.py` ohne Abweichung; ein Dekoder allein begruendet keine Konformitaet | S1-1 | `OPEN` | Datei + Gate |
 | S1-T-55 | Container-Bytegrenze wirkt vor dem Hashing: eine Eingabe oberhalb des Werts wird abgelehnt, ohne dass Hash- oder Dekodierarbeit anfaellt; derselbe Wert auf allen Validatoren; `E-012` bleibt davon getrennt | S1-1 | `OPEN` | Code-Test + Grenzwerttest |
