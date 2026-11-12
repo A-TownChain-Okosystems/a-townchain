@@ -1,0 +1,20 @@
+{
+  "spec": "ATC-SEC-EXEC-001",
+  "spec_version": "0.1.1-draft",
+  "generated": "2026-11-12",
+  "note": "SSOT der Admission-Fehlercodes. Die Pruefreihenfolge (stage=evaluation, order 1..11) und die vorgelagerte Registrierung (stage=registration) sind getrennte Sachverhalte.",
+  "codes": [
+    {"code": "ADM-010", "name": "AUTHORITY_UNAVAILABLE", "stage": "evaluation", "order": 1, "status": "active", "rust_variant": "AuthorityUnavailable"},
+    {"code": "ADM-009", "name": "POLICY_MISMATCH", "stage": "evaluation", "order": 2, "status": "active", "rust_variant": "NonCanonicalPolicy", "note": "Anfrage weicht von der registrierten Policy ab; nicht fuer Registrierungskonflikte"},
+    {"code": "ADM-001", "name": "UNKNOWN_CODE", "stage": "evaluation", "order": 3, "status": "active", "rust_variant": "UnknownCode"},
+    {"code": "ADM-002", "name": "INTEGRITY_MISMATCH", "stage": "evaluation", "order": 4, "status": "active", "rust_variant": "IntegrityMismatch"},
+    {"code": "ADM-003", "name": "SIGNER_NOT_AUTHORIZED", "stage": "evaluation", "order": 5, "status": "active", "rust_variant": "SignerNotAuthorized"},
+    {"code": "ADM-004", "name": "COMPONENT_NOT_ALLOWED", "stage": "evaluation", "order": 6, "status": "active", "rust_variant": "ComponentNotAllowed"},
+    {"code": "ADM-005", "name": "CAPABILITY_NOT_GRANTED", "stage": "evaluation", "order": 7, "status": "active", "rust_variant": "CapabilityNotGranted"},
+    {"code": "ADM-006", "name": "EXPIRED_OR_ROLLED_BACK", "stage": "evaluation", "order": 8, "status": "active", "rust_variant": "ExpiredOrRolledBack"},
+    {"code": "ADM-007", "name": "REVOKED", "stage": "evaluation", "order": 9, "status": "active", "rust_variant": "Revoked"},
+    {"code": "ADM-008", "name": "PROVENANCE_MISSING", "stage": "evaluation", "order": 10, "status": "active", "rust_variant": "ProvenanceMissing"},
+    {"code": "ADM-011", "name": "ISOLATION_UNAVAILABLE", "stage": "evaluation", "order": 11, "status": "active", "rust_variant": "IsolationUnavailable"},
+    {"code": "ADM-012", "name": "POLICY_CONFLICT", "stage": "registration", "order": 0, "status": "proposed", "rust_variant": null, "note": "Registrierung einer abweichenden Policy fuer bekannten code_hash. Gesperrt bis zur normativen Registrierung des Standards (Owner-Entscheidung 12.11.2026)"}
+  ]
+}
