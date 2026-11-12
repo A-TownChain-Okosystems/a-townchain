@@ -123,6 +123,13 @@ Compiler, der nichts tut und Erfolg meldet, ist von einem Compiler, der funktion
 unterscheiden. Dieselbe Signallage entsteht auf der Kette: Deployment erfolgreich, Ausführung
 erfolgreich, Ergebnis 0. Es gibt keinen Punkt im Pfad, der widerspricht.
 
+**Behoben am 12.11.2026 durch E1 (fail-closed).** `lower_program` lehnt jeden `Stmt::Contract`
+jetzt vor dem Aufbau des Kompilats ab, mit Vertragsnamen und Bestandteilen im Fehler. `atc run`
+endet mit Exit 1 ohne stdout, `System::deploy` mit `SystemError::Compile(CompileError::Lower)`,
+Registry, Audit und Kette bleiben unveraendert. 11 neue Tests, Workspace 759 gruen. Nachweis und
+Abnahmekriterien: `docs/decisions/EXEC-E1-CONTRACT-LOWERING-FAILCLOSED-2026-11-12.md`. Die Befunde
+F2 bis F9 bleiben offen; E1 entfernt die falsche Zusage, nicht die Luecke.
+
 ### F2 (kritisch) — Zwei Opcode-Tabellen unter einem Magic, und die falsche ist eingefroren
 
 | Byte | Compiler, `ATCB` (`src/bytecode.rs:172-260`) | ATC-VM (`components/vm/src/artifact.rs:203-221`) |
@@ -351,4 +358,5 @@ zugehörigen Aussagen und verlangt eine neue Messung).
 | CI_VERIFIED | **nicht vergeben** (kein CI-Lauf für `atc-core`, siehe F9) |
 | E2E_VERIFIED | **nicht vergeben** |
 | Offene Entscheidungen | E2 (Formatwahrheit), E3 (Aufrufe/Wortbreite), E4 (P2 im Standard) |
-| Nächster Schritt | E1 umsetzen (fail-closed für Vertragsrümpfe) |
+| E1 (F1) | **IMPLEMENTED + TESTED** lokal (11 Tests, Workspace 759 grün); `CI_VERIFIED` offen |
+| Nächster Schritt | E2 (Opcode-SSOT entscheiden), danach E3 (VM-Decoder) und E4 (E2E Deploy/Execute/Call) |
