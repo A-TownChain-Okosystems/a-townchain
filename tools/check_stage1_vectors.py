@@ -67,6 +67,11 @@ def main() -> int:
         print("FEHLER Stromdefinition P1/P2 nicht gefunden")
         return 1
     p2 = bytes.fromhex(p2m.group(1))
+    vm = re.search(r"\*\*Version:\*\*\s*(\S+)", text)
+    if not vm:
+        print("FEHLER Version im Dokument nicht gefunden")
+        return 1
+    version = vm.group(1)
 
     digests: dict[str, str] = {}
     segments_by_id: dict[str, list[bytes]] = {}
@@ -132,7 +137,7 @@ def main() -> int:
             "quelle": str(DOC.relative_to(ROOT)),
             "abschnitt": "18.2",
             "standard": "ATC-SMART-CONTRACT-EXECUTION-001",
-            "fassung": "1.6.0-draft",
+            "fassung": version,
             "hinweis": "Erzeugt aus dem Dokument; nicht von Hand aendern.",
             "stroeme": {"P1": p1, "P2": p2m.group(1)},
             "goldvektoren": [
