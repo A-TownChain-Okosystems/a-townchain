@@ -5,7 +5,7 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.5.1-draft
+> **Version:** 1.6.0-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
@@ -26,6 +26,7 @@
 | 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
 | 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
 | 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
+| 1.6.0-draft | 2026-11-12 | Spezifikation Stufe 1 byte-genau: drei Domaenenlabels mit abschliessendem Nullbyte (Laengen nachgezaehlt 16/14/13), Eingaben fuer `artifact_hash`, `code_hash` und `state_root` exakt, neun Goldvektoren und sechs Negativvektoren (mit reinem SHA-256-Werkzeug erzeugt), Containerfassung `0x02` mit Namensraumtrennung fuer das Magic, zwoelf Fehlercodes, getypte Policy-Schluesselraeume mit achtstufiger Pruefsequenz, Erstattungswortlaut samt Fall der kuenftigen Kontobelastung; REQ-SCE-061 bis 077, Testzuordnung in 18.6. Kein Test dadurch bestanden. |
 | 1.5.1-draft | 2026-11-12 | Nur Hinweise, keine Anforderung geaendert: Aufruftiefe 8 als offener Konflikt gegen die Owner-Entscheidung 64 in ATC-BC-002 markiert (R-901); Grenzwerte als heute nicht pruefbar gekennzeichnet, weil kein Aufruf existiert (R-902); Verweise auf Abhaengigkeitsinventur und Entscheidungsvorlage. |
 | 1.5.0-draft | 2026-11-12 | REQ-SCE-060 praezisiert: lokaler Knotenfehler und Konsensresultat strikt getrennt (kein Beleg, kein Blockstatus, keine Belastung, deterministische Wiederaufnahme); Reproduzierbarkeit entscheidet ueber die Einordnung. REQ-SCE-054 fuehrt zwei getrennte Code-Raeume (Beleg-Status `0x00` bis `0x03`, Knotenfehler `ATC-NODE-INFRA-001`). Testmatrix T-42 bis T-44. |
 | 1.4.0-draft | 2026-11-12 | Drei Spezifikationsluecken geschlossen: Domainlaenge auf 15 Byte und Eingabe auf 75 Byte korrigiert (vorher 16/76, war falsch); IdentityValue mit einem kanonischen 32-Byte-Layout (Kennzeichen 0..3, reservierte Nullbytes 4..11, Adresse 12..31) und fail-closed-Regeln, REQ-SCE-057 bis 059; vierte Fehlerklasse fuer interne Infrastrukturfehler ohne Nutzerbelastung, REQ-SCE-060; Erstattungsformeln als ausdruecklicher Vorschlag. Testmatrix T-31 bis T-41. |
@@ -564,7 +565,7 @@ keine auf **IMPLEMENTED**.
 
 | ID | Entscheidung (Titel) | Owner-Entscheidung | Ratifikation | Spezifikation | spezifiziert in | Umsetzung | Gate |
 |---|---|---|---|---|---|---|---|
-| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.1 (nicht ratifiziert) | OPEN | SCE-G1 |
+| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | SPECIFIED | Kandidat §5.1 und §18.1-18.3 (nicht ratifiziert) | OPEN | SCE-G1 |
 | D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.3, §5.10 (nicht ratifiziert) | OPEN | SCE-G3 |
 | D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.4 (nicht ratifiziert) | OPEN | SCE-G4 |
 | D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.6, §5.10 (nicht ratifiziert) | OPEN | SCE-G6 |
@@ -797,11 +798,267 @@ aendert keine Anforderung.
 17. `caller`-Semantik bei Vertrag-zu-Vertrag mit ATC-BC-002 abstimmen (REQ-SCE-052).
 18. Eigenen Statuscode fuer Infrastrukturfehler vergeben (REQ-SCE-060); er darf nicht
     mit Revert oder Erschoepfung kollidieren.
+20. Containerfassung `0x02` und die Namensraumtrennung des Magic bestaetigen
+    (REQ-SCE-067). Die Spezifikation haelt `ATCB` als Byte-Konstante fest und
+    behandelt die Kollision mit `ATC-BC-001` als Namensgleichheit. Wird das Magic
+    anders entschieden, aendern sich GV-1, GV-3, GV-5, GV-7 und NV-2, sonst nichts.
 19. Testvektoren fuer `IdentityValue` liegen als Datei vor
     (`standards/atc/conformance/identity-value-vectors.json`). Offen bleibt die
     Umsetzung gegen diese Datei: eine Implementierung fuer Wallet, VM und Knoten
     (REQ-SCE-059).
 
+## 18. Spezifikation Stufe 1 (byte-genau)
+
+Dieser Abschnitt setzt die am 12.11.2026 ratifizierten Entscheidungen S1-1 (Option A
+mit Domaenenvariante 1b), S1-2 (Option C), S1-3 (Option A) und S1-4 (Option B) in
+normative Regeln um. Er ist **Spezifikation, keine Freigabe**: Implementierung und
+Release bleiben gesperrt, P1a bleibt offen, P2 bleibt gesperrt.
+
+Alle Werte in diesem Abschnitt sind nachrechenbar: die Sollwerte in 18.2 wurden mit
+einem reinen SHA-256-Werkzeug aus den hier definierten Bytes erzeugt, **nicht** mit
+Projektcode. Jede Regel nennt ihre Tests aus `docs/decisions/EXEC-STAGE1-TRACKING.md`.
+
+### 18.1 Hash-Domaenen (REQ-SCE-061 bis 064)
+
+**Drei Domaenenlabels**, ASCII, jeweils mit abschliessendem `0x00`:
+
+| Label | Bytes | Laenge | Zweck |
+|---|---|---|---|
+| `ATC-ARTIFACT-V1\0` | `4154432d41525449464143542d5631 00` | 16 | Huelle (Container) |
+| `ATC-STREAM-V1\0` | `4154432d53545245414d2d5631 00` | 14 | Instruktionsstrom |
+| `ATC-STATE-V2\0` | `4154432d53544154452d5632 00` | 13 | Zustandswurzel |
+
+**REQ-SCE-061 (Domaenenlabels).** Die Labels sind fest und byte-exakt. Das
+abschliessende Nullbyte ist Pflicht, damit kein Label Praefix eines laengeren werden
+kann: ohne Nullbyte waere `ATC-STREAM-V1` Praefix von `ATC-STREAM-V10`.
+
+**REQ-SCE-062 (Eingaben).** Es gilt genau:
+
+```
+artifact_hash = SHA-256( "ATC-ARTIFACT-V1\0" || container[0 .. n-32] )
+code_hash     = SHA-256( "ATC-STREAM-V1\0"   || ops )
+state_root    = SHA-256( "ATC-STATE-V2\0"    || code_hash || count(u32 LE) || words(u64 LE)*count )
+```
+
+Dabei ist `container` der vollstaendige Container aus 18.3 und `container[0 .. n-32]`
+alles ausser dem angehaengten 32-Byte-Hash. `ops` ist die lueckenlose Folge der
+kodierten Instruktionen ohne jeden Kopf. Die Anzahl der Instruktionen ist
+**absichtlich nicht** Teil der Strom-Eingabe: sie ist aus der Opcode-Tabelle
+eindeutig ableitbar, und ihre Aufnahme wuerde Metadaten in die Code-Identitaet
+ziehen. Damit gilt: derselbe Strom in zwei verschiedenen Huellen ergibt denselben
+`code_hash` und verschiedene `artifact_hash`.
+
+**REQ-SCE-063 (Kodierung).** ASCII ohne BOM. Alle Ganzzahlen Little Endian mit fester
+Breite (u32 = 4 Byte, u64 = 8 Byte). Keine Host-Typen, keine Zeiger, keine
+Debug-Ausgabe, keine JSON- oder Base64-Darstellung als Hash-Eingabe. Kein Hash ueber
+eine Eingabe ohne Domaene.
+
+**REQ-SCE-064 (Fehlerreaktion).** Ein leerer Strom ist kein gueltiges Artefakt:
+`ATC-SCE-E-004 EMPTY_STREAM`, kein Digest. Ein abgeschnittener Operand ergibt
+`ATC-SCE-E-002 TRUNCATED_OPERAND`, ebenfalls ohne Digest. In beiden Faellen gibt es
+keinen Hash, keine Registrierung und keine Ausfuehrung.
+
+Tests: S1-T-19, S1-T-20, S1-T-21, S1-T-28, S1-T-33.
+
+### 18.2 Goldvektoren (REQ-SCE-065)
+
+**REQ-SCE-065.** Diese Vektoren sind verbindlich. Eine Implementierung, die einen
+Sollwert nicht reproduziert, ist nicht konform.
+
+**Programm P1** (`Push(1)`, `Halt`): Strom `01010000000000000010` (10 Byte).
+**Programm P2** (`Push(7)`, `Push(42)`, `Add`, `Store(0)`, `Halt`):
+Strom `010700000000000000012a00000000000000020b10` (21 Byte).
+
+| ID | Gegenstand | Eingabe (hex) | Sollwert |
+|---|---|---|---|
+| GV-1 | `artifact_hash`, P1, Generation 1, Fassung 2 | `4154432d41525449464143542d563100` + `4154434202010200000001010000000000000010` | `03ccdae71c4619975c6869491342bef27483f18462504eafc9bc10b24bc13137` |
+| GV-2 | `code_hash`, P1 | `4154432d53545245414d2d563100` + `01010000000000000010` | `d7adc88fc2ceb21136df3397ec7d6bfff57a4f439088798f34ab3c8c3c546cdb` |
+| GV-3 | `artifact_hash`, P1, Generation 2 | `4154432d41525449464143542d563100` + `4154434202020200000001010000000000000010` | `e64cfc2bfb2ed0f7143670cafa4a5294b7247179aabcefe359130f11a7977481` |
+| GV-4 | `code_hash`, P1, Generation 2 | wie GV-2 | `d7adc88fc2ceb21136df3397ec7d6bfff57a4f439088798f34ab3c8c3c546cdb` (**gleich GV-2**) |
+| GV-5 | alte Fassung, ohne Praefix, Containerformat `0x01` | `4154434201010200000001010000000000000010` | `3f5bb373c995e6f92ff81722d28f7e5329e4ba670dad5bf962729670edd7484e` (**ueberholt**) |
+| GV-6 | `code_hash`, P2 | `4154432d53545245414d2d563100` + `010700000000000000012a00000000000000020b10` | `c829629e93d97b464b58a1a5004c7a17700f482a08fb34caae59a83ef39e30d8` |
+| GV-7 | `artifact_hash`, P2, Generation 1, Fassung 2 | `4154432d41525449464143542d563100` + `41544342020105000000` + P2-Strom | `c74a70ad245884eaccc591f0dfae31154a62f212a064bbb5683b9d7c31ab469a` |
+| GV-8 | `state_root` V2, `code_hash` = GV-2, Woerter `[7, 42]` | `4154432d53544154452d563200` + GV-2 + `02000000` + `0700000000000000` + `2a00000000000000` | `c3cc531a91ce794025e1f584cc4d6e33dc1dea36accddd8a72cc6e20b26cc184` |
+| GV-9 | `state_root` V1 (alte Semantik), `artifact_hash` = GV-1 | `4154432d53544154452d563100` + GV-1 + `02000000` + `0700000000000000` + `2a00000000000000` | `8235d7bd9e9f2fb47d5bbebc62064c99cc5a9694486e05fc3d8b13d5954163a2` (**ueberholt**) |
+
+**Negativvektoren.** Sie muessen ungleich sein, sonst ist die Trennung unwirksam:
+
+| ID | Pruefung | Sollwert |
+|---|---|---|
+| NV-1 | Strom mit Artefakt-Domaene gehasht | `4f67416a21680a0b2029b625904cf88850f43e00a46a0679069059bf57887810`, darf weder GV-1 noch GV-2 sein |
+| NV-2 | Container mit Strom-Domaene gehasht | `015d3bbd6858472c56e5c1a4899ebfc5eced615ae77cf493c86b73349b5db97a`, darf weder GV-1 noch GV-2 sein |
+| NV-3 | Label ohne Nullbyte (`ATC-STREAM-V1`) statt mit | Digest weicht von GV-2 ab; eine Implementierung ohne Nullbyte ist nicht konform |
+| NV-4 | leerer Strom | `ATC-SCE-E-004`, kein Digest |
+| NV-5 | `01` ohne 8-Byte-Operand | `ATC-SCE-E-002`, kein Digest |
+| NV-6 | Fassung `0x01` als `0x02` gelesen | `ATC-SCE-E-003`, kein Digest |
+
+**Reproduktion ohne Projektcode**, damit die Werte ohne Vertrauen pruefbar sind. Die
+Vektoren liegen zusaetzlich maschinenlesbar in
+`standards/atc/conformance/stage1-vectors.json`; diese Datei wird aus diesem
+Abschnitt erzeugt und nie von Hand gepflegt:
+
+```
+python3 tools/check_stage1_vectors.py          # prueft Dokument gegen SHA-256
+python3 tools/check_stage1_vectors.py --write  # erzeugt die Vektordatei neu
+```
+
+Eine Zeile genuegt fuer die Gegenprobe:
+
+```
+python3 -c "import hashlib;print(hashlib.sha256(bytes.fromhex('4154432d53545245414d2d56310001010000000000000010')).hexdigest())"
+# d7adc88fc2ceb21136df3397ec7d6bfff57a4f439088798f34ab3c8c3c546cdb   (= GV-2)
+```
+
+Tests: S1-T-04, S1-T-19, S1-T-20, S1-T-21, S1-T-22, S1-T-25, S1-T-34.
+
+### 18.3 Containerfassung (REQ-SCE-066 bis 069)
+
+**REQ-SCE-066 (Fassung).** Das Containerformat steigt von `0x01` auf `0x02`. Das ist
+Bestandteil der Entscheidung S1-1/1b und keine spaetere Einzeländerung. Aufbau
+unveraendert in den Feldern, geaendert in der Kennung:
+
+| Offset | Laenge | Inhalt |
+|---|---|---|
+| 0 | 4 | Magic `ATCB` (`41544342`) |
+| 4 | 1 | Containerformat `0x02` |
+| 5 | 1 | Generation `0x01` oder `0x02` |
+| 6 | 4 | Anzahl Instruktionen, u32 LE |
+| 10 | n | Instruktionsstrom |
+| 10+n | 32 | SHA-256 ueber Byte 0 bis 10+n-1 (**ohne** Domaene, siehe 18.1) |
+
+Gesamtlaenge = `10 + n + 32`.
+
+**REQ-SCE-067 (Magic).** Die vier Bytes `ATCB` bleiben. Die Auflage aus D1 ist damit
+erfuellt, und zwar durch Namensraumtrennung statt durch Byteänderung: `ATCB` ist eine
+Byte-Konstante des Containers, `ATC-BC-001` und `ATC-BC-002` sind Dokumentkennungen
+des Instruktionsstroms. Es gibt keine Formatgleichheit, nur Namensgleichheit. Wird
+das Magic spaeter anders entschieden, aendern sich GV-1, GV-3, GV-5, GV-7 und NV-2,
+sonst nichts.
+
+**REQ-SCE-068 (Ablehnung).** Nur Fassung `0x02` wird angenommen. Fassung `0x01` wird
+abgelehnt mit `ATC-SCE-E-003 UNSUPPORTED_CONTAINER_VERSION`; es gibt keinen Fallback,
+keine Deutung als `0x02` und keine Umrechnung der Identitaet. Ebenso abgelehnt:
+eine Anzahl, die nicht zur dekodierten Opzahl passt (`ATC-SCE-E-005 COUNT_MISMATCH`),
+und ein angehaengter Hash, der nicht zur Berechnung passt (`ATC-SCE-E-006
+INTEGRITY_MISMATCH`).
+
+**REQ-SCE-069 (Generationen).** Die Regeln aus ATC-BC-002 bleiben: Opcodes `0x11` bis
+`0x13` nur mit Generation `0x02`, keine Konvertierung zwischen Generationen. Die
+Generation ist Teil des `artifact_hash` und **nicht** Teil des `code_hash` (GV-2 =
+GV-4). Eine Huelle mit anderer Generation ist ein anderes Artefakt mit demselben
+Code.
+
+Tests: S1-T-01, S1-T-02, S1-T-19, S1-T-26, S1-T-27, S1-T-35.
+
+### 18.4 Policy-Schluesselraeume (REQ-SCE-070 bis 074)
+
+**REQ-SCE-070 (getypte Schluessel).** Ein Eintrag nennt seine Identitaet. Vorgabe:
+erstes Byte `0xC0` = Code-Identitaet, `0xA0` = Artefakt-Identitaet, danach der
+32-Byte-Hash. Ein Eintrag ohne gueltiges Kennzeichen ist ungueltig; er wird **nicht**
+geraten und **nicht** als Code gelesen.
+
+**REQ-SCE-071 (Pruefsequenz, verbindlich).** In dieser Reihenfolge, jede Stufe mit
+eigenem Statuscode:
+
+| # | Pruefung | Fehler |
+|---|---|---|
+| 1 | Authority verfuegbar | `ATC-SCE-E-101 AUTHORITY_UNAVAILABLE` |
+| 2 | Containerfassung unterstuetzt | `ATC-SCE-E-003` |
+| 3 | Struktur und kanonische Kodierung | `ATC-SCE-E-005`, `E-006` |
+| 4 | Eintrag zu `code_hash` vorhanden | `ATC-SCE-E-102 UNKNOWN_CODE` |
+| 5 | Huellen-Identitaet: `artifact_hash` des Containers gleich registriertem `artifact_hash` | `ATC-SCE-E-103 ARTIFACT_MISMATCH` |
+| 6 | Code-Identitaet: `code_hash` gleich registriertem `code_hash` | `ATC-SCE-E-104 CODE_MISMATCH` |
+| 7 | Signaturen und Autorisierung | `ATC-SCE-E-105 SIGNER` |
+| 8 | Sperren und Mindestversion | `E-110`, `E-111`, `E-112` |
+
+Stufe 5 und 6 sind **zwei** Pruefungen, nicht eine. Heute existiert nur Stufe 6
+(`exec-admission/src/lib.rs:434`), und ihre Meldung nennt bereits "Artefakt-Hash",
+wo ein Code-Hash gemeint ist.
+
+**REQ-SCE-072 (Sperren).** `ATC-SCE-E-110 CODE_REVOKED` bei Treffer auf die
+Code-Identitaet, `ATC-SCE-E-111 ARTIFACT_REVOKED` bei Treffer auf die
+Artefakt-Identitaet, `ATC-SCE-E-112 MIN_VERSION` bei Unterschreitung. Beide
+Sperrraeume werden immer geprueft; ein Treffer auf einem von beiden blockiert.
+Treffer auf beiden: gemeldet wird `E-110`, damit Belege deterministisch bleiben.
+
+**REQ-SCE-073 (Wirkung).** Eine Code-Sperre wirkt auf jede Huelle desselben Stroms.
+Eine Artefakt-Sperre wirkt nur auf diese eine Huelle; derselbe Code in anderer
+Verpackung bleibt zulaessig, solange er nicht selbst gesperrt ist. Eine
+Artefakt-Sperre darf nie als Code-Sperre gelesen werden und umgekehrt.
+
+**REQ-SCE-074 (Migration).** Flache 32-Byte-Altschluessel ohne Kennzeichen werden
+nicht interpretiert. Ein solcher Altbestand fuehrt zur **Startverweigerung**
+(`ATC-SCE-E-113 LEGACY_KEY_UNTYPED`), mit Zaehlung im Startbericht. Es gibt keine
+automatische Umwandlung und keinen Mischbetrieb.
+
+S1-2 gilt nur als vollstaendige Einheit: eine zweite Abfrage ohne getypte
+Schluesselraeume, oder getypte Schluesselraeume ohne zweite Abfrage, bestehen das
+Gate nicht.
+
+Tests: S1-T-07, S1-T-08, S1-T-09, S1-T-23, S1-T-24, S1-T-29, S1-T-30, S1-T-31,
+S1-T-32, S1-T-36, S1-T-37, S1-T-38.
+
+### 18.5 Gasrueckgabe (REQ-SCE-075 bis 077)
+
+**REQ-SCE-075 (Felder).** Vier getrennte Felder im Beleg: `gas_limit`,
+`gas_used`, `gas_refund` (Gaseinheiten), `fee_charged` (Geld). `gas_refund` ist
+immer eine Gasmenge. Ein Geldbetrag an dieser Stelle ist unzulaessig; eine
+Umrechnung im Beleg ebenfalls.
+
+**REQ-SCE-076 (Wortlaut der Regel).** Es gilt `0 <= gas_used <= gas_limit` und
+
+```
+gas_refund = gas_limit - gas_used
+```
+
+je Fall:
+
+| Fall | `gas_used` | `gas_refund` |
+|---|---|---|
+| Erfolg | verbrauchte Gase | Restbudget |
+| Revert | nur verbrauchtes Gas | Restbudget |
+| Erschoepfung | `gas_limit` (volles Budget) | `0` |
+| Ablehnung vor Ausfuehrung | `0` | `gas_limit` |
+
+Nicht verbrauchtes Budget **verfaellt**; es entsteht kein Guthaben. Solange kein
+Konto belastet wird, ist das folgenlos. Sobald eine tatsaechliche Belastung
+eingefuehrt wird, gilt verbindlich: Belastung hoechstens `gas_limit * gas_price`,
+Rueckbuchung genau `gas_refund * gas_price`, keine Gutschrift ueber den
+Ausgangsstand hinaus, keine Verzinsung, keine Gutschrift fiktiver Betraege.
+
+**REQ-SCE-077 (Determinismus).** Alle Betraege ergeben sich ausschliesslich aus den
+Belegfeldern und der Gastabelle. Keine Zeit, kein Zufall, keine Host-Groesse. Zwei
+Knoten mit derselben Eingabe erzeugen denselben Beleg.
+
+Der Referenzwert 100 000 Gas bleibt Mess- und Vergleichswert, kein Konsenslimit; die
+Gastabelle selbst ist nicht Teil dieser Spezifikation.
+
+Tests: S1-T-11, S1-T-12, S1-T-13, S1-T-14, S1-T-17.
+
+### 18.6 Testzuordnung und Abnahmekriterium
+
+Jeder Abschnitt nennt seine Tests. Umgekehrt muss jeder Test aus der Matrix hier
+eine Regel haben; ein Test ohne Regel ist ein Spezifikationsfehler, eine Regel ohne
+Test ein Abnahmeverstoss.
+
+| Abschnitt | Anforderungen | Tests |
+|---|---|---|
+| 18.1 Domaenen | REQ-SCE-061 bis 064 | S1-T-19, 20, 21, 28, 33 |
+| 18.2 Goldvektoren | REQ-SCE-065 | S1-T-04, 19, 20, 21, 22, 25, 34 |
+| 18.3 Container | REQ-SCE-066 bis 069 | S1-T-01, 02, 19, 26, 27, 35 |
+| 18.4 Schluesselraeume | REQ-SCE-070 bis 074 | S1-T-07 bis 10, 23, 24, 29 bis 32, 36, 37, 38 |
+| 18.5 Gasrueckgabe | REQ-SCE-075 bis 077 | S1-T-11 bis 14, 17 |
+
+Nicht abgedeckt und deshalb weiterhin offen: S1-T-15 und S1-T-18 (Schichtzuordnung
+und L1-Status; sie haengen an einem Dekoder, den es nicht gibt), S1-T-16 (L2, von
+B-1 abhaengig).
+
+Der Nachweisstand aendert sich durch diesen Abschnitt **nicht**: die Matrix bleibt
+bei 37 offen und 1 blockiert, weil kein Test ausgefuehrt wurde. Spezifiziert ist
+nicht implementiert.
+
+
+---
 Der Referenzwert 100 000 Gas aus `ATC-BC-002-CANDIDATE` §19.5 (groesstes im Repo
 verwendetes Budget, zwei Aufrufe in `tests/atcb_v2.rs`) ist ein Mess- und
 Vergleichswert, kein Konsenslimit. `DEFAULT_GAS = 50_000` in
