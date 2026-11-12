@@ -87,16 +87,18 @@ def render(data: dict) -> str:
         f"**Entscheidungsregister** (Owner, {data['decided_on']}; "
         f"Quelle: `docs/decisions/exec-decision-register.yaml`)",
         "",
-        "| ID | Entscheidung (Titel) | Owner-Entscheidung | Spezifikation | Umsetzung | Gate |",
-        "|---|---|---|---|---|---|---|",
+        "| ID | Entscheidung (Titel) | Owner-Entscheidung | Ratifikation | Spezifikation | spezifiziert in | Umsetzung | Gate |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for dec in data["decisions"]:
         lines.append(
-            "| {id} | {title} | {own} | {spec} | {impl} | {gate} |".format(
+            "| {id} | {title} | {own} | {rat} | {spec} | {where} | {impl} | {gate} |".format(
                 id=dec["id"],
                 title=dec["title"],
                 own=approval_text(dec["decision"]),
+                rat=dec.get("ratification", "nicht ratifiziert"),
                 spec=dec["specification_status"],
+                where=dec.get("specified_in", "-"),
                 impl=dec["implementation_status"],
                 gate=dec["gate"],
             )
@@ -107,6 +109,12 @@ def render(data: dict) -> str:
         "(vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden "
         "System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die "
         "Gates bleiben bis zum jeweiligen Nachweis offen.",
+        "",
+        "Drei Ebenen: **Owner-Entscheidung** ist intern verbindlich, auch wenn der "
+        "zugehoerige Standard nicht ratifiziert ist. **Ratifikation** sagt, ob der "
+        "Standard in Kraft ist; \"nicht ratifiziert (Kandidat)\" bindet niemanden. "
+        "Ein Wert im Kandidaten bleibt **Vorschlag**, solange der Owner ihn nicht "
+        "ausdruecklich beschliesst.",
         "",
         "Offen und nicht Teil dieser Freigabe: " + "; ".join(data["pending_globally"]) + ".",
         "",
