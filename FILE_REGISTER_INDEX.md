@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 15:22 UTC+2 aus `origin/main` @ `7efbadd1`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 15:30 UTC+2 aus `origin/main` @ `5dae394b`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11403 Dateien**
+**Total: 11405 Dateien**
 
-## docs (5099)
+## docs (5100)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -23,6 +23,7 @@
 - `docs/audits/EXEC-DEPENDENCY-INVENTORY-2026-11-12.md`
 - `docs/audits/EXEC-MAPPING-INVENTORY-2026-11-11.md`
 - `docs/audits/EXEC-OPEN-POINTS-2026-11-12.md`
+- `docs/audits/GOVERNANCE-FINDING-FAMILY-400-2026-11-12.md`
 - `docs/audits/INTEGRATION-MATRIX-2026-11-09.md`
 - `docs/audits/REPOSITORY-AUDIT-2026-09-16.md`
 - `docs/audits/SB-01-SCHRITTOBERGRENZE-ENTWURF-2026-11-09.md`
@@ -5107,7 +5108,7 @@
 - `docs/os-docs/wiki/windows-edition-wiki/STATUS.md`
 - `docs/zkp/PROOF_SYSTEM_SELECTION_MATRIX.md`
 
-## standards (2174)
+## standards (2175)
 
 - `standards/.atc/compliance.yaml`
 - `standards/.atc/discovery/baseline.json`
@@ -5296,6 +5297,7 @@
 - `standards/atc/candidates/ATC-NODE-001-CANDIDATE.md`
 - `standards/atc/candidates/ATC-SEC-EXEC-001-CANDIDATE.md`
 - `standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md`
+- `standards/atc/candidates/ATC-STD-410-CANDIDATE.md`
 - `standards/atc/candidates/KAI-OS-READINESS-001-CANDIDATE.md`
 - `standards/atc/conformance/admission-codes.json`
 - `standards/atc/conformance/identity-value-vectors.json`
