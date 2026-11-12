@@ -7,6 +7,22 @@ use std::io::{BufRead, BufReader, Write};
 use std::net::TcpStream;
 use std::time::Duration;
 
+/// Devnet-Payloads sind Daten (Tx-IDs, Zustandswurzel). Der Validator nimmt sie
+/// an, weist aber das innere Format ab — wie die reale Systemgrenze.
+struct DevnetValidator;
+impl atc_node::import::ContainerValidator for DevnetValidator {
+    fn validate_block_payload(
+        &self,
+        payload: &str,
+    ) -> Result<(), atc_node::import::PayloadRejection> {
+        if payload.starts_with("atcb:") || payload.starts_with("ATCB") {
+            Err(atc_node::import::PayloadRejection::new("block_payload", "P-002"))
+        } else {
+            Ok(())
+        }
+    }
+}
+
 fn start_node() -> (u16, String) {
     let g = Genesis::devnet();
     let (peers, boot_hash) = devnet_boot(&g, &[(1, "atc-node-1".into()), (2, "atc-node-2".into())]).expect("devnet_boot fehlgeschlagen");
@@ -72,7 +88,7 @@ fn zwei_nodes_syncen_kette_ueber_gossip() {
     std::thread::spawn(move || { let _ = atc_node::gossip::serve_gossip(&format!("127.0.0.1:{}", port), handler); });
     for _ in 0..50 { if TcpStream::connect(("127.0.0.1", port)).is_ok() { break; } std::thread::sleep(Duration::from_millis(100)); }
     let mut b = atc_node::chain::Chain::from_genesis(&g);
-    let rep = atc_node::gossip::sync_pull(&mut b, &format!("127.0.0.1:{}", port)).unwrap();
+    let rep = atc_node::gossip::sync_pull(&mut b, &format!("127.0.0.1:{}", port), Some(&DevnetValidator)).unwrap();
     assert!(rep.adopted);
     assert_eq!(b.height(), 4);
     assert_eq!(b.best_hash(), ziel);
