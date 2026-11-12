@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 15:43 UTC+2 aus `origin/main` @ `6862561f`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 16:03 UTC+2 aus `origin/main` @ `15948a24`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11408 Dateien**
+**Total: 11410 Dateien**
 
-## docs (5101)
+## docs (5103)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -40,12 +40,14 @@
 - `docs/decisions/AD-EXEC-D0-FOUR-DECISIONS-2026-11-12.md`
 - `docs/decisions/AD-EXEC-D1-D7.md`
 - `docs/decisions/AD-EXEC-KERNEL-ENFORCEMENT.md`
+- `docs/decisions/AD-GOV-FAMILY-400-OPTION-B-2026-11-12.md`
 - `docs/decisions/EXEC-D0-ARCH-QUESTIONS-TEMPLATE-2026-11-12.md`
 - `docs/decisions/EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-D0A-SYSTEM-INGRESS-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md`
 - `docs/decisions/EXEC-P1A-BLOCKPAYLOAD-EVIDENCE-2026-11-12.md`
+- `docs/decisions/EXEC-P1B-NODE-IMPORT-DESIGN-2026-11-12.md`
 - `docs/decisions/EXEC-S1-2-ADMISSION-REGISTRY-F1.md`
 - `docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md`
 - `docs/decisions/EXEC-STAGE1-PARSER-EVIDENCE-2026-11-12.md`
