@@ -35,9 +35,13 @@ eigene Identitaet mit eigenem Namen?
   Code-Hash **ist** der Container-Hash.
 - `components/vm/src/artifact.rs:297-298`: `Artifact::hash()` = SHA-256 ueber
   `ohne_hash()`, also ueber Magic, Containerformat, Generation, Anzahl und Strom.
-- Es existiert **keine** zweite Hashfunktion. `grep` ueber `artifact.rs` findet
-  nur `sha256_daten`, `Artifact::hash` und die Prueffunktion. Der Strom-Hash aus
-  REQ-SCE-041 ist damit nicht unbeneannt, sondern **nicht vorhanden**.
+- Es existiert in **diesem** Repository **keine** zweite Hashfunktion: `grep`
+  ueber `components/` findet nur `sha256_daten`, `Artifact::hash`, die
+  Prueffunktion und die davon unabhaengigen Miner- und Block-Hashes. Der
+  Strom-Hash aus REQ-SCE-041 ist damit nicht unbeneannt, sondern **nicht
+  vorhanden**. (Das atclang-Repository fuehrt ein eigenes Bytecode-Modell mit
+  `compute_hash`; ob dieser Wert als Strom-Hash taugt, ist eine eigene Frage und
+  hier nicht geprueft.)
 - `components/system/src/state.rs:12`, `43-52`: die Zustandswurzel nimmt den
   Code-Hash als Eingabe, neben der Domaine `ATC-STATE-V1\0`.
 
