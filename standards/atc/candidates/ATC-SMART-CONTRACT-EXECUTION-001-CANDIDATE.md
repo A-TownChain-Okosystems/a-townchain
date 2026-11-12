@@ -577,6 +577,15 @@ keine auf **IMPLEMENTED**.
 | D6 | Identitaet: 32-Byte-Identitaetswort | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.5, §5.10 (nicht ratifiziert) | OPEN | SCE-G5 |
 | D7 | Frontend: ATCLang kanonisch, .ops nur Testwerkzeug | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.2 (nicht ratifiziert) | OPEN | SCE-G2 |
 
+**Teilauflagen** (getrennt implementierbar und testbar, je eigene Zustaendigkeit; eine erfuellte Teilauflage hebt die naechste nicht auf)
+
+| ID | Teilauflage | Zustaendigkeit | Ziel | Status | offen, weil |
+|---|---|---|---|---|---|
+| D1-A | Container-Admission: verbindliche Byteobergrenze vor dem Hashing | Admission-Layer | Die gesamte Eingabe wird gegen eine konsensweit identische Obergrenze geprueft, bevor Hash-, Dekodier- oder Allokationsarbeit anfaellt; der Dekoder bleibt eine reine Funktion ohne eigene Groessenpolitik | OPEN | Wert offen bis zur Messung in P1b und darf nicht aus bestehenden VM-Grenzen abgeleitet werden (Kandidat §19.7, S1-T-55) |
+| D1-B | Dekoderfehler: EMPTY_STREAM (E-004) und COUNT_MISMATCH (E-005) ergaenzen | VM-Parser | ArtifactError fuehrt alle zwoelf Codes aus §19.1; beide fehlenden Varianten sind vorhanden und tragen dieselbe Bedingung wie der Vertrag | OPEN | notwendige Konformitaetskorrektur, Implementierung und Freigabe stehen aus |
+| D1-C | Groessenpruefung: dekodierte Laenge statt deklarierter Anzahl | VM-Parser / Admission-Vertrag | Die Groessenpruefung bewertet die dekodierte Stromlaenge (p - 10); die deklarierte Anzahl c ist Obergrenze und kein Ausloeser von E-012. C-8-GV1-MAX ergibt E-005, nicht ProgramTooLarge | OPEN | notwendige Konformitaetskorrektur; die VM prueft heute c > MAX_PROGRAM_OPS (artifact.rs:322) |
+
+
 Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** (vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die Gates bleiben bis zum jeweiligen Nachweis offen.
 
 Drei Ebenen: **Owner-Entscheidung** ist intern verbindlich, auch wenn der zugehoerige Standard nicht ratifiziert ist. **Ratifikation** sagt, ob der Standard in Kraft ist; "nicht ratifiziert (Kandidat)" bindet niemanden. Ein Wert im Kandidaten bleibt **Vorschlag**, solange der Owner ihn nicht ausdruecklich beschliesst.
@@ -1358,10 +1367,48 @@ Fehlschlag, kein Hinweis.
 | 19.3 Tail | REQ-SCE-080 | S1-T-39, 40, 41 |
 | 19.4 Versionsisolation | REQ-SCE-081 bis 083 | S1-T-44, 45, 46, 47 |
 | 19.5 Differentialtest, Korpusauswahl | REQ-SCE-084 | S1-T-43, S1-T-48, S1-T-54 |
+| 19.7 Container-Bytegrenze | REQ-SCE-090 bis 093 | S1-T-55 |
 
 Die Tests S1-T-49 bis S1-T-54 sind `OPEN`. Ein ausgefuehrter Referenzdekoder ist kein
 Konformitaetsnachweis: REQ-SCE-084 verlangt zwei unabhaengige Dekoder. Der Dekoder
 bleibt die Voraussetzung fuer L1 (S1-T-18) und damit fuer P1a.
+
+### 19.7 Container-Bytegrenze vor dem Dekodieren (Vorschlag, Wert offen)
+
+**Befund (12.11.2026, `57fce3e3`).** Weder der Dekoder noch der Transaktions- oder
+Blockpfad begrenzen die Laenge der Container-Bytes. `Artifact::parse` prueft als erstes
+nur `bytes.len() < 42` und hasht danach die **gesamte** Eingabe
+(`components/vm/src/artifact.rs:311-319`); `Block.payload` ist ein unbeschraenkter
+String (`components/node/src/chain.rs:17`). Eine uebergrosse Eingabe kostet daher
+vollstaendige SHA-256-Arbeit, bevor irgendeine Grenze greift. `E-012` hilft dabei
+nicht: es steht in Stufe 10 und misst die dekodierte Stromlaenge.
+
+**REQ-SCE-090 (Vorschlag, Wert offen).** Der Admission-Layer prueft die Laenge der
+Container-Bytes gegen die Obergrenze, **bevor** Hash-, Dekodier- oder
+Allokationsarbeit anfaellt. Bei Ueberschreitung wird die Transaktion abgelehnt, ohne
+dass Eingabebytes verarbeitet werden. Der Dekoder bleibt eine reine, deterministische
+Funktion ohne eigene Groessenpolitik.
+
+**REQ-SCE-091 (Vorschlag).** Der Wert ist Teil des Protokolls, nicht der lokalen
+Konfiguration. Alle Validatoren verwenden denselben Wert; ein Knoten mit abweichendem
+Wert ist kein gueltiger Konsensknoten. Zwei Validatoren duerfen dieselbe Transaktion
+nicht unterschiedlich annehmen.
+
+**REQ-SCE-092 (Vorschlag).** Bytegrenze und `E-012` bleiben getrennte Mechanismen mit
+verschiedenen Messgroessen: die Grenze bewertet die gesamte Eingabe (Kopf, Strom,
+Tail) vor dem Hashing, `E-012` die dekodierte Stromlaenge ohne Kopf und Tail. Ein
+gemeinsamer Fehlercode wuerde zwei verschiedene Groessen verdecken und ist unzulaessig.
+
+**REQ-SCE-093 (Vorschlag).** RPC-Rumpf (`MAX_RPC_REQUEST_BYTES` 8 KiB,
+`node/src/rpc.rs:11`) und Block-Payload sind eigene Schutzschichten auf dem Transport-
+beziehungsweise Blockpfad. Sie ersetzen die Container-Bytegrenze nicht, und diese
+ersetzt sie nicht.
+
+**Wert und Status.** Der Zahlenwert ist offen. Er wird in P1b gemessen und
+ausdruecklich **nicht** aus bestehenden VM-Grenzen abgeleitet (65 536 Ops,
+4 096 Stack, 65 536 Speicherplaetze, 1 MiB Assemblerquelle, 8 KiB RPC-Rumpf,
+512 MiB Release-Pakete sind andere Groessen). Bis dahin bleibt D1-A offen, S1-T-55
+ist `OPEN`, und die vier Anforderungen sind Vorschlag, nicht ratifiziert.
 
 ---
 Der Referenzwert 100 000 Gas aus `ATC-BC-002-CANDIDATE` §19.5 (groesstes im Repo
