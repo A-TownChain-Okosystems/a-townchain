@@ -41,7 +41,7 @@ Offen und nicht Teil dieser Freigabe: Numerische Gaspreise (Messung je Instrukti
 | S1-3 | Erstattung: Grundsatz | A, ausschliesslich Gasrueckgabe | 2026-11-12 | `a63e41a93` | gas_refund in Gaseinheiten, kein Geldbetrag; ungenutztes Budget verfaellt, auch nach Einfuehrung einer Kontobelastung |
 | S1-4 | Testschichtung L1/L2/L3 | B, nur L1 zaehlt fuer P1a | 2026-11-12 | `a63e41a93` | L1 muss nicht ausfuehrbar sein, um zu zaehlen; L2 und L3 bleiben bis B-1 gesperrt; L1 ist heute EMPTY, P1a bleibt offen |
 
-Durch die Stufe-1-Ratifikation entfallen: B-2 Artefaktidentitaet im Identitaetsteil (R-903); die Frage des Container-Magic bleibt Auflage in D1; B-3 Verfahren (R-905): Schichtung entschieden, L2 und L3 bleiben bis B-1 gesperrt.
+Durch die Stufe-1-Ratifikation entfallen: B-2 Artefaktidentitaet im Identitaetsteil (R-903); Container-Magic am 12.11.2026 entschieden: ATCE fuer die Huelle; B-3 Verfahren (R-905): Schichtung entschieden, L2 und L3 bleiben bis B-1 gesperrt.
 
 Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard: der Kandidat bleibt Kandidat, P1a bleibt offen und P2 bleibt gesperrt.
 
@@ -80,7 +80,7 @@ D1 (Format) → D7 (Frontend) → D2 (Aufruf) → D3 (Speicher) → D6 (Identita
 sprach noch von "Artefakt mit Magie ATCB + Version" und widersprach damit dieser
 Entscheidung. SCX-003 beschreibt jetzt den Instruktionsstrom nach ATC-BC-001 plus
 die getrennte Huelle SCE-ARTIFACT; `ATCB` bleibt ausschliesslich der Strom. Das
-Magic der Huelle ist als Vorschlag `ATCE` gefuehrt und noch nicht bestaetigt.
+Magic der Huelle ist `ATCE` (bestätigt am 12.11.2026, Fassung `0x02`), `ATCB` bleibt der Strom.
 
 **Ist-Stand.** `ATC-BC-001` ist `SPEC-FROZEN` und normativ seit 06.10.2026
 (`ai/atclang/specs/bytecode/SPEC.md`, SCR-0071); Referenzimplementierung ist
@@ -94,7 +94,7 @@ Namensdopplung (Konflikt K-01, K-02).
 
 | Option | Inhalt | Kosten | Risiko |
 |---|---|---|---|
-| A | Instruktionsstrom bleibt `ATC-BC-001`. Der VM-Container wird zu einer eigenstaendigen Huelle mit eigenem Magic (Vorschlag `ATCE`), die Generation, Stromlaenge, Layout-Version und SHA-256 traegt. Opcodes der VM werden auf die BC-001-Nummerierung umgestellt. | Umbau des VM-Loaders und des Backends, alle Devnet-Artefakte neu erzeugen | klein: rund 40 betroffene Tests, keine Aussenzusage bricht, weil niemand Artefakte archiviert |
+| A | Instruktionsstrom bleibt `ATC-BC-001`. Der VM-Container wird zu einer eigenstaendigen Huelle mit eigenem Magic (`ATCE`), die Generation, Stromlaenge, Layout-Version und SHA-256 traegt. Opcodes der VM werden auf die BC-001-Nummerierung umgestellt. | Umbau des VM-Loaders und des Backends, alle Devnet-Artefakte neu erzeugen | klein: rund 40 betroffene Tests, keine Aussenzusage bricht, weil niemand Artefakte archiviert |
 | B | `ATC-BC-002` wird Nachfolger als v2 mit eigener Opcode-Belegung; BC-001 bleibt fuer atclang v0.1 bestehen. | zwei Generationen dauerhaft pflegen, Compiler braucht zwei Emitter | hoch: zwei Wahrheiten, genau der Zustand, der heute schon schadet |
 | C | Beide Formate im Loader akzeptieren (Bridge) | sehr klein | sehr hoch: erzeugt das doppelte Format dauerhaft |
 
@@ -454,3 +454,24 @@ intern verbindlich, auch wenn der zugehoerige Standard nur Kandidat ist und nich
 ratifiziert wurde; ein Wert im Kandidaten ist ein Vorschlag. Die Ratsche gilt
 auch fuer ATC-BC-002: dessen Aufruftiefe 64 ist eine Owner-Entscheidung vom
 09.11.2026, der Standard selbst ist Kandidat.
+
+## Nachtrag 12.11.2026: Magic und Integritaetsdigest
+
+Der Owner hat zwei Widersprueche in der Spezifikation gefunden und entschieden.
+
+**Magic.** Mein Vorschlag in REQ-SCE-067, `ATCB` als Byte-Konstante des Containers
+beizubehalten und die Kollision mit `ATC-BC-001` als Namensgleichheit zu behandeln,
+war falsch. Er widersprach derselben Spezifikation: Abschnitt 5 legt fest, dass
+`ATCB` ausschliesslich den eingefrorenen Strom bezeichnet, dass die Huelle ein
+eigenes Magic erhaelt und dass ein Container mit gleichem Magic und anderer Semantik
+untersagt ist. Genau dieser Doppelkopf ist Audit-Befund IV-03. Festlegung: Huelle
+`ATCE`, Strom `ATCB`, Containerfassung `0x02`.
+
+**Integritaetsdigest.** Der Tail war in §18.3 als SHA-256 ohne Domaene beschrieben,
+REQ-SCE-062 definiert `artifact_hash` dagegen mit Domaenenpraefix. Zwei Definitionen
+derselben Sache. Festlegung: der Tail **ist** `artifact_hash`. Kein Zirkel, weil der
+Tail nicht in die Eingabe eingeht.
+
+**Folge fuer die Vektoren.** Neu berechnet: GV-1, GV-3, GV-5, GV-7 und NV-2 aus dem
+Magic; zusaetzlich GV-9, weil es GV-1 als Eingabe enthaelt. Unveraendert: GV-2, GV-4,
+GV-6, GV-8, NV-1. Nachgerechnet mit `tools/check_stage1_vectors.py`.
