@@ -1,7 +1,10 @@
 # S1-2 / F-1 isoliert: Policy-Ueberschreibung in der Admission Registry
 
 > **Status:** drei Entscheidungen getroffen (Owner, 12.11.2026), Compare-and-Insert
-> **umgesetzt** und lokal geprueft. `ADM-012` ist **gesperrt**, bis der Standard
+> **umgesetzt**; Owner-Abnahme 12.11.2026: **`IMPLEMENTED` + `TESTED`** (T-01 bis
+> T-08 gruen), `CI_VERIFIED` nicht vergeben. Standardidentitaet seit 12.11.2026:
+> **`ATC-STD-410`** (reserviert, nicht normativ; `ATC-SEC-EXEC-001` ist nur noch
+> historische Entwurfskennung). `ADM-012` ist **gesperrt**, bis `ATC-STD-410`
 > normativ registriert ist; bis dahin traegt der Konflikt **keine**
 > Fehleridentitaet (kein provisorischer Code). Kein `CI_VERIFIED`.
 > Die Korrektur liegt ausschliesslich in `components/exec-admission`; die
@@ -125,12 +128,22 @@ ein aktiver Code fehlt, ein nicht registrierter Code implementiert ist, die
 Reihenfolge abweicht oder ein vorgeschlagener Code vorzeitig auftaucht. Damit ist
 die Sperre fuer `ADM-012` nicht Prosa, sondern ein Testfall.
 
-**Offen (Governance).** Der Standard selbst ist weiterhin ein Kandidat, nicht
-normativ registriert: `ATC-SEC-EXEC-001` steht nicht in
-`atc-standards/registry/standards.yaml`, und eine ID-Vergabe fuer eine
-Standardfassung ist eine Owner-Entscheidung, keine Agenten-Entscheidung. Deshalb
-bleibt die Fehleridentitaet `ADM-012` gesperrt: der Systempfad meldet den Konflikt
-mit `code: None`, ohne provisorische Kennung.
+**Standardidentitaet (Owner-Entscheidung 12.11.2026).** Der Standard heisst
+`ATC-STD-410` (Familie 400 SECURITY, Kategorie `security`, Version `0.1.1-draft`,
+Status `reserved`, `normative: false`). `ATC-SEC-EXEC-001` bleibt ausschliesslich
+historische Entwurfskennung; sie ist **keine** zweite Standardidentitaet und
+enthaelt nur noch einen Verweis. Die Reservierung liegt in `atc-standards`
+(`registry/standards.yaml`, `registry/allocation/reservations.yaml`); ein Pruefer
+in diesem Repository verhindert, dass die alte Kennung wieder eine eigene
+Code-Tabelle fuehrt.
+
+**Offen (Governance).** Die Reservierung ist **keine** normative Freigabe. Es
+fehlen Technical Review, Security Review, Architecture Review und Owner-Approval;
+zusaetzlich ist die Familien-Verkabelung offen, weil im Framework kein FAM-Range
+eine Security-Familie im 4xx-Bereich abbildet
+([Befund](../audits/GOVERNANCE-FINDING-FAMILY-400-2026-11-12.md)). Deshalb bleibt
+`ADM-012` gesperrt: der Systempfad meldet den Konflikt mit `code: None`, ohne
+provisorische Kennung.
 
 ## 7 Was ausdruecklich nicht geaendert wird
 
