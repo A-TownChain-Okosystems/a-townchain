@@ -5,7 +5,7 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.8.0-draft
+> **Version:** 1.9.0-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
@@ -26,6 +26,7 @@
 | 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
 | 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
 | 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
+| 1.9.0-draft | 2026-11-12 | Drei Befunde des Owners eingearbeitet: (1) C-1 war nicht ausfuehrbar definiert und umfasste mit GV-5 ein ausdruecklich abzulehnendes Altformat sowie fuenf Hash-Eingaben, die keine Container sind; C-1 umfasst jetzt genau GV-1, GV-3 und GV-7 als rekonstruierte Container, GV-5 gehoert nach C-3, GV-2/4/6/8/9 sind ausdruecklich keine Parser-Eingaben. (2) Die Behauptung, die Codeliste sei deckungsgleich mit `ArtifactError`, war falsch: zehn von zwoelf Codes haben eine Variante, `EMPTY_STREAM` und `COUNT_MISMATCH` fehlen; die VM verarbeitet ausserdem noch `ATCB`/`0x01` und ist damit kein konformer zweiter Dekoder. (3) Zaehlfehler in der Matrix berichtigt. Neuer Test S1-T-48 fuer die Korpusauswahl. |
 | 1.8.0-draft | 2026-11-12 | Parser-Fehlersemantik und Versionsisolation spezifiziert (§19, REQ-SCE-078 bis 084): geschlossene Codeliste E-001 bis E-012 passend zur VM-Fehleraufzaehlung, zehnstufige Pruefreihenfolge mit Praezedenz (erstes Problem gewinnt, Magic vor Version, deshalb ergibt der Altcontainer `ATCB` `E-007` und nicht `E-003`), Tail-Integritaet byte-genau, Versionsisolation ohne Fallback und als reine Funktion, Differentialtest mit acht Korpusklassen. Neun neue Tests S1-T-39 bis S1-T-47, alle `OPEN`. |
 | 1.7.0-draft | 2026-11-12 | Owner-Entscheidung: Container-Magic `ATCE`, Fassung `0x02`, `ATCB` bleibt der Strom (REQ-SCE-067, Widerspruch zu §5 und Audit IV-03 beseitigt). Zweiter Befund des Owners behoben: der angehaengte Integritaetsdigest war als SHA-256 ohne Domaene beschrieben und ist jetzt exakt `artifact_hash` (REQ-SCE-062), ohne Zirkel, weil der Tail nicht in die Eingabe eingeht. Neues Fehlerbild `ATC-SCE-E-007 UNKNOWN_MAGIC`, verbindliche Pruefreihenfolge Laenge/Magic/Version/Generation/Struktur/Tail. Sechs Vektoren neu berechnet: GV-1, GV-3, GV-5, GV-7, GV-9 (enthaelt GV-1) und NV-2; GV-2, GV-4, GV-6, GV-8 unveraendert. Keine Implementierungsfreigabe. |
 | 1.6.0-draft | 2026-11-12 | Spezifikation Stufe 1 byte-genau: drei Domaenenlabels mit abschliessendem Nullbyte (Laengen nachgezaehlt 16/14/13), Eingaben fuer `artifact_hash`, `code_hash` und `state_root` exakt, neun Goldvektoren und sechs Negativvektoren (mit reinem SHA-256-Werkzeug erzeugt), Containerfassung `0x02` mit Namensraumtrennung fuer das Magic, zwoelf Fehlercodes, getypte Policy-Schluesselraeume mit achtstufiger Pruefsequenz, Erstattungswortlaut samt Fall der kuenftigen Kontobelastung; REQ-SCE-061 bis 077, Testzuordnung in 18.6. Kein Test dadurch bestanden. |
@@ -567,7 +568,7 @@ keine auf **IMPLEMENTED**.
 
 | ID | Entscheidung (Titel) | Owner-Entscheidung | Ratifikation | Spezifikation | spezifiziert in | Umsetzung | Gate |
 |---|---|---|---|---|---|---|---|
-| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | SPECIFIED | Kandidat §5.1, §18.1-18.3 und §19 (nicht ratifiziert) | OPEN | SCE-G1 |
+| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | SPECIFIED | Kandidat §5.1, §18.1-18.3 und §19.1-19.5 (nicht ratifiziert) | OPEN | SCE-G1 |
 | D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.3, §5.10 (nicht ratifiziert) | OPEN | SCE-G3 |
 | D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.4 (nicht ratifiziert) | OPEN | SCE-G4 |
 | D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.6, §5.10 (nicht ratifiziert) | OPEN | SCE-G6 |
@@ -1084,28 +1085,36 @@ oder Annahme-/Ablehnungsentscheidung.
 ### 19.1 Fehlercodes (REQ-SCE-078)
 
 **REQ-SCE-078 (geschlossene Codeliste).** Ein Dekoder kennt genau diese Codes und
-erfindet keine weiteren. Die Liste entspricht eins zu eins der Fehleraufzaehlung der
-VM (`components/vm/src/artifact.rs`, `ArtifactError`) und den bereits in §18
-verwendeten Codes:
+erfindet keine weiteren. Die Liste ist **normativ**; die Fehleraufzaehlung der VM
+(`components/vm/src/artifact.rs`, `ArtifactError`) ist heute **nicht** deckungsgleich
+mit ihr. Zehn der zwoelf Codes haben dort eine Variante, zwei fehlen (Tabelle unten).
+Die VM ist deshalb derzeit kein konformer zweiter Dekoder.
 
-| Code | Name | Bedeutung | Offset |
-|---|---|---|---|
-| `E-001` | `TOO_SHORT` | weniger als 42 Byte, kein vollstaendiger Container | Laenge der Eingabe |
-| `E-002` | `TRUNCATED_OPERAND` | Operand reicht nicht bis zum Stromende | erstes Byte des fehlenden Operanden |
-| `E-003` | `UNSUPPORTED_CONTAINER_VERSION` | Magic stimmt, Version ist nicht `0x02` | 4 |
-| `E-004` | `EMPTY_STREAM` | Strom ohne Instruktion | 10 |
-| `E-005` | `COUNT_MISMATCH` | deklarierte Anzahl passt nicht zur dekodierten Opzahl | 6 |
-| `E-006` | `INTEGRITY_MISMATCH` | Tail entspricht nicht `artifact_hash` | 10+n |
-| `E-007` | `UNKNOWN_MAGIC` | erste vier Bytes sind nicht `ATCE` | 0 |
-| `E-008` | `TRAILING_BYTES` | Bytes zwischen Stromende und Tail | 10 + dekodierte Laenge |
-| `E-009` | `UNKNOWN_GENERATION` | Generation ist nicht `0x01` und nicht `0x02` | 5 |
-| `E-010` | `UNKNOWN_OPCODE` | Opcode existiert in keiner Generation | Position des Opcode-Bytes |
-| `E-011` | `GENERATION_MISMATCH` | Opcode `0x11` bis `0x13` bei Generation `0x01` | Position des Opcode-Bytes |
-| `E-012` | `PROGRAM_TOO_LARGE` | Strom ueberschreitet den Groesstwert | 10 |
+| Code | Name | Bedeutung | Offset | `ArtifactError` in der VM |
+|---|---|---|---|---|
+| `E-001` | `TOO_SHORT` | weniger als 42 Byte, kein vollstaendiger Container | Laenge der Eingabe | `TooShort` |
+| `E-002` | `TRUNCATED_OPERAND` | Operand reicht nicht bis zum Stromende | erstes Byte des fehlenden Operanden | `TruncatedOperand` |
+| `E-003` | `UNSUPPORTED_CONTAINER_VERSION` | Magic stimmt, Version ist nicht `0x02` | 4 | `UnsupportedContainer(u8)` |
+| `E-004` | `EMPTY_STREAM` | Strom ohne Instruktion | 10 | **fehlt in der VM** |
+| `E-005` | `COUNT_MISMATCH` | deklarierte Anzahl passt nicht zur dekodierten Opzahl | 6 | **fehlt in der VM** |
+| `E-006` | `INTEGRITY_MISMATCH` | Tail entspricht nicht `artifact_hash` | 10+n | `BadHash` |
+| `E-007` | `UNKNOWN_MAGIC` | erste vier Bytes sind nicht `ATCE` | 0 | `BadMagic` |
+| `E-008` | `TRAILING_BYTES` | Bytes zwischen Stromende und Tail | 10 + dekodierte Laenge | `TrailingBytes` |
+| `E-009` | `UNKNOWN_GENERATION` | Generation ist nicht `0x01` und nicht `0x02` | 5 | `UnknownGeneration(u8)` |
+| `E-010` | `UNKNOWN_OPCODE` | Opcode existiert in keiner Generation | Position des Opcode-Bytes | `UnknownOpcode(u8)` |
+| `E-011` | `GENERATION_MISMATCH` | Opcode `0x11` bis `0x13` bei Generation `0x01` | Position des Opcode-Bytes | `GenerationMismatch { .. }` |
+| `E-012` | `PROGRAM_TOO_LARGE` | Strom ueberschreitet den Groesstwert | 10 | `ProgramTooLarge { .. }` |
 
 `E-012` ist vergeben, sein Groesstwert ist aber **nicht** festgelegt; die Grenzwerte
 bleiben offen (T-21 bis T-24). Ein Dekoder darf `E-012` deshalb heute nur melden,
 wenn ein Betreiber einen Wert konfiguriert hat.
+
+**Zur VM als zweitem Dekoder.** `components/vm/src/artifact.rs` verarbeitet heute
+Magic `ATCB` mit Containerfassung `0x01`. Sie erfuellt den Vertrag aus §19 damit
+nicht: es fehlen die Varianten fuer `E-004` und `E-005`, und solange sie `ATCB`
+annimmt, wuerde sie den Altbestand durchlassen, den REQ-SCE-079 ablehnt. Die VM darf
+erst dann als unabhaengiger zweiter Dekoder im Differentialtest zaehlen, wenn sie
+beides erfuellt. Das ist eine Implementierungsauflage, keine Freigabe.
 
 ### 19.2 Pruefreihenfolge und Praezedenz (REQ-SCE-079)
 
@@ -1182,14 +1191,36 @@ Der Korpus ist mindestens:
 
 | Klasse | Inhalt |
 |---|---|
-| C-1 | die neun Goldvektoren aus §18.2, alle angenommen |
+| C-1 | die **drei vollstaendigen Artefakt-Goldvektoren** GV-1, GV-3 und GV-7, rekonstruiert als Kopf + Strom + 32-Byte-Tail mit Tail = Sollwert des jeweiligen Vektors; alle drei werden angenommen |
 | C-2 | Magic falsch, Version falsch, Generation falsch (je einzeln) |
-| C-3 | Altcontainer `ATCB` + `0x01` (muss `E-007` ergeben) |
+| C-3 | Altcontainer `ATCB` + `0x01`, darunter GV-5 als Eingabe (muss `E-007` mit Offset `0` ergeben) |
 | C-4 | `ATCE` + `0x01`, `ATCE` + `0x03`, `ATCE` + `0xFF` |
 | C-5 | abgeschnittene Operanden an jeder Operandenposition |
 | C-6 | ein bis drei zusaetzliche Bytes zwischen Stromende und Tail |
 | C-7 | um ein Byte verschobener Tail |
 | C-8 | deklarierte Anzahl zu klein und zu gross |
+
+**Welche Vektoren Parser-Eingaben sind (REQ-SCE-084, praezisiert 12.11.2026).**
+Ein Goldvektor ist nur dann eine Parser-Eingabe, wenn er einen **vollstaendigen
+Container** beschreibt. Das ist bei drei Vektoren der Fall:
+
+| Vektor | Art | Rolle im Korpus |
+|---|---|---|
+| GV-1, GV-3, GV-7 | `artifact_hash`-Eingabe plus Sollwert = Tail | vollstaendiger Container, C-1, angenommen |
+| GV-5 | Altformat `ATCB` + `0x01`, Sollwert = alter Hash | kein gueltiger Container, C-3, `E-007`, Offset `0` |
+| GV-2, GV-4, GV-6 | `code_hash`-Eingabe (Strom ohne Kopf) | keine Container, **nicht** im Parser-Korpus |
+| GV-8, GV-9 | `state_root`-Eingabe | keine Container, **nicht** im Parser-Korpus |
+
+Rekonstruktion fuer GV-1 als Beispiel: der dokumentierte Container ist
+`4154434502010200000001010000000000000010`, der Sollwert
+`02a62ba7…08a23` ist der Tail. Die vollstaendige Eingabe ist also Kopf + Strom +
+Tail, und der Tail wird nicht mitgehasht (19.3). Fuer GV-3 und GV-7 gilt dasselbe
+Verfahren.
+
+C-1 hat damit **drei** Eintraege, nicht neun. Ein Korpus, der GV-5 als gueltigen
+Container fuehrt, wuerde REQ-SCE-079 verletzen und ist unzulaessig; ein Korpus, der
+GV-2, GV-4, GV-6, GV-8 oder GV-9 an einen Containerdecoder gibt, stellt eine Frage,
+die diese Vektoren nicht beantworten.
 
 Ergebnisform: eine Zeile je Eingabe mit `id`, `sha256` der Eingabe, `decision`,
 `code`, `offset`. Die Datei ist maschinenlesbar; ein Abweichen in einer Zeile ist ein
@@ -1203,7 +1234,7 @@ Fehlschlag, kein Hinweis.
 | 19.2 Praezedenz | REQ-SCE-079 | S1-T-42, S1-T-45 |
 | 19.3 Tail | REQ-SCE-080 | S1-T-39, 40, 41 |
 | 19.4 Versionsisolation | REQ-SCE-081 bis 083 | S1-T-44, 45, 46, 47 |
-| 19.5 Differentialtest | REQ-SCE-084 | S1-T-43 |
+| 19.5 Differentialtest, Korpusauswahl | REQ-SCE-084 | S1-T-43, S1-T-48 |
 
 Alle neun Tests sind `OPEN`. Kein Test ist damit bestanden; die Matrix aendert nur
 ihre Groesse, nicht ihren Befund. Der Dekoder bleibt die Voraussetzung fuer L1
