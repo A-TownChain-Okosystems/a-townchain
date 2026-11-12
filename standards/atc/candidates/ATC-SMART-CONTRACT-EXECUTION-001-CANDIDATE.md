@@ -732,6 +732,11 @@ keinem Punkt CI_VERIFIED oder E2E_VERIFIED.
 
 ## 17. Offene Entscheidungen vor Ratifizierung
 
+**Pruefstand (12.11.2026):** Die vier offenen Punkte sind gegen ATC-BC-002 und die
+vorhandenen Vektoren geprueft; Ergebnis und Abhaengigkeiten in
+`docs/audits/EXEC-OPEN-POINTS-2026-11-12.md`. Der Bericht entscheidet nichts und
+aendert keine Anforderung.
+
 1. ATCB-v2: ASSERT/REVERT einfuehren (Empfehlung) oder Abbildung ohne neues Op.
 2. Revert-Semantik: Speicher-Rollback je Rahmen oder je Transaktion.
 3. Storage-Modell: Maps als VM-Primitive oder Contract-seitig ueber Slot-Rechnung.
