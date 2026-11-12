@@ -37,32 +37,49 @@ die Norm.
 | `registry/categories.yaml` | `security` (400) ist auf FAM-77 verkabelt; Kategorie-Range 400–499 wird gedeckt |
 | `registry/families/FAMILY-400.yaml` | `wiring.fam: FAM-77`, `grandfathered_exceptions.list_ref` und `count: 51` |
 | `registry/allocation/family-exceptions.yaml` | 51 Ausnahmen, jede mit Kategorie, historischer FAM, Basis und Status; Kopf trägt die fünf Regeln |
-| `tools/allocation-validator/check_family_400.py` | ALLOC-12f, ALLOC-13, ALLOC-14, ALLOC-15 über den vollen Bestand |
+| `registry/allocation/reservations.yaml` | ATC-STD-410 als `standard_reservations`-Eintrag, `family_wiring: FAM-77` |
+| `registry/families/FAMILY-400.yaml` | zusätzlich `allocation_window`: normative Basis, vorbelegte Reservierung mit Begründung, neues Fenster 411–419, gesperrte Bereiche 420–499 |
+| `tools/allocation-validator/check_family_400.py` | ALLOC-12f, ALLOC-13, ALLOC-14, ALLOC-15; liest das Fenster **aus** FAMILY-400.yaml (kein hartkodiertes Fenster, fail-closed) |
 
 Bewusst **keine** Slot-Liste in FAM-77: die 52 Einträge sind über ihre
 historischen FAMs und die Registry bereits einzeln belegt; eine zweite
 Slot-Tabelle wäre eine zweite Wahrheit über dieselben IDs.
 
-**Ein Sonderfall, offen benannt:** `ATC-STD-410` liegt außerhalb des freien
+**Ein Sonderfall, normativ verankert:** `ATC-STD-410` liegt außerhalb des freien
 Fensters 411–419. Das ist kein Fehler, sondern die zuerst reservierte
-Security-ID (Owner-Entscheidung 12.11.2026); umnummeriert wird nicht. ALLOC-14
-erlaubt deshalb 410 und verlangt 411–419 für alles Neue.
+Security-ID (Owner-Entscheidung 12.11.2026); umnummeriert wird nicht. Die
+Begründung steht **normativ** in `FAMILY-400.yaml` (`allocation_window.pre_reserved`)
+und ist kein Sonderfall im Prüfcode: `check_family_400.py` liest Fenster und
+Vorbelegung von dort und wird FAIL, wenn die normative Angabe fehlt.
+
+**Reservierung und Registry getrennt (Korrektur nach Gate-Befund):** `ATC-STD-410`
+steht **nicht** in `registry/standards.yaml`. Diese Datei führt Standards mit
+Dokument; S-18a verlangt zu jedem Eintrag eine Datei, und ATC-STD-000 kennt keinen
+Lifecycle-Stand `reserved`. Der Eintrag mit `file: null` ließ S-01 READ an einem
+Pfad `<ROOT>/null` scheitern. Die Reservierung lebt jetzt ausschließlich in
+`registry/allocation/reservations.yaml`.
 
 ## 4 Nachweis (lokaler Lauf, Branch `std/family-400-option-b`)
 
 ```
-Familie 400 Bestand: 52 Standards (1 security, 51 grandfatherte Ausnahmen)
-ALLOC-12f Familien-Range: 52/52 4xx-Standards gedeckt
+Familie 400 Bestand: 52 Slots = 51 Standards (0 security, 51 grandfatherte
+                    Ausnahmen) + 1 Reservierung
+ALLOC-12f Familien-Range: 51/51 4xx-Standards gedeckt
 ALLOC-13 Bestandsliste: 51 Ausnahmen, vollstaendig und deckungsgleich
-ALLOC-14 Allokationsfenster: 1 security-Standard in 410-419, 51 Ausnahmen unveraendert
+ALLOC-14 Allokationsfenster (normativ): 1 Reservierung in 410-419, 51 Ausnahmen
 ALLOC-15 Norm/Register/Kategorien: eine Zuordnung (FAM-77, SECURITY, 400-499)
 Gate Familie 400: PASS
 ```
 
-Zusätzlich: `atc_repo_audit --level R3` COMPLIANT 100/100 GATE PASS,
-`check_agent_manifest` GATE PASS, Views 534 Standards/77 Familien.
-`validate_all.py` scheitert an `S-01 READ` **bereits auf der Basis** (nicht durch
-diese Änderung, eigener Befund).
+Zusätzlich: `validate_all.py` **ALL COMPLIANT** (533 Registry-Einträge, S-18a
+pass), `atc_repo_audit --level R3` COMPLIANT 100/100 GATE PASS,
+`check_agent_manifest` GATE PASS, Views 533 Standards/77 Familien.
+
+**Korrektur einer früheren Aussage:** in der ersten Fassung stand, `S-01 READ`
+scheitere „bereits auf der Basis". Das war falsch. Auf `origin/main` (`f540835`)
+ist `validate_all` ALL COMPLIANT. Ursache war der eigene Eintrag `file: null` in
+`standards.yaml`; behoben wurde das **Datenmodell**, nicht das Gate: der Prüfer
+bleibt unverändert streng.
 
 ## 5 Offen
 
