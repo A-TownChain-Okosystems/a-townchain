@@ -81,10 +81,12 @@ decisions:
       - "Beide Hashes tragen feste, byte-exakte Domaenen-Praefixe (S1-T-33, S1-T-34)"
       - "Magic der Huelle: ATCE, Fassung 0x02 (Owner 12.11.2026); ATCB bleibt ausschliesslich der Strom"
       - "Zweiter Dekoder: die VM fuehrt EMPTY_STREAM und COUNT_MISMATCH noch nicht, liest ATCB/0x01 und prueft den Digest vor dem Strom; sie gilt erst nach allen drei Punkten als konformer zweiter Dekoder (S1-T-52)"
+      - "Vierte Abweichung: die VM begrenzt die deklarierte Anzahl (MAX_PROGRAM_OPS 65536, artifact.rs:322), der Vertrag die dekodierte Stromlaenge; C-8-GV1-MAX ergibt nach Vertrag E-005, in der VM ProgramTooLarge"
       - "Stromgrenze und Dekodierprozedur sind verbindlich (§19.2a): tail_start = L - 32, E-005 nur an der Instruktionsgrenze, E-002 im Operanden, E-008 nach c Instruktionen (S1-T-49 bis S1-T-51)"
     open_items:
       - "Groesstwert fuer E-012: kein Wert festgelegt, deshalb kein Korpusfall; haengt an T-21 bis T-24"
       - "Differentialtest offen: ein Referenzdekoder vorhanden (tools/atc_reference_decoder.py), zweiter Dekoder fehlt"
+      - "Laengengrenze vor dem Dekodieren: keine verbindliche Obergrenze fuer Container-Bytes vorhanden (Stand 57fce3e3); Vorschlag ist eine Pruefung im Admission-Layer mit einem Wert aus P1b, ausdruecklich nicht aus bestehenden VM-Grenzen abgeleitet"
 
   - id: D2
     ratification: "nicht ratifiziert (Kandidat)"
