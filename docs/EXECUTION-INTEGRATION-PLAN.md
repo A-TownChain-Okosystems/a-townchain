@@ -1,0 +1,172 @@
+# Implementierungsplan: Smart-Contract-Ausfuehrung
+
+**Datum:** 2026-11-12
+**Stand:** `a-townchain` main `43b194c86`
+**Bezug:** `ATC-SMART-CONTRACT-EXECUTION-001` (Entwurf),
+`docs/decisions/AD-EXEC-D1-D7.md`, `docs/audits/CONTRACT-EXECUTION-INVENTORY-2026-11-12.md`
+
+**Grundregel:** Kein Code wird geschrieben, bevor die zugehoerige Entscheidung
+gefallen ist. Jede Phase hat ein Eingangskriterium (Entscheidung), ein
+Ausgangskriterium (Gate) und einen Nachweis. Eine Phase ohne Nachweis gilt als
+nicht abgeschlossen, unabhaengig davon, wie viel Code entstanden ist.
+
+## Uebersicht
+
+| Phase | Inhalt | Eingang | Gate |
+|---|---|---|---|
+| P0 | Inventar, Konflikte, Vertragsentwurf | Audit vom 11.11.2026 | liegt vor |
+| P1 | Entscheidungen D1 bis D7 | P0 | Owner-Freigabe |
+| P2 | Format und Huelle | D1, D7 | SCE-G1, G2, G8 |
+| P3 | Aufruf Stufe 1 und Identitaet | D2 (Stufe 1), D6 | SCE-G3 (teil), G5 |
+| P4 | Speicher und Zustand | D3 | SCE-G4 |
+| P5 | Gas und Gebuehren | D4 | SCE-G6 |
+| P6 | Ausfuehrung im Block | D5 | SCE-G7, G10 |
+| P7 | Call zwischen Vertraegen, Ereignisse | D2 Stufe 2 nach BC-002 | SCE-G3 (voll) |
+| P8 | E2E und CI | P2 bis P7 | G9, CI_VERIFIED, E2E_VERIFIED |
+
+## P0 — Inventar und Konflikte (abgeschlossen)
+
+**Ergebnis.** 20 Implementierungsstellen erfasst, sieben Domaenen mit
+konkurrierenden Wahrheiten, 12 Konflikte K-01 bis K-12, jeder mit der
+Entscheidung, die ihn aufloest.
+
+**Nachweis.** `docs/audits/CONTRACT-EXECUTION-INVENTORY-2026-11-12.md`.
+
+## P1 — Entscheidungen (Owner)
+
+**Arbeit.** Die sieben Vorlagen aus `AD-EXEC-D1-D7.md` pruefen, aendern oder
+verwerfen. Ergebnis ist je Entscheidung ein Satz, der ohne Rueckfrage anwendbar
+ist, plus die Festlegung der Zahlen, die ich bewusst offen gelassen habe
+(Gaspreise, Gebuehren, Grenzen).
+
+**Ausgang.** Sieben Entscheidungen mit Datum, in diesem Repo dokumentiert, und der
+Auftrag, den Vertragsentwurf zu ratifizieren oder zu aendern.
+
+**Risiko.** Ohne D1 ist jede Zeile Code an Loader oder Backend eine Vermutung.
+Deshalb ist P1 keine Formalie, sondern die eigentliche Arbeit.
+
+## P2 — Ein Format, eine Huelle, ein Frontend
+
+**Arbeit.**
+1. Huelle nach SCE-ARTIFACT definieren (eigenes Magic, Generation, Laenge,
+   Layout-Hash, SHA-256).
+2. VM-Loader auf den Strom nach ATC-BC-001 umstellen, Opcode-Belegung angleichen.
+3. Backend in `components/system` vom Opcode-Uebersetzer zum Semantikpruefer
+   zurueckbauen; verbleibende Ablehnungen bleiben Ablehnungen.
+4. `.ops` aus dem Produktionspfad nehmen, im Register als Testwerkzeug fuehren.
+5. Bestehende Devnet-Artefakte neu erzeugen, Code-Hashes neu binden.
+
+**Nachweis.** Ein Artefakt, gelesen von Verifier und VM mit identischem Strom;
+Gate SCE-G1, G2, G8. Rundlauf-Test als Pflichtfall T-01 und T-03.
+
+**Was nicht passiert.** Keine Aenderung an ATC-BC-001, keine zweite VM, kein
+Parallelbetrieb beider Formate.
+
+## P3 — Aufruf Stufe 1 und Identitaet
+
+**Arbeit.**
+1. `CallEnvelope` (SCE-CALL) implementieren: Adresse, Selektor, Calldata, Wert,
+   Gasbudget, Aufruferidentitaet.
+2. Selektor aus dem Vertrags-ABI (`abi.rs`), Calldata als kanonische Wortfolge.
+3. Rueckgabepuffer mit Status und Laenge, Fehlerfaelle als eigene Statuscodes.
+4. Vertragsadresse deterministisch ableiten (Deployer, Nonce, Code-Hash, eigene
+   Domain).
+5. `caller` von `u64` auf das 32-Byte-Identitaetswort umstellen, inklusive
+   Receipt-Feld.
+
+**Nachweis.** T-04, T-05, T-06, T-12, T-13; Gate SCE-G3 (ohne Call), G5.
+
+**Bewusste Grenze.** Noch kein Vertrag-zu-Vertrag-Aufruf. Ohne Ruecklauf waere
+das eine halbe Zustandsaenderung.
+
+## P4 — Speicher und Zustand
+
+**Arbeit.**
+1. Lokale in einen Frame-Speicher legen, eigene Befehle fuer Lokale.
+2. Persistente Slots nach S1, Adressierung ueber Layout-Hash aus dem Artefakt.
+3. `ContractState` von `Vec<u64>` auf eine Slot-Tabelle mit Layout-Bezug
+   umstellen, `state_root` entsprechend.
+4. Maps im Kettenziel ausdruecklich ablehnen, solange kein Schluesselbefehl
+   existiert.
+
+**Nachweis.** T-07, T-08, T-19; Gate SCE-G4.
+
+**Nebenwirkung, die benannt sein muss.** `state.rs` und der Beleg aendern sich;
+alte Entwicklungszustaende sind nicht mehr lesbar. Fuer Devnet akzeptabel, fuer
+Testnet braucht es einen Migrationshinweis.
+
+## P5 — Gas und Gebuehren
+
+**Arbeit.**
+1. `GAS_TABLE_V2` als einzige Tabelle, zusammengefuehrt aus `GAS_TABLE_V1` und der
+   ATC-14-Formel fuer Deployment.
+2. Budget aus `tx.gas_limit`, nicht aus `DEFAULT_GAS`; Mempool prueft das Feld.
+3. Verbrauch im Beleg, auch bei Erfolg (schliesst GAS-AUD-005).
+4. Kontofuehrung und Abbuchung; Fehlschlag verbraucht das ganze Budget.
+5. Ruecklauf bei erschoepftem Budget ohne Teilwirkung.
+
+**Nachweis.** T-09, T-10, T-11, T-17; Gate SCE-G6.
+
+**Offen und blockierend.** Ohne Kontofuehrung ist REQ-SCE-025 nicht erfuellbar.
+Das ist eigene Arbeit, kein Nebenprodukt.
+
+## P6 — Ausfuehrung im Block
+
+**Arbeit.**
+1. Blockstruktur erweitern: Belege, Zustandswurzel vorher/nachher,
+   Aufnahmeverweis, Gasabrechnung je Transaktion.
+2. `atc-node` bekommt die VM-Kante; `TxType::Contract` wird ausgewertet.
+3. Nachrechnen beim Import, Abbruch bei Abweichung, kein stilles Weiterreichen.
+4. Aufnahme nach ATC-SEC-EXEC-001 im Kettenpfad verankern, Devnet-Schluessel
+   ausdruecklich als Devnet kennzeichnen.
+
+**Nachweis.** T-14, T-15, T-18, T-20; Gate SCE-G7 und G10. Zwei Validatoren,
+zwei Prozesse, gleiche Wurzel.
+
+**Bruch.** Die bestehende Kette ist nach dieser Phase nicht mehr kompatibel. Das
+ist der Punkt, an dem ein Netz neu gestartet wird, und er muss vorher angekuendigt
+sein.
+
+## P7 — Call und Ereignisse (nach BC-002)
+
+**Arbeit.** `Call` mit eigenem Frame, Ruecklauf je Frame und je Transaktion,
+Ereignisse als Teil des Belegs. Voraussetzung ist die Ratifizierung von
+ATC-BC-002 (Assert, Revert, Ruecklauf-Ebenen, Fehlercodes).
+
+**Nachweis.** Pflichtfaelle fuer Tiefe, Zyklen, Teilfehler; Gate SCE-G3 vollstaendig.
+
+## P8 — E2E und CI
+
+**Arbeit.** Zwei Knoten, getrennte Prozesse, gleicher Block, gleiche Wurzel; CI
+am gebundenen Commit; Register und Doku nachziehen.
+
+**Nachweis.** `CI_VERIFIED` und `E2E_VERIFIED` fuer denselben SHA. Die 464 lokalen
+Tests vom 11.11.2026 bleiben lokale Evidenz und werden nicht hochgestuft.
+
+## Risiken
+
+| Risiko | Wirkung | Umgang |
+|---|---|---|
+| K-11: ATC-14 fordert Wasm, die Kette fuehrt eine Stack-Maschine | Standardkonflikt, der bei einer Pruefung auffaellt | SCR auf ATC-14, nicht stillschweigend umdeuten |
+| Fehlende Kontofuehrung | P5 nicht abschliessbar | eigene Phase vor P5, ehrlich im Plan |
+| CI blockiert (E-Mail, workflow-Scope) | CI_VERIFIED nicht erreichbar | Owner-Aktion, solange offen bleibt der Status offen |
+| 16 Registry-Vertraege auf `.ops` | Migration noetig vor P2-Abschluss | Portierung mit Paritaetsvergleich, danach Legacy |
+| Devnet-Neustart in P6 | Datenverlust in Devnet | vorher ankuendigen, Register und Belege neu erzeugen |
+| Reihenfolge wird uebersprungen | zwei Wahrheiten kehren zurueck | Gate je Phase, kein Phasenbeginn ohne Vorgaenger |
+
+## Definition of Done fuer ATC-SMART-CONTRACT-EXECUTION-001
+
+Der Vertrag ist erfuellt, wenn alle zehn Gates mit Nachweis vorliegen und
+zusaetzlich gilt:
+
+1. Ein Vertrag aus ATCLang wird deployt, aufgerufen und aendert Zustand, ohne dass
+   jemand von Hand Bytes schreibt.
+2. Zwei unabhaengige Validatoren berechnen dieselbe Zustandswurzel und lehnen
+   einen absichtlich abweichenden Block ab.
+3. Ein Aufruf, der scheitert, hinterlaesst weder Zustand noch Gebuehrenerstattung.
+4. Kein Pfad im Produktionsbetrieb kommt ohne Typpruefung, ABI und Freigabe aus.
+5. Die Dokumentation sagt dasselbe wie der Code, und jede Aussage traegt ihre
+   Evidenzstufe.
+
+Bis dahin gilt der Status aus dem Audit vom 11.11.2026: der Pfad ist da, die
+Semantik fehlt, und `VERIFIED` ist nicht erreicht.
