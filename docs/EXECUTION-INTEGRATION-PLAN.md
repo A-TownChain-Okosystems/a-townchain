@@ -66,8 +66,10 @@ stellen.
 | D4 | Fehlerklassen und Erstattungsregel unterscheiden | vier Klassen erledigt, Erstattungsregel **offen** (Formeln als Vorschlag) | REQ-SCE-047, REQ-SCE-054, REQ-SCE-060, T-28, T-29, T-40 |
 | D4 | Einheiten von `gas_refund` und Geldbetrag getrennt | erledigt | REQ-SCE-055 |
 | D6 | `origin`, `caller` und Vertragsidentitaet getrennt definiert | erledigt | REQ-SCE-051 bis REQ-SCE-053 |
-| D6 | `IdentityValue` mit kanonischem Layout, Typkennzeichen, fail-closed, eine Implementierung | Layout erledigt, Testvektoren **offen** | REQ-SCE-057 bis REQ-SCE-059, T-31 bis T-39 |
+| D6 | `IdentityValue` mit kanonischem Layout, Typkennzeichen, fail-closed, eine Implementierung | erledigt: Layout und gemeinsame Testvektor-Datei | REQ-SCE-057 bis REQ-SCE-059, `standards/atc/conformance/identity-value-vectors.json` |
 | D4 | Infrastrukturfehler als eigene Klasse, nicht als Revert oder Erschoepfung | erledigt | REQ-SCE-060, T-40 |
+| D4 | Infrastruktur-Statuscode zentral festgelegt, nicht als Beleg-Status | erledigt: `ATC-NODE-INFRA-001`, Beleg nur `0x00` bis `0x03` | REQ-SCE-054, T-44 |
+| Alle | Entscheidungsdokument gibt die Anforderungen widerspruchsfrei wieder | erledigt: D4 und D6 synchronisiert, alte Optionen als historisch markiert | AD-EXEC-D1-D7, D4 und D6 |
 | D6 | `caller`-Semantik bei Vertrag-zu-Vertrag mit ATC-BC-002 abgestimmt | **offen** (haengt an BC-002) | REQ-SCE-052 |
 | D5 | Validator-Orchestrierung und VM-Ausfuehrungsverantwortung getrennt | erledigt | Matrix §4, REQ-SCE-056 |
 | Alle | Register-Generator und Konsistenzpruefung erfolgreich | erledigt | `tools/decision_register.py --check` PASS |
