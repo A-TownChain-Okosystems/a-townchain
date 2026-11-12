@@ -15,7 +15,9 @@ nicht abgeschlossen, unabhaengig davon, wie viel Code entstanden ist.
 | Phase | Inhalt | Eingang | Gate |
 |---|---|---|---|
 | P0 | Inventar, Konflikte, Vertragsentwurf | Audit vom 11.11.2026 | liegt vor |
-| P1 | Entscheidungen D1 bis D7 | P0 | Owner-Freigabe |
+| P1 | Entscheidungen D1 bis D7 | P0 | erledigt 12.11.2026 (alle DECIDED) |
+| P1a | Auflagen der bedingten Freigaben spezifizieren (D2, D4, D6) | P1 | in Arbeit: REQ-SCE-039..050 |
+| P1b | Messung und Zahlen (Gaskosten je Instruktionsklasse, Limits) | P1a | offen |
 | P2 | Format und Huelle | D1, D7 | SCE-G1, G2, G8 |
 | P3 | Aufruf Stufe 1 und Identitaet | D2 (Stufe 1), D6 | SCE-G3 (teil), G5 |
 | P4 | Speicher und Zustand | D3 | SCE-G4 |
@@ -32,18 +34,50 @@ Entscheidung, die ihn aufloest.
 
 **Nachweis.** `docs/audits/CONTRACT-EXECUTION-INVENTORY-2026-11-12.md`.
 
-## P1 — Entscheidungen (Owner)
+## P1 — Entscheidungen (Owner) — erledigt am 12.11.2026
 
-**Arbeit.** Die sieben Vorlagen aus `AD-EXEC-D1-D7.md` pruefen, aendern oder
-verwerfen. Ergebnis ist je Entscheidung ein Satz, der ohne Rueckfrage anwendbar
-ist, plus die Festlegung der Zahlen, die ich bewusst offen gelassen habe
-(Gaspreise, Gebuehren, Grenzen).
+**Ergebnis.** Vier Entscheidungen freigegeben (D1, D3, D5, D7), drei bedingt
+freigegeben (D2, D4, D6). Alle sieben stehen auf DECIDED. Register:
+`docs/decisions/exec-decision-register.yaml`, Tabelle identisch in
+`AD-EXEC-D1-D7.md` und im Kandidaten (`tools/decision_register.py --check`).
 
-**Ausgang.** Sieben Entscheidungen mit Datum, in diesem Repo dokumentiert, und der
-Auftrag, den Vertragsentwurf zu ratifizieren oder zu aendern.
+**Nicht freigegeben und damit nicht Teil von P1:** numerische Gaspreise,
+Transaktionsgaslimit, Blockgaslimit, Implementierungs- und CI-Gates.
 
-**Risiko.** Ohne D1 ist jede Zeile Code an Loader oder Backend eine Vermutung.
-Deshalb ist P1 keine Formalie, sondern die eigentliche Arbeit.
+**P2 ist nicht freigegeben.** Die Sperre gilt, bis P1a und die Konsistenz des
+Registers erfuellt sind; P1b (Zahlen) blockiert die Gasphase, nicht den Beginn von P2.
+
+## P1a — Auflagen spezifizieren
+
+**Arbeit.** Die Bedingungen der bedingten Freigaben in Anforderungen ueberfuehren,
+sodass sie pruefbar sind statt verhandelbar.
+
+| Auflage | Anforderung | Stand |
+|---|---|---|
+| Selektor, Wortgroesse, Encoding, Groessen, Adressableitung | REQ-SCE-039 bis REQ-SCE-041 | geschrieben, Werte zur Bestaetigung |
+| atomare Rueckabwicklung | REQ-SCE-043 | geschrieben |
+| fuenf Gasfelder, Abrechnung unabhaengig vom Rollback | REQ-SCE-045 bis REQ-SCE-047 | geschrieben |
+| Identitaetsnachweise (vier Punkte) | REQ-SCE-048 | geschrieben, Nachweise offen |
+| VM-Versionierung, Rollback, Replay | REQ-SCE-042 bis REQ-SCE-044 | geschrieben |
+| deterministische Reihenfolge, reproduzierbare Receipts | REQ-SCE-049, REQ-SCE-050 | geschrieben |
+
+**Ausgang.** Keine Anforderung der Auflagen mehr ohne Prueffall, und die
+Vorschlagswerte (Calldata 8 192 Byte, Rueckgabe 4 096 Byte, Aufruftiefe 8)
+bestaetigt oder ersetzt.
+
+## P1b — Messung und Zahlen
+
+**Arbeit.** Instruktionskosten je Klasse messen, nicht schaetzen. Dazu ein
+Messaufbau, der dieselbe Messung zweimal ausfuehrt und die Abweichung ausweist, und
+realistische Vertragsbenchmarks statt eines einzelnen Durchsatzwerts.
+
+**Ausgang.** Eine Tabelle mit gemessenen Kosten, ein Transaktionsgaslimit und ein
+Blockgaslimit, jedes mit Messprotokoll. Der Referenzwert 100 000 Gas
+(`ATC-BC-002-CANDIDATE` §19.5) bleibt Vergleichswert, nicht Konsenslimit; 50 000
+(`DEFAULT_GAS`) bleibt Implementierungswert.
+
+**Risiko.** Ohne Messung ist jede Zahl eine Setzung. Deshalb ist P1b keine
+Feinheit, sondern die Grundlage der Abrechnung.
 
 ## P2 — Ein Format, eine Huelle, ein Frontend
 
@@ -61,6 +95,9 @@ Gate SCE-G1, G2, G8. Rundlauf-Test als Pflichtfall T-01 und T-03.
 
 **Was nicht passiert.** Keine Aenderung an ATC-BC-001, keine zweite VM, kein
 Parallelbetrieb beider Formate.
+
+**Eingang jetzt erfuellt.** D1 und D7 sind entschieden (freigegeben). P2 darf
+beginnen, sobald P1a abgeschlossen ist und das Register konsistent ist.
 
 ## P3 — Aufruf Stufe 1 und Identitaet
 
@@ -170,3 +207,12 @@ zusaetzlich gilt:
 
 Bis dahin gilt der Status aus dem Audit vom 11.11.2026: der Pfad ist da, die
 Semantik fehlt, und `VERIFIED` ist nicht erreicht.
+
+## Stand 12.11.2026
+
+| Frage | Antwort |
+|---|---|
+| Ist P1 erledigt? | Ja: sieben Entscheidungen, alle DECIDED, Register fuehrend. |
+| Ist P2 freigegeben? | Nein. Wartet auf P1a (Auflagen als Anforderungen) und den Registerabgleich. |
+| Was ist der naechste konkrete Schritt? | P1a abschliessen: Vorschlagswerte bestaetigen, Nachweise zu REQ-SCE-048 benennen, dann P2 beginnen. |
+| Was bleibt bis zuletzt offen? | Zahlen aus P1b, CI- und E2E-Evidenz. Kein Gate gilt ohne Nachweis. |
