@@ -122,6 +122,64 @@ Migration ist damit **heute** ohne Bestandsdaten moeglich, aber nur mit Verfahre
 | S1-T-05 | Grep-Gate ueber `components/` | kein Pfad setzt `code_hash` aus dem Container-Hash |
 | S1-T-06 | Reproduzierbarkeit | derselbe Quelltext erzeugt die Werte aus 1.2 erneut |
 
+### 1.7 Zusatzfrage: Aendert die Domaenen-Trennung den bestehenden Artefakt-Hash?
+
+Der Review verlangt eigene Domaenen fuer beide Hashes (S1-T-19) und weist richtig
+darauf hin, dass eine nachtraegliche Domaenen-Trennung den bisherigen Wert von
+`Artifact::hash()` aendern kann. Das ist exakt der Fall, und zwar unvermeidbar:
+jedes zusaetzliche Byte vor der Eingabe aendert den Digest.
+
+**Ist-Stand.** `artifact.rs:273-284` baut die Eingabe als
+`MAGIC(4) + CONTAINER_VERSION(1) + generation(1) + Anzahl(4, LE) + Opcodes`.
+Es gibt **keinen** Domaenen-Praefix. Der Containerkopf ist damit heute die
+faktische Domaine des Artefakt-Hashes.
+
+**Und ein belegbarer Unterschied.** Ein Container beginnt immer mit `0x41`
+(`"ATCB"`). Ein Strom beginnt mit einem Opcode; `artifact.rs:130-151` kennt 19
+Opcodes von `0x01` bis `0x13`, `0x41` ist keiner davon. Die beiden Bytebereiche
+koennen sich daher heute nicht vermischen, auch ohne Praefix. (Ein leerer Strom
+hat kein erstes Byte; er ist von jedem Container verschieden, weil dieser
+mindestens neun Byte traegt.)
+
+**Drei Varianten, alle mit Option A vereinbar.** Die Wahl A (drei Identitaeten)
+bleibt unberuehrt; offen ist nur, wie die Trennung hergestellt wird.
+
+| Variante | Artefakt-Hash | Strom-Hash | Wert des Artefakt-Hashes |
+|---|---|---|---|
+| S1-1a | ohne Praefix, Trennung strukturell ueber den Containerkopf | eigener Praefix, z. B. `ATC-STREAM-V1\0` | **unveraendert** |
+| S1-1b | eigener Praefix `ATC-ARTIFACT-V1\0` | eigener Praefix | **aendert sich fuer jedes Artefakt** |
+| S1-1c | Praefix nur fuer neue Containerfassung, Altfassung ohne | eigener Praefix | haengt an der Containerfassung |
+
+**Folgen.**
+
+| Bereich | S1-1a | S1-1b | S1-1c |
+|---|---|---|---|
+| elf abhaengige Stellen | Werte bleiben, nur die Zustandswurzel wechselt | Werte aendern sich alle | zwei Lesepfade dauerhaft |
+| Containerformat | unveraendert | Formatfassung muss steigen | Formatfassung steuert den Pfad |
+| Auditierbarkeit | Trennung haengt an einer stillen Invariante (kein Opcode `0x41`) | eine Regel fuer alle Identitaeten | eine Regel mit Ausnahme |
+| Risiko | ein spaeterer Opcode `0x41` hebt die Trennung auf, ohne dass es auffaellt | einmalige Wertänderung, heute ohne Bestand | dauerhaft zwei Wahrheiten ueber denselben Gegenstand |
+
+**Technische Einschaetzung (keine Entscheidung).** S1-1a ist nur so lange sicher,
+wie die Opcode-Menge `0x41` nicht enthaelt. Diese Bedingung ist nirgends
+aufgeschrieben und wuerde bei einer Erweiterung des Instruktionssatzes niemandem
+auffallen. S1-1b kostet heute nur eine Neuverifikation, weil kein Artefakt-Hash
+gespeichert ist, und kauft dafuer eine Regel ohne Ausnahme. S1-1c traegt zwei
+Wahrheiten dauerhaft weiter.
+
+**Zusatzpruefungen.**
+
+| ID | Pruefung | Bestehen |
+|---|---|---|
+| S1-T-25 | erste Bytes | Strom beginnt in `0x01..0x13`, Container mit `0x41`; die Pruefung ist Test, nicht Kommentar |
+| S1-T-26 | Schutz der Trennung | ein Opcode `0x41` oder eine neue Containerfassung ohne Domaenenangabe wird von einem Gate abgewiesen |
+| S1-T-27 | Wertwechsel | aendert sich der Artefakt-Hash, sind alte Werte als ueberholt dokumentiert und der Goldvektor ist erneuert |
+| S1-T-28 | Benennung | kein Codepfad und kein Dokument verwendet `hash` ohne Qualifizierung (`code_hash`, `artifact_hash`, `state_root`) |
+
+**Zum Zustandsbaum.** `ATC-STATE-V2` ist nicht wegen des Praefixes noetig, sondern
+weil sich die **Eingabe** der Wurzel aendert: heute der Artefakt-Hash, kuenftig der
+Strom-Hash (`state.rs:43-52`). Auch bei S1-1a, das den Artefakt-Hash unveraendert
+laesst, wechselt damit die Wurzel.
+
 ## 2. S1-2 — Welche Identitaet bindet die Freigabe
 
 ### 2.1 Frage
@@ -167,6 +225,48 @@ verseuchte Verpackung sperren, ohne den Code zu sperren, und umgekehrt.
 | S1-T-08 | Widerruf | sperrt genau die gewaehlte Identitaet; das andere Objekt verhaelt sich wie entschieden |
 | S1-T-09 | Gleichlauf | Mindestversion und Widerruf nennen ihre Identitaet im Datensatz |
 | S1-T-10 | Umbenennung | Aenderung des Magic kann eine Freigabe weder umgehen noch vortaeuschen; das Ergebnis ist definiert |
+
+### 2.6 Umsetzbarkeit der asymmetrischen Bindung heute
+
+Der Review verlangt getrennte Schluesselraeume und Vorrangregeln. Am Code geprueft
+ist das heute **nicht** darstellbar, ohne die Datenstruktur zu aendern:
+
+| Stelle | Stand |
+|---|---|
+| `exec-admission/src/lib.rs:191` | `policies: BTreeMap<[u8; 32], ExecutionPolicy>`, Schluessel ist `policy.code_hash` |
+| `:335` | `revoked: BTreeSet<[u8; 32]>`, flach, ohne Typangabe |
+| `:334` | `min_versions: BTreeMap<[u8; 32], u64>` |
+| `:486` | `min_versions.get(&policy.code_hash)` |
+| `:500` | `revoked.contains(&policy.code_hash)` |
+
+Zwei Folgen, die die Option C zu einer Strukturaenderung machen und nicht zu einem
+zweiten Eintrag:
+
+1. **Falscher Blickwinkel.** Beide Abfragen pruefen `policy.code_hash`, nie
+   `request.observed_hash`. Ein Widerruf, der auf den Artefakt-Hash zeigt, wuerde
+   heute nie gefunden, weil niemand den beobachteten Hash fragt.
+2. **Typverlust.** `revoked` ist eine Menge aus 32 Byte ohne Kennzeichnung. Ein
+   Artefakt-Hash in dieser Menge waere von einem Code-Hash nicht unterscheidbar und
+   wuerde als Code-Widerruf gelesen, also genau der Fehler, den die Option
+   ausschliessen soll.
+
+Ein Symptom dafuer steht schon im Code: `:434` vergleicht `observed_hash` mit
+`policy.code_hash` und meldet dabei "Artefakt-Hash stimmt nicht mit der Freigabe
+ueberein". Die Meldung nennt bereits den Artefakt-Hash, wo ein Code-Hash gemeint
+ist.
+
+**Damit Option C tragfaehig ist**, braucht sie: getypte Schluesselraeume (zwei
+Mengen oder ein getaggter Schluessel), eine zweite Abfrage auf
+`request.observed_hash`, Ablehnung bei Treffer auf einer der beiden Sperren, je
+einen eigenen Statuscode, damit ein Treffer nicht der falschen Sperre zugeschrieben
+wird, und die Zurueckweisung ungetypter Altbelegungen beim Start.
+
+| ID | Pruefung | Bestehen |
+|---|---|---|
+| S1-T-29 | Schluesselraum | jeder Eintrag nennt seine Identitaet; ein Eintrag ohne Angabe wird abgelehnt |
+| S1-T-30 | beide Abfragen | Code- und Artefakt-Sperre werden beide geprueft; ein Treffer auf einer davon blockiert |
+| S1-T-31 | Trennung der Wirkung | eine Artefakt-Sperre sperrt nicht den Code in anderer Verpackung, eine Code-Sperre nicht das Artefakt einer anderen Fassung, wie entschieden |
+| S1-T-32 | Begruendung | der Ablehnungsgrund nennt die Sperre, die getroffen hat, und nicht die andere |
 
 ## 3. S1-3 — Erstattung: Grundsatz
 
@@ -314,7 +414,7 @@ Die Reihenfolge folgt der Abhaengigkeit, nicht der Wichtigkeit:
 
 | Schritt | Gegenstand | Ergebnis |
 |---|---|---|
-| 1 | S1-1 und S1-2 | Hash-Semantik und Policy-Identitaet festgelegt |
+| 1 | S1-1 und S1-2 | Hash-Semantik und Policy-Identitaet festgelegt; bei S1-1 zusaetzlich die Domaenenvariante S1-1a/b/c (Abschnitt 1.7), bei S1-2 die getypten Schluesselraeume (Abschnitt 2.6) |
 | 2 | S1-3 | Grundsatz zu Gas und Erstattung |
 | 3 | S1-4 | entkoppeltes Testverfahren |
 | 4 | B-1 mit R-906 | Autoritaet und Aufrufarchitektur |
@@ -353,3 +453,30 @@ Diese fuenf Punkte sind keine Empfehlungen, sondern die Grenze dieser Vorlage.
 Sie waehlt keine Option, aendert keine Anforderung und setzt keinen Grenzwert.
 Alle sieben Entscheidungen im Register bleiben Kandidaten und nicht ratifiziert.
 P1a ist offen, P2 ist gesperrt, eine Produktionsfreigabe ist nicht erteilt.
+
+## 9. Empfehlung des Owners vom 12.11.2026 (nicht bestaetigt)
+
+Der Owner hat eine Optionswahl als **Empfehlung** vorgelegt. Sie ist hier
+festgehalten, damit die naechste Pruefung nicht mit einer Vermutung arbeitet. Sie
+ist **keine** Ratifikation: das Register ist unveraendert, die Anforderungen sind
+unveraendert, Aufgabe 910 bleibt offen, P1a bleibt offen und P2 gesperrt.
+
+| Entscheidung | Empfehlung | Begruendung des Owners |
+|---|---|---|
+| S1-1 | A, drei Identitaeten | Code und Container muessen unabhaengig identifizierbar sein |
+| S1-2 | C, asymmetrische Bindung | Freigabe und Mindestversion binden den Code, Widerruf sperrt gezielt Code oder Verpackung |
+| S1-3 | A, nur Gas-Rueckfluss | kein Geldmodell, solange Konten- und Gebuehrenmodell es nicht tragen |
+| S1-4 | B, nur L1 zaehlt fuer P1a | keine Frame-Semantik durch einen Harness vorwegnehmen |
+
+**Vier Auflagen, die mit der Empfehlung verbunden sind:**
+
+1. S1-1 verlangt zusaetzlich die Klaerung der Domaenenfrage aus Abschnitt 1.7
+   (Varianten S1-1a, S1-1b, S1-1c). Diese Unterfrage ist **offen**; die Empfehlung
+   A entscheidet sie nicht mit.
+2. S1-2 verlangt getrennte Schluesselraeume und Vorrangregeln; Abschnitt 2.6 zeigt,
+   dass die heutige Datenstruktur das nicht hergibt.
+3. S1-3 schliesst eine Geldrueckzahlung aus, solange kein Kontenmodell existiert.
+4. S1-4 aendert nichts daran, dass L1 heute `EMPTY` ist. Option B macht L1 nicht
+   testbar; erst ein reiner Dekoder und ausgefuehrte Tests erzeugen `TESTED`.
+
+Bis zur Bestaetigung durch den Owner gilt: keine Option gewaehlt, keine Umsetzung.
