@@ -43,8 +43,12 @@ fn erwarte(error: &SystemError, code: &str, offset: usize) {
     }
 }
 
-fn gueltige_huelle(system: &mut System) -> Vec<u8> {
-    system
+/// Huelle fuer `SOURCE_A`. Bewusst aus einem eigenen System: die Registrierung
+/// ist Compare-and-Insert (S1-2), ein zweiter Zulassungsweg fuer dasselbe
+/// Programm waere im selben System ein Policy-Konflikt.
+fn gueltige_huelle(_system: &mut System) -> Vec<u8> {
+    System::devnet()
+        .expect("Devnet")
         .deploy(SOURCE_A, NOW_US)
         .expect("Deployment")
         .container_bytes
@@ -65,7 +69,10 @@ fn huelle_ist_der_externe_eingang() {
     let aus_huelle = system
         .deploy_container(&container, NOW_US)
         .expect("Huelle angenommen");
-    let aus_quelle = system.deploy(SOURCE_A, NOW_US).expect("Quelle");
+    let aus_quelle = System::devnet()
+        .expect("Devnet")
+        .deploy(SOURCE_A, NOW_US)
+        .expect("Quelle");
 
     assert_eq!(
         aus_huelle.code_hash, aus_quelle.code_hash,
@@ -120,6 +127,9 @@ fn bytegleiche_rueckfuehrung_des_bytecodes() {
     let gelesen = Envelope::parse(&container).expect("Huelle");
     let inner = gelesen.into_artifact().expect("ATCB");
     let deployment = system.deploy_container(&container, NOW_US).expect("Huelle");
+    system
+        .deploy(SOURCE_A, NOW_US)
+        .expect_err("zweiter Zulassungsweg fuer dasselbe Programm ist ein Konflikt");
 
     assert_eq!(
         inner.to_bytes(),
