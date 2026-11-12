@@ -5,7 +5,7 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.7.0-draft
+> **Version:** 1.8.0-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
@@ -26,6 +26,7 @@
 | 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
 | 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
 | 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
+| 1.8.0-draft | 2026-11-12 | Parser-Fehlersemantik und Versionsisolation spezifiziert (§19, REQ-SCE-078 bis 084): geschlossene Codeliste E-001 bis E-012 passend zur VM-Fehleraufzaehlung, zehnstufige Pruefreihenfolge mit Praezedenz (erstes Problem gewinnt, Magic vor Version, deshalb ergibt der Altcontainer `ATCB` `E-007` und nicht `E-003`), Tail-Integritaet byte-genau, Versionsisolation ohne Fallback und als reine Funktion, Differentialtest mit acht Korpusklassen. Neun neue Tests S1-T-39 bis S1-T-47, alle `OPEN`. |
 | 1.7.0-draft | 2026-11-12 | Owner-Entscheidung: Container-Magic `ATCE`, Fassung `0x02`, `ATCB` bleibt der Strom (REQ-SCE-067, Widerspruch zu §5 und Audit IV-03 beseitigt). Zweiter Befund des Owners behoben: der angehaengte Integritaetsdigest war als SHA-256 ohne Domaene beschrieben und ist jetzt exakt `artifact_hash` (REQ-SCE-062), ohne Zirkel, weil der Tail nicht in die Eingabe eingeht. Neues Fehlerbild `ATC-SCE-E-007 UNKNOWN_MAGIC`, verbindliche Pruefreihenfolge Laenge/Magic/Version/Generation/Struktur/Tail. Sechs Vektoren neu berechnet: GV-1, GV-3, GV-5, GV-7, GV-9 (enthaelt GV-1) und NV-2; GV-2, GV-4, GV-6, GV-8 unveraendert. Keine Implementierungsfreigabe. |
 | 1.6.0-draft | 2026-11-12 | Spezifikation Stufe 1 byte-genau: drei Domaenenlabels mit abschliessendem Nullbyte (Laengen nachgezaehlt 16/14/13), Eingaben fuer `artifact_hash`, `code_hash` und `state_root` exakt, neun Goldvektoren und sechs Negativvektoren (mit reinem SHA-256-Werkzeug erzeugt), Containerfassung `0x02` mit Namensraumtrennung fuer das Magic, zwoelf Fehlercodes, getypte Policy-Schluesselraeume mit achtstufiger Pruefsequenz, Erstattungswortlaut samt Fall der kuenftigen Kontobelastung; REQ-SCE-061 bis 077, Testzuordnung in 18.6. Kein Test dadurch bestanden. |
 | 1.5.1-draft | 2026-11-12 | Nur Hinweise, keine Anforderung geaendert: Aufruftiefe 8 als offener Konflikt gegen die Owner-Entscheidung 64 in ATC-BC-002 markiert (R-901); Grenzwerte als heute nicht pruefbar gekennzeichnet, weil kein Aufruf existiert (R-902); Verweise auf Abhaengigkeitsinventur und Entscheidungsvorlage. |
@@ -566,7 +567,7 @@ keine auf **IMPLEMENTED**.
 
 | ID | Entscheidung (Titel) | Owner-Entscheidung | Ratifikation | Spezifikation | spezifiziert in | Umsetzung | Gate |
 |---|---|---|---|---|---|---|---|
-| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | SPECIFIED | Kandidat §5.1 und §18.1-18.3 (nicht ratifiziert) | OPEN | SCE-G1 |
+| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | SPECIFIED | Kandidat §5.1, §18.1-18.3 und §19 (nicht ratifiziert) | OPEN | SCE-G1 |
 | D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.3, §5.10 (nicht ratifiziert) | OPEN | SCE-G3 |
 | D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.4 (nicht ratifiziert) | OPEN | SCE-G4 |
 | D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.6, §5.10 (nicht ratifiziert) | OPEN | SCE-G6 |
@@ -1067,6 +1068,146 @@ Der Nachweisstand aendert sich durch diesen Abschnitt **nicht**: die Matrix blei
 bei 37 offen und 1 blockiert, weil kein Test ausgefuehrt wurde. Spezifiziert ist
 nicht implementiert.
 
+
+---
+## 19. Parser-Fehlersemantik und Versionsisolation
+
+Dieser Abschnitt ist die Antwort auf die drei vom Owner am 12.11.2026 benannten
+unabhaengigen Pruefungen: Tail-Integritaet, Differentialtests, Versionsisolation.
+Er ist Spezifikation, **keine** Freigabe. Er aendert keine Anforderung aus §18 und
+ergaenzt keine Vektoren: die neun Gold- und zwei Negativvektoren bleiben gueltig.
+
+Grundsatz: ein Fehler ist ein **Paar aus Code und Offset**, nicht ein Text. Zwei
+konforme Dekoder duerfen sich in der Formulierung unterscheiden, nie in Code, Offset
+oder Annahme-/Ablehnungsentscheidung.
+
+### 19.1 Fehlercodes (REQ-SCE-078)
+
+**REQ-SCE-078 (geschlossene Codeliste).** Ein Dekoder kennt genau diese Codes und
+erfindet keine weiteren. Die Liste entspricht eins zu eins der Fehleraufzaehlung der
+VM (`components/vm/src/artifact.rs`, `ArtifactError`) und den bereits in §18
+verwendeten Codes:
+
+| Code | Name | Bedeutung | Offset |
+|---|---|---|---|
+| `E-001` | `TOO_SHORT` | weniger als 42 Byte, kein vollstaendiger Container | Laenge der Eingabe |
+| `E-002` | `TRUNCATED_OPERAND` | Operand reicht nicht bis zum Stromende | erstes Byte des fehlenden Operanden |
+| `E-003` | `UNSUPPORTED_CONTAINER_VERSION` | Magic stimmt, Version ist nicht `0x02` | 4 |
+| `E-004` | `EMPTY_STREAM` | Strom ohne Instruktion | 10 |
+| `E-005` | `COUNT_MISMATCH` | deklarierte Anzahl passt nicht zur dekodierten Opzahl | 6 |
+| `E-006` | `INTEGRITY_MISMATCH` | Tail entspricht nicht `artifact_hash` | 10+n |
+| `E-007` | `UNKNOWN_MAGIC` | erste vier Bytes sind nicht `ATCE` | 0 |
+| `E-008` | `TRAILING_BYTES` | Bytes zwischen Stromende und Tail | 10 + dekodierte Laenge |
+| `E-009` | `UNKNOWN_GENERATION` | Generation ist nicht `0x01` und nicht `0x02` | 5 |
+| `E-010` | `UNKNOWN_OPCODE` | Opcode existiert in keiner Generation | Position des Opcode-Bytes |
+| `E-011` | `GENERATION_MISMATCH` | Opcode `0x11` bis `0x13` bei Generation `0x01` | Position des Opcode-Bytes |
+| `E-012` | `PROGRAM_TOO_LARGE` | Strom ueberschreitet den Groesstwert | 10 |
+
+`E-012` ist vergeben, sein Groesstwert ist aber **nicht** festgelegt; die Grenzwerte
+bleiben offen (T-21 bis T-24). Ein Dekoder darf `E-012` deshalb heute nur melden,
+wenn ein Betreiber einen Wert konfiguriert hat.
+
+### 19.2 Pruefreihenfolge und Praezedenz (REQ-SCE-079)
+
+**REQ-SCE-079 (erste Stufe gewinnt).** Die Pruefungen laufen in dieser Reihenfolge.
+Meldet eine Eingabe mehrere Fehler, wird ausschliesslich der Code der **fruehesten**
+Stufe gemeldet. Die Reihenfolge ist normativ und nicht implementierungsabhaengig:
+
+| Stufe | Pruefung | Code |
+|---|---|---|
+| 1 | Laenge mindestens 42 Byte | `E-001` |
+| 2 | Magic `ATCE` | `E-007` |
+| 3 | Version `0x02` | `E-003` |
+| 4 | Generation `0x01` oder `0x02` | `E-009` |
+| 5 | Strom dekodierbar (Opcode bekannt, Generation passt, Operand vollstaendig) | `E-010`, `E-011`, `E-002` |
+| 6 | keine Bytes zwischen Stromende und Tail | `E-008` |
+| 7 | deklarierte Anzahl gleich dekodierter Opzahl | `E-005` |
+| 8 | Strom nicht leer | `E-004` |
+| 9 | Tail gleich `artifact_hash` | `E-006` |
+| 10 | Strom innerhalb des Groesstwerts, sofern konfiguriert | `E-012` |
+
+Bemerkenswert und beabsichtigt: Stufe 2 steht **vor** Stufe 3. Ein alter Container mit
+Magic `ATCB` und Version `0x01` ergibt daher `E-007` und nicht `E-003`. Das ist die
+einzige Stelle, an der die alte Fassung sichtbar wird, und sie wird nicht als
+Versionsfehler getarnt. Ein Container mit `ATCE` und Version `0x01` ergibt `E-003`.
+
+### 19.3 Tail-Integritaet (REQ-SCE-080)
+
+**REQ-SCE-080 (exakter Tail).** Der Tail beginnt **genau** bei `10 + n` und ist
+**genau** 32 Byte lang, wobei `n` die dekodierte Laenge des Stroms ist. Es gilt:
+
+- kein Byte vor dem Tail gehoert zum Digest, kein Byte nach dem Tail ist zulaessig;
+- die Eingabe des Digest ist Byte 0 bis `10+n-1`, also ohne Tail;
+- ein um ein Byte verschobener Digest ergibt `E-006`, nicht `E-008`;
+- zusaetzliche Bytes nach dem Tail ergeben `E-008`, nicht `E-006`; die Stufen 6 und 9
+  duerfen nicht vertauscht werden;
+- fehlende Bytes ergeben `E-001`, wenn die Gesamtlaenge unter 42 liegt, sonst
+  `E-002` oder `E-008`, je nachdem, wo die Dekodierung endet.
+
+Der gespeicherte Digest ist der **einzige** Integritaetswert im Container. Ein zweiter
+Digest an anderer Stelle ist unzulaessig.
+
+### 19.4 Versionsisolation (REQ-SCE-081 bis 083)
+
+**REQ-SCE-081 (keine Vermischung).** Es gibt genau eine angenommene Kombination:
+Magic `ATCE`, Version `0x02`, Generation `0x01` oder `0x02`. Jede andere Kombination
+wird abgelehnt. Verboten sind ausdruecklich:
+
+- Fallback-Parsing ("erst `0x02`, sonst `0x01`"),
+- spekulatives Parsen mehrerer Fassungen mit Auswahl des besten Ergebnisses,
+- Umdeuten eines Containers in eine andere Version,
+- jede versionsabhaengige Interpretation vor der Versionspruefung,
+- ein gemeinsamer Parserzustand zwischen zwei Aufrufen.
+
+**REQ-SCE-082 (reine Funktion).** Der Dekoder ist eine reine Funktion der Bytes.
+Derselbe Aufruf mit denselben Bytes liefert im selben Prozess und in jedem anderen
+Prozess dasselbe Ergebnis `(Code, Offset)` beziehungsweise dieselbe Annahme. Kein
+Cache, dessen Schluessel nur das Magic ist, keine globalen Veraenderlichen, keine
+Abhaengigkeit von der Reihenfolge frueherer Aufrufe.
+
+**REQ-SCE-083 (Generation vor Opcode).** Die Generation stammt ausschliesslich aus dem
+Kopffeld. Opcodes `0x11` bis `0x13` sind bei Generation `0x01` unzulaessig
+(`E-011`), unbekannte Opcodes sind in jeder Generation unzulaessig (`E-010`). Es gibt
+keine stille Umnummerierung und kein Lesen eines Artefakts fremder Generation
+(REQ-SCE-003 bleibt in Kraft).
+
+### 19.5 Differentialtests (REQ-SCE-084)
+
+**REQ-SCE-084 (Vergleich statt Behauptung).** Ein Dekoder gilt erst als konform, wenn
+zwei unabhaengige Dekoder auf demselben Korpus dasselbe Ergebnis liefern. Der
+Vergleich umfasst ausschliesslich `(Code, Offset)` je Eingabe sowie die
+Annahme-/Ablehnungsentscheidung; Meldungstexte sind nicht normativ.
+
+Der Korpus ist mindestens:
+
+| Klasse | Inhalt |
+|---|---|
+| C-1 | die neun Goldvektoren aus §18.2, alle angenommen |
+| C-2 | Magic falsch, Version falsch, Generation falsch (je einzeln) |
+| C-3 | Altcontainer `ATCB` + `0x01` (muss `E-007` ergeben) |
+| C-4 | `ATCE` + `0x01`, `ATCE` + `0x03`, `ATCE` + `0xFF` |
+| C-5 | abgeschnittene Operanden an jeder Operandenposition |
+| C-6 | ein bis drei zusaetzliche Bytes zwischen Stromende und Tail |
+| C-7 | um ein Byte verschobener Tail |
+| C-8 | deklarierte Anzahl zu klein und zu gross |
+
+Ergebnisform: eine Zeile je Eingabe mit `id`, `sha256` der Eingabe, `decision`,
+`code`, `offset`. Die Datei ist maschinenlesbar; ein Abweichen in einer Zeile ist ein
+Fehlschlag, kein Hinweis.
+
+### 19.6 Testzuordnung
+
+| Abschnitt | Anforderungen | Tests |
+|---|---|---|
+| 19.1 Codes | REQ-SCE-078 | S1-T-42 |
+| 19.2 Praezedenz | REQ-SCE-079 | S1-T-42, S1-T-45 |
+| 19.3 Tail | REQ-SCE-080 | S1-T-39, 40, 41 |
+| 19.4 Versionsisolation | REQ-SCE-081 bis 083 | S1-T-44, 45, 46, 47 |
+| 19.5 Differentialtest | REQ-SCE-084 | S1-T-43 |
+
+Alle neun Tests sind `OPEN`. Kein Test ist damit bestanden; die Matrix aendert nur
+ihre Groesse, nicht ihren Befund. Der Dekoder bleibt die Voraussetzung fuer L1
+(S1-T-18) und damit fuer P1a.
 
 ---
 Der Referenzwert 100 000 Gas aus `ATC-BC-002-CANDIDATE` §19.5 (groesstes im Repo
