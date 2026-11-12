@@ -5,6 +5,24 @@ Alle wesentlichen Änderungen an diesem Projekt werden in dieser Datei dokumenti
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-11-12
+
+### Fixed (E1 — Contract-Lowering fail-closed, Audit F1)
+
+- `lower::executable_subset_gate` buendelt das Vertrags-Gate an einer Stelle und
+  nennt Vertrag, Basen, Funktionen, Zustandsfelder, Events und `require`-Guards.
+  `lower_program`, `atc run` und `atc check <datei>` verwenden dasselbe Gate.
+- `lower::require_entry_point`: `atc run` verlangt eine Funktion `main`. Leere oder
+  rein deklarative Quellen endeten vorher mit Exit 0 und der Ausgabe `0`.
+- `atc check <datei>` meldet fuer Vertragsquellen nicht mehr "validiert".
+- Kein Ersatzprogramm (`ConstI64(0)`/`Return`) als Erfolgspfad; kein Artefakt fuer
+  einen abgelehnten Vertrag.
+- Neu: `docs/EXECUTION_STATE_MODEL.md` (Compiler Success ist kein ausfuehrbarer
+  Vertrag; `PARSED` bis `EXECUTABLE` mit je eigenem Nachweis).
+- Neu: `crates/atc-core/tests/contract_e1_failclosed.rs` (14 Regressionstests:
+  `main = 42`, `require`, Basen, Zustand/Events, CLI-Exit-Codes, Entry-Point,
+  Gateway-Beispiel).
+
 ## [Unreleased] - 2026-11-08
 
 ### Changed (Parser — Vertrags-Ruempfe als AST)
