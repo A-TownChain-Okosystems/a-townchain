@@ -52,8 +52,16 @@ Die Schicht liegt in `components/vm/src/envelope.rs` (`a0ea77f3`, Blob `b253ffc3
 der Strom wird von **einer** Prozedur dekodiert (`dekodiere_strom`). Lokal laufen
 alle 40 Korpushaben durch beide Implementierungen mit gleichem `(Code, Offset)`
 ([Nachweis](EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md)). `ATCE/0x02` bleibt
-`OPEN` (Integration in den System-Deploypfad fehlt), der Differentialtest bleibt
-`BLOCKED` (Owner-Vorgabe), `CI_VERIFIED` ist nicht vergeben.
+`OPEN`, der Differentialtest bleibt `BLOCKED` (Owner-Vorgabe), `CI_VERIFIED` ist
+nicht vergeben.
+
+**Systemeingang (D-0 Phase 1 und 2).** `System::deploy_container` nimmt
+ausschliesslich die Huelle an, `System::execute` liest den Strom nur ueber die
+Huelle, eine `ATCB`-Eingabe ergibt `E-007` und ein Deployment ohne Huelle `E-001`
+([Nachweis](EXEC-D0A-SYSTEM-INGRESS-EVIDENCE-2026-11-12.md), `d5b25f3b`). Die
+Sicherheitsgrenze ist damit im Deploy-Weg durchgesetzt, nicht im Block-Import; die
+vier Architekturfragen stehen in
+[EXEC-D0-ARCH-QUESTIONS-TEMPLATE-2026-11-12.md](EXEC-D0-ARCH-QUESTIONS-TEMPLATE-2026-11-12.md).
 
 Siebzehn Tests (S1-T-39 bis S1-T-55) sind am 12.11.2026 mit §19, §19.2a und §19.7 des
 Kandidaten hinzugekommen: Parser-Fehlersemantik, Stromgrenze, Tail-Integritaet,
