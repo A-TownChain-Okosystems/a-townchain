@@ -46,6 +46,7 @@ decisions:
       - "kanonische Serialisierung"
       - "keine Aenderung am bestehenden Transaktionsformat"
       - "SCX-003 und SCE-ARTIFACT verwenden dieselbe Formatdefinition; ATCB ist nicht das Magic des VM-Containers"
+      - "Drei Identitaeten getrennt benannt und verwendet: artifact_hash (Integritaet), code_hash (Instruktionsstrom), state_root (Ausfuehrungscommitment); Offen (S1-1)"
       - "Magic der Huelle: Vorschlag ATCE, Bestaetigung offen"
     open_items: []
 
@@ -62,7 +63,8 @@ decisions:
       - "Selektor-Hashverfahren und Selektorbreite festgelegt"
       - "Wortgroesse und Calldata-Encoding festgelegt"
       - "maximale Rueckgabepuffergroesse festgelegt"
-      - "deterministische Vertragsadressableitung festgelegt"
+      - "deterministische Vertragsadressableitung festgelegt; im Code heute nicht vorhanden, keine blosse Anpassung einer bestehenden Funktion"
+      - "Policy, Widerruf und Mindestversion nennen ihre Identitaet ausdruecklich; Offen (S1-2)"
       - "atomare Rueckabwicklung fehlgeschlagener Transaktionen festgelegt"
       - "Vertrag-zu-Vertrag-Aufrufe bis BC-002 gesperrt"
     open_items:
