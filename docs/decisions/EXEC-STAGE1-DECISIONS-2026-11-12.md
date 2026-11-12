@@ -190,10 +190,14 @@ Daraus folgen vier weitere Pruefungen:
 | S1-T-35 | Versionsbindung | die Containerfassung ist an die Domaenenfassung gebunden; eine Fassung ohne passende Domaene wird abgewiesen |
 | S1-T-36 | keine Verwechslung | Registry und Zustandswurzel koennen einen Strom-Hash nicht als Artefakt-Hash lesen und umgekehrt; die Eingabe ist benannt und geprueft |
 
-**Zum Zustandsbaum.** `ATC-STATE-V2` ist nicht wegen des Praefixes noetig, sondern
-weil sich die **Eingabe** der Wurzel aendert: heute der Artefakt-Hash, kuenftig der
-Strom-Hash (`state.rs:43-52`). Auch bei S1-1a, das den Artefakt-Hash unveraendert
-laesst, wechselt damit die Wurzel.
+**Zum Zustandsbaum.** `ATC-STATE-V2` ist unabhaengig von 1a, 1b und 1c
+erforderlich, sobald sich die Eingabe des Wurzelverfahrens vom Artefakt-Hash auf
+den Strom-Hash aendert (`state.rs:43-52`). Das ist ein Wechsel der
+Commitment-Semantik, nicht eine Folge des Praefixes: auch bei 1a, das den
+Artefakt-Hash unveraendert laesst, wechselt die Wurzel, weil sie kuenftig einen
+anderen Gegenstand bindet. Aendert sich spaeter erneut, was die Wurzel bindet
+(etwa zusaetzlich der Layout-Hash aus P4), ist das wieder eine neue Fassung, nicht
+eine stille Erweiterung von V2.
 
 ## 2. S1-2 — Welche Identitaet bindet die Freigabe
 
@@ -283,6 +287,12 @@ wird, und die Zurueckweisung ungetypter Altbelegungen beim Start.
 | S1-T-31 | Trennung der Wirkung | eine Artefakt-Sperre sperrt nicht den Code in anderer Verpackung, eine Code-Sperre nicht das Artefakt einer anderen Fassung, wie entschieden |
 | S1-T-32 | Begruendung | der Ablehnungsgrund nennt die Sperre, die getroffen hat, und nicht die andere |
 | S1-T-37 | Migration | ein alter flacher 32-Byte-Schluessel wird nicht als typisierter Eintrag gelesen; der Start verweigert die Deutung, statt sie zu raten |
+| S1-T-38 | Vollstaendigkeit | S1-2 gilt nur als Ganzes: eine zweite Abfrage ohne getypte Schluesselraeume oder getypte Schluesselraeume ohne zweite Abfrage bestehen das Gate nicht |
+
+Die sechs Anforderungen aus 2.6 und S1-T-37 sind eine Einheit. Eine zweite
+Hash-Abfrage allein waere keine Umsetzung der Option C, sondern eine
+Scheinumsetzung: sie wuerde bei flachen Altschluesseln genau die Verwechslung
+zulassen, die die Option ausschliesst.
 
 ## 3. S1-3 — Erstattung: Grundsatz
 
