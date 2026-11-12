@@ -92,7 +92,11 @@ fn peer_antwort(peer_addr: &str, befehl: &str) -> Result<String, String> {
 
 /// Pull-Sync: holt den Peer-Status, zieht bei groesserer Hoehe die komplette
 /// Kette und adoptiert sie NUR nach voller Verifikation und Genesis-Bindung.
-pub fn sync_pull(kette: &mut Chain, peer_addr: &str) -> Result<SyncReport, String> {
+pub fn sync_pull(
+    kette: &mut Chain,
+    peer_addr: &str,
+    validator: Option<&dyn crate::import::ContainerValidator>,
+) -> Result<SyncReport, String> {
     let antwort = peer_antwort(peer_addr, "STATUS")?;
     let peer_hoehe: u64 = antwort
         .split_whitespace()
@@ -109,26 +113,39 @@ pub fn sync_pull(kette: &mut Chain, peer_addr: &str) -> Result<SyncReport, Strin
     }
     let daten = peer_antwort(peer_addr, "BLOCKS 0")?;
     let bloecke = parse_bloecke(&daten)?;
-    let kandidat = Chain::from_blocks(bloecke)?;
-    if kandidat.blocks().first() != kette.blocks().first() {
-        return Err("Peer-Genesis abweichend — Adoption verweigert".to_string());
-    }
-    if kandidat.height() <= kette.height() {
+    // Kein `*kette = kandidat` mehr: Adoption laeuft ueber den validierenden
+    // Pfad. Ohne Validator wird nicht adoptiert (fail-closed, `I-001`).
+    if kette.height() >= peer_hoehe {
         return Ok(SyncReport {
             adopted: false,
             neue_hoehe: kette.height(),
-            grund: "Kandidat nicht laenger".to_string(),
+            grund: "Peer nicht laenger".to_string(),
         });
     }
-    let neue_hoehe = kandidat.height();
+    let vorher = kette.height();
+    kette
+        .adopt_verified(bloecke, validator)
+        .map_err(|e| format!("Adoption verweigert: {e}"))?;
+    let neue_hoehe = kette.height();
     let grund = format!(
-        "adoptiert von {} (Hoehe {} -> {})",
-        peer_addr,
-        kette.height(),
-        neue_hoehe
+        "adoptiert von {} (Hoehe {} -> {}) nach Payload-Pruefung",
+        peer_addr, vorher, neue_hoehe
     );
-    *kette = kandidat;
     Ok(SyncReport { adopted: true, neue_hoehe, grund })
+}
+
+#[cfg(test)]
+pub(crate) mod test_support {
+    use crate::import::{ContainerValidator, PayloadRejection};
+
+    /// Nimmt jede Payload an — fuer Gossip-Tests, in denen es um Verkettung,
+    /// Genesis-Bindung und Transport geht, nicht um Codeannahme.
+    pub struct Annehmen;
+    impl ContainerValidator for Annehmen {
+        fn validate_block_payload(&self, _payload: &str) -> Result<(), PayloadRejection> {
+            Ok(())
+        }
+    }
 }
 
 fn parse_bloecke(daten: &str) -> Result<Vec<Block>, String> {
@@ -191,7 +208,7 @@ mod tests {
 
         let mut b = Chain::from_genesis(&g);
         assert_eq!(b.height(), 0);
-        let rep = sync_pull(&mut b, &format!("127.0.0.1:{}", port)).expect("sync fehlgeschlagen");
+        let rep = sync_pull(&mut b, &format!("127.0.0.1:{}", port), Some(&crate::gossip::test_support::Annehmen)).expect("sync fehlgeschlagen");
         assert!(rep.adopted, "Adoption erwartet: {}", rep.grund);
         assert_eq!(b.height(), 3);
         assert_eq!(b.best_hash(), ziel, "uebernommene Kette muss identisch sein");
@@ -206,7 +223,7 @@ mod tests {
         let mut b = Chain::from_genesis(&g);
         b.produce("eigener-block").expect("produce b");
         let alt = b.best_hash();
-        let rep = sync_pull(&mut b, &format!("127.0.0.1:{}", port)).expect("sync fehlgeschlagen");
+        let rep = sync_pull(&mut b, &format!("127.0.0.1:{}", port), Some(&crate::gossip::test_support::Annehmen)).expect("sync fehlgeschlagen");
         assert!(!rep.adopted, "kuerzerer Peer darf nicht adoptieren: {}", rep.grund);
         assert_eq!(b.best_hash(), alt, "eigene Kette unangetastet");
     }
@@ -242,7 +259,7 @@ mod tests {
 
         let g = Genesis::devnet();
         let mut b = Chain::from_genesis(&g);
-        let ergebnis = sync_pull(&mut b, &format!("127.0.0.1:{}", port));
+        let ergebnis = sync_pull(&mut b, &format!("127.0.0.1:{}", port), Some(&crate::gossip::test_support::Annehmen));
         assert!(ergebnis.is_err(), "gefaelschte Kette muss abgelehnt werden");
         assert_eq!(b.height(), 0, "keine Adoption");
         assert!(b.verify().is_ok(), "eigene Kette bleibt valide");
@@ -258,7 +275,7 @@ mod tests {
 
         let g = Genesis::devnet();
         let mut b = Chain::from_genesis(&g);
-        let ergebnis = sync_pull(&mut b, &format!("127.0.0.1:{}", port));
+        let ergebnis = sync_pull(&mut b, &format!("127.0.0.1:{}", port), Some(&crate::gossip::test_support::Annehmen));
         assert!(ergebnis.is_err(), "abweichende Genesis muss abgelehnt werden");
         assert_eq!(b.height(), 0, "keine Adoption");
     }
@@ -267,6 +284,6 @@ mod tests {
     fn verbindungsfehler_ehrlich() {
         let g = Genesis::devnet();
         let mut b = Chain::from_genesis(&g);
-        assert!(sync_pull(&mut b, "127.0.0.1:1").is_err());
+        assert!(sync_pull(&mut b, "127.0.0.1:1", Some(&crate::gossip::test_support::Annehmen)).is_err());
     }
 }
