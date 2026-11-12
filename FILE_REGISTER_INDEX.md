@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 08:08 UTC+2 aus `origin/main` @ `ed307b27`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 08:48 UTC+2 aus `origin/main` @ `a49bd4f2`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11369 Dateien**
+**Total: 11371 Dateien**
 
-## docs (5085)
+## docs (5086)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -37,6 +37,7 @@
 - `docs/decisions/AD-EXEC-D1-D7.md`
 - `docs/decisions/AD-EXEC-KERNEL-ENFORCEMENT.md`
 - `docs/decisions/VM-INTEGER-SEMANTICS-DRAFT.md`
+- `docs/decisions/exec-decision-register.yaml`
 - `docs/demo/.atc/compliance.yaml`
 - `docs/demo/.atc/evidence/evidence.yaml`
 - `docs/demo/.atc/lifecycle.yaml`
@@ -11355,6 +11356,26 @@
 - `determinism_allowlist.yaml`
 - `ruff.toml`
 
+## tools (17)
+
+- `tools/atc-sc-validator/audit_contract_copies.py`
+- `tools/atc-sc-validator/check_contract_registry.py`
+- `tools/atc-sc-validator/tests/test_contract_copies.py`
+- `tools/atc-sc-validator/tests/test_contract_registry_gate.py`
+- `tools/atc-sc-validator/tests/test_links.py`
+- `tools/atc-sc-validator/tests/test_supply_cap_invariant.py`
+- `tools/consensus_boundary_check.py`
+- `tools/consolidate_monorepo.py`
+- `tools/decision_register.py`
+- `tools/dependency_review.py`
+- `tools/determinism_check.py`
+- `tools/ecosystem.sh`
+- `tools/file_register.py`
+- `tools/integration_graph.py`
+- `tools/integration_graph_baseline.json`
+- `tools/linkcheck.py`
+- `tools/tests/test_integration_graph.py`
+
 ## .github (16)
 
 - `.github/CODEOWNERS`
@@ -11373,25 +11394,6 @@
 - `.github/workflows/sdk.yml`
 - `.github/workflows/ssot-source-validation.yml`
 - `.github/workflows/test-suite.yml`
-
-## tools (16)
-
-- `tools/atc-sc-validator/audit_contract_copies.py`
-- `tools/atc-sc-validator/check_contract_registry.py`
-- `tools/atc-sc-validator/tests/test_contract_copies.py`
-- `tools/atc-sc-validator/tests/test_contract_registry_gate.py`
-- `tools/atc-sc-validator/tests/test_links.py`
-- `tools/atc-sc-validator/tests/test_supply_cap_invariant.py`
-- `tools/consensus_boundary_check.py`
-- `tools/consolidate_monorepo.py`
-- `tools/dependency_review.py`
-- `tools/determinism_check.py`
-- `tools/ecosystem.sh`
-- `tools/file_register.py`
-- `tools/integration_graph.py`
-- `tools/integration_graph_baseline.json`
-- `tools/linkcheck.py`
-- `tools/tests/test_integration_graph.py`
 
 ## "docs (6)
 
