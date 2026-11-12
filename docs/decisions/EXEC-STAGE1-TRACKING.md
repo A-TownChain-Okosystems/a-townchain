@@ -166,6 +166,7 @@ Aufrufarchitektur B-1 ist nicht entschieden.
 | Abgleich | `tools/check_parser_corpus.py`: 40 Eingaben, 0 Abweichungen |
 | Werkzeugtests | `pytest tools/tests/test_parser_corpus.py`: 11 Tests gruen |
 | Vektoren | `check_stage1_vectors.py`: 9 Gold- und 2 Negativvektoren nach der P2-Korrektur neu berechnet |
+| Bindung | Nachweis an HEAD `57fce3e3` gebunden, sechs Blob-SHAs im Vermerk |
 | L1 | `EMPTY` -> `OPEN` (S1-T-18 `TESTED`) |
 | Konformitaet | **nicht** erreicht: ein Dekoder ist kein Differentialtest |
 
@@ -182,6 +183,13 @@ Drei Befunde aus diesem Lauf, alle am Byte nachpruefbar:
    Operandenbytes, dokumentiert war eines. GV-7 ergab `E-002` bei Offset 31, obwohl
    der Digest stimmte. Ein Hash-Nachweis belegt also keine Dekodierbarkeit. P2 ist
    berichtigt, GV-6 und GV-7 sind nach S1-T-27 neu berechnet.
+4. Vierte Abweichung der VM: sie begrenzt die deklarierte Anzahl
+   (`MAX_PROGRAM_OPS` 65 536, `artifact.rs:322`), der Vertrag die dekodierte
+   Stromlaenge. `C-8-GV1-MAX` ergibt nach Vertrag `E-005`, in der VM `ProgramTooLarge`.
+5. Kein Aufwandsschutz vor dem Dekodieren: es gibt keine verbindliche Obergrenze fuer
+   Container-Bytes, und `Artifact::parse` hasht die gesamte Eingabe vor jeder
+   Grenzpruefung (`artifact.rs:311-319`). Vorschlag: Grenze im Admission-Layer,
+   Wert aus P1b; offener Punkt an D1, keine Anforderung (Abschnitt 6 des Vermerks).
 
 Die Einzelheiten, Aufrufe und Ausgaben stehen in
 `docs/decisions/EXEC-STAGE1-PARSER-EVIDENCE-2026-11-12.md`.
