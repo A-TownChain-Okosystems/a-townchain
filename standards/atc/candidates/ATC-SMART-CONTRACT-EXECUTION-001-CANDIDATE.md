@@ -205,13 +205,15 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
   `ATC:` plus Hex, identisch zur Adressform aus SEC-P0-005.
   **Praezisierung 12.11.2026 (Befund A):**
 
-  | Feld | Laenge | Kodierung |
-  |---|---|---|
-  | `domain` | 16 Byte | ASCII `ATC-CONTRACT-V1`, keine Laengenvorspannung |
-  | `deployer_20` | 20 Byte | Adresse nach SEC-P0-005, rohe Bytes ohne `ATC:`-Praefix |
-  | `nonce_u64_le` | 8 Byte | unsigned, little-endian, Monotonie je Deployer |
-  | `code_hash_32` | 32 Byte | SHA-256 ueber den kanonischen Instruktionsstrom (nicht ueber die Huelle) |
-  | Eingabe gesamt | 76 Byte | Verkettung in dieser Reihenfolge, keine Trenner |
+
+| Feld | Laenge | Kodierung |
+|---|---|---|
+| `domain` | 16 Byte | ASCII `ATC-CONTRACT-V1`, keine Laengenvorspannung |
+| `deployer_20` | 20 Byte | Adresse nach SEC-P0-005, rohe Bytes ohne `ATC:`-Praefix |
+| `nonce_u64_le` | 8 Byte | unsigned, little-endian, Monotonie je Deployer |
+| `code_hash_32` | 32 Byte | SHA-256 ueber den kanonischen Instruktionsstrom (nicht ueber die Huelle) |
+| Eingabe gesamt | 76 Byte | Verkettung in dieser Reihenfolge, keine Trenner |
+
 
   **Kollision:** Ist die abgeleitete Adresse bereits belegt, wird das Deployment
   abgelehnt. Es gibt kein stilles Weiterzaehlen der Nonce und keine Ausweichadresse,
@@ -259,11 +261,13 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
   fuer Fehlschlaege im Loader und im Backend. **Praezisierung 12.11.2026 (Befund 4):
   "fehlgeschlagen" ist nicht gleich "Budget weg".** Es gelten drei Klassen:
 
-  | Klasse | Verbrauch | Erstattung |
-  |---|---|---|
-  | Gaserschoepfung | volles `gas_limit` | keine, `gas_refund = 0` |
-  | Revert oder logischer Vertragsfehler | nur `gas_used` | ungenutztes Budget, nach der Erstattungsregel |
-  | Ablehnung vor der Ausfuehrung (Struktur, Aufnahme, Signatur) | kein Gas, keine Zustandsaenderung | nicht anwendbar; die Transaktion wird nicht gebucht |
+
+| Klasse | Verbrauch | Erstattung |
+|---|---|---|
+| Gaserschoepfung | volles `gas_limit` | keine, `gas_refund = 0` |
+| Revert oder logischer Vertragsfehler | nur `gas_used` | ungenutztes Budget, nach der Erstattungsregel |
+| Ablehnung vor der Ausfuehrung (Struktur, Aufnahme, Signatur) | kein Gas, keine Zustandsaenderung | nicht anwendbar; die Transaktion wird nicht gebucht |
+
 
   Die Erstattungsregel ist normativ festzulegen (Vorschlag: volles ungenutztes
   Budget, kein prozentualer Abzug) und zu testen; ohne sie waere jede einfache
