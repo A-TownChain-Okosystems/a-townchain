@@ -16,15 +16,15 @@ getroffenen Entscheidung.
 
 **Entscheidungsregister** (Owner, 2026-11-12; Quelle: `docs/decisions/exec-decision-register.yaml`)
 
-| ID | Entscheidung (Titel) | Owner-Entscheidung | Spezifikation | Umsetzung | Gate |
+| ID | Entscheidung (Titel) | Owner-Entscheidung | Spezifikation | spezifiziert in | Umsetzung | Gate |
 |---|---|---|---|---|---|---|
-| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | SPECIFIED | OPEN | SCE-G1 |
-| D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | SPECIFIED | OPEN | SCE-G3 |
-| D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | SPECIFIED | OPEN | SCE-G4 |
-| D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | SPECIFIED | OPEN | SCE-G6 |
-| D5 | Blockausfuehrung: deterministische Validator-Ausfuehrung | freigegeben | SPECIFIED | OPEN | SCE-G7 |
-| D6 | Identitaet: 32-Byte-Identitaetswort | bedingt freigegeben | SPECIFIED | OPEN | SCE-G5 |
-| D7 | Frontend: ATCLang kanonisch, .ops nur Testwerkzeug | freigegeben | SPECIFIED | OPEN | SCE-G2 |
+| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | OPEN | Kandidat §5.1 (nicht ratifiziert) | OPEN | SCE-G1 |
+| D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | OPEN | Kandidat §5.3, §5.10 (nicht ratifiziert) | OPEN | SCE-G3 |
+| D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | OPEN | Kandidat §5.4 (nicht ratifiziert) | OPEN | SCE-G4 |
+| D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | OPEN | Kandidat §5.6, §5.10 (nicht ratifiziert) | OPEN | SCE-G6 |
+| D5 | Blockausfuehrung: deterministische Validator-Ausfuehrung | freigegeben | OPEN | Kandidat §5.7, §5.10 (nicht ratifiziert) | OPEN | SCE-G7 |
+| D6 | Identitaet: 32-Byte-Identitaetswort | bedingt freigegeben | OPEN | Kandidat §5.5, §5.10 (nicht ratifiziert) | OPEN | SCE-G5 |
+| D7 | Frontend: ATCLang kanonisch, .ops nur Testwerkzeug | freigegeben | OPEN | Kandidat §5.2 (nicht ratifiziert) | OPEN | SCE-G2 |
 
 Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** (vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die Gates bleiben bis zum jeweiligen Nachweis offen.
 
