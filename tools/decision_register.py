@@ -69,6 +69,16 @@ def validate(data: dict) -> list[str]:
     expected = [f"D{i}" for i in range(1, 8)]
     if sorted(ids) != sorted(expected):
         errors.append(f"erwartete IDs D1..D7, gefunden {sorted(ids)}")
+
+    seen = set()
+    for st in data.get("stage1") or []:
+        sid = st.get("id", "?")
+        if sid in seen:
+            errors.append(f"{sid}: doppelte ID in stage1")
+        seen.add(sid)
+        for field in ("title", "option", "ratified_at", "basis_head", "effect"):
+            if not st.get(field):
+                errors.append(f"{sid}: Feld '{field}' fehlt")
     return errors
 
 
@@ -118,8 +128,44 @@ def render(data: dict) -> str:
         "",
         "Offen und nicht Teil dieser Freigabe: " + "; ".join(data["pending_globally"]) + ".",
         "",
-        END,
     ]
+
+    stage1 = data.get("stage1") or []
+    if stage1:
+        lines += [
+            "**Stufe-1-Ratifikation** (Owner, " + str(data.get("decided_on", ""))
+            + "; Quelle: `docs/decisions/exec-decision-register.yaml`)",
+            "",
+            "| ID | Gegenstand | Option | ratifiziert | Basis | Wirkung |",
+            "|---|---|---|---|---|---|",
+        ]
+        for st in stage1:
+            lines.append(
+                "| {id} | {title} | {option} | {ratified_at} | `{basis_head}` | {effect} |".format(
+                    id=st["id"],
+                    title=st["title"],
+                    option=st["option"],
+                    ratified_at=st["ratified_at"],
+                    basis_head=st["basis_head"],
+                    effect=st["effect"],
+                )
+            )
+        lines.append("")
+        resolved = data.get("resolved_by_ratification") or []
+        if resolved:
+            lines += [
+                "Durch die Stufe-1-Ratifikation entfallen: " + "; ".join(resolved) + ".",
+                "",
+            ]
+        lines += [
+            "Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard: der "
+            "Kandidat bleibt Kandidat, P1a bleibt offen und P2 bleibt gesperrt.",
+            "",
+            "Nicht freigegeben sind weiterhin Implementierung und Release.",
+            "",
+        ]
+
+    lines += ["", END]
     return "\n".join(lines)
 
 
