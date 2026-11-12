@@ -26,6 +26,8 @@ pending_globally:
   - "Fehlende CALL-Instruktion und Identitaetstyp auf dem u64-Stapel (R-902, R-907)"
   - "Autoritaet der beiden Instruktionssaetze (R-906)"
   - "Governance-Luecke: ATC-SEC-EXEC-001, ATC-BC-001 und ATC-BC-002 sind keine Eintraege in atc-standards/registry/standards.yaml; D0 ist damit intern verbindlich, aber nicht gegen einen registrierten Standard durchsetzbar"
+  - "ATC-STD-410: Reservierung ist Registry-Zeile (atc-standards Branch reserve/atc-std-410, PR offen wegen unverifizierter E-Mail); normative Freigabe (Technical/Security/Architecture Review + Owner-Approval) fehlt"
+  - "ATC-STD-410: Familien-Verkabelung offen — kein FAM-Range bildet eine Security-Familie im 4xx-Bereich ab (ALLOC-12; Befund docs/audits/GOVERNANCE-FINDING-FAMILY-400-2026-11-12.md, Entscheidung Option A/B/C offen)"
   - "S1-2/F-1: Policy-Ueberschreibung in der Registry; Regel, neuer Code ADM-012 und Verbleib von source_provenance in der signierten Policy sind offen (EXEC-S1-2-ADMISSION-REGISTRY-F1.md)"
   - "P1a: Block.payload und Blockimport transportieren keinen Container; die Containergrenze ist bisher nur im Deploy-Weg durchgesetzt"
 
@@ -112,13 +114,14 @@ decisions:
       - "CI_VERIFIED nicht vergeben; kein CI-Lauf am exakten HEAD"
 
   - id: S1-2-F1
-    ratification: "nicht ratifiziert (Kandidat ATC-SEC-EXEC-001, 0.1.1-draft)"
-    specified_in: "ATC-SEC-EXEC-001 Kandidat Abschnitt 4a (Registrierung) und standards/atc/conformance/admission-codes.json"
+    ratification: "nicht ratifiziert (ATC-STD-410 = reserviert 12.11.2026; Kandidat 0.1.1-draft)"
+    specified_in: "ATC-STD-410 Kandidat Abschnitt 4a (Registrierung; Vorgaengerkennung ATC-SEC-EXEC-001) und standards/atc/conformance/admission-codes.json"
     title: "Admission Registry: Registrierung ist Compare-and-Insert, kein Last-Write-Wins (F-1)"
     decision_status: DECIDED
     decision: FREIGEGEBEN
     specification_status: SPECIFIED
     implementation_status: IMPLEMENTED
+    verified_by: "Owner-Bewertung 12.11.2026: IMPLEMENTED + TESTED (T-01..T-08 gruen); CI_VERIFIED nicht vergeben"
     gate: SCE-G5
     conditions:
       - "Die Registry fuehrt genau eine Policy je code_hash; die vorhandene Architektur bleibt (BTreeMap je code_hash, keine zweite Registry)"
@@ -141,7 +144,7 @@ decisions:
         owner: "Governance/Spezifikation"
         goal: "Der Konflikt erhaelt eine eigene Fehleridentitaet, ohne ADM-009 umzudeuten; die Codeliste ist an einer Stelle maschinenlesbar registriert"
         status: OPEN
-        open_because: "Kandidat 0.1.1-draft und admission-codes.json fuehren ADM-012 als proposed; die Implementierung ist bis zur normativen Registrierung des Standards gesperrt, der Systempfad meldet code=None statt einer provisorischen Kennung"
+        open_because: "ATC-STD-410 ist seit 12.11.2026 reserviert (nicht normativ); Kandidat 0.1.1-draft und admission-codes.json fuehren ADM-012 als proposed, der Systempfad meldet code=None statt einer provisorischen Kennung. Freigabe braucht Technical/Security/Architecture Review und Owner-Approval"
       - id: S1-2-D3
         title: "source_provenance bleibt Teil der signierten Policy"
         owner: "Format/Sicherheit"
