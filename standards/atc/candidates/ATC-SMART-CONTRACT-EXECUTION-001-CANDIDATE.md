@@ -5,7 +5,7 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.9.0-draft
+> **Version:** 1.10.0-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
@@ -23,6 +23,7 @@
 
 | Version | Datum | Aenderung |
 |---|---|---|
+| 1.10.0-draft | 2026-11-12 | Stromgrenze und Parserprozedur festgelegt (§19.2a, REQ-SCE-085 bis 089). Befund des Owners: `E-008` (Stufe 7) und `E-005` (Stufe 6) waren nicht abgrenzbar, weil der Strom keinen Endmarker hat. Entscheidung: `E-005` bleibt und erhaelt die eigene Bedingung "Strom endet an einer Instruktionsgrenze vor der deklarierten Anzahl"; `E-002` gilt im Operanden, `E-008` nach `c` Instruktionen. `tail_start = L - 32` ist die einzige Stromgrenze, `c` nur eine Obergrenze. Zweiter Befund derselben Pruefung: die VM prueft den Digest vor der Struktur und ist damit auch darin kein konformer zweiter Dekoder (REQ-SCE-088, dritte Abweichung). Dritter Befund: der dokumentierte P2-Strom kodierte `Store(u32)` mit einem Byte und war nicht dekodierbar; P2 auf die kanonische Kodierung berichtigt, GV-6 und GV-7 nach T-27 neu berechnet. Korpus C-1 bis C-8 und unabhaengiger Referenzdekoder als Werkzeuge, Sollwerte aus der Konstruktion. Sechs neue Tests S1-T-49 bis S1-T-54, alle `OPEN`. Kein Statusaufstieg. |
 | 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
 | 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
 | 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
@@ -568,7 +569,7 @@ keine auf **IMPLEMENTED**.
 
 | ID | Entscheidung (Titel) | Owner-Entscheidung | Ratifikation | Spezifikation | spezifiziert in | Umsetzung | Gate |
 |---|---|---|---|---|---|---|---|
-| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | SPECIFIED | Kandidat §5.1, §18.1-18.3 und §19.1-19.5 (nicht ratifiziert) | OPEN | SCE-G1 |
+| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | SPECIFIED | Kandidat §5.1, §18.1-18.3, §19.1-19.5 und §19.2a (nicht ratifiziert) | OPEN | SCE-G1 |
 | D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.3, §5.10 (nicht ratifiziert) | OPEN | SCE-G3 |
 | D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.4 (nicht ratifiziert) | OPEN | SCE-G4 |
 | D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.6, §5.10 (nicht ratifiziert) | OPEN | SCE-G6 |
@@ -869,7 +870,18 @@ Sollwert nicht reproduziert, ist nicht konform.
 
 **Programm P1** (`Push(1)`, `Halt`): Strom `01010000000000000010` (10 Byte).
 **Programm P2** (`Push(7)`, `Push(42)`, `Add`, `Store(0)`, `Halt`):
-Strom `010700000000000000012a00000000000000020b10` (21 Byte).
+Strom `010700000000000000012a00000000000000020b0000000010` (25 Byte).
+
+**Korrektur am 12.11.2026 (Wertwechsel nach S1-T-27).** Der frueher hier
+dokumentierte P2-Strom war 21 Byte lang und kodierte `Store` mit einem einzigen
+Byte. Die Befehlstabelle in ATC-BC-002 §16 verlangt fuer `0x0B Store(u32)` vier
+Operandenbytes; der alte Strom war damit **nicht dekodierbar** und ergab `E-002`
+bei Offset 31, sobald man ihn als Container prueft. Da GV-7 als vollstaendiger
+Container in C-1 geprueft wird, ist der Strom auf die kanonische Kodierung
+`0b 00000000` berichtigt (25 Byte). Dadurch aendern sich genau zwei Sollwerte:
+GV-6 `c829629e…e30d8` → `3c506eaa…96636` und GV-7 `79c1a77b…caaa17` →
+`0133d7a6…6449b3`. GV-1 bis GV-5, GV-8 und GV-9 bleiben unveraendert, weil sie P1
+beziehungsweise GV-1 verwenden. Das ist ein Wertwechsel, kein neuer Vektor.
 
 | ID | Gegenstand | Eingabe (hex) | Sollwert |
 |---|---|---|---|
@@ -878,8 +890,8 @@ Strom `010700000000000000012a00000000000000020b10` (21 Byte).
 | GV-3 | `artifact_hash`, P1, Generation 2 | `4154432d41525449464143542d563100` + `4154434502020200000001010000000000000010` | `29790676ca4b93fa7c9d90880a432b82394ee7b86acad802dd76de0afbcabe44` |
 | GV-4 | `code_hash`, P1, Generation 2 | wie GV-2 | `d7adc88fc2ceb21136df3397ec7d6bfff57a4f439088798f34ab3c8c3c546cdb` (**gleich GV-2**) |
 | GV-5 | alte Fassung, ohne Praefix, Containerformat `0x01` | `4154434201010200000001010000000000000010` | `3f5bb373c995e6f92ff81722d28f7e5329e4ba670dad5bf962729670edd7484e` (**ueberholt**) |
-| GV-6 | `code_hash`, P2 | `4154432d53545245414d2d563100` + `010700000000000000012a00000000000000020b10` | `c829629e93d97b464b58a1a5004c7a17700f482a08fb34caae59a83ef39e30d8` |
-| GV-7 | `artifact_hash`, P2, Generation 1, Fassung 2 | `4154432d41525449464143542d563100` + `41544345020105000000` + P2-Strom | `79c1a77bb66101277cd1fe4d38d66b7c7fb11869a694fbc77771e8fc93caaa17` |
+| GV-6 | `code_hash`, P2 | `4154432d53545245414d2d563100` + `010700000000000000012a00000000000000020b0000000010` | `3c506eaadcb21b1887cfd1c92135e6804644dd1c087ccb1edfcb09744de96636` |
+| GV-7 | `artifact_hash`, P2, Generation 1, Fassung 2 | `4154432d41525449464143542d563100` + `41544345020105000000` + P2-Strom | `0133d7a63a529a9de8848e2db1efa436121c7bb0691a7927cc459d366d6449b3` |
 | GV-8 | `state_root` V2, `code_hash` = GV-2, Woerter `[7, 42]` | `4154432d53544154452d563200` + GV-2 + `02000000` + `0700000000000000` + `2a00000000000000` | `c3cc531a91ce794025e1f584cc4d6e33dc1dea36accddd8a72cc6e20b26cc184` |
 | GV-9 | `state_root` V1 (alte Semantik), `artifact_hash` = GV-1 | `4154432d53544154452d563100` + GV-1 + `02000000` + `0700000000000000` + `2a00000000000000` | `8116c0f71d1ada483836c3b33abd0c21c24a25a144f3bfb0dbb8c096d4f22d28` |
 
@@ -1128,9 +1140,9 @@ Stufe gemeldet. Die Reihenfolge ist normativ und nicht implementierungsabhaengig
 | 2 | Magic `ATCE` | `E-007` |
 | 3 | Version `0x02` | `E-003` |
 | 4 | Generation `0x01` oder `0x02` | `E-009` |
-| 5 | Strom dekodierbar (Opcode bekannt, Generation passt, Operand vollstaendig) | `E-010`, `E-011`, `E-002` |
-| 6 | keine Bytes zwischen Stromende und Tail | `E-008` |
-| 7 | deklarierte Anzahl gleich dekodierter Opzahl | `E-005` |
+| 5 | Opcode bekannt, Generation passend, Operand vollstaendig | `E-010`, `E-011`, `E-002` |
+| 6 | Strom endet nicht vor Erreichen der deklarierten Anzahl | `E-005` |
+| 7 | nach `c` Instruktionen keine Bytes vor dem Tail | `E-008` |
 | 8 | Strom nicht leer | `E-004` |
 | 9 | Tail gleich `artifact_hash` | `E-006` |
 | 10 | Strom innerhalb des Groesstwerts, sofern konfiguriert | `E-012` |
@@ -1140,18 +1152,112 @@ Magic `ATCB` und Version `0x01` ergibt daher `E-007` und nicht `E-003`. Das ist 
 einzige Stelle, an der die alte Fassung sichtbar wird, und sie wird nicht als
 Versionsfehler getarnt. Ein Container mit `ATCE` und Version `0x01` ergibt `E-003`.
 
+Die Stufen 5 bis 8 sind **ein** Durchlauf der Prozedur aus §19.2a, nicht vier
+getrennte Dekodierversuche. Die Nummern geben die Reihenfolge an, in der dieser eine
+Durchlauf seine Ergebnisse meldet.
+
+### 19.2a Stromgrenze und Dekodierprozedur (REQ-SCE-085 bis 089)
+
+Der Container hat **keinen Endmarker** fuer den Strom. Drei Angaben bilden zusammen
+die Grenze: der Stromanfang bei Offset `10`, die deklarierte Anzahl `c` bei Offset
+`6..9` (u32 LE) und der Tail als **letzte** 32 Byte. Ohne eine festgelegte Prozedur
+sind Stufe 6 (`E-005`) und Stufe 7 (`E-008`) nicht trennbar, weil beide davon handeln,
+dass Bytes fehlen beziehungsweise uebrig bleiben.
+
+**REQ-SCE-085 (Stromgrenze aus der Laenge).** Mit `L` als Laenge der Eingabe gilt
+
+```
+strom_start  = 10
+tail_start   = L - 32
+Strombereich = Byte 10 bis tail_start - 1
+```
+
+`tail_start` wird **ausschliesslich** aus `L` abgeleitet, niemals aus `c`, aus der
+dekodierten Laenge oder aus dem Digest. `c` ist eine **Obergrenze fuer die Anzahl
+gelesener Instruktionen**, kein Endmarker. Zwei Dekoder, die `tail_start` verschieden
+bestimmen, sind nicht konform, auch wenn sie auf gueltigen Containern dasselbe
+Ergebnis liefern.
+
+**REQ-SCE-086 (Dekodierprozedur).** Die Stufen 5 bis 8 sind genau dieser Durchlauf,
+mit `p = 10` und `i = 0`:
+
+```
+solange i < c und p < tail_start:
+    opcode = Byte(p)
+    ist der Opcode in keiner Generation bekannt:        -> E-010, Offset p
+    ist er 0x11..0x13 und Generation ist 1:             -> E-011, Offset p
+    braucht der Opcode k Operandenbytes und gilt
+        p + 1 + k > tail_start:                         -> E-002, Offset tail_start
+    i = i + 1;  p = p + 1 + k
+danach:
+    i < c:                                              -> E-005, Offset tail_start
+    p < tail_start:                                     -> E-008, Offset p
+    i = 0:                                              -> E-004, Offset 10
+```
+
+Die Operandenlaengen stehen in ATC-BC-002 §16: `0x01` acht Byte; `0x0A`, `0x0B`,
+`0x0D`, `0x0E`, `0x0F` und `0x12` je vier Byte; alle uebrigen Opcodes null Byte.
+Die Prozedur terminiert bei jeder Eingabe, weil die Schleife durch `c` **und** durch
+`tail_start` begrenzt ist und `c` aus vier Byte stammt. Eine deklarierte Anzahl von
+`0xFFFFFFFF` kostet einen Schritt, nicht vier Milliarden.
+
+**REQ-SCE-087 (`E-005` bleibt, mit eigener Bedingung).** `E-005 COUNT_MISMATCH` ist
+**nicht** entfallen. Es gilt genau dann, wenn der Strom an einer
+**Instruktionsgrenze** endet, bevor `c` Instruktionen gelesen sind (`i < c` und
+`p = tail_start`). Die vier Stromcodes sind damit paarweise disjunkt:
+
+| Eingabe | Code | Offset |
+|---|---|---|
+| Strom endet an einer Instruktionsgrenze, bevor `c` erreicht ist | `E-005` | `tail_start` |
+| Operand reicht nicht bis `tail_start` | `E-002` | `tail_start` |
+| nach `c` Instruktionen bleiben Bytes vor dem Tail | `E-008` | erstes Restbyte |
+| `c = 0` und Strom leer | `E-004` | 10 |
+
+Dass zwei verschiedene Konstruktionen denselben Code ergeben, ist zulaessig, solange
+sie dieselbe Bedingung erfuellen: "Anzahl zu klein" (C-8) und "ein bis drei
+eingefuegte Bytes" (C-6) sind beide `E-008`, weil in beiden Faellen Bytes vor dem Tail
+stehen, die keine deklarierte Instruktion abdeckt. Sie bleiben im Korpus getrennt,
+weil Herkunft und Offset verschieden sind.
+
+`E-005` darf nicht durch eine der drei anderen Bedingungen ersetzt werden. Faellt es
+weg, wird "Anzahl zu gross an einer sauberen Grenze" zu `E-002` mit einem Offset, an
+dem kein Operand fehlt; der Code waere nicht mehr erklaerbar, und die Auflage an die VM
+(D1: `EMPTY_STREAM` und `COUNT_MISMATCH` ergaenzen) waere gegenstandslos.
+
+**REQ-SCE-088 (Struktur vor Integritaet).** Die Stufen 5 bis 8 liegen **vor** der
+Digestpruefung. Ein Container mit beschaedigtem Strom **und** veraltetem Tail ergibt
+daher den Strukturcode und nicht `E-006`. Das ist keine Nebenbedingung:
+`components/vm/src/artifact.rs:316-318` prueft den Digest heute **vor** dem Dekodieren
+und meldet in diesem Fall `BadHash`. Das ist die **dritte** Abweichung der VM von
+diesem Vertrag, neben den zwei fehlenden Fehlervarianten (`E-004`, `E-005`) und der
+Annahme von `ATCB`/`0x01`. Der Korpus fuehrt deshalb zu jeder Strukturmutation beide
+Varianten: mit belassenem Tail (Praezedenzfall, die Struktur gewinnt) und mit neu
+berechnetem Tail (Strukturfehler isoliert).
+
+**REQ-SCE-089 (Groesstwert und deklarierte Anzahl).** `E-012 PROGRAM_TOO_LARGE` misst
+die **dekodierte** Stromlaenge `p - 10` gegen einen konfigurierten Groesstwert. Eine
+grosse deklarierte Anzahl erzeugt kein `E-012`; sie endet nach REQ-SCE-086 als
+`E-005`, sobald der Strombereich erschoepft ist. Solange kein Groesstwert konfiguriert
+ist, ist `E-012` nicht erreichbar; das ist zulaessig, weil die Grenzwerte offen sind
+(T-21 bis T-24). `E-012` hat deshalb keinen Korpus-Eintrag.
+
 ### 19.3 Tail-Integritaet (REQ-SCE-080)
 
-**REQ-SCE-080 (exakter Tail).** Der Tail beginnt **genau** bei `10 + n` und ist
-**genau** 32 Byte lang, wobei `n` die dekodierte Laenge des Stroms ist. Es gilt:
+**REQ-SCE-080 (exakter Tail).** Der Tail beginnt **genau** bei `tail_start = L - 32`
+und ist **genau** 32 Byte lang. Es gilt:
 
 - kein Byte vor dem Tail gehoert zum Digest, kein Byte nach dem Tail ist zulaessig;
-- die Eingabe des Digest ist Byte 0 bis `10+n-1`, also ohne Tail;
-- ein um ein Byte verschobener Digest ergibt `E-006`, nicht `E-008`;
-- zusaetzliche Bytes nach dem Tail ergeben `E-008`, nicht `E-006`; die Stufen 6 und 9
-  duerfen nicht vertauscht werden;
-- fehlende Bytes ergeben `E-001`, wenn die Gesamtlaenge unter 42 liegt, sonst
-  `E-002` oder `E-008`, je nachdem, wo die Dekodierung endet.
+- die Eingabe des Digest ist Byte 0 bis `tail_start - 1`, also ohne Tail;
+- ein **im Inhalt** veraenderter Tail bei gleicher Laenge (rotiert, ersetzt) ergibt
+  `E-006` bei `tail_start`;
+- **eingefuegte** Bytes vor dem Tail verschieben `tail_start` und ergeben `E-008` beim
+  ersten Restbyte, nicht `E-006`; die Stufen 7 und 9 duerfen nicht vertauscht werden;
+- **angehaengte** Bytes hinter dem Tail verschieben `tail_start` um dieselbe Anzahl und
+  ergeben ebenfalls `E-008`, weil genau diese Anzahl als Rest stehen bleibt;
+- fehlende Bytes ergeben `E-001`, wenn die Gesamtlaenge unter 42 liegt; sonst `E-002`,
+  wenn ein Operand in den Tail hineinreicht, und `E-005`, wenn der Strom an einer
+  Instruktionsgrenze endet. Die fruehere Angabe `E-008` fuer diesen Fall war falsch:
+  nach einer Verkuerzung entstehen keine Restbytes, es fehlen Instruktionen.
 
 Der gespeicherte Digest ist der **einzige** Integritaetswert im Container. Ein zweiter
 Digest an anderer Stelle ist unzulaessig.
@@ -1189,20 +1295,19 @@ Annahme-/Ablehnungsentscheidung; Meldungstexte sind nicht normativ.
 
 Der Korpus ist mindestens:
 
-| Klasse | Inhalt |
-|---|---|
-| C-1 | die **drei vollstaendigen Artefakt-Goldvektoren** GV-1, GV-3 und GV-7, rekonstruiert als Kopf + Strom + 32-Byte-Tail mit Tail = Sollwert des jeweiligen Vektors; alle drei werden angenommen |
-| C-2 | Magic falsch, Version falsch, Generation falsch (je einzeln) |
-| C-3 | Altcontainer `ATCB` + `0x01`, darunter GV-5 als Eingabe (muss `E-007` mit Offset `0` ergeben) |
-| C-4 | `ATCE` + `0x01`, `ATCE` + `0x03`, `ATCE` + `0xFF` |
-| C-5 | abgeschnittene Operanden an jeder Operandenposition |
-| C-6 | ein bis drei zusaetzliche Bytes zwischen Stromende und Tail |
-| C-7 | um ein Byte verschobener Tail |
-| C-8 | deklarierte Anzahl zu klein und zu gross |
+| Klasse | Inhalt | erwartete Codes |
+|---|---|---|
+| C-1 | die vollstaendigen Artefakt-Goldvektoren GV-1, GV-3 und GV-7, rekonstruiert als Kopf + Strom + 32-Byte-Tail mit Tail = Sollwert | angenommen |
+| C-2 | Magic falsch, Generation `0x00`, Generation `0x03` (je einzeln) | `E-007`, `E-009` |
+| C-3 | Altcontainer `ATCB` + `0x01`, darunter GV-5 | `E-007`, Offset `0` |
+| C-4 | `ATCE` + `0x01`, `ATCE` + `0x03`, `ATCE` + `0xFF` | `E-003`, Offset `4` |
+| C-5 | Stromfehler: abgeschnittene Operanden an jeder Operandenposition, unbekannter Opcode, v2-Opcode bei Generation `0x01` | `E-002`, `E-010`, `E-011`, `E-005` |
+| C-6 | ein bis drei eingefuegte Bytes zwischen Strom und Tail | `E-008` |
+| C-7 | Tail im Inhalt veraendert, Laenge unveraendert | `E-006` |
+| C-8 | deklarierte Anzahl zu klein und zu gross, auch `0xFFFFFFFF` | `E-008`, `E-005` |
 
-**Welche Vektoren Parser-Eingaben sind (REQ-SCE-084, praezisiert 12.11.2026).**
-Ein Goldvektor ist nur dann eine Parser-Eingabe, wenn er einen **vollstaendigen
-Container** beschreibt. Das ist bei drei Vektoren der Fall:
+**Welche Vektoren Parser-Eingaben sind (REQ-SCE-084).** Ein Goldvektor ist nur dann
+eine Parser-Eingabe, wenn er einen **vollstaendigen Container** beschreibt:
 
 | Vektor | Art | Rolle im Korpus |
 |---|---|---|
@@ -1211,16 +1316,30 @@ Container** beschreibt. Das ist bei drei Vektoren der Fall:
 | GV-2, GV-4, GV-6 | `code_hash`-Eingabe (Strom ohne Kopf) | keine Container, **nicht** im Parser-Korpus |
 | GV-8, GV-9 | `state_root`-Eingabe | keine Container, **nicht** im Parser-Korpus |
 
-Rekonstruktion fuer GV-1 als Beispiel: der dokumentierte Container ist
-`4154434502010200000001010000000000000010`, der Sollwert
-`02a62ba7…08a23` ist der Tail. Die vollstaendige Eingabe ist also Kopf + Strom +
-Tail, und der Tail wird nicht mitgehasht (19.3). Fuer GV-3 und GV-7 gilt dasselbe
-Verfahren.
-
 C-1 hat damit **drei** Eintraege, nicht neun. Ein Korpus, der GV-5 als gueltigen
 Container fuehrt, wuerde REQ-SCE-079 verletzen und ist unzulaessig; ein Korpus, der
 GV-2, GV-4, GV-6, GV-8 oder GV-9 an einen Containerdecoder gibt, stellt eine Frage,
 die diese Vektoren nicht beantworten.
+
+**Befund zu GV-7 (12.11.2026).** GV-7 war als C-1-Eintrag nur scheinbar geeignet: mit
+dem damals dokumentierten P2-Strom ergab der Container `E-002` bei Offset 31, weil
+`Store` ohne Operandenbytes kodiert war. Erst nach der Korrektur in §18.2 ist GV-7 ein
+annehmbarer Container. Der Fehler waere ohne den Korpus unentdeckt geblieben, weil der
+Digest auch ueber einen nicht dekodierbaren Strom richtig ist: eine Hashprobe beweist
+**Dekodierbarkeit nicht**.
+
+**Korpusdatei.** C-1 bis C-8 stehen maschinenlesbar in
+`standards/atc/conformance/stage1-parser-corpus.json`, erzeugt aus
+`tools/build_parser_corpus.py`. Jede Zeile traegt `id`, `klasse`, `hinweis` (die
+Konstruktion), `laenge`, `eingabe_hex`, `sha256`, `entscheidung`, `code` und `offset`.
+Die Sollwerte werden **aus der Konstruktion** abgeleitet und nicht vom Dekoder
+berechnet; sonst pruefte der Korpus sich selbst. Der Korpus hat mindestens 30
+Eingaben; `tools/check_parser_corpus.py` vergleicht Dekoder gegen Korpus.
+
+**Zweiter Dekoder.** Der Referenzdekoder in `tools/atc_reference_decoder.py` ist eine
+**von zwei** Implementierungen und ausdruecklich kein Konformitaetsnachweis. Er
+belegt, dass die Prozedur ausfuehrbar und eindeutig ist, nicht dass zwei unabhaengige
+Dekoder uebereinstimmen. Die VM ist heute nicht der zweite Dekoder (REQ-SCE-088).
 
 Ergebnisform: eine Zeile je Eingabe mit `id`, `sha256` der Eingabe, `decision`,
 `code`, `offset`. Die Datei ist maschinenlesbar; ein Abweichen in einer Zeile ist ein
@@ -1232,13 +1351,17 @@ Fehlschlag, kein Hinweis.
 |---|---|---|
 | 19.1 Codes | REQ-SCE-078 | S1-T-42 |
 | 19.2 Praezedenz | REQ-SCE-079 | S1-T-42, S1-T-45 |
+| 19.2a Stromgrenze und Prozedur | REQ-SCE-085, 086 | S1-T-49, S1-T-50, S1-T-53 |
+| 19.2a Abgrenzung der Stromcodes | REQ-SCE-087 | S1-T-49, S1-T-50, S1-T-51 |
+| 19.2a Struktur vor Integritaet | REQ-SCE-088 | S1-T-52 |
+| 19.2a Groesstwert | REQ-SCE-089 | S1-T-53 |
 | 19.3 Tail | REQ-SCE-080 | S1-T-39, 40, 41 |
 | 19.4 Versionsisolation | REQ-SCE-081 bis 083 | S1-T-44, 45, 46, 47 |
-| 19.5 Differentialtest, Korpusauswahl | REQ-SCE-084 | S1-T-43, S1-T-48 |
+| 19.5 Differentialtest, Korpusauswahl | REQ-SCE-084 | S1-T-43, S1-T-48, S1-T-54 |
 
-Alle neun Tests sind `OPEN`. Kein Test ist damit bestanden; die Matrix aendert nur
-ihre Groesse, nicht ihren Befund. Der Dekoder bleibt die Voraussetzung fuer L1
-(S1-T-18) und damit fuer P1a.
+Die Tests S1-T-49 bis S1-T-54 sind `OPEN`. Ein ausgefuehrter Referenzdekoder ist kein
+Konformitaetsnachweis: REQ-SCE-084 verlangt zwei unabhaengige Dekoder. Der Dekoder
+bleibt die Voraussetzung fuer L1 (S1-T-18) und damit fuer P1a.
 
 ---
 Der Referenzwert 100 000 Gas aus `ATC-BC-002-CANDIDATE` §19.5 (groesstes im Repo
