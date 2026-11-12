@@ -61,7 +61,7 @@ resolved_by_ratification:
 decisions:
   - id: D1
     ratification: "nicht ratifiziert (Kandidat)"
-    specified_in: "Kandidat §5.1, §18.1-18.3 und §19 (nicht ratifiziert)"
+    specified_in: "Kandidat §5.1, §18.1-18.3 und §19.1-19.5 (nicht ratifiziert)"
     title: "Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert"
     decision_status: DECIDED
     decision: FREIGEGEBEN
@@ -80,6 +80,7 @@ decisions:
       - "Neue Containerfassung ist Teil von S1-1b, nicht eine spaetere unabhaengige Aenderung"
       - "Beide Hashes tragen feste, byte-exakte Domaenen-Praefixe (S1-T-33, S1-T-34)"
       - "Magic der Huelle: ATCE, Fassung 0x02 (Owner 12.11.2026); ATCB bleibt ausschliesslich der Strom"
+      - "Zweiter Dekoder: die VM fuehrt EMPTY_STREAM und COUNT_MISMATCH noch nicht und liest ATCB/0x01; sie gilt erst nach beidem als konformer zweiter Dekoder"
     open_items: []
 
   - id: D2
