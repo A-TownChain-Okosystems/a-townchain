@@ -5,7 +5,7 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.5.0-draft
+> **Version:** 1.5.1-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
@@ -26,6 +26,7 @@
 | 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
 | 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
 | 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
+| 1.5.1-draft | 2026-11-12 | Nur Hinweise, keine Anforderung geaendert: Aufruftiefe 8 als offener Konflikt gegen die Owner-Entscheidung 64 in ATC-BC-002 markiert (R-901); Grenzwerte als heute nicht pruefbar gekennzeichnet, weil kein Aufruf existiert (R-902); Verweise auf Abhaengigkeitsinventur und Entscheidungsvorlage. |
 | 1.5.0-draft | 2026-11-12 | REQ-SCE-060 praezisiert: lokaler Knotenfehler und Konsensresultat strikt getrennt (kein Beleg, kein Blockstatus, keine Belastung, deterministische Wiederaufnahme); Reproduzierbarkeit entscheidet ueber die Einordnung. REQ-SCE-054 fuehrt zwei getrennte Code-Raeume (Beleg-Status `0x00` bis `0x03`, Knotenfehler `ATC-NODE-INFRA-001`). Testmatrix T-42 bis T-44. |
 | 1.4.0-draft | 2026-11-12 | Drei Spezifikationsluecken geschlossen: Domainlaenge auf 15 Byte und Eingabe auf 75 Byte korrigiert (vorher 16/76, war falsch); IdentityValue mit einem kanonischen 32-Byte-Layout (Kennzeichen 0..3, reservierte Nullbytes 4..11, Adresse 12..31) und fail-closed-Regeln, REQ-SCE-057 bis 059; vierte Fehlerklasse fuer interne Infrastrukturfehler ohne Nutzerbelastung, REQ-SCE-060; Erstattungsformeln als ausdruecklicher Vorschlag. Testmatrix T-31 bis T-41. |
 | 1.3.0-draft | 2026-11-12 | Vier Befunde der Owner-Pruefung eingearbeitet: SCX-003 beschreibt Strom plus getrennte Huelle SCE-ARTIFACT (ATCB nicht mehr als Magic des VM-Containers); Verantwortungsmatrix trennt Knoten-Orchestrierung von VM-Interpretation und ergaenzt den Validator; Identitaeten `origin`, `caller` und Vertragsadresse getrennt (REQ-SCE-051 bis 053); Fehlerklassen und Erstattung getrennt (REQ-SCE-047, 054, 055); Grundregel SCE-P1 eine Wahrheit je Funktionalitaet; Kanonisierung der Signatur praezisiert; Adressableitung mit Bytebreiten und Kollisionsregel; Grenzwerte mit eigener Begruendung und Grenzwerttests T-21 bis T-30, Status weiterhin Vorschlag. |
@@ -180,6 +181,20 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
   **Grenzen (Status: VORSCHLAG, nicht bestaetigt; Begruendung unten, Grenzwerttest
   T-21 bis T-24 verbindlich):** Calldata hoechstens 8 192 Byte, Rueckgabepuffer
   hoechstens 4 096 Byte, Aufruftiefe hoechstens 8.
+
+  **Konflikt, offen (12.11.2026, R-901):** ATC-BC-002 nennt die Aufruftiefe an
+  vier Stellen als 64 und reserviert `E06` ausdruecklich dafuer; diese 64 ist eine
+  Owner-Entscheidung vom 2026-11-09, der Standard selbst ist nicht ratifiziert.
+  Die 8 in diesem Kandidaten ist ein Vorschlag und kann die Owner-Entscheidung
+  nur durch deren ausdrueckliche Aenderung ersetzen, nicht stillschweigend.
+  Optionen und Auswirkungen: `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md`,
+  E-1. Bis zur Aufloesung gilt keine der beiden Zahlen als bestaetigt.
+
+  **Nicht pruefbar (12.11.2026, R-902):** Calldata und Rueckgabepuffer setzen
+  einen Aufruf voraus. Weder der Rust-Instruktionssatz (19 Befehle) noch
+  ATC-BC-002 Abschnitt 16 kennen einen Aufruf, deshalb sind T-21 bis T-24 heute
+  nicht ausfuehrbar. Die Werte bleiben Vorschlag, auch wenn sie rechnerisch
+  begruendet sind.
 
   Begruendung, die nicht aus den bestehenden VM-Grenzen abgeleitet ist, sondern aus
   drei eigenen Bindungen:
@@ -547,19 +562,21 @@ keine auf **IMPLEMENTED**.
 
 **Entscheidungsregister** (Owner, 2026-11-12; Quelle: `docs/decisions/exec-decision-register.yaml`)
 
-| ID | Entscheidung (Titel) | Owner-Entscheidung | Spezifikation | spezifiziert in | Umsetzung | Gate |
-|---|---|---|---|---|---|---|
-| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | OPEN | Kandidat §5.1 (nicht ratifiziert) | OPEN | SCE-G1 |
-| D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | OPEN | Kandidat §5.3, §5.10 (nicht ratifiziert) | OPEN | SCE-G3 |
-| D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | OPEN | Kandidat §5.4 (nicht ratifiziert) | OPEN | SCE-G4 |
-| D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | OPEN | Kandidat §5.6, §5.10 (nicht ratifiziert) | OPEN | SCE-G6 |
-| D5 | Blockausfuehrung: deterministische Validator-Ausfuehrung | freigegeben | OPEN | Kandidat §5.7, §5.10 (nicht ratifiziert) | OPEN | SCE-G7 |
-| D6 | Identitaet: 32-Byte-Identitaetswort | bedingt freigegeben | OPEN | Kandidat §5.5, §5.10 (nicht ratifiziert) | OPEN | SCE-G5 |
-| D7 | Frontend: ATCLang kanonisch, .ops nur Testwerkzeug | freigegeben | OPEN | Kandidat §5.2 (nicht ratifiziert) | OPEN | SCE-G2 |
+| ID | Entscheidung (Titel) | Owner-Entscheidung | Ratifikation | Spezifikation | spezifiziert in | Umsetzung | Gate |
+|---|---|---|---|---|---|---|---|
+| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.1 (nicht ratifiziert) | OPEN | SCE-G1 |
+| D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.3, §5.10 (nicht ratifiziert) | OPEN | SCE-G3 |
+| D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.4 (nicht ratifiziert) | OPEN | SCE-G4 |
+| D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.6, §5.10 (nicht ratifiziert) | OPEN | SCE-G6 |
+| D5 | Blockausfuehrung: deterministische Validator-Ausfuehrung | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.7, §5.10 (nicht ratifiziert) | OPEN | SCE-G7 |
+| D6 | Identitaet: 32-Byte-Identitaetswort | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.5, §5.10 (nicht ratifiziert) | OPEN | SCE-G5 |
+| D7 | Frontend: ATCLang kanonisch, .ops nur Testwerkzeug | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.2 (nicht ratifiziert) | OPEN | SCE-G2 |
 
 Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** (vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die Gates bleiben bis zum jeweiligen Nachweis offen.
 
-Offen und nicht Teil dieser Freigabe: Numerische Gaspreise (Messung je Instruktionsklasse und Vertragsbenchmark); Endgueltiges Transaktionsgaslimit; Endgueltiges Blockgaslimit; Implementierungs- und CI-Gates.
+Drei Ebenen: **Owner-Entscheidung** ist intern verbindlich, auch wenn der zugehoerige Standard nicht ratifiziert ist. **Ratifikation** sagt, ob der Standard in Kraft ist; "nicht ratifiziert (Kandidat)" bindet niemanden. Ein Wert im Kandidaten bleibt **Vorschlag**, solange der Owner ihn nicht ausdruecklich beschliesst.
+
+Offen und nicht Teil dieser Freigabe: Numerische Gaspreise (Messung je Instruktionsklasse und Vertragsbenchmark); Endgueltiges Transaktionsgaslimit; Endgueltiges Blockgaslimit; Implementierungs- und CI-Gates; Konflikt Aufruftiefe: Owner-Entscheidung 64 vom 09.11.2026 in ATC-BC-002 (Kandidat, nicht ratifiziert) gegen SCE-Vorschlag 8 (R-901); Artefaktidentitaet: Container-Magic ATCB gegen SCE-D1, zwei Hashumfaenge ohne getrennte Namen (R-903); Fehlende CALL-Instruktion und Identitaetstyp auf dem u64-Stapel (R-902, R-907); Zirkularitaet P1a/P2: Grenzwerttests brauchen den Aufrufmechanismus (R-905); Autoritaet der beiden Instruktionssaetze (R-906).
 
 <!-- END DECISION-REGISTER -->
 
