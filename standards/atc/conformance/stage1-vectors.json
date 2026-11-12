@@ -1,0 +1,61 @@
+{
+  "quelle": "standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md",
+  "abschnitt": "18.2",
+  "standard": "ATC-SMART-CONTRACT-EXECUTION-001",
+  "fassung": "1.6.0-draft",
+  "hinweis": "Erzeugt aus dem Dokument; nicht von Hand aendern.",
+  "stroeme": {
+    "P1": "01010000000000000010",
+    "P2": "010700000000000000012a00000000000000020b10"
+  },
+  "goldvektoren": [
+    {
+      "id": "GV-1",
+      "sollwert": "03ccdae71c4619975c6869491342bef27483f18462504eafc9bc10b24bc13137"
+    },
+    {
+      "id": "GV-2",
+      "sollwert": "d7adc88fc2ceb21136df3397ec7d6bfff57a4f439088798f34ab3c8c3c546cdb"
+    },
+    {
+      "id": "GV-3",
+      "sollwert": "e64cfc2bfb2ed0f7143670cafa4a5294b7247179aabcefe359130f11a7977481"
+    },
+    {
+      "id": "GV-4",
+      "sollwert": "d7adc88fc2ceb21136df3397ec7d6bfff57a4f439088798f34ab3c8c3c546cdb"
+    },
+    {
+      "id": "GV-5",
+      "sollwert": "3f5bb373c995e6f92ff81722d28f7e5329e4ba670dad5bf962729670edd7484e"
+    },
+    {
+      "id": "GV-6",
+      "sollwert": "c829629e93d97b464b58a1a5004c7a17700f482a08fb34caae59a83ef39e30d8"
+    },
+    {
+      "id": "GV-7",
+      "sollwert": "c74a70ad245884eaccc591f0dfae31154a62f212a064bbb5683b9d7c31ab469a"
+    },
+    {
+      "id": "GV-8",
+      "sollwert": "c3cc531a91ce794025e1f584cc4d6e33dc1dea36accddd8a72cc6e20b26cc184"
+    },
+    {
+      "id": "GV-9",
+      "sollwert": "8235d7bd9e9f2fb47d5bbebc62064c99cc5a9694486e05fc3d8b13d5954163a2"
+    }
+  ],
+  "negativvektoren": [
+    {
+      "id": "NV-1",
+      "sollwert": "4f67416a21680a0b2029b625904cf88850f43e00a46a0679069059bf57887810",
+      "regel": "muss von GV-1 und GV-2 abweichen"
+    },
+    {
+      "id": "NV-2",
+      "sollwert": "015d3bbd6858472c56e5c1a4899ebfc5eced615ae77cf493c86b73349b5db97a",
+      "regel": "muss von GV-1 und GV-2 abweichen"
+    }
+  ]
+}
