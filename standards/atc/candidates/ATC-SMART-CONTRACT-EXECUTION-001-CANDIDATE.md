@@ -5,7 +5,7 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.2.0-draft
+> **Version:** 1.3.0-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
@@ -26,6 +26,7 @@
 | 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
 | 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
 | 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
+| 1.3.0-draft | 2026-11-12 | Vier Befunde der Owner-Pruefung eingearbeitet: SCX-003 beschreibt Strom plus getrennte Huelle SCE-ARTIFACT (ATCB nicht mehr als Magic des VM-Containers); Verantwortungsmatrix trennt Knoten-Orchestrierung von VM-Interpretation und ergaenzt den Validator; Identitaeten `origin`, `caller` und Vertragsadresse getrennt (REQ-SCE-051 bis 053); Fehlerklassen und Erstattung getrennt (REQ-SCE-047, 054, 055); Grundregel SCE-P1 eine Wahrheit je Funktionalitaet; Kanonisierung der Signatur praezisiert; Adressableitung mit Bytebreiten und Kollisionsregel; Grenzwerte mit eigener Begruendung und Grenzwerttests T-21 bis T-30, Status weiterhin Vorschlag. |
 | 1.2.0-draft | 2026-11-12 | Owner-Entscheidung P1 erfasst: D1, D3, D5, D7 freigegeben, D2, D4, D6 bedingt freigegeben, alle sieben DECIDED. Auflagen als REQ-SCE-039 bis REQ-SCE-050 aufgenommen, Entscheidungs-Slots durch das Register ersetzt, Zustandsleiter DECIDED/SPECIFIED/IMPLEMENTED ergaenzt. Zahlen und Gates bleiben offen. |
 
 ---
@@ -68,6 +69,13 @@ Produkt-Apps.
 - Keine Konsensregeln in der VM.
 - Keine Aenderung eingefrorener Formate ohne Aenderungsverfahren.
 
+**Grundregel SCE-P1 (eine Wahrheit je Funktionalitaet).** Jede Komponente besitzt
+ihre eigene Verantwortung, aber keine Komponente darf eine zweite Wahrheit ueber
+dieselbe Funktionalitaet etablieren. Konkret: eine Sprache (ATCLang), eine VM
+(ATC-VM), ein Instruktionsstrom (ATC-BC-001), eine Huelle (SCE-ARTIFACT), eine
+Gastabelle je Generation, eine Zustandswurzel. Zwei Implementierungen derselben
+Sache sind kein Redundanzgewinn, sondern eine Divergenzquelle.
+
 ## 3. Begriffe
 
 | Begriff | Definition |
@@ -87,8 +95,16 @@ Produkt-Apps.
 | --- | --- | --- |
 | ATCLang | Syntax, Typen, IR, Bytecode-Erzeugung | Konsens, Persistenz, Netzwerk |
 | ATC Smart-Contract | Vertragsregeln, Storage-Schema, ABI | Eigene VM, eigene Execution |
-| ATC-VM | Determinismus, Gas, Speichergrenzen | Zeit, Zufall, Netzwerk, Signaturen |
-| A-TownChain | Transaktion, Konsens, Zustaende | Vertragslogik interpretieren |
+| ATC-VM | Interpretation und Ausfuehrung der Vertragslogik, Determinismus, Gas, Speichergrenzen | Zeit, Zufall, Netzwerk, Signaturen |
+| A-TownChain (Knoten) | Ausfuehrungsauftrag, Kontext, Reihenfolge, Konsens, Zustand | Vertragslogik selbst interpretieren, eine zweite Ausfuehrungslogik |
+| Validator | Aufruf der normierten VM und Vergleich des Ergebnisses | eigene Semantik, eigene Gasrechnung, eigene Zustandswurzel |
+
+**Praezisierung zu D5 (Befund vom 12.11.2026):** "Der Validator rechnet nach"
+heisst nicht, dass die Kette Vertragslogik auslegt. Der Knoten orchestriert:
+Auftrag bilden, Reihenfolge festlegen, die normierte VM mit dem vereinbarten
+Zustand aufrufen, Ergebnis und Zustandswurzel vergleichen. Die Interpretation der
+Vertragslogik liegt ausschliesslich in der VM. Zwei Implementierungen derselben
+Vertragslogik waeren eine zweite Wahrheit und sind unzulaessig (REQ-SCE-056).
 
 ## 5. Lifecycle mit Pruefpunkten (aus v0.1.0)
 
@@ -96,7 +112,7 @@ Produkt-Apps.
 | --- | --- | --- | --- | --- |
 | SCX-001 | Source | Vertragsquelle | geparste Einheit | ATCLang |
 | SCX-002 | Compiler | Einheit | typgeprueftes IR | ATCLang |
-| SCX-003 | Bytecode | IR | Artefakt mit Magie ATCB + Version | ATCLang |
+| SCX-003 | Bytecode | IR | Instruktionsstrom nach ATC-BC-001, verpackt in die getrennte Huelle SCE-ARTIFACT (eigenes Magic, eigene Versionskennung) | ATCLang |
 | SCX-004 | Verifikation | Artefakt | gueltig oder Ablehnung | ATC-VM Verifier |
 | SCX-005 | Deployment | signierte Transaktion | Contract ID + Storage-Wurzel | A-TownChain |
 | SCX-006 | Aufruf | Transaktion + Kontext | Ausfuehrungsauftrag | A-TownChain |
@@ -107,6 +123,19 @@ Produkt-Apps.
 
 Regel: Keine Stufe darf die Pruefung einer spaeteren Stufe ersetzen.
 Eine gueltige Compilierung ist kein Ausfuehrungsrecht.
+
+**Klarstellung zu SCX-003 (Befund vom 12.11.2026):** Die v0.1.0-Formulierung
+"Artefakt mit Magie ATCB + Version" ist ueberholt und widersprach D1. Es gibt zwei
+getrennte Dinge, die nicht denselben Namen tragen duerfen:
+
+| Ebene | Was | Kennung |
+|---|---|---|
+| Instruktionsstrom | Bytes nach ATC-BC-001, unveraendert, eingefroren | ATC-BC-001 |
+| Huelle | Verpackung des Stroms: eigenes Magic (Vorschlag `ATCE`), eigene Generation, Laenge, Layout-Hash, SHA-256 | SCE-ARTIFACT |
+
+`ATCB` bezeichnet damit weiterhin ausschliesslich den eingefrorenen Strom. Ein
+Container mit demselben Magic und anderer Semantik ist untersagt; genau dieser
+Doppelkopf war Audit-Befund IV-03.
 
 **Zuordnung der Stufen zu den Anforderungen dieser Fassung:**
 
@@ -133,20 +162,63 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
 **Aufruf (D2)**
 
 - **REQ-SCE-039:** Der Selektor ist 4 Byte breit und besteht aus den ersten 4 Byte
-  des SHA-256 der kanonischen Funktionssignatur. Ein Deployment, dessen ABI zwei
+  des SHA-256 der **kanonischen** Funktionssignatur. Ein Deployment, dessen ABI zwei
   gleiche Selektoren enthaelt, wird abgelehnt. Eine Kollision wird nicht durch eine
   laengere Laufzeitform aufgeloest, weil das die Semantik je Generation verschieben
   wuerde.
+  **Kanonisierung (Praezisierung 12.11.2026):** Die Signaturform ist
+  `name(typ,typ,...)`, ohne Leerzeichen, mit einer festen Schreibweise je Typ aus
+  der Typentabelle des Standards (u8 bis u256, i8 bis i256, bool, address,
+  bytes32, string, `list<T>`); keine Aliase, keine Kurzformen, keine
+  Quellextschreibweise. Die kanonische Form wird aus dem ABI erzeugt, nicht aus dem
+  Vertragstext gelesen. Das ABI-Gate lehnt unbekannte Typnamen und zwei gleiche
+  kanonische Signaturen ab.
 - **REQ-SCE-040:** Die Wortgroesse ist 32 Byte, die Reihenfolge big-endian.
-  Calldata ist die kanonische Verkettung von Woertern ohne Auffuellung. Grenzen
-  (Vorschlag, Bestaetigung im Rahmen von P1b offen, angelehnt an die bestehenden
-  Grenzen `MAX_PROGRAM_OPS` 65 536, `MAX_STACK_ITEMS` 4 096,
-  `MAX_STORAGE_SLOTS` 65 536): Calldata hoechstens 8 192 Byte, Rueckgabepuffer
+  Calldata ist die kanonische Verkettung von Woertern ohne Auffuellung.
+  **Grenzen (Status: VORSCHLAG, nicht bestaetigt; Begruendung unten, Grenzwerttest
+  T-21 bis T-24 verbindlich):** Calldata hoechstens 8 192 Byte, Rueckgabepuffer
   hoechstens 4 096 Byte, Aufruftiefe hoechstens 8.
+
+  Begruendung, die nicht aus den bestehenden VM-Grenzen abgeleitet ist, sondern aus
+  drei eigenen Bindungen:
+
+  1. **Speicher je Frame.** Ein Frame traegt Stack (4 096 Eintraege zu 8 Byte =
+     32 KiB) plus Calldata plus Rueckgabepuffer. Bei 8 192 + 4 096 Byte sind das
+     rund 44 KiB je Frame; bei Tiefe 8 also hoechstens rund 352 KiB je Transaktion.
+     Diese Zahl ist ohne Messung rechenbar und begrenzt den Speicherbedarf
+     deterministisch, unabhaengig von der Gastabelle.
+  2. **Belegroesse.** Der Rueckgabepuffer wird vollstaendig in den Beleg kopiert.
+     4 096 Byte je Aufruf halten einen Beleg in einer Groessenordnung, die sich
+     hashen und speichern laesst; groessere Rueckgaben gehoeren in Ereignisse oder
+     Zustand, nicht in den Rueckgabepuffer.
+  3. **Kostenverhaeltnis.** 8 192 Byte sind 256 Woerter; selbst bei 10 Gas je Wort
+     bleibt die Dekodierung unter 3 000 Gas und damit klein gegen jede
+     Ausfuehrungsrechnung. Die Grenze soll Speicher begrenzen, nicht Kosten
+     erzeugen; waere sie der dominante Kostenfaktor, waere sie falsch dimensioniert.
+
+  **Was ausdruecklich fehlt und vor der Bestaetigung nachzuholen ist:** ein
+  Grenzwerttest je Parameter (T-21 bis T-24) und eine Messung, die zeigt, dass die
+  gewaehlten Werte reale Vertraege nicht aussperren. Uebereinstimmung mit
+  `MAX_STACK_ITEMS` ist kein Argument; sie ist hoechstens ein Nebenbefund.
 - **REQ-SCE-041:** Die Vertragsadresse ist die ersten 20 Byte von
-  `SHA-256("ATC-CONTRACT-V1" || deployer_20 || nonce_u64_le || code_hash_32)`,
-  dargestellt als `ATC:` plus Hex, identisch zur Adressform aus SEC-P0-005. Sie ist
-  ohne Netzwerkzugriff und ohne Zeitbezug reproduzierbar.
+  `SHA-256(domain || deployer_20 || nonce_u64_le || code_hash_32)`, dargestellt als
+  `ATC:` plus Hex, identisch zur Adressform aus SEC-P0-005.
+  **Praezisierung 12.11.2026 (Befund A):**
+
+  | Feld | Laenge | Kodierung |
+  |---|---|---|
+  | `domain` | 16 Byte | ASCII `ATC-CONTRACT-V1`, keine Laengenvorspannung |
+  | `deployer_20` | 20 Byte | Adresse nach SEC-P0-005, rohe Bytes ohne `ATC:`-Praefix |
+  | `nonce_u64_le` | 8 Byte | unsigned, little-endian, Monotonie je Deployer |
+  | `code_hash_32` | 32 Byte | SHA-256 ueber den kanonischen Instruktionsstrom (nicht ueber die Huelle) |
+  | Eingabe gesamt | 76 Byte | Verkettung in dieser Reihenfolge, keine Trenner |
+
+  **Kollision:** Ist die abgeleitete Adresse bereits belegt, wird das Deployment
+  abgelehnt. Es gibt kein stilles Weiterzaehlen der Nonce und keine Ausweichadresse,
+  weil beides die Ableitung mehrdeutig machen wuerde; der Deployer muss eine neue
+  Transaktion mit der naechsten Nonce senden. Die Adresse wird bei jeder
+  Kettenverarbeitung aus ihren Eingaben neu berechnet und nicht als Wahrheit
+  gespeichert.
 
 **Identitaet (D6)**
 
@@ -158,6 +230,20 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
   authentifiziert die Identitaet, belegt durch einen Negativtest mit fremdem
   Schluessel; (d) interne Aufrufe bilden den unmittelbaren Aufrufer ab, belegt
   nach BC-002.
+- **REQ-SCE-051:** Drei Identitaeten sind getrennt zu fuehren und getrennt zu
+  benennen: `origin` (Urheber der Transaktion, ueber den gesamten Aufrufstapel
+  unveraendert), `caller` (unmittelbar Aufrufender des aktuellen Frames) und die
+  Vertragsadresse als technischer Aufrufer. `origin` ist nicht ersetzbar, `caller`
+  ist frame-lokal.
+- **REQ-SCE-052:** Bei einem Aufruf von Vertrag zu Vertrag ist `caller` die
+  Vertragsadresse des aufrufenden Vertrags, nicht die Wallet des Urhebers. Eine
+  Implementierung, die `caller` dauerhaft auf `origin` stehen laesst, ist
+  unzulaessig, weil sie jede Berechtigungspruefung aushebelt. Die Semantik wird mit
+  ATC-BC-002 abgestimmt, bevor Vertrag-zu-Vertrag-Aufrufe freigegeben werden.
+- **REQ-SCE-053:** Eine Wallet-Identitaet darf niemals als interne Aufruferidentitaet
+  eines Vertrags erscheinen, und eine Vertragsadresse darf sich nicht als Wallet
+  ausgeben. Die Unterscheidung ist im Identitaetswort sichtbar (Typkennzeichen),
+  nicht nur in der Dokumentation.
 
 **Gas (D4)**
 
@@ -168,9 +254,26 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
   normiert ist.
 - **REQ-SCE-046:** Die Gebuehr wird unabhaengig vom Rollback des Vertragszustands
   belastet. Ein Rollback der Ausfuehrung ist kein Rollback der Abrechnung.
-- **REQ-SCE-047:** Ein fehlgeschlagener Vertrag verbraucht sein Budget vollstaendig.
-  Rechenzeit ohne Belastung ist unzulaessig; das gilt auch fuer Fehlschlaege im
-  Loader und im Backend.
+- **REQ-SCE-047:** Ein fehlgeschlagener Vertrag verbraucht mindestens die tatsaechlich
+  geleistete Rechenzeit. Rechenzeit ohne Belastung ist unzulaessig; das gilt auch
+  fuer Fehlschlaege im Loader und im Backend. **Praezisierung 12.11.2026 (Befund 4):
+  "fehlgeschlagen" ist nicht gleich "Budget weg".** Es gelten drei Klassen:
+
+  | Klasse | Verbrauch | Erstattung |
+  |---|---|---|
+  | Gaserschoepfung | volles `gas_limit` | keine, `gas_refund = 0` |
+  | Revert oder logischer Vertragsfehler | nur `gas_used` | ungenutztes Budget, nach der Erstattungsregel |
+  | Ablehnung vor der Ausfuehrung (Struktur, Aufnahme, Signatur) | kein Gas, keine Zustandsaenderung | nicht anwendbar; die Transaktion wird nicht gebucht |
+
+  Die Erstattungsregel ist normativ festzulegen (Vorschlag: volles ungenutztes
+  Budget, kein prozentualer Abzug) und zu testen; ohne sie waere jede einfache
+  Vertragsablehnung so teuer wie eine Erschoepfung, was den Anreiz verzerrt.
+- **REQ-SCE-054:** Die Fehlerklassen nach REQ-SCE-047 sind im Ergebnis und im Beleg
+  unterscheidbar (eigener Statuscode je Klasse), damit ein Validator die Abrechnung
+  nachrechnen kann, ohne die Absicht zu raten.
+- **REQ-SCE-055:** `gas_refund` ist eine Anzahl Gaseinheiten, kein Geldbetrag. Der
+  zurueckerstattete Betrag ist `gas_refund * gas_price` und traegt einen eigenen
+  Namen; die beiden Groessen duerfen nicht in einem Feld vermischt werden.
 
 **Ausfuehrung und Block (D5, Zusatzanforderungen)**
 
@@ -187,6 +290,11 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
   festgelegt, nicht von Ankunftszeit, Map-Reihenfolge oder Zufall abhaengig.
 - **REQ-SCE-050:** Receipts sind byte-gleich reproduzierbar. Zwei Laeufe derselben
   Transaktion auf demselben Zustand erzeugen identische Bytes.
+- **REQ-SCE-056:** Der Knoten orchestriert, interpretiert aber nicht. Er bildet den
+  Ausfuehrungsauftrag, legt die Reihenfolge fest, ruft die normierte VM mit dem
+  vereinbarten Zustand auf und vergleicht Ergebnis, Verbrauch und Zustandswurzel.
+  Eine eigene Auslegung der Vertragslogik im Knoten, im Backend oder im Loader ist
+  unzulaessig (Grundregel SCE-P1).
 
 ## 6. Normative Objekte
 
@@ -495,6 +603,16 @@ keinem Punkt CI_VERIFIED oder E2E_VERIFIED.
 | T-18 | Ausfuehrung ohne Freigabe | Abbruch |
 | T-19 | Vertrag im Kettenziel nicht abbildbar | Ablehnung beim Deployment, nicht still |
 | T-20 | Messung: gleiche Wurzel ueber zwei Laeufe mit verschiedenen Prozessen | identisch |
+| T-21 | Calldata genau 8 192 Byte | angenommen, dekodiert |
+| T-22 | Calldata 8 193 Byte | abgelehnt vor der Ausfuehrung, kein Gas |
+| T-23 | Rueckgabe genau 4 096 Byte | angenommen, vollstaendig im Beleg |
+| T-24 | Rueckgabe 4 097 Byte oder Aufruftiefe 9 | abgelehnt, Statuscode eindeutig |
+| T-25 | ABI mit zwei gleichen Selektoren | Deployment abgelehnt |
+| T-26 | Zwei kanonische Signaturen, die sich nur in Alias-Schreibweise unterscheiden | gleicher Selektor, Deployment abgelehnt |
+| T-27 | Adresskollision: gleicher Deployer, gleiche Nonce, gleicher Code-Hash | zweites Deployment abgelehnt |
+| T-28 | Revert nach 1 000 Gas bei Budget 10 000 | `gas_used` 1 000, Erstattung nach Regel, Zustand unveraendert |
+| T-29 | Gaserschoepfung bei Budget 10 000 | `gas_used` 10 000, `gas_refund` 0, Zustand unveraendert |
+| T-30 | Aufruf mit falschem Statuscode fuer den Beleg | Block abgelehnt |
 
 ## 17. Offene Entscheidungen vor Ratifizierung
 
@@ -518,6 +636,11 @@ keinem Punkt CI_VERIFIED oder E2E_VERIFIED.
 12. Endgueltiges Transaktionsgaslimit.
 13. Endgueltiges Blockgaslimit.
 14. Implementierungs- und CI-Gates.
+15. Grenzwerte bestaetigen: Calldata 8 192, Rueckgabe 4 096 Byte, Tiefe 8 erst nach
+    den Grenzwerttests T-21 bis T-24.
+16. Erstattungsregel nach Revert normativ festlegen (Vorschlag: volles ungenutztes
+    Budget) und mit T-28 belegen.
+17. `caller`-Semantik bei Vertrag-zu-Vertrag mit ATC-BC-002 abstimmen (REQ-SCE-052).
 
 Der Referenzwert 100 000 Gas aus `ATC-BC-002-CANDIDATE` §19.5 (groesstes im Repo
 verwendetes Budget, zwei Aufrufe in `tests/atcb_v2.rs`) ist ein Mess- und
