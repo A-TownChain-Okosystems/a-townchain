@@ -29,12 +29,16 @@ aktualisiert, wenn eine der drei Voraussetzungen eintritt:
 | `FAILED` | 0 |
 | `BLOCKED` | 1 |
 | `EMPTY` | 0 |
-| `OPEN` | 36 |
-| **Summe** | **38** |
+| `OPEN` | 45 |
+| **Summe** | **47** |
 
 Kein Test ist `TESTED`. P1a ist offen, P2 ist gesperrt, eine Produktionsfreigabe ist
 nicht erteilt. Der Status `OPEN` heisst: es fehlt die Entscheidung, nicht nur die
 Ausfuehrung.
+
+Neun Tests (S1-T-39 bis S1-T-47) sind am 12.11.2026 mit §19 des Kandidaten
+hinzugekommen: Parser-Fehlersemantik, Tail-Integritaet, Versionsisolation und
+Differentialtest. Sie erweitern die Matrix, ohne einen Befund zu aendern.
 
 ## 3. Nachweisstand je Test
 
@@ -78,6 +82,15 @@ Ausfuehrung.
 | S1-T-36 | Registry und Wurzel koennen die Hashes nicht verwechseln | S1-1/1b | `OPEN` | Code-Test |
 | S1-T-37 | flacher 32-Byte-Alt Schluessel wird nicht gedeutet, Start verweigert | S1-2 | `OPEN` | Code-Test |
 | S1-T-38 | S1-2 nur als Ganzes: Teilumsetzung besteht das Gate nicht | S1-2 | `OPEN` | Gate |
+| S1-T-39 | Tail beginnt exakt bei `10+n`; ein um ein Byte verschobener Digest ergibt `E-006` | S1-1 | `OPEN` | Code-Test |
+| S1-T-40 | Gesamtlaenge unter 42 Byte ergibt `E-001`; Container mit 42 Byte und Anzahl 0 ergibt `E-004` | S1-1 | `OPEN` | Grenzwerttest |
+| S1-T-41 | Zusaetzliche Bytes zwischen Stromende und Tail ergeben `E-008`, nicht `E-006` | S1-1 | `OPEN` | Code-Test |
+| S1-T-42 | Praezedenz: acht kombinierte Fehlerfaelle liefern je den Code der fruehesten Stufe | S1-1 | `OPEN` | Code-Test |
+| S1-T-43 | Differentialtest: mindestens 30 Eingaben durch zwei unabhaengige Dekoder, identische `(Code, Offset)` je Zeile | S1-1 | `OPEN` | Vergleichstest |
+| S1-T-44 | Versionsisolation: `ATCE` + `0x01` ergibt `E-003`, kein Fallback-Parsing | S1-1 | `OPEN` | Code-Test |
+| S1-T-45 | Altcontainer `ATCB` + `0x01` ergibt `E-007` (Magic vor Version), nicht `E-003` | S1-1 | `OPEN` | Code-Test |
+| S1-T-46 | Unbekannte Versionen `0x03` und `0xFF` bei Magic `ATCE` ergeben `E-003`, ohne spekulatives Parsen | S1-1 | `OPEN` | Code-Test |
+| S1-T-47 | Opcodes `0x11` bis `0x13` bei Generation `0x01` ergeben `E-011`; Generation `0x03` ergibt `E-009` | S1-1 | `OPEN` | Code-Test |
 
 ## 3.1 Wirkung der Ratifikation auf den Nachweisstand
 
@@ -108,6 +121,10 @@ Fehlerreaktion und Testbezug:
 | Containerfassung | §18.3 | REQ-SCE-066 bis 069 | Magic `ATCE`, Fassung `0x02`, Tail = `artifact_hash`, sieben Fehlercodes (neu: `E-007 UNKNOWN_MAGIC`) |
 | Policy-Schluesselraeume | §18.4 | REQ-SCE-070 bis 074 | achtstufige Pruefsequenz, Startverweigerung |
 | Gasrueckgabe | §18.5 | REQ-SCE-075 bis 077 | vier Faelle, Wortlaut fuer kuenftige Kontobelastung |
+| Parser-Fehlersemantik | §19.1 bis 19.2 | REQ-SCE-078 bis 079 | Codeliste `E-001` bis `E-012`, zehnstufige Praezedenz |
+| Tail-Integritaet | §19.3 | REQ-SCE-080 | exakter Offset `10+n`, 32 Byte, keine Bytes danach |
+| Versionsisolation | §19.4 | REQ-SCE-081 bis 083 | keine Vermischung, reine Funktion, Generation vor Opcode |
+| Differentialtest | §19.5 | REQ-SCE-084 | acht Korpusklassen, Vergleich von `(Code, Offset)` |
 
 Der Sollwert ist ohne Projektcode pruefbar: `python3 tools/check_stage1_vectors.py`
 liest die Vektoren aus dem Dokument und rechnet sie mit reinem SHA-256 nach. Damit
