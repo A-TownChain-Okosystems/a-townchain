@@ -96,6 +96,27 @@ Der Status `OPEN` bedeutet ab jetzt: die Entscheidung liegt vor, die Spezifikati
 und die Umsetzung nicht. Kein Test ist `TESTED`, und keiner darf als bestanden
 gemeldet werden, solange er nicht ausgefuehrt wurde.
 
+## 3.2 Stand der Spezifikation (12.11.2026)
+
+Die fuenf Bereiche sind im Kandidaten byte-genau spezifiziert, jeweils mit
+Fehlerreaktion und Testbezug:
+
+| Bereich | Abschnitt | Anforderungen | Vektornachweis |
+|---|---|---|---|
+| Hash-Domaenen | §18.1 | REQ-SCE-061 bis 064 | Labels 16/14/13 Byte, Nullbyte-Pflicht |
+| Goldvektoren | §18.2 | REQ-SCE-065 | 9 Gold- und 6 Negativvektoren, maschinenlesbar in `standards/atc/conformance/stage1-vectors.json` |
+| Containerfassung | §18.3 | REQ-SCE-066 bis 069 | Fassung `0x02`, sechs Fehlercodes |
+| Policy-Schluesselraeume | §18.4 | REQ-SCE-070 bis 074 | achtstufige Pruefsequenz, Startverweigerung |
+| Gasrueckgabe | §18.5 | REQ-SCE-075 bis 077 | vier Faelle, Wortlaut fuer kuenftige Kontobelastung |
+
+Der Sollwert ist ohne Projektcode pruefbar: `python3 tools/check_stage1_vectors.py`
+liest die Vektoren aus dem Dokument und rechnet sie mit reinem SHA-256 nach. Damit
+ist die Spezifikation gegen sich selbst pruefbar, aber **kein** Test gegen eine
+Implementierung: die Matrix bleibt unveraendert, weil kein Test ausgefuehrt wurde.
+
+Was weiterhin fehlt, ist ausdruecklich kein Spezifikationsrest: L1 braucht einen
+reinen Dekoder (S1-T-18), und die Aufrufarchitektur B-1 ist nicht entschieden.
+
 ## 4. Bereits belegte Befunde
 
 Diese Punkte sind keine Tests, sondern am Code oder im Lauf erhobene Befunde. Sie
