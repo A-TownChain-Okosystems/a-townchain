@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 09:13 UTC+2 aus `origin/main` @ `995948b5`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 09:18 UTC+2 aus `origin/main` @ `a4617667`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11374 Dateien**
+**Total: 11376 Dateien**
 
-## docs (5087)
+## docs (5089)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -20,6 +20,7 @@
 - `docs/audits/ATCLANG-VM-CHAIN-INTEGRATION-2026-11-11.md`
 - `docs/audits/CONTRACT-EXECUTION-INVENTORY-2026-11-12.md`
 - `docs/audits/CONTRACT-INTEGRITY-2026-11-08.md`
+- `docs/audits/EXEC-DEPENDENCY-INVENTORY-2026-11-12.md`
 - `docs/audits/EXEC-MAPPING-INVENTORY-2026-11-11.md`
 - `docs/audits/EXEC-OPEN-POINTS-2026-11-12.md`
 - `docs/audits/INTEGRATION-MATRIX-2026-11-09.md`
@@ -37,6 +38,7 @@
 - `docs/boot/BOOT-EVIDENCE.md`
 - `docs/decisions/AD-EXEC-D1-D7.md`
 - `docs/decisions/AD-EXEC-KERNEL-ENFORCEMENT.md`
+- `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md`
 - `docs/decisions/VM-INTEGER-SEMANTICS-DRAFT.md`
 - `docs/decisions/exec-decision-register.yaml`
 - `docs/demo/.atc/compliance.yaml`
