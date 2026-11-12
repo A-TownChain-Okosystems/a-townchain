@@ -365,7 +365,8 @@ chain_state:
   register: ATC-CHAIN-STATE-DECISIONS
   decided_on: 2026-11-12
   basis_head: "d97b476 (P1d-B1 Inventur, keine Codeaenderung)"
-  source: "Owner-Bewertung P1d-B1 (Chat, 12.11.2026)"
+  specification_basis_head: "82ae098d (P1d-B2-Gates, Ausarbeitung ohne Codeaenderung)"
+  source: "Owner-Bewertung P1d-B1 und P1d-B2 (Chat, 12.11.2026)"
   rule:
     id: ATC-ATOMIC-STATE-TRANSITION
     title: "ATC Atomic State Transition Rule"
@@ -454,23 +455,267 @@ chain_state:
     - id: B2-S1
       title: "Zustandsdatenmodell und kanonische Serialisierung"
       blocks: "P1d-C"
+      decides: "AD-B1-03"
+      status: OPEN
+      evidence: null
       acceptance: "Gleicher logischer Zustand ergibt byte-identische Eingabe in die Wurzel; Testvektoren, die von zwei Implementierungen unabhaengig reproduziert werden"
+      specification: >-
+        Das Modell legt fest, WELCHE Daten ueberhaupt Zustand sind und WIE sie
+        kanonisch zu Bytes werden: Bereichsliste, Schluesselfamilien mit fester
+        Bytebreite, Werttypen, Sortierregel, Leerwert je Bereich und die
+        ausdrueckliche Nichtaufnahme. Es ist die Eingabe der Wurzel und damit
+        Konsensgut: eine Aenderung ist eine harte Abspaltung, keine Formatierung.
+      required_content:
+        - "Vollstaendige Bereichsliste, auch fuer noch nicht implementierte Bereiche (Konten, Nonces, Vertragsspeicher, Deployment- und Berechtigungsregister, Gebuehrenzustand)"
+        - "Schluesselfamilien je Bereich mit fester Breite und Endianness; keine Varints auf dem Konsenspfad"
+        - "Werttypen je Bereich (u64-Betrag, u256-Slot, Bytes32) und ihre Kodierung"
+        - "Sortierregel: aufsteigend nach kanonischem Schluesselbyte, nicht nach Einfuegereihenfolge"
+        - "Kanonischer Leerwert je Bereich, definiert statt 'nicht vorhanden'"
+        - "Ausgeschlossene Daten mit Begruendung, insbesondere Zeitstempel im gehashten Zustand"
+        - "Bytebreiten ausgezaehlt und im Werkzeug als Pflichtpruefung verankert (Lehre vom 12.11.2026: 15 statt 16 Byte)"
+      artifacts:
+        - "standards/atc/candidates/ATC-STATE-002-CANDIDATE.md, Abschnitt Zustandsmodell (Kennung ist ein Vorschlag; die Familienzuordnung entscheidet atc-standards)"
+        - "standards/atc/conformance/state-model-corpus.json, Vektoren logischer Zustand zu kanonischen Bytes"
+        - "tools/atc_state_model.py, unabhaengige zweite Implementierung mit --check gegen den Korpus"
+      owner_points:
+        - "O-S1-1 Schluesselbreiten: Vorschlag Konto 8 Byte, Vertragsadresse und Speicherslot je 32 Byte, jede Breite mit eigener Begruendung"
+        - "O-S1-2 Zeitstempel: Vorschlag Ausschluss aus dem gehashten Zustand; Zeit bleibt Belegdatum ausserhalb der Wurzel"
+        - "O-S1-3 Konten und Nonces existieren im Code heute nicht (System kennt keine Salden); der Bereich wird trotzdem jetzt festgelegt, siehe B2-S2"
+      entry_tests:
+        - id: B2-S1-T-01
+          test: "Zwei verschiedene Einspeisereihenfolgen desselben logischen Zustands ergeben byte-identische kanonische Bytes"
+          proves: "Sortierregel statt Einfuegereihenfolge"
+        - id: B2-S1-T-02
+          test: "Leerer Bereich und nicht vorhandener Bereich ergeben den definierten Leerwert, ein belegter Bereich nicht"
+          proves: "kanonischer Leerwert, keine Verwechslung von leer und belegt"
+        - id: B2-S1-T-03
+          test: "Rust-Implementierung und tools/atc_state_model.py bilden denselben Korpus auf dieselben Bytes ab"
+          proves: "zwei unabhaengige Implementierungen, gleiches Ergebnis"
+        - id: B2-S1-T-04
+          test: "Ein Zeitstempelwechsel bei sonst gleichem Zustand aendert die kanonischen Bytes nicht"
+          proves: "Nichtaufnahme nicht deterministischer Felder"
+        - id: B2-S1-T-05
+          test: "Das Werkzeug lehnt einen Vektor mit falscher Feldbreite ab, statt ihn zu akzeptieren"
+          proves: "Breiten sind Pflichtpruefung, nicht Kommentar"
+
     - id: B2-S2
       title: "Komposition der Zustandswurzel"
       blocks: "P1d-C"
+      decides: "AD-B1-03"
+      status: OPEN
+      evidence: null
       acceptance: "Domaene, Bereichswurzeln, Reihenfolge und Leerwerte festgelegt; Aenderung eines aufgenommenen Bereichs aendert die Wurzel, Aenderung eines ausgeschlossenen Bereichs nicht"
+      specification: >-
+        Die Systemwurzel ist eine Komposition ueber Bereiche, nicht die Wurzel
+        eines einzelnen Vertrags. Heute bildet state_root(code_hash) genau einen
+        Bereich ab (components/system/src/state.rs, Domaene ATC-STATE-V1 plus
+        code_hash plus Wortzahl plus Woerter). Diese Funktion behaelt ihre
+        Bedeutung; die Systemwurzel ist eine zweite, eigene Domaene darueber.
+      required_content:
+        - "Domaenenname der Systemwurzel mit ausgezaehlter Bytebreite, getrennt von ATC-STATE-V1, artifact_hash und code_hash"
+        - "Bereichs-IDs mit fester Breite und die Kompositionsreihenfolge (Vorschlag: aufsteigende Bereichs-ID)"
+        - "Bereichswurzel als Hash ueber Domaene, Bereichs-ID, Anzahl und sortierte Eintraege, mit Laengenpraefixen gegen Konkatenationskollisionen"
+        - "Kanonische Leerwertwurzel je Bereich, damit ein leerer Bereich deterministisch ist"
+        - "Ausdruecklicher Ausschluss des Chain-Kopfes (Hoehe, Best-Hash) aus der Wurzel: der Blockhash haengt an der Wurzel, die Wurzel darf nicht am Blockhash haengen; die Parent-Bindung bleibt Vorbedingung des Commits"
+        - "Feststellung, dass die Bereichsliste vollstaendig sein muss, auch fuer noch nicht implementierte Bereiche: ein spaeter ergaenzter Bereich aendert jede Wurzel und bricht jede bestehende Kette"
+      artifacts:
+        - "standards/atc/candidates/ATC-STATE-002-CANDIDATE.md, Abschnitt Wurzelkomposition"
+        - "standards/atc/conformance/state-model-corpus.json, Abschnitt Bereichs- und Systemwurzeln"
+        - "tools/atc_state_model.py, Wurzelberechnung mit --check"
+      owner_points:
+        - "O-S2-1 Domaenenzeichenkette und Breite der Systemwurzel"
+        - "O-S2-2 Breite der Bereichs-ID und die Reihenfolge der Komposition"
+        - "O-S2-3 Ausschluss des Chain-Kopfes (Empfehlung, sonst Zirkel zwischen Blockhash und Wurzel)"
+        - "O-S2-4 Bindet die Bereichswurzel Vertragsspeicher weiterhin code_hash (heutiges Verhalten), oder wandert die Codebindung aus der Wurzel heraus; die zweite Variante aendert jeden bestehenden Wert"
+      entry_tests:
+        - id: B2-S2-T-01
+          test: "Aenderung in einem aufgenommenen Bereich aendert die Systemwurzel"
+          proves: "der Bereich ist wirklich Teil der Wurzel"
+        - id: B2-S2-T-02
+          test: "Aenderung eines ausgeschlossenen Bereichs (Cache, Debug, Audit-Metadaten) aendert die Systemwurzel nicht"
+          proves: "Nichtaufnahme ist wirksam, nicht nur dokumentiert"
+        - id: B2-S2-T-03
+          test: "Ein leerer Bereich ergibt die festgelegte Leerwertwurzel, unabhaengig von der Anzahl der Bereichseintraege in der Komposition"
+          proves: "Leerwert ist kanonisch und nicht implementierungsabhaengig"
+        - id: B2-S2-T-04
+          test: "Vertauschte Reihenfolge der Bereichswurzeln ergibt eine andere Systemwurzel"
+          proves: "die Komposition bindet die Reihenfolge oder sortiert nachweislich selbst"
+        - id: B2-S2-T-05
+          test: "Fuer dieselben Woerter und denselben code_hash ist die Bereichswurzel Vertragsspeicher byte-gleich zum heutigen state_root(code_hash)"
+          proves: "keine stille Neudefinition des bestehenden Werts"
+
     - id: B2-S3
       title: "Commit-Log: Datensatzformat, Dauerhaftigkeit, ein Schreiber"
       blocks: "P1d-C"
+      decides: "AD-B1-02"
+      status: OPEN
+      evidence: null
       acceptance: "Feldliste je Datensatz, Dauerhaftigkeitsregel und Schreibhoheit festgelegt; abgeschnittener Schwanz wird verworfen, nicht akzeptiert; Luecke in state_version entwertet den Schwanz"
+      specification: >-
+        Das Log ist die einzige Autoritaet. Format und Dauerhaftigkeit sind
+        deshalb selbst Konsensgut: ein Datensatz, der auf einem Knoten als
+        committet gilt und auf einem anderen nicht, erzeugt zwei Ketten.
+      required_content:
+        - "Feldliste je Datensatz: state_version, parent_state_version, parent_height, parent_hash, state_root_after, block_hash, Art (deploy oder exec), Payload-Verweis (Hash und Laenge), Pruefsumme"
+        - "Rahmung: Laengenkopf, Rumpf, Pruefsumme; ein Datensatz ist vollstaendig, wenn alle drei vorhanden sind"
+        - "Dauerhaftigkeit, ausdruecklich getrennt vom vollstaendigen Schreiben: write(2) ohne sync ist nicht committet; Commit-Punkt ist das erfolgreiche fsync/fdatasync des Datensatzes einschliesslich Laengenkopf"
+        - "Keine Bestaetigung an den Aufrufer vor erfolgreichem sync; ein sync-Fehler ist COMMIT_REJECTED und hinterlaesst keinen wirksamen Zustand"
+        - "Genau ein Schreiber: die Kompositionswurzel haelt die Schreibhoheit, Anhaengen ist exklusiv, im Betrieb wird nicht gekuerzt und nicht ueberschrieben"
+        - "state_version luecken- und sprunglos, monoton, unabhaengig von der Blockhoehe"
+        - "Obergrenze je Datensatz mit eigener Begruendung, nicht aus bestehenden VM-Grenzen abgeleitet"
+      artifacts:
+        - "docs/spec/ATC-COMMIT-LOG-FORMAT.md, Datensatzformat, Feldbreiten, Dauerhaftigkeitsregel, Schreibhoheit"
+        - "tools/check_commit_log.py, Pruefer gegen Log-Fixturen (vollstaendig, abgeschnitten, Pruefsummenfehler, Luecke)"
+        - "standards/atc/conformance/commit-log-fixtures.json, die zugehoerigen Fixturen"
+      owner_points:
+        - "O-S3-1 Dauerhaftigkeit je Datensatz oder Sammelsync: Vorschlag je Datensatz, weil ein Sammelsync zwei logische Commits zu einem Dauerhaftigkeitspunkt verschmilzt"
+        - "O-S3-2 Pruefsummenverfahren und Breite (Vorschlag SHA-256 vollstaendig ueber den Rumpf mit eigener Domaene)"
+        - "O-S3-3 Breite des Laengenkopfes und Wert der Obergrenze je Datensatz"
+        - "O-S3-4 Speichermedium (offener Punkt B2-O4), Semantik bleibt davon unabhaengig"
+      entry_tests:
+        - id: B2-S3-T-01
+          test: "Ein Datensatz wurde vollstaendig geschrieben, aber vor dem sync abgebrochen: er gilt nicht als committet"
+          proves: "vollstaendiges Schreiben ist nicht Dauerhaftigkeit"
+        - id: B2-S3-T-02
+          test: "Nach erfolgreichem sync gilt der Datensatz genau einmal als committet"
+          proves: "Commit-Punkt ist der sync, nicht der Rueckgabewert"
+        - id: B2-S3-T-03
+          test: "Ein zweiter Schreiber kann nicht anhaengen, solange die Schreibhoheit beim ersten liegt"
+          proves: "ein Schreiber, keine konkurrierenden Anhaenge"
+        - id: B2-S3-T-04
+          test: "Eine Luecke in state_version entwertet den Schwanz ab der Luecke"
+          proves: "Sprunglosigkeit ist Pruefkriterium"
+        - id: B2-S3-T-05
+          test: "Ein erneutes Anhaengen derselben state_version wird abgewiesen"
+          proves: "kein doppelter Uebergang durch Wiederholung"
+        - id: B2-S3-T-06
+          test: "Ein Datensatz ueber der Obergrenze wird vor dem Schreiben abgewiesen"
+          proves: "Grenze wirkt vor der Allokation, nicht danach"
+
     - id: B2-S4
       title: "Recovery- und Integritaetssemantik"
       blocks: "P1d-C"
+      decides: "AD-B1-02"
+      status: OPEN
+      evidence: null
       acceptance: "Neustart stellt (hoehe, best_hash, state_root, state_version) allein aus dem Log her; Snapshotverlust ohne Wirkung; Snapshot-Log-Widerspruch wird erkannt und zugunsten des Logs entschieden"
+      specification: >-
+        Recovery ist die Umkehrung des Commits. Sie muss zwei Faelle strikt
+        trennen, die heute beide 'kaputt' waeren: einen abgeschnittenen Schwanz,
+        der verworfen werden darf, und einen vollstaendigen, aber ungueltigen
+        Datensatz, der einen Integritaetsfehler ausloest und niemals
+        stillschweigend uebersprungen wird.
+      required_content:
+        - "Definition vollstaendig: Laengenkopf, Rumpf und Pruefsumme vorhanden; nur ein unvollstaendiger Datensatz ist ein Schwanz"
+        - "Unvollstaendiger Schwanz: wird verworfen, das Log wird auf den letzten vollstaendigen Datensatz gekuerzt, der Vorgang wird mit verworfener state_version protokolliert; kein Fehler, kein Zustandswechsel"
+        - "Vollstaendiger, aber ungueltiger Datensatz (Pruefsumme, Parent-Bindung, state_version-Luecke, Wurzelwiderspruch): INTEGRITAETSFEHLER, Abbruch, kein Weiterlauf, kein Ueberspringen, keine automatische Reparatur"
+        - "Der im Betrieb gueltige Satz bleibt gueltig: ein als Schwanz erkannter Datensatz darf nie als gueltig uebernommen werden, ein vollstaendiger nie als Schwanz verworfen werden"
+        - "Snapshot ist abgeleitet: gebunden an (state_version, state_root), bei Widerspruch zum Log verworfen und aus dem validierten Log neu gebaut, Loeschung ohne Informationsverlust"
+        - "Keine Heilung durch Nachrechnen beim Start: Wiederausfuehrung waere eine Konsensentscheidung, kein Recovery"
+        - "Fehleridentitaet als Code, nicht als Meldungstext"
+      artifacts:
+        - "docs/spec/ATC-COMMIT-LOG-FORMAT.md, Abschnitte Recovery und Integritaet"
+        - "tools/check_commit_log.py mit den Faellen Schwanz, Pruefsummenfehler, Parent-Bruch, Luecke"
+        - "standards/atc/conformance/commit-log-fixtures.json, je Fall eine Fixtur mit Sollergebnis"
+      owner_points:
+        - "O-S4-1 Verhalten bei Integritaetsfehler: Vorschlag Startabbruch mit benanntem Code; Wiederherstellung aus Snapshot plus Nachrechnen wird verworfen, weil sie eine Konsensentscheidung waere"
+        - "O-S4-2 Darf ein abgeschnittener Schwanz beim Start automatisch verworfen werden (Vorschlag ja), und muss die verworfene state_version sichtbar protokolliert werden (Vorschlag ja)"
+      entry_tests:
+        - id: B2-S4-T-01
+          test: "Abgeschnittener Schwanz: Neustart ergibt den Stand des letzten vollstaendigen Datensatzes, ohne Fehler, mit protokollierter verworfener Version"
+          proves: "Schwanz verwerfen statt akzeptieren"
+        - id: B2-S4-T-02
+          test: "Vollstaendiger Datensatz mit falscher Pruefsumme: Integritaetsfehler, kein Zustand, kein Weiterlauf"
+          proves: "ungueltig wird nicht als Schwanz behandelt"
+        - id: B2-S4-T-03
+          test: "Gebrochene Parent-Bindung: Integritaetsfehler statt Ueberspringen"
+          proves: "Kettenglied wird geprueft, nicht geglaubt"
+        - id: B2-S4-T-04
+          test: "Luecke in state_version: Integritaetsfehler, nicht Schwanz"
+          proves: "die Grenze zwischen Schwanz und Fehler ist entschieden"
+        - id: B2-S4-T-05
+          test: "Snapshot widerspricht dem Log: Log gewinnt, Snapshot wird verworfen und neu gebaut, Ergebnis identisch"
+          proves: "Snapshot ist Beschleuniger, keine zweite Autoritaet"
+        - id: B2-S4-T-06
+          test: "Snapshot geloescht: vollstaendige Wiederherstellung allein aus dem Log, gleiches Tupel aus Hoehe, Best-Hash, Wurzel und state_version"
+          proves: "das Log traegt die Wiederherstellung allein"
+
     - id: B2-S5
       title: "Ausfuehrungsnachweis: Ergebnis gebunden an Parent-Hash und Parent-State-Root"
       blocks: "P1d-C"
+      decides: "AD-B1-01, AD-B1-03"
+      status: OPEN
+      evidence: null
       acceptance: "Ein Ergebnis, das auf einem anderen Parent gerechnet wurde, wird von der Kompositionswurzel allein abgewiesen, ohne Nachrechnen der Ausfuehrung"
+      specification: >-
+        Zwischen Ausfuehrung und Commit liegt ein Ergebnis. Es muss die
+        Ausgangsversion so tragen, dass die Kompositionswurzel ohne
+        Wiederausfuehrung entscheiden kann, ob es noch gilt. Heute wird
+        state_root_before berechnet (components/system/src/system.rs:396) und nur
+        in den Beleg geschrieben, nie verglichen.
+      required_content:
+        - "Ergebnisfelder: parent_height, parent_hash, parent_state_root, state_version_before, state_root_after, code_hash, Payload-Verweis (Hash und Laenge), Gaskosten"
+        - "Pruefung allein anhand dieser Felder gegen den autoritativen Stand; vier Vergleiche, kein Nachrechnen, keine Heilung"
+        - "state_root_before wird verglichen, nicht protokolliert: die heute nur belegte Groesse wird Pruefgroesse"
+        - "Ablehnungsgruende als geschlossene Aufzaehlung (veraltete Hoehe, fremder Parent-Hash, fremde Ausgangswurzel, veraltete state_version, Dauerhaftigkeitsfehler, Integritaetsfehler)"
+        - "Ein abgewiesenes Ergebnis hinterlaesst weder Log-Datensatz noch Zustands- oder Policy-Aenderung"
+      artifacts:
+        - "docs/spec/ATC-COMMIT-LOG-FORMAT.md, Abschnitt Ergebnisfelder und Vorbedingung"
+        - "Rust-Tests in P1d-C, die die vier Vergleiche und die Ablehnungsgruende einzeln belegen"
+      owner_points:
+        - "O-S5-1 Traegt das Ergebnis die Payload selbst oder nur ihren Verweis (Vorschlag Verweis, Transport bleibt Sache des Blocks)"
+        - "O-S5-2 Wortlaut und Umfang der Ablehnungsgruende (Vorschlag sechs Werte, wie oben)"
+      entry_tests:
+        - id: B2-S5-T-01
+          test: "Ergebnis mit fremdem parent_hash wird abgewiesen, ohne dass die VM erneut laeuft"
+          proves: "die Kompositionswurzel entscheidet ohne Nachrechnen"
+        - id: B2-S5-T-02
+          test: "Ergebnis mit fremdem parent_state_root wird abgewiesen, obwohl die Ausfuehrung inhaltlich korrekt war"
+          proves: "Bindung an die Ausgangswurzel, nicht an das Ergebnis allein"
+        - id: B2-S5-T-03
+          test: "Nach einer Abweisung sind Log, Zustand und Policy unveraendert"
+          proves: "kein Teilerfolg, kein Aufraeumbedarf"
+        - id: B2-S5-T-04
+          test: "Jeder Ablehnungsgrund ist ein eigener, stabiler Code"
+          proves: "Fehleridentitaet ist unterscheidbar, nicht ein Sammeltext"
+        - id: B2-S5-T-05
+          test: "Der Vergleich von state_root_before ist als Regressionstest abgesichert: wird der Vergleich entfernt, schlaegt der Test fehl"
+          proves: "die Pruefung existiert wirklich und ist nicht nur protokolliert"
+
+  p1d_c_entry:
+    - id: C-T-01
+      title: "Veralteter state_root wird abgewiesen"
+      status: OPEN
+      requires: "B2-S2, B2-S5"
+    - id: C-T-02
+      title: "Falscher Ausgangs-Blockhash wird abgewiesen"
+      status: OPEN
+      requires: "B2-S5"
+    - id: C-T-03
+      title: "Zwei parallele Aufrufer mit unterschiedlichem Zustand koennen nicht beide committen"
+      status: OPEN
+      requires: "B2-S3, B2-S5"
+    - id: C-T-04
+      title: "Fehler nach der VM-Ausfuehrung veraendert keinen dauerhaften Zustand"
+      status: OPEN
+      requires: "B2-S3"
+    - id: C-T-05
+      title: "Fehler waehrend des Block-Commits veraendert keinen dauerhaften Zustand"
+      status: OPEN
+      requires: "B2-S3, B2-S4"
+    - id: C-T-06
+      title: "Neustart nach einem Commit stellt einen konsistenten Chain- und Zustandszustand her"
+      status: OPEN
+      requires: "B2-S4"
+    - id: C-T-07
+      title: "Wiederholte Ausfuehrung derselben Transaktion erzeugt keinen doppelten Zustandsuebergang"
+      status: OPEN
+      requires: "B2-S3"
+    - id: C-T-08
+      title: "state_root_before wird gegen den autoritativen Ausgangszustand geprueft, nicht nur protokolliert"
+      status: OPEN
+      requires: "B2-S5"
+
   pending:
     - "B2-O1 Authority-Pfade (Widerruf, Obergrenzen, Signiererautorisierung) schreiben heute ohne Block; ob sie derselben Regel unterliegen, ist nicht entschieden"
     - "B2-O2 Dauerhafte Kette gegen Devnet-Grenze: produce lehnt ab 64 Bloecken ab; der Wert ist eine Entwicklungsgrenze und braucht fuer eine persistente Kette eine eigene Begruendung"
