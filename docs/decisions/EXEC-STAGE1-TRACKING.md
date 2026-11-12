@@ -27,9 +27,9 @@ aktualisiert, wenn eine der drei Voraussetzungen eintritt:
 |---|---|
 | `TESTED` | 5 |
 | `FAILED` | 0 |
-| `BLOCKED` | 1 |
+| `BLOCKED` | 3 |
 | `EMPTY` | 0 |
-| `OPEN` | 49 |
+| `OPEN` | 47 |
 | **Summe** | **55** |
 
 Fuenf Tests sind `TESTED`. S1-T-18 als **Statustest**, nicht als
@@ -45,6 +45,15 @@ unveraendert offen (offener Punkt D-0 im Nachweis). P1a bleibt offen, P2 bleibt 
 B-1 gesperrt, eine Produktionsfreigabe ist nicht erteilt und `CI_VERIFIED` ist
 nirgends vergeben. Der Status `OPEN` heisst: die Entscheidung liegt vor, die
 Umsetzung nicht.
+
+**D-0 ist entschieden und umgesetzt** (Owner 12.11.2026, Option 1): `ATCE`/`0x02`
+ist die aeussere Artefakt-Huelle, `ATCB`/`0x01` bleibt das ausfuehrbare Bytecodeformat.
+Die Schicht liegt in `components/vm/src/envelope.rs` (`a0ea77f3`, Blob `b253ffc3`),
+der Strom wird von **einer** Prozedur dekodiert (`dekodiere_strom`). Lokal laufen
+alle 40 Korpushaben durch beide Implementierungen mit gleichem `(Code, Offset)`
+([Nachweis](EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md)). `ATCE/0x02` bleibt
+`OPEN` (Integration in den System-Deploypfad fehlt), der Differentialtest bleibt
+`BLOCKED` (Owner-Vorgabe), `CI_VERIFIED` ist nicht vergeben.
 
 Siebzehn Tests (S1-T-39 bis S1-T-55) sind am 12.11.2026 mit §19, §19.2a und §19.7 des
 Kandidaten hinzugekommen: Parser-Fehlersemantik, Stromgrenze, Tail-Integritaet,
@@ -97,7 +106,7 @@ Konformitaetsbefund zu erzeugen.
 | S1-T-40 | Gesamtlaenge unter 42 Byte ergibt `E-001`; Container mit 42 Byte und Anzahl 0 ergibt `E-004` | S1-1 | `OPEN` | Grenzwerttest |
 | S1-T-41 | Zusaetzliche Bytes zwischen Stromende und Tail ergeben `E-008`, nicht `E-006` | S1-1 | `OPEN` | Code-Test |
 | S1-T-42 | Praezedenz: acht kombinierte Fehlerfaelle liefern je den Code der fruehesten Stufe | S1-1 | `OPEN` | Code-Test |
-| S1-T-43 | Differentialtest: mindestens 30 Eingaben durch zwei unabhaengige Dekoder, identische `(Code, Offset)` je Zeile | S1-1 | `OPEN` | Vergleichstest |
+| S1-T-43 | Differentialtest: mindestens 30 Eingaben durch zwei unabhaengige Dekoder, identische `(Code, Offset)` je Zeile | S1-1 | `BLOCKED` | Vergleichstest: lokaler Lauf 40/40 gleich (Huelle gegen Referenzdekoder, `5e0165a3`); Status BLOCKED per Owner bis Integration und unabhaengige Pruefung |
 | S1-T-44 | Versionsisolation: `ATCE` + `0x01` ergibt `E-003`, kein Fallback-Parsing | S1-1 | `OPEN` | Code-Test |
 | S1-T-45 | Altcontainer `ATCB` + `0x01` ergibt `E-007` (Magic vor Version), nicht `E-003` | S1-1 | `OPEN` | Code-Test |
 | S1-T-46 | Unbekannte Versionen `0x03` und `0xFF` bei Magic `ATCE` ergeben `E-003`, ohne spekulatives Parsen | S1-1 | `OPEN` | Code-Test |
@@ -108,7 +117,7 @@ Konformitaetsbefund zu erzeugen.
 | S1-T-51 | `E-004` gilt nur bei `c = 0` und leerem Strom; `c = 0` mit Bytes ergibt `E-008` | S1-1 | `TESTED` | Code-Test (VM, `ATCB`-Huelle) |
 | S1-T-52 | Struktur vor Integritaet: beschaedigter Strom mit veraltetem Tail ergibt den Strukturcode, nicht `E-006` | S1-1 | `TESTED` | Code-Test (VM, `ATCB`-Huelle; Korpusanteil offen, D-0) |
 | S1-T-53 | Terminierung und Groesstwert: `c = 0xFFFFFFFF` ergibt `E-005` in einem Schritt, `E-012` nur bei konfiguriertem Wert | S1-1 | `OPEN` | Code-Test |
-| S1-T-54 | Korpus C-1 bis C-8 mit mindestens 30 Eingaben, Sollwerte aus der Konstruktion, `tools/check_parser_corpus.py` ohne Abweichung; ein Dekoder allein begruendet keine Konformitaet | S1-1 | `OPEN` | Datei + Gate |
+| S1-T-54 | Korpus C-1 bis C-8 mit mindestens 30 Eingaben, Sollwerte aus der Konstruktion, `tools/check_parser_corpus.py` ohne Abweichung; ein Dekoder allein begruendet keine Konformitaet | S1-1 | `BLOCKED` | Datei + Gate: Korpus 40 Eingaben, Gate gruen, zwei Dekoder mit gleichem Ergebnis; Status BLOCKED per Owner bis Integration und unabhaengige Pruefung |
 | S1-T-55 | Container-Bytegrenze wirkt vor dem Hashing: eine Eingabe oberhalb des Werts wird abgelehnt, ohne dass Hash- oder Dekodierarbeit anfaellt; derselbe Wert auf allen Validatoren; `E-012` bleibt davon getrennt | S1-1 | `OPEN` | Code-Test + Grenzwerttest |
 
 ## 3.1 Wirkung der Ratifikation auf den Nachweisstand
