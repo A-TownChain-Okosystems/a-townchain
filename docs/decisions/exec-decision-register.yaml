@@ -1,0 +1,160 @@
+# Entscheidungsregister Smart-Contract-Ausfuehrung
+# SSOT fuer D1 bis D7. Die Tabellen in
+#   docs/decisions/AD-EXEC-D1-D7.md
+#   standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md
+# werden aus dieser Datei erzeugt (tools/decision_register.py).
+# Aenderungen nur hier; dann `python3 tools/decision_register.py --write`.
+
+register: ATC-EXEC-DECISIONS
+version: 1
+owner: Michael Wroblewski
+decided_on: 2026-11-12
+source: "Owner-Bewertung P1 (Chat, 12.11.2026)"
+ladder:
+  - DECIDED       # Architekturentscheidung getroffen
+  - SPECIFIED     # vollstaendig normativ spezifiziert (Kandidat bzw. Standard)
+  - IMPLEMENTED   # Umsetzung im bestehenden System nachgewiesen
+rules:
+  - "Kein Zustand ersetzt den naechsten automatisch."
+  - "Die Gates bleiben bis zum jeweiligen Nachweis offen."
+pending_globally:
+  - "Numerische Gaspreise (Messung je Instruktionsklasse und Vertragsbenchmark)"
+  - "Endgueltiges Transaktionsgaslimit"
+  - "Endgueltiges Blockgaslimit"
+  - "Implementierungs- und CI-Gates"
+
+decisions:
+  - id: D1
+    title: "Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert"
+    decision_status: DECIDED
+    decision: FREIGEGEBEN
+    specification_status: SPECIFIED
+    implementation_status: OPEN
+    gate: SCE-G1
+    conditions:
+      - "eigenes Magic"
+      - "eigene Versionskennung"
+      - "festgelegte Byte-Reihenfolge"
+      - "eindeutige Laengenangabe"
+      - "kanonische Serialisierung"
+      - "keine Aenderung am bestehenden Transaktionsformat"
+    open_items: []
+
+  - id: D2
+    title: "Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer"
+    decision_status: DECIDED
+    decision: BEDINGT_FREIGEGEBEN
+    specification_status: SPECIFIED
+    implementation_status: OPEN
+    gate: SCE-G3
+    conditions:
+      - "Selektor-Hashverfahren und Selektorbreite festgelegt"
+      - "Wortgroesse und Calldata-Encoding festgelegt"
+      - "maximale Rueckgabepuffergroesse festgelegt"
+      - "deterministische Vertragsadressableitung festgelegt"
+      - "atomare Rueckabwicklung fehlgeschlagener Transaktionen festgelegt"
+      - "Vertrag-zu-Vertrag-Aufrufe bis BC-002 gesperrt"
+    open_items:
+      - "Vertrag-zu-Vertrag-Aufruf (haengt an ATC-BC-002 Ratifizierung)"
+
+  - id: D3
+    title: "Storage: Frame-lokal und persistente S1-Slots"
+    decision_status: DECIDED
+    decision: FREIGEGEBEN
+    specification_status: SPECIFIED
+    implementation_status: OPEN
+    gate: SCE-G4
+    conditions:
+      - "Lokale ausschliesslich im Execution Frame"
+      - "persistente Daten ausschliesslich in S1-Slots"
+      - "layout_hash je Vertragsversion pruefbar"
+      - "Maps ausgeschlossen bis Schluesselcodierung, Hashing und Storage-Proofs normiert sind"
+    open_items:
+      - "Map-Schluesselcodierung und Storage-Proofs (eigene Normung)"
+
+  - id: D4
+    title: "Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung"
+    decision_status: DECIDED
+    decision: BEDINGT_FREIGEGEBEN
+    specification_status: SPECIFIED
+    implementation_status: OPEN
+    gate: SCE-G6
+    conditions:
+      - "Trennung gas_limit, gas_used, gas_price, fee_charged, gas_refund"
+      - "Gebuehrenabrechnung unabhaengig vom Rollback des Vertragszustands"
+      - "fehlgeschlagener Vertrag verbraucht Rechenzeit nicht kostenlos"
+      - "Gebuehren und Verbrauch im Transaktionsbeleg"
+      - "keine Gebuehrenumgehung ueber Backend oder Loader"
+    open_items:
+      - "numerische Instruktionskosten (Messung je Instruktionsklasse)"
+      - "Transaktionsgaslimit, Blockgaslimit, Dynamik nach Auslastung"
+
+  - id: D5
+    title: "Blockausfuehrung: deterministische Validator-Ausfuehrung"
+    decision_status: DECIDED
+    decision: FREIGEGEBEN
+    specification_status: SPECIFIED
+    implementation_status: OPEN
+    gate: SCE-G7
+    conditions:
+      - "deterministische Transaktionsreihenfolge"
+      - "identische VM-Version bei allen Validatoren"
+      - "identische Gasberechnung"
+      - "atomare Zustandsaenderungen"
+      - "reproduzierbare Receipts"
+      - "verbindliche State-Root-Berechnung"
+      - "unabhaengiges Nachrechnen durch Validatoren"
+    open_items: []
+
+  - id: D6
+    title: "Identitaet: 32-Byte-Identitaetswort"
+    decision_status: DECIDED
+    decision: BEDINGT_FREIGEGEBEN
+    specification_status: SPECIFIED
+    implementation_status: OPEN
+    gate: SCE-G5
+    conditions:
+      - "Nachweis: DID und Kontoidentitaet nutzen dieselbe kanonische Ableitung"
+      - "Nachweis: keine fremde Identitaet durch Transaktionsfelder einschleusbar"
+      - "Nachweis: Signaturpruefung authentifiziert die Identitaet"
+      - "Nachweis: interne Vertragsaufrufe bilden den unmittelbaren Aufrufer korrekt ab"
+      - "keine Vertrauensluecke zwischen Wallet, Blockchain und VM"
+    open_items:
+      - "interne Aufrufe: erst nach BC-002 pruefbar"
+
+  - id: D7
+    title: "Frontend: ATCLang kanonisch, .ops nur Testwerkzeug"
+    decision_status: DECIDED
+    decision: FREIGEGEBEN
+    specification_status: SPECIFIED
+    implementation_status: OPEN
+    gate: SCE-G2
+    conditions:
+      - "ATCLang ist das einzige kanonische Frontend"
+      - ".ops nur fuer interne Tests und Testfixtures"
+      - ".ops niemals als alternativer produktiver Bytecode-Eingang"
+    open_items: []
+
+zusatzanforderungen:
+  - id: SCE-Z1
+    title: "VM-Versionierung"
+    rule: "Ein Validator darf nicht unbemerkt eine andere Ausfuehrungssemantik verwenden."
+    mapped_to: [REQ-SCE-042, SCX-004, SCX-009]
+  - id: SCE-Z2
+    title: "State-Rollback"
+    rule: "Jede fehlgeschlagene Ausfuehrung rollt ihren Vertragszustand vollstaendig zurueck."
+    mapped_to: [REQ-SCE-043, SCX-008]
+  - id: SCE-Z3
+    title: "Replay-Sicherheit"
+    rule: "Dieselbe Transaktion darf durch erneute Verarbeitung keine doppelten Zustandsaenderungen verursachen."
+    mapped_to: [REQ-SCE-044, SCX-006, SCX-009]
+
+referenzwerte:
+  - name: "Gas-Referenzwert 100 000"
+    value: 100000
+    kind: "Mess- und Vergleichswert, kein Konsenslimit"
+    evidence: "standards/atc/candidates/ATC-BC-002-CANDIDATE.md §19.5: groesstes im Repo verwendetes Budget (zwei Aufrufe in tests/atcb_v2.rs)"
+  - name: "Repository-Default 50 000"
+    value: 50000
+    kind: "Implementierungswert, ersetzt kein Transaktionsbudget"
+    evidence: "components/system/src/system.rs:37 (DEFAULT_GAS)"
