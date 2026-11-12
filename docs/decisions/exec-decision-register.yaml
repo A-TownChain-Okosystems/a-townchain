@@ -29,7 +29,7 @@ pending_globally:
   - "ATC-STD-410: Reservierung ist Registry-Zeile (atc-standards Branch reserve/atc-std-410, PR offen wegen unverifizierter E-Mail); normative Freigabe (Technical/Security/Architecture Review + Owner-Approval) fehlt"
   - "ATC-STD-410: Familienverkabelung entschieden (Option B, FAM-77) und umgesetzt auf atc-standards Branch std/family-400-option-b; Merge offen (PR-Anlage an unverifizierter E-Mail gesperrt). Gate Familie 400 lokal PASS (52/52, 51 Ausnahmen)"
   - "S1-2/F-1: Policy-Ueberschreibung in der Registry; Regel, neuer Code ADM-012 und Verbleib von source_provenance in der signierten Policy sind offen (EXEC-S1-2-ADMISSION-REGISTRY-F1.md)"
-  - "P1b/P1c/P1d-A: IMPLEMENTED/TESTED. P1d-B: G-01 Build-Abdeckung als Gate (77 Manifeste klassifiziert, 7 ohne Build-Nachweis, CI-Verankerung BLOCKED/Owner). P1d-B1: Inventur der Eigentums- und Commit-Verhaeltnisse abgeschlossen (docs/decisions/EXEC-P1D-B1-OWNERSHIP-INVENTORY-2026-11-12.md) — KEIN Umbau; Befunde: kein Zustandsspeicher, deploy schreibt Registry ohne Block, DevnetNode fuehrt neben System eine zweite Kette, keine Konkurrenzkontrolle. Neu geordnet: B1 Chain herausloesen, B2 State-Root-Vorbedingung, C atomarer Commit, D Standalone Node, E import_tx_block, F E2E. FREIGABE offen: autoritativer Bestand, Zustandsspeicher, Umfang state_root, Rolle der deploy-Registry"
+  - "P1b/P1c/P1d-A: IMPLEMENTED/TESTED. P1d-B: G-01 Build-Abdeckung als Gate (77 Manifeste klassifiziert, 7 ohne Build-Nachweis, CI-Verankerung BLOCKED/Owner). P1d-B1: Inventur der Eigentums- und Commit-Verhaeltnisse abgeschlossen (docs/decisions/EXEC-P1D-B1-OWNERSHIP-INVENTORY-2026-11-12.md) — KEIN Umbau; Befunde: kein Zustandsspeicher, deploy schreibt Registry ohne Block, DevnetNode fuehrt neben System eine zweite Kette, keine Konkurrenzkontrolle. Neu geordnet (B1-Stand): B1 Chain herausloesen, B2 State-Root-Vorbedingung, C atomarer Commit, D Standalone Node, E import_tx_block, F E2E. ABGELOEST durch die Phasenordnung vom 12.11.2026: B1 Inventur (abgeschlossen), B2 Architekturentscheidungen (getroffen, AD-B1-01..04), C Persistenz und atomarer Commit, D Runtime-Komposition, E import_tx_block, F E2E-Sicherheitsaudit. Die vier Freigabepunkte sind damit entschieden (docs/decisions/AD-P1D-B2-FOUR-DECISIONS-2026-11-12.md): autoritativer Bestand = Kompositionswurzel, Zustandsspeicher = append-only Log mit Snapshot als abgeleitetem Beschleuniger, state_root = vollstaendiger konsensrelevanter Zustand, deploy-Registry = Teil des Deployment-Commits. P1d-C ist NICHT freigegeben: erst B2-S1..S5 spezifizieren (Datenmodell, Wurzelkomposition, Log-Format, Recovery, Ausfuehrungsnachweis). Offen bleiben B2-O1 Authority-Pfade ohne Block, B2-O2 64-Block-Grenze gegen dauerhafte Kette, B2-O3 Format des Deployment-Blocks, B2-O4 Speichermedium"
 
 # Stufe-1-Ratifikation vom 12.11.2026 (Owner-Wortlaut im Chat, Basis HEAD a63e41a93).
 # Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard.
@@ -355,3 +355,124 @@ referenzwerte:
     value: 50000
     kind: "Implementierungswert, ersetzt kein Transaktionsbudget"
     evidence: "components/system/src/system.rs:37 (DEFAULT_GAS)"
+
+# P1d-B2 — Architekturentscheidungen zu Chain- und Zustandsautoritaet (Owner, 12.11.2026).
+# Eigener Block, weil diese Entscheidungen nicht zum Standard SCE gehoeren: sie
+# regeln die Runtime-Komposition (Chain-Eigentum, Persistenz, Zustandswurzel,
+# Policy-Commit), nicht die Ausfuehrungssemantik D1 bis D7.
+# Gerendert in docs/decisions/AD-P1D-B2-FOUR-DECISIONS-2026-11-12.md.
+chain_state:
+  register: ATC-CHAIN-STATE-DECISIONS
+  decided_on: 2026-11-12
+  basis_head: "d97b476 (P1d-B1 Inventur, keine Codeaenderung)"
+  source: "Owner-Bewertung P1d-B1 (Chat, 12.11.2026)"
+  rule:
+    id: ATC-ATOMIC-STATE-TRANSITION
+    title: "ATC Atomic State Transition Rule"
+    text: >-
+      Kein Systemzustand darf dauerhaft wirksam werden, bevor der zugehoerige
+      autoritative Commit erfolgreich abgeschlossen wurde. Jeder Commit ist an
+      eine eindeutig identifizierte Ausgangsversion gebunden. Chain,
+      konsensrelevanter Zustand und ausfuehrungsrelevante Policy repraesentieren
+      nach einem erfolgreichen Commit dieselbe bestaetigte Version.
+    classes:
+      - Ausfuehrung
+      - Vorbereitung
+      - Validierung
+      - dauerhafte Uebernahme
+      - Wiederherstellung
+    commit_precondition:
+      fields:
+        - "ExpectedParentHeight"
+        - "ExpectedParentHash"
+        - "ExpectedStateRoot"
+        - "ExpectedStateVersion"
+      rule: >-
+        Der Commit wird nur ausgefuehrt, wenn alle vier Werte noch dem
+        autoritativen Ausgangszustand entsprechen. Bei Abweichung gilt
+        COMMIT_REJECTED mit STATE_UNCHANGED, CHAIN_UNCHANGED und POLICY_UNCHANGED.
+      note: >-
+        Owner-Vorgabe vom 12.11.2026, hier als Vertrag festgehalten. Sie ist keine
+        fuenfte Entscheidung, sondern die Bedingung, ohne die AD-B1-01 bis AD-B1-04
+        nicht pruefbar waeren.
+  decisions:
+    - id: AD-B1-01
+      title: "Eigentuemer der Chain"
+      choice: "Kompositionswurzel"
+      decision: FREIGEGEBEN
+      status: DECIDED
+      phase: P1d-D
+      consequences:
+        - "Genau eine Chain-Instanz; sie gehoert der Kompositionswurzel, nicht System"
+        - "System erzeugt Ausfuehrungsergebnisse und liest die Chain, schreibt sie aber nicht"
+        - "Eine gemeinsame Referenz auf dieselbe Instanz ist zulaessig, eine Synchronisation zweier Kopien ausdruecklich nicht"
+        - "Erst mit dieser Aenderung entfaellt DevnetNode.chain als zweiter Bestand, weil es die einzige Kette ist"
+      rejected:
+        - "Zwei Bestaende, die regelmaessig abgeglichen werden (waere eine zweite Wahrheit mit Zusatzaufwand)"
+    - id: AD-B1-02
+      title: "Persistenzmodell des Zustands"
+      choice: "Append-only Commit-Log als einzige Autoritaet, Snapshot je Hoehe als abgeleiteter Beschleuniger"
+      decision: FREIGEGEBEN
+      status: DECIDED
+      phase: P1d-C
+      consequences:
+        - "Das Commit-Log ist die maßgebliche Wahrheit; ein Snapshot ist niemals eine zweite Autoritaet"
+        - "Bei Widerspruch zwischen Snapshot und Log gewinnt das Log, der Snapshot wird verworfen und neu gebaut"
+        - "Ein Snapshot darf jederzeit geloescht werden, ohne Informationsverlust"
+        - "Chain und Zustand sind nach Wiederanlauf nur dann konsistent, wenn beide aus demselben Log stammen"
+      rejected:
+        - "Nur Snapshots ohne Log (kein Wiederanlaufnachweis, keine Reihenfolge)"
+        - "Nur Log ohne Snapshot als Dauerloesung (zulaessig als erster Schritt, aber ohne Wiederanlaufbeschleunigung)"
+    - id: AD-B1-03
+      title: "Inhalt der Zustandswurzel"
+      choice: "Vollstaendiger konsensrelevanter Zustand; Leerwert kanonisch; Komposition statt Einzelwurzel"
+      decision: FREIGEGEBEN
+      status: DECIDED
+      phase: P1d-C
+      consequences:
+        - "Aufgenommen: Konten, Nonces/Replay-Schutz, Vertragsspeicher, ausfuehrungsrelevantes Deployment- und Berechtigungsregister, konsensrelevante Registry, transaktionsrelevante Gebuehrenzustaende"
+        - "Nicht aufgenommen: temporaere Caches, reine Debug-Informationen, nicht konsensrelevante Audit-Metadaten"
+        - "Jeder Datenbereich braucht einen definierten Leerwert, sonst hashen zwei Knoten denselben logischen Zustand verschieden"
+        - "Die Wurzel ist eine Komposition ueber Bereiche, nicht die Wurzel eines einzelnen Vertrags"
+        - "Die Systemwurzel erhaelt eine eigene Domaene, getrennt von ATC-STATE-V1 und von artifact_hash/code_hash"
+      rejected:
+        - "Nur ContractState-Woerter (heute: deckt Nicht-Vertragszustand nicht ab, Konkurrenzkontrolle waere wirkungslos)"
+    - id: AD-B1-04
+      title: "Policy-Registrierung ist Teil des Deployment-Commits"
+      choice: "Atomarer Deployment-Commit; vorgelagerte Registrierung nur unverbindlich, idempotent und ohne wirksame Berechtigung"
+      decision: FREIGEGEBEN
+      status: DECIDED
+      phase: P1d-C
+      consequences:
+        - "Eine Policy wird erst mit dem erfolgreich committeten Deployment wirksam"
+        - "Bei fehlgeschlagenem Commit bleibt keine wirksame Berechtigung zurueck"
+        - "Audit-Eintraege fehlgeschlagener Versuche duerfen bestehen, muessen aber als Versuch ohne Commit erkennbar sein und duerfen keinen erfolgreichen Commit suggerieren"
+        - "Ein Deployment wird damit ein Chain-Ereignis; der Payload transportiert nach D0-1 den Container"
+      rejected:
+        - "Vorgelagerte, sofort wirksame Registrierung (Policy ohne Block, heutiger Zustand)"
+  specification_gates:
+    - id: B2-S1
+      title: "Zustandsdatenmodell und kanonische Serialisierung"
+      blocks: "P1d-C"
+      acceptance: "Gleicher logischer Zustand ergibt byte-identische Eingabe in die Wurzel; Testvektoren, die von zwei Implementierungen unabhaengig reproduziert werden"
+    - id: B2-S2
+      title: "Komposition der Zustandswurzel"
+      blocks: "P1d-C"
+      acceptance: "Domaene, Bereichswurzeln, Reihenfolge und Leerwerte festgelegt; Aenderung eines aufgenommenen Bereichs aendert die Wurzel, Aenderung eines ausgeschlossenen Bereichs nicht"
+    - id: B2-S3
+      title: "Commit-Log: Datensatzformat, Dauerhaftigkeit, ein Schreiber"
+      blocks: "P1d-C"
+      acceptance: "Feldliste je Datensatz, Dauerhaftigkeitsregel und Schreibhoheit festgelegt; abgeschnittener Schwanz wird verworfen, nicht akzeptiert; Luecke in state_version entwertet den Schwanz"
+    - id: B2-S4
+      title: "Recovery- und Integritaetssemantik"
+      blocks: "P1d-C"
+      acceptance: "Neustart stellt (hoehe, best_hash, state_root, state_version) allein aus dem Log her; Snapshotverlust ohne Wirkung; Snapshot-Log-Widerspruch wird erkannt und zugunsten des Logs entschieden"
+    - id: B2-S5
+      title: "Ausfuehrungsnachweis: Ergebnis gebunden an Parent-Hash und Parent-State-Root"
+      blocks: "P1d-C"
+      acceptance: "Ein Ergebnis, das auf einem anderen Parent gerechnet wurde, wird von der Kompositionswurzel allein abgewiesen, ohne Nachrechnen der Ausfuehrung"
+  pending:
+    - "B2-O1 Authority-Pfade (Widerruf, Obergrenzen, Signiererautorisierung) schreiben heute ohne Block; ob sie derselben Regel unterliegen, ist nicht entschieden"
+    - "B2-O2 Dauerhafte Kette gegen Devnet-Grenze: produce lehnt ab 64 Bloecken ab; der Wert ist eine Entwicklungsgrenze und braucht fuer eine persistente Kette eine eigene Begruendung"
+    - "B2-O3 Format des Deployment-Blocks: nach D0-1 transportiert der Payload den ATCE-Container; Festlegung erfolgt mit D0-1/P1a, nicht hier"
+    - "B2-O4 Speichermedium des Commit-Logs (Datei, KV, Ledger): Semantikfrage entschieden, Technologie offen"
