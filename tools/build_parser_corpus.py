@@ -414,6 +414,36 @@ def serialise(corpus: dict) -> str:
     return json.dumps(corpus, indent=2, ensure_ascii=False, sort_keys=False) + "\n"
 
 
+RUST_FIXTURE = ROOT / "components/vm/tests/stage1_parser_corpus.rs"
+
+
+def rust_fixture(corpus: dict) -> str:
+    """Rendert den Korpus als Rust-Fixture fuer den Differentialtest der Huelle.
+
+    Der Korpus bleibt die einzige Quelle. Das Fixture enthaelt nur Bytes und
+    Sollwerte, damit der Rust-Test keinen JSON-Parser und keine Fremdabhaengigkeit
+    braucht; beim Erzeugen wird geprueft, dass es zur Korpusdatei passt.
+    """
+    zeilen = [
+        "// @generated von tools/build_parser_corpus.py — nicht von Hand aendern.",
+        "// Quelle: standards/atc/conformance/stage1-parser-corpus.json",
+        "//",
+        "// Sollwerte stammen aus der Konstruktion des Korpus, nicht aus der VM.",
+        "",
+        "/// (id, eingabe_hex, entscheidung, code, offset)",
+        "pub const FAELLE: [(&str, &str, &str, Option<&str>, Option<usize>); %d] = [" % corpus["anzahl"],
+    ]
+    for e in corpus["eintraege"]:
+        code = "None" if e["code"] is None else 'Some("%s")' % e["code"]
+        offset = "None" if e["offset"] is None else "Some(%d)" % e["offset"]
+        zeilen.append(
+            '    ("%s", "%s", "%s", %s, %s),'
+            % (e["id"], e["eingabe_hex"], e["entscheidung"], code, offset)
+        )
+    zeilen += ["];", ""]
+    return "\n".join(zeilen)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="nur pruefen")
@@ -421,6 +451,7 @@ def main(argv: list[str] | None = None) -> int:
 
     corpus = build()
     text = serialise(corpus)
+    fixture = rust_fixture(corpus)
     per_class: dict[str, int] = {}
     for entry in corpus["eintraege"]:
         per_class[entry["klasse"]] = per_class.get(entry["klasse"], 0) + 1
@@ -432,11 +463,19 @@ def main(argv: list[str] | None = None) -> int:
         if CORPUS.read_text(encoding="utf-8") != text:
             print("FAIL: Korpusdatei weicht von der Erzeugung ab (von Hand geaendert?)")
             return 1
+        if not RUST_FIXTURE.exists():
+            print(f"FAIL: {RUST_FIXTURE.relative_to(ROOT)} fehlt")
+            return 1
+        if RUST_FIXTURE.read_text(encoding="utf-8") != fixture:
+            print("FAIL: Rust-Fixture weicht vom Korpus ab (neu erzeugen)")
+            return 1
         print(f"PASS: Korpus unveraendert, {corpus['anzahl']} Eingaben in 8 Klassen")
         return 0
 
     CORPUS.write_text(text, encoding="utf-8")
+    RUST_FIXTURE.write_text(fixture, encoding="utf-8")
     print(f"Korpus geschrieben: {CORPUS.relative_to(ROOT)} ({corpus['anzahl']} Eingaben)")
+    print(f"Fixture geschrieben: {RUST_FIXTURE.relative_to(ROOT)}")
     for klasse in sorted(per_class):
         print(f"  {klasse}: {per_class[klasse]}")
     if corpus["anzahl"] < 30:
