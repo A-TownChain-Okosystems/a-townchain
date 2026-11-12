@@ -25,6 +25,9 @@ pending_globally:
   - "Konflikt Aufruftiefe: Owner-Entscheidung 64 vom 09.11.2026 in ATC-BC-002 (Kandidat, nicht ratifiziert) gegen SCE-Vorschlag 8 (R-901)"
   - "Fehlende CALL-Instruktion und Identitaetstyp auf dem u64-Stapel (R-902, R-907)"
   - "Autoritaet der beiden Instruktionssaetze (R-906)"
+  - "Governance-Luecke: ATC-SEC-EXEC-001, ATC-BC-001 und ATC-BC-002 sind keine Eintraege in atc-standards/registry/standards.yaml; D0 ist damit intern verbindlich, aber nicht gegen einen registrierten Standard durchsetzbar"
+  - "S1-2/F-1: Policy-Ueberschreibung in der Registry; Regel, neuer Code ADM-012 und Verbleib von source_provenance in der signierten Policy sind offen (EXEC-S1-2-ADMISSION-REGISTRY-F1.md)"
+  - "P1a: Block.payload und Blockimport transportieren keinen Container; die Containergrenze ist bisher nur im Deploy-Weg durchgesetzt"
 
 # Stufe-1-Ratifikation vom 12.11.2026 (Owner-Wortlaut im Chat, Basis HEAD a63e41a93).
 # Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard.
@@ -75,6 +78,32 @@ decisions:
       - "Digest der Huelle erst nach erfolgreicher Strukturpruefung, Laengen und Stromgrenzen strikt"
       - "Keine doppelte Implementierung von VM-Logik: Opcode-Tabelle und Stromprozedur sind gemeinsam"
       - "Kandidat und Korpus bleiben maszgeblich; keine nachtraegliche Umschreibung auf ATCB/0x01"
+      - "Die vier Architekturfragen sind am 12.11.2026 je mit Option A entschieden (D0-1 bis D0-4, AD-EXEC-D0-FOUR-DECISIONS-2026-11-12.md); die Invarianten I1 bis I9 gelten fuer jede weitere Aenderung"
+    sub_gates:
+      - id: D0-1
+        title: "Containergrenze: ATCE ist der verbindliche externe Eingang"
+        owner: "Format/System"
+        goal: "Jedes externe ausfuehrbare Artefakt laeuft ueber ATCE; Blockimport und Systemeingang verwenden denselben Vertrag, kein zweiter Eingangsweg"
+        status: DECIDED
+        open_because: "Umsetzung P1a offen: Block.payload und Importpfad transportieren heute keinen Container (AD-EXEC-D0-FOUR-DECISIONS-2026-11-12.md)"
+      - id: D0-2
+        title: "Interne Grenze: ATCB bleibt internes Artefaktformat"
+        owner: "VM-Kern"
+        goal: "Eine Bytecodeform, eine Opcode-Tabelle, eine Strompruefung; ATCB ist von aussen nicht erreichbar, into_artifact ist der einzige Uebergang"
+        status: DECIDED
+        open_because: "im Systemeingang umgesetzt (d5b25f3b); vollstaendig erst mit P1a, weil der Import noch offen ist"
+      - id: D0-3
+        title: "Authentizitaet: Signatur als eigene Ebene ueber artifact_hash"
+        owner: "Sicherheit/Signatur"
+        goal: "Signaturpruefung, Schluesselidentitaet, Widerruf und Vertrauensrichtlinien getrennt spezifiziert; Digest allein gilt nie als Herkunftsnachweis"
+        status: DECIDED
+        open_because: "Umsetzung nicht freigegeben: Bedrohungsmodell und Schluesselrichtlinie fehlen"
+      - id: D0-4
+        title: "Versionierung: eigener Parser je Containerfassung"
+        owner: "Format/Versionierung"
+        goal: "Keine automatische Konvertierung, keine stillschweigende Deutung unbekannter Fassungen, Opcode-Aenderungen nur als Generation, Bytecode-Hash bleibt stabil"
+        status: DECIDED
+        open_because: "geltende Fassung 0x02 umgesetzt; Verfahren fuer die naechste Fassung dokumentiert, aber nicht erprobt"
     open_items:
       - "ATCE/0x02: Schicht (components/vm/src/envelope.rs, Commit a0ea77f3, Blob b253ffc3) und Systemeingang (components/system/src/system.rs, Commit d5b25f3b, Blob 14436437) umgesetzt und lokal geprueft; Status OPEN, weil die vier Architekturfragen (Containergrenze, interne Grenze, Authentizitaet, Versionierung) und ein CI-Lauf fehlen (EXEC-D0-ARCH-QUESTIONS-TEMPLATE-2026-11-12.md, EXEC-D0A-SYSTEM-INGRESS-EVIDENCE-2026-11-12.md)"
       - "Befund F-1: die Registry fuehrt eine Freigabe je code_hash; Quell- und Huellenweg erzeugen fuer dasselbe Programm verschiedene Policies (source_provenance) und ueberschreiben sich (ADM-009). Kein Sicherheitsverlust, aber eine zweite Aussage ueber denselben code_hash; Aenderung waere eine eigene Aufgabe an atc_exec_admission"
