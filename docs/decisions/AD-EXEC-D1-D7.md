@@ -58,6 +58,12 @@ D1 (Format) → D7 (Frontend) → D2 (Aufruf) → D3 (Speicher) → D6 (Identita
 
 **DECIDED — freigegeben (12.11.2026).** Eigene VM-Huelle, ATC-BC-001 unveraendert; Magic, eigene Versionskennung, festgelegte Byte-Reihenfolge, eindeutige Laengenangabe, kanonische Serialisierung, keine Aenderung am Transaktionsformat.
 
+**Nachtrag 12.11.2026 (Befund 1):** Die uebernommene Lifecycle-Zeile SCX-003
+sprach noch von "Artefakt mit Magie ATCB + Version" und widersprach damit dieser
+Entscheidung. SCX-003 beschreibt jetzt den Instruktionsstrom nach ATC-BC-001 plus
+die getrennte Huelle SCE-ARTIFACT; `ATCB` bleibt ausschliesslich der Strom. Das
+Magic der Huelle ist als Vorschlag `ATCE` gefuehrt und noch nicht bestaetigt.
+
 **Ist-Stand.** `ATC-BC-001` ist `SPEC-FROZEN` und normativ seit 06.10.2026
 (`ai/atclang/specs/bytecode/SPEC.md`, SCR-0071); Referenzimplementierung ist
 `atc-core/src/bytecode.rs`. Die VM implementiert einen anderen Container
@@ -218,6 +224,15 @@ bricht die Ausfuehrung ab.
 
 **DECIDED — bedingt freigegeben (12.11.2026).** Nachweise noetig: DID und Kontoidentitaet nutzen dieselbe Ableitung; keine Identitaetseinschleusung ueber Transaktionsfelder; Signaturpruefung authentifiziert; interne Aufrufe bilden den unmittelbaren Aufrufer ab; keine Vertrauensluecke Wallet/Kette/VM. Siehe REQ-SCE-048 und Gate SCE-G5.
 
+**Nachtrag 12.11.2026 (Befund 3):** Die vier Nachweise reichen nicht, solange die
+Identitaeten nicht getrennt sind. `origin` ist der Urheber der Transaktion und ueber
+den Aufrufstapel unveraenderlich; `caller` ist der unmittelbar Aufrufende des
+aktuellen Frames und bei Vertrag-zu-Vertrag die Vertragsadresse, nicht die Wallet;
+die Vertragsadresse ist ein technischer Aufrufer mit eigenem Typkennzeichen. Eine
+Implementierung, die `caller` dauerhaft auf `origin` stehen laesst, hebelt jede
+Berechtigungspruefung aus. REQ-SCE-051 bis REQ-SCE-053; die `caller`-Semantik wird
+mit ATC-BC-002 abgestimmt, bevor Vertrag-zu-Vertrag freigegeben wird.
+
 **Ist-Stand.** Die VM kennt `caller: u64` (`components/system/src/system.rs:266`,
 `components/vm/src/vm.rs:58`). Die Kette kennt `ATC:`-Adressen, und die DID ist
 dieselbe Ableitung: `address_from_pubkey` = `ATC:` plus 20-Byte-Prefix von
@@ -250,6 +265,15 @@ aendert die aktuelle Adresse nicht, Aufruf ohne gueltige Bindung wird abgelehnt.
 ## D4 — Wie werden Gas und Gebuehren gerechnet?
 
 **DECIDED — bedingt freigegeben (12.11.2026).** Fuenf getrennte Felder `gas_limit`, `gas_used`, `gas_price`, `fee_charged`, `gas_refund`; Abrechnung unabhaengig vom Rollback; ein fehlgeschlagener Vertrag verbraucht Rechenzeit nicht kostenlos; keine Gebuehrenumgehung ueber Backend oder Loader. Zahlen bleiben offen (P1b). Siehe REQ-SCE-045 bis REQ-SCE-047.
+
+**Nachtrag 12.11.2026 (Befund 4):** "Fehlgeschlagen" ist nicht gleich "Budget
+weg". Drei Klassen sind zu trennen: Gaserschoepfung (volles Budget, keine
+Erstattung), Revert oder logischer Fehler (nur `gas_used`, ungenutztes Budget nach
+Erstattungsregel), Ablehnung vor der Ausfuehrung (kein Gas, keine
+Zustandsaenderung). `gas_refund` zaehlt Gaseinheiten, der Geldbetrag traegt einen
+eigenen Namen. REQ-SCE-047 ist entsprechend praezisiert, REQ-SCE-054 und
+REQ-SCE-055 sind neu, T-28 und T-29 sind die Pflichtfaelle. Die Erstattungsregel
+selbst ist noch nicht normativ festgelegt.
 
 **Ist-Stand.** Vier Quellen ohne Verbindung: `GAS_TABLE_V1` mit 19 Befehlen
 (`components/vm/src/vm.rs:71-80`), `DEFAULT_GAS = 50_000`
@@ -286,6 +310,13 @@ identisch bei zwei Laeufen.
 ## D5 — Ist Ausfuehrung Teil der Blockgueltigkeit?
 
 **DECIDED — freigegeben (12.11.2026).** Ausfuehrung wird Bestandteil der Block-State-Transition, mit deterministischer Reihenfolge, identischer VM-Version, identischer Gasberechnung, atomaren Zustandsaenderungen, reproduzierbaren Receipts, verbindlicher State-Root-Berechnung und unabhaengigem Nachrechnen. Ein Hash ohne Ausfuehrungsnachweis reicht nicht.
+
+**Nachtrag 12.11.2026 (Befund 2):** "Der Validator rechnet nach" ist kein
+Widerspruch zur Verantwortungsmatrix, aber die Matrix war zu grob. Der Knoten
+bildet Auftrag, Kontext und Reihenfolge, ruft die normierte VM auf und vergleicht
+Ergebnis, Verbrauch und Zustandswurzel. Die Interpretation der Vertragslogik liegt
+ausschliesslich in der VM. Der Validator ist als eigene Zeile gefuehrt; REQ-SCE-056
+verbietet eine zweite Auslegung im Knoten, im Backend oder im Loader.
 
 **Ist-Stand.** Nein. `components/node` hat keine VM-Abhaengigkeit
 (`Cargo.toml:9-10`), `TxType::Contract` hat null Konsumenten, die Block-Payload
@@ -350,3 +381,13 @@ Reihenfolge, nach der der Plan in `docs/EXECUTION-INTEGRATION-PLAN.md` gebaut is
 | Sind sie umgesetzt? | Nein. Kein Gate ist erfuellt, CI_VERIFIED und E2E_VERIFIED sind offen. |
 | Was fehlt bis P2? | Die drei Zusatzanforderungen als Anforderungen (erledigt), die Konsistenz des Registers in beiden Dokumenten (erledigt, `tools/decision_register.py --check`), und die Zahlen aus P1b. |
 | Was ist ausdruecklich offen? | Numerische Gaspreise, Transaktionsgaslimit, Blockgaslimit, Implementierungs- und CI-Gates. |
+
+## Grundregel fuer alle sieben Entscheidungen
+
+**Eine Wahrheit je Funktionalitaet (SCE-P1).** Jede Komponente besitzt ihre eigene
+Verantwortung, aber keine Komponente darf eine zweite Wahrheit ueber dieselbe
+Funktionalitaet etablieren: eine Sprache, eine VM, ein Instruktionsstrom, eine
+Huelle, eine Gastabelle je Generation, eine Zustandswurzel. Die Arbeitsteilung
+bleibt: ATCLang erzeugt, ATC-VM verifiziert und fuehrt aus, A-TownChain verarbeitet
+und bestaetigt, Validatoren rechnen deterministisch nach, der Konsens bestaetigt
+ausschliesslich einen nachvollziehbaren Zustand.
