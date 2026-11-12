@@ -82,3 +82,31 @@ Entscheidung ueber die Schichtung erzeugt keinen Test. P2 bleibt gesperrt, weil 
 Spezifikation der drei Identitaeten und der Domaenen-Strings, der neuen
 Containerfassung, der getypten Schluesselraeume und des Erstattungswortlauts im
 Kandidaten, danach Konformitaetstests. Kein Code vor der Spezifikation.
+
+## 8. Nachweise zur Eintragung
+
+Basis der Ratifikation war `a63e41a93`. Die Eintragung erfolgte in dieser
+Reihenfolge, jeder Schritt als eigener Commit mit Agenten-Trailer:
+
+| Commit | Inhalt |
+|---|---|
+| `affb4988d` | Register geaendert: `stage1`-Block mit vier Eintraegen, `resolved_by_ratification`, Auflagen in D1, D2, D4, `pending_globally` bereinigt |
+| `e45305556` | Werkzeug erweitert: `stage1` wird als eigene Tabelle gerendert, damit beide Dokumente aus derselben Quelle kommen |
+| `34d484e31` | Registerblock in `AD-EXEC-D1-D7.md` neu erzeugt |
+| `72e3d99c2` | Registerblock im Kandidaten neu erzeugt; Kandidat bleibt Kandidat |
+| `32fa1c632` | Tracking-Matrix auf Ratifikationsstand gezogen |
+| `1273e1f0c` | Dieser Vermerk |
+| `ac9c22126`, `9fcbb50bb` | Dateiregister und Index nachgezogen |
+
+Pruefbar ohne Vertrauen:
+
+```
+python3 tools/decision_register.py --check
+# PASS: Register konsistent in 2 Dokumenten, 7 Entscheidungen
+```
+
+Der Registerstand nach der Eintragung ist Blob
+`docs/decisions/exec-decision-register.yaml` = `1ddc97aa22`; die Matrix ist Blob
+`docs/decisions/EXEC-STAGE1-TRACKING.md` = `029ce08108`. Beide Werte lassen sich
+ueber die Contents-API am HEAD pruefen und aendern sich nicht durch diesen
+Vermerk.
