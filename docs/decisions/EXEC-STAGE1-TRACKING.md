@@ -2,7 +2,7 @@
 
 **Status:** Nachverfolgung. Keine Ratifikation, keine Implementierung, keine
 Freigabe.
-**Datum:** 2026-11-12 · **Basis:** `a-townchain` main `76b8fddfe`
+**Datum:** 2026-11-12 · **Basis:** `a-townchain` main `45f9d9093`
 **Vorlage:** `docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md`
 **Register:** unveraendert (`docs/decisions/exec-decision-register.yaml`, Blob
 `9b76813663`)
@@ -30,7 +30,7 @@ aktualisiert, wenn eine der drei Voraussetzungen eintritt:
 | `BLOCKED` | 1 |
 | `EMPTY` | 0 |
 | `OPEN` | 36 |
-| **Summe** | **37** |
+| **Summe** | **38** |
 
 Kein Test ist `TESTED`. P1a ist offen, P2 ist gesperrt, eine Produktionsfreigabe ist
 nicht erteilt. Der Status `OPEN` heisst: es fehlt die Entscheidung, nicht nur die
@@ -77,6 +77,7 @@ Ausfuehrung.
 | S1-T-35 | Containerfassung an Domaenenfassung gebunden | S1-1b | `OPEN` | Code-Test |
 | S1-T-36 | Registry und Wurzel koennen die Hashes nicht verwechseln | S1-1/1b | `OPEN` | Code-Test |
 | S1-T-37 | flacher 32-Byte-Alt Schluessel wird nicht gedeutet, Start verweigert | S1-2 | `OPEN` | Code-Test |
+| S1-T-38 | S1-2 nur als Ganzes: Teilumsetzung besteht das Gate nicht | S1-2 | `OPEN` | Gate |
 
 ## 4. Bereits belegte Befunde
 
