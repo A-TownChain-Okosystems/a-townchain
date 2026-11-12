@@ -240,8 +240,9 @@ Implementierung, die `caller` dauerhaft auf `origin` stehen laesst, hebelt jede
 Berechtigungspruefung aus. REQ-SCE-051 bis REQ-SCE-053; die `caller`-Semantik wird
 mit ATC-BC-002 abgestimmt, bevor Vertrag-zu-Vertrag freigegeben wird.
 
-**Nachtrag 12.11.2026 (Spezifikationsluecke B):** Das Typkennzeichen war gefordert,
-aber nicht kodiert. Es gibt jetzt genau ein kanonisches 32-Byte-Layout: Bytes 0..3
+**Nachtrag 12.11.2026 (Spezifikationsluecke B, ersetzt die Formulierung
+"20-Byte-Adresse, links mit Nullen" in Option A):** Das Typkennzeichen war
+gefordert, aber nicht kodiert. Es gibt jetzt genau ein kanonisches 32-Byte-Layout: Bytes 0..3
 Kennzeichen (`0x00000001` Wallet, `0x00000002` Vertrag), Bytes 4..11 reserviert und
 zwingend null, Bytes 12..31 die 20 Adressbytes. Ungueltig sind Kennzeichen null,
 unbekannte Kennzeichen, nicht-null reservierte Bytes, Nulladresse und Nullwort;
@@ -262,7 +263,7 @@ einheitlich; nur die VM faellt heraus (Konflikt K-06).
 
 | Option | Inhalt | Bewertung |
 |---|---|---|
-| A | `caller` wird ein 32-Byte-Identitaetswort (20-Byte-Adresse, links mit Nullen), `u64` entfaellt | nutzt die bestehende Ableitung, keine neue Wahrheit |
+| A | `caller` wird ein 32-Byte-Identitaetswort nach dem kanonischen Layout (Kennzeichen Bytes 0..3, reserviert 4..11 zwingend null, Adresse 12..31; REQ-SCE-057), `u64` entfaellt | nutzt die bestehende Ableitung, keine neue Wahrheit |
 | B | Tabelle `u64` zu DID im Zustand | zusaetzlicher Zustand, Synchronisationsproblem, kollidiert mit Rotaion |
 | C | `u64` bleibt, Berechtigung nur ausserhalb des Vertrags | Berechtigung im Vertrag unmoeglich |
 
@@ -283,24 +284,26 @@ aendert die aktuelle Adresse nicht, Aufruf ohne gueltige Bindung wird abgelehnt.
 
 **DECIDED — bedingt freigegeben (12.11.2026).** Fuenf getrennte Felder `gas_limit`, `gas_used`, `gas_price`, `fee_charged`, `gas_refund`; Abrechnung unabhaengig vom Rollback; ein fehlgeschlagener Vertrag verbraucht Rechenzeit nicht kostenlos; keine Gebuehrenumgehung ueber Backend oder Loader. Zahlen bleiben offen (P1b). Siehe REQ-SCE-045 bis REQ-SCE-047.
 
-**Nachtrag 12.11.2026 (Befund 4):** "Fehlgeschlagen" ist nicht gleich "Budget
-weg". Vier Klassen sind zu trennen: Gaserschoepfung (volles Budget, keine
-Erstattung), Revert oder logischer Fehler (nur `gas_used`, ungenutztes Budget nach
-Erstattungsregel), Ablehnung vor der Ausfuehrung (kein Gas, keine
-Zustandsaenderung). `gas_refund` zaehlt Gaseinheiten, der Geldbetrag traegt einen
-eigenen Namen. REQ-SCE-047 ist entsprechend praezisiert, REQ-SCE-054 und
-REQ-SCE-055 sind neu, T-28 und T-29 sind die Pflichtfaelle. Die Erstattungsregel
-selbst ist noch nicht normativ festgelegt.
+**Nachtrag 12.11.2026 (Befunde 4 und C, ersetzt die frueher hier stehende
+Dreiteilung):** "Fehlgeschlagen" ist nicht gleich "Budget weg". Es gelten vier
+Klassen:
 
-**Nachtrag 12.11.2026 (Spezifikationsluecke C):** Die vierte Fehlerklasse fehlte:
-der interne Fehler der Ausfuehrungsinfrastruktur. Er ist weder Revert noch
-Erschoepfung und darf nicht als eines von beiden abgerechnet werden, sonst erzeugen
-identische Transaktionen je nach Infrastrukturzustand unterschiedliche Gebuehren.
-Regel: keine Belastung, keine Zustandsaenderung, kein Beleg; ein Block, der einen
-Erfolgsbeleg traegt, ist ungueltig; eigener Statuscode, Fuehrung als Knotenfehler.
-REQ-SCE-060. Die Erstattungsformeln (`gas_refund = gas_limit - gas_used`,
+| Klasse | Verbrauch | Erstattung |
+|---|---|---|
+| Gaserschoepfung | volles `gas_limit` | keine |
+| Revert oder logischer Vertragsfehler | nur `gas_used` | ungenutztes Budget nach Erstattungsregel |
+| Ablehnung vor der Ausfuehrung | kein Gas, keine Zustandsaenderung | keine Buchung |
+| Interner Fehler der Ausfuehrungsinfrastruktur | kein Nutzeranteil | keine Belastung |
+
+Die vierte Klasse ist weder Revert noch Erschoepfung; wuerde sie als eines von
+beiden abgerechnet, erzeugten identische Transaktionen je nach Zustand der
+Infrastruktur unterschiedliche Gebuehren. Sie erzeugt keinen Beleg und keinen
+Konsensstatus, sondern einen lokalen Knotenfehler (ATC-NODE-INFRA-001); Einzelheiten
+in REQ-SCE-060. `gas_refund` zaehlt Gaseinheiten, der Geldbetrag traegt einen eigenen
+Namen (REQ-SCE-055). Die Erstattungsformeln (`gas_refund = gas_limit - gas_used`,
 `refund_amount = gas_refund * gas_price`, `fee_charged = gas_used * gas_price`)
-stehen als Vorschlag im Kandidaten und sind nicht beschlossen.
+stehen als Vorschlag im Kandidaten und sind nicht beschlossen. Pflichtfaelle:
+T-28, T-29, T-40.
 
 **Ist-Stand.** Vier Quellen ohne Verbindung: `GAS_TABLE_V1` mit 19 Befehlen
 (`components/vm/src/vm.rs:71-80`), `DEFAULT_GAS = 50_000`
@@ -314,13 +317,15 @@ bei Erfolg nicht zurueckgegeben (GAS-AUD-005), eine Abbuchung existiert nirgends
 
 | Option | Inhalt | Bewertung |
 |---|---|---|
-| A | Ein Gastvertrag: eine versionierte Kostentabelle, Budget gleich `tx.gas_limit`, Verbrauch im Receipt, Gebuehr gleich Verbrauch mal `gas_price`, Abbuchung gegen ein Konto, Fehlschlag verbraucht das ganze Budget | erfuellt die Vorgaben der Vorlage |
+| A | Ein Gastvertrag: eine versionierte Kostentabelle, Budget gleich `tx.gas_limit`, Verbrauch im Receipt, Gebuehr gleich Verbrauch mal `gas_price`, Abbuchung gegen ein Konto, Fehlschlag verbraucht die geleistete Rechenzeit (Erschoepfung: volles Budget) | erfuellt die Vorgaben der Vorlage |
 | B | Zwei Budgets (heute) | keine Abrechnung, kein Schutz |
 | C | Kostenloser Betrieb ohne Gas, nur Ops-Limit | einfacher, aber widerspricht ATC-14 und SC-016 |
 
 **Empfehlung: Option A.** Eine Tabelle, eine Kennung (`GAS_TABLE_V2`), eine
-Reihenfolge: Kosten vor der Wirkung belasten, Fehlschlag verbraucht alles,
-Erfolg meldet den Verbrauch. Die Zahlen selbst sind eine Owner-Entscheidung; die
+Reihenfolge: Kosten vor der Wirkung belasten, ein Fehlschlag belastet die
+geleistete Rechenzeit (bei Erschoepfung das ganze Budget), Erfolg meldet den
+Verbrauch. Die frueher hier stehende Formulierung "Fehlschlag verbraucht alles" ist
+durch die Klassifizierung in vier Fehlerklassen ueberholt. Die Zahlen selbst sind eine Owner-Entscheidung; die
 ATC-14-Formel fuer Deployment und `GAS_TABLE_V1` fuer Befehle sind die beiden
 vorhandenen Quellen, die zu **einer** Tabelle zusammengefuehrt werden muessen.
 
@@ -329,7 +334,7 @@ Ausfuehrung, `receipt` traegt `gas_used`, `System::execute` bucht gegen ein Kont
 und die Kette braucht eine Kontofuehrung, die es heute nicht gibt.
 
 **Gate:** SCE-G6 (Gasvertrag) mit Pflichtfaellen: Budget 0, Budget exakt
-ausreichend, Budget ein Gas zu klein, Fehlschlag verbraucht alles, Verbrauch
+ausreichend, Budget ein Gas zu klein, Erschoepfung verbraucht das Budget, Revert belastet nur den Verbrauch, Verbrauch
 identisch bei zwei Laeufen.
 
 ---
