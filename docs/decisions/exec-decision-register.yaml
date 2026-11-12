@@ -23,10 +23,40 @@ pending_globally:
   - "Endgueltiges Blockgaslimit"
   - "Implementierungs- und CI-Gates"
   - "Konflikt Aufruftiefe: Owner-Entscheidung 64 vom 09.11.2026 in ATC-BC-002 (Kandidat, nicht ratifiziert) gegen SCE-Vorschlag 8 (R-901)"
-  - "Artefaktidentitaet: Container-Magic ATCB gegen SCE-D1, zwei Hashumfaenge ohne getrennte Namen (R-903)"
   - "Fehlende CALL-Instruktion und Identitaetstyp auf dem u64-Stapel (R-902, R-907)"
-  - "Zirkularitaet P1a/P2: Grenzwerttests brauchen den Aufrufmechanismus (R-905)"
   - "Autoritaet der beiden Instruktionssaetze (R-906)"
+
+# Stufe-1-Ratifikation vom 12.11.2026 (Owner-Wortlaut im Chat, Basis HEAD a63e41a93).
+# Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard.
+stage1:
+  - id: S1-1
+    title: "Drei getrennte Identitaeten: artifact_hash, code_hash, state_root"
+    option: "A mit Domaenenvariante 1b"
+    ratified_at: "2026-11-12"
+    basis_head: "a63e41a93"
+    effect: "zweite Hashidentitaet wird berechnet, nicht nur benannt; neue Containerfassung ist Teil derselben Entscheidung; ATC-STATE-V2 unabhaengig von der Variante"
+  - id: S1-2
+    title: "Policy-Bindung: welche Identitaet Freigabe, Widerruf, Mindestversion bindet"
+    option: "C, asymmetrisch"
+    ratified_at: "2026-11-12"
+    basis_head: "a63e41a93"
+    effect: "Freigabe und Mindestversion am code_hash, Widerruf getrennt fuer Code und Artefakt; getypte Schluesselraeume, zwei Abfragen, nur als vollstaendige Einheit (S1-T-38)"
+  - id: S1-3
+    title: "Erstattung: Grundsatz"
+    option: "A, ausschliesslich Gasrueckgabe"
+    ratified_at: "2026-11-12"
+    basis_head: "a63e41a93"
+    effect: "gas_refund in Gaseinheiten, kein Geldbetrag; ungenutztes Budget verfaellt, auch nach Einfuehrung einer Kontobelastung"
+  - id: S1-4
+    title: "Testschichtung L1/L2/L3"
+    option: "B, nur L1 zaehlt fuer P1a"
+    ratified_at: "2026-11-12"
+    basis_head: "a63e41a93"
+    effect: "L1 muss nicht ausfuehrbar sein, um zu zaehlen; L2 und L3 bleiben bis B-1 gesperrt; L1 ist heute EMPTY, P1a bleibt offen"
+
+resolved_by_ratification:
+  - "B-2 Artefaktidentitaet im Identitaetsteil (R-903); die Frage des Container-Magic bleibt Auflage in D1"
+  - "B-3 Verfahren (R-905): Schichtung entschieden, L2 und L3 bleiben bis B-1 gesperrt"
 
 decisions:
   - id: D1
@@ -46,7 +76,9 @@ decisions:
       - "kanonische Serialisierung"
       - "keine Aenderung am bestehenden Transaktionsformat"
       - "SCX-003 und SCE-ARTIFACT verwenden dieselbe Formatdefinition; ATCB ist nicht das Magic des VM-Containers"
-      - "Drei Identitaeten getrennt benannt und verwendet: artifact_hash (Integritaet), code_hash (Instruktionsstrom), state_root (Ausfuehrungscommitment); Offen (S1-1)"
+      - "Drei Identitaeten getrennt benannt und verwendet: artifact_hash (Integritaet), code_hash (Instruktionsstrom), state_root (Ausfuehrungscommitment) — ratifiziert 12.11.2026, S1-1 Option A mit Domaenenvariante 1b"
+      - "Neue Containerfassung ist Teil von S1-1b, nicht eine spaetere unabhaengige Aenderung"
+      - "Beide Hashes tragen feste, byte-exakte Domaenen-Praefixe (S1-T-33, S1-T-34)"
       - "Magic der Huelle: Vorschlag ATCE, Bestaetigung offen"
     open_items: []
 
@@ -64,7 +96,9 @@ decisions:
       - "Wortgroesse und Calldata-Encoding festgelegt"
       - "maximale Rueckgabepuffergroesse festgelegt"
       - "deterministische Vertragsadressableitung festgelegt; im Code heute nicht vorhanden, keine blosse Anpassung einer bestehenden Funktion"
-      - "Policy, Widerruf und Mindestversion nennen ihre Identitaet ausdruecklich; Offen (S1-2)"
+      - "Policy, Widerruf und Mindestversion nennen ihre Identitaet ausdruecklich — ratifiziert 12.11.2026, S1-2 Option C"
+      - "Getypte Schluesselraeume fuer code_hash und artifact_hash, zwei getrennte Abfragen, eigene Statuscodes, Ablehnung bei Treffer auf einer der beiden Sperren (S1-T-29 bis S1-T-32)"
+      - "Keine Deutung flacher 32-Byte-Altschluessel; Startverweigerung (S1-T-37); Umsetzung nur als vollstaendige Einheit (S1-T-38)"
       - "atomare Rueckabwicklung fehlgeschlagener Transaktionen festgelegt"
       - "Vertrag-zu-Vertrag-Aufrufe bis BC-002 gesperrt"
     open_items:
@@ -107,6 +141,7 @@ decisions:
       - "Fehlerklassen getrennt: Erschoepfung volles Budget, Revert nur verbrauchtes Gas, Ablehnung ohne Ausfuehrung ohne Gas (REQ-SCE-047, 054)"
       - "gas_refund in Gaseinheiten, Geldbetrag getrennt benannt (REQ-SCE-055)"
       - "Erstattungsregel normativ festlegen und mit T-28 belegen; Formeln bisher ausdruecklicher Vorschlag"
+      - "Grundsatz ratifiziert 12.11.2026 (S1-3 Option A): ausschliesslich Gasrueckgabe, gas_refund in Gaseinheiten, kein Geldbetrag; ungenutztes Budget verfaellt, ausdruecklich auch nach Einfuehrung einer tatsaechlichen Kontobelastung"
       - "Vierte Fehlerklasse: interner Infrastrukturfehler ohne Nutzerbelastung, deterministisch, eigener Statuscode (REQ-SCE-060)"
       - "Zwei getrennte Code-Raeume: Beleg-Status 0x00 bis 0x03, Knotenfehler ATC-NODE-INFRA-001 nie im Beleg (REQ-SCE-054)"
       - "Wiederaufnahme: derselbe Block nach behobenem Fehler deterministisch identisch (REQ-SCE-060 Punkt 4)"
