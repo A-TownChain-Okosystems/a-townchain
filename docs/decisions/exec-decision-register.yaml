@@ -76,7 +76,9 @@ decisions:
       - "Keine doppelte Implementierung von VM-Logik: Opcode-Tabelle und Stromprozedur sind gemeinsam"
       - "Kandidat und Korpus bleiben maszgeblich; keine nachtraegliche Umschreibung auf ATCB/0x01"
     open_items:
-      - "ATCE/0x02: Schicht implementiert (components/vm/src/envelope.rs, Commit a0ea77f3, Blob b253ffc3), Integration in den System-Deploypfad und unabhaengige Pruefung offen; Status OPEN"
+      - "ATCE/0x02: Schicht (components/vm/src/envelope.rs, Commit a0ea77f3, Blob b253ffc3) und Systemeingang (components/system/src/system.rs, Commit d5b25f3b, Blob 14436437) umgesetzt und lokal geprueft; Status OPEN, weil die vier Architekturfragen (Containergrenze, interne Grenze, Authentizitaet, Versionierung) und ein CI-Lauf fehlen (EXEC-D0-ARCH-QUESTIONS-TEMPLATE-2026-11-12.md, EXEC-D0A-SYSTEM-INGRESS-EVIDENCE-2026-11-12.md)"
+      - "Befund F-1: die Registry fuehrt eine Freigabe je code_hash; Quell- und Huellenweg erzeugen fuer dasselbe Programm verschiedene Policies (source_provenance) und ueberschreiben sich (ADM-009). Kein Sicherheitsverlust, aber eine zweite Aussage ueber denselben code_hash; Aenderung waere eine eigene Aufgabe an atc_exec_admission"
+      - "Verbleibende Luecke zu F-1: Block.payload und Importpfad transportieren keinen Container; die Sicherheitsgrenze ist bisher nur im Deploy-Weg durchgesetzt"
       - "Differentialtest: lokaler Lauf 40 von 40 Eingaben gleich (Huelle gegen den unabhaengigen Referenzdekoder); Status bleibt BLOCKED bis zur vollstaendigen Integration und unabhaengigen Pruefung (Owner 12.11.2026); Nachweis EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md"
       - "CI_VERIFIED nicht vergeben; kein CI-Lauf am exakten HEAD"
 
