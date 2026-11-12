@@ -110,3 +110,16 @@ Der Registerstand nach der Eintragung ist Blob
 `docs/decisions/EXEC-STAGE1-TRACKING.md` = `029ce08108`. Beide Werte lassen sich
 ueber die Contents-API am HEAD pruefen und aendern sich nicht durch diesen
 Vermerk.
+
+## 9. Nachtrag 12.11.2026: Container-Magic
+
+Die in Abschnitt 6 offen gefuehrte Frage des Container-Magic ist entschieden:
+`ATCE` fuer die Huelle, Fassung `0x02`, `ATCB` bleibt ausschliesslich der
+Instruktionsstrom. Damit ist die Auflage aus D1 erfuellt, und der Widerspruch
+zwischen §5 (eigenes Magic der Huelle) und §18.3 (Magic `ATCB`) ist beseitigt.
+
+Gleichzeitig korrigiert: der angehaengte Integritaetsdigest ist exakt
+`artifact_hash` nach REQ-SCE-062, nicht ein zweiter Digest ohne Domaene. Sechs
+Vektoren wurden neu berechnet (GV-1, GV-3, GV-5, GV-7, GV-9, NV-2). Das ist eine
+Spezifikationskorrektur. Sie ist **keine** Implementierungsfreigabe: P1a bleibt
+offen, P2 bleibt durch B-1 gesperrt, der Standard bleibt Kandidat.
