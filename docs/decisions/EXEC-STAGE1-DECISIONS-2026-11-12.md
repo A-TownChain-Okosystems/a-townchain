@@ -57,8 +57,10 @@ Zustand      : 552e5a0b4b644bd6 -> 0c02e59d68a644fb
 ```
 
 Die Zeilen "Code-Hash" und "Artefakt-Hash" des Programms sind identisch, weil sie
-denselben Wert ausgeben. Das ist der sichtbare Beweis, dass es heute nur **eine**
-Identitaet gibt.
+denselben Wert ausgeben. Das belegt **eine** Sache: dass beide Ausgaben heute
+dieselbe Funktion benutzen. Es belegt **keine** unabhaengige Strom-Hash-Berechnung,
+denn eine solche gibt es nicht. Wer den Strom-Hash braucht, muss ihn definieren und
+implementieren, nicht umleiten.
 
 ### 1.3 Optionen
 
@@ -261,10 +263,52 @@ Akzeptanz der Schichtung selbst:
 |---|---|---|
 | S1-T-15 | Vollstaendigkeit | jeder Fall T-21 bis T-24 ist genau einer Schicht zugeordnet, keiner ohne |
 | S1-T-16 | Trennung | L2 laeuft ohne Produktionsfreigabe und ohne Netz |
-| S1-T-17 | Ehrlichkeit | ein L3-Fall kann nicht als bestanden gemeldet werden, solange B-1 offen ist |
-| S1-T-18 | Dekoder | L1 braucht einen reinen Dekoder; ohne ihn bleibt L1 leer und ist als leer zu melden |
+| S1-T-17 | Ehrlichkeit | ein L3-Fall kann nicht als `TESTED` gemeldet werden, solange B-1 offen ist (Status `BLOCKED`) |
+| S1-T-18 | Dekoder | L1 braucht einen reinen Dekoder; ohne ihn ist L1 `EMPTY`, nicht `TESTED` und nicht "teilweise bestanden" |
 
-## 5. Reihenfolge und Zuordnung zum Register
+Das Statusvokabular steht in Abschnitt 5.1. Es gilt fuer alle drei Schichten: ein
+nicht ausfuehrbarer Fall ist `BLOCKED`, `EXCLUDED` oder `EMPTY`, niemals `TESTED`.
+
+## 5. Auflagen aus dem Review vom 12.11.2026
+
+Diese Bedingungen sind Voraussetzung dafuer, dass S1-1 ueberhaupt abnahmefaehig ist.
+Sie stehen hier als Pruefungen, nicht als gewaehlte Option.
+
+| Bedingung | Pruefung | Test |
+|---|---|---|
+| Getrennte Hash-Domaenen | Artefakt-Hash und Strom-Hash werden aus verschiedenen, exakt benannten Bytebereichen berechnet, jeder mit eigener Domaine; eine Aenderung ausserhalb des Stroms aendert den Artefakt-Hash und **nicht** den Strom-Hash | S1-T-19 |
+| Kanonische Eingabe | keine implizite Konvertierung, keine nicht deterministische Serialisierung; zwei gleichwertige Darstellungen ergeben denselben Hash, zwei Prozesse dasselbe Ergebnis | S1-T-20 |
+| Identitaetstrennung | gleicher Strom mit unterschiedlichen Container-Metadaten (Magic, Generation, Anzahl): Strom-Hash gleich, Artefakt-Hash verschieden | S1-T-01, S1-T-21 |
+| Zustandswurzel | `ATC-STATE-V2` legt die neue Semantik eindeutig fest; `V1` wird nie stillschweigend als `V2` gelesen; beide Wurzeln sind unterscheidbar | S1-T-03, S1-T-22 |
+| Policy-Migration | keine automatische Uebernahme alter Freigabe- oder Widerrufsschluessel; die Neuregistrierung ist nachweisbar (Zaehlung, Protokolleintrag) | S1-T-23 |
+| Startpruefung | gemischte V1-/V2-Identitaeten werden erkannt und zurueckgewiesen; kein Rueckfall auf alte Schluessel | S1-T-24 |
+
+### 5.1 Teststatus-Vokabular
+
+| Status | Bedeutung |
+|---|---|
+| `TESTED` | ausgefuehrt und bestanden |
+| `FAILED` | ausgefuehrt und nicht bestanden |
+| `BLOCKED` | ausfuehrbar, aber Voraussetzung fehlt (z. B. B-1) |
+| `EXCLUDED` | bewusst nicht im Umfang dieser Stufe |
+| `EMPTY` | die Schicht enthaelt keine ausfuehrbaren Faelle (z. B. L1 ohne Dekoder) |
+
+Ein nicht ausfuehrbarer Fall wird **nie** als `TESTED` oder "teilweise bestanden"
+gefuehrt, sondern als `BLOCKED`, `EXCLUDED` oder `EMPTY`. Damit ist S1-1 nicht
+abnehmbar, solange der Strom-Hash nur beschrieben und nicht berechnet ist.
+
+### 5.2 Zusaetzliche Akzeptanztests
+
+| ID | Pruefung | Bestehen |
+|---|---|---|
+| S1-T-19 | Domaenen | beide Hashes tragen verschiedene Domaenen; Aenderung der Generation aendert nur `artifact_hash` |
+| S1-T-20 | Determinismus | gleiche Eingabe, zwei Prozesse, gleicher Hash; keine Serialisierung mit Host-Zeit, Zufall oder Zeigern |
+| S1-T-21 | Metadaten | gleicher Strom, andere Metadaten: `code_hash` gleich, `artifact_hash` verschieden |
+| S1-T-22 | Versionstreue | eine V1-Wurzel wird nicht als V2 gelesen; die Domaine ist im Datensatz sichtbar |
+| S1-T-23 | Neuregistrierung | alter Schluessel wird nicht uebernommen; Zaehlung vor und nach der Umstellung ist belegbar |
+| S1-T-24 | Mischzustand | Start bricht bei gemischten Schluesseln ab, ohne Rueckfall |
+
+## 6. Reihenfolge und Zuordnung zum Register
 
 Die Reihenfolge folgt der Abhaengigkeit, nicht der Wichtigkeit:
 
@@ -291,7 +335,20 @@ den Bedingungen des Registers selbst. Die Aufruftiefe ist der einzige Punkt ohne
 Registerbezug; sie ist eine Entscheidung zwischen zwei Standards, nicht innerhalb
 dieses Registers.
 
-## 6. Was diese Vorlage nicht tut
+## 7. Was jetzt nicht passieren darf
+
+1. Keine Implementierung auf Grundlage einer noch nicht gewaehlten Option.
+2. Keine Aenderung an `Artifact::hash()` ohne vollstaendige Erfassung der elf
+   Abhaengigkeiten aus der Inventur, Abschnitt 2.
+3. Keine Aenderung der Zustandswurzel ohne ausdruecklichen V1/V2-Kompatibilitaetsvertrag.
+4. Keine Freigabe von P2, solange B-1 nicht entschieden und die Abhaengigkeiten
+   nicht geschlossen sind.
+5. Keine Hochstufung eines Kandidaten zur ratifizierten Norm durch blosse
+   Dokumentenaenderung.
+
+Diese fuenf Punkte sind keine Empfehlungen, sondern die Grenze dieser Vorlage.
+
+## 8. Was diese Vorlage nicht tut
 
 Sie waehlt keine Option, aendert keine Anforderung und setzt keinen Grenzwert.
 Alle sieben Entscheidungen im Register bleiben Kandidaten und nicht ratifiziert.
