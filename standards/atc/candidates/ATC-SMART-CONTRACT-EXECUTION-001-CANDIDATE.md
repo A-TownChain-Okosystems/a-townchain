@@ -5,15 +5,27 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.0.0-draft
+> **Version:** 1.1.0-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
+> **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
+> uebernimmt v0.1.0 **vollstaendig**: Verantwortungsmatrix, Lifecycle SCX-001 bis
+> SCX-010, den `require`-Blocker, die Determinismusklausel, die Kodierungsregeln
+> und die Evidenzleiter. Gestrichen wurde nichts.
 > **Grundlage:** `docs/audits/ATCLANG-VM-CHAIN-INTEGRATION-2026-11-11.md`,
 > `docs/audits/CONTRACT-EXECUTION-INVENTORY-2026-11-12.md`,
 > `docs/decisions/AD-EXEC-D1-D7.md`
 > **Abhaengigkeiten:** ATC-BC-001 (`SPEC-FROZEN`), ATC-BC-002 (Kandidat),
 > ATC-SEC-EXEC-001 (Kandidat), ATC-STD-600 (approved), ATC-STD-SC-001..020,
 > ATC-14 (Determinismus), ATC-STD-000 (Verfassung, §9, §30)
+
+**Changelog**
+
+| Version | Datum | Aenderung |
+|---|---|---|
+| 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
+| 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
+| 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
 
 ---
 
@@ -37,7 +49,7 @@ macht.
 Dieser Vertrag ist die Spezifikation. Ob eine Implementierung ihn erfuellt, sagt
 die Evidenzstufe in Abschnitt 10, nicht die Existenz dieses Dokuments.
 
-## 2. Geltungsbereich
+## 2. Geltungsbereich und Nicht-Ziele
 
 **Im Geltungsbereich:** jede Stelle, an der ein Vertrag entsteht, geladen,
 ausgefuehrt, abgerechnet oder als Zustand bestaetigt wird, im A-TownChain-L1 und
@@ -47,6 +59,13 @@ im Devnet.
 Lizenzrecht im Detail (ATC-SEC-EXEC-001, ATC-LIC), Oekonomie der Gebuehrenhoehe,
 Konsensverfahren selbst (ATC-STD-202, `components/algorithm`), Kernel und
 Produkt-Apps.
+
+**Nicht-Ziele (aus v0.1.0, unveraendert):**
+
+- Keine zweite Sprache neben ATCLang.
+- Keine zweite VM neben der ATC-VM.
+- Keine Konsensregeln in der VM.
+- Keine Aenderung eingefrorener Formate ohne Aenderungsverfahren.
 
 ## 3. Begriffe
 
@@ -61,7 +80,51 @@ Produkt-Apps.
 | **Beleg (Receipt)** | Ergebnis einer Ausfuehrung: Status, Rueckgabedaten, Gasverbrauch, Zustandswurzelbezug |
 | **Zustandswurzel** | kryptografische Zusammenfassung des bestaetigten Zustands |
 
-## 4. Normative Objekte
+## 4. Verantwortungsmatrix (aus v0.1.0)
+
+| System | Darf verantworten | Darf nicht |
+| --- | --- | --- |
+| ATCLang | Syntax, Typen, IR, Bytecode-Erzeugung | Konsens, Persistenz, Netzwerk |
+| ATC Smart-Contract | Vertragsregeln, Storage-Schema, ABI | Eigene VM, eigene Execution |
+| ATC-VM | Determinismus, Gas, Speichergrenzen | Zeit, Zufall, Netzwerk, Signaturen |
+| A-TownChain | Transaktion, Konsens, Zustaende | Vertragslogik interpretieren |
+
+## 5. Lifecycle mit Pruefpunkten (aus v0.1.0)
+
+| Code | Stufe | Eingang | Ausgang | Zustaendig |
+| --- | --- | --- | --- | --- |
+| SCX-001 | Source | Vertragsquelle | geparste Einheit | ATCLang |
+| SCX-002 | Compiler | Einheit | typgeprueftes IR | ATCLang |
+| SCX-003 | Bytecode | IR | Artefakt mit Magie ATCB + Version | ATCLang |
+| SCX-004 | Verifikation | Artefakt | gueltig oder Ablehnung | ATC-VM Verifier |
+| SCX-005 | Deployment | signierte Transaktion | Contract ID + Storage-Wurzel | A-TownChain |
+| SCX-006 | Aufruf | Transaktion + Kontext | Ausfuehrungsauftrag | A-TownChain |
+| SCX-007 | Ausfuehrung | Bytecode + Zustand | Ergebnis, Gas, Events | ATC-VM |
+| SCX-008 | Zustandswechsel | Ergebnis | neuer Zustand oder Abbruch | A-TownChain |
+| SCX-009 | Konsens | Vorschlag | bestaetigter Block | A-TownChain |
+| SCX-010 | Finalitaet | Block | dauerhafter Zustand | A-TownChain |
+
+Regel: Keine Stufe darf die Pruefung einer spaeteren Stufe ersetzen.
+Eine gueltige Compilierung ist kein Ausfuehrungsrecht.
+
+**Zuordnung der Stufen zu den Anforderungen dieser Fassung:**
+
+| SCX | Anforderung | Gate |
+|---|---|---|
+| SCX-001 bis SCX-002 | REQ-SCE-005, REQ-SCE-006 (ein Frontend) | SCE-G2 |
+| SCX-003 | REQ-SCE-001 bis REQ-SCE-004 (ein Format, Huelle, Generation) | SCE-G1 |
+| SCX-004 | REQ-SCE-003, REQ-SCE-015, REQ-SCE-034 | SCE-G1, G4 |
+| SCX-005 | REQ-SCE-012 bis REQ-SCE-015 (Deployment, Layout, Adresse) | SCE-G3, G4 |
+| SCX-006 | REQ-SCE-007 bis REQ-SCE-012 (Aufruf) | SCE-G3 |
+| SCX-007 | REQ-SCE-021 bis REQ-SCE-026, REQ-SCE-032 bis REQ-SCE-035 | SCE-G6, G9 |
+| SCX-008 | REQ-SCE-017, REQ-SCE-026, REQ-SCE-033 | SCE-G4, G6 |
+| SCX-009 | REQ-SCE-027 bis REQ-SCE-031 | SCE-G7 |
+| SCX-010 | REQ-SCE-028, REQ-SCE-029, REQ-SCE-035 | SCE-G7, G10 |
+
+Regel aus v0.1.0, unveraendert: **Keine Stufe darf die Pruefung einer spaeteren
+Stufe ersetzen. Eine gueltige Compilierung ist kein Ausfuehrungsrecht.**
+
+## 6. Normative Objekte
 
 Der Vertrag definiert acht Objekte. Jedes hat genau eine kodierte Form und genau
 eine Version.
@@ -86,7 +149,7 @@ eine Version.
 8. **BlockExecution** (`SCE-BLOCK`): Belegliste, Zustandswurzel vorher/nachher,
    Aufnahmeverweis, Gasabrechnung je Transaktion.
 
-## 5. Anforderungen
+## 7. Anforderungen
 
 ### 5.1 Ein Format (D1)
 
@@ -199,7 +262,7 @@ eine Version.
 - **REQ-SCE-038:** Ein eingefrorener Standard wird nicht umgedeutet (ATC-STD-000
   §30). Abweichungen laufen ueber SCR.
 
-## 6. Entscheidungs-Slots
+## 8. Entscheidungs-Slots
 
 Dieser Vertrag ist absichtlich an sieben Stellen offen. Er ist erst ratifizierbar,
 wenn alle sieben gefuellt sind.
@@ -216,7 +279,7 @@ wenn alle sieben gefuellt sind.
 
 Die Ausarbeitung liegt in `docs/decisions/AD-EXEC-D1-D7.md`.
 
-## 7. Freigabe-Gates
+## 9. Freigabe-Gates
 
 | Gate | Kriterium | Nachweisform |
 |---|---|---|
@@ -234,7 +297,52 @@ Die Ausarbeitung liegt in `docs/decisions/AD-EXEC-D1-D7.md`.
 Kein Gate gilt als erfuellt durch lokale Tests allein. Jede Zeile braucht die
 Evidenzstufe, die in Abschnitt 10 verlangt ist.
 
-## 8. Was ausdruecklich verboten bleibt
+## 10. Blocker aus v0.1.0: `require` ist heute wirkungslos
+
+Belegt am 08.11.2026: Ein Vertrag mit `require(x == 0)` bei x=7 erzeugt acht
+Operationen ohne Pruefinstruktion und laeuft auf PASS (Exit 0).
+
+Ursache: Der eingefrorene Opcode-Satz ATC-BC-001 kennt keinen Assert- oder
+Revert-Op. `require` wird beim Lowering still verworfen. Damit ist jede
+Vertragsinvariante, die nur in einem `require` steht, ungeschuetzt.
+
+Konsequenz fuer diesen Standard: SCX-003 bis SCX-008 sind nicht erfuellbar,
+solange Bedingungen nicht als Bytecode existieren. Ein Smart-Contract-Standard
+darf `require` deshalb erst normieren, wenn ATCB-v2 entschieden ist.
+
+Optionen (Entscheidung Owner):
+- A) ATCB-v2 fuehrt ASSERT und REVERT ein, versioniert, mit Verifier-Gate.
+- B) `require` wird auf JumpIfNotZero plus Abbruchpfad abgebildet, ohne neues
+  Op; Nachteil: kein Revert-Grund, kein sauberer Speicher-Rollback.
+Empfehlung: A, weil ohne Revert-Semantik atomare Transfers nicht sicher sind.
+
+**Stand 12.11.2026:** Der Blocker besteht unveraendert. Er ist im Audit vom
+11.11.2026 als Befund IV-12 gefuehrt und bleibt Voraussetzung fuer SCE-D2 Stufe 2
+(Call zwischen Vertraegen). Die dort genannte Empfehlung A (ATCB-v2 mit ASSERT und
+REVERT) entspricht `standards/atc/candidates/ATC-BC-002-CANDIDATE.md`.
+
+## 11. Determinismus (SCX-007)
+
+Zwei Validatoren mit gleichem Ausgangszustand und gleicher Transaktion
+erzeugen identisches Ergebnis, identisches Gas, identische Events und
+identisches Fehlerverhalten. Verboten in der Ausfuehrung: Systemzeit,
+Zufall, Netzwerk, Dateisystem, Umgebungsvariablen, Iterationsreihenfolge
+nicht deterministischer Strukturen.
+
+Ergaenzt durch REQ-SCE-032 bis REQ-SCE-035 (Arithmetik je Generation,
+Ressourcengrenzen, Reproduzierbarkeit von Status, Rueckgabe, Verbrauch und Wurzel).
+
+## 12. Kanonische Kodierung und ABI (aus v0.1.0)
+
+- Jede signierte Nutzlast traegt Domain-Praefix und Laengenfelder.
+- ABI ist versioniert; Aufrufe nennen Version und Funktionsauswahl explizit.
+- Die Blockchain uebernimmt keine vom Client behaupteten Ergebnisse.
+- Gas wird von der VM berechnet, nie vom Aufrufer geliefert.
+
+Ergaenzt durch REQ-SCE-008 bis REQ-SCE-012 (Selektor, Calldata, Rueckgabe,
+Adresse, Grenzen).
+
+## 13. Was ausdruecklich verboten bleibt
 
 - Eine zweite VM.
 - Ein zweiter Compiler.
@@ -244,7 +352,7 @@ Evidenzstufe, die in Abschnitt 10 verlangt ist.
 - Ein "gruener" Testlauf, der als Integrationsnachweis ausgegeben wird, ohne dass
   ein Validator die Ausfuehrung geprueft hat.
 
-## 9. Verhaeltnis zu bestehenden Dokumenten
+## 14. Verhaeltnis zu bestehenden Dokumenten
 
 | Dokument | Verhaeltnis |
 |---|---|
@@ -256,7 +364,11 @@ Evidenzstufe, die in Abschnitt 10 verlangt ist.
 | ATC-14 | Determinismus- und Sicherheitsziele; der Wasm-Teil (ATC-21) steht in Spannung zur Stack-Maschine und braucht eine eigene SCR |
 | ATC-STD-000 | Verfassung: Freigabe nach §9, Immutabilitaet nach §30 |
 
-## 10. Evidenzstufen
+## 15. Evidenz je Stufe
+
+Jeder Pruefpunkt braucht Test plus Nachweis, sonst bleibt er unter der
+Statusleiter. Reihenfolge: IMPLEMENTED, TESTED, CI_VERIFIED, E2E_VERIFIED,
+VERIFIED. Nicht nachgewiesen bleibt BLOCKED.
 
 | Stufe | Bedeutung |
 |---|---|
@@ -270,7 +382,7 @@ Evidenzstufe, die in Abschnitt 10 verlangt ist.
 Der heutige Stand der Kette erreicht IMPLEMENTED auf Teilen, TESTED lokal, und in
 keinem Punkt CI_VERIFIED oder E2E_VERIFIED.
 
-## 11. Pflicht-Testmatrix (verbindlich bei Implementierung)
+## 16. Pflicht-Testmatrix (verbindlich bei Implementierung)
 
 | # | Fall | Erwartung |
 |---|---|---|
@@ -295,13 +407,21 @@ keinem Punkt CI_VERIFIED oder E2E_VERIFIED.
 | T-19 | Vertrag im Kettenziel nicht abbildbar | Ablehnung beim Deployment, nicht still |
 | T-20 | Messung: gleiche Wurzel ueber zwei Laeufe mit verschiedenen Prozessen | identisch |
 
-## 12. Offene Punkte, die die Ratifizierung blockieren
+## 17. Offene Entscheidungen vor Ratifizierung
 
-1. Die sieben Entscheidungs-Slots aus Abschnitt 6.
-2. Zahlen fuer Gas und Gebuehren.
-3. Verhaeltnis zur Wasm-Forderung aus ATC-14 / ATC-21 (Standardkonflikt K-11).
-4. Kontofuehrung, ohne die REQ-SCE-025 nicht erfuellbar ist.
-5. Nachweis, dass die Aufnahme (ATC-SEC-EXEC-001) auch im Kettenpfad greift.
+1. ATCB-v2: ASSERT/REVERT einfuehren (Empfehlung) oder Abbildung ohne neues Op.
+2. Revert-Semantik: Speicher-Rollback je Rahmen oder je Transaktion.
+3. Storage-Modell: Maps als VM-Primitive oder Contract-seitig ueber Slot-Rechnung.
+4. ABI-Kodierung: eigene kanonische Form oder etabliertes Format.
+5. Gas-Modell: feste Op-Preise oder Tabelle mit Versionsbindung.
 
-Bis dahin gilt: dieser Vertrag ist ein Entwurf, der die Arbeit ordnet. Er ist
-kein Freibrief, und er ist kein Nachweis.
+**Zusaetzlich aus dem Integrationsteil (12.11.2026):**
+
+6. Die sieben Entscheidungs-Slots aus Abschnitt 8 (D1, D7, D2, D3, D6, D4, D5).
+7. Zahlen fuer Gas und Gebuehren.
+8. Verhaeltnis zur Wasm-Forderung aus ATC-14 / ATC-21 (Standardkonflikt K-11).
+9. Kontofuehrung, ohne die REQ-SCE-025 nicht erfuellbar ist.
+10. Nachweis, dass die Aufnahme (ATC-SEC-EXEC-001) auch im Kettenpfad greift.
+
+Bis dahin gilt: dieser Vertrag ordnet die Arbeit. Er ist kein Freibrief und kein
+Nachweis.
