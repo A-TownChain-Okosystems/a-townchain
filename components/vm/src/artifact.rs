@@ -228,7 +228,7 @@ fn ist_v2_opcode(code: u8) -> bool {
     (0x11..=0x13).contains(&code)
 }
 
-fn schreibe_op(buf: &mut Vec<u8>, op: &Op) {
+pub(crate) fn schreibe_op(buf: &mut Vec<u8>, op: &Op) {
     buf.push(opcode(op));
     match op {
         Op::Push(v) => buf.extend_from_slice(&v.to_le_bytes()),
@@ -241,8 +241,85 @@ fn schreibe_op(buf: &mut Vec<u8>, op: &Op) {
     }
 }
 
+/// Strukturfehler eines Stroms, unabhaengig von der Huelle.
+///
+/// Diese Codes sind fuer `ATCB` und `ATCE` identisch; sie werden von **einer**
+/// Prozedur erzeugt (`dekodiere_strom`), damit Opcode-Tabelle und Stromregeln
+/// nicht doppelt existieren. Jede Huelle bildet sie auf ihren eigenen Fehlertyp ab.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum StromFehler {
+    UnknownOpcode {
+        opcode: u8,
+        offset: usize,
+    },
+    GenerationMismatch {
+        opcode: u8,
+        generation: u8,
+        offset: usize,
+    },
+    TruncatedOperand {
+        offset: usize,
+    },
+    CountMismatch {
+        offset: usize,
+    },
+    TrailingBytes {
+        offset: usize,
+    },
+    EmptyStream {
+        offset: usize,
+    },
+}
+
+impl StromFehler {
+    pub(crate) fn code(&self) -> &'static str {
+        match self {
+            StromFehler::UnknownOpcode { .. } => "E-010",
+            StromFehler::GenerationMismatch { .. } => "E-011",
+            StromFehler::TruncatedOperand { .. } => "E-002",
+            StromFehler::CountMismatch { .. } => "E-005",
+            StromFehler::TrailingBytes { .. } => "E-008",
+            StromFehler::EmptyStream { .. } => "E-004",
+        }
+    }
+
+    pub(crate) fn offset(&self) -> usize {
+        match self {
+            StromFehler::UnknownOpcode { offset, .. }
+            | StromFehler::GenerationMismatch { offset, .. }
+            | StromFehler::TruncatedOperand { offset }
+            | StromFehler::CountMismatch { offset }
+            | StromFehler::TrailingBytes { offset }
+            | StromFehler::EmptyStream { offset } => *offset,
+        }
+    }
+}
+
+impl From<StromFehler> for ArtifactError {
+    fn from(f: StromFehler) -> Self {
+        match f {
+            StromFehler::UnknownOpcode { opcode, offset } => {
+                ArtifactError::UnknownOpcode { opcode, offset }
+            }
+            StromFehler::GenerationMismatch {
+                opcode,
+                generation,
+                offset,
+            } => ArtifactError::GenerationMismatch {
+                opcode,
+                generation,
+                offset,
+            },
+            StromFehler::TruncatedOperand { offset } => ArtifactError::TruncatedOperand { offset },
+            StromFehler::CountMismatch { offset } => ArtifactError::CountMismatch { offset },
+            StromFehler::TrailingBytes { offset } => ArtifactError::TrailingBytes { offset },
+            StromFehler::EmptyStream { offset } => ArtifactError::EmptyStream { offset },
+        }
+    }
+}
+
 /// Operandenbreite je Opcode (ATC-BC-002 §16). `None` = unbekannter Opcode.
-fn operandenbreite(code: u8) -> Option<usize> {
+pub(crate) fn operandenbreite(code: u8) -> Option<usize> {
     Some(match code {
         0x01 => 8, // Push(u64)
         0x02 | 0x03 | 0x04 | 0x05 | 0x06 | 0x07 | 0x08 | 0x09 | 0x0C | 0x10 | 0x11 | 0x13 => 0,
@@ -252,25 +329,29 @@ fn operandenbreite(code: u8) -> Option<usize> {
 }
 
 /// Dekodiert genau eine Instruktion. `tail_start` ist die einzige Stromgrenze.
-fn dekodiere_op(rumpf: &[u8], pos: &mut usize, generation: u8) -> Result<Op, ArtifactError> {
+pub(crate) fn dekodiere_op(
+    rumpf: &[u8],
+    pos: &mut usize,
+    generation: u8,
+) -> Result<Op, StromFehler> {
     let tail_start = rumpf.len();
     let start = *pos;
     let code = rumpf[start];
     let Some(breite) = operandenbreite(code) else {
-        return Err(ArtifactError::UnknownOpcode {
+        return Err(StromFehler::UnknownOpcode {
             opcode: code,
             offset: start,
         });
     };
     if ist_v2_opcode(code) && generation != GENERATION_V2 {
-        return Err(ArtifactError::GenerationMismatch {
+        return Err(StromFehler::GenerationMismatch {
             opcode: code,
             generation,
             offset: start,
         });
     }
     if start + 1 + breite > tail_start {
-        return Err(ArtifactError::TruncatedOperand { offset: tail_start });
+        return Err(StromFehler::TruncatedOperand { offset: tail_start });
     }
     let operand = &rumpf[start + 1..start + 1 + breite];
     *pos = start + 1 + breite;
@@ -313,12 +394,42 @@ fn dekodiere_op(rumpf: &[u8], pos: &mut usize, generation: u8) -> Result<Op, Art
         }
         0x13 => Op::RevertIf,
         other => {
-            return Err(ArtifactError::UnknownOpcode {
+            return Err(StromFehler::UnknownOpcode {
                 opcode: other,
                 offset: start,
             })
         }
     })
+}
+
+/// Stufen 5 bis 8 fuer jeden Container: Strom dekodieren, Anzahl pruefen,
+/// ueberzaehlige Bytes und leerer Strom. `rumpf` ist der Container **ohne** Tail,
+/// `declared` die deklarierte Anzahl. Die Stromgrenze ist `rumpf.len()`.
+///
+/// Genau eine Implementierung fuer `ATCB` und `ATCE`; dadurch koennen die beiden
+/// Hüllen die Stromregeln nicht auseinanderlaufen lassen.
+pub(crate) fn dekodiere_strom(
+    rumpf: &[u8],
+    declared: usize,
+    generation: u8,
+) -> Result<Vec<Op>, StromFehler> {
+    let tail_start = rumpf.len();
+    let mut program: Vec<Op> =
+        Vec::with_capacity(declared.min(tail_start.saturating_sub(HEAD_LEN)));
+    let mut pos = HEAD_LEN;
+    while program.len() < declared && pos < tail_start {
+        program.push(dekodiere_op(rumpf, &mut pos, generation)?);
+    }
+    if program.len() < declared {
+        return Err(StromFehler::CountMismatch { offset: tail_start });
+    }
+    if pos < tail_start {
+        return Err(StromFehler::TrailingBytes { offset: pos });
+    }
+    if program.is_empty() {
+        return Err(StromFehler::EmptyStream { offset: HEAD_LEN });
+    }
+    Ok(program)
 }
 
 // --- Artefakt ---------------------------------------------------------------
@@ -431,21 +542,8 @@ impl Artifact {
         let tail_start = rumpf.len();
         let declared = u32::from_le_bytes([bytes[6], bytes[7], bytes[8], bytes[9]]) as usize;
 
-        // Stufen 5..8: ein Durchlauf. Keine Vorabreservierung ueber `c`.
-        let mut program: Vec<Op> = Vec::with_capacity(declared.min(tail_start - HEAD_LEN));
-        let mut pos = HEAD_LEN;
-        while program.len() < declared && pos < tail_start {
-            program.push(dekodiere_op(rumpf, &mut pos, generation)?);
-        }
-        if program.len() < declared {
-            return Err(ArtifactError::CountMismatch { offset: tail_start });
-        }
-        if pos < tail_start {
-            return Err(ArtifactError::TrailingBytes { offset: pos });
-        }
-        if program.is_empty() {
-            return Err(ArtifactError::EmptyStream { offset: HEAD_LEN });
-        }
+        // Stufen 5..8: gemeinsame Stromprozedur, keine Vorabreservierung ueber `c`.
+        let program = dekodiere_strom(rumpf, declared, generation)?;
 
         // Stufe 9: Integritaet nach der Struktur.
         if sha256_daten(rumpf) != bytes[tail_start..] {
