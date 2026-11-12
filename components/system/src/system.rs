@@ -60,6 +60,8 @@ pub enum SystemError {
     /// Die aeussere Artefakt-Huelle `ATCE` wurde abgelehnt; die Identitaet ist
     /// das Paar `(Code, Offset)` aus der geschlossenen Liste `E-001` bis `E-012`.
     Container(EnvelopeError),
+    /// Die Block-Payload wurde abgelehnt; Identitaet `P-001` bis `P-003`.
+    BlockPayload(crate::block_payload::BlockPayloadError),
     Seal(SealError),
     Admission {
         code: Option<&'static str>,
@@ -77,6 +79,7 @@ impl SystemError {
             SystemError::Backend(_) => "backend",
             SystemError::Artifact(_) => "artifact",
             SystemError::Container(_) => "container",
+            SystemError::BlockPayload(_) => "block_payload",
             SystemError::Seal(_) => "seal",
             SystemError::Admission { .. } => "admission",
             SystemError::Vm(_) => "vm",
@@ -95,6 +98,7 @@ impl std::fmt::Display for SystemError {
             SystemError::Container(e) => {
                 write!(f, "Artefakthuelle: {} bei {}", e.code(), e.offset())
             }
+            SystemError::BlockPayload(e) => write!(f, "Block-Payload: {e}"),
             SystemError::Seal(e) => write!(f, "Freigabeschluessel: {e:?}"),
             SystemError::Admission { code, detail } => match code {
                 Some(code) => write!(f, "Freigabe abgelehnt ({code}): {detail}"),
