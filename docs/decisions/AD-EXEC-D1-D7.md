@@ -4,8 +4,50 @@
 **Stand:** `a-townchain` main `43b194c86`
 **Grundlage:** `docs/audits/ATCLANG-VM-CHAIN-INTEGRATION-2026-11-11.md` (Befunde IV-01 bis IV-13),
 `docs/audits/CONTRACT-EXECUTION-INVENTORY-2026-11-12.md` (Inventar, Konflikte K-01 bis K-12)
-**Status:** Vorschlag. Keine dieser Entscheidungen ist beschlossen. Jede Zeile
-"Empfehlung" ist eine begruendete Vorlage, keine Feststellung.
+**Status:** Die sieben Entscheidungen sind am 12.11.2026 vom Owner beantwortet
+worden: vier freigegeben (D1, D3, D5, D7), drei bedingt freigegeben (D2, D4, D6).
+Alle sieben stehen auf **DECIDED**. Numerische Gaspreise, Transaktions- und
+Blockgaslimit sowie die Implementierungs- und CI-Gates sind ausdruecklich **nicht**
+freigegeben; P2 bleibt gesperrt. Die Abschnitte "Empfehlung" bleiben als
+Begruendung stehen, sind aber nicht mehr die Vorlage, sondern die Herleitung der
+getroffenen Entscheidung.
+
+<!-- BEGIN DECISION-REGISTER (erzeugt aus docs/decisions/exec-decision-register.yaml, nicht von Hand aendern) -->
+
+**Entscheidungsregister** (Owner, 2026-11-12; Quelle: `docs/decisions/exec-decision-register.yaml`)
+
+| ID | Entscheidung (Titel) | Owner-Entscheidung | Spezifikation | Umsetzung | Gate |
+|---|---|---|---|---|---|---|
+| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | SPECIFIED | OPEN | SCE-G1 |
+| D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | SPECIFIED | OPEN | SCE-G3 |
+| D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | SPECIFIED | OPEN | SCE-G4 |
+| D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | SPECIFIED | OPEN | SCE-G6 |
+| D5 | Blockausfuehrung: deterministische Validator-Ausfuehrung | freigegeben | SPECIFIED | OPEN | SCE-G7 |
+| D6 | Identitaet: 32-Byte-Identitaetswort | bedingt freigegeben | SPECIFIED | OPEN | SCE-G5 |
+| D7 | Frontend: ATCLang kanonisch, .ops nur Testwerkzeug | freigegeben | SPECIFIED | OPEN | SCE-G2 |
+
+Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** (vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die Gates bleiben bis zum jeweiligen Nachweis offen.
+
+Offen und nicht Teil dieser Freigabe: Numerische Gaspreise (Messung je Instruktionsklasse und Vertragsbenchmark); Endgueltiges Transaktionsgaslimit; Endgueltiges Blockgaslimit; Implementierungs- und CI-Gates.
+
+<!-- END DECISION-REGISTER -->
+
+### Auflagen, die aus der Freigabe folgen
+
+| Entscheidung | Auflage | Umgesetzt in |
+|---|---|---|
+| D2 | Selektor, Wortgroesse, Encoding, Groessen, Adressableitung, atomare Rueckabwicklung | REQ-SCE-039 bis REQ-SCE-041, REQ-SCE-043 |
+| D4 | fuenf getrennte Gasfelder, Abrechnung unabhaengig vom Rollback, kein kostenloser Verbrauch | REQ-SCE-045 bis REQ-SCE-047 |
+| D6 | vier Nachweise zur Identitaet, keine Vertrauensluecke Wallet/Kette/VM | REQ-SCE-048, Gate SCE-G5 |
+| D5 | deterministische Reihenfolge, identische VM-Version, reproduzierbare Receipts | REQ-SCE-042, REQ-SCE-049, REQ-SCE-050 |
+| alle | VM-Versionierung, State-Rollback, Replay-Sicherheit | REQ-SCE-042 bis REQ-SCE-044 |
+
+### Was die Freigabe nicht bedeutet
+
+Eine getroffene Entscheidung ist noch keine Spezifikation und keine Umsetzung.
+Der Kandidat traegt die Auflagen jetzt als Anforderungen; bis zur Ratifizierung
+bleibt er Kandidat, und bis zum Nachweis bleibt jedes Gate offen. Der Zustand
+"IMPLEMENTED" ist fuer keine der sieben Entscheidungen erreicht.
 
 **Reihenfolge (technische Abhaengigkeit, nicht Beschluss):**
 D1 (Format) → D7 (Frontend) → D2 (Aufruf) → D3 (Speicher) → D6 (Identitaet) → D4 (Gas) → D5 (Block).
@@ -13,6 +55,8 @@ D1 (Format) → D7 (Frontend) → D2 (Aufruf) → D3 (Speicher) → D6 (Identita
 ---
 
 ## D1 — Welches Bytecodeformat ist das normative?
+
+**DECIDED — freigegeben (12.11.2026).** Eigene VM-Huelle, ATC-BC-001 unveraendert; Magic, eigene Versionskennung, festgelegte Byte-Reihenfolge, eindeutige Laengenangabe, kanonische Serialisierung, keine Aenderung am Transaktionsformat.
 
 **Ist-Stand.** `ATC-BC-001` ist `SPEC-FROZEN` und normativ seit 06.10.2026
 (`ai/atclang/specs/bytecode/SPEC.md`, SCR-0071); Referenzimplementierung ist
@@ -52,6 +96,8 @@ dasselbe Artefakt von Verifier und VM gelesen wird.
 
 ## D7 — Welches Frontend ist das kanonische?
 
+**DECIDED — freigegeben (12.11.2026).** ATCLang ist das einzige kanonische Frontend; `.ops` nur fuer interne Tests und Testfixtures, niemals als produktiver Bytecode-Eingang.
+
 **Ist-Stand.** Zwei Wege: ATCLang (`atc-core`, ATCA) und EXEC-GATE
 (`components/contracts/exec_chain`, `.atc` mit eigener Syntax, `assemble.py` zu
 `.ops`, ausgefuehrt von `atc-vm-runner --ops`). Nur der zweite Weg ist heute
@@ -82,6 +128,8 @@ Produktionspfad aus ATCLang entsteht.
 ---
 
 ## D2 — Wie wird ein Vertrag aufgerufen?
+
+**DECIDED — bedingt freigegeben (12.11.2026).** Auflagen: Selektor-Hashverfahren und Breite, Wortgroesse und Calldata-Encoding, maximale Rueckgabepuffergroesse, deterministische Vertragsadressableitung, atomare Rueckabwicklung fehlgeschlagener Transaktionen. Vertrag-zu-Vertrag-Aufrufe bleiben bis BC-002 gesperrt. Spezifiziert in REQ-SCE-039 bis REQ-SCE-041 sowie REQ-SCE-043.
 
 **Ist-Stand.** Es gibt keinen Aufruf. `Instruction::Call` wird abgelehnt
 (`components/system/src/backend.rs:156`), es gibt keine Calldata, keinen
@@ -127,6 +175,8 @@ existierenden Vertrag.
 
 ## D3 — Wie wird Zustand gehalten?
 
+**DECIDED — freigegeben (12.11.2026).** Lokale im Execution Frame, Persistenz ausschliesslich in S1-Slots, `layout_hash` je Vertragsversion pruefbar, Maps erst nach normierter Schluesselcodierung, Hashing und Storage-Proofs.
+
 **Ist-Stand.** Drei Modelle ohne Verbindung: Rahmen-lokale im Compiler,
 persistente Woerter in der VM (`Op::Load`/`Op::Store`, `components/vm/src/vm.rs:371-389`),
 ABI-Slots aus S1 (`atc-core/src/storage.rs`, 32 Byte, `LAYOUT_VERSION = 1`,
@@ -166,6 +216,8 @@ bricht die Ausfuehrung ab.
 
 ## D6 — Wie heisst der Aufrufer?
 
+**DECIDED — bedingt freigegeben (12.11.2026).** Nachweise noetig: DID und Kontoidentitaet nutzen dieselbe Ableitung; keine Identitaetseinschleusung ueber Transaktionsfelder; Signaturpruefung authentifiziert; interne Aufrufe bilden den unmittelbaren Aufrufer ab; keine Vertrauensluecke Wallet/Kette/VM. Siehe REQ-SCE-048 und Gate SCE-G5.
+
 **Ist-Stand.** Die VM kennt `caller: u64` (`components/system/src/system.rs:266`,
 `components/vm/src/vm.rs:58`). Die Kette kennt `ATC:`-Adressen, und die DID ist
 dieselbe Ableitung: `address_from_pubkey` = `ATC:` plus 20-Byte-Prefix von
@@ -196,6 +248,8 @@ aendert die aktuelle Adresse nicht, Aufruf ohne gueltige Bindung wird abgelehnt.
 ---
 
 ## D4 — Wie werden Gas und Gebuehren gerechnet?
+
+**DECIDED — bedingt freigegeben (12.11.2026).** Fuenf getrennte Felder `gas_limit`, `gas_used`, `gas_price`, `fee_charged`, `gas_refund`; Abrechnung unabhaengig vom Rollback; ein fehlgeschlagener Vertrag verbraucht Rechenzeit nicht kostenlos; keine Gebuehrenumgehung ueber Backend oder Loader. Zahlen bleiben offen (P1b). Siehe REQ-SCE-045 bis REQ-SCE-047.
 
 **Ist-Stand.** Vier Quellen ohne Verbindung: `GAS_TABLE_V1` mit 19 Befehlen
 (`components/vm/src/vm.rs:71-80`), `DEFAULT_GAS = 50_000`
@@ -230,6 +284,8 @@ identisch bei zwei Laeufen.
 ---
 
 ## D5 — Ist Ausfuehrung Teil der Blockgueltigkeit?
+
+**DECIDED — freigegeben (12.11.2026).** Ausfuehrung wird Bestandteil der Block-State-Transition, mit deterministischer Reihenfolge, identischer VM-Version, identischer Gasberechnung, atomaren Zustandsaenderungen, reproduzierbaren Receipts, verbindlicher State-Root-Berechnung und unabhaengigem Nachrechnen. Ein Hash ohne Ausfuehrungsnachweis reicht nicht.
 
 **Ist-Stand.** Nein. `components/node` hat keine VM-Abhaengigkeit
 (`Cargo.toml:9-10`), `TxType::Contract` hat null Konsumenten, die Block-Payload
@@ -284,3 +340,13 @@ D5 (Block) ← D2, D3, D4, D6, Aufnahme (SEC-EXEC-001)
 
 Kein Schritt beginnt vor der Entscheidung seines Vorgaengers. Das ist die
 Reihenfolge, nach der der Plan in `docs/EXECUTION-INTEGRATION-PLAN.md` gebaut ist.
+
+## Stand nach der Freigabe (12.11.2026)
+
+| Frage | Antwort |
+|---|---|
+| Sind D1 bis D7 entschieden? | Ja, alle sieben: DECIDED. Vier freigegeben, drei bedingt. |
+| Sind sie spezifiziert? | Die Auflagen stehen als Anforderungen im Kandidaten (REQ-SCE-039 bis REQ-SCE-050). Ratifiziert ist nichts. |
+| Sind sie umgesetzt? | Nein. Kein Gate ist erfuellt, CI_VERIFIED und E2E_VERIFIED sind offen. |
+| Was fehlt bis P2? | Die drei Zusatzanforderungen als Anforderungen (erledigt), die Konsistenz des Registers in beiden Dokumenten (erledigt, `tools/decision_register.py --check`), und die Zahlen aus P1b. |
+| Was ist ausdruecklich offen? | Numerische Gaspreise, Transaktionsgaslimit, Blockgaslimit, Implementierungs- und CI-Gates. |
