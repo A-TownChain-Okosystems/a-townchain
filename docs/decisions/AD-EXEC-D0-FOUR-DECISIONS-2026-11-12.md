@@ -162,9 +162,16 @@ Geprueft gegen `registry/standards.yaml` in `atc-standards` (Stand 12.11.2026).
 | ATC-STD-204 (Dependency & Interface) | approved 1.0.0 | Abhaengigkeiten der drei Schichten | kein Widerspruch; Huelle/VM sind getrennte Schichten ohne Zusatzabhaengigkeit |
 | ATC-STD-203 (Repository Security & Release) | approved 1.0.1 | Evidence-Pflichten | kein Widerspruch |
 
+**Nachtrag 12.11.2026.** Der Kandidat fuehrt seit der Owner-Entscheidung die
+Standardidentitaet **`ATC-STD-410`** (Familie 400 SECURITY, `reserved`, nicht
+normativ); `ATC-SEC-EXEC-001` ist nur noch historische Entwurfskennung. Die
+Reservierung ist **keine** Freigabe: technische, Sicherheits- und
+Architektur-Review sowie Owner-Approval stehen aus, die Familien-Verkabelung ist
+offen ([Befund](../audits/GOVERNANCE-FINDING-FAMILY-400-2026-11-12.md)).
+
 **Befund (Governance).** Die Dokumente, auf die sich D0 inhaltlich stuetzt —
-`ATC-SEC-EXEC-001`, `ATC-BC-001`, `ATC-BC-002` — sind **keine Eintraege** in
-`registry/standards.yaml`. Sie existieren als Spezifikation/Kandidat in
+`ATC-STD-410` (vormals `ATC-SEC-EXEC-001`), `ATC-BC-001`, `ATC-BC-002` — sind
+**keine normativen Eintraege** in `registry/standards.yaml`. Sie existieren als Spezifikation/Kandidat in
 `a-townchain`, sind also nicht normativ registriert. Folge: D0 ist intern
 verbindlich, aber nicht gegen einen registrierten Standard durchsetzbar, und
 "normativ festschreiben" heisst heute: **Entscheidung**, nicht **Standard**.
