@@ -29,14 +29,14 @@ aktualisiert, wenn eine der drei Voraussetzungen eintritt:
 | `FAILED` | 0 |
 | `BLOCKED` | 1 |
 | `EMPTY` | 0 |
-| `OPEN` | 45 |
-| **Summe** | **47** |
+| `OPEN` | 47 |
+| **Summe** | **48** |
 
 Kein Test ist `TESTED`. P1a ist offen, P2 ist gesperrt, eine Produktionsfreigabe ist
 nicht erteilt. Der Status `OPEN` heisst: es fehlt die Entscheidung, nicht nur die
 Ausfuehrung.
 
-Neun Tests (S1-T-39 bis S1-T-47) sind am 12.11.2026 mit §19 des Kandidaten
+Zehn Tests (S1-T-39 bis S1-T-48) sind am 12.11.2026 mit §19 des Kandidaten
 hinzugekommen: Parser-Fehlersemantik, Tail-Integritaet, Versionsisolation und
 Differentialtest. Sie erweitern die Matrix, ohne einen Befund zu aendern.
 
@@ -91,6 +91,7 @@ Differentialtest. Sie erweitern die Matrix, ohne einen Befund zu aendern.
 | S1-T-45 | Altcontainer `ATCB` + `0x01` ergibt `E-007` (Magic vor Version), nicht `E-003` | S1-1 | `OPEN` | Code-Test |
 | S1-T-46 | Unbekannte Versionen `0x03` und `0xFF` bei Magic `ATCE` ergeben `E-003`, ohne spekulatives Parsen | S1-1 | `OPEN` | Code-Test |
 | S1-T-47 | Opcodes `0x11` bis `0x13` bei Generation `0x01` ergeben `E-011`; Generation `0x03` ergibt `E-009` | S1-1 | `OPEN` | Code-Test |
+| S1-T-48 | Korpusauswahl: nur vollstaendige Container sind Parser-Eingaben; GV-5 erscheint ausschliesslich als C-3-Ablehnungsfall (`E-007`, Offset `0`) | S1-1 | `OPEN` | Reviewtest |
 
 ## 3.1 Wirkung der Ratifikation auf den Nachweisstand
 
@@ -130,6 +131,11 @@ Der Sollwert ist ohne Projektcode pruefbar: `python3 tools/check_stage1_vectors.
 liest die Vektoren aus dem Dokument und rechnet sie mit reinem SHA-256 nach. Damit
 ist die Spezifikation gegen sich selbst pruefbar, aber **kein** Test gegen eine
 Implementierung: die Matrix bleibt unveraendert, weil kein Test ausgefuehrt wurde.
+
+**Korpusgrenze (12.11.2026).** Nur GV-1, GV-3 und GV-7 beschreiben vollstaendige
+Container und taugen als Parser-Eingaben; GV-5 ist Altformat und gehoert als
+Ablehnungsfall nach C-3; GV-2, GV-4, GV-6, GV-8 und GV-9 sind Hash-Eingaben ohne
+Container. Test S1-T-48 haelt das fest.
 
 Was weiterhin fehlt, ist ausdruecklich kein Spezifikationsrest: L1 braucht einen
 reinen Dekoder (S1-T-18), und die Aufrufarchitektur B-1 ist nicht entschieden.
