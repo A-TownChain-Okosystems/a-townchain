@@ -61,11 +61,13 @@ stellen.
 | D1 | SCX-003 und SCE-ARTIFACT verwenden dieselbe Formatdefinition; `ATCB` ist nicht das Magic des VM-Containers | erledigt | Kandidat §5, Klarstellung zu SCX-003 |
 | D1 | Magic der Huelle bestaetigt (`ATCE` oder anderer Name) | **offen** | Vorschlag im Kandidaten |
 | D2 | 8 192 Byte Calldata, 4 096 Byte Rueckgabe, Tiefe 8 ausdruecklich bestaetigen oder ersetzen | **offen** | Begruendung in REQ-SCE-040, Grenzwerttests T-21 bis T-24 |
-| D2 | Adressableitung inklusive Bytebreiten, Serialisierung und Code-Hash eindeutig; Kollisionsbehandlung geregelt | erledigt | REQ-SCE-041, Tabelle 76 Byte, T-27 |
+| D2 | Adressableitung inklusive Bytebreiten, Serialisierung und Code-Hash eindeutig; Kollisionsbehandlung geregelt | erledigt: Domain 15 Byte, Eingabe 75 Byte, Laengenpruefung Pflicht | REQ-SCE-041, T-27, T-41 |
 | D2 | Kanonisierung der Signatur eindeutig, inklusive Parametertypen und verschachtelter Typen | erledigt | REQ-SCE-039, T-25, T-26 |
-| D4 | Fehlerklassen und Erstattungsregel unterscheiden | Klassen erledigt, Regel **offen** | REQ-SCE-047, REQ-SCE-054, T-28, T-29 |
+| D4 | Fehlerklassen und Erstattungsregel unterscheiden | vier Klassen erledigt, Erstattungsregel **offen** (Formeln als Vorschlag) | REQ-SCE-047, REQ-SCE-054, REQ-SCE-060, T-28, T-29, T-40 |
 | D4 | Einheiten von `gas_refund` und Geldbetrag getrennt | erledigt | REQ-SCE-055 |
 | D6 | `origin`, `caller` und Vertragsidentitaet getrennt definiert | erledigt | REQ-SCE-051 bis REQ-SCE-053 |
+| D6 | `IdentityValue` mit kanonischem Layout, Typkennzeichen, fail-closed, eine Implementierung | Layout erledigt, Testvektoren **offen** | REQ-SCE-057 bis REQ-SCE-059, T-31 bis T-39 |
+| D4 | Infrastrukturfehler als eigene Klasse, nicht als Revert oder Erschoepfung | erledigt | REQ-SCE-060, T-40 |
 | D6 | `caller`-Semantik bei Vertrag-zu-Vertrag mit ATC-BC-002 abgestimmt | **offen** (haengt an BC-002) | REQ-SCE-052 |
 | D5 | Validator-Orchestrierung und VM-Ausfuehrungsverantwortung getrennt | erledigt | Matrix §4, REQ-SCE-056 |
 | Alle | Register-Generator und Konsistenzpruefung erfolgreich | erledigt | `tools/decision_register.py --check` PASS |
