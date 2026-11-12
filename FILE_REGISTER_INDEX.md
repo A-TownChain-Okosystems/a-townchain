@@ -1,22 +1,24 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-11 22:54 UTC+2 aus `origin/main` @ `a81217e4`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 08:08 UTC+2 aus `origin/main` @ `ed307b27`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11366 Dateien**
+**Total: 11369 Dateien**
 
-## docs (5082)
+## docs (5085)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
 - `docs/CONSENSUS.md`
 - `docs/ENGINEERING_AUDIT.md`
+- `docs/EXECUTION-INTEGRATION-PLAN.md`
 - `docs/MAINNET_READINESS.md`
 - `docs/MONOREPO_MIGRATION.md`
 - `docs/REPOSITORY_STANDARD.md`
 - `docs/SMART_CONTRACTS.md`
 - `docs/audits/ATCLANG-PARSER-REACH-2026-11-08.md`
 - `docs/audits/ATCLANG-VM-CHAIN-INTEGRATION-2026-11-11.md`
+- `docs/audits/CONTRACT-EXECUTION-INVENTORY-2026-11-12.md`
 - `docs/audits/CONTRACT-INTEGRITY-2026-11-08.md`
 - `docs/audits/EXEC-MAPPING-INVENTORY-2026-11-11.md`
 - `docs/audits/INTEGRATION-MATRIX-2026-11-09.md`
@@ -32,6 +34,7 @@
 - `docs/audits/ZERO-TRUST-CODE-EXECUTION-BASELINE-2026-11-09.md`
 - `docs/boot/2026-11-08-uefi-screen.png`
 - `docs/boot/BOOT-EVIDENCE.md`
+- `docs/decisions/AD-EXEC-D1-D7.md`
 - `docs/decisions/AD-EXEC-KERNEL-ENFORCEMENT.md`
 - `docs/decisions/VM-INTEGER-SEMANTICS-DRAFT.md`
 - `docs/demo/.atc/compliance.yaml`
