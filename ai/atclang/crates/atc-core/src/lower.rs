@@ -501,13 +501,39 @@ fn lower_user_function(
     finish_function(lowerer, f.name.clone(), f.params.len() as u16)
 }
 
-/// Lowered ein komplettes Programm: Entry + alle Funktionen, alles verifiziert.
-/// Sucht einen Vertrag in der Deklarationsliste (rekursiv, damit auch ein
-/// verschachtelter Vertrag nicht unbemerkt bleibt).
-fn find_contract<'a>(stmts: &'a [Stmt]) -> Option<(&'a str, &'a [Stmt])> {
+/// Sucht einen Vertrag in der Deklarationsliste. Steigt in Blockkoerper ab, damit
+/// auch ein verschachtelter Vertrag nicht unbemerkt bleibt.
+fn find_contract(stmts: &[Stmt]) -> Option<(&str, &[Stmt], &[String])> {
     for s in stmts {
-        if let Stmt::Contract { name, body, .. } = s {
-            return Some((name.as_str(), body.as_slice()));
+        match s {
+            Stmt::Contract { name, bases, body } => {
+                return Some((name.as_str(), body.as_slice(), bases.as_slice()));
+            }
+            Stmt::Fn(f) => {
+                if let Some(hit) = find_contract(&f.body) {
+                    return Some(hit);
+                }
+            }
+            Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                if let Some(hit) = find_contract(then_body) {
+                    return Some(hit);
+                }
+                if let Some(else_body) = else_body {
+                    if let Some(hit) = find_contract(else_body) {
+                        return Some(hit);
+                    }
+                }
+            }
+            Stmt::While { body, .. } | Stmt::For { body, .. } => {
+                if let Some(hit) = find_contract(body) {
+                    return Some(hit);
+                }
+            }
+            _ => {}
         }
     }
     None
@@ -531,20 +557,84 @@ fn contract_surface(body: &[Stmt]) -> (usize, usize, usize, usize) {
     (fns, states, events, other)
 }
 
-pub fn lower_program(prog: &Program) -> Result<CompiledProgram, LowerError> {
-    // E1 (Audit 2026-11-12, F1): Vertragsruempfe werden nicht zu Bytecode gesenkt.
-    // Sie duerfen deshalb NICHT uebersprungen werden: ein Vertrag, dessen Logik
-    // verworfen wird, ist kein ausfuehrbares Programm. Fail-closed, bevor irgendetwas
-    // gebaut wird (kein Ersatzprogramm, kein ConstI64(0)/Return als Platzhalter).
-    if let Some((name, body)) = find_contract(&prog.statements) {
-        let (fns, states, events, other) = contract_surface(body);
-        return Err(LowerError::new(format!(
-            "Vertrag '{name}' ist nicht ausfuehrbar: ATCLang senkt Vertragsruempfe nicht zu \
-             Bytecode ({fns} Funktionen, {states} Zustandsfelder, {events} Events, {other} weitere \
-             Deklarationen). Der Vertrag wird abgelehnt, statt ihn mit einem Ersatzprogramm \
-             anzunehmen (Compiler-Erfolg ist kein ausfuehrbarer Vertrag)"
-        )));
+/// Zaehlt `require`-Guards im Vertragsrumpf, auch innerhalb von Funktionskoerpern.
+fn contract_requires(stmts: &[Stmt]) -> usize {
+    let mut n = 0usize;
+    for s in stmts {
+        match s {
+            Stmt::Require { .. } => n += 1,
+            Stmt::Fn(f) => n += contract_requires(&f.body),
+            Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                n += contract_requires(then_body);
+                if let Some(else_body) = else_body {
+                    n += contract_requires(else_body);
+                }
+            }
+            Stmt::While { body, .. } | Stmt::For { body, .. } => {
+                n += contract_requires(body);
+            }
+            _ => {}
+        }
     }
+    n
+}
+
+/// E1 (Audit 2026-11-12, F1): Vertrags-Gate fuer das ausfuehrbare Subset.
+///
+/// Vertragsruempfe werden nicht zu Bytecode gesenkt. Sie duerfen deshalb NICHT
+/// uebersprungen werden: ein Vertrag, dessen Logik verworfen wird, ist kein
+/// ausfuehrbares Programm. Fail-closed, bevor irgendetwas gebaut wird (kein
+/// Ersatzprogramm, kein `ConstI64(0)`/`Return` als Platzhalter). Der Fehler nennt
+/// Vertrag, Basen, Funktionen, Zustandsfelder, Events und `require`-Guards und
+/// bleibt bis zum Aufrufer erhalten. `lower_program`, `atc run` und `atc check`
+/// verwenden dasselbe Gate, damit Pruef- und Ausfuehrungspfad nicht auseinander
+/// laufen (Compiler-Erfolg ist kein ausfuehrbarer Vertrag).
+pub fn executable_subset_gate(prog: &Program) -> Result<(), LowerError> {
+    let Some((name, body, bases)) = find_contract(&prog.statements) else {
+        return Ok(());
+    };
+    let (fns, states, events, other) = contract_surface(body);
+    let requires = contract_requires(body);
+    let bases_note = if bases.is_empty() {
+        String::new()
+    } else {
+        format!(", Basen: {}", bases.join(", "))
+    };
+    Err(LowerError::new(format!(
+        "Vertrag '{name}' ist nicht ausfuehrbar: ATCLang senkt Vertragsruempfe nicht zu \
+         Bytecode ({fns} Funktionen, {states} Zustandsfelder, {events} Events, {requires} \
+         require-Guards, {other} weitere Deklarationen{bases_note}). Der Vertrag wird \
+         abgelehnt, statt ihn mit einem Ersatzprogramm anzunehmen (Compiler-Erfolg ist \
+         kein ausfuehrbarer Vertrag)"
+    )))
+}
+
+/// E1: `atc run` braucht einen echten Einstiegspunkt. Eine Quelle ohne `fn main`
+/// ist kein ausfuehrbares Programm; vor dem Fix endete `atc run` fuer eine leere
+/// oder reine Deklarationsquelle mit Exit 0 und gab `0` aus.
+pub fn require_entry_point(prog: &Program) -> Result<(), LowerError> {
+    let has_main = prog.statements.iter().any(|s| {
+        matches!(s, Stmt::Fn(f) if f.name == ENTRY) || matches!(s, Stmt::Fn(f) if f.name == "main")
+    });
+    if has_main {
+        return Ok(());
+    }
+    Err(LowerError::new(
+        "kein Einstiegspunkt: die Quelle deklariert keine Funktion 'main'. ATCLang fuehrt \
+         nur Programme mit Entry-Point aus; eine reine Deklarationsquelle ist nicht \
+         ausfuehrbar (Compiler-Erfolg ist kein ausfuehrbarer Vertrag)"
+            .to_string(),
+    ))
+}
+
+/// Lowered ein komplettes Programm: Entry + alle Funktionen, alles verifiziert.
+pub fn lower_program(prog: &Program) -> Result<CompiledProgram, LowerError> {
+    // E1 (Audit 2026-11-12, F1): erst das Vertrags-Gate, dann Lowering.
+    executable_subset_gate(prog)?;
     // Funktionsindex-Tabelle: Index 0 reserviert fuer __main__.
     let mut fn_ids: HashMap<String, (u16, u16)> = HashMap::new();
     fn_ids.insert(ENTRY.to_string(), (0, 0));
