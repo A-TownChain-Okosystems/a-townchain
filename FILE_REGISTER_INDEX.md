@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 13:05 UTC+2 aus `origin/main` @ `6ddc8c93`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 13:15 UTC+2 aus `origin/main` @ `d9144f9e`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11389 Dateien**
+**Total: 11393 Dateien**
 
-## docs (5094)
+## docs (5095)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -38,6 +38,7 @@
 - `docs/boot/BOOT-EVIDENCE.md`
 - `docs/decisions/AD-EXEC-D1-D7.md`
 - `docs/decisions/AD-EXEC-KERNEL-ENFORCEMENT.md`
+- `docs/decisions/EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md`
 - `docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md`
@@ -8544,7 +8545,7 @@
 - `ecosystem/tools/validate_privacy_policy.py`
 - `ecosystem/tools/validate_runtime_symbol_registry.py`
 
-## components (891)
+## components (894)
 
 - `components/algorithm/.atc/compliance.yaml`
 - `components/algorithm/.atc/evidence/evidence.yaml`
@@ -9304,14 +9305,17 @@
 - `components/vm/src/artifact.rs`
 - `components/vm/src/assembler.rs`
 - `components/vm/src/context.rs`
+- `components/vm/src/envelope.rs`
 - `components/vm/src/lib.rs`
 - `components/vm/src/main.rs`
 - `components/vm/src/ops.rs`
 - `components/vm/src/vm.rs`
 - `components/vm/tests/.gitkeep`
 - `components/vm/tests/atcb_v2.rs`
+- `components/vm/tests/atce_corpus.rs`
 - `components/vm/tests/exec_chain_e2e.rs`
 - `components/vm/tests/gas_table_v1.rs`
+- `components/vm/tests/stage1_parser_corpus.rs`
 - `components/wallet/.atc/compliance.yaml`
 - `components/wallet/.atc/evidence/evidence.yaml`
 - `components/wallet/.atc/lifecycle.yaml`
