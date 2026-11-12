@@ -195,3 +195,79 @@ def test_chain_state_fehlt_wird_erkannt(data: dict) -> None:
     broken = copy.deepcopy(data)
     del broken["chain_state"]
     assert any("chain_state fehlt" in e for e in dr.validate_chain_state(broken))
+
+
+def gate(data: dict, gid: str) -> dict:
+    for item in data["chain_state"]["specification_gates"]:
+        if item["id"] == gid:
+            return item
+    raise AssertionError(f"{gid} fehlt im Register")
+
+
+def test_gates_haben_nachvollziehbare_eintrittstests(data: dict) -> None:
+    """Jedes Gate braucht mindestens drei Pruefungen mit eigener Kennung."""
+    for item in data["chain_state"]["specification_gates"]:
+        tests = item["entry_tests"]
+        assert len(tests) >= 3, item["id"]
+        ids = [t["id"] for t in tests]
+        assert len(ids) == len(set(ids)), item["id"]
+        for test in tests:
+            assert test["id"].startswith(f"{item['id']}-T-"), test["id"]
+            assert test["proves"], test["id"]
+
+
+def test_gate_ohne_nachweis_kann_nicht_geschlossen_werden(data: dict) -> None:
+    """Status SPECIFIED ohne Feld evidence ist ein Fehler, nicht ein Statuswort."""
+    mutated = copy.deepcopy(data)
+    gate(mutated, "B2-S1")["status"] = "SPECIFIED"
+    gate(mutated, "B2-S1")["evidence"] = None
+    errors = dr.validate_chain_state(mutated)
+    assert any("B2-S1" in e and "evidence" in e for e in errors), errors
+
+    mutated["chain_state"]["specification_gates"][0]["evidence"] = "docs/spec/beispiel.md"
+    assert not [e for e in dr.validate_chain_state(mutated) if "evidence" in e]
+
+
+def test_eintrittstest_mit_falschem_praefix_wird_erkannt(data: dict) -> None:
+    mutated = copy.deepcopy(data)
+    gate(mutated, "B2-S2")["entry_tests"][0]["id"] = "B2-S1-T-99"
+    errors = dr.validate_chain_state(mutated)
+    assert any("B2-S1-T-99" in e for e in errors), errors
+
+
+def test_doppelte_eintrittstest_id_wird_erkannt(data: dict) -> None:
+    mutated = copy.deepcopy(data)
+    erste = gate(mutated, "B2-S1")["entry_tests"][0]["id"]
+    gate(mutated, "B2-S2")["entry_tests"][0]["id"] = erste
+    errors = dr.validate_chain_state(mutated)
+    assert any("doppelte ID in entry_tests" in e for e in errors), errors
+
+
+def test_p1d_c_abnahmen_sind_vollstaendig(data: dict) -> None:
+    """Die acht Abnahmen stehen im Register, auch state_root_before (C-T-08)."""
+    ids = [item["id"] for item in data["chain_state"]["p1d_c_entry"]]
+    assert ids == [f"C-T-{i:02d}" for i in range(1, 9)]
+    assert all(item["status"] == "OPEN" for item in data["chain_state"]["p1d_c_entry"])
+    assert all(item["requires"] for item in data["chain_state"]["p1d_c_entry"])
+
+
+def test_fehlende_abnahme_wird_erkannt(data: dict) -> None:
+    mutated = copy.deepcopy(data)
+    mutated["chain_state"]["p1d_c_entry"].pop()
+    errors = dr.validate_chain_state(mutated)
+    assert any("P1d-C-Abnahmetests" in e for e in errors), errors
+
+
+def test_gates_werden_gerendert(data: dict) -> None:
+    block = dr.render_gates(data)
+    assert block.startswith(dr.G_BEGIN)
+    assert block.endswith(dr.G_END)
+    for item in data["chain_state"]["specification_gates"]:
+        assert f"### {item['id']} " in block
+        for test in item["entry_tests"]:
+            assert test["id"] in block
+    assert "C-T-08" in block
+
+
+def test_gate_block_ist_im_dokument_gerendert(data: dict) -> None:
+    assert dr.apply(dr.GATES_DOC, dr.render_gates(data), False, dr.G_BEGIN, dr.G_END)
