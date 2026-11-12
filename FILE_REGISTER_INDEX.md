@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 18:16 UTC+2 aus `origin/main` @ `47a807a`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 18:24 UTC+2 aus `origin/main` @ `99fdb101`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11422 Dateien**
+**Total: 11423 Dateien**
 
-## docs (5108)
+## docs (5109)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -53,6 +53,7 @@
 - `docs/decisions/EXEC-P1D-A-PARALLEL-GOSSIP-2026-11-12.md`
 - `docs/decisions/EXEC-P1D-B-CHAIN-AUTHORITY-2026-11-12.md`
 - `docs/decisions/EXEC-P1D-B1-OWNERSHIP-INVENTORY-2026-11-12.md`
+- `docs/decisions/EXEC-P1D-B2-S1-S5-ENTRY-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-S1-2-ADMISSION-REGISTRY-F1.md`
 - `docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md`
 - `docs/decisions/EXEC-STAGE1-PARSER-EVIDENCE-2026-11-12.md`
