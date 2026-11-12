@@ -86,6 +86,13 @@ stellen.
 **Ausgang.** Alle Zeilen der Tabelle auf "erledigt" oder mit benanntem Eigentuemer
 und Termin. Erst dann ist P2 freigegeben.
 
+**Pruefstand der offenen Zeilen:** `docs/audits/EXEC-OPEN-POINTS-2026-11-12.md`
+(Punkt 1 bis 4 gegen ATC-BC-002 und die vorhandenen Vektoren, ohne Entscheidung).
+Zwei Befunde daraus betreffen den Plan unmittelbar: die Aufruftiefe 8 steht gegen
+die bereits entschiedene 64 aus ATC-BC-002, und die Kantentests T-21 bis T-24
+brauchen einen Aufrufmechanismus, den es noch nicht gibt (Zirkularitaet P1a/P2,
+Abschnitt 6.1 des Berichts).
+
 ## P1b — Messung und Zahlen
 
 **Arbeit.** Instruktionskosten je Klasse messen, nicht schaetzen. Dazu ein
