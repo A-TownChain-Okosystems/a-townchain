@@ -70,6 +70,19 @@ def validate(data: dict) -> list[str]:
     if sorted(ids) != sorted(expected):
         errors.append(f"erwartete IDs D1..D7, gefunden {sorted(ids)}")
 
+    sub_ids = set()
+    for dec in data["decisions"]:
+        for sub in dec.get("sub_gates") or []:
+            sid = sub.get("id", "?")
+            if sid in sub_ids:
+                errors.append(f"{sid}: doppelte ID in sub_gates")
+            sub_ids.add(sid)
+            for field in ("title", "owner", "goal", "status"):
+                if not sub.get(field):
+                    errors.append(f"{sid}: Feld '{field}' fehlt")
+            if sub.get("status") not in STATUS_VALUES:
+                errors.append(f"{sid}: status '{sub.get('status')}' ungueltig")
+
     seen = set()
     for st in data.get("stage1") or []:
         sid = st.get("id", "?")
@@ -113,6 +126,29 @@ def render(data: dict) -> str:
                 gate=dec["gate"],
             )
         )
+    sub_gates = [(dec["id"], sub) for dec in data["decisions"] for sub in (dec.get("sub_gates") or [])]
+    if sub_gates:
+        lines += [
+            "",
+            "**Teilauflagen** (getrennt implementierbar und testbar, je eigene Zustaendigkeit; "
+            "eine erfuellte Teilauflage hebt die naechste nicht auf)",
+            "",
+            "| ID | Teilauflage | Zustaendigkeit | Ziel | Status | offen, weil |",
+            "|---|---|---|---|---|---|",
+        ]
+        for parent, sub in sub_gates:
+            lines.append(
+                "| {id} | {title} | {owner} | {goal} | {status} | {because} |".format(
+                    id=sub["id"],
+                    title=sub["title"],
+                    owner=sub["owner"],
+                    goal=sub["goal"],
+                    status=sub["status"],
+                    because=sub.get("open_because", "-"),
+                )
+            )
+        lines.append("")
+
     lines += [
         "",
         "Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** "
