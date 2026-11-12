@@ -25,10 +25,11 @@ pending_globally:
 
 decisions:
   - id: D1
+    specified_in: "Kandidat §5.1 (nicht ratifiziert)"
     title: "Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert"
     decision_status: DECIDED
     decision: FREIGEGEBEN
-    specification_status: SPECIFIED
+    specification_status: OPEN
     implementation_status: OPEN
     gate: SCE-G1
     conditions:
@@ -41,10 +42,11 @@ decisions:
     open_items: []
 
   - id: D2
+    specified_in: "Kandidat §5.3, §5.10 (nicht ratifiziert)"
     title: "Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer"
     decision_status: DECIDED
     decision: BEDINGT_FREIGEGEBEN
-    specification_status: SPECIFIED
+    specification_status: OPEN
     implementation_status: OPEN
     gate: SCE-G3
     conditions:
@@ -58,10 +60,11 @@ decisions:
       - "Vertrag-zu-Vertrag-Aufruf (haengt an ATC-BC-002 Ratifizierung)"
 
   - id: D3
+    specified_in: "Kandidat §5.4 (nicht ratifiziert)"
     title: "Storage: Frame-lokal und persistente S1-Slots"
     decision_status: DECIDED
     decision: FREIGEGEBEN
-    specification_status: SPECIFIED
+    specification_status: OPEN
     implementation_status: OPEN
     gate: SCE-G4
     conditions:
@@ -73,10 +76,11 @@ decisions:
       - "Map-Schluesselcodierung und Storage-Proofs (eigene Normung)"
 
   - id: D4
+    specified_in: "Kandidat §5.6, §5.10 (nicht ratifiziert)"
     title: "Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung"
     decision_status: DECIDED
     decision: BEDINGT_FREIGEGEBEN
-    specification_status: SPECIFIED
+    specification_status: OPEN
     implementation_status: OPEN
     gate: SCE-G6
     conditions:
@@ -90,10 +94,11 @@ decisions:
       - "Transaktionsgaslimit, Blockgaslimit, Dynamik nach Auslastung"
 
   - id: D5
+    specified_in: "Kandidat §5.7, §5.10 (nicht ratifiziert)"
     title: "Blockausfuehrung: deterministische Validator-Ausfuehrung"
     decision_status: DECIDED
     decision: FREIGEGEBEN
-    specification_status: SPECIFIED
+    specification_status: OPEN
     implementation_status: OPEN
     gate: SCE-G7
     conditions:
@@ -107,10 +112,11 @@ decisions:
     open_items: []
 
   - id: D6
+    specified_in: "Kandidat §5.5, §5.10 (nicht ratifiziert)"
     title: "Identitaet: 32-Byte-Identitaetswort"
     decision_status: DECIDED
     decision: BEDINGT_FREIGEGEBEN
-    specification_status: SPECIFIED
+    specification_status: OPEN
     implementation_status: OPEN
     gate: SCE-G5
     conditions:
@@ -123,10 +129,11 @@ decisions:
       - "interne Aufrufe: erst nach BC-002 pruefbar"
 
   - id: D7
+    specified_in: "Kandidat §5.2 (nicht ratifiziert)"
     title: "Frontend: ATCLang kanonisch, .ops nur Testwerkzeug"
     decision_status: DECIDED
     decision: FREIGEGEBEN
-    specification_status: SPECIFIED
+    specification_status: OPEN
     implementation_status: OPEN
     gate: SCE-G2
     conditions:
