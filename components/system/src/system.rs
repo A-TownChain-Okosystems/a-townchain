@@ -288,7 +288,14 @@ impl System {
             revocation_status: Revocation::Active,
         };
         let signature = self.seal.sign_policy(&policy);
-        self.registry.insert(policy.clone());
+        if let Err(konflikt) = self.registry.register(policy.clone()) {
+            return Err(SystemError::Admission {
+                code: None,
+                detail: format!(
+                    "Policy-Konflikt, vorhandene Freigabe bleibt: {konflikt} (Code ADM-012 vorgesehen, bis zur normativen Registrierung ohne Fehleridentitaet)"
+                ),
+            });
+        }
 
         Ok(Deployment {
             code_hash,
@@ -343,7 +350,14 @@ impl System {
             revocation_status: Revocation::Active,
         };
         let signature = self.seal.sign_policy(&policy);
-        self.registry.insert(policy.clone());
+        if let Err(konflikt) = self.registry.register(policy.clone()) {
+            return Err(SystemError::Admission {
+                code: None,
+                detail: format!(
+                    "Policy-Konflikt, vorhandene Freigabe bleibt: {konflikt} (Code ADM-012 vorgesehen, bis zur normativen Registrierung ohne Fehleridentitaet)"
+                ),
+            });
+        }
 
         let _ = container_hash;
         Ok(Deployment {
