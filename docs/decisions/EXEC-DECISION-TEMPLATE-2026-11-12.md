@@ -203,6 +203,12 @@ Frame-Identitaet. **Entscheidungsreife: nein.**
 
 ## 4. Reihenfolge
 
+**Ausfuehrliche Fassung der Stufe 1:**
+`docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md` (S1-1 bis S1-4 mit Optionen,
+Folgen, Rueckwaertskompatibilitaet, Migrationsverfahren und Akzeptanztests).
+Die Stufe-1-Kennungen sind dort eigenstaendig, weil E-1 in dieser Vorlage die
+Aufruftiefe bezeichnet und die Identitaetsfrage nicht derselbe Gegenstand ist.
+
 ```
 Stufe 1 (heute entscheidbar)
   B-2 Magic und Hash-Namen      unabhaengig
