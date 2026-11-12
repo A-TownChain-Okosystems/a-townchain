@@ -5,7 +5,7 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.6.0-draft
+> **Version:** 1.7.0-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
@@ -26,6 +26,7 @@
 | 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
 | 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
 | 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
+| 1.7.0-draft | 2026-11-12 | Owner-Entscheidung: Container-Magic `ATCE`, Fassung `0x02`, `ATCB` bleibt der Strom (REQ-SCE-067, Widerspruch zu §5 und Audit IV-03 beseitigt). Zweiter Befund des Owners behoben: der angehaengte Integritaetsdigest war als SHA-256 ohne Domaene beschrieben und ist jetzt exakt `artifact_hash` (REQ-SCE-062), ohne Zirkel, weil der Tail nicht in die Eingabe eingeht. Neues Fehlerbild `ATC-SCE-E-007 UNKNOWN_MAGIC`, verbindliche Pruefreihenfolge Laenge/Magic/Version/Generation/Struktur/Tail. Sechs Vektoren neu berechnet: GV-1, GV-3, GV-5, GV-7, GV-9 (enthaelt GV-1) und NV-2; GV-2, GV-4, GV-6, GV-8 unveraendert. Keine Implementierungsfreigabe. |
 | 1.6.0-draft | 2026-11-12 | Spezifikation Stufe 1 byte-genau: drei Domaenenlabels mit abschliessendem Nullbyte (Laengen nachgezaehlt 16/14/13), Eingaben fuer `artifact_hash`, `code_hash` und `state_root` exakt, neun Goldvektoren und sechs Negativvektoren (mit reinem SHA-256-Werkzeug erzeugt), Containerfassung `0x02` mit Namensraumtrennung fuer das Magic, zwoelf Fehlercodes, getypte Policy-Schluesselraeume mit achtstufiger Pruefsequenz, Erstattungswortlaut samt Fall der kuenftigen Kontobelastung; REQ-SCE-061 bis 077, Testzuordnung in 18.6. Kein Test dadurch bestanden. |
 | 1.5.1-draft | 2026-11-12 | Nur Hinweise, keine Anforderung geaendert: Aufruftiefe 8 als offener Konflikt gegen die Owner-Entscheidung 64 in ATC-BC-002 markiert (R-901); Grenzwerte als heute nicht pruefbar gekennzeichnet, weil kein Aufruf existiert (R-902); Verweise auf Abhaengigkeitsinventur und Entscheidungsvorlage. |
 | 1.5.0-draft | 2026-11-12 | REQ-SCE-060 praezisiert: lokaler Knotenfehler und Konsensresultat strikt getrennt (kein Beleg, kein Blockstatus, keine Belastung, deterministische Wiederaufnahme); Reproduzierbarkeit entscheidet ueber die Einordnung. REQ-SCE-054 fuehrt zwei getrennte Code-Raeume (Beleg-Status `0x00` bis `0x03`, Knotenfehler `ATC-NODE-INFRA-001`). Testmatrix T-42 bis T-44. |
@@ -135,7 +136,7 @@ getrennte Dinge, die nicht denselben Namen tragen duerfen:
 | Ebene | Was | Kennung |
 |---|---|---|
 | Instruktionsstrom | Bytes nach ATC-BC-001, unveraendert, eingefroren | ATC-BC-001 |
-| Huelle | Verpackung des Stroms: eigenes Magic (Vorschlag `ATCE`), eigene Generation, Laenge, Layout-Hash, SHA-256 | SCE-ARTIFACT |
+| Huelle | Verpackung des Stroms: eigenes Magic `ATCE` (festgelegt 12.11.2026), eigene Generation, Laenge, Layout-Hash, SHA-256 | SCE-ARTIFACT |
 
 `ATCB` bezeichnet damit weiterhin ausschliesslich den eingefrorenen Strom. Ein
 Container mit demselben Magic und anderer Semantik ist untersagt; genau dieser
@@ -588,7 +589,7 @@ Offen und nicht Teil dieser Freigabe: Numerische Gaspreise (Messung je Instrukti
 | S1-3 | Erstattung: Grundsatz | A, ausschliesslich Gasrueckgabe | 2026-11-12 | `a63e41a93` | gas_refund in Gaseinheiten, kein Geldbetrag; ungenutztes Budget verfaellt, auch nach Einfuehrung einer Kontobelastung |
 | S1-4 | Testschichtung L1/L2/L3 | B, nur L1 zaehlt fuer P1a | 2026-11-12 | `a63e41a93` | L1 muss nicht ausfuehrbar sein, um zu zaehlen; L2 und L3 bleiben bis B-1 gesperrt; L1 ist heute EMPTY, P1a bleibt offen |
 
-Durch die Stufe-1-Ratifikation entfallen: B-2 Artefaktidentitaet im Identitaetsteil (R-903); die Frage des Container-Magic bleibt Auflage in D1; B-3 Verfahren (R-905): Schichtung entschieden, L2 und L3 bleiben bis B-1 gesperrt.
+Durch die Stufe-1-Ratifikation entfallen: B-2 Artefaktidentitaet im Identitaetsteil (R-903); Container-Magic am 12.11.2026 entschieden: ATCE fuer die Huelle; B-3 Verfahren (R-905): Schichtung entschieden, L2 und L3 bleiben bis B-1 gesperrt.
 
 Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard: der Kandidat bleibt Kandidat, P1a bleibt offen und P2 bleibt gesperrt.
 
@@ -798,10 +799,9 @@ aendert keine Anforderung.
 17. `caller`-Semantik bei Vertrag-zu-Vertrag mit ATC-BC-002 abstimmen (REQ-SCE-052).
 18. Eigenen Statuscode fuer Infrastrukturfehler vergeben (REQ-SCE-060); er darf nicht
     mit Revert oder Erschoepfung kollidieren.
-20. Containerfassung `0x02` und die Namensraumtrennung des Magic bestaetigen
-    (REQ-SCE-067). Die Spezifikation haelt `ATCB` als Byte-Konstante fest und
-    behandelt die Kollision mit `ATC-BC-001` als Namensgleichheit. Wird das Magic
-    anders entschieden, aendern sich GV-1, GV-3, GV-5, GV-7 und NV-2, sonst nichts.
+20. *(erledigt 12.11.2026)* Container-Magic: `ATCE` fuer die Huelle, `ATCB` bleibt
+    der Strom, Fassung `0x02` (REQ-SCE-067). Die Formatidentitaet ist das Tupel aus
+    Magic, Version und Struktur, nicht das Magic allein.
 19. Testvektoren fuer `IdentityValue` liegen als Datei vor
     (`standards/atc/conformance/identity-value-vectors.json`). Offen bleibt die
     Umsetzung gegen diese Datei: eine Implementierung fuer Wallet, VM und Knoten
@@ -871,22 +871,22 @@ Strom `010700000000000000012a00000000000000020b10` (21 Byte).
 
 | ID | Gegenstand | Eingabe (hex) | Sollwert |
 |---|---|---|---|
-| GV-1 | `artifact_hash`, P1, Generation 1, Fassung 2 | `4154432d41525449464143542d563100` + `4154434202010200000001010000000000000010` | `03ccdae71c4619975c6869491342bef27483f18462504eafc9bc10b24bc13137` |
+| GV-1 | `artifact_hash`, P1, Generation 1, Fassung 2 | `4154432d41525449464143542d563100` + `4154434502010200000001010000000000000010` | `02a62ba7bb1d81722fdf0e8eadd94c8637c37c95f82b794a3a93d63b76208a23` |
 | GV-2 | `code_hash`, P1 | `4154432d53545245414d2d563100` + `01010000000000000010` | `d7adc88fc2ceb21136df3397ec7d6bfff57a4f439088798f34ab3c8c3c546cdb` |
-| GV-3 | `artifact_hash`, P1, Generation 2 | `4154432d41525449464143542d563100` + `4154434202020200000001010000000000000010` | `e64cfc2bfb2ed0f7143670cafa4a5294b7247179aabcefe359130f11a7977481` |
+| GV-3 | `artifact_hash`, P1, Generation 2 | `4154432d41525449464143542d563100` + `4154434502020200000001010000000000000010` | `29790676ca4b93fa7c9d90880a432b82394ee7b86acad802dd76de0afbcabe44` |
 | GV-4 | `code_hash`, P1, Generation 2 | wie GV-2 | `d7adc88fc2ceb21136df3397ec7d6bfff57a4f439088798f34ab3c8c3c546cdb` (**gleich GV-2**) |
 | GV-5 | alte Fassung, ohne Praefix, Containerformat `0x01` | `4154434201010200000001010000000000000010` | `3f5bb373c995e6f92ff81722d28f7e5329e4ba670dad5bf962729670edd7484e` (**ueberholt**) |
 | GV-6 | `code_hash`, P2 | `4154432d53545245414d2d563100` + `010700000000000000012a00000000000000020b10` | `c829629e93d97b464b58a1a5004c7a17700f482a08fb34caae59a83ef39e30d8` |
-| GV-7 | `artifact_hash`, P2, Generation 1, Fassung 2 | `4154432d41525449464143542d563100` + `41544342020105000000` + P2-Strom | `c74a70ad245884eaccc591f0dfae31154a62f212a064bbb5683b9d7c31ab469a` |
+| GV-7 | `artifact_hash`, P2, Generation 1, Fassung 2 | `4154432d41525449464143542d563100` + `41544345020105000000` + P2-Strom | `79c1a77bb66101277cd1fe4d38d66b7c7fb11869a694fbc77771e8fc93caaa17` |
 | GV-8 | `state_root` V2, `code_hash` = GV-2, Woerter `[7, 42]` | `4154432d53544154452d563200` + GV-2 + `02000000` + `0700000000000000` + `2a00000000000000` | `c3cc531a91ce794025e1f584cc4d6e33dc1dea36accddd8a72cc6e20b26cc184` |
-| GV-9 | `state_root` V1 (alte Semantik), `artifact_hash` = GV-1 | `4154432d53544154452d563100` + GV-1 + `02000000` + `0700000000000000` + `2a00000000000000` | `8235d7bd9e9f2fb47d5bbebc62064c99cc5a9694486e05fc3d8b13d5954163a2` (**ueberholt**) |
+| GV-9 | `state_root` V1 (alte Semantik), `artifact_hash` = GV-1 | `4154432d53544154452d563100` + GV-1 + `02000000` + `0700000000000000` + `2a00000000000000` | `8116c0f71d1ada483836c3b33abd0c21c24a25a144f3bfb0dbb8c096d4f22d28` |
 
 **Negativvektoren.** Sie muessen ungleich sein, sonst ist die Trennung unwirksam:
 
 | ID | Pruefung | Sollwert |
 |---|---|---|
 | NV-1 | Strom mit Artefakt-Domaene gehasht | `4f67416a21680a0b2029b625904cf88850f43e00a46a0679069059bf57887810`, darf weder GV-1 noch GV-2 sein |
-| NV-2 | Container mit Strom-Domaene gehasht | `015d3bbd6858472c56e5c1a4899ebfc5eced615ae77cf493c86b73349b5db97a`, darf weder GV-1 noch GV-2 sein |
+| NV-2 | Container mit Strom-Domaene gehasht | `9408a5daea03a72a77e3a366a3289aa742795e7620dfc1b3ab8333747f08a583`, darf weder GV-1 noch GV-2 sein |
 | NV-3 | Label ohne Nullbyte (`ATC-STREAM-V1`) statt mit | Digest weicht von GV-2 ab; eine Implementierung ohne Nullbyte ist nicht konform |
 | NV-4 | leerer Strom | `ATC-SCE-E-004`, kein Digest |
 | NV-5 | `01` ohne 8-Byte-Operand | `ATC-SCE-E-002`, kein Digest |
@@ -919,25 +919,35 @@ unveraendert in den Feldern, geaendert in der Kennung:
 
 | Offset | Laenge | Inhalt |
 |---|---|---|
-| 0 | 4 | Magic `ATCB` (`41544342`) |
+| 0 | 4 | Magic `ATCE` (`41544345`) |
 | 4 | 1 | Containerformat `0x02` |
 | 5 | 1 | Generation `0x01` oder `0x02` |
 | 6 | 4 | Anzahl Instruktionen, u32 LE |
 | 10 | n | Instruktionsstrom |
-| 10+n | 32 | SHA-256 ueber Byte 0 bis 10+n-1 (**ohne** Domaene, siehe 18.1) |
+| 10+n | 32 | `artifact_hash` = SHA-256(`ATC-ARTIFACT-V1\0` ++ Byte 0 bis 10+n-1) |
+
+Der Tail ist **genau** der definierte `artifact_hash` aus REQ-SCE-062, kein zweiter
+Digest ohne Domaene. Es entsteht kein Zirkel, weil die Eingabe den Tail nicht
+enthaelt: gehasht wird Byte 0 bis 10+n-1, der Tail beginnt bei 10+n.
 
 Gesamtlaenge = `10 + n + 32`.
 
-**REQ-SCE-067 (Magic).** Die vier Bytes `ATCB` bleiben. Die Auflage aus D1 ist damit
-erfuellt, und zwar durch Namensraumtrennung statt durch Byteänderung: `ATCB` ist eine
-Byte-Konstante des Containers, `ATC-BC-001` und `ATC-BC-002` sind Dokumentkennungen
-des Instruktionsstroms. Es gibt keine Formatgleichheit, nur Namensgleichheit. Wird
-das Magic spaeter anders entschieden, aendern sich GV-1, GV-3, GV-5, GV-7 und NV-2,
-sonst nichts.
+**REQ-SCE-067 (Magic).** Das Container-Magic ist `ATCE` (`41544345`), **nicht**
+`ATCB` (Owner-Entscheidung 12.11.2026). Damit ist die Auflage aus D1 erfuellt und der
+Widerspruch zu §5 beseitigt: `ATCB` bleibt ausschliesslich die Kennung des
+eingefrorenen Instruktionsstroms, die Huelle traegt ihr eigenes Magic. Der Doppelkopf
+aus Audit-Befund IV-03 wird nicht wiederholt.
 
-**REQ-SCE-068 (Ablehnung).** Nur Fassung `0x02` wird angenommen. Fassung `0x01` wird
-abgelehnt mit `ATC-SCE-E-003 UNSUPPORTED_CONTAINER_VERSION`; es gibt keinen Fallback,
-keine Deutung als `0x02` und keine Umrechnung der Identitaet. Ebenso abgelehnt:
+Formatidentitaet ist immer das vollstaendige Tupel aus Magic, Formatversion und
+festgelegter Struktur. Kein Parser darf aus dem Magic allein auf Version oder Semantik
+schliessen. Die Pruefreihenfolge ist verbindlich: Laenge, dann Magic, dann Version,
+dann Generation, dann Struktur und Anzahl, dann Tail.
+
+**REQ-SCE-068 (Ablehnung).** Nur das Magic `ATCE` und nur Fassung `0x02` werden
+angenommen. Ein anderes Magic ergibt `ATC-SCE-E-007 UNKNOWN_MAGIC`, Fassung `0x01`
+oder jede andere Fassung `ATC-SCE-E-003 UNSUPPORTED_CONTAINER_VERSION`. Es gibt
+keinen Fallback, keine Deutung als `0x02`, keine Umrechnung der Identitaet und keine
+versionsabhaengige Interpretation vor der Versionspruefung. Ebenso abgelehnt:
 eine Anzahl, die nicht zur dekodierten Opzahl passt (`ATC-SCE-E-005 COUNT_MISMATCH`),
 und ein angehaengter Hash, der nicht zur Berechnung passt (`ATC-SCE-E-006
 INTEGRITY_MISMATCH`).
