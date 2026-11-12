@@ -61,11 +61,11 @@ resolved_by_ratification:
 decisions:
   - id: D1
     ratification: "nicht ratifiziert (Kandidat)"
-    specified_in: "Kandidat §5.1 (nicht ratifiziert)"
+    specified_in: "Kandidat §5.1 und §18.1-18.3 (nicht ratifiziert)"
     title: "Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert"
     decision_status: DECIDED
     decision: FREIGEGEBEN
-    specification_status: OPEN
+    specification_status: SPECIFIED
     implementation_status: OPEN
     gate: SCE-G1
     conditions:
