@@ -1,18 +1,18 @@
 # Stufe 1 — Nachverfolgung der Akzeptanztests
 
-**Status:** Nachverfolgung. Keine Ratifikation, keine Implementierung, keine
-Freigabe.
-**Datum:** 2026-11-12 · **Basis:** `a-townchain` main `45f9d9093`
+**Status:** Nachverfolgung. Ratifikation erfolgt am 12.11.2026, keine
+Implementierungs- oder Releasefreigabe.
+**Datum:** 2026-11-12 · **Basis der Ratifikation:** `a-townchain` main `a63e41a93`
 **Vorlage:** `docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md`
 **Register:** unveraendert (`docs/decisions/exec-decision-register.yaml`, Blob
 `9b76813663`)
 
 ## 1. Zweck und Grenze
 
-Der Owner hat am 12.11.2026 die Nachverfolgung der vier Stufe-1-Empfehlungen und
-ihrer Akzeptanzbedingungen bestaetigt, ausdruecklich **ohne** Ratifikation. Dieses
-Dokument fuehrt deshalb nur den Nachweisstand. Es entscheidet nichts, es aendert
-keine Anforderung und es erteilt keine Freigabe.
+Der Owner hat am 12.11.2026 die vier Optionen ratifiziert (Vermerk:
+`docs/decisions/EXEC-STAGE1-RATIFICATION-2026-11-12.md`) und die Nachverfolgung
+ihrer Akzeptanzbedingungen bestaetigt. Dieses Dokument fuehrt nur den Nachweisstand.
+Es aendert keine Anforderung, erteilt keine Freigabe und ersetzt keinen Test.
 
 Eine periodische Ueberwachung ist nicht eingerichtet. Dieses Dokument wird
 aktualisiert, wenn eine der drei Voraussetzungen eintritt:
@@ -78,6 +78,23 @@ Ausfuehrung.
 | S1-T-36 | Registry und Wurzel koennen die Hashes nicht verwechseln | S1-1/1b | `OPEN` | Code-Test |
 | S1-T-37 | flacher 32-Byte-Alt Schluessel wird nicht gedeutet, Start verweigert | S1-2 | `OPEN` | Code-Test |
 | S1-T-38 | S1-2 nur als Ganzes: Teilumsetzung besteht das Gate nicht | S1-2 | `OPEN` | Gate |
+
+## 3.1 Wirkung der Ratifikation auf den Nachweisstand
+
+Die Ratifikation beseitigt die **Entscheidungs**blockade, nicht die Umsetzungs- oder
+Freigabeblockade. Deshalb aendert sich in der Matrix kein Status:
+
+| Frage | vor der Ratifikation | nach der Ratifikation |
+|---|---|---|
+| Fehlt eine Option? | ja, bei S1-1 bis S1-4 | nein, alle vier entschieden |
+| Ist ein Test dadurch bestanden? | nein | nein |
+| Ist Implementierung freigegeben? | nein | nein |
+| Ist P1a abschliessbar? | nein | nein, L1 bleibt `EMPTY` bis der Dekoder existiert |
+| Ist P2 freigegeben? | nein | nein, B-1 unentschieden |
+
+Der Status `OPEN` bedeutet ab jetzt: die Entscheidung liegt vor, die Spezifikation
+und die Umsetzung nicht. Kein Test ist `TESTED`, und keiner darf als bestanden
+gemeldet werden, solange er nicht ausgefuehrt wurde.
 
 ## 4. Bereits belegte Befunde
 
