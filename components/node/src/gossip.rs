@@ -140,6 +140,17 @@ pub(crate) mod test_support {
 
     /// Nimmt jede Payload an — fuer Gossip-Tests, in denen es um Verkettung,
     /// Genesis-Bindung und Transport geht, nicht um Codeannahme.
+    pub struct NurDaten;
+    impl ContainerValidator for NurDaten {
+        fn validate_block_payload(&self, payload: &str) -> Result<(), PayloadRejection> {
+            if payload.starts_with("atcb:") || payload.starts_with("ATCB") {
+                Err(PayloadRejection::new("block_payload", "P-002"))
+            } else {
+                Ok(())
+            }
+        }
+    }
+
     pub struct Annehmen;
     impl ContainerValidator for Annehmen {
         fn validate_block_payload(&self, _payload: &str) -> Result<(), PayloadRejection> {
@@ -198,7 +209,7 @@ mod tests {
 
     #[test]
     fn sync_uebernimmt_laengere_kette() {
-        let g = Genesis::devnet();
+        let g = crate::bootstrap::Genesis::devnet();
         let mut a = Chain::from_genesis(&g);
         for p in ["tx-1", "tx-2", "tx-3"] {
             a.produce(p).expect("produce a");
@@ -217,7 +228,7 @@ mod tests {
 
     #[test]
     fn kuerzerer_peer_wird_nicht_adoptiert() {
-        let g = Genesis::devnet();
+        let g = crate::bootstrap::Genesis::devnet();
         let a = Chain::from_genesis(&g); // Hoehe 0
         let port = start_gossip(a);
         let mut b = Chain::from_genesis(&g);
@@ -257,7 +268,7 @@ mod tests {
         });
         warte_auf_dienst(port);
 
-        let g = Genesis::devnet();
+        let g = crate::bootstrap::Genesis::devnet();
         let mut b = Chain::from_genesis(&g);
         let ergebnis = sync_pull(&mut b, &format!("127.0.0.1:{}", port), Some(&crate::gossip::test_support::Annehmen));
         assert!(ergebnis.is_err(), "gefaelschte Kette muss abgelehnt werden");
@@ -273,7 +284,7 @@ mod tests {
         a.produce("fremde-tx").expect("produce a");
         let port = start_gossip(a);
 
-        let g = Genesis::devnet();
+        let g = crate::bootstrap::Genesis::devnet();
         let mut b = Chain::from_genesis(&g);
         let ergebnis = sync_pull(&mut b, &format!("127.0.0.1:{}", port), Some(&crate::gossip::test_support::Annehmen));
         assert!(ergebnis.is_err(), "abweichende Genesis muss abgelehnt werden");
@@ -282,8 +293,86 @@ mod tests {
 
     #[test]
     fn verbindungsfehler_ehrlich() {
-        let g = Genesis::devnet();
+        let g = crate::bootstrap::Genesis::devnet();
         let mut b = Chain::from_genesis(&g);
         assert!(sync_pull(&mut b, "127.0.0.1:1", Some(&crate::gossip::test_support::Annehmen)).is_err());
     }
 }
+
+    /// Ein Peer liefert eine strukturell einwandfreie Kette (Hashes, Hoehen,
+    /// Verkettung, Genesis) — aber mit einer Payload, die kein ausfuehrbarer
+    /// Container ist. Genau der frueher offene Weg (`*kette = kandidat`).
+    #[test]
+    fn manipulierter_peer_mit_gueltigen_hashes_wird_abgewiesen() {
+        use std::net::TcpListener;
+
+        let g = crate::bootstrap::Genesis::devnet();
+        let genesis = Chain::from_genesis(&g).best().clone();
+        let b1 = crate::chain::Block::build_for_test(1, genesis.hash, "state-root-1");
+        let b2 = crate::chain::Block::build_for_test(2, b1.hash, "atcb:41544342");
+        assert_eq!(b2.recompute_hash(), b2.hash, "Hash gueltig");
+
+        let hoehe = 2u64;
+        let best = b2.hash;
+        let bloecke = format!(
+            "{}|{}|{}|{};{}|{}|{}|{}",
+            genesis.height,
+            crate::chain::hash_hex(&genesis.prev_hash),
+            genesis.payload,
+            crate::chain::hash_hex(&genesis.hash),
+            b1.height,
+            crate::chain::hash_hex(&b1.prev_hash),
+            b1.payload,
+            crate::chain::hash_hex(&b1.hash),
+        );
+        let bloecke_alle = format!(
+            "{};{}|{}|{}|{}",
+            bloecke,
+            b2.height,
+            crate::chain::hash_hex(&b2.prev_hash),
+            b2.payload,
+            crate::chain::hash_hex(&b2.hash)
+        );
+
+        let probe = TcpListener::bind("127.0.0.1:0").expect("probe");
+        let port = probe.local_addr().expect("addr").port();
+        drop(probe);
+        std::thread::spawn(move || {
+            let listener = TcpListener::bind(("127.0.0.1", port)).expect("bind");
+            for stream in listener.incoming() {
+                let mut s = stream.expect("stream");
+                let mut reader = std::io::BufReader::new(s.try_clone().expect("clone"));
+                let mut line = String::new();
+                let _ = reader.read_line(&mut line);
+                let antwort = if line.trim() == "STATUS" {
+                    format!("{} {}", hoehe, crate::chain::hash_hex(&best))
+                } else {
+                    bloecke_alle.clone()
+                };
+                let _ = s.write_all(format!("{}\n", antwort).as_bytes());
+            }
+        });
+        for _ in 0..50 {
+            if std::net::TcpStream::connect(("127.0.0.1", port)).is_ok() {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(50));
+        }
+
+        let mut lokal = Chain::from_genesis(&g);
+        let (hoehe_vorher, hash_vorher) = (lokal.height(), lokal.best_hash());
+        let ergebnis = sync_pull(
+            &mut lokal,
+            &format!("127.0.0.1:{}", port),
+            Some(&test_support::NurDaten),
+        );
+        assert!(ergebnis.is_err(), "Adoption muss verweigert werden");
+        assert_eq!(lokal.height(), hoehe_vorher, "Hoehe unveraendert");
+        assert_eq!(lokal.best_hash(), hash_vorher, "Best-Hash unveraendert");
+        lokal.verify().expect("lokale Kette bleibt gueltig");
+
+        // Und ohne Validator ebenso wenig — fail-closed, nicht "permissiv".
+        let ergebnis = sync_pull(&mut lokal, &format!("127.0.0.1:{}", port), None);
+        assert!(ergebnis.is_err(), "ohne Validator keine Adoption");
+        assert_eq!(lokal.height(), hoehe_vorher);
+    }
