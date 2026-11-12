@@ -1,9 +1,9 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 08:55 UTC+2 aus `origin/main` @ `db7db576`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 09:10 UTC+2 aus `origin/main` @ `2ddd9d07`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11371 Dateien**
+**Total: 11373 Dateien**
 
 ## docs (5086)
 
@@ -5094,7 +5094,7 @@
 - `docs/os-docs/wiki/windows-edition-wiki/STATUS.md`
 - `docs/zkp/PROOF_SYSTEM_SELECTION_MATRIX.md`
 
-## standards (2170)
+## standards (2171)
 
 - `standards/.atc/compliance.yaml`
 - `standards/.atc/discovery/baseline.json`
@@ -5284,6 +5284,7 @@
 - `standards/atc/candidates/ATC-SEC-EXEC-001-CANDIDATE.md`
 - `standards/atc/candidates/ATC-SMART-CONTRACT-EXECUTION-001-CANDIDATE.md`
 - `standards/atc/candidates/KAI-OS-READINESS-001-CANDIDATE.md`
+- `standards/atc/conformance/identity-value-vectors.json`
 - `standards/ats/ATS-LIC-SYSTEM_HARDWARE_LICENSE.md`
 - `standards/ats/ATS_STANDARDS.md`
 - `standards/audits/AUD-2026-0001.md`
@@ -11356,7 +11357,7 @@
 - `determinism_allowlist.yaml`
 - `ruff.toml`
 
-## tools (17)
+## tools (18)
 
 - `tools/atc-sc-validator/audit_contract_copies.py`
 - `tools/atc-sc-validator/check_contract_registry.py`
@@ -11371,6 +11372,7 @@
 - `tools/determinism_check.py`
 - `tools/ecosystem.sh`
 - `tools/file_register.py`
+- `tools/identity_vectors_check.py`
 - `tools/integration_graph.py`
 - `tools/integration_graph_baseline.json`
 - `tools/linkcheck.py`
