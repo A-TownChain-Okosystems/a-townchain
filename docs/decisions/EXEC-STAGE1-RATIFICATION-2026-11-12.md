@@ -123,3 +123,19 @@ Gleichzeitig korrigiert: der angehaengte Integritaetsdigest ist exakt
 Vektoren wurden neu berechnet (GV-1, GV-3, GV-5, GV-7, GV-9, NV-2). Das ist eine
 Spezifikationskorrektur. Sie ist **keine** Implementierungsfreigabe: P1a bleibt
 offen, P2 bleibt durch B-1 gesperrt, der Standard bleibt Kandidat.
+
+## 10. Nachtrag 12.11.2026: Parser-Fehlersemantik
+
+Auf Empfehlung des Owners sind die drei unabhaengigen Pruefungen als §19 des
+Kandidaten spezifiziert: Tail-Integritaet byte-genau, Differentialtests zweier
+unabhaengiger Dekoder und Versionsisolation ohne Fallback. Die Codeliste `E-001` bis
+`E-012` entspricht eins zu eins der Fehleraufzaehlung der VM, die Pruefreihenfolge
+ist zehnstufig und legt die Praezedenz fest.
+
+Zwei Festlegungen sind dabei inhaltlich neu und pruefbar: das Magic wird vor der
+Version geprueft, deshalb ergibt der Altcontainer `ATCB` + `0x01` den Code `E-007`
+und nicht `E-003`; und ein Fehler ist das Paar `(Code, Offset)`, nie ein Meldungstext.
+
+Die Matrix waechst dadurch von 38 auf 47 Tests (46 `OPEN`, 1 `BLOCKED`). Kein Test
+ist bestanden. D1 bleibt `SPECIFIED`, nicht `IMPLEMENTED`; P1a bleibt offen, weil der
+reine Dekoder fehlt; P2 bleibt durch B-1 gesperrt; der Standard bleibt Kandidat.
