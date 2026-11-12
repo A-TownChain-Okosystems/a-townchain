@@ -22,7 +22,32 @@ impl Block {
     /// 256-Bit-Blockhash (SEC-P0-007): SHA-256 ueber Domain, Hoehe, Hex des
     /// Vorgaenger-Hashes und Payload. Kein 64-Bit-Traversal mehr.
     fn compute_hash(height: u64, prev_hash: [u8; 32], payload: &str) -> [u8; 32] {
-        atc_hash(format!("ATC-BLOCK-V1|{}|{}|{}", height, hash_hex(&prev_hash), payload).as_bytes())
+        atc_hash(
+            format!(
+                "ATC-BLOCK-V1|{}|{}|{}",
+                height,
+                hash_hex(&prev_hash),
+                payload
+            )
+            .as_bytes(),
+        )
+    }
+
+    /// Block mit gueltigem Hash bauen — fuer Tests und Import-Simulation.
+    /// Kein Konsens, keine Finalitaet: der Block ist nur formal verkettet.
+    pub fn build_for_test(height: u64, prev_hash: [u8; 32], payload: &str) -> Block {
+        Block {
+            height,
+            prev_hash,
+            payload: payload.to_string(),
+            hash: Block::compute_hash(height, prev_hash, payload),
+        }
+    }
+
+    /// Neu berechneter Hash dieses Blocks — fuer die Importpruefung, ohne
+    /// den Block zu veraendern. Die Hashformel bleibt die einzige Wahrheit.
+    pub fn recompute_hash(&self) -> [u8; 32] {
+        Block::compute_hash(self.height, self.prev_hash, &self.payload)
     }
 
     /// Genesis-Block: Hoehe 0, prev_hash = Genesis-Boot-Hash (SCR-0106/0114)
@@ -47,11 +72,15 @@ pub struct Chain {
 
 impl Chain {
     pub fn from_genesis(g: &Genesis) -> Chain {
-        Chain { blocks: vec![Block::genesis_block(g)] }
+        Chain {
+            blocks: vec![Block::genesis_block(g)],
+        }
     }
 
     pub fn best(&self) -> &Block {
-        self.blocks.last().expect("Kette enthaelt immer den Genesis-Block")
+        self.blocks
+            .last()
+            .expect("Kette enthaelt immer den Genesis-Block")
     }
 
     pub fn height(&self) -> u64 {
@@ -62,6 +91,18 @@ impl Chain {
         self.best().hash
     }
 
+    /// Anhaengen **nur** nach vollstaendiger Pruefung. Bewusst nicht `pub`:
+    /// der einzige oeffentliche Weg fuer einen fremden Block ist
+    /// `import::Chain::import_block` (dort mit Validator und Reihenfolge).
+    pub(crate) fn append_validated(&mut self, block: Block) {
+        self.blocks.push(block);
+    }
+
+    /// Platz fuer einen weiteren Block (Devnet-Grenze, wie `produce`).
+    pub(crate) fn has_capacity(&self) -> bool {
+        self.blocks.len() < 64
+    }
+
     /// Deterministische Devnet-Blockproduktion (kein Konsens, dokumentiert):
     /// haengt an den Best-Block an. Gibt den neuen Best-Hash zurueck.
     pub fn produce(&mut self, payload: &str) -> Result<[u8; 32], String> {
@@ -69,7 +110,10 @@ impl Chain {
             return Err("Devnet-MVP: Kette auf 64 Bloecke begrenzt".to_string());
         }
         if payload.contains('|') || payload.contains(';') {
-            return Err("Devnet-MVP: '|' und ';' in Payloads verboten (Gossip-Wire-Format, SCR-0118)".to_string());
+            return Err(
+                "Devnet-MVP: '|' und ';' in Payloads verboten (Gossip-Wire-Format, SCR-0118)"
+                    .to_string(),
+            );
         }
         let (height, prev_hash) = {
             let best = self.best();
@@ -97,7 +141,10 @@ impl Chain {
             }
             if i == 0 {
                 if b.height != 0 {
-                    return Err(format!("Genesis-Block muss Hoehe 0 haben, ist {}", b.height));
+                    return Err(format!(
+                        "Genesis-Block muss Hoehe 0 haben, ist {}",
+                        b.height
+                    ));
                 }
             } else {
                 let p = &self.blocks[i - 1];
@@ -239,8 +286,12 @@ pub fn parse_hash(text: &str) -> Result<[u8; 32], String> {
     }
     let mut out = [0u8; 32];
     for (i, chunk) in t.as_bytes().chunks(2).enumerate() {
-        let hi = (chunk[0] as char).to_digit(16).ok_or_else(|| "kein Hex".to_string())?;
-        let lo = (chunk[1] as char).to_digit(16).ok_or_else(|| "kein Hex".to_string())?;
+        let hi = (chunk[0] as char)
+            .to_digit(16)
+            .ok_or_else(|| "kein Hex".to_string())?;
+        let lo = (chunk[1] as char)
+            .to_digit(16)
+            .ok_or_else(|| "kein Hex".to_string())?;
         out[i] = ((hi << 4) | lo) as u8;
     }
     Ok(out)
@@ -298,10 +349,16 @@ mod tests {
         c.produce("ehrlich-2").unwrap();
         let mut gefaelscht = c.clone();
         gefaelscht.blocks[1].payload = "gefaelscht".to_string();
-        assert!(gefaelscht.verify().is_err(), "Payload-Manipulation muss auffallen");
+        assert!(
+            gefaelscht.verify().is_err(),
+            "Payload-Manipulation muss auffallen"
+        );
         let mut umgehaengt = c.clone();
         umgehaengt.blocks[2].prev_hash = [7u8; 32];
-        assert!(umgehaengt.verify().is_err(), "Verkettungs-Bruch muss auffallen");
+        assert!(
+            umgehaengt.verify().is_err(),
+            "Verkettungs-Bruch muss auffallen"
+        );
         assert!(c.verify().is_ok(), "Original bleibt valide");
     }
 
@@ -314,7 +371,11 @@ mod tests {
             k1.produce(p).unwrap();
             k2.produce(p).unwrap();
         }
-        assert_eq!(k1.best_hash(), k2.best_hash(), "gleiche Genesis + gleiche Payloads => identische Kette");
+        assert_eq!(
+            k1.best_hash(),
+            k2.best_hash(),
+            "gleiche Genesis + gleiche Payloads => identische Kette"
+        );
         assert_eq!(k1, k2);
     }
 
@@ -324,7 +385,11 @@ mod tests {
         let c1 = Chain::from_genesis(&g);
         g.chain_name = "A-TownChain Devnet ALT".to_string();
         let c2 = Chain::from_genesis(&g);
-        assert_ne!(c1.best_hash(), c2.best_hash(), "Genesis-Drift muss die Kette aendern");
+        assert_ne!(
+            c1.best_hash(),
+            c2.best_hash(),
+            "Genesis-Drift muss die Kette aendern"
+        );
     }
 
     #[test]
@@ -339,4 +404,9 @@ mod tests {
         assert!(c.produce("eins zu viel").is_err(), "Cap muss greifen");
         assert_eq!(c.height(), 63, "Fehlgeschlagene Produktion aendert nichts");
     }
+}
+
+/// Hexdarstellung eines 32-Byte-Werts (nur fuer Meldungen, nie fuer Vergleiche).
+pub(crate) fn hex_32(v: &[u8; 32]) -> String {
+    v.iter().map(|b| format!("{b:02x}")).collect()
 }
