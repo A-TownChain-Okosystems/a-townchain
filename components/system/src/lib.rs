@@ -19,6 +19,7 @@
 pub mod backend;
 pub mod block_payload;
 pub mod compile;
+pub mod node_import;
 pub mod seal;
 pub mod state;
 pub mod system;
