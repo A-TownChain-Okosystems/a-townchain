@@ -222,3 +222,65 @@ fn adoption_mit_validator_uebernimmt_nach_pruefung() {
     assert_eq!(kette.height(), 2);
     kette.verify().expect("Kette gueltig");
 }
+
+/// Repo-weite Grenze (P1d-A): ausserhalb der kanonischen Chain darf **keine**
+/// Stelle eine Kette aus fremden Bloecken bauen oder ersetzen. Der Test liest
+/// alle `.rs`-Dateien des Repos (ohne Kommentarzeilen) und schlaegt bei jeder
+/// Wiederkehr von `Chain::from_blocks(`, `kandidat`-Zuweisung oder
+/// `pub fn sync_pull` in einer anderen Kette fehl.
+#[test]
+fn keine_zweite_adoptionsstelle_im_repo() {
+    let wurzel = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let mut treffer: Vec<String> = Vec::new();
+    stapel(&wurzel, &mut treffer);
+    assert!(treffer.is_empty(), "zweite Adoptionsstelle: {treffer:?}");
+}
+
+fn stapel(dir: &std::path::Path, treffer: &mut Vec<String>) {
+    let Ok(eintraege) = std::fs::read_dir(dir) else { return };
+    for eintrag in eintraege.flatten() {
+        let pfad = eintrag.path();
+        let name = pfad.file_name().and_then(|n| n.to_str()).unwrap_or("");
+        if pfad.is_dir() {
+            // Build-Artefakte und VCS nicht durchsuchen.
+            if !matches!(name, "target" | ".git" | "node_modules") {
+                stapel(&pfad, treffer);
+            }
+            continue;
+        }
+        if pfad.extension().and_then(|e| e.to_str()) != Some("rs") {
+            continue;
+        }
+        let text = std::fs::read_to_string(&pfad).unwrap_or_default();
+        let code: String = text
+            .lines()
+            .filter(|l| {
+                let t = l.trim_start();
+                !t.starts_with("//") && !t.starts_with("///") && !t.starts_with("//!")
+            })
+            .collect::<Vec<_>>()
+            .join("\n");
+        // Ausnahmen sind nur die beiden Waechter selbst: sie nennen die
+        // verbotenen Muster als Sollwert "darf nicht vorkommen". Jede andere
+        // Datei, insbesondere Produktionscode, muss frei davon sein.
+        let text_pfad = pfad.to_string_lossy().replace('\\', "/");
+        if text_pfad.ends_with("components/node/tests/block_import.rs")
+            || text_pfad.ends_with("apps/atc-node/tests/two_node_devnet.rs")
+        {
+            continue;
+        }
+        let kanonisch = text_pfad.ends_with("components/node/src/chain.rs");
+        if code.contains("Chain::from_blocks(") && !kanonisch {
+            treffer.push(format!("{}: from_blocks", pfad.display()));
+        }
+        if code.contains("kette = kandidat") || code.contains("kette = kandidat;") {
+            treffer.push(format!("{}: kette = kandidat", pfad.display()));
+        }
+        if code.contains("pub fn sync_pull") && !kanonisch {
+            // Nur die kanonische Implementierung darf Peer-Adoption anbieten.
+            if !text_pfad.ends_with("components/node/src/gossip.rs") {
+                treffer.push(format!("{}: zweiter sync_pull", pfad.display()));
+            }
+        }
+    }
+}
