@@ -502,7 +502,49 @@ fn lower_user_function(
 }
 
 /// Lowered ein komplettes Programm: Entry + alle Funktionen, alles verifiziert.
+/// Sucht einen Vertrag in der Deklarationsliste (rekursiv, damit auch ein
+/// verschachtelter Vertrag nicht unbemerkt bleibt).
+fn find_contract<'a>(stmts: &'a [Stmt]) -> Option<(&'a str, &'a [Stmt])> {
+    for s in stmts {
+        if let Stmt::Contract { name, body, .. } = s {
+            return Some((name.as_str(), body.as_slice()));
+        }
+    }
+    None
+}
+
+/// Zaehlt die Bestandteile eines Vertragsrumpfs: (Funktionen, Zustandsfelder,
+/// Events, weitere Deklarationen).
+fn contract_surface(body: &[Stmt]) -> (usize, usize, usize, usize) {
+    let mut fns = 0usize;
+    let mut states = 0usize;
+    let mut events = 0usize;
+    let mut other = 0usize;
+    for s in body {
+        match s {
+            Stmt::Fn(_) => fns += 1,
+            Stmt::State { .. } | Stmt::StateBlock { .. } => states += 1,
+            Stmt::Event { .. } => events += 1,
+            _ => other += 1,
+        }
+    }
+    (fns, states, events, other)
+}
+
 pub fn lower_program(prog: &Program) -> Result<CompiledProgram, LowerError> {
+    // E1 (Audit 2026-11-12, F1): Vertragsruempfe werden nicht zu Bytecode gesenkt.
+    // Sie duerfen deshalb NICHT uebersprungen werden: ein Vertrag, dessen Logik
+    // verworfen wird, ist kein ausfuehrbares Programm. Fail-closed, bevor irgendetwas
+    // gebaut wird (kein Ersatzprogramm, kein ConstI64(0)/Return als Platzhalter).
+    if let Some((name, body)) = find_contract(&prog.statements) {
+        let (fns, states, events, other) = contract_surface(body);
+        return Err(LowerError::new(format!(
+            "Vertrag '{name}' ist nicht ausfuehrbar: ATCLang senkt Vertragsruempfe nicht zu \
+             Bytecode ({fns} Funktionen, {states} Zustandsfelder, {events} Events, {other} weitere \
+             Deklarationen). Der Vertrag wird abgelehnt, statt ihn mit einem Ersatzprogramm \
+             anzunehmen (Compiler-Erfolg ist kein ausfuehrbarer Vertrag)"
+        )));
+    }
     // Funktionsindex-Tabelle: Index 0 reserviert fuer __main__.
     let mut fn_ids: HashMap<String, (u16, u16)> = HashMap::new();
     fn_ids.insert(ENTRY.to_string(), (0, 0));
@@ -551,7 +593,7 @@ pub fn lower_program(prog: &Program) -> Result<CompiledProgram, LowerError> {
                 | Stmt::UseGroup { .. }
                 | Stmt::Struct { .. }
                 | Stmt::Enum { .. }
-                | Stmt::Contract { .. }
+                | Stmt::Contract { .. } // durch den E1-Guard oben abgelehnt, nie hier
         ) {
             continue;
         }
