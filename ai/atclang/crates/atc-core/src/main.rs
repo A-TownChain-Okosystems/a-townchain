@@ -6,7 +6,9 @@
 //! als Bibliothek ueber atc_core::bytecode erreichbar; Lowering folgt via SCR).
 
 use atc_core::artifact::{Artifact, ArtifactMetadata};
-use atc_core::lower::{lower_program, CompiledProgram};
+use atc_core::lower::{
+    executable_subset_gate, lower_program, require_entry_point, CompiledProgram,
+};
 use atc_core::parser::parse_program;
 use std::env;
 use std::fs;
@@ -32,8 +34,14 @@ EXIT-CODES:
     1  Kompilier-/Parse-/Laufzeit-Fehler
     2  Aufruffehler";
 
-fn compile_to_bytecode(src: &str) -> Result<CompiledProgram, String> {
+/// E1 (Audit 2026-11-12, F1): `run` fuehrt nur aus, was wirklich ausfuehrbar ist.
+/// Erst das Vertrags-Gate (spezifischere Meldung), dann der Entry-Point, dann das
+/// Lowering. Vor dem Fix endete `atc run` fuer leere oder reine
+/// Deklarationsquellen mit Exit 0 und gab `0` aus.
+fn compile_for_run(src: &str) -> Result<CompiledProgram, String> {
     let program = parse_program(src).map_err(|e| e.message)?;
+    executable_subset_gate(&program).map_err(|e| e.message)?;
+    require_entry_point(&program).map_err(|e| e.message)?;
     lower_program(&program).map_err(|e| e.message)
 }
 
@@ -92,7 +100,7 @@ fn main() -> ExitCode {
     };
     match mode {
         "run" => {
-            let compiled = match compile_to_bytecode(&src) {
+            let compiled = match compile_for_run(&src) {
                 Ok(c) => c,
                 Err(msg) => {
                     eprintln!("Kompilierfehler in {path}: {msg}");
@@ -165,6 +173,15 @@ fn main() -> ExitCode {
                     "FEHLER (--strict): {path} hat {} offene Warnung(en)",
                     report.warnings.len()
                 );
+                return ExitCode::FAILURE;
+            }
+            // E1 (Audit 2026-11-12, F1): dasselbe Gate wie `run` und `lower_program`.
+            // `check` darf nicht "validiert" melden, was nicht ausfuehrbar ist.
+            let gate = parse_program(&src)
+                .map_err(|e| e.message)
+                .and_then(|program| executable_subset_gate(&program).map_err(|e| e.message));
+            if let Err(msg) = gate {
+                eprintln!("FEHLER: {path} ist nicht ausfuehrbar: {msg}");
                 return ExitCode::FAILURE;
             }
             eprintln!("OK: {path} validiert");
