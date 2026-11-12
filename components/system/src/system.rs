@@ -17,7 +17,7 @@ use atc_exec_admission::{
 };
 use atc_node::bootstrap::Genesis;
 use atc_node::chain::Chain;
-use atc_vm::artifact::{Artifact, ArtifactError, GENERATION_V1};
+use atc_vm::artifact::{Artifact, ArtifactError, GENERATION_V1, HASH_LEN};
 use atc_vm::context::ChainContext;
 use atc_vm::vm::{Op, Vm, VmError};
 
@@ -226,7 +226,9 @@ impl System {
         // Deployment, dessen eigener Umlauf nicht stimmt, geht nicht weiter.
         let reparsed = Artifact::parse(&artifact_bytes).map_err(SystemError::Artifact)?;
         if reparsed.hash() != code_hash {
-            return Err(SystemError::Artifact(ArtifactError::BadHash));
+            return Err(SystemError::Artifact(ArtifactError::BadHash {
+                offset: artifact_bytes.len() - HASH_LEN,
+            }));
         }
 
         let policy = ExecutionPolicy {
