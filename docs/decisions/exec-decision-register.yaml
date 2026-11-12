@@ -111,6 +111,43 @@ decisions:
       - "Differentialtest: lokaler Lauf 40 von 40 Eingaben gleich (Huelle gegen den unabhaengigen Referenzdekoder); Status bleibt BLOCKED bis zur vollstaendigen Integration und unabhaengigen Pruefung (Owner 12.11.2026); Nachweis EXEC-D0-ATCE-ENVELOPE-EVIDENCE-2026-11-12.md"
       - "CI_VERIFIED nicht vergeben; kein CI-Lauf am exakten HEAD"
 
+  - id: S1-2-F1
+    ratification: "nicht ratifiziert (Kandidat ATC-SEC-EXEC-001, 0.1.1-draft)"
+    specified_in: "ATC-SEC-EXEC-001 Kandidat Abschnitt 4a (Registrierung) und standards/atc/conformance/admission-codes.json"
+    title: "Admission Registry: Registrierung ist Compare-and-Insert, kein Last-Write-Wins (F-1)"
+    decision_status: DECIDED
+    decision: FREIGEGEBEN
+    specification_status: SPECIFIED
+    implementation_status: IMPLEMENTED
+    gate: SCE-G5
+    conditions:
+      - "Die Registry fuehrt genau eine Policy je code_hash; die vorhandene Architektur bleibt (BTreeMap je code_hash, keine zweite Registry)"
+      - "Registrierung ist Compare-and-Insert: unbekannt einfuegen, bytegleich idempotent, abweichend PolicyConflict ohne jede Aenderung"
+      - "Verglichen werden die vollstaendigen kanonischen Policy-Bytes, nicht einzelne Felder"
+      - "Kein Last-Write-Wins, keine implizite Aktualisierung, kein stiller Ersatz; die zuerst registrierte Policy bleibt"
+      - "Konflikte tragen eine reproduzierbare Identitaet (Code, code_hash, beide Bytefolgen) ohne Zeitstempel und ohne Zufall"
+      - "Die Registrierungsreihenfolge muss konsensgeordnet sein (bestaetigte Deployment-Reihenfolge); lokale Ankunftsreihenfolge darf keine Konsensentscheidung veraendern"
+      - "source_provenance bleibt Bestandteil der signierten Policy; Option C (Herkunftsnachweis aus der Signatur herausnehmen) ist NICHT freigegeben"
+      - "ADM-009 beschreibt nur noch die Anfrage-Abweichung von der registrierten Policy, nicht den Registrierungskonflikt"
+    sub_gates:
+      - id: S1-2-D1
+        title: "Policy-Konflikt: Option A, Erstregistrierung gewinnt"
+        owner: "Admission-Layer"
+        goal: "Compare-and-Insert mit idempotenter Wiederholung und deterministischer Ablehnung abweichender Policies; keine Zustandsaenderung bei Konflikt"
+        status: IMPLEMENTED
+        open_because: "umgesetzt in components/exec-admission/src/lib.rs (Registry::register, RegistryError) und geprueft durch S1-2-T-01/02/04/07/08; CI_VERIFIED offen"
+      - id: S1-2-D2
+        title: "ADM-012 POLICY_CONFLICT als eigener Fehlercode"
+        owner: "Governance/Spezifikation"
+        goal: "Der Konflikt erhaelt eine eigene Fehleridentitaet, ohne ADM-009 umzudeuten; die Codeliste ist an einer Stelle maschinenlesbar registriert"
+        status: OPEN
+        open_because: "Kandidat 0.1.1-draft und admission-codes.json fuehren ADM-012 als proposed; die Implementierung ist bis zur normativen Registrierung des Standards gesperrt, der Systempfad meldet code=None statt einer provisorischen Kennung"
+      - id: S1-2-D3
+        title: "source_provenance bleibt Teil der signierten Policy"
+        owner: "Format/Sicherheit"
+        goal: "Herkunft bleibt kryptografisch gebunden; gleicher code_hash mit abweichender Herkunft ist ein Policy-Konflikt"
+        status: IMPLEMENTED
+        open_because: "beibehalten, keine Formatmigration; Option C ist nicht freigegeben"
   - id: D1
     ratification: "nicht ratifiziert (Kandidat)"
     specified_in: "Kandidat §5.1, §18.1-18.3, §19.1-19.5 und §19.2a (nicht ratifiziert)"
