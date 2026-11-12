@@ -20,7 +20,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SPEC = ROOT / "standards/atc/candidates/ATC-SEC-EXEC-001-CANDIDATE.md"
+SPEC = ROOT / "standards/atc/candidates/ATC-STD-410-CANDIDATE.md"
+POINTER = ROOT / "standards/atc/candidates/ATC-SEC-EXEC-001-CANDIDATE.md"
 SSOT = ROOT / "standards/atc/conformance/admission-codes.json"
 RUST = ROOT / "components/exec-admission/src/lib.rs"
 
@@ -121,6 +122,14 @@ def pruefe() -> list[str]:
             fehler.append(
                 f"SSOT: vorgeschlagener Code {eintrag['code']} nennt eine Rust-Variante"
             )
+
+    # 4b — Die alte Entwurfskennung ist nur ein Zeiger, keine zweite Fassung
+    zeiger = POINTER.read_text(encoding="utf-8")
+    if re.search(r"`ADM-\d{3}`\s*\|", zeiger):
+        fehler.append(
+            "ATC-SEC-EXEC-001 enthaelt Code-Tabellen: die Kennung muss ein reiner "
+            "Zeiger auf ATC-STD-410 sein (keine zweite Wahrheit)"
+        )
 
     # 5 — Rangfolge der Implementierung entspricht der Spezifikationsreihenfolge
     reihenfolge = rust_reihenfolge()
