@@ -104,8 +104,8 @@ Fehlerreaktion und Testbezug:
 | Bereich | Abschnitt | Anforderungen | Vektornachweis |
 |---|---|---|---|
 | Hash-Domaenen | §18.1 | REQ-SCE-061 bis 064 | Labels 16/14/13 Byte, Nullbyte-Pflicht |
-| Goldvektoren | §18.2 | REQ-SCE-065 | 9 Gold- und 6 Negativvektoren, maschinenlesbar in `standards/atc/conformance/stage1-vectors.json` |
-| Containerfassung | §18.3 | REQ-SCE-066 bis 069 | Fassung `0x02`, sechs Fehlercodes |
+| Goldvektoren | §18.2 | REQ-SCE-065 | 9 Gold- und 6 Negativvektoren, maschinenlesbar in `standards/atc/conformance/stage1-vectors.json`; am 12.11.2026 auf Magic `ATCE` neu berechnet (GV-1, GV-3, GV-5, GV-7, GV-9, NV-2) |
+| Containerfassung | §18.3 | REQ-SCE-066 bis 069 | Magic `ATCE`, Fassung `0x02`, Tail = `artifact_hash`, sieben Fehlercodes (neu: `E-007 UNKNOWN_MAGIC`) |
 | Policy-Schluesselraeume | §18.4 | REQ-SCE-070 bis 074 | achtstufige Pruefsequenz, Startverweigerung |
 | Gasrueckgabe | §18.5 | REQ-SCE-075 bis 077 | vier Faelle, Wortlaut fuer kuenftige Kontobelastung |
 
