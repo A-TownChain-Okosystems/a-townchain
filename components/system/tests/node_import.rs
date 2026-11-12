@@ -13,7 +13,7 @@ use atc_node::bootstrap::Genesis;
 use atc_node::chain::{Block, Chain};
 use atc_node::import::{ContainerValidator, ImportError};
 use atc_system::block_payload::{self, PayloadKind};
-use atc_system::node_import::SystemPayloadValidator;
+use atc_system::node_import::{DevnetNode, SystemPayloadValidator};
 use atc_system::System;
 
 const NOW_US: i64 = 1_800_000_000_000_000;
@@ -168,4 +168,46 @@ fn abgelehnter_block_laesst_chain_und_registry_unveraendert() {
     assert_eq!(chain.height(), height, "Hoehe unveraendert");
     assert_eq!(chain.best_hash(), hash, "Best-Hash unveraendert");
     chain.verify().expect("Kette bleibt gueltig");
+}
+
+// --- Devnet-Verdrahtung: der Knoten entscheidet, nicht der Aufrufer --------
+
+#[test]
+fn devnet_knoten_nimmt_nur_geprueft_an() {
+    let container = huelle();
+    let payload = block_payload::encode_container(&container);
+    let mut node = DevnetNode::start().expect("Knoten startet");
+    let best = node.chain().best().clone();
+
+    // Gueltige Huelle: angenommen (der Validator ist Teil des Knotens).
+    node.import_block(Block::build_for_test(best.height + 1, best.hash, &payload))
+        .expect("gueltige Huelle");
+    assert_eq!(node.chain().height(), 1);
+
+    // ATCB: abgelehnt, kein Zustand.
+    let best = node.chain().best().clone();
+    let err = node
+        .import_block(Block::build_for_test(best.height + 1, best.hash, "atcb:41544342"))
+        .expect_err("ATCB");
+    assert_eq!(err.code(), "I-005");
+    assert_eq!(node.chain().height(), 1);
+
+    // Falscher Hash: abgelehnt, bevor die Payload ueberhaupt gefragt wird.
+    let mut kaputt = Block::build_for_test(2, best.hash, "state-root");
+    kaputt.payload = "manipuliert".into();
+    assert_eq!(node.import_block(kaputt).expect_err("Hash").code(), "I-002");
+    assert_eq!(node.chain().height(), 1, "keine Annahme, kein Zustand");
+}
+
+#[test]
+fn devnet_knoten_adoption_prueft_payloads() {
+    let mut node = DevnetNode::start().expect("Knoten startet");
+    let genesis = node.chain().best().clone();
+    let b1 = Block::build_for_test(1, genesis.hash, "state-root-1");
+    let b2 = Block::build_for_test(2, b1.hash, "atcb:41544342");
+    let err = node
+        .adopt_chain(vec![genesis, b1, b2])
+        .expect_err("ATCB im Kandidaten");
+    assert_eq!(err.code(), "I-005");
+    assert_eq!(node.chain().height(), 0, "nichts uebernommen");
 }
