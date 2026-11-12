@@ -50,7 +50,9 @@ fn aufbau() -> Aufbau {
     let verifier = AuthorizedKeyVerifier::new(schluessel.public_key()).expect("Verifier");
 
     let mut registry = Registry::new();
-    registry.insert(policy.clone());
+    registry
+        .register(policy.clone())
+        .expect("erste Registrierung");
 
     let mut authority = Authority::new(IsolationState::Available);
     authority.authorize_signer(policy.signer_identity.clone());
