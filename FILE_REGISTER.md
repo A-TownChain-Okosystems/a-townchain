@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-12 15:15 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `33bc51d1` (letzter Commit 2026-11-12)
+> **Erzeugt:** 2026-11-12 15:22 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `7efbadd1` (letzter Commit 2026-11-12)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,9 +13,9 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 11398 |
+| **Total Dateien** | 11403 |
 | **Bereiche** | 15 |
-| **Verzeichnisse** | 2015 |
+| **Verzeichnisse** | 2016 |
 
 ### Nach Dateityp
 
@@ -24,9 +24,9 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `.md` | 4092 |
 | `.atc` | 1514 |
 | `.yaml` | 1474 |
-| `.json` | 1398 |
-| `.py` | 810 |
-| `.rs` | 556 |
+| `.json` | 1399 |
+| `.py` | 812 |
+| `.rs` | 558 |
 | `.tsx` | 377 |
 | `(keine)` | 363 |
 | `.yml` | 285 |
@@ -63,15 +63,15 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | Bereich | Dateien | Inhalt |
 |---------|---------|--------|
 | `docs` | 5099 | Dokumentation und Archive |
-| `standards` | 2173 | Normative Standards und Werkzeuge |
+| `standards` | 2174 | Normative Standards und Werkzeuge |
 | `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
-| `components` | 895 | Chain-Komponenten (kanonischer Code) |
+| `components` | 897 | Chain-Komponenten (kanonischer Code) |
 | `apps` | 857 | Produkt-Anwendungen |
 | `ai` | 504 | KI-, Sprach- und Engine-Schicht |
 | `modules` | 208 | Module ohne eigene Produktschicht |
 | `tooling` | 164 | Werkzeuge und Engineering-Gates |
 | `kernel` | 157 | Kernel- und OS-Ebenen |
-| `tools` | 24 | Einstiegspunkte |
+| `tools` | 26 | Einstiegspunkte |
 | `(root)` | 21 | Wurzeldateien |
 | `.github` | 16 | CI- und Repository-Konfiguration |
 | `"docs` | 6 | — |
@@ -108,4 +108,4 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 | `docs/os-docs/docs/archive/monorepo-full/src/modules/atc-franchise` | 40 |
 | `standards/standards/sc` | 40 |
 
-… insgesamt 2015 Verzeichnisse.
+… insgesamt 2016 Verzeichnisse.
