@@ -127,7 +127,9 @@ fn push_opt(out: &mut Vec<u8>, value: Option<&str>) {
 pub enum AdmCode {
     /// 1 — Authority nicht erreichbar oder nicht initialisiert.
     AuthorityUnavailable,
-    /// 2 — Policy strukturell ungültig oder nicht kanonisch codiert.
+    /// 2 — Policy weicht von der registrierten Policy ab (Vergleich der
+    /// kanonischen Bytes). Nicht zu verwechseln mit einem Registrierungskonflikt:
+    /// der entsteht beim Eintragen und hat eine eigene Identitaet.
     NonCanonicalPolicy,
     /// 3 — Code Unit unbekannt.
     UnknownCode,
@@ -185,7 +187,47 @@ impl AdmCode {
     }
 }
 
-/// Die Registry der Freigaben. Sie ist die SSOT für `code_hash` → Policy.
+/// Das Ergebnis einer Registrierung. Ein Konflikt ist ein eigener Zustand, keine
+/// Ausnahme: die vorhandene Policy bleibt unveraendert, nichts wird geschrieben.
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub enum RegistryError {
+    /// Fuer diesen `code_hash` ist bereits eine **abweichende** Policy
+    /// registriert. `existing` und `rejected` sind die vollstaendigen
+    /// kanonischen Bytes; damit ist der Konflikt reproduzierbar protokollierbar,
+    /// ohne Zeitstempel oder Zufall.
+    PolicyConflict {
+        code_hash: [u8; 32],
+        existing: Vec<u8>,
+        rejected: Vec<u8>,
+    },
+}
+
+impl std::fmt::Display for RegistryError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RegistryError::PolicyConflict {
+                code_hash,
+                existing,
+                rejected,
+            } => write!(
+                f,
+                "Policy-Konflikt fuer {:02x?}: registriert {} Byte, abgelehnt {} Byte",
+                &code_hash[..4],
+                existing.len(),
+                rejected.len()
+            ),
+        }
+    }
+}
+
+impl std::error::Error for RegistryError {}
+
+/// Die Registry der Freigaben. Sie ist die SSOT fuer `code_hash` → Policy.
+///
+/// Sie fuehrt genau **eine** Policy je `code_hash`. Registrierung ist eine
+/// Compare-and-Insert-Operation: unbekannt = einfuegen, bytegleich =
+/// idempotent, abweichend = `PolicyConflict` ohne jede Aenderung. Es gibt
+/// keinen Last-Write-Wins-Pfad und keine implizite Aktualisierung.
 #[derive(Default)]
 pub struct Registry {
     policies: BTreeMap<[u8; 32], ExecutionPolicy>,
@@ -196,8 +238,38 @@ impl Registry {
         Self::default()
     }
 
-    pub fn insert(&mut self, policy: ExecutionPolicy) {
-        self.policies.insert(policy.code_hash, policy);
+    /// Registriert eine Policy (Compare-and-Insert).
+    ///
+    /// * `code_hash` unbekannt → einfuegen, `Ok(())`.
+    /// * kanonische Bytes bytegleich → `Ok(())`, kein Schreiben.
+    /// * kanonische Bytes abweichend → `Err(PolicyConflict)`, vorhandene Policy
+    ///   bleibt unveraendert.
+    ///
+    /// Die Reihenfolge der Registrierungen entscheidet daher, welche Policy
+    /// gilt. Sie muss aus einem deterministischen, konsensgeordneten Vorgang
+    /// stammen (bestaetigte Deployment-Reihenfolge), nicht aus lokaler
+    /// Ankunftsreihenfolge; sonst koennten Knoten verschiedene Entscheidungen
+    /// treffen.
+    pub fn register(&mut self, policy: ExecutionPolicy) -> Result<(), RegistryError> {
+        let neu = policy.canonical_bytes();
+        match self.policies.get(&policy.code_hash) {
+            None => {
+                self.policies.insert(policy.code_hash, policy);
+                Ok(())
+            }
+            Some(vorhanden) => {
+                let alt = vorhanden.canonical_bytes();
+                if alt == neu {
+                    Ok(())
+                } else {
+                    Err(RegistryError::PolicyConflict {
+                        code_hash: policy.code_hash,
+                        existing: alt,
+                        rejected: neu,
+                    })
+                }
+            }
+        }
     }
 
     pub fn get(&self, code_hash: &[u8; 32]) -> Option<&ExecutionPolicy> {
@@ -426,7 +498,7 @@ impl Authority {
         if policy.canonical_bytes() != request.policy_bytes {
             return Decision::block(
                 AdmCode::NonCanonicalPolicy,
-                "Policy-Bytes weichen von der kanonischen Codierung ab",
+                "Policy weicht von der registrierten Policy ab",
             );
         }
 
@@ -550,7 +622,7 @@ mod tests {
 
     fn registry_with(policy: ExecutionPolicy) -> Registry {
         let mut registry = Registry::new();
-        registry.insert(policy);
+        registry.register(policy).expect("erste Registrierung");
         registry
     }
 
