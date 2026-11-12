@@ -1,6 +1,6 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 09:22 UTC+2 aus `origin/main` @ `04858ee8`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 09:25 UTC+2 aus `origin/main` @ `5c5b87cb`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
 **Total: 11377 Dateien**
