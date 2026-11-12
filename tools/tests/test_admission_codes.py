@@ -48,6 +48,13 @@ def test_implementierung_kennt_genau_die_aktiven_codes() -> None:
     }
 
 
+def test_alte_kennung_ist_nur_ein_zeiger() -> None:
+    """ATC-SEC-EXEC-001 darf keine Code-Tabelle mehr fuehren (eine Wahrheit)."""
+    zeiger = cac.POINTER.read_text(encoding="utf-8")
+    assert "ATC-STD-410-CANDIDATE.md" in zeiger
+    assert "| `ADM-" not in zeiger, "keine Code-Tabelle im Zeiger"
+
+
 def test_sperre_wird_erkannt(tmp_path) -> None:
     """Wird ADM-012 vorzeitig implementiert, muss der Pruefer das melden."""
     ssot = cac.lade_ssot()
