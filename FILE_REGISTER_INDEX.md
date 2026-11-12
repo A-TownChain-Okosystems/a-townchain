@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 15:38 UTC+2 aus `origin/main` @ `5dae394b`.
+> Vollständige Dateiliste. Erzeugt 2026-11-12 15:43 UTC+2 aus `origin/main` @ `6862561f`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11405 Dateien**
+**Total: 11408 Dateien**
 
-## docs (5100)
+## docs (5101)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -45,6 +45,7 @@
 - `docs/decisions/EXEC-D0A-SYSTEM-INGRESS-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md`
+- `docs/decisions/EXEC-P1A-BLOCKPAYLOAD-EVIDENCE-2026-11-12.md`
 - `docs/decisions/EXEC-S1-2-ADMISSION-REGISTRY-F1.md`
 - `docs/decisions/EXEC-STAGE1-DECISIONS-2026-11-12.md`
 - `docs/decisions/EXEC-STAGE1-PARSER-EVIDENCE-2026-11-12.md`
@@ -8552,7 +8553,7 @@
 - `ecosystem/tools/validate_privacy_policy.py`
 - `ecosystem/tools/validate_runtime_symbol_registry.py`
 
-## components (897)
+## components (899)
 
 - `components/algorithm/.atc/compliance.yaml`
 - `components/algorithm/.atc/evidence/evidence.yaml`
@@ -9257,6 +9258,7 @@
 - `components/storage/tools/determinism_check.py`
 - `components/system/Cargo.toml`
 - `components/system/src/backend.rs`
+- `components/system/src/block_payload.rs`
 - `components/system/src/compile.rs`
 - `components/system/src/lib.rs`
 - `components/system/src/main.rs`
@@ -9264,6 +9266,7 @@
 - `components/system/src/state.rs`
 - `components/system/src/system.rs`
 - `components/system/tests/backend.rs`
+- `components/system/tests/block_payload_container.rs`
 - `components/system/tests/container_admission.rs`
 - `components/system/tests/differential.rs`
 - `components/system/tests/e2e.rs`
