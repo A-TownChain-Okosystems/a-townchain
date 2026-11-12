@@ -55,7 +55,7 @@ stage1:
     effect: "L1 muss nicht ausfuehrbar sein, um zu zaehlen; L2 und L3 bleiben bis B-1 gesperrt; L1 ist heute EMPTY, P1a bleibt offen"
 
 resolved_by_ratification:
-  - "B-2 Artefaktidentitaet im Identitaetsteil (R-903); die Frage des Container-Magic bleibt Auflage in D1"
+  - "B-2 Artefaktidentitaet im Identitaetsteil (R-903); Container-Magic am 12.11.2026 entschieden: ATCE fuer die Huelle"
   - "B-3 Verfahren (R-905): Schichtung entschieden, L2 und L3 bleiben bis B-1 gesperrt"
 
 decisions:
@@ -75,11 +75,11 @@ decisions:
       - "eindeutige Laengenangabe"
       - "kanonische Serialisierung"
       - "keine Aenderung am bestehenden Transaktionsformat"
-      - "SCX-003 und SCE-ARTIFACT verwenden dieselbe Formatdefinition; ATCB ist nicht das Magic des VM-Containers"
+      - "SCX-003 und SCE-ARTIFACT verwenden dieselbe Formatdefinition; ATCB ist nicht das Magic des VM-Containers (erfuellt durch ATCE)"
       - "Drei Identitaeten getrennt benannt und verwendet: artifact_hash (Integritaet), code_hash (Instruktionsstrom), state_root (Ausfuehrungscommitment) — ratifiziert 12.11.2026, S1-1 Option A mit Domaenenvariante 1b"
       - "Neue Containerfassung ist Teil von S1-1b, nicht eine spaetere unabhaengige Aenderung"
       - "Beide Hashes tragen feste, byte-exakte Domaenen-Praefixe (S1-T-33, S1-T-34)"
-      - "Magic der Huelle: Vorschlag ATCE, Bestaetigung offen"
+      - "Magic der Huelle: ATCE, Fassung 0x02 (Owner 12.11.2026); ATCB bleibt ausschliesslich der Strom"
     open_items: []
 
   - id: D2
