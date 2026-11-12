@@ -109,27 +109,116 @@ fn verkettung_wird_geprueft() {
     assert_eq!(err.code(), "I-003");
 }
 
-/// Kein alternativer Importpfad: `blocks.push` darf nur an zwei Stellen stehen —
-/// in der lokalen Produktion und hinter der Pruefung im Import.
+/// Kein alternativer Importpfad: **alle** Mutationen des Blockbestands liegen in
+/// `chain.rs`, und zwar genau drei — zwei Anhängepunkte (lokale Produktion,
+/// validierter Import) und eine Ersetzung (validierte Adoption).
+///
+/// Der Test sucht nicht nur `blocks.push`, sondern jede Form von Schreibzugriff
+/// (`blocks =`, `blocks.push`, `blocks.clear/retain/truncate/insert/remove/
+/// extend`) und verlangt, dass sie ausschliesslich in `chain.rs` vorkommt. Damit
+/// ist auch ein indirekter Pfad in einem anderen Modul ein Testfehler.
 #[test]
 fn kein_zweiter_importpfad_im_quelltext() {
+    const SCHREIBER: [&str; 8] = [
+        "blocks.push",
+        "blocks =",
+        "blocks.clear",
+        "blocks.retain",
+        "blocks.truncate",
+        "blocks.insert",
+        "blocks.remove",
+        "blocks.extend",
+    ];
     let src = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
-    let mut treffer = Vec::new();
+    let mut treffer: Vec<(String, usize)> = Vec::new();
     for entry in std::fs::read_dir(&src).expect("src") {
         let path = entry.expect("dir entry").path();
         if path.extension().and_then(|e| e.to_str()) != Some("rs") {
             continue;
         }
         let text = std::fs::read_to_string(&path).expect("lesbar");
-        let n = text.matches("blocks.push").count();
-        if n > 0 {
-            treffer.push((path.file_name().unwrap().to_string_lossy().to_string(), n));
+        // Kommentare zaehlen nicht: sie beschreiben die Stellen nur.
+        let code: usize = text
+            .lines()
+            .filter(|l| !l.trim_start().starts_with("//") && !l.trim_start().starts_with("///"))
+            .map(|l| SCHREIBER.iter().filter(|m| l.contains(*m)).count())
+            .sum();
+        if code > 0 {
+            treffer.push((path.file_name().unwrap().to_string_lossy().to_string(), code));
         }
     }
     treffer.sort();
     assert_eq!(
         treffer,
-        vec![("chain.rs".to_string(), 2)],
-        "nur produce + append_validated"
+        vec![("chain.rs".to_string(), 3)],
+        "Schreibzugriffe auf den Blockbestand nur in chain.rs (produce, import_block, adopt_verified)"
     );
+}
+
+/// Auch die Feldprivatheit ist Teil der Grenze: ausserhalb von `chain.rs` darf
+/// kein Modul das Feld direkt lesen oder schreiben.
+#[test]
+fn blockbestand_ist_ausserhalb_nicht_zugaenglich() {
+    let src = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
+    for entry in std::fs::read_dir(&src).expect("src") {
+        let path = entry.expect("dir entry").path();
+        if path.extension().and_then(|e| e.to_str()) != Some("rs") {
+            continue;
+        }
+        if path.file_name().and_then(|n| n.to_str()) == Some("chain.rs") {
+            continue;
+        }
+        let text = std::fs::read_to_string(&path).expect("lesbar");
+        // Erlaubt sind nur die Lesezugriffe `.blocks()` und `.blocks_from(…)`.
+        for (i, _) in text.match_indices(".blocks") {
+            let next = text[i + ".blocks".len()..].chars().next().unwrap_or(' ');
+            assert!(
+                next == '(' || next == '_',
+                "{} greift direkt auf das Feld `blocks` zu (Zeichen danach: {next:?}) — nur chain.rs darf das",
+                path.display()
+            );
+        }
+    }
+}
+
+// --- Adoption (Gossip-Sync): derselbe Port, kein Ersetzen ohne Pruefung -----
+
+fn kandidat(payloads: &[&str]) -> Vec<Block> {
+    let kette = kette();
+    let mut out = vec![kette.best().clone()];
+    for (i, payload) in payloads.iter().enumerate() {
+        let prev = out.last().unwrap().hash;
+        out.push(Block::build_for_test(i as u64 + 1, prev, payload));
+    }
+    out
+}
+
+#[test]
+fn adoption_ohne_validator_wird_verweigert() {
+    let mut kette = kette();
+    let bloecke = kandidat(&["a", "b"]);
+    let err = kette.adopt_verified(bloecke, None).expect_err("fail-closed");
+    assert_eq!(err.code(), "I-001");
+    assert_eq!(kette.height(), 0, "nichts uebernommen");
+}
+
+#[test]
+fn adoption_prueft_jede_payload() {
+    let mut kette = kette();
+    let bloecke = kandidat(&["state-root-1", "atcb:41544342"]);
+    let err = kette.adopt_verified(bloecke, Some(&NurHuelle)).expect_err("ATCB im Kandidaten");
+    match err {
+        ImportError::Payload(r) => assert_eq!(r.code, "P-002"),
+        other => panic!("erwartet Payload(P-002), erhalten {other:?}"),
+    }
+    assert_eq!(kette.height(), 0, "keine Teiluebernahme");
+}
+
+#[test]
+fn adoption_mit_validator_uebernimmt_nach_pruefung() {
+    let mut kette = kette();
+    let bloecke = kandidat(&["state-root-1", "state-root-2"]);
+    kette.adopt_verified(bloecke, Some(&NurHuelle)).expect("Adoption");
+    assert_eq!(kette.height(), 2);
+    kette.verify().expect("Kette gueltig");
 }
