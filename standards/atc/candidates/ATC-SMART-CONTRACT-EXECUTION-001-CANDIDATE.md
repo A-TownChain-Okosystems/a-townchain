@@ -5,7 +5,7 @@
 > **Tier:** 0 (Kandidat fuer foundational)
 > **Status:** KANDIDAT, **nicht normativ.** Keine Implementierungspflicht, keine
 > Ratifizierung, keine Registry-Bindung vor der Owner-Freigabe nach ATC-STD-000 §9.
-> **Version:** 1.1.0-draft
+> **Version:** 1.2.0-draft
 > **Datum:** 2026-11-12
 > **Autor:** Michael Wroblewski (Owner-Vorgabe), Entwurf durch Aurora
 > **Vorgaenger:** v0.1.0 vom 2026-11-09 (Commit `18730d431`). Diese Fassung
@@ -26,6 +26,7 @@
 | 0.1.0 | 2026-11-09 | erster Kandidat: Lifecycle, Verantwortungsmatrix, `require`-Blocker |
 | 1.0.0-draft | 2026-11-12 | Integrationsteil: acht Objekte, 38 Anforderungen, zehn Gates, sieben Entscheidungs-Slots, Testmatrix |
 | 1.1.0-draft | 2026-11-12 | v0.1.0 vollstaendig wieder eingearbeitet. Zwischenzeitlich war die Datei durch den Entwurf 1.0.0 ersetzt worden; v0.1.0 ist aus Commit `18730d431` zurueckgeholt und in die neue Gliederung ueberfuehrt. Die Kennungen SCX-001 bis SCX-010 bleiben unveraendert gueltig. |
+| 1.2.0-draft | 2026-11-12 | Owner-Entscheidung P1 erfasst: D1, D3, D5, D7 freigegeben, D2, D4, D6 bedingt freigegeben, alle sieben DECIDED. Auflagen als REQ-SCE-039 bis REQ-SCE-050 aufgenommen, Entscheidungs-Slots durch das Register ersetzt, Zustandsleiter DECIDED/SPECIFIED/IMPLEMENTED ergaenzt. Zahlen und Gates bleiben offen. |
 
 ---
 
@@ -123,6 +124,69 @@ Eine gueltige Compilierung ist kein Ausfuehrungsrecht.
 
 Regel aus v0.1.0, unveraendert: **Keine Stufe darf die Pruefung einer spaeteren
 Stufe ersetzen. Eine gueltige Compilierung ist kein Ausfuehrungsrecht.**
+
+### 5.10 Auflagen aus der Owner-Freigabe vom 12.11.2026
+
+Diese Anforderungen setzen die Bedingungen der bedingten Freigaben um. Sie sind
+Teil dieses Vertrags, nicht Zusatzmaterial.
+
+**Aufruf (D2)**
+
+- **REQ-SCE-039:** Der Selektor ist 4 Byte breit und besteht aus den ersten 4 Byte
+  des SHA-256 der kanonischen Funktionssignatur. Ein Deployment, dessen ABI zwei
+  gleiche Selektoren enthaelt, wird abgelehnt. Eine Kollision wird nicht durch eine
+  laengere Laufzeitform aufgeloest, weil das die Semantik je Generation verschieben
+  wuerde.
+- **REQ-SCE-040:** Die Wortgroesse ist 32 Byte, die Reihenfolge big-endian.
+  Calldata ist die kanonische Verkettung von Woertern ohne Auffuellung. Grenzen
+  (Vorschlag, Bestaetigung im Rahmen von P1b offen, angelehnt an die bestehenden
+  Grenzen `MAX_PROGRAM_OPS` 65 536, `MAX_STACK_ITEMS` 4 096,
+  `MAX_STORAGE_SLOTS` 65 536): Calldata hoechstens 8 192 Byte, Rueckgabepuffer
+  hoechstens 4 096 Byte, Aufruftiefe hoechstens 8.
+- **REQ-SCE-041:** Die Vertragsadresse ist die ersten 20 Byte von
+  `SHA-256("ATC-CONTRACT-V1" || deployer_20 || nonce_u64_le || code_hash_32)`,
+  dargestellt als `ATC:` plus Hex, identisch zur Adressform aus SEC-P0-005. Sie ist
+  ohne Netzwerkzugriff und ohne Zeitbezug reproduzierbar.
+
+**Identitaet (D6)**
+
+- **REQ-SCE-048:** Vor jeder Freigabe von SCE-G5 sind vier Nachweise zu fuehren:
+  (a) DID und Kontoidentitaet verwenden dieselbe kanonische Ableitung, belegt durch
+  einen Test, der aus einem Schluessel beide Werte erzeugt und vergleicht;
+  (b) keine Identitaet ist ueber Transaktionsfelder einschleusbar, belegt durch
+  einen Negativtest mit abweichendem Aufruferfeld; (c) die Signaturpruefung
+  authentifiziert die Identitaet, belegt durch einen Negativtest mit fremdem
+  Schluessel; (d) interne Aufrufe bilden den unmittelbaren Aufrufer ab, belegt
+  nach BC-002.
+
+**Gas (D4)**
+
+- **REQ-SCE-045:** Die Abrechnung fuehrt fuenf getrennte Felder:
+  `gas_limit` (Budget), `gas_used` (Verbrauch), `gas_price` (Preis je Einheit),
+  `fee_charged` (tatsaechlich belastet), `gas_refund` (nicht verbrauchtes Budget).
+  Kein Feld darf aus einem anderen abgeleitet werden, ohne dass die Ableitung
+  normiert ist.
+- **REQ-SCE-046:** Die Gebuehr wird unabhaengig vom Rollback des Vertragszustands
+  belastet. Ein Rollback der Ausfuehrung ist kein Rollback der Abrechnung.
+- **REQ-SCE-047:** Ein fehlgeschlagener Vertrag verbraucht sein Budget vollstaendig.
+  Rechenzeit ohne Belastung ist unzulaessig; das gilt auch fuer Fehlschlaege im
+  Loader und im Backend.
+
+**Ausfuehrung und Block (D5, Zusatzanforderungen)**
+
+- **REQ-SCE-042:** Das Artefakt und der Block deklarieren die Semantikversion der
+  VM. Ein Validator, dessen Version abweicht, lehnt den Block ab, statt ihn mit
+  anderer Semantik zu bewerten. Kein stiller Moduswechsel.
+- **REQ-SCE-043:** Jede fehlgeschlagene Ausfuehrung rollt ihren Vertragszustand
+  vollstaendig zurueck, ueber alle Frames einer Transaktion. Ein Teilzustand nach
+  Fehlschlag ist unzulaessig.
+- **REQ-SCE-044:** Dieselbe Transaktion darf durch erneute Verarbeitung keine
+  doppelten Zustandsaenderungen verursachen. Die Bindung erfolgt ueber Chain-Domain
+  und Nonce; ein bereits verarbeiteter Beleg ist nicht erneut anwendbar.
+- **REQ-SCE-049:** Die Transaktionsreihenfolge im Block ist deterministisch
+  festgelegt, nicht von Ankunftszeit, Map-Reihenfolge oder Zufall abhaengig.
+- **REQ-SCE-050:** Receipts sind byte-gleich reproduzierbar. Zwei Laeufe derselben
+  Transaktion auf demselben Zustand erzeugen identische Bytes.
 
 ## 6. Normative Objekte
 
@@ -262,22 +326,36 @@ eine Version.
 - **REQ-SCE-038:** Ein eingefrorener Standard wird nicht umgedeutet (ATC-STD-000
   §30). Abweichungen laufen ueber SCR.
 
-## 8. Entscheidungs-Slots
+## 8. Entscheidungs-Slots (am 12.11.2026 beantwortet)
 
-Dieser Vertrag ist absichtlich an sieben Stellen offen. Er ist erst ratifizierbar,
-wenn alle sieben gefuellt sind.
+Die sieben Slots sind entschieden. Vier sind freigegeben (D1, D3, D5, D7), drei
+bedingt freigegeben (D2, D4, D6); die Auflagen stehen in Abschnitt 5.10. Alle
+sieben stehen auf **DECIDED**, keine auf **SPECIFIED** im Sinne einer Ratifizierung,
+keine auf **IMPLEMENTED**.
 
-| Slot | Entscheidung | Blockiert |
-|---|---|---|
-| SCE-D1 | Format und Huellenname (Vorschlag: Strom ATC-BC-001, Huelle `ATCE`) | alles |
-| SCE-D7 | kanonisches Frontend | Compilerziel |
-| SCE-D2 | Aufrufkonvention, Stufe 1 und Stufe 2 | Ausfuehrung |
-| SCE-D3 | Speichertrennung und Layout-Bindung | Zustand |
-| SCE-D6 | Aufruferidentitaet | Berechtigungen |
-| SCE-D4 | Gastvertrag und Gebuehrenabbuchung | Abrechnung |
-| SCE-D5 | Ausfuehrung als Blockbestandteil | Konsens |
+<!-- BEGIN DECISION-REGISTER (erzeugt aus docs/decisions/exec-decision-register.yaml, nicht von Hand aendern) -->
 
-Die Ausarbeitung liegt in `docs/decisions/AD-EXEC-D1-D7.md`.
+**Entscheidungsregister** (Owner, 2026-11-12; Quelle: `docs/decisions/exec-decision-register.yaml`)
+
+| ID | Entscheidung (Titel) | Owner-Entscheidung | Spezifikation | Umsetzung | Gate |
+|---|---|---|---|---|---|---|
+| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | SPECIFIED | OPEN | SCE-G1 |
+| D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | SPECIFIED | OPEN | SCE-G3 |
+| D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | SPECIFIED | OPEN | SCE-G4 |
+| D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | SPECIFIED | OPEN | SCE-G6 |
+| D5 | Blockausfuehrung: deterministische Validator-Ausfuehrung | freigegeben | SPECIFIED | OPEN | SCE-G7 |
+| D6 | Identitaet: 32-Byte-Identitaetswort | bedingt freigegeben | SPECIFIED | OPEN | SCE-G5 |
+| D7 | Frontend: ATCLang kanonisch, .ops nur Testwerkzeug | freigegeben | SPECIFIED | OPEN | SCE-G2 |
+
+Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** (vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die Gates bleiben bis zum jeweiligen Nachweis offen.
+
+Offen und nicht Teil dieser Freigabe: Numerische Gaspreise (Messung je Instruktionsklasse und Vertragsbenchmark); Endgueltiges Transaktionsgaslimit; Endgueltiges Blockgaslimit; Implementierungs- und CI-Gates.
+
+<!-- END DECISION-REGISTER -->
+
+Die Ausarbeitung liegt in `docs/decisions/AD-EXEC-D1-D7.md`. Das Register ist die
+einzige Quelle; beide Dokumente tragen denselben, erzeugten Block
+(`tools/decision_register.py --check`).
 
 ## 9. Freigabe-Gates
 
@@ -366,6 +444,17 @@ Adresse, Grenzen).
 
 ## 15. Evidenz je Stufe
 
+**Drei Zustaende, die einander nicht ersetzen:**
+
+| Zustand | Bedeutung | Wer setzt ihn |
+|---|---|---|
+| **DECIDED** | Architekturentscheidung getroffen | Owner |
+| **SPECIFIED** | vollstaendig normativ spezifiziert und ratifiziert | Owner nach §9 |
+| **IMPLEMENTED** | Umsetzung im bestehenden System nachgewiesen | Evidenz, nicht Beschluss |
+
+Eine Entscheidung erzeugt keine Spezifikation, eine Spezifikation keine Umsetzung.
+Die Gates bleiben bis zum jeweiligen Nachweis offen.
+
 Jeder Pruefpunkt braucht Test plus Nachweis, sonst bleibt er unter der
 Statusleiter. Reihenfolge: IMPLEMENTED, TESTED, CI_VERIFIED, E2E_VERIFIED,
 VERIFIED. Nicht nachgewiesen bleibt BLOCKED.
@@ -422,6 +511,19 @@ keinem Punkt CI_VERIFIED oder E2E_VERIFIED.
 8. Verhaeltnis zur Wasm-Forderung aus ATC-14 / ATC-21 (Standardkonflikt K-11).
 9. Kontofuehrung, ohne die REQ-SCE-025 nicht erfuellbar ist.
 10. Nachweis, dass die Aufnahme (ATC-SEC-EXEC-001) auch im Kettenpfad greift.
+
+**Aus der Freigabe vom 12.11.2026 ausdruecklich offen:**
+
+11. Numerische Instruktionskosten (Messung je Instruktionsklasse und Vertragsbenchmark).
+12. Endgueltiges Transaktionsgaslimit.
+13. Endgueltiges Blockgaslimit.
+14. Implementierungs- und CI-Gates.
+
+Der Referenzwert 100 000 Gas aus `ATC-BC-002-CANDIDATE` §19.5 (groesstes im Repo
+verwendetes Budget, zwei Aufrufe in `tests/atcb_v2.rs`) ist ein Mess- und
+Vergleichswert, kein Konsenslimit. `DEFAULT_GAS = 50_000` in
+`components/system/src/system.rs:37` ist ein Implementierungswert und ersetzt kein
+Transaktionsbudget.
 
 Bis dahin gilt: dieser Vertrag ordnet die Arbeit. Er ist kein Freibrief und kein
 Nachweis.
