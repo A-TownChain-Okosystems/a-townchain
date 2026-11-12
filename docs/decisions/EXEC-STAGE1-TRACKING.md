@@ -62,6 +62,11 @@ Huelle, eine `ATCB`-Eingabe ergibt `E-007` und ein Deployment ohne Huelle `E-001
 Sicherheitsgrenze ist damit im Deploy-Weg durchgesetzt, nicht im Block-Import; die
 vier Architekturfragen stehen in
 [EXEC-D0-ARCH-QUESTIONS-TEMPLATE-2026-11-12.md](EXEC-D0-ARCH-QUESTIONS-TEMPLATE-2026-11-12.md).
+Die vier Fragen sind am 12.11.2026 je mit Option A entschieden
+([AD-EXEC-D0-FOUR-DECISIONS-2026-11-12.md](AD-EXEC-D0-FOUR-DECISIONS-2026-11-12.md),
+Register D0-1 bis D0-4); die Invarianten I1 bis I9 gelten fuer jede weitere
+Aenderung. F-1 ist als eigener Schritt S1-2 analysiert
+([Analyse](EXEC-S1-2-ADMISSION-REGISTRY-F1.md)), Umsetzung nicht freigegeben.
 
 Siebzehn Tests (S1-T-39 bis S1-T-55) sind am 12.11.2026 mit §19, §19.2a und §19.7 des
 Kandidaten hinzugekommen: Parser-Fehlersemantik, Stromgrenze, Tail-Integritaet,
