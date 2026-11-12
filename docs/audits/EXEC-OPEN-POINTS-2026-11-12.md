@@ -2,6 +2,9 @@
 
 **Status:** Pruefbericht. Trifft **keine** Entscheidung und aendert keine Anforderung.
 **Datum:** 2026-11-12 · **Basis:** `a-townchain` main `78596f79`
+**Fortsetzung:** `docs/audits/EXEC-DEPENDENCY-INVENTORY-2026-11-12.md` (wo die
+Befunde im Code haengen) und `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md`
+(Blocker und Entscheidungen getrennt)
 
 Dieser Bericht beantwortet eine einzige Frage: Was sagen die heute gueltigen oder
 im Entwurf befindlichen Regeln von ATC-BC-002 und die vorhandenen Testvektoren zu
@@ -50,6 +53,17 @@ Magic (Vorschlag `ATCE`).
    (`artifact.rs:306`) und der Test `zu_kurz_und_falsche_magic_abgelehnt`
    (`artifact.rs:452`).
 
+**Dritter Befund: der Container-Hash wird bereits als `code_hash` verwendet.**
+`components/system/src/system.rs:223` setzt `let code_hash = artifact.hash();`,
+also den Hash der ganzen Huelle. Derselbe Wert geht in die Zustandswurzel
+(`state.rs:43-52`), in den Freigabeantrag (`system.rs:276`, verglichen in
+`exec-admission/src/lib.rs:434`) und in die Registry, die sich ausdruecklich als
+"SSOT fuer `code_hash` zu Policy" bezeichnet (`exec-admission/src/lib.rs:188-204`).
+REQ-SCE-041 meint mit `code_hash` dagegen den Strom-Hash. Es sind elf Stellen;
+die vollstaendige Liste steht in der Abhaengigkeitsinventur, Abschnitt 2. Eine
+Umbenennung korrigiert daran nichts: es braucht zwei benannte Hashes mit
+getrennten Verwendungen.
+
 **Was fuer die Entscheidung fehlt.** Nicht die Namenswahl selbst, sondern die
 Zuordnung, **wer** das Containerformat besitzt: ATC-BC-002 Abschnitt 16 oder
 SCE-ARTIFACT. Solange beide es beschreiben, bleibt es bei zwei Wahrheiten, auch
@@ -57,12 +71,25 @@ wenn das Magic umbenannt wird.
 
 ## 3. Punkt 2 — die drei Grenzwerte
 
-**Aufruftiefe: 8 gegen 64, und 64 ist bereits entschieden.** ATC-BC-002 nennt die
-Aufruftiefe an vier Stellen als 64 (Zeilen 50, 133, 146, 282) und reserviert `E06`
-ausdruecklich und unveraenderlich fuer die Aufruftiefe (Zeile 197, Owner-Entscheid
-vom 2026-11-09). REQ-SCE-040 schlaegt Tiefe **8** vor. Das ist kein offener Wert,
-sondern ein **Widerspruch zu einer bestehenden Entscheidung**. Zusaetzlich kollidiert
-die SCE-Formulierung "Aufruftiefe 9 wird abgelehnt, Statuscode eindeutig" mit der
+**Aufruftiefe: 8 gegen 64, und die 64 ist eine Owner-Entscheidung, aber keine
+ratifizierte Norm.** ATC-BC-002 nennt die Aufruftiefe an vier Stellen als 64
+(Zeilen 50, 133, 146, 282) und reserviert `E06` ausdruecklich und unveraenderlich
+dafuer (Zeile 197). REQ-SCE-040 schlaegt Tiefe **8** vor.
+
+Die Ebenen sind dabei streng zu trennen, sonst wird aus einem internen Beschluss
+eine scheinbare Norm:
+
+| Ebene | Status |
+|---|---|
+| Owner-Entscheidung 64 (09.11.2026) | intern getroffen und verbindlich |
+| ATC-BC-002 als Standard | Kandidat, **nicht ratifiziert** |
+| SCE-Wert 8 | Vorschlag |
+| Konfliktaufloesung | offen |
+
+Daraus folgt: die 64 darf nicht als bereits ratifizierte Norm behandelt werden,
+und eine Abweichung von ihr ist nicht stillschweigend moeglich, sondern nur als
+ausdrueckliche Aenderung der Owner-Entscheidung. Zusaetzlich kollidiert die
+SCE-Formulierung "Aufruftiefe 9 wird abgelehnt, Statuscode eindeutig" mit der
 Rolle von `E06`.
 
 **Calldata und Rueckgabepuffer: es gibt nichts, wogegen man sie pruefen koennte.**
@@ -97,9 +124,20 @@ Rueckfluss des ungenutzten Transaktionsbudgets an den Absender als "Erstattung"
 bezeichnet, widerspricht das dem Wortlaut von Zeile 127, ohne dass sich an der
 Zahl etwas aendert.
 
-Ein Geldmodell (Konto, Abbuchung, Betrag) existiert in ATC-BC-002 **nicht**; es
-steht ausschliesslich in D4 und im SCE-Kandidaten. Die Erstattungsregel ist damit
-keine Frage an ATC-BC-002, sondern eine Frage des noch fehlenden Kontomodells.
+Drei Ebenen sind auseinanderzuhalten, und nur die dritte ist Geld:
+
+| Ebene | Regel |
+|---|---|
+| verbrauchtes Gas | bleibt verbraucht (BC-002 Zeile 127, 197) |
+| nicht verbrauchtes Unterbudget eines Frames | fliesst in Gas-Einheiten an den Aufrufer zurueck (BC-002 Zeile 200) |
+| nicht verbrauchtes Transaktionsbudget | monetar gegenueber dem Absender: **nicht geregelt** |
+
+Die SCE-Formel `refund_amount = gas_refund * gas_price` macht aus dem
+Gas-Rueckfluss eine Geldabrechnung und entscheidet damit die dritte Ebene, nicht
+die zweite. Ein Geldmodell (Konto, Abbuchung, Betrag) existiert in ATC-BC-002
+**nicht**; es steht ausschliesslich in D4 und im SCE-Kandidaten. Die
+Erstattungsregel ist damit keine Frage an ATC-BC-002, sondern eine Frage des noch
+fehlenden Kontomodells.
 
 ## 5. Punkt 4 — `caller` bei Vertrag-zu-Vertrag
 
@@ -111,8 +149,23 @@ keine Frage an ATC-BC-002, sondern eine Frage des noch fehlenden Kontomodells.
 | Rust-VM | kein Befehl (19 Ops) | `Op::Caller` pusht `u64` (`vm.rs:391`, `system.rs:266`) |
 | Python-VM in `docs/os-docs` | `CALL_EXT` vorhanden (`compiler.py:201`) | `CALLER` als Opcode 104 (ATC-93 Zeile 233) |
 
+Der Unterschied ist grundsaetzlich: `Caller` liefert eine vorhandene
+Aufruferinformation, `CALL` wuerde einen neuen Ausfuehrungsframe erzeugen. Ein
+Frame braucht Identitaet, Speichergrenzen, Gasbudget, Rueckgabepuffer und
+Rollback-Semantik. Der Abstand zum Zielbild ist damit groesser als ein Typwechsel:
+
+| Bestandteil | heute | SCE-Ziel |
+|---|---|---|
+| `caller` | `u64` | 32-Byte-`IdentityValue` |
+| Stapelwort | `u64` | 32 Byte |
+| Aufrufbefehl | fehlt | nicht spezifiziert |
+| Frame-Verwaltung | keine | erforderlich |
+| Vertrag-zu-Vertrag | nicht implementiert | haengt an einer neuen Instruktion |
+
 Damit haengt REQ-SCE-052 nicht an der Ratifizierung von ATC-BC-002 allein: es
-fehlt eine Instruktion. ATC-BC-002 v2 kennt sie nicht, also waere sie eine
+fehlt eine Instruktion. Und `CALL_EXT` aus der Python-VM darf nicht uebernommen
+werden, solange deren Autoritaet nicht geklaert ist (R-906); eine Uebernahme
+waere eine dritte Wahrheit. ATC-BC-002 v2 kennt sie nicht, also waere sie eine
 Erweiterung von v2 oder eine dritte Generation. Zusaetzlich:
 
 - **Werttyp.** Der Stapel traegt `u64`. Ein 32-Byte-`IdentityValue` passt nicht
