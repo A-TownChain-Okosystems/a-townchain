@@ -9,6 +9,7 @@
 use atc_algorithm::hash::atc_hash;
 
 use crate::bootstrap::Genesis;
+use crate::import::{ContainerValidator, ImportError};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Block {
@@ -91,15 +92,8 @@ impl Chain {
         self.best().hash
     }
 
-    /// Anhaengen **nur** nach vollstaendiger Pruefung. Bewusst nicht `pub`:
-    /// der einzige oeffentliche Weg fuer einen fremden Block ist
-    /// `import::Chain::import_block` (dort mit Validator und Reihenfolge).
-    pub(crate) fn append_validated(&mut self, block: Block) {
-        self.blocks.push(block);
-    }
-
     /// Platz fuer einen weiteren Block (Devnet-Grenze, wie `produce`).
-    pub(crate) fn has_capacity(&self) -> bool {
+    fn has_capacity(&self) -> bool {
         self.blocks.len() < 64
     }
 
@@ -243,6 +237,73 @@ impl Chain {
             .commit_block(txs)
             .map_err(|e| format!("Ledger-Commit fehlgeschlagen: {:?}", e))?;
         Ok(hash)
+    }
+
+    /// Nimmt einen fremden Block an — nur ueber diesen Weg, nur mit Validator.
+    ///
+    /// Reihenfolge, erstes Problem gewinnt: Blockhash (`I-002`), Verkettung
+    /// (`I-003`), Kapazitaet (`I-004`), Validator vorhanden (`I-001`),
+    /// Payload (`I-005`). Angehaengt wird erst danach; ein abgelehnter Block
+    /// aendert nichts. `self.blocks.push` steht damit nur an zwei Stellen im
+    /// ganzen Crate: hier und in der lokalen Produktion.
+    pub fn import_block(
+        &mut self,
+        block: Block,
+        validator: Option<&dyn ContainerValidator>,
+    ) -> Result<(), ImportError> {
+        let recomputed = block.recompute_hash();
+        if recomputed != block.hash {
+            return Err(ImportError::BlockHash { expected: recomputed, found: block.hash });
+        }
+        let (best_height, best_hash) = {
+            let b = self.best();
+            (b.height, b.hash)
+        };
+        if block.height != best_height + 1 {
+            return Err(ImportError::Linkage("Hoehe springt gegenueber dem Best-Block"));
+        }
+        if block.prev_hash != best_hash {
+            return Err(ImportError::Linkage("Vorgaenger-Hash passt nicht zum Best-Block"));
+        }
+        if !self.has_capacity() {
+            return Err(ImportError::Capacity);
+        }
+        let validator = validator.ok_or(ImportError::NoValidator)?;
+        validator
+            .validate_block_payload(&block.payload)
+            .map_err(ImportError::Payload)?;
+        self.blocks.push(block);
+        Ok(())
+    }
+
+    /// Ersetzt die Kette durch eine empfangene Blockfolge — **validiert**.
+    ///
+    /// Der Gossip-Sync hat bisher `*kette = kandidat` geschrieben, nachdem nur
+    /// Hashes und Verkettung geprueft waren. Damit war die Payload-Pruefung
+    /// umgehbar: ein Peer konnte beliebige Payloads liefern. Hier wird jeder
+    /// Block oberhalb der eigenen Hoehe durch denselben Port geprueft wie beim
+    /// Einzelimport; ohne Validator wird **nicht** adoptiert (`I-001`).
+    pub fn adopt_verified(
+        &mut self,
+        blocks: Vec<Block>,
+        validator: Option<&dyn ContainerValidator>,
+    ) -> Result<(), ImportError> {
+        let kandidat = Chain::from_blocks(blocks)
+            .map_err(|_| ImportError::Linkage("Kandidat nicht verifizierbar"))?;
+        if kandidat.blocks.first() != self.blocks.first() {
+            return Err(ImportError::Linkage("Kandidat-Genesis abweichend"));
+        }
+        if kandidat.blocks.len() <= self.blocks.len() {
+            return Err(ImportError::Linkage("Kandidat nicht laenger"));
+        }
+        let validator = validator.ok_or(ImportError::NoValidator)?;
+        for block in kandidat.blocks.iter().skip(self.blocks.len()) {
+            validator
+                .validate_block_payload(&block.payload)
+                .map_err(ImportError::Payload)?;
+        }
+        self.blocks = kandidat.blocks;
+        Ok(())
     }
 
     /// Kompletter Blockzugriff (read-only) fuer Gossip-Sync (SCR-0118).
