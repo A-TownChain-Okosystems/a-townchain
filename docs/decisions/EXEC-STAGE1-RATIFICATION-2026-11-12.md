@@ -129,13 +129,14 @@ offen, P2 bleibt durch B-1 gesperrt, der Standard bleibt Kandidat.
 Auf Empfehlung des Owners sind die drei unabhaengigen Pruefungen als §19 des
 Kandidaten spezifiziert: Tail-Integritaet byte-genau, Differentialtests zweier
 unabhaengiger Dekoder und Versionsisolation ohne Fallback. Die Codeliste `E-001` bis
-`E-012` entspricht eins zu eins der Fehleraufzaehlung der VM, die Pruefreihenfolge
-ist zehnstufig und legt die Praezedenz fest.
+`E-012` ist normativ; sie ist **nicht** deckungsgleich mit der Fehleraufzaehlung der
+VM, der dort `EMPTY_STREAM` und `COUNT_MISMATCH` fehlen. Die Pruefreihenfolge ist
+zehnstufig und legt die Praezedenz fest.
 
 Zwei Festlegungen sind dabei inhaltlich neu und pruefbar: das Magic wird vor der
 Version geprueft, deshalb ergibt der Altcontainer `ATCB` + `0x01` den Code `E-007`
 und nicht `E-003`; und ein Fehler ist das Paar `(Code, Offset)`, nie ein Meldungstext.
 
-Die Matrix waechst dadurch von 38 auf 47 Tests (46 `OPEN`, 1 `BLOCKED`). Kein Test
+Die Matrix waechst dadurch von 38 auf 48 Tests (47 `OPEN`, 1 `BLOCKED`). Kein Test
 ist bestanden. D1 bleibt `SPECIFIED`, nicht `IMPLEMENTED`; P1a bleibt offen, weil der
 reine Dekoder fehlt; P2 bleibt durch B-1 gesperrt; der Standard bleibt Kandidat.
