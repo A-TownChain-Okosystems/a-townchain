@@ -26,6 +26,15 @@ getroffenen Entscheidung.
 | D6 | Identitaet: 32-Byte-Identitaetswort | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.5, §5.10 (nicht ratifiziert) | OPEN | SCE-G5 |
 | D7 | Frontend: ATCLang kanonisch, .ops nur Testwerkzeug | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.2 (nicht ratifiziert) | OPEN | SCE-G2 |
 
+**Teilauflagen** (getrennt implementierbar und testbar, je eigene Zustaendigkeit; eine erfuellte Teilauflage hebt die naechste nicht auf)
+
+| ID | Teilauflage | Zustaendigkeit | Ziel | Status | offen, weil |
+|---|---|---|---|---|---|
+| D1-A | Container-Admission: verbindliche Byteobergrenze vor dem Hashing | Admission-Layer | Die gesamte Eingabe wird gegen eine konsensweit identische Obergrenze geprueft, bevor Hash-, Dekodier- oder Allokationsarbeit anfaellt; der Dekoder bleibt eine reine Funktion ohne eigene Groessenpolitik | OPEN | Wert offen bis zur Messung in P1b und darf nicht aus bestehenden VM-Grenzen abgeleitet werden (Kandidat §19.7, S1-T-55) |
+| D1-B | Dekoderfehler: EMPTY_STREAM (E-004) und COUNT_MISMATCH (E-005) ergaenzen | VM-Parser | ArtifactError fuehrt alle zwoelf Codes aus §19.1; beide fehlenden Varianten sind vorhanden und tragen dieselbe Bedingung wie der Vertrag | OPEN | notwendige Konformitaetskorrektur, Implementierung und Freigabe stehen aus |
+| D1-C | Groessenpruefung: dekodierte Laenge statt deklarierter Anzahl | VM-Parser / Admission-Vertrag | Die Groessenpruefung bewertet die dekodierte Stromlaenge (p - 10); die deklarierte Anzahl c ist Obergrenze und kein Ausloeser von E-012. C-8-GV1-MAX ergibt E-005, nicht ProgramTooLarge | OPEN | notwendige Konformitaetskorrektur; die VM prueft heute c > MAX_PROGRAM_OPS (artifact.rs:322) |
+
+
 Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** (vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die Gates bleiben bis zum jeweiligen Nachweis offen.
 
 Drei Ebenen: **Owner-Entscheidung** ist intern verbindlich, auch wenn der zugehoerige Standard nicht ratifiziert ist. **Ratifikation** sagt, ob der Standard in Kraft ist; "nicht ratifiziert (Kandidat)" bindet niemanden. Ein Wert im Kandidaten bleibt **Vorschlag**, solange der Owner ihn nicht ausdruecklich beschliesst.
