@@ -16,19 +16,21 @@ getroffenen Entscheidung.
 
 **Entscheidungsregister** (Owner, 2026-11-12; Quelle: `docs/decisions/exec-decision-register.yaml`)
 
-| ID | Entscheidung (Titel) | Owner-Entscheidung | Spezifikation | spezifiziert in | Umsetzung | Gate |
-|---|---|---|---|---|---|---|
-| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | OPEN | Kandidat §5.1 (nicht ratifiziert) | OPEN | SCE-G1 |
-| D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | OPEN | Kandidat §5.3, §5.10 (nicht ratifiziert) | OPEN | SCE-G3 |
-| D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | OPEN | Kandidat §5.4 (nicht ratifiziert) | OPEN | SCE-G4 |
-| D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | OPEN | Kandidat §5.6, §5.10 (nicht ratifiziert) | OPEN | SCE-G6 |
-| D5 | Blockausfuehrung: deterministische Validator-Ausfuehrung | freigegeben | OPEN | Kandidat §5.7, §5.10 (nicht ratifiziert) | OPEN | SCE-G7 |
-| D6 | Identitaet: 32-Byte-Identitaetswort | bedingt freigegeben | OPEN | Kandidat §5.5, §5.10 (nicht ratifiziert) | OPEN | SCE-G5 |
-| D7 | Frontend: ATCLang kanonisch, .ops nur Testwerkzeug | freigegeben | OPEN | Kandidat §5.2 (nicht ratifiziert) | OPEN | SCE-G2 |
+| ID | Entscheidung (Titel) | Owner-Entscheidung | Ratifikation | Spezifikation | spezifiziert in | Umsetzung | Gate |
+|---|---|---|---|---|---|---|---|
+| D1 | Bytecode-Kopf: eigene VM-Huelle, ATC-BC-001 unveraendert | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.1 (nicht ratifiziert) | OPEN | SCE-G1 |
+| D2 | Aufrufkonvention: ABI-Selektor, Calldata, Rueckgabepuffer | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.3, §5.10 (nicht ratifiziert) | OPEN | SCE-G3 |
+| D3 | Storage: Frame-lokal und persistente S1-Slots | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.4 (nicht ratifiziert) | OPEN | SCE-G4 |
+| D4 | Gas: eine Tabelle, Transaktionsbudget, Gebuehrenabbuchung | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.6, §5.10 (nicht ratifiziert) | OPEN | SCE-G6 |
+| D5 | Blockausfuehrung: deterministische Validator-Ausfuehrung | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.7, §5.10 (nicht ratifiziert) | OPEN | SCE-G7 |
+| D6 | Identitaet: 32-Byte-Identitaetswort | bedingt freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.5, §5.10 (nicht ratifiziert) | OPEN | SCE-G5 |
+| D7 | Frontend: ATCLang kanonisch, .ops nur Testwerkzeug | freigegeben | nicht ratifiziert (Kandidat) | OPEN | Kandidat §5.2 (nicht ratifiziert) | OPEN | SCE-G2 |
 
 Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** (vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die Gates bleiben bis zum jeweiligen Nachweis offen.
 
-Offen und nicht Teil dieser Freigabe: Numerische Gaspreise (Messung je Instruktionsklasse und Vertragsbenchmark); Endgueltiges Transaktionsgaslimit; Endgueltiges Blockgaslimit; Implementierungs- und CI-Gates.
+Drei Ebenen: **Owner-Entscheidung** ist intern verbindlich, auch wenn der zugehoerige Standard nicht ratifiziert ist. **Ratifikation** sagt, ob der Standard in Kraft ist; "nicht ratifiziert (Kandidat)" bindet niemanden. Ein Wert im Kandidaten bleibt **Vorschlag**, solange der Owner ihn nicht ausdruecklich beschliesst.
+
+Offen und nicht Teil dieser Freigabe: Numerische Gaspreise (Messung je Instruktionsklasse und Vertragsbenchmark); Endgueltiges Transaktionsgaslimit; Endgueltiges Blockgaslimit; Implementierungs- und CI-Gates; Konflikt Aufruftiefe: Owner-Entscheidung 64 vom 09.11.2026 in ATC-BC-002 (Kandidat, nicht ratifiziert) gegen SCE-Vorschlag 8 (R-901); Artefaktidentitaet: Container-Magic ATCB gegen SCE-D1, zwei Hashumfaenge ohne getrennte Namen (R-903); Fehlende CALL-Instruktion und Identitaetstyp auf dem u64-Stapel (R-902, R-907); Zirkularitaet P1a/P2: Grenzwerttests brauchen den Aufrufmechanismus (R-905); Autoritaet der beiden Instruktionssaetze (R-906).
 
 <!-- END DECISION-REGISTER -->
 
@@ -426,4 +428,13 @@ ausschliesslich einen nachvollziehbaren Zustand.
 
 **Pruefstand der offenen Auflagen:** `docs/audits/EXEC-OPEN-POINTS-2026-11-12.md`
 (fuer D1, D2, D4 und D6 gegen ATC-BC-002 und die vorhandenen Vektoren, ohne
-Entscheidung).
+Entscheidung), die Abhaengigkeitsinventur
+`docs/audits/EXEC-DEPENDENCY-INVENTORY-2026-11-12.md` (betroffene Codestellen) und
+die Vorlage `docs/decisions/EXEC-DECISION-TEMPLATE-2026-11-12.md` (drei Blocker,
+vier Entscheidungen).
+
+**Drei Ebenen, die nicht vermischt werden duerfen:** eine Owner-Entscheidung ist
+intern verbindlich, auch wenn der zugehoerige Standard nur Kandidat ist und nicht
+ratifiziert wurde; ein Wert im Kandidaten ist ein Vorschlag. Die Ratsche gilt
+auch fuer ATC-BC-002: dessen Aufruftiefe 64 ist eine Owner-Entscheidung vom
+09.11.2026, der Standard selbst ist Kandidat.
