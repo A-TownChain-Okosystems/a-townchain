@@ -10,6 +10,14 @@
 //!
 //! Faellt Schritt 1 bis 4 aus, entsteht **kein** Block und **keine**
 //! Zustandsaenderung. Es gibt keinen Pfad, der ohne Freigabe bucht.
+//!
+//! **Eingangsvertrag (D-0):** von aussen wird ausschliesslich die
+//! Artefakt-Huelle `ATCE`/`0x02` angenommen ([`System::deploy_container`]). Die
+//! Huelle wird **vor** jeder Uebersetzung, Signatur und Ausfuehrung geprueft;
+//! `ATCB`/`0x01` bleibt das innere Ausfuehrungsformat und ist kein externer
+//! Eingang. Es gibt keinen Rueckfall: ein `ATCB`-Strom an der Huelle ergibt
+//! `E-007`, eine leere Huelle `E-001`. Die Ausfuehrung liest den Strom immer
+//! ueber die Huelle und vergleicht den Bytecode-Hash mit der Freigabe.
 
 use atc_exec_admission::{
     AdmCode, Authority, Component, ExecutionPolicy, IsolationState, Registry, Request, Revocation,
@@ -19,6 +27,7 @@ use atc_node::bootstrap::Genesis;
 use atc_node::chain::Chain;
 use atc_vm::artifact::{Artifact, ArtifactError, GENERATION_V1, HASH_LEN};
 use atc_vm::context::ChainContext;
+use atc_vm::envelope::{Envelope, EnvelopeError};
 use atc_vm::vm::{Op, Vm, VmError};
 
 use crate::backend::{self, BackendError};
@@ -48,6 +57,9 @@ pub enum SystemError {
     Compile(CompileError),
     Backend(BackendError),
     Artifact(ArtifactError),
+    /// Die aeussere Artefakt-Huelle `ATCE` wurde abgelehnt; die Identitaet ist
+    /// das Paar `(Code, Offset)` aus der geschlossenen Liste `E-001` bis `E-012`.
+    Container(EnvelopeError),
     Seal(SealError),
     Admission {
         code: Option<&'static str>,
@@ -64,6 +76,7 @@ impl SystemError {
             SystemError::Compile(_) => "compile",
             SystemError::Backend(_) => "backend",
             SystemError::Artifact(_) => "artifact",
+            SystemError::Container(_) => "container",
             SystemError::Seal(_) => "seal",
             SystemError::Admission { .. } => "admission",
             SystemError::Vm(_) => "vm",
@@ -79,6 +92,9 @@ impl std::fmt::Display for SystemError {
             SystemError::Compile(e) => write!(f, "Kompilierung: {}", e.message()),
             SystemError::Backend(e) => write!(f, "Uebersetzung: {}", e.message()),
             SystemError::Artifact(e) => write!(f, "Artefakt: {e:?}"),
+            SystemError::Container(e) => {
+                write!(f, "Artefakthuelle: {} bei {}", e.code(), e.offset())
+            }
             SystemError::Seal(e) => write!(f, "Freigabeschluessel: {e:?}"),
             SystemError::Admission { code, detail } => match code {
                 Some(code) => write!(f, "Freigabe abgelehnt ({code}): {detail}"),
@@ -95,7 +111,12 @@ impl std::fmt::Display for SystemError {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Deployment {
     pub code_hash: [u8; 32],
+    /// Inneres Ausfuehrungsformat `ATCB`/`0x01` (Bytecode plus Bytecode-Hash).
     pub artifact_bytes: Vec<u8>,
+    /// Aeusseres Artefaktformat `ATCE`/`0x02`, wie es von aussen angenommen und
+    /// von der Kette gefuehrt wird. Traegt denselben Strom wie `artifact_bytes`;
+    /// beide werden bei der Freigabe gegeneinander geprueft.
+    pub container_bytes: Vec<u8>,
     pub policy: ExecutionPolicy,
     pub signature: [u8; 64],
     /// Anzahl der ATCB-Operationen im Artefakt.
@@ -109,6 +130,14 @@ pub struct Deployment {
 impl Deployment {
     pub fn code_hash_hex(&self) -> String {
         hex(&self.code_hash)
+    }
+
+    /// `artifact_hash` der Huelle (eigener Digest, getrennt vom Bytecode-Hash).
+    pub fn container_hash_hex(&self) -> String {
+        match Envelope::parse(&self.container_bytes) {
+            Ok(env) => hex(&env.artifact_hash()),
+            Err(_) => "ungueltig".to_string(),
+        }
     }
 
     /// Hash genau der Bytes, die ausgefuehrt werden (aus dem Container gelesen).
@@ -231,6 +260,21 @@ impl System {
             }));
         }
 
+        // Aeussere Huelle bauen und denselben Umlauf verlangen: Huelle -> ATCB
+        // muss wieder genau diesen Bytecode-Hash ergeben. Sonst gaebe es ein
+        // Deployment, dessen Huelle eine andere Ausfuehrung benennt.
+        let container_bytes = Envelope::from_artifact(&artifact).to_bytes();
+        let aus_huelle = Envelope::parse(&container_bytes)
+            .map_err(SystemError::Container)?
+            .into_artifact()
+            .map_err(SystemError::Container)?;
+        if aus_huelle.hash() != code_hash {
+            return Err(SystemError::Admission {
+                code: None,
+                detail: "Huelle und Bytecode nennen verschiedene Hashes".to_string(),
+            });
+        }
+
         let policy = ExecutionPolicy {
             code_hash,
             signer_identity: self.seal.address(),
@@ -249,12 +293,76 @@ impl System {
         Ok(Deployment {
             code_hash,
             artifact_bytes,
+            container_bytes,
             policy,
             signature,
             ops: artifact.program().len(),
             source_instructions: translation.source_len,
             divergences: backend::DIVERGENZEN,
         })
+    }
+
+    /// Externer Eingang: ein Artefakt als `ATCE`/`0x02`-Huelle annehmen.
+    ///
+    /// Reihenfolge ist bindend und nicht umstellbar:
+    ///  1. Huelle pruefen (Laenge, Magic, Fassung, Generation, Strom, Tail)
+    ///  2. Strom an das bestehende `ATCB`-Artefakt uebergeben (`into_artifact`)
+    ///  3. Freigabe bilden, signieren, registrieren
+    ///
+    /// Zwischen 1 und 2 liegt **keine** Uebersetzung: die Huelle wird geprueft,
+    /// bevor Hash-, Dekodier- oder Ausfuehrungsarbeit der VM anfaellt. Ein
+    /// `ATCB`-Strom wird hier mit `E-007` abgewiesen; es gibt keinen Rueckfall
+    /// auf das innere Format.
+    ///
+    /// Die Quelle ist bei diesem Weg unbekannt: `source_instructions` bleibt 0
+    /// und es gelten keine Uebersetzungs-Unterschiede.
+    pub fn deploy_container(
+        &mut self,
+        container: &[u8],
+        now_us: i64,
+    ) -> Result<Deployment, SystemError> {
+        // 1 — Huelle. Fehleridentitaet ist (Code, Offset).
+        let envelope = Envelope::parse(container).map_err(SystemError::Container)?;
+        let container_hash = envelope.artifact_hash();
+
+        // 2 — Uebergabe an das bestehende Artefaktmodell, kein zweiter Parser.
+        let artifact = envelope.into_artifact().map_err(SystemError::Container)?;
+        let artifact_bytes = artifact.to_bytes();
+        let code_hash = artifact.hash();
+
+        let policy = ExecutionPolicy {
+            code_hash,
+            signer_identity: self.seal.address(),
+            source_provenance: Some(format!("atce:{}ops", artifact.program().len())),
+            generation_proof: None,
+            component_identity: Component::AtcVm,
+            version: POLICY_VERSION,
+            requested_capabilities: CONTRACT_RIGHTS,
+            execution_scope: Scope::Contract,
+            expiration_us: now_us.saturating_add(POLICY_TTL_US),
+            revocation_status: Revocation::Active,
+        };
+        let signature = self.seal.sign_policy(&policy);
+        self.registry.insert(policy.clone());
+
+        let _ = container_hash;
+        Ok(Deployment {
+            code_hash,
+            artifact_bytes,
+            container_bytes: container.to_vec(),
+            policy,
+            signature,
+            ops: artifact.program().len(),
+            source_instructions: 0,
+            divergences: &[],
+        })
+    }
+
+    /// Nur pruefen, ohne Deployment: gibt die Fehleridentitaet der Huelle zurueck.
+    pub fn check_container(&self, container: &[u8]) -> Result<(), SystemError> {
+        Envelope::parse(container)
+            .map(|_| ())
+            .map_err(SystemError::Container)
     }
 
     /// Stufe 4 und 5: Freigabe pruefen, ausfuehren, Block buchen.
@@ -269,13 +377,33 @@ impl System {
     ) -> Result<Receipt, SystemError> {
         let state_root_before = state.state_root(&deployment.code_hash);
 
-        // 0 — Das Artefakt aus den Bytes lesen. `parse` prueft dabei den
-        // angehaengten SHA-256: ein veraendertes Byte ergibt hier bereits einen
-        // Fehler. Der beobachtete Hash ist deshalb der Hash genau der Bytes,
-        // die gleich ausgefuehrt werden, und nicht ein separat gerechneter.
-        let artifact =
-            Artifact::parse(&deployment.artifact_bytes).map_err(SystemError::Artifact)?;
+        // 0 — Die aeussere Huelle lesen, dann den Strom an das Artefakt geben.
+        // Die Huelle prueft Struktur vor Digest und meldet (Code, Offset); eine
+        // leere oder fehlende Huelle ergibt E-001 und damit keinen Pfad an der
+        // Huelle vorbei.
+        let artifact = Envelope::parse(&deployment.container_bytes)
+            .map_err(SystemError::Container)?
+            .into_artifact()
+            .map_err(SystemError::Container)?;
         let observed_hash = artifact.hash();
+
+        // 0b — Huelle und Freigabe muessen dasselbe Programm benennen.
+        if observed_hash != deployment.code_hash {
+            return Err(SystemError::Admission {
+                code: None,
+                detail: "Huelle und Freigabe nennen verschiedene Bytecode-Hashes".to_string(),
+            });
+        }
+
+        // 0c — Es gibt genau eine Wahrheit: die Huelle. Die inneren Bytes sind
+        // eine Ableitung davon und duerfen nicht auseinanderlaufen; sonst haette
+        // das System zwei Aussagen ueber dasselbe Artefakt.
+        if artifact.to_bytes() != deployment.artifact_bytes {
+            return Err(SystemError::Admission {
+                code: None,
+                detail: "innere Artefaktbytes weichen von der Huelle ab".to_string(),
+            });
+        }
 
         // 1 — Freigabe. Die Signatur wird gegen den Schluessel geprueft, nicht
         // gegen "vorhanden oder nicht".
