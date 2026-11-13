@@ -13,7 +13,7 @@ Im Stack existieren **drei** getrennte Opcode-Vokabulare, nicht zwei:
 
 1. **ATC-BC-001** (frozen): 19 Opcodes, big-endian, Container `ATCB` + u16-Version + u32-Count, keine Checksum.
 2. **ATC-BC-002** (Kandidat, ausdruecklich nicht normativ): 19 Opcodes `0x01..0x13`, little-endian, Container mit Generationsbyte und SHA-256-Tail.
-3. **`.ops`-Textformat** der VM (`Push 1`, `Add`, `Halt`): kein Byteformat, keine ABI, 19 Namen in `components/vm`, 15 Namen im Einzelrepo `atc-vm`.
+3. **`.ops`-Textformat** der VM (`Push 1`, `Add`, `Halt`): kein Byteformat, keine ABI, 19 Namen in `components/vm`, 16 Namen im Einzelrepo `atc-vm`.
 
 Die beiden Binaertabellen belegen **sieben gemeinsame Bytewerte** (`0x01`, `0x02`, `0x03`,
 `0x10`, `0x11`, `0x12`, `0x13`) und **keiner** davon bedeutet dasselbe. `0x10` ist `Add`
@@ -120,7 +120,7 @@ und der Verifier lehnt v2-Befehle in einem v1-Artefakt ab.
 
 `components/vm/src/ops.rs` parst ein Zeilenformat (`Push 1`, `Load 0`, `Jump 4`, `Halt`,
 `Assert`, `Revert 5`, `RevertIf`) und akzeptiert 19 Namen. Das Einzelrepo `atc-vm` kennt
-davon 15 (ohne `Assert`, `Revert`, `RevertIf`). Das Format ist ein Assembler-Eingabeformat
+davon 16 (ohne `Assert`, `Revert`, `RevertIf`). Das Format ist ein Assembler-Eingabeformat
 fuer Fixtures und den EXEC-CHAIN-Pfad; es definiert **keine** Bytebelegung und darf nicht
 als ABI oder als Opcode-Quelle referenziert werden.
 
