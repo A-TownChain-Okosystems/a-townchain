@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0.0",
+  "source": {
+    "standard": "ATC-BC-001",
+    "spec_path": "ai/atclang/specs/bytecode/SPEC.md",
+    "spec_section": "3. Opcode-Katalog",
+    "spec_sha256": "591680437107fbb732d1fd3a965290b29aeaa971ad8d2c61de2bf499bf458da4",
+    "container": "ATCB",
+    "format_version": "1",
+    "endianness": "big"
+  },
+  "opcode_count": 19,
+  "opcodes": [
+    {
+      "opcode": "0x01",
+      "name": "ConstI64",
+      "operand": "i64"
+    },
+    {
+      "opcode": "0x02",
+      "name": "LoadLocal",
+      "operand": "u16"
+    },
+    {
+      "opcode": "0x03",
+      "name": "StoreLocal",
+      "operand": "u16"
+    },
+    {
+      "opcode": "0x10",
+      "name": "Add",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x11",
+      "name": "Sub",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x12",
+      "name": "Mul",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x13",
+      "name": "Div",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x14",
+      "name": "Neg",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x15",
+      "name": "Eq",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x16",
+      "name": "Ne",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x17",
+      "name": "Lt",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x18",
+      "name": "Gt",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x19",
+      "name": "Le",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x1A",
+      "name": "Ge",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x20",
+      "name": "Call",
+      "operand": "function:u16, argc:u16"
+    },
+    {
+      "opcode": "0x21",
+      "name": "Return",
+      "operand": "-"
+    },
+    {
+      "opcode": "0x30",
+      "name": "Jump",
+      "operand": "i16"
+    },
+    {
+      "opcode": "0x31",
+      "name": "JumpIfFalse",
+      "operand": "i16"
+    },
+    {
+      "opcode": "0x40",
+      "name": "Pop",
+      "operand": "-"
+    }
+  ]
+}
