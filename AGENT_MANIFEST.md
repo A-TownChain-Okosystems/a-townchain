@@ -51,8 +51,8 @@
 | [genesis-engine](https://github.com/A-TownChain-Okosystems/genesis-engine) | Game-Engine-Produkt (L6) | ✅ vault-restauriert |
 
 ### Vertikale Repos (14, AD-024)
-| Repo | Priorität | Inhalt |
-|------|-----------|--------|
+| Repo | Priorität | Inhalt | Status |
+|------|-----------|--------|--------|
 | [genesis-chronicles](https://github.com/A-TownChain-Okosystems/genesis-chronicles) | P1 | NFT-Game „Genesis Chronicles" (ex-shivamon, AD-025) | ✅ restauriert |
 | [atc-contracts](https://github.com/A-TownChain-Okosystems/atc-contracts) | P0 | Smart-Contract-Standards + .atc-Referenzverträge | ✅ restauriert |
 | [atc-sdk](https://github.com/A-TownChain-Okosystems/atc-sdk) | P0 | Developer Platform | ✅ restauriert |
