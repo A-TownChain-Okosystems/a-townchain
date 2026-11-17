@@ -1,7 +1,7 @@
 {
   "name": "atc-explorer",
   "version": "0.1.0",
-  "description": "atc-explorer — A-TownChain-Okosystems",
+  "description": "atc-explorer \u2014 A-TownChain-Okosystems",
   "author": "Michael Wroblewski",
   "license": "Apache-2.0",
   "scripts": {
@@ -12,13 +12,13 @@
   "dependencies": {
     "react": "^19.2",
     "react-dom": "^19.2",
-    "next": "^16.3.8",
-    "typescript": "^7"
+    "next": "^16.3.8"
   },
   "devDependencies": {
-    "@types/node": "^26",
     "@types/jest": "^30",
+    "@types/node": "^26",
     "jest": "^30",
-    "ts-jest": "^29"
+    "ts-jest": "^29",
+    "typescript": "^5"
   }
 }
