@@ -49,7 +49,7 @@ contract GovernanceContract {
     fn init() {
         self.proposals = {}
         self.proposal_ids = []
-        self.total_supply = 21000000000000000000000000
+        self.total_supply = 360000000000000000000000000
         self.balances = {}
         self.owner = msg_sender()
         self.paused = false
