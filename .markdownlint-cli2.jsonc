@@ -21,5 +21,10 @@
     "MD041": false,
     "MD060": false
   },
+  // Importierte Fremdbestaende werden nicht gelintet: docs/os-docs (Snapshot des
+  // aufgeloesten Docs-Repos, SCR-0127) und .org-github-policy (zur Laufzeit
+  // geklonte Org-Policy, nicht Inhalt dieses Repositories). Beide werden von
+  // ihren Eigentuemern gepflegt; Befunde dort sind keine Fehler dieses Repos.
+  "ignores": ["docs/os-docs/**", ".org-github-policy/**"],
   "noProgress": true
 }
