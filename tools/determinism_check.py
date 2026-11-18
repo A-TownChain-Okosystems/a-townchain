@@ -58,6 +58,14 @@ def load_allowlist(root):
             m = re.match(r"\s+line:\s*(\d+)", line)
             if m and entries:
                 entries[-1]["line"] = int(m.group(1))
+                continue
+            m = re.match(r'\s+pattern:\s*"?([^"\n]+)"?', line)
+            if m and entries:
+                entries[-1]["pattern"] = m.group(1).strip()
+                continue
+            m = re.match(r'\s+justification:\s*"?([^"\n]+)"?', line)
+            if m and entries:
+                entries[-1]["justification"] = m.group(1).strip()
     return entries
 
 
@@ -144,10 +152,17 @@ def main():
     )
     findings = scan_sources(root, args.lang)
     allow = load_allowlist(root)
+    # Zwei Match-Arten: exakte Zeile (line: N) oder zeilenunabhaengig
+    # (line: 0) mit Pattern-Bindung. Zeilenunabhaengig verhindert, dass
+    # reine Formatierung (Ruff) die reviewten Ausnahmen unbemerkt bricht.
     allow_keys = {(e["file"], e.get("line")) for e in allow if e.get("line")}
+    allow_any = [(e["file"], e.get("pattern", "")) for e in allow if e.get("line") == 0]
     unallowed, allowed = [], []
     for f, ln, desc in findings:
-        (unallowed if (f, ln) not in allow_keys else allowed).append((f, ln, desc))
+        hit = (f, ln) in allow_keys or any(
+            f == af and pat and pat in desc for af, pat in allow_any
+        )
+        (allowed if hit else unallowed).append((f, ln, desc))
     for f, ln, desc in allowed:
         print(f"  ALLOWED {f}:{ln}: {desc} (reviewte Begründung in {ALLOWLIST_FILE})")
     for f, ln, desc in unallowed:
