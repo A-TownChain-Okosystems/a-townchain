@@ -132,14 +132,10 @@ def compare(frozen: dict[str, dict], actual: dict[str, dict]) -> list[str]:
     for name in sorted(set(frozen) | set(actual)):
         was, now = frozen.get(name), actual.get(name)
         if was is None:
-            findings.append(
-                f"neue Mehrfachdeklaration: {name} ({now['copies']}x, {now['kind']})"
-            )
+            findings.append(f"neue Mehrfachdeklaration: {name} ({now['copies']}x, {now['kind']})")
             continue
         if now is None:
-            findings.append(
-                f"Mehrfachdeklaration verschwunden: {name} (war {was['copies']}x)"
-            )
+            findings.append(f"Mehrfachdeklaration verschwunden: {name} (war {was['copies']}x)")
             continue
         if was["kind"] == "identical" and now["kind"] == "divergent":
             findings.append(
@@ -150,9 +146,7 @@ def compare(frozen: dict[str, dict], actual: dict[str, dict]) -> list[str]:
         if was["copies"] != now["copies"]:
             findings.append(f"{name}: Kopienzahl {was['copies']} -> {now['copies']}")
         if was["kind"] == "divergent" and was["variants"] != now["variants"]:
-            findings.append(
-                f"{name}: Variantenzahl {was['variants']} -> {now['variants']}"
-            )
+            findings.append(f"{name}: Variantenzahl {was['variants']} -> {now['variants']}")
         if was["kind"] == "divergent" and set(was["files"]) != set(now["files"]):
             findings.append(f"{name}: Dateiliste der Kopien geaendert")
     return findings
@@ -161,18 +155,14 @@ def compare(frozen: dict[str, dict], actual: dict[str, dict]) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Audit der Vertragskopien (SC-019)")
     parser.add_argument("--write", action="store_true", help="Einordnung neu schreiben")
-    parser.add_argument(
-        "--json", action="store_true", help="Ergebnis als JSON ausgeben"
-    )
+    parser.add_argument("--json", action="store_true", help="Ergebnis als JSON ausgeben")
     args = parser.parse_args(argv)
 
     actual = collect()
     if args.write:
         AUDIT.parent.mkdir(parents=True, exist_ok=True)
         AUDIT.write_text(_simple_yaml(actual), encoding="utf-8")
-        print(
-            f"{AUDIT.relative_to(ROOT)}: {len(actual)} Mehrfachdeklarationen eingefroren"
-        )
+        print(f"{AUDIT.relative_to(ROOT)}: {len(actual)} Mehrfachdeklarationen eingefroren")
         return 0
 
     if not AUDIT.exists():
@@ -184,11 +174,7 @@ def main(argv: list[str] | None = None) -> int:
 
     findings = compare(_parse_frozen(AUDIT.read_text(encoding="utf-8")), actual)
     if args.json:
-        print(
-            json.dumps(
-                {"findings": findings, "actual": actual}, indent=2, ensure_ascii=False
-            )
-        )
+        print(json.dumps({"findings": findings, "actual": actual}, indent=2, ensure_ascii=False))
         return 1 if findings else 0
 
     identical = sum(1 for v in actual.values() if v["kind"] == "identical")

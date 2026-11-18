@@ -47,9 +47,7 @@ def git(*args: str) -> str:
 
 
 def sammle(rev: str) -> tuple[list[str], str, str]:
-    paths = sorted(
-        p for p in git("ls-tree", "-r", "--name-only", rev).splitlines() if p
-    )
+    paths = sorted(p for p in git("ls-tree", "-r", "--name-only", rev).splitlines() if p)
     sha = git("rev-parse", "--short", rev).strip()
     datum = git("log", "-1", "--format=%cs", rev).strip()
     return paths, sha, datum
@@ -78,9 +76,7 @@ def main() -> int:
     jetzt = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2)))
     stempel = jetzt.strftime("%Y-%m-%d %H:%M UTC+2")
 
-    ext = collections.Counter(
-        os.path.splitext(p)[1].lower() or "(keine)" for p in paths
-    )
+    ext = collections.Counter(os.path.splitext(p)[1].lower() or "(keine)" for p in paths)
     nach_bereich = collections.Counter(bereich(p) for p in paths)
     verzeichnisse = collections.Counter(os.path.dirname(p) or "(Wurzel)" for p in paths)
 

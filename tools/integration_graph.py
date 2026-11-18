@@ -53,9 +53,7 @@ def parse_manifest(text: str) -> tuple[str | None, dict[str, str], dict[str, str
                 name = m.group(1)
                 continue
         is_work = (
-            section in WORK_SECTIONS
-            or section.endswith(".dependencies")
-            and "dev" not in section
+            section in WORK_SECTIONS or section.endswith(".dependencies") and "dev" not in section
         )
         is_dev = "dev-dependencies" in section
         if not (is_work or is_dev):
@@ -77,9 +75,7 @@ def find_crates(root: Path) -> dict[str, dict]:
         if ".git" in parts or "target" in parts:
             continue
         try:
-            name, work, dev = parse_manifest(
-                manifest.read_text(encoding="utf-8", errors="replace")
-            )
+            name, work, dev = parse_manifest(manifest.read_text(encoding="utf-8", errors="replace"))
         except OSError:
             continue
         if not name:
@@ -199,14 +195,10 @@ def evaluate_bridges(crates: dict[str, dict], roots: dict[str, Path]) -> list[di
     node_ok = False
     node_evidence = []
     if "atc-node" in crates and "atc-vm" in crates["atc-node"]["work"]:
-        text = source_text(
-            roots[crates["atc-node"]["root"]], crates["atc-node"]["path"]
-        )
+        text = source_text(roots[crates["atc-node"]["root"]], crates["atc-node"]["path"])
         if "execute_state_transition" in text:
             node_ok = True
-            node_evidence.append(
-                "atc-node haengt an atc-vm und ruft execute_state_transition"
-            )
+            node_evidence.append("atc-node haengt an atc-vm und ruft execute_state_transition")
         else:
             node_evidence.append("atc-node haengt an atc-vm, ruft es aber nicht auf")
     else:
@@ -232,9 +224,7 @@ def evaluate_bridges(crates: dict[str, dict], roots: dict[str, Path]) -> list[di
                 builds_init = bool(re.search(r"init_program[\s\S]{0,200}?cargo", text))
                 passes_init = bool(re.search(r'"init=[^"]*shivacore-init"', text))
                 if builds_init:
-                    ci_evidence.append(
-                        f"{root.name}/{yml.name}: baut das Init-Programm"
-                    )
+                    ci_evidence.append(f"{root.name}/{yml.name}: baut das Init-Programm")
                 if passes_init:
                     ci_evidence.append(
                         f"{root.name}/{yml.name}: uebergibt init=... an den Boot-Builder"
@@ -252,15 +242,12 @@ def evaluate_bridges(crates: dict[str, dict], roots: dict[str, Path]) -> list[di
         {
             "id": "B4",
             "status": "VERBUNDEN" if ci_ok else "OFFEN",
-            "evidence": ci_evidence
-            or ["kein Workflow baut den Init und uebergibt ihn dem Image"],
+            "evidence": ci_evidence or ["kein Workflow baut den Init und uebergibt ihn dem Image"],
         }
     )
 
     ai_crates = [
-        c
-        for c, d in crates.items()
-        if area_of(d["path"]).startswith(("ai/aurora", "ai/genesis"))
+        c for c, d in crates.items() if area_of(d["path"]).startswith(("ai/aurora", "ai/genesis"))
     ]
     tool_targets = {"atc-exec-admission", "atc-tool-runtime", "globus-tool-runtime"}
     b5 = [c for c in ai_crates if tool_targets & set(crates[c]["work"])]
@@ -334,9 +321,7 @@ def analyse(roots: dict[str, Path]) -> dict:
             n for n, c in dev_only.items() if incoming[n] == 0 and c > 0
         ),
         "bridges": evaluate_bridges(crates, roots),
-        "duplicate_names": {
-            n: d["duplicates"] for n, d in crates.items() if d["duplicates"]
-        },
+        "duplicate_names": {n: d["duplicates"] for n, d in crates.items() if d["duplicates"]},
     }
 
 
@@ -344,14 +329,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument(
-        "--repo", action="append", required=True, help="Repowurzel (mehrfach erlaubt)"
-    )
+    ap.add_argument("--repo", action="append", required=True, help="Repowurzel (mehrfach erlaubt)")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--baseline", help="Baseline-JSON; neue Inseln => Exit 1")
-    ap.add_argument(
-        "--update-baseline", help="Baseline aus dem aktuellen Lauf schreiben"
-    )
+    ap.add_argument("--update-baseline", help="Baseline aus dem aktuellen Lauf schreiben")
     args = ap.parse_args()
 
     roots = {Path(r).name: Path(r).resolve() for r in args.repo}

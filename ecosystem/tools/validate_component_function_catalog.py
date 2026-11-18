@@ -65,9 +65,7 @@ def validate(doc: dict) -> tuple[list[str], dict]:
             continue
         name = repo.get("repository")
         if not isinstance(name, str) or "/" not in name:
-            errors.append(
-                f"repository_coverage[{index}] must include full repository name"
-            )
+            errors.append(f"repository_coverage[{index}] must include full repository name")
             continue
         repo_names.append(name)
         for field in (
@@ -87,9 +85,7 @@ def validate(doc: dict) -> tuple[list[str], dict]:
                     f"{name}: active repository function inventory must remain RESIDUAL until audited"
                 )
             if repo.get("production_readiness") == "PRODUCTION_READY":
-                errors.append(
-                    f"{name}: repository coverage cannot certify production readiness"
-                )
+                errors.append(f"{name}: repository coverage cannot certify production readiness")
         elif archive_state == "ARCHIVED":
             archived_repos += 1
             if repo.get("function_inventory_status") != "REFERENCE_ONLY":
@@ -103,13 +99,9 @@ def validate(doc: dict) -> tuple[list[str], dict]:
     if len(repo_names) != len(set(repo_names)):
         errors.append("duplicate full repository names in repository_coverage")
     if scope.get("organization_repository_count") != len(repository_coverage):
-        errors.append(
-            "scope organization_repository_count does not match repository_coverage"
-        )
+        errors.append("scope organization_repository_count does not match repository_coverage")
     if scope.get("active_repository_count") != active_repos:
-        errors.append(
-            "scope active_repository_count does not match observed ACTIVE repositories"
-        )
+        errors.append("scope active_repository_count does not match observed ACTIVE repositories")
     if scope.get("archived_repository_count") != archived_repos:
         errors.append(
             "scope archived_repository_count does not match observed ARCHIVED repositories"
@@ -215,9 +207,7 @@ def validate(doc: dict) -> tuple[list[str], dict]:
         if not isinstance(gate, dict):
             continue
         if gate.get("status") not in GATE_STATUS:
-            errors.append(
-                f"{gate.get('id')}: invalid gate status {gate.get('status')!r}"
-            )
+            errors.append(f"{gate.get('id')}: invalid gate status {gate.get('status')!r}")
         if not isinstance(gate.get("acceptance"), list) or not gate["acceptance"]:
             errors.append(f"{gate.get('id')}: acceptance must be a non-empty array")
 
@@ -236,9 +226,7 @@ def validate(doc: dict) -> tuple[list[str], dict]:
         if interface.get("consumer") not in all_component_ids:
             errors.append(f"{iid}: unknown consumer {interface.get('consumer')!r}")
         if interface.get("status") not in GATE_STATUS:
-            errors.append(
-                f"{iid}: invalid interface status {interface.get('status')!r}"
-            )
+            errors.append(f"{iid}: invalid interface status {interface.get('status')!r}")
     if len(interface_ids) != len(set(interface_ids)):
         errors.append("duplicate interface IDs found")
 
@@ -252,11 +240,7 @@ def validate(doc: dict) -> tuple[list[str], dict]:
             errors.append(
                 "release_decision PRODUCTION_READY requires every production gate VERIFIED"
             )
-        if any(
-            c.get("readiness") != "PRODUCTION_READY"
-            for c in components
-            if isinstance(c, dict)
-        ):
+        if any(c.get("readiness") != "PRODUCTION_READY" for c in components if isinstance(c, dict)):
             errors.append(
                 "release_decision PRODUCTION_READY requires every listed component PRODUCTION_READY"
             )
@@ -283,9 +267,7 @@ def validate(doc: dict) -> tuple[list[str], dict]:
 def _check_evidence(item: dict, item_id: str, errors: list[str]) -> None:
     evidence = item.get("production_evidence")
     if not isinstance(evidence, dict):
-        errors.append(
-            f"{item_id}: PRODUCTION_READY requires production_evidence object"
-        )
+        errors.append(f"{item_id}: PRODUCTION_READY requires production_evidence object")
         return
     for field in (
         "source_sha",
@@ -299,9 +281,7 @@ def _check_evidence(item: dict, item_id: str, errors: list[str]) -> None:
         if evidence.get(field) in (None, ""):
             errors.append(f"{item_id}: PRODUCTION_READY evidence missing {field}")
     if evidence.get("source_sha") and not SHA_RE.fullmatch(str(evidence["source_sha"])):
-        errors.append(
-            f"{item_id}: production_evidence.source_sha must be a full 40-character SHA"
-        )
+        errors.append(f"{item_id}: production_evidence.source_sha must be a full 40-character SHA")
     if evidence.get("exit_code") != 0:
         errors.append(f"{item_id}: production_evidence.exit_code must be 0")
 

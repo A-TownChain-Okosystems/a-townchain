@@ -37,9 +37,7 @@ def test_bootstrap_client_no_server():
     """Announce ohne laufenden Server → leere Liste (kein Crash)."""
     from bootstrap_client import BootstrapClient
 
-    bc = BootstrapClient(
-        "test-node-002", timeout=0.5, bootstrap_nodes=[("localhost", 19999)]
-    )
+    bc = BootstrapClient("test-node-002", timeout=0.5, bootstrap_nodes=[("localhost", 19999)])
     # timeout Param nicht in __init__ — teste nur dass Methode nicht crasht
     bc.bootstraps = [("localhost", 19999)]
     peers = bc.announce(timeout=0.3)

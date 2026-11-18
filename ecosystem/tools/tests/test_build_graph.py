@@ -5,9 +5,7 @@ import sys
 
 HERE = os.path.dirname(__file__)
 VALIDATOR = os.path.join(HERE, "..", "validate_build_graph.py")
-GRAPH = os.path.join(
-    HERE, "..", "..", "docs", "architecture", "ATC-DEPENDENCY-GRAPH-001.json"
-)
+GRAPH = os.path.join(HERE, "..", "..", "docs", "architecture", "ATC-DEPENDENCY-GRAPH-001.json")
 BM = os.path.join(HERE, "..", "..", "docs", "build", "ATC-BUILD-MANIFEST-001.json")
 
 

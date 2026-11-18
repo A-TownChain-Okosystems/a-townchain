@@ -17,25 +17,19 @@ SAMPLE_CENSUS = {
                         "path": "src/lib.rs",
                         "language": "rust",
                         "file_sha256": "f" * 64,
-                        "candidate_public_symbols": [
-                            {"kind": "function", "name": "execute"}
-                        ],
+                        "candidate_public_symbols": [{"kind": "function", "name": "execute"}],
                     },
                     {
                         "path": "src/types.rs",
                         "language": "rust",
                         "file_sha256": "e" * 64,
-                        "candidate_public_symbols": [
-                            {"kind": "type", "name": "Config"}
-                        ],
+                        "candidate_public_symbols": [{"kind": "type", "name": "Config"}],
                     },
                     {
                         "path": "tests/it.rs",
                         "language": "rust",
                         "file_sha256": "d" * 64,
-                        "candidate_public_symbols": [
-                            {"kind": "function", "name": "helper"}
-                        ],
+                        "candidate_public_symbols": [{"kind": "function", "name": "helper"}],
                     },
                 ]
             },
@@ -50,9 +44,7 @@ SAMPLE_CENSUS = {
                         "path": "components/sample/src/lib.rs",
                         "language": "rust",
                         "file_sha256": "c" * 64,
-                        "candidate_public_symbols": [
-                            {"kind": "function", "name": "execute"}
-                        ],
+                        "candidate_public_symbols": [{"kind": "function", "name": "execute"}],
                     },
                 ]
             },
@@ -67,9 +59,7 @@ SAMPLE_CENSUS = {
                         "path": "src/main.rs",
                         "language": "rust",
                         "file_sha256": "b" * 64,
-                        "candidate_public_symbols": [
-                            {"kind": "function", "name": "run"}
-                        ],
+                        "candidate_public_symbols": [{"kind": "function", "name": "run"}],
                     },
                 ]
             },
@@ -116,9 +106,7 @@ SAMPLE_MANIFEST = {
 }
 
 
-def build_sample_registry(
-    catalog=SAMPLE_CATALOG, census=SAMPLE_CENSUS, manifest=SAMPLE_MANIFEST
-):
+def build_sample_registry(catalog=SAMPLE_CATALOG, census=SAMPLE_CENSUS, manifest=SAMPLE_MANIFEST):
     return build_registry(census, catalog, manifest)
 
 
@@ -151,14 +139,10 @@ class RuntimeSymbolRegistryTests(unittest.TestCase):
 
     def test_quellrepo_entries_carry_ssot_finding(self):
         registry = build_sample_registry()
-        quell = [
-            e for e in registry["entries"] if e["repository"] == "example/quellrepo"
-        ]
+        quell = [e for e in registry["entries"] if e["repository"] == "example/quellrepo"]
         self.assertEqual(len(quell), 1)
         self.assertEqual(quell[0]["ssot"]["finding"], "QUERLREPO_REFERENCE_NON_SSOT")
-        self.assertEqual(
-            quell[0]["ssot"]["canonical_source_path"], "sample/components/quellrepo"
-        )
+        self.assertEqual(quell[0]["ssot"]["canonical_source_path"], "sample/components/quellrepo")
 
     def test_duplicate_catalog_binding_blocks_registry(self):
         catalog = {
@@ -217,9 +201,7 @@ class RuntimeSymbolRegistryTests(unittest.TestCase):
                         {
                             "id": "FN-SAMPLE-002",
                             "name": "delegated view",
-                            "source_binding": {
-                                "delegates_to_function_id": "FN-SAMPLE-001"
-                            },
+                            "source_binding": {"delegates_to_function_id": "FN-SAMPLE-001"},
                         },
                     ],
                 }
@@ -227,12 +209,8 @@ class RuntimeSymbolRegistryTests(unittest.TestCase):
         }
         registry = build_sample_registry(catalog=catalog)
         self.assertEqual(registry["status"], "RESIDUAL")
-        self.assertEqual(
-            registry["catalog_duplicate_findings"]["duplicate_source_bindings"], []
-        )
-        self.assertEqual(
-            len(registry["catalog_duplicate_findings"]["delegated_bindings"]), 1
-        )
+        self.assertEqual(registry["catalog_duplicate_findings"]["duplicate_source_bindings"], [])
+        self.assertEqual(len(registry["catalog_duplicate_findings"]["delegated_bindings"]), 1)
 
 
 class RuntimeSymbolRegistryValidatorTests(unittest.TestCase):

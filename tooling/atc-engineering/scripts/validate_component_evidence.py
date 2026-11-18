@@ -29,9 +29,7 @@ ALLOWED_STATUSES = {
 
 
 def git_blob_sha(data: bytes) -> str:
-    return hashlib.sha1(
-        b"blob " + str(len(data)).encode("ascii") + b"\0" + data
-    ).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\0" + data).hexdigest()
 
 
 def current_commit(root: Path) -> str | None:
@@ -225,9 +223,9 @@ def validate(
                     "message": f"{prefix} has no contract_refs; absence is not proof of no contract",
                 }
             )
-        if not isinstance(
-            candidate.get("runtime_wiring_evidence"), list
-        ) or not candidate.get("runtime_wiring_evidence"):
+        if not isinstance(candidate.get("runtime_wiring_evidence"), list) or not candidate.get(
+            "runtime_wiring_evidence"
+        ):
             findings.append(
                 {
                     "code": "MISSING_RUNTIME_WIRING",

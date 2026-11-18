@@ -65,10 +65,7 @@ def test_kante_und_insel():
         data = json.loads(r.stdout)
         assert data["crates"] == 2
         assert len(data["edges"]) == 1
-        assert (
-            data["edges"][0]["from"] == "crate-b"
-            and data["edges"][0]["to"] == "crate-a"
-        )
+        assert data["edges"][0]["from"] == "crate-b" and data["edges"][0]["to"] == "crate-a"
         # Insel = kein eingehender Verweis; crate-a hat einen, crate-b keinen.
         assert data["islands"] == ["crate-b"]
 
@@ -151,9 +148,7 @@ def test_b4_verlangt_bau_und_uebergabe(tmp_path):
     (root / ".github" / "workflows").mkdir(parents=True)
     workflow = root / ".github" / "workflows" / "boot.yml"
     # Nur Erwaehnung des Pfads, kein Bau und keine Uebergabe:
-    workflow.write_text(
-        "run: ls modules/atc-shivacore/init_program\n", encoding="utf-8"
-    )
+    workflow.write_text("run: ls modules/atc-shivacore/init_program\n", encoding="utf-8")
     data = json.loads(run("--repo", str(root), "--json").stdout)
     assert bridge(data, "B4")["status"] == "OFFEN"
 

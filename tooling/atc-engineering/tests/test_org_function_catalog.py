@@ -11,9 +11,7 @@ SPEC.loader.exec_module(catalog)
 
 class CatalogTests(unittest.TestCase):
     def test_git_blob_hash_matches_known_empty_blob(self):
-        self.assertEqual(
-            catalog.blob_sha(b""), "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
-        )
+        self.assertEqual(catalog.blob_sha(b""), "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391")
 
     def test_symbol_id_does_not_depend_on_line_number(self):
         first = catalog.extract_python(
@@ -35,24 +33,16 @@ class CatalogTests(unittest.TestCase):
 
     def test_python_ast_finds_functions_and_methods_with_lines(self):
         source = "def top(x):\n    return x\n\nclass Thing:\n    def method(self):\n        pass\n"
-        records = catalog.extract_python(
-            "owner/repo", "example.py", source, "a" * 40, "b" * 40
-        )
-        self.assertEqual(
-            [r["qualified_name"] for r in records], ["top", "Thing", "Thing.method"]
-        )
+        records = catalog.extract_python("owner/repo", "example.py", source, "a" * 40, "b" * 40)
+        self.assertEqual([r["qualified_name"] for r in records], ["top", "Thing", "Thing.method"])
         self.assertEqual(records[0]["source_start_line"], 1)
         self.assertEqual(records[2]["source_start_line"], 5)
         self.assertTrue(all(r["observed_commit_sha"] == "b" * 40 for r in records))
-        self.assertTrue(
-            all("component_id" in r and "contract_refs" in r for r in records)
-        )
+        self.assertTrue(all("component_id" in r and "contract_refs" in r for r in records))
 
     def test_invalid_python_is_reported(self):
         with self.assertRaises(ValueError):
-            catalog.extract_python(
-                "owner/repo", "broken.py", "def broken(:\n", "a" * 40, "b" * 40
-            )
+            catalog.extract_python("owner/repo", "broken.py", "def broken(:\n", "a" * 40, "b" * 40)
 
     def test_rust_extraction_is_explicitly_heuristic(self):
         records = catalog.extract_heuristic(
@@ -68,20 +58,14 @@ class CatalogTests(unittest.TestCase):
         self.assertTrue(records[0]["limitations"])
 
     def test_heuristic_signature_uses_declaration_line_after_blank_lines(self):
-        source = (
-            "\n\npub fn first(value: u32) -> u32 { value }\n\n\npub fn second() {}\n"
-        )
+        source = "\n\npub fn first(value: u32) -> u32 { value }\n\n\npub fn second() {}\n"
         records = catalog.extract_heuristic(
             "owner/repo", "src/lib.rs", "rust", source, "a" * 40, "b" * 40
         )
-        self.assertEqual(
-            [record["qualified_name"] for record in records], ["first", "second"]
-        )
+        self.assertEqual([record["qualified_name"] for record in records], ["first", "second"])
         self.assertEqual(records[0]["source_start_line"], 3)
         self.assertEqual(records[1]["source_start_line"], 6)
-        self.assertEqual(
-            records[0]["signature"], "pub fn first(value: u32) -> u32 { value }"
-        )
+        self.assertEqual(records[0]["signature"], "pub fn first(value: u32) -> u32 { value }")
         self.assertEqual(records[1]["signature"], "pub fn second() {}")
         self.assertTrue(all(record["signature"].strip() for record in records))
 
@@ -106,15 +90,11 @@ class CatalogTests(unittest.TestCase):
                 catalog.validate_document_format(language, invalid[language])
 
     def test_rust_tree_sitter_extraction_uses_ast_ranges_and_nonempty_signatures(self):
-        source = (
-            "\n\npub fn first(value: u32) -> u32 { value }\n\n\npub fn second() {}\n"
-        )
+        source = "\n\npub fn first(value: u32) -> u32 { value }\n\n\npub fn second() {}\n"
         records = catalog.extract_tree_sitter(
             "owner/repo", "src/lib.rs", "rust", source, "a" * 40, "b" * 40
         )
-        self.assertEqual(
-            [record["qualified_name"] for record in records], ["first", "second"]
-        )
+        self.assertEqual([record["qualified_name"] for record in records], ["first", "second"])
         self.assertEqual(records[0]["source_start_line"], 3)
         self.assertEqual(records[1]["source_start_line"], 6)
         self.assertTrue(all(record["signature"].strip() for record in records))
@@ -129,13 +109,9 @@ class CatalogTests(unittest.TestCase):
             link = next(item for item in result["files"] if item["path"] == "link.txt")
             self.assertEqual(link["status"], "SKIPPED")
             self.assertEqual(link["blob_sha"], catalog.blob_sha(b"target.txt"))
-            exclusion = next(
-                item for item in result["exclusions"] if item["path"] == "link.txt"
-            )
+            exclusion = next(item for item in result["exclusions"] if item["path"] == "link.txt")
             self.assertEqual(exclusion["reason_code"], "SYMLINK_FILE_NOT_FOLLOWED")
-            self.assertIn(
-                "link.txt#" + link["blob_sha"], exclusion["evidence"][0]["reference"]
-            )
+            self.assertIn("link.txt#" + link["blob_sha"], exclusion["evidence"][0]["reference"])
 
     def test_git_worktree_metadata_is_not_inventoried(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -148,9 +124,7 @@ class CatalogTests(unittest.TestCase):
             paths = {entry["path"] for entry in result["files"]}
             self.assertIn("source.py", paths)
             self.assertNotIn(".git", paths)
-            self.assertFalse(
-                any(item["path"] == ".git" for item in result["exclusions"])
-            )
+            self.assertFalse(any(item["path"] == ".git" for item in result["exclusions"]))
 
     def test_scan_indexes_unsupported_files_with_reason_coded_exclusion(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -167,9 +141,7 @@ class CatalogTests(unittest.TestCase):
             self.assertRegex(exclusion["exclusion_id"], r"^[0-9a-f]{64}$")
             self.assertEqual(exclusion["rationale"], exclusion["reason"])
             self.assertTrue(exclusion["evidence"])
-            self.assertIn(
-                exclusion["source_blob_sha"], exclusion["evidence"][0]["reference"]
-            )
+            self.assertIn(exclusion["source_blob_sha"], exclusion["evidence"][0]["reference"])
             self.assertTrue(result["limitations"])
 
     def test_excluded_directories_are_recorded_without_scanning_contents(self):
@@ -177,17 +149,13 @@ class CatalogTests(unittest.TestCase):
             root = Path(tmp)
             excluded = root / "target"
             excluded.mkdir()
-            (excluded / "generated.py").write_text(
-                "def hidden(): pass\n", encoding="utf-8"
-            )
+            (excluded / "generated.py").write_text("def hidden(): pass\n", encoding="utf-8")
             (root / "src.py").write_text("def visible(): pass\n", encoding="utf-8")
             result = catalog.scan(root, "owner/sample")
             paths = {entry["path"] for entry in result["files"]}
             self.assertIn("src.py", paths)
             self.assertNotIn("target/generated.py", paths)
-            records = [
-                item for item in result["exclusions"] if item["path"] == "target"
-            ]
+            records = [item for item in result["exclusions"] if item["path"] == "target"]
             self.assertEqual(len(records), 1)
             self.assertEqual(records[0]["reason_code"], "EXCLUDED_DIRECTORY")
             self.assertRegex(records[0]["exclusion_id"], r"^[0-9a-f]{64}$")
@@ -206,16 +174,10 @@ class CatalogTests(unittest.TestCase):
             self.assertEqual(
                 result["parser_coverage"]["rust"]["parser_mode"], "tree_sitter_rust_cst"
             )
-            self.assertEqual(
-                result["parser_coverage"]["rust"]["status"], "AUTHORITATIVE_COMPLETE"
-            )
+            self.assertEqual(result["parser_coverage"]["rust"]["status"], "AUTHORITATIVE_COMPLETE")
             self.assertEqual(result["parser_coverage"]["rust"]["symbols_detected"], 1)
-            self.assertEqual(
-                result["parser_coverage"]["yaml"]["parser_mode"], "pyyaml_ast"
-            )
-            self.assertEqual(
-                result["parser_coverage"]["yaml"]["status"], "AUTHORITATIVE_COMPLETE"
-            )
+            self.assertEqual(result["parser_coverage"]["yaml"]["parser_mode"], "pyyaml_ast")
+            self.assertEqual(result["parser_coverage"]["yaml"]["status"], "AUTHORITATIVE_COMPLETE")
             self.assertEqual(result["parser_coverage"]["yaml"]["unsupported_files"], 0)
             self.assertEqual(result["status"], "DETECTED")
 

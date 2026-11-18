@@ -152,17 +152,14 @@ class ATCRepl:
             if not self.vm.globals:
                 return "(keine Variablen)"
             return "\n".join(
-                f"  {k} = {v!r}"
-                for k, v in self.vm.globals.items()
-                if not k.startswith("__")
+                f"  {k} = {v!r}" for k, v in self.vm.globals.items() if not k.startswith("__")
             )
         if line == ".events":
             evts = self.vm.get_events()
             if not evts:
                 return "(keine Events)"
             return "\n".join(
-                f"  📡 {e['event']}({', '.join(str(a) for a in e['args'])})"
-                for e in evts
+                f"  📡 {e['event']}({', '.join(str(a) for a in e['args'])})" for e in evts
             )
         if line == ".gas":
             return f"  Gas verbraucht: {self.vm.gas_used}"

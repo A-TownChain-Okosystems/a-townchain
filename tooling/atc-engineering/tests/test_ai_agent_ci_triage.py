@@ -16,9 +16,7 @@ SPEC.loader.exec_module(triage)
 class TriagePolicyTests(unittest.TestCase):
     def test_classifies_merge_conflict(self):
         self.assertEqual(
-            triage.classify_finding(
-                "PR checks", "merge conflict detector", [], "failure"
-            ),
+            triage.classify_finding("PR checks", "merge conflict detector", [], "failure"),
             "MERGE_CONFLICT",
         )
 
@@ -37,13 +35,9 @@ class TriagePolicyTests(unittest.TestCase):
         )
 
     def test_finding_id_is_stable_and_sha_bound(self):
-        first = triage.stable_finding_id(
-            "org/repo", "CI", "a" * 40, 123, ["cargo test"]
-        )
+        first = triage.stable_finding_id("org/repo", "CI", "a" * 40, 123, ["cargo test"])
         same = triage.stable_finding_id("org/repo", "CI", "a" * 40, 123, ["cargo test"])
-        other_sha = triage.stable_finding_id(
-            "org/repo", "CI", "b" * 40, 123, ["cargo test"]
-        )
+        other_sha = triage.stable_finding_id("org/repo", "CI", "b" * 40, 123, ["cargo test"])
         self.assertEqual(first, same)
         self.assertNotEqual(first, other_sha)
         self.assertTrue(first.startswith("ATC-FINDING-"))
@@ -63,12 +57,8 @@ class TriagePolicyTests(unittest.TestCase):
             triage.CURRENT_SHA = "a" * 40
             triage.CURRENT_RUN_ID = "123456789"
             source = Path(temp_dir) / "triage.json"
-            source.write_text(
-                '{"status":"FINDINGS","finding_count":1}', encoding="utf-8"
-            )
-            triage.write_evidence_record(
-                source, {"status": "FINDINGS", "finding_count": 1}, "now"
-            )
+            source.write_text('{"status":"FINDINGS","finding_count":1}', encoding="utf-8")
+            triage.write_evidence_record(source, {"status": "FINDINGS", "finding_count": 1}, "now")
             record = json.loads(
                 (Path(temp_dir) / "evidence-record.json").read_text(encoding="utf-8")
             )

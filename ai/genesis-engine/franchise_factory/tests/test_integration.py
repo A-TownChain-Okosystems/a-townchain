@@ -45,9 +45,7 @@ def test_dependency_resolution_fails_closed():
 
 def test_core_franchise_pipeline():
     core = GFFCore()
-    fid = core.create_franchise(
-        FranchiseBlueprint(name="Example", genre="RPG"), now=1.0
-    )
+    fid = core.create_franchise(FranchiseBlueprint(name="Example", genre="RPG"), now=1.0)
     assert core.run_pipeline(fid)
     assert core.franchises[fid].progress == 1.0
 

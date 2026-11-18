@@ -61,9 +61,7 @@ def scan_sources(root, lang):
                     for i, line in enumerate(f, 1):
                         for pat, desc in PATTERNS[lang]:
                             if re.search(pat, line):
-                                findings.append(
-                                    f"{path}:{i}: {desc}: {line.strip()[:80]}"
-                                )
+                                findings.append(f"{path}:{i}: {desc}: {line.strip()[:80]}")
             except (OSError, UnicodeDecodeError):
                 continue
     return findings

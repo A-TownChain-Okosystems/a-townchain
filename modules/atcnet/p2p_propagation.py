@@ -348,9 +348,7 @@ class P2PBroadcaster:
                 self.consensus.height += 1
             # Weiterleiten an andere Peers
             self.broadcast_block(block)
-            logger.info(
-                f"Block #{block.get('height', '?')} akzeptiert und weitergeleitet"
-            )
+            logger.info(f"Block #{block.get('height', '?')} akzeptiert und weitergeleitet")
 
     def _handle_new_tx(self, msg: P2PMessage) -> None:
         """Handler für NEW_TX-Nachrichten."""
@@ -369,9 +367,7 @@ class P2PBroadcaster:
         """Handler für HANDSHAKE-Nachrichten."""
         version = msg.payload.get("version")
         chain_height = msg.payload.get("chain_height")
-        logger.info(
-            f"Handshake von {msg.sender}: Version {version}, Chain Height {chain_height}"
-        )
+        logger.info(f"Handshake von {msg.sender}: Version {version}, Chain Height {chain_height}")
 
     def get_status(self) -> dict[str, Any]:
         """Gibt den aktuellen Status des P2P-Netzwerks zurück."""

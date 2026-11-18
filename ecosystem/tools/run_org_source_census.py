@@ -34,9 +34,7 @@ def git(root: Path, *args: str) -> str:
 
 def run_census(workspace: Path, manifest: dict) -> dict:
     repositories = []
-    active_total = sum(
-        1 for r in manifest["repositories"] if not r.get("archived", False)
-    )
+    active_total = sum(1 for r in manifest["repositories"] if not r.get("archived", False))
     scanned_active = 0
     excluded_private = 0
     for item in sorted(manifest["repositories"], key=lambda r: r["name"].lower()):
@@ -99,9 +97,7 @@ def run_census(workspace: Path, manifest: dict) -> dict:
         repositories.append(entry)
 
     missing_active = [
-        r["repository"]
-        for r in repositories
-        if not r["archived"] and r["status"] == "BLOCKED"
+        r["repository"] for r in repositories if not r["archived"] and r["status"] == "BLOCKED"
     ]
     return {
         "schema_id": "ATC-ORG-SOURCE-CENSUS-001",
@@ -118,16 +114,12 @@ def run_census(workspace: Path, manifest: dict) -> dict:
             "active_scanned": scanned_active,
             "active_blocked": len(missing_active),
             "active_excluded_private": excluded_private,
-            "archived_reference_repositories": sum(
-                1 for r in repositories if r["archived"]
-            ),
+            "archived_reference_repositories": sum(1 for r in repositories if r["archived"]),
             "source_files_scanned": sum(
-                (r["summary"] or {}).get("source_files_scanned", 0)
-                for r in repositories
+                (r["summary"] or {}).get("source_files_scanned", 0) for r in repositories
             ),
             "candidate_public_symbols": sum(
-                (r["summary"] or {}).get("candidate_public_symbols", 0)
-                for r in repositories
+                (r["summary"] or {}).get("candidate_public_symbols", 0) for r in repositories
             ),
         },
         "blocked_active_repositories": missing_active,
@@ -156,18 +148,14 @@ def main() -> int:
         type=Path,
         help="Organization repository manifest JSON",
     )
-    parser.add_argument(
-        "--output", required=True, type=Path, help="Combined census JSON output"
-    )
+    parser.add_argument("--output", required=True, type=Path, help="Combined census JSON output")
     args = parser.parse_args()
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     if not isinstance(manifest.get("repositories"), list) or not manifest.get("owner"):
         parser.error("manifest requires owner and repositories array")
     result = run_census(args.workspace.resolve(), manifest)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
-        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(
         json.dumps(
             {

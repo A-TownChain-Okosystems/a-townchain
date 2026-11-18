@@ -18,12 +18,12 @@ import pytest
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 
-from atc_reference_decoder import (  # noqa: E402 — bewusst: sys.path-Setup vor Import
+from atc_reference_decoder import (
     DOMAIN_ARTIFACT,
     decode,
     decode_hex,
 )
-from build_parser_corpus import (  # noqa: E402 — bewusst: sys.path-Setup vor Import
+from build_parser_corpus import (
     CORPUS,
     build,
     header,
@@ -74,9 +74,7 @@ def test_referenzdekoder_bestaetigt_jede_zeile(corpus: dict) -> None:
 
 def test_gleicher_offset_verschiedene_codes(corpus: dict) -> None:
     """Der Kern der Entscheidung: bei Offset 19 stehen E-005 und E-008 nebeneinander."""
-    zu_klein = entry(
-        corpus, "C-8-GV1-ZU-KLEIN"
-    )  # Anzahl 1, zwei Instruktionen im Strom
+    zu_klein = entry(corpus, "C-8-GV1-ZU-KLEIN")  # Anzahl 1, zwei Instruktionen im Strom
     gekuerzt = entry(corpus, "C-5-GV1-K1")  # zwei Instruktionen deklariert, Halt fehlt
     assert (zu_klein["offset"], gekuerzt["offset"]) == (19, 19)
     assert zu_klein["code"] == "E-008"
@@ -115,9 +113,7 @@ def test_e012_nur_mit_konfiguriertem_grenzwert(corpus: dict) -> None:
 
 def test_deklarierte_anzahl_ist_kein_groesstwert() -> None:
     """0xFFFFFFFF kostet einen Schritt und ergibt E-005, nicht E-012."""
-    body = header(generation=1, count=0xFFFFFFFF) + bytes.fromhex(
-        "01010000000000000010"
-    )
+    body = header(generation=1, count=0xFFFFFFFF) + bytes.fromhex("01010000000000000010")
     result = decode(seal(body))
     assert (result.code, result.offset) == ("E-005", 20)
 

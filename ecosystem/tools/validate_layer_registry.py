@@ -23,18 +23,10 @@ except ImportError:
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_REGISTRY = REPO_ROOT / "docs/architecture/layers/ATC-LAYER-REGISTRY-001.yaml"
 DEFAULT_MAPPING = REPO_ROOT / "docs/architecture/layers/ATC-LAYER-MAPPING-001.yaml"
-DEFAULT_CATALOG = (
-    REPO_ROOT / "docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.json"
-)
-DEFAULT_L0_CATALOG = (
-    REPO_ROOT / "docs/architecture/layers/ATC-L0-FUNCTION-CATALOG-001.yaml"
-)
-DEFAULT_L1_CATALOG = (
-    REPO_ROOT / "docs/architecture/layers/ATC-L1-FUNCTION-CATALOG-001.yaml"
-)
-DEFAULT_L2_CATALOG = (
-    REPO_ROOT / "docs/architecture/layers/ATC-L2-FUNCTION-CATALOG-001.yaml"
-)
+DEFAULT_CATALOG = REPO_ROOT / "docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.json"
+DEFAULT_L0_CATALOG = REPO_ROOT / "docs/architecture/layers/ATC-L0-FUNCTION-CATALOG-001.yaml"
+DEFAULT_L1_CATALOG = REPO_ROOT / "docs/architecture/layers/ATC-L1-FUNCTION-CATALOG-001.yaml"
+DEFAULT_L2_CATALOG = REPO_ROOT / "docs/architecture/layers/ATC-L2-FUNCTION-CATALOG-001.yaml"
 
 VALID_STATUS = {
     "MAPPED",
@@ -130,9 +122,7 @@ def validate_registry(registry_path):
                 for k in sub:
                     if k[0].isdigit() or "X" in k[:2]:
                         all_sub_ids.append(
-                            f"{layer['id']}-{k}"
-                            if not str(k).startswith(layer["id"])
-                            else str(k)
+                            f"{layer['id']}-{k}" if not str(k).startswith(layer["id"]) else str(k)
                         )
     if len(all_sub_ids) != len(set(all_sub_ids)):
         from collections import Counter
@@ -206,15 +196,11 @@ def validate_mapping(mapping_path, all_layer_ids, catalog_ids):
         # VAL-LR-004: Must have installation models
         models = entry.get("install_models", [])
         if not models:
-            result.error(
-                "VAL-LR-004", f"Component {cid}: no installation models declared"
-            )
+            result.error("VAL-LR-004", f"Component {cid}: no installation models declared")
         else:
             for m in models:
                 if m not in VALID_INSTALL_MODELS:
-                    result.error(
-                        "VAL-LR-004", f"Component {cid}: invalid install model '{m}'"
-                    )
+                    result.error("VAL-LR-004", f"Component {cid}: invalid install model '{m}'")
 
             # VAL-LR-005: Kernel layers cannot claim Windows/Linux models
             if pl in KERNEL_LAYERS:
@@ -228,23 +214,17 @@ def validate_mapping(mapping_path, all_layer_ids, catalog_ids):
         # Cross-cutting layers must be valid X-layer IDs
         for cl in entry.get("cross_cutting_layers", []):
             if cl not in all_layer_ids:
-                result.error(
-                    "VAL-LR-002", f"Component {cid}: invalid cross-cutting layer '{cl}'"
-                )
+                result.error("VAL-LR-002", f"Component {cid}: invalid cross-cutting layer '{cl}'")
 
         # Readiness must be a valid status value
         readiness = entry.get("readiness")
         if readiness and readiness not in VALID_STATUS:
-            result.warn(
-                "VAL-STATUS", f"Component {cid}: non-standard readiness '{readiness}'"
-            )
+            result.warn("VAL-STATUS", f"Component {cid}: non-standard readiness '{readiness}'")
 
     # VAL-LR-006: All catalog components must be mapped
     unmapped = catalog_ids - mapped_ids
     if unmapped:
-        result.error(
-            "VAL-LR-006", f"Catalog components not in mapping: {sorted(unmapped)}"
-        )
+        result.error("VAL-LR-006", f"Catalog components not in mapping: {sorted(unmapped)}")
     else:
         result.ok(f"All {len(catalog_ids)} catalog components are mapped")
 
@@ -348,9 +328,7 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
         # VAL-L0-002: required fields
         for field in required_fields:
             if field not in fn or fn[field] in (None, ""):
-                result.error(
-                    "VAL-L0-002", f"Function {fid}: missing required field '{field}'"
-                )
+                result.error("VAL-L0-002", f"Function {fid}: missing required field '{field}'")
 
         # VAL-L0-003: layer assignment
         if fn.get("layer_id") != layer_id:
@@ -381,18 +359,14 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
                     f"Function {fid}: VERIFIED without test/CI evidence (fail-closed rule)",
                 )
         elif st in ("UNRESOLVED", "BLOCKED") and not fn.get("status_reason"):
-            result.error(
-                "VAL-LR-009", f"Function {fid}: status {st} requires status_reason"
-            )
+            result.error("VAL-LR-009", f"Function {fid}: status {st} requires status_reason")
 
         # VAL-L0-007: contract completeness
         c = fn.get("contract", {})
         if isinstance(c, dict):
             for cf in ("inputs", "outputs", "errors"):
                 if cf not in c:
-                    result.warn(
-                        "VAL-L0-007", f"Function {fid}: contract missing '{cf}'"
-                    )
+                    result.warn("VAL-L0-007", f"Function {fid}: contract missing '{cf}'")
 
     result.ok(f"Functions validated: {len(functions)} entries")
 
@@ -413,9 +387,7 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
         tl = dep.get("target_layer")
         if tl not in valid_layers:
             result.error("VAL-L0-009", f"Layer dependency with invalid target: '{tl}'")
-    result.ok(
-        f"Layer dependencies validated: {len(cat.get('layer_dependencies', []))} targets"
-    )
+    result.ok(f"Layer dependencies validated: {len(cat.get('layer_dependencies', []))} targets")
 
     return cat, result
 

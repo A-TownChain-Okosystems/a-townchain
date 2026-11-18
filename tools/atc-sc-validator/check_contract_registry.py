@@ -128,11 +128,7 @@ def sha256_of(path: Path) -> str:
 def deployment_ids(path: Path) -> set[str]:
     if not path.is_file():
         return set()
-    return set(
-        re.findall(
-            r"contract_id:\s*\"?([A-Z0-9-]+)\"?", path.read_text(encoding="utf-8")
-        )
-    )
+    return set(re.findall(r"contract_id:\s*\"?([A-Z0-9-]+)\"?", path.read_text(encoding="utf-8")))
 
 
 def discover_sources(base: Path, exclusions: list[str], root: Path) -> dict[str, Path]:
@@ -154,9 +150,7 @@ def discover_sources(base: Path, exclusions: list[str], root: Path) -> dict[str,
 # ------------------------------------------------------------------------ GATE
 
 
-def compile_contract(
-    atc_bin: Path, target: Path, timeout: int = 60
-) -> tuple[bool, str]:
+def compile_contract(atc_bin: Path, target: Path, timeout: int = 60) -> tuple[bool, str]:
     """ATCLang-Pruefung einer Quelle. Rueckgabe: (ok, Meldung)."""
     import subprocess
 
@@ -243,9 +237,7 @@ def check_registry(
         else:
             num = int(m.group(2))
             if not 1 <= num <= 999:
-                findings.append(
-                    {"gate": "A6", "id": cid, "detail": "Nummer ausserhalb 001..999"}
-                )
+                findings.append({"gate": "A6", "id": cid, "detail": "Nummer ausserhalb 001..999"})
             elif e.get("category") and str(e.get("category")) != f"SC-{m.group(1)}":
                 findings.append(
                     {
@@ -320,9 +312,7 @@ def check_registry(
                     e.pop("abi_sha256", None)
             elif actual_abi is not None:
                 if declared_abi in (None, ""):
-                    findings.append(
-                        {"gate": "A9", "id": cid, "detail": "abi_sha256 fehlt"}
-                    )
+                    findings.append({"gate": "A9", "id": cid, "detail": "abi_sha256 fehlt"})
                     e["abi_sha256"] = actual_abi
                 elif declared_abi != actual_abi:
                     findings.append(
@@ -354,9 +344,7 @@ def check_registry(
         status = e.get("status")
         if status == "deployed":
             if not e.get("network"):
-                findings.append(
-                    {"gate": "A5", "id": cid, "detail": "deployed ohne network"}
-                )
+                findings.append({"gate": "A5", "id": cid, "detail": "deployed ohne network"})
             if cid not in deployed_ids:
                 findings.append(
                     {
@@ -365,9 +353,7 @@ def check_registry(
                         "detail": "deployed ohne Deploy-Record (ATC-DEP-NNNN)",
                     }
                 )
-        if status in ("development", "review", "example", "archived") and e.get(
-            "network"
-        ):
+        if status in ("development", "review", "example", "archived") and e.get("network"):
             findings.append(
                 {
                     "gate": "A5",
@@ -384,9 +370,7 @@ def check_registry(
                 }
             )
         if e.get("audited") is True and not e.get("audit_ref"):
-            findings.append(
-                {"gate": "A5", "id": cid, "detail": "audited=true ohne audit_ref"}
-            )
+            findings.append({"gate": "A5", "id": cid, "detail": "audited=true ohne audit_ref"})
         if status == "archived":
             head = target.read_text(encoding="utf-8", errors="ignore")[:400].upper()
             if "ARCHIVED" not in head and "archive" not in str(cpath).lower():
@@ -400,9 +384,7 @@ def check_registry(
 
     for cid, count in ids_seen.items():
         if count > 1:
-            findings.append(
-                {"gate": "A6", "id": cid, "detail": f"ID {count}x vergeben"}
-            )
+            findings.append({"gate": "A6", "id": cid, "detail": f"ID {count}x vergeben"})
 
     # A4 Waisen
     sources = discover_sources(root / CONTRACT_BASE, reg["exclusions"], root)
@@ -481,9 +463,7 @@ def main(argv: list[str] | None = None) -> int:
         default=str(ROOT / "target/debug/atc"),
         help="Pfad zum atc-Binary fuer Gate A8 (Default: target/debug/atc)",
     )
-    ap.add_argument(
-        "--skip-compile", action="store_true", help="Gate A8 (atc check) aussetzen"
-    )
+    ap.add_argument("--skip-compile", action="store_true", help="Gate A8 (atc check) aussetzen")
     args = ap.parse_args(argv)
 
     if not REGISTRY.exists():
@@ -492,9 +472,7 @@ def main(argv: list[str] | None = None) -> int:
 
     atc_bin = None if args.skip_compile else Path(args.atc)
     if atc_bin is not None and not atc_bin.exists():
-        print(
-            f"FEHLER: atc-Binary nicht gefunden: {atc_bin} (mit --skip-compile aussetzen)"
-        )
+        print(f"FEHLER: atc-Binary nicht gefunden: {atc_bin} (mit --skip-compile aussetzen)")
         return 2
 
     findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin)
@@ -502,18 +480,14 @@ def main(argv: list[str] | None = None) -> int:
     drift = [f for f in findings if f["gate"] == "A3" and "fehlt" not in f["detail"]]
     if args.write_hashes and drift:
         reg = load_registry(REGISTRY)
-        check_registry(
-            ROOT, REGISTRY, DEPLOYMENTS, atc_bin, reg=reg
-        )  # Hashes in-place nachziehen
+        check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin, reg=reg)  # Hashes in-place nachziehen
         write_registry(reg, REGISTRY)
         findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin)
 
     abi_drift = [f for f in findings if f["gate"] == "A9"]
     if args.write_abis and abi_drift:
         reg = load_registry(REGISTRY)
-        check_registry(
-            ROOT, REGISTRY, DEPLOYMENTS, atc_bin, reg=reg
-        )  # ABIs in-place nachziehen
+        check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin, reg=reg)  # ABIs in-place nachziehen
         write_registry(reg, REGISTRY)
         findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin)
 

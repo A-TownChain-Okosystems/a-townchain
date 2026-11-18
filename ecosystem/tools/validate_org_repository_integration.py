@@ -37,9 +37,7 @@ def validate(doc: dict) -> tuple[list[str], dict]:
     if len(names) != len(set(names)):
         errors.append("duplicate full_name values found")
     if len(repos) != doc.get("inventory", {}).get("observed_repository_count"):
-        errors.append(
-            "inventory observed_repository_count does not match repositories length"
-        )
+        errors.append("inventory observed_repository_count does not match repositories length")
 
     active = archived = 0
     verified = 0
@@ -56,15 +54,11 @@ def validate(doc: dict) -> tuple[list[str], dict]:
         if archive == "ARCHIVED":
             archived += 1
             if status != "ARCHIVED_REFERENCE_ONLY":
-                errors.append(
-                    f"{name}: archived repository must be ARCHIVED_REFERENCE_ONLY"
-                )
+                errors.append(f"{name}: archived repository must be ARCHIVED_REFERENCE_ONLY")
         else:
             active += 1
             if status == "ARCHIVED_REFERENCE_ONLY":
-                errors.append(
-                    f"{name}: active repository cannot be ARCHIVED_REFERENCE_ONLY"
-                )
+                errors.append(f"{name}: active repository cannot be ARCHIVED_REFERENCE_ONLY")
         if status == "VERIFIED":
             verified += 1
             evidence = repo.get("required_evidence") or {}
@@ -104,13 +98,8 @@ def validate(doc: dict) -> tuple[list[str], dict]:
         if not isinstance(gate, dict):
             continue
         if gate.get("status") not in ALLOWED_GATE_STATUS:
-            errors.append(
-                f"{gate.get('id')}: invalid gate status {gate.get('status')!r}"
-            )
-        if (
-            gate.get("status") == "VERIFIED"
-            and gate.get("required_terminal_status") != "VERIFIED"
-        ):
+            errors.append(f"{gate.get('id')}: invalid gate status {gate.get('status')!r}")
+        if gate.get("status") == "VERIFIED" and gate.get("required_terminal_status") != "VERIFIED":
             errors.append(
                 f"{gate.get('id')}: verified gate must declare required_terminal_status VERIFIED"
             )

@@ -55,15 +55,11 @@ class ATCNode:
         if not block:
             return False
         # Basis-Validierung
-        if block.get("prev_hash") == (
-            self.chain[-1]["hash"] if self.chain else "0" * 64
-        ):
+        if block.get("prev_hash") == (self.chain[-1]["hash"] if self.chain else "0" * 64):
             self.chain.append(block)
             # Bestätigte TXs aus Mempool entfernen
             confirmed = {tx["tx_id"] for tx in block.get("transactions", [])}
-            self.mempool = [
-                tx for tx in self.mempool if tx.get("tx_id") not in confirmed
-            ]
+            self.mempool = [tx for tx in self.mempool if tx.get("tx_id") not in confirmed]
             return True
         return False
 
@@ -102,6 +98,5 @@ class NodeNetwork:
             "online": online,
             "offline": len(self.nodes) - online,
             "total_stake": sum(n.stake for n in self.nodes.values()),
-            "avg_peers": sum(len(n.peers) for n in self.nodes.values())
-            // max(len(self.nodes), 1),
+            "avg_peers": sum(len(n.peers) for n in self.nodes.values()) // max(len(self.nodes), 1),
         }

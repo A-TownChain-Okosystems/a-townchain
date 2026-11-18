@@ -12,7 +12,7 @@ import pytest
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 
-import decision_register as dr  # noqa: E402 — bewusst: sys.path-Setup vor Import
+import decision_register as dr
 
 
 @pytest.fixture(scope="module")
@@ -86,9 +86,7 @@ def test_teilauflagen_ohne_nachweis_bleiben_offen(data: dict) -> None:
         sub = sub_gate(data, sid)
         assert sub["status"] in STATUSE
         assert "EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md" in sub["open_because"]
-        assert (
-            "CI_VERIFIED offen" in sub["open_because"] or "P1b" in sub["open_because"]
-        )
+        assert "CI_VERIFIED offen" in sub["open_because"] or "P1b" in sub["open_because"]
 
 
 def test_teilauflagen_werden_gerendert(data: dict) -> None:
@@ -102,9 +100,7 @@ def test_d0_ist_eigene_entscheidung(data: dict) -> None:
     """D-0 (Formate) steht als eigene Entscheidung im Register und ist entschieden."""
     d0 = next(d for d in data["decisions"] if d["id"] == "D-0")
     assert d0["decision_status"] == "DECIDED"
-    assert d0["implementation_status"] == "OPEN", (
-        "ATCE/0x02 bleibt OPEN bis Integration"
-    )
+    assert d0["implementation_status"] == "OPEN", "ATCE/0x02 bleibt OPEN bis Integration"
     assert any("ATCE" in c for c in d0["conditions"])
 
 
@@ -181,9 +177,7 @@ def test_chain_state_ist_im_dokument_gerendert(data: dict) -> None:
     block = dr.render_chain_state(data)
     doc = dr.CHAIN_STATE_DOC.read_text(encoding="utf-8")
     assert dr.CS_BEGIN in doc and dr.CS_END in doc
-    assert block in doc, (
-        "Registerblock im P1d-B2-Dokument ist veraltet, --write ausfuehren"
-    )
+    assert block in doc, "Registerblock im P1d-B2-Dokument ist veraltet, --write ausfuehren"
     for did in ("AD-B1-01", "AD-B1-04", "B2-S3", "B2-O2"):
         assert f"| {did} |" in block or f"- {did} " in block
 
@@ -235,9 +229,7 @@ def test_gate_ohne_nachweis_kann_nicht_geschlossen_werden(data: dict) -> None:
     errors = dr.validate_chain_state(mutated)
     assert any("B2-S1" in e and "evidence" in e for e in errors), errors
 
-    mutated["chain_state"]["specification_gates"][0]["evidence"] = (
-        "docs/spec/beispiel.md"
-    )
+    mutated["chain_state"]["specification_gates"][0]["evidence"] = "docs/spec/beispiel.md"
     assert not [e for e in dr.validate_chain_state(mutated) if "evidence" in e]
 
 

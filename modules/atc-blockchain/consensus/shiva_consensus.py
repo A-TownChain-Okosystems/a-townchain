@@ -99,9 +99,7 @@ class PoHEntry:
     tx_hash: str = ""  # Optional: eingebettete TX
 
     def to_bytes(self) -> bytes:
-        return (
-            f"{self.sequence}|{self.prev_hash}|{self.timestamp}|{self.tx_hash}".encode()
-        )
+        return f"{self.sequence}|{self.prev_hash}|{self.timestamp}|{self.tx_hash}".encode()
 
 
 @dataclass
@@ -237,9 +235,7 @@ class ProofOfHistory:
         self.sequence += 1
         return entry
 
-    def batch_tick(
-        self, count: int, txs: list[ATCTransaction] | None = None
-    ) -> list[PoHEntry]:
+    def batch_tick(self, count: int, txs: list[ATCTransaction] | None = None) -> list[PoHEntry]:
         """Mehrere Ticks auf einmal erzeugen."""
         result = []
         for i in range(count):
@@ -305,20 +301,12 @@ class ProofOfStake:
             v.reputation = max(0, v.reputation - 1000)
             if v.stake < self.MIN_STAKE:
                 v.active = False
-            print(
-                f"  ⚡ SLASH: {address[:12]}... | -{penalty_pct}% Stake | Grund: {reason}"
-            )
+            print(f"  ⚡ SLASH: {address[:12]}... | -{penalty_pct}% Stake | Grund: {reason}")
 
     def get_active_validators(self) -> list[ValidatorInfo]:
         """Aktive Validators nach Voting-Power sortiert."""
-        active = [
-            v
-            for v in self.validators.values()
-            if v.active and v.stake >= self.MIN_STAKE
-        ]
-        return sorted(active, key=lambda v: v.voting_power, reverse=True)[
-            : self.MAX_VALIDATORS
-        ]
+        active = [v for v in self.validators.values() if v.active and v.stake >= self.MIN_STAKE]
+        return sorted(active, key=lambda v: v.voting_power, reverse=True)[: self.MAX_VALIDATORS]
 
     def select_block_producer(self, slot: int) -> ValidatorInfo | None:
         """
@@ -344,9 +332,7 @@ class ProofOfStake:
                 return v
         return validators[0]
 
-    def cast_vote(
-        self, validator_addr: str, block_hash: str, slot: int
-    ) -> ValidatorVote | None:
+    def cast_vote(self, validator_addr: str, block_hash: str, slot: int) -> ValidatorVote | None:
         """Validator-Stimme abgeben."""
         if validator_addr not in self.validators:
             return None
@@ -417,9 +403,7 @@ class ProofOfWork:
         """Prüft ob Hash die Schwierigkeit erfüllt."""
         return count_leading_zeros(hash_bytes) >= difficulty
 
-    def mine(
-        self, header: BlockHeader, max_iterations: int = 10_000_000
-    ) -> tuple[bool, int, str]:
+    def mine(self, header: BlockHeader, max_iterations: int = 10_000_000) -> tuple[bool, int, str]:
         """
         Block minen — Nonce finden.
         Gibt (success, nonce, hash) zurück.
@@ -467,9 +451,7 @@ class ProofOfWork:
         elif ratio > 2.0:
             self.difficulty = max(self.difficulty - 1, 1)
 
-        print(
-            f"  ⚙️  Schwierigkeit angepasst: {self.difficulty} | ∅ Blockzeit: {avg_time:.0f}ms"
-        )
+        print(f"  ⚙️  Schwierigkeit angepasst: {self.difficulty} | ∅ Blockzeit: {avg_time:.0f}ms")
         return self.difficulty
 
 
@@ -494,9 +476,7 @@ class ATCMerkleTree:
         while len(nodes) > 1:
             if len(nodes) % 2 == 1:
                 nodes.append(nodes[-1])  # Duplizieren wenn ungerade
-            nodes = [
-                self._hash_pair(nodes[i], nodes[i + 1]) for i in range(0, len(nodes), 2)
-            ]
+            nodes = [self._hash_pair(nodes[i], nodes[i + 1]) for i in range(0, len(nodes), 2)]
         return nodes[0].hex()
 
 
@@ -575,17 +555,13 @@ class ShivaConsensus:
         pending_txs = self.mempool[:max_txs]
         poh_entries = self.poh.batch_tick(self.POH_TICKS_PER_BLOCK, pending_txs)
         poh_checkpoint = self.poh.get_checkpoint()
-        print(
-            f"        PoH-Checkpoint: {poh_checkpoint[:16]}... | Seq: {self.poh.sequence}"
-        )
+        print(f"        PoH-Checkpoint: {poh_checkpoint[:16]}... | Seq: {self.poh.sequence}")
 
         # ── Phase 2: PoS — Block-Produzent wählen ─────────
         print("  [2/3] PoS — Validator-Auswahl...")
         _producer = self.pos.select_block_producer(self.slot)
         active = self.pos.get_active_validators()
-        print(
-            f"        Produzent: {validator_addr[:16]}... | Aktive Validators: {len(active)}"
-        )
+        print(f"        Produzent: {validator_addr[:16]}... | Aktive Validators: {len(active)}")
 
         # Transaktionen auswählen + Merkle-Root
         selected_txs = self.mempool[:max_txs]
@@ -624,9 +600,7 @@ class ShivaConsensus:
             pow_hash = header.hash()
 
         header.nonce = nonce
-        print(
-            f"        Nonce: {nonce} | Zeit: {elapsed:.0f}ms | Hash: {pow_hash[:16]}..."
-        )
+        print(f"        Nonce: {nonce} | Zeit: {elapsed:.0f}ms | Hash: {pow_hash[:16]}...")
 
         # ── Block finalisieren ─────────────────────────────
         block = ATCBlock(

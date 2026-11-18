@@ -60,9 +60,7 @@ PATTERNS = {
         r"^\s*(?:(?:export|declare|async|public|private|static)\s+)*function\s+([\w$]+)\s*(?:<[^>]*>)?\s*\(",
         re.MULTILINE,
     ),
-    "go": re.compile(
-        r"^\s*func\s+(?:\([^)]*\)\s*)?([A-Za-z_][A-Za-z0-9_]*)\s*\(", re.MULTILINE
-    ),
+    "go": re.compile(r"^\s*func\s+(?:\([^)]*\)\s*)?([A-Za-z_][A-Za-z0-9_]*)\s*\(", re.MULTILINE),
     "java": re.compile(
         r"^\s*(?:(?:public|protected|private|static|final|synchronized|abstract)\s+)+[\w<>?,.\[\]]+\s+([A-Za-z_$][\w$]*)\s*\(",
         re.MULTILINE,
@@ -71,9 +69,7 @@ PATTERNS = {
         r"^\s*(?:(?:public|protected|private|static|async|virtual|override|sealed)\s+)+[\w<>?,.\[\]]+\s+([A-Za-z_]\w*)\s*\(",
         re.MULTILINE,
     ),
-    "c": re.compile(
-        r"^\s*(?:[\w*]+\s+)+([A-Za-z_]\w*)\s*\([^;{}]*\)\s*\{", re.MULTILINE
-    ),
+    "c": re.compile(r"^\s*(?:[\w*]+\s+)+([A-Za-z_]\w*)\s*\([^;{}]*\)\s*\{", re.MULTILINE),
     "cpp": re.compile(
         r"^\s*(?:[\w:*&<>]+\s+)+([A-Za-z_]\w*)\s*\([^;{}]*\)\s*(?:const\s*)?\{",
         re.MULTILINE,
@@ -85,9 +81,7 @@ PATTERNS = {
 
 
 def git_sha(root: Path) -> str:
-    env_sha = os.environ.get("ATC_CATALOG_SOURCE_SHA", "") or os.environ.get(
-        "GITHUB_SHA", ""
-    )
+    env_sha = os.environ.get("ATC_CATALOG_SOURCE_SHA", "") or os.environ.get("GITHUB_SHA", "")
     if re.fullmatch(r"[0-9a-f]{40,64}", env_sha):
         return env_sha
     try:
@@ -134,9 +128,7 @@ def classify(path: Path) -> str:
         or ".spec." in path.name
     ):
         return "test"
-    if path.suffix.lower() in {".md", ".rst", ".adoc"} or path.name.lower().startswith(
-        "readme"
-    ):
+    if path.suffix.lower() in {".md", ".rst", ".adoc"} or path.name.lower().startswith("readme"):
         return "documentation"
     if path.suffix.lower() in {".yml", ".yaml", ".toml", ".json", ".ini", ".cfg"}:
         return "configuration"
@@ -154,9 +146,7 @@ def exclusion_record(
     evidence_ref: str,
 ) -> dict:
     """Create a stable, source/policy-bound exclusion record; never infer semantic meaning."""
-    identity = json.dumps(
-        [repo, path, reason_code], ensure_ascii=False, separators=(",", ":")
-    )
+    identity = json.dumps([repo, path, reason_code], ensure_ascii=False, separators=(",", ":"))
     return {
         "exclusion_id": hashlib.sha256(identity.encode("utf-8")).hexdigest(),
         "repository": repo,
@@ -233,9 +223,7 @@ def extract_python(repo: str, rel: str, text: str, sha: str, commit: str) -> lis
                     node.lineno,
                     getattr(node, "end_lineno", node.lineno) or node.lineno,
                 )
-                signature = (
-                    lines[start - 1].strip() if 0 < start <= len(lines) else node.name
-                )
+                signature = lines[start - 1].strip() if 0 < start <= len(lines) else node.name
                 records.append(
                     symbol_record(
                         repo,
@@ -258,9 +246,7 @@ def extract_python(repo: str, rel: str, text: str, sha: str, commit: str) -> lis
                     node.lineno,
                     getattr(node, "end_lineno", node.lineno) or node.lineno,
                 )
-                signature = (
-                    lines[start - 1].strip() if 0 < start <= len(lines) else node.name
-                )
+                signature = lines[start - 1].strip() if 0 < start <= len(lines) else node.name
                 records.append(
                     symbol_record(
                         repo,
@@ -304,11 +290,7 @@ def extract_heuristic(
         declaration_pos = match.start(name_group)
         start = text.count("\n", 0, declaration_pos) + 1
         signature = lines[start - 1].strip() if start <= len(lines) else name
-        vis = (
-            "public"
-            if re.search(r"^\s*(?:pub\b|export\b|public\b)", signature)
-            else "unknown"
-        )
+        vis = "public" if re.search(r"^\s*(?:pub\b|export\b|public\b)", signature) else "unknown"
         out.append(
             symbol_record(
                 repo,
@@ -406,20 +388,12 @@ def extract_tree_sitter(
                 raise ValueError(
                     f"parser found {node.type} without a name at line {node.start_point.row + 1}"
                 )
-            name = (
-                source[name_node.start_byte : name_node.end_byte]
-                .decode("utf-8")
-                .strip()
-            )
+            name = source[name_node.start_byte : name_node.end_byte].decode("utf-8").strip()
             qualified = f"{scope}::{name}" if scope else name
             body = node.child_by_field_name("body")
             signature_end = body.start_byte if body is not None else node.end_byte
             signature = (
-                source[node.start_byte : signature_end]
-                .decode("utf-8")
-                .strip()
-                .rstrip("{")
-                .strip()
+                source[node.start_byte : signature_end].decode("utf-8").strip().rstrip("{").strip()
             )
             if not signature:
                 raise ValueError(
@@ -455,9 +429,7 @@ def extract_tree_sitter(
                 scope_node = node.child_by_field_name("type")
             if scope_node is not None:
                 scope_name = (
-                    source[scope_node.start_byte : scope_node.end_byte]
-                    .decode("utf-8")
-                    .strip()
+                    source[scope_node.start_byte : scope_node.end_byte].decode("utf-8").strip()
                 )
                 child_scope = f"{scope}::{scope_name}" if scope else scope_name
         for child in reversed(node.named_children):
@@ -498,9 +470,7 @@ def scan(root: Path, repo: str) -> dict:
     def record_symlink(rel_path: str, symlink_path: Path) -> None:
         target_bytes = os.fsencode(os.readlink(symlink_path))
         sha = blob_sha(target_bytes)
-        reason = (
-            "symlink target is inventoried as a Git blob but not followed or parsed"
-        )
+        reason = "symlink target is inventoried as a Git blob but not followed or parsed"
         files.append(
             {
                 "path": rel_path,
@@ -525,9 +495,7 @@ def scan(root: Path, repo: str) -> dict:
 
     # Prune excluded build/cache directories explicitly and record each exclusion.
     # This records policy boundaries without scanning potentially large generated trees.
-    for current_dir, dirnames, filenames in os.walk(
-        root, topdown=True, followlinks=False
-    ):
+    for current_dir, dirnames, filenames in os.walk(root, topdown=True, followlinks=False):
         current = Path(current_dir)
         retained_dirs = []
         for dirname in sorted(dirnames):
@@ -612,9 +580,7 @@ def scan(root: Path, repo: str) -> dict:
                 if language == "python":
                     symbols.extend(extract_python(repo, rel, content, sha, commit))
                 elif language in {"rust", "shell"}:
-                    symbols.extend(
-                        extract_tree_sitter(repo, rel, language, content, sha, commit)
-                    )
+                    symbols.extend(extract_tree_sitter(repo, rel, language, content, sha, commit))
                 elif language in {"json", "markdown", "toml", "yaml"}:
                     validate_document_format(language, content)
                 elif language == "unknown":
@@ -637,9 +603,7 @@ def scan(root: Path, repo: str) -> dict:
                         )
                     else:
                         category, reason = explicit
-                        entry.update(
-                            status="SKIPPED", classification=category, reason=reason
-                        )
+                        entry.update(status="SKIPPED", classification=category, reason=reason)
                         exclusions.append(
                             exclusion_record(
                                 repo,
@@ -668,9 +632,7 @@ def scan(root: Path, repo: str) -> dict:
                         )
                     )
             except UnicodeDecodeError:
-                entry.update(
-                    status="UNSUPPORTED", reason="not UTF-8 text; file indexed only"
-                )
+                entry.update(status="UNSUPPORTED", reason="not UTF-8 text; file indexed only")
                 exclusions.append(
                     exclusion_record(
                         repo,
@@ -683,9 +645,7 @@ def scan(root: Path, repo: str) -> dict:
                     )
                 )
             except Exception as exc:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
-                entry.update(
-                    status="PARSE_ERROR", reason=f"{type(exc).__name__}: {exc}"
-                )
+                entry.update(status="PARSE_ERROR", reason=f"{type(exc).__name__}: {exc}")
                 exclusions.append(
                     exclusion_record(
                         repo,
@@ -723,9 +683,7 @@ def scan(root: Path, repo: str) -> dict:
                 f"duplicate parser identity disambiguated by source order: {base_id}"
             )
     if commit == "0" * 40:
-        limitations.append(
-            "repository commit SHA unavailable; output cannot be VERIFIED"
-        )
+        limitations.append("repository commit SHA unavailable; output cannot be VERIFIED")
     if exclusions:
         limitations.append(
             "one or more files or directories are explicitly excluded, unsupported, or have parse/read errors; catalog is not complete"
@@ -755,12 +713,8 @@ def scan(root: Path, repo: str) -> dict:
         analysed = sum(item["status"] == "ANALYSED" for item in language_files)
         unsupported = sum(item["status"] == "UNSUPPORTED" for item in language_files)
         parse_errors = sum(item["status"] == "PARSE_ERROR" for item in language_files)
-        skipped = sum(
-            item["status"] in {"SKIPPED", "EXCLUDED"} for item in language_files
-        )
-        symbol_count = sum(
-            symbols_by_path.get(item["path"], 0) for item in language_files
-        )
+        skipped = sum(item["status"] in {"SKIPPED", "EXCLUDED"} for item in language_files)
+        symbol_count = sum(symbols_by_path.get(item["path"], 0) for item in language_files)
         if mode == "none":
             coverage_status = "UNSUPPORTED"
         elif unsupported or parse_errors or analysed + skipped != len(language_files):
@@ -830,15 +784,9 @@ def reconcile(current: dict, baseline: dict) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "root", nargs="?", default=".", help="repository checkout to inventory"
-    )
-    parser.add_argument(
-        "--repository", default=None, help="canonical owner/repository label"
-    )
-    parser.add_argument(
-        "--output", default="-", help="JSON output path, or - for stdout"
-    )
+    parser.add_argument("root", nargs="?", default=".", help="repository checkout to inventory")
+    parser.add_argument("--repository", default=None, help="canonical owner/repository label")
+    parser.add_argument("--output", default="-", help="JSON output path, or - for stdout")
     parser.add_argument(
         "--baseline", default=None, help="prior catalog JSON for symbol reconciliation"
     )
@@ -862,9 +810,7 @@ def main() -> int:
     if args.baseline:
         baseline = json.loads(Path(args.baseline).read_text(encoding="utf-8"))
         report = reconcile(catalog, baseline)
-        report_text = (
-            json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
-        )
+        report_text = json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
         if args.reconciliation_output:
             target = Path(args.reconciliation_output)
             target.parent.mkdir(parents=True, exist_ok=True)

@@ -128,9 +128,7 @@ def copy_tree(src, dst, dry_run, counter):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument(
-        "--sources", required=True, help="Verzeichnis mit den geklonten Repos"
-    )
+    ap.add_argument("--sources", required=True, help="Verzeichnis mit den geklonten Repos")
     ap.add_argument("--target", required=True, help="Ziel-Monorepo (Arbeitskopie)")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
@@ -143,9 +141,7 @@ def main():
 
     overlap = sorted(set(LAYOUT) & set(NOT_CONSOLIDATED))
     if overlap:
-        print(
-            "FEHLER: Repos stehen in LAYOUT und NOT_CONSOLIDATED: " + ", ".join(overlap)
-        )
+        print("FEHLER: Repos stehen in LAYOUT und NOT_CONSOLIDATED: " + ", ".join(overlap))
         return 2
 
     for repo, rel_target in sorted(LAYOUT.items()):
@@ -192,9 +188,7 @@ def main():
         f"{len(manifest)} Repos -> {dst_root}"
     )
     for m in manifest:
-        print(
-            f"  {m['source_repo']:45s} -> {m['target_path']:32s} {m['files']:5d} Dateien"
-        )
+        print(f"  {m['source_repo']:45s} -> {m['target_path']:32s} {m['files']:5d} Dateien")
     if missing:
         print("  FEHLEND (nicht geklont):", ", ".join(missing))
     skipped = sorted(set(NOT_CONSOLIDATED) - set(LAYOUT))
@@ -206,9 +200,7 @@ def main():
         import json
 
         with open(path, "w") as fh:
-            json.dump(
-                {"consolidated_at": "2026-11-08", "entries": manifest}, fh, indent=2
-            )
+            json.dump({"consolidated_at": "2026-11-08", "entries": manifest}, fh, indent=2)
         print("  Manifest:", path)
     return 0
 

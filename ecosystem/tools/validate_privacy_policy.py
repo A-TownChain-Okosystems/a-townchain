@@ -49,10 +49,7 @@ def validate(document: Any) -> list[str]:
         errors.append("version must be a non-empty string")
     if document.get("status") not in POLICY_STATUSES:
         errors.append(f"status must be one of {sorted(POLICY_STATUSES)}")
-    if (
-        not isinstance(document.get("requirements"), list)
-        or not document["requirements"]
-    ):
+    if not isinstance(document.get("requirements"), list) or not document["requirements"]:
         errors.append("requirements must be a non-empty array")
         return errors
 
@@ -76,13 +73,9 @@ def validate(document: Any) -> list[str]:
             if not _nonempty(req.get(field)):
                 errors.append(f"{prefix}.{field} must be a non-empty string")
         if req.get("normative_level") not in NORMATIVE_LEVELS:
-            errors.append(
-                f"{prefix}.normative_level must be one of {sorted(NORMATIVE_LEVELS)}"
-            )
+            errors.append(f"{prefix}.normative_level must be one of {sorted(NORMATIVE_LEVELS)}")
         if req.get("mapping_status") not in MAPPING_STATUSES:
-            errors.append(
-                f"{prefix}.mapping_status must be one of {sorted(MAPPING_STATUSES)}"
-            )
+            errors.append(f"{prefix}.mapping_status must be one of {sorted(MAPPING_STATUSES)}")
         impl = req.get("implementation_status")
         if impl not in IMPLEMENTATION_STATUSES:
             errors.append(
@@ -91,22 +84,16 @@ def validate(document: Any) -> list[str]:
 
         targets = req.get("catalog_refs", [])
         if not isinstance(targets, list) or any(not _nonempty(x) for x in targets):
-            errors.append(
-                f"{prefix}.catalog_refs must be an array of non-empty strings"
-            )
+            errors.append(f"{prefix}.catalog_refs must be an array of non-empty strings")
         if req.get("mapping_status") == "MAPPED" and not targets:
             errors.append(f"{prefix}: MAPPED requires at least one catalog_refs entry")
         if req.get("mapping_status") in {"MISSING", "UNRESOLVED"} and targets:
             errors.append(
                 f"{prefix}: {req.get('mapping_status')} must not claim resolved catalog_refs"
             )
-        if req.get("mapping_status") == "EXCLUDED" and not _nonempty(
-            req.get("exclusion_reason")
-        ):
+        if req.get("mapping_status") == "EXCLUDED" and not _nonempty(req.get("exclusion_reason")):
             errors.append(f"{prefix}: EXCLUDED requires exclusion_reason")
-        if req.get("mapping_status") == "DUPLICATE" and not _nonempty(
-            req.get("duplicate_of")
-        ):
+        if req.get("mapping_status") == "DUPLICATE" and not _nonempty(req.get("duplicate_of")):
             errors.append(f"{prefix}: DUPLICATE requires duplicate_of")
 
         evidence = req.get("evidence_refs", [])
@@ -119,9 +106,7 @@ def validate(document: Any) -> list[str]:
                     f"{prefix}: {impl} requires evidence_refs; missing evidence is fail-closed"
                 )
             for eidx, item in enumerate(evidence):
-                errors.extend(
-                    _validate_evidence(item, f"{prefix}.evidence_refs[{eidx}]")
-                )
+                errors.extend(_validate_evidence(item, f"{prefix}.evidence_refs[{eidx}]"))
         if impl == "VERIFIED" and req.get("mapping_status") != "MAPPED":
             errors.append(f"{prefix}: VERIFIED requires mapping_status MAPPED")
 
@@ -182,8 +167,7 @@ def _validate_evidence(item: Any, path: str) -> list[str]:
         errors.append(f"{path}.exit_code must be exactly 0")
     hashes = item.get("artifact_sha256", [])
     if not isinstance(hashes, list) or any(
-        not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value)
-        for value in hashes
+        not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value) for value in hashes
     ):
         errors.append(
             f"{path}.artifact_sha256 must be an array of 64-character lowercase SHA-256 hashes"
@@ -193,9 +177,7 @@ def _validate_evidence(item: Any, path: str) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "input", help="Path to the machine-readable privacy policy JSON"
-    )
+    parser.add_argument("input", help="Path to the machine-readable privacy policy JSON")
     parser.add_argument("--report", help="Optional path for a JSON validation report")
     args = parser.parse_args()
     try:

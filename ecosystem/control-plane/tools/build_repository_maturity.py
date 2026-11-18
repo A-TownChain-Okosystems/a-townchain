@@ -19,6 +19,7 @@ Aufruf:
 
 Env: GITHUB_ACCESS_TOKEN (nur lesend), GITHUB_ORG (Default A-TownChain-Okosystems)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -27,35 +28,65 @@ import os
 import sys
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 ORG = os.environ.get("GITHUB_ORG", "A-TownChain-Okosystems")
 TOKEN = os.environ.get("GITHUB_ACCESS_TOKEN", "")
 
 # Architekturrolle und SSOT-Zustaendigkeit (kuratiert, nicht geraten).
 ROLE = {
-    "a-townchain": ("monorepo-ssot", "SSOT: gesamter Code, apps/, kernel/, ai/, components/"),
-    "a-townchain-ecosystem": ("control-plane", "Governance/Integration/Evidenz, keine zweite Implementierung"),
+    "a-townchain": (
+        "monorepo-ssot",
+        "SSOT: gesamter Code, apps/, kernel/, ai/, components/",
+    ),
+    "a-townchain-ecosystem": (
+        "control-plane",
+        "Governance/Integration/Evidenz, keine zweite Implementierung",
+    ),
     "a-townchain-os": ("kernel-runtime", "KAI-OS Runtime -> Monorepo kernel/atc-os"),
     "a-townchain-os-docs": ("documentation", "Doku-Hub -> Monorepo docs/"),
     "atc-standards": ("governance-root", "Normative Standards -> Monorepo standards/"),
-    "atc-engineering": ("engineering", "Engineering-Tooling -> Monorepo tooling/atc-engineering"),
+    "atc-engineering": (
+        "engineering",
+        "Engineering-Tooling -> Monorepo tooling/atc-engineering",
+    ),
     "atc-toolchain": ("toolchain", "Toolchain -> Monorepo tooling/atc-toolchain"),
     "atc-ide": ("application", "IDE -> Monorepo apps/atc-ide"),
-    "atc-node": ("blockchain-runtime", "Full-Node-Runtime -> Monorepo apps/atc-node + components/node"),
+    "atc-node": (
+        "blockchain-runtime",
+        "Full-Node-Runtime -> Monorepo apps/atc-node + components/node",
+    ),
     "atc-sdk": ("sdk", "SDK -> Monorepo apps/atc-sdk + components/sdk"),
-    "atc-vm": ("governance-spec", "VM-Kompatibilitaets-/Governance-Rolle, bewusst kein Code"),
-    "atc-algorithm": ("consensus-library", "Konsens-/Oekonomie-Algorithmen -> components/algorithm"),
+    "atc-vm": (
+        "governance-spec",
+        "VM-Kompatibilitaets-/Governance-Rolle, bewusst kein Code",
+    ),
+    "atc-algorithm": (
+        "consensus-library",
+        "Konsens-/Oekonomie-Algorithmen -> components/algorithm",
+    ),
     "atc-contracts": ("smart-contracts", "ATCLang-Contracts -> components/contracts"),
     "atc-compute": ("compute", "Compute-Schicht -> Monorepo apps/atc-compute"),
     "atc-zkp": ("zkp-layer", "ZKP-Layer -> components/zkp (R1-Skelett)"),
-    "globus-os": ("operating-system", "Kernel/OS -> Monorepo kernel/atc-shivacore-Bereich"),
-    "atc-shivacore": ("trust-anchor", "ShivaCore Kern -> Monorepo kernel/atc-shivacore"),
+    "globus-os": (
+        "operating-system",
+        "Kernel/OS -> Monorepo kernel/atc-shivacore-Bereich",
+    ),
+    "atc-shivacore": (
+        "trust-anchor",
+        "ShivaCore Kern -> Monorepo kernel/atc-shivacore",
+    ),
     "aurora-ai": ("ai-runtime", "Aurora-Modell/Runtime -> Monorepo ai/aurora-ai"),
     "atclang": ("language", "ATCLang Compiler/VM -> Monorepo ai/atclang"),
     "genesis-engine": ("genesis", "Genesis Engine -> Monorepo ai/genesis-engine"),
-    "genesis-franchise-factory": ("genesis", "GFF -> Monorepo ai/genesis-franchise-factory"),
-    "genesis-chronicles": ("application", "Spiel/NFT -> Monorepo ai/genesis-chronicles"),
+    "genesis-franchise-factory": (
+        "genesis",
+        "GFF -> Monorepo ai/genesis-franchise-factory",
+    ),
+    "genesis-chronicles": (
+        "application",
+        "Spiel/NFT -> Monorepo ai/genesis-chronicles",
+    ),
     "atc-launchpad": ("application", "Launchpad -> Monorepo apps/atc-launchpad"),
     "atc-marketplace": ("application", "Marketplace -> Monorepo apps/atc-marketplace"),
     "atc-wallet": ("archived", "Wallet-Funktion im Monorepo (components/wallet)"),
@@ -66,7 +97,10 @@ ROLE = {
     "atc-oracle": ("archived", "Oracle-Funktion im Monorepo (components/oracle)"),
     "atc-storage": ("archived", "Storage-Funktion im Monorepo (components/storage)"),
     "demo-repository": ("demo", "Demo, kein Reifeziel"),
-    ".github": ("governance-control-plane", "Org-Governance-Hub (Policies, Validatoren)"),
+    ".github": (
+        "governance-control-plane",
+        "Org-Governance-Hub (Policies, Validatoren)",
+    ),
 }
 
 BUILD_MANIFESTS = ("Cargo.toml", "package.json", "pyproject.toml", "requirements.txt")
@@ -86,7 +120,7 @@ def api(path: str):
 def head_sha(repo: str, branch: str) -> str:
     try:
         return api(f"/repos/{ORG}/{repo}/git/ref/heads/{branch}")["object"]["sha"]
-    except Exception:
+    except Exception:  # noqa: BLE001 — API-Fehler (Netz/Rate-Limit) => "kein HEAD"
         return ""
 
 
@@ -94,7 +128,7 @@ def tree_paths(repo: str, sha: str) -> list[str]:
     try:
         t = api(f"/repos/{ORG}/{repo}/git/trees/{sha}?recursive=1")
         return [x["path"] for x in t.get("tree", []) if x.get("type") == "blob"]
-    except Exception:
+    except Exception:  # noqa: BLE001 — Tree nicht lesbar => keine Dateievidenz
         return []
 
 
@@ -102,8 +136,10 @@ def check_summary(repo: str, sha: str) -> dict:
     if not sha:
         return {"total": 0, "success": 0, "failure": 0, "failing": []}
     try:
-        runs = api(f"/repos/{ORG}/{repo}/commits/{sha}/check-runs?per_page=100").get("check_runs", [])
-    except Exception:
+        runs = api(f"/repos/{ORG}/{repo}/commits/{sha}/check-runs?per_page=100").get(
+            "check_runs", []
+        )
+    except Exception:  # noqa: BLE001 — Check-Runs nicht lesbar => CI unbekannt
         return {"total": 0, "success": 0, "failure": 0, "failing": []}
     ok = sum(1 for r in runs if r.get("conclusion") == "success")
     bad = [r["name"] for r in runs if r.get("conclusion") == "failure"]
@@ -115,10 +151,24 @@ BLOCKERS = {
         "6 von 15 Checks am main-HEAD rot (markdownlint, ruff, npm-tests, pytest, quality, determinism) — Fix liegt in PR #116",
         ">=100 offene Dependabot-Alerts (API-Deckel), ueberwiegend aus Konsolidierungsimporten",
     ],
-    "atc-node": ["keine Testsuite", "reproduzierbarer Build erst mit PR #15/#16", "markdownlint rot am HEAD"],
-    "globus-os": ["keine Testdateien", "Syscall-ABI nur spezifiziert, nicht implementiert", "cargo-tests rot am HEAD"],
-    "atc-standards": ["regenerate-Check rot (Generator-Drift)", "330 von 534 Standards specification_only"],
-    "a-townchain-ecosystem": ["Knowledge-Indexer-Check rot", "176 Sync-Commits/Woche ohne Automatisierung"],
+    "atc-node": [
+        "keine Testsuite",
+        "reproduzierbarer Build erst mit PR #15/#16",
+        "markdownlint rot am HEAD",
+    ],
+    "globus-os": [
+        "keine Testdateien",
+        "Syscall-ABI nur spezifiziert, nicht implementiert",
+        "cargo-tests rot am HEAD",
+    ],
+    "atc-standards": [
+        "regenerate-Check rot (Generator-Drift)",
+        "330 von 534 Standards specification_only",
+    ],
+    "a-townchain-ecosystem": [
+        "Knowledge-Indexer-Check rot",
+        "176 Sync-Commits/Woche ohne Automatisierung",
+    ],
     "aurora-ai": ["kein Runtime-E2E gegen GlobusOS nachgewiesen"],
     "atc-launchpad": ["cargo-tests rot", "keine Tests"],
     "atc-marketplace": ["pytest rot"],
@@ -130,7 +180,10 @@ BLOCKERS = {
 
 EVIDENCE = {
     "a-townchain": ["docs/audits/TECHNICAL_MATURITY-REPORT-2026-11-18.md", "PR #116"],
-    "atc-standards": ["registry/standard-implementation.yaml", "registry/standards.yaml"],
+    "atc-standards": [
+        "registry/standard-implementation.yaml",
+        "registry/standards.yaml",
+    ],
     "a-townchain-os-docs": ["docs/audits/TECHNICAL_MATURITY-REPORT-2026-11-18.md"],
 }
 
@@ -184,19 +237,24 @@ def main() -> int:
                 "test_files": sum(
                     1
                     for p in files
-                    if any(k in p.lower() for k in ("/tests/", "test_", "_test.", ".test.", ".spec."))
+                    if any(
+                        k in p.lower() for k in ("/tests/", "test_", "_test.", ".test.", ".spec.")
+                    )
                 ),
                 "ci": checks,
                 "maturity_level": level_for(archived, role, files, checks),
-                "ci_status": ("GREEN" if checks["total"] and not checks["failure"]
-                              else ("RED" if checks["failure"] else "NONE")),
+                "ci_status": (
+                    "GREEN"
+                    if checks["total"] and not checks["failure"]
+                    else ("RED" if checks["failure"] else "NONE")
+                ),
                 "e2e_status": "NOT_VERIFIED",
                 "open_blockers": BLOCKERS.get(name, []),
                 "evidence_refs": EVIDENCE.get(name, []),
             }
         )
 
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     out = [
         "# REPOSITORY_MATURITY.yaml — HEAD-gebundener Reifegrad aller Org-Repositories",
         "# Erzeugt von ecosystem/control-plane/tools/build_repository_maturity.py",
@@ -221,7 +279,7 @@ def main() -> int:
             f"    head_sha: {x['head_sha'] or 'null'}",
             f"    archived: {str(x['archived']).lower()}",
             f"    architecture_role: {x['architecture_role']}",
-            f"    ssot_scope: \"{x['ssot_scope']}\"",
+            f'    ssot_scope: "{x["ssot_scope"]}"',
             f"    build_manifests: {x['build_manifests']}",
             f"    test_files: {x['test_files']}",
             f"    ci_checks: {x['ci']['total']}",
@@ -233,18 +291,19 @@ def main() -> int:
             "    open_blockers:" + (" []" if not x["open_blockers"] else ""),
         ]
         for b in x["open_blockers"]:
-            out.append(f"      - \"{b}\"")
+            out.append(f'      - "{b}"')
         if x["evidence_refs"]:
             out.append("    evidence_refs:")
-            out += [f"      - \"{e}\"" for e in x["evidence_refs"]]
+            out += [f'      - "{e}"' for e in x["evidence_refs"]]
         if x["ci"]["failing"]:
             out.append("    failing_checks:")
-            out += [f"      - \"{n}\"" for n in x["ci"]["failing"][:8]]
+            out += [f'      - "{n}"' for n in x["ci"]["failing"][:8]]
     text = "\n".join(out) + "\n"
 
     if args.check:
         try:
-            current = open(args.out, encoding="utf-8").read()
+            with open(args.out, encoding="utf-8") as fh:
+                current = fh.read()
         except OSError:
             current = ""
         if current != text:

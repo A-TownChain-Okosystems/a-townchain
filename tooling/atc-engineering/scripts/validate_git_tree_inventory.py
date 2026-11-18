@@ -78,12 +78,7 @@ def validate_side(side: str, manifest: dict, inventory: dict) -> list[dict]:
             entry.get("type"),
             entry.get("sha"),
         )
-        if (
-            not isinstance(path, str)
-            or not path
-            or path.startswith("/")
-            or ".." in path.split("/")
-        ):
+        if not isinstance(path, str) or not path or path.startswith("/") or ".." in path.split("/"):
             findings.append(
                 {
                     "code": "INVALID_TREE_PATH",
@@ -141,11 +136,7 @@ def validate_side(side: str, manifest: dict, inventory: dict) -> list[dict]:
         files = []
     file_by_path: dict[str, dict] = {}
     for item in files:
-        if (
-            not isinstance(item, dict)
-            or not isinstance(item.get("path"), str)
-            or not item["path"]
-        ):
+        if not isinstance(item, dict) or not isinstance(item.get("path"), str) or not item["path"]:
             findings.append(
                 {
                     "code": "INVALID_INVENTORY_FILE",
@@ -179,9 +170,7 @@ def validate_side(side: str, manifest: dict, inventory: dict) -> list[dict]:
             )
 
     tree_blobs = {
-        path: entry
-        for path, entry in tree_by_path.items()
-        if entry.get("type") == "blob"
+        path: entry for path, entry in tree_by_path.items() if entry.get("type") == "blob"
     }
     submodules = {
         path: entry
@@ -223,13 +212,9 @@ def validate_side(side: str, manifest: dict, inventory: dict) -> list[dict]:
                 }
             )
 
-    tree_dirs = {
-        path for path, entry in tree_by_path.items() if entry.get("type") == "tree"
-    }
+    tree_dirs = {path for path, entry in tree_by_path.items() if entry.get("type") == "tree"}
     leaf_paths = tree_paths | set(submodules)
-    expected_dirs = (
-        set().union(*(_parents(path) for path in leaf_paths)) if leaf_paths else set()
-    )
+    expected_dirs = set().union(*(_parents(path) for path in leaf_paths)) if leaf_paths else set()
     for path in sorted(expected_dirs - tree_dirs):
         findings.append(
             {
@@ -261,9 +246,7 @@ def reconcile(
 ) -> dict:
     findings = validate_side("source", source_manifest, source_inventory)
     findings.extend(validate_side("catalog", catalog_manifest, catalog_inventory))
-    findings.sort(
-        key=lambda item: (item["side"], item["code"], item["path"], item["detail"])
-    )
+    findings.sort(key=lambda item: (item["side"], item["code"], item["path"], item["detail"]))
     source_entries = (
         source_manifest.get("entries", [])
         if isinstance(source_manifest.get("entries"), list)
@@ -334,24 +317,14 @@ def main() -> int:
     parser.add_argument("--source-inventory", required=True)
     parser.add_argument("--catalog-manifest", required=True)
     parser.add_argument("--catalog-inventory", required=True)
-    parser.add_argument(
-        "--root", default=".", help="Git checkout containing both pinned commits"
-    )
+    parser.add_argument("--root", default=".", help="Git checkout containing both pinned commits")
     parser.add_argument("--output", default="-")
     args = parser.parse_args()
     source_manifest = json.loads(Path(args.source_manifest).read_text(encoding="utf-8"))
-    catalog_manifest = json.loads(
-        Path(args.catalog_manifest).read_text(encoding="utf-8")
-    )
-    source_inventory = json.loads(
-        Path(args.source_inventory).read_text(encoding="utf-8")
-    )
-    catalog_inventory = json.loads(
-        Path(args.catalog_inventory).read_text(encoding="utf-8")
-    )
-    report = reconcile(
-        source_manifest, source_inventory, catalog_manifest, catalog_inventory
-    )
+    catalog_manifest = json.loads(Path(args.catalog_manifest).read_text(encoding="utf-8"))
+    source_inventory = json.loads(Path(args.source_inventory).read_text(encoding="utf-8"))
+    catalog_inventory = json.loads(Path(args.catalog_inventory).read_text(encoding="utf-8"))
+    report = reconcile(source_manifest, source_inventory, catalog_manifest, catalog_inventory)
     # Rebuild each manifest directly from Git, independently of the supplied
     # artifact, so an empty or truncated manifest cannot pass by self-consistency.
     for side, manifest in (("source", source_manifest), ("catalog", catalog_manifest)):
@@ -389,11 +362,7 @@ def main() -> int:
         target = Path(args.output)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(rendered, encoding="utf-8")
-    print(
-        json.dumps(
-            {"status": report["status"], "counts": report["counts"]}, sort_keys=True
-        )
-    )
+    print(json.dumps({"status": report["status"], "counts": report["counts"]}, sort_keys=True))
     return 0 if report["status"] == "PASS" else 1
 
 

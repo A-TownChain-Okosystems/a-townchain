@@ -36,9 +36,7 @@ def path_exists(repo: Path, rel: str) -> bool:
 
 
 def extract_scalar(text: str, key: str) -> str | None:
-    m = re.search(
-        rf"^\s*{re.escape(key)}:\s*[\"']?([^\"'\n#]+?)[\"']?\s*$", text, re.MULTILINE
-    )
+    m = re.search(rf"^\s*{re.escape(key)}:\s*[\"']?([^\"'\n#]+?)[\"']?\s*$", text, re.MULTILINE)
     return m.group(1).strip() if m else None
 
 
@@ -70,11 +68,7 @@ def audit_repo(repo: Path) -> list[dict]:
     findings: list[dict] = []
     metadata = read(repo / ".atc/repository.yaml")
     compliance = read(repo / ".atc/compliance.yaml")
-    maturity = (
-        extract_scalar(metadata, "maturity")
-        or extract_scalar(compliance, "level")
-        or "R0"
-    )
+    maturity = extract_scalar(metadata, "maturity") or extract_scalar(compliance, "level") or "R0"
 
     if metadata:
         declared_name = extract_scalar(metadata, "name")
@@ -297,9 +291,7 @@ def audit_repo(repo: Path) -> list[dict]:
                         "Minimize permissions, never execute untrusted PR code with write credentials, and document the trust boundary.",
                     )
                 )
-            if re.search(
-                r"uses:\s*[^\s@]+@(main|master|latest)\s*$", text, re.MULTILINE
-            ):
+            if re.search(r"uses:\s*[^\s@]+@(main|master|latest)\s*$", text, re.MULTILINE):
                 findings.append(
                     finding(
                         name,
@@ -327,12 +319,7 @@ def audit_repo(repo: Path) -> list[dict]:
                 )
 
     for p in repo.rglob("*"):
-        if (
-            not p.is_file()
-            or ".git" in p.parts
-            or "archive" in p.parts
-            or "target" in p.parts
-        ):
+        if not p.is_file() or ".git" in p.parts or "archive" in p.parts or "target" in p.parts:
             continue
         if p.suffix not in {
             ".rs",
@@ -346,9 +333,7 @@ def audit_repo(repo: Path) -> list[dict]:
             ".h",
         }:
             continue
-        if re.search(
-            r"\b(unimplemented!\(\)|NotImplementedError|TODO\(\)|todo!\(\))", read(p)
-        ):
+        if re.search(r"\b(unimplemented!\(\)|NotImplementedError|TODO\(\)|todo!\(\))", read(p)):
             findings.append(
                 finding(
                     name,
@@ -396,9 +381,7 @@ def audit_repo(repo: Path) -> list[dict]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "root", type=Path, help="directory containing checked-out repositories"
-    )
+    parser.add_argument("root", type=Path, help="directory containing checked-out repositories")
     parser.add_argument("--json", dest="json_path", type=Path, default=None)
     args = parser.parse_args()
     if not args.root.is_dir():
@@ -410,21 +393,14 @@ def main() -> int:
         "audit": "ATC-STD-ENFORCEMENT-OFFLINE-001",
         "organization": ORG,
         "repositories_scanned": len(repos),
-        "blocking_findings": sum(
-            1 for f in all_findings if f["severity"] in {"P0", "P1"}
-        ),
+        "blocking_findings": sum(1 for f in all_findings if f["severity"] in {"P0", "P1"}),
         "findings": all_findings,
     }
     out = args.json_path or (args.root / "STANDARDS_ENFORCEMENT_AUDIT.json")
-    out.write_text(
-        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(
         json.dumps(
-            {
-                k: report[k]
-                for k in ("audit", "repositories_scanned", "blocking_findings")
-            },
+            {k: report[k] for k in ("audit", "repositories_scanned", "blocking_findings")},
             ensure_ascii=False,
         )
     )

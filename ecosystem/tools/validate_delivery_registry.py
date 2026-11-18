@@ -18,9 +18,7 @@ SCHEMA = ROOT / "control-plane" / "DELIVERY_REGISTRY.schema.json"
 def validate(document: object, schema: dict) -> list[str]:
     errors: list[str] = []
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
-    errors.extend(
-        f"schema:{e.json_path}: {e.message}" for e in validator.iter_errors(document)
-    )
+    errors.extend(f"schema:{e.json_path}: {e.message}" for e in validator.iter_errors(document))
     if not isinstance(document, dict):
         return errors
     statuses = document.get("status_enum")
@@ -39,13 +37,9 @@ def validate(document: object, schema: dict) -> list[str]:
     def walk(value: object, path: str = "$") -> None:
         if isinstance(value, dict):
             if "status" in value and value["status"] not in statuses:
-                errors.append(
-                    f"{path}.status is outside status_enum: {value['status']!r}"
-                )
+                errors.append(f"{path}.status is outside status_enum: {value['status']!r}")
             if "priority" in value and value["priority"] not in priorities:
-                errors.append(
-                    f"{path}.priority is outside priority_enum: {value['priority']!r}"
-                )
+                errors.append(f"{path}.priority is outside priority_enum: {value['priority']!r}")
             for key, child in value.items():
                 walk(child, f"{path}.{key}")
         elif isinstance(value, list):
@@ -79,21 +73,15 @@ def validate(document: object, schema: dict) -> list[str]:
         if len(inv_repos) != len(set(inv_repos)):
             errors.append("repository_inventory contains duplicate repository names")
         if len(plan_repos) != len(set(plan_repos)):
-            errors.append(
-                "repository_delivery_plans contains duplicate repository names"
-            )
+            errors.append("repository_delivery_plans contains duplicate repository names")
         if set(inv_repos) != set(plan_repos):
-            errors.append(
-                "repository inventory and delivery-plan repository sets differ"
-            )
+            errors.append("repository inventory and delivery-plan repository sets differ")
     census = document.get("repository_census")
     if isinstance(census, dict):
         if census.get("total") != census.get("active", 0) + census.get("archived", 0):
             errors.append("repository_census.total must equal active + archived")
         if isinstance(inventory, list) and census.get("total") != len(inventory):
-            errors.append(
-                "repository_census.total does not match repository_inventory length"
-            )
+            errors.append("repository_census.total does not match repository_inventory length")
         if isinstance(inventory, list):
             active = sum(
                 1
@@ -106,9 +94,7 @@ def validate(document: object, schema: dict) -> list[str]:
                 if isinstance(x, dict) and x.get("repository_state") == "ARCHIVED"
             )
             if active != census.get("active") or archived != census.get("archived"):
-                errors.append(
-                    "repository_census active/archived counts do not match inventory"
-                )
+                errors.append("repository_census active/archived counts do not match inventory")
     return errors
 
 
@@ -141,9 +127,7 @@ def main() -> int:
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
-    print(
-        "PASS: DELIVERY_REGISTRY.json matches Draft 2020-12 schema and semantic invariants"
-    )
+    print("PASS: DELIVERY_REGISTRY.json matches Draft 2020-12 schema and semantic invariants")
     print(
         f"repositories={len(document['repository_inventory'])}; plans={len(document['repository_delivery_plans'])}; components={len(document['components'])}; functions={len(document['functions'])}"
     )

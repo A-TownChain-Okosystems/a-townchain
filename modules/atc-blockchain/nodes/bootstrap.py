@@ -163,12 +163,7 @@ class DNSSeedResolver:
             addr = ipaddress.ip_address(ip)
         except ValueError:
             return False
-        return not (
-            addr.is_private
-            or addr.is_loopback
-            or addr.is_link_local
-            or addr.is_reserved
-        )
+        return not (addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved)
 
     def get_hardcoded_seeds(self) -> list[PeerAddress]:
         return [
@@ -185,9 +180,7 @@ class DNSSeedResolver:
             for ip in ips:
                 if self._is_valid_ip(ip):
                     peers.append(
-                        PeerAddress(
-                            ip=ip, port=BOOTSTRAP_CONFIG["bootstrap_port"], source="dns"
-                        )
+                        PeerAddress(ip=ip, port=BOOTSTRAP_CONFIG["bootstrap_port"], source="dns")
                     )
             return peers
         except (TimeoutError, socket.gaierror, OSError):

@@ -12,9 +12,7 @@ from core.ecs import Position, Sprite, World
 
 
 class Renderer2D:
-    def __init__(
-        self, world: World, width: int = 800, height: int = 600, headless: bool = False
-    ):
+    def __init__(self, world: World, width: int = 800, height: int = 600, headless: bool = False):
         self.world = world
         self.width = width
         self.height = height

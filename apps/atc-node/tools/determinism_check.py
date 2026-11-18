@@ -60,18 +60,14 @@ def scan_sources(root, lang):
                     for i, line in enumerate(f, 1):
                         for pat, desc in PATTERNS[lang]:
                             if re.search(pat, line):
-                                findings.append(
-                                    f"{path}:{i}: {desc}: {line.strip()[:80]}"
-                                )
+                                findings.append(f"{path}:{i}: {desc}: {line.strip()[:80]}")
             except (OSError, UnicodeDecodeError):
                 continue
     return findings
 
 
 def run_tests(cmd, cwd):
-    r = subprocess.run(
-        cmd, shell=True, cwd=cwd, capture_output=True, text=True, check=False
-    )
+    r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, check=False)
     return (r.returncode, (r.stdout or "") + (r.stderr or ""))
 
 

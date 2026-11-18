@@ -73,10 +73,7 @@ def _unique_ids(items: Any, label: str, errors: list[str]) -> set[str]:
         if identifier in seen:
             errors.append(f"duplicate {label} id: {identifier}")
         seen.add(identifier)
-        if (
-            not isinstance(item.get("description"), str)
-            or not item["description"].strip()
-        ):
+        if not isinstance(item.get("description"), str) or not item["description"].strip():
             errors.append(f"{label}[{index}].description must be a non-empty string")
     return seen
 
@@ -87,10 +84,7 @@ def validate_taxonomy(taxonomy: Any, catalog: Any | None = None) -> list[str]:
         return ["taxonomy root must be an object"]
     if taxonomy.get("schema_id") != TAXONOMY_SCHEMA_ID:
         errors.append(f"schema_id must be {TAXONOMY_SCHEMA_ID}")
-    if (
-        not isinstance(taxonomy.get("schema_version"), str)
-        or not taxonomy["schema_version"]
-    ):
+    if not isinstance(taxonomy.get("schema_version"), str) or not taxonomy["schema_version"]:
         errors.append("schema_version must be a non-empty string")
     if taxonomy.get("status") != "PROPOSED_NOT_SOURCE_VERIFIED":
         errors.append(
@@ -102,9 +96,7 @@ def validate_taxonomy(taxonomy: Any, catalog: Any | None = None) -> list[str]:
     class_ids = _unique_ids(taxonomy.get("classes"), "classes", errors)
 
     for index, family in enumerate(
-        taxonomy.get("families", [])
-        if isinstance(taxonomy.get("families"), list)
-        else []
+        taxonomy.get("families", []) if isinstance(taxonomy.get("families"), list) else []
     ):
         if isinstance(family, dict) and family.get("category_id") not in category_ids:
             errors.append(
@@ -135,9 +127,7 @@ def validate_taxonomy(taxonomy: Any, catalog: Any | None = None) -> list[str]:
                 errors.append(f"catalog schema_id must be {CATALOG_SCHEMA_ID}")
             _validate_architecture_layers(catalog, errors)
             _validate_source_binding_accounting(catalog, errors)
-            _validate_catalog_records(
-                catalog, category_ids, family_ids, class_ids, errors
-            )
+            _validate_catalog_records(catalog, category_ids, family_ids, class_ids, errors)
 
     return errors
 
@@ -160,11 +150,7 @@ def _validate_catalog_records(
                     ("family_id", family_ids),
                     ("class_id", class_ids),
                 ):
-                    if (
-                        field in value
-                        and value[field] is not None
-                        and value[field] not in allowed
-                    ):
+                    if field in value and value[field] is not None and value[field] not in allowed:
                         errors.append(
                             f"{path}.{field} references unknown taxonomy id: {value[field]!r}"
                         )
@@ -174,9 +160,7 @@ def _validate_catalog_records(
                 if state == "MAPPED":
                     evidence = value.get("source_evidence")
                     if not isinstance(evidence, dict):
-                        errors.append(
-                            f"{path}: MAPPED record requires source_evidence object"
-                        )
+                        errors.append(f"{path}: MAPPED record requires source_evidence object")
                     else:
                         required = (
                             "canonical_repository",
@@ -194,9 +178,9 @@ def _validate_catalog_records(
                                 errors.append(
                                     f"{path}.source_evidence.{field} is required for MAPPED"
                                 )
-                        if isinstance(
-                            evidence.get("source_sha"), str
-                        ) and not SHA40.fullmatch(evidence["source_sha"]):
+                        if isinstance(evidence.get("source_sha"), str) and not SHA40.fullmatch(
+                            evidence["source_sha"]
+                        ):
                             errors.append(
                                 f"{path}.source_evidence.source_sha must be a full 40-character lowercase SHA"
                             )
@@ -211,9 +195,7 @@ def _validate_catalog_records(
                     ("verification_status", VERIFICATION_STATES),
                 ):
                     if field in value and value[field] not in allowed:
-                        errors.append(
-                            f"{path}.{field} has invalid value: {value[field]!r}"
-                        )
+                        errors.append(f"{path}.{field} has invalid value: {value[field]!r}")
             for key, child in value.items():
                 walk(child, f"{path}.{key}")
         elif isinstance(value, list):
@@ -271,9 +253,7 @@ def _validate_architecture_layers(catalog: dict[str, Any], errors: list[str]) ->
             )
 
 
-def _validate_source_binding_accounting(
-    catalog: dict[str, Any], errors: list[str]
-) -> None:
+def _validate_source_binding_accounting(catalog: dict[str, Any], errors: list[str]) -> None:
     functions = [
         fn
         for c in catalog.get("components", [])
@@ -287,23 +267,16 @@ def _validate_source_binding_accounting(
             isinstance(fn.get("source_binding"), dict) for fn in functions
         ),
         "function_source_paths": sum(
-            bool((fn.get("source_binding") or {}).get("source_path"))
-            for fn in functions
+            bool((fn.get("source_binding") or {}).get("source_path")) for fn in functions
         ),
         "function_exact_source_shas": sum(
-            bool(
-                SHA40.fullmatch(
-                    str((fn.get("source_binding") or {}).get("exact_source_sha", ""))
-                )
-            )
+            bool(SHA40.fullmatch(str((fn.get("source_binding") or {}).get("exact_source_sha", ""))))
             for fn in functions
         ),
     }
     for field, count in derived.items():
         if scope.get(field) != count:
-            errors.append(
-                f"scope.{field} is stale: declared {scope.get(field)!r}, derived {count}"
-            )
+            errors.append(f"scope.{field} is stale: declared {scope.get(field)!r}, derived {count}")
     counts = {}
     for fn in functions:
         status = (fn.get("source_binding") or {}).get("status", "NO_SOURCE_BINDING")
@@ -345,9 +318,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"- {error}")
         return 1
     print("PASS: taxonomy structure and existing taxonomy bindings are valid")
-    print(
-        "NOTE: structural validation is not source reconciliation or runtime verification"
-    )
+    print("NOTE: structural validation is not source reconciliation or runtime verification")
     return 0
 
 

@@ -15,9 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 KMS = ROOT / "docs/knowledge-system"
 GENERATED = KMS / "records/generated"
 REGISTRY = KMS / "registry.json"
-REPO = os.environ.get(
-    "GITHUB_REPOSITORY", "A-TownChain-Okosystems/a-townchain-ecosystem"
-)
+REPO = os.environ.get("GITHUB_REPOSITORY", "A-TownChain-Okosystems/a-townchain-ecosystem")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
 NOW = datetime.now(UTC).isoformat().replace("+00:00", "Z")
 API = "https://api.github.com"
@@ -28,9 +26,7 @@ def gh(path, params=None):
     h = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
     if TOKEN:
         h["Authorization"] = "Bearer " + TOKEN
-    with urllib.request.urlopen(
-        urllib.request.Request(API + path + q, headers=h), timeout=30
-    ) as r:
+    with urllib.request.urlopen(urllib.request.Request(API + path + q, headers=h), timeout=30) as r:
         return json.load(r)
 
 
@@ -87,11 +83,7 @@ def main():
     records = []
     top = sorted({p.split("/")[0] for p in files if p})
     comps = sorted(
-        {
-            p.split("/")[1]
-            for p in files
-            if p.startswith("components/") and len(p.split("/")) > 1
-        }
+        {p.split("/")[1] for p in files if p.startswith("components/") and len(p.split("/")) > 1}
     )
     records.append(
         rec(
@@ -101,23 +93,15 @@ def main():
             "Automatically indexed repository structure.",
             "github",
             "https://github.com/" + REPO,
-            "Top-level entries: "
-            + ", ".join(top)
-            + "\n\nComponents: "
-            + ", ".join(comps),
+            "Top-level entries: " + ", ".join(top) + "\n\nComponents: " + ", ".join(comps),
             ["repository", "structure", "generated"],
-            [
-                {"relation": "contains", "target": "ATC-KMS-COMPONENT-" + slug(c)}
-                for c in comps
-            ],
+            [{"relation": "contains", "target": "ATC-KMS-COMPONENT-" + slug(c)} for c in comps],
         )
     )
     for c in comps:
         paths = [p for p in files if p.startswith("components/" + c + "/")]
         manifests = [
-            p
-            for p in paths
-            if Path(p).name in {"Cargo.toml", "package.json", "pyproject.toml"}
+            p for p in paths if Path(p).name in {"Cargo.toml", "package.json", "pyproject.toml"}
         ]
         records.append(
             rec(
@@ -127,10 +111,7 @@ def main():
                 "Component subtree indexed from " + REPO + ".",
                 "file",
                 "components/" + c,
-                "Files: "
-                + str(len(paths))
-                + "\n\nManifests: "
-                + (", ".join(manifests) or "none"),
+                "Files: " + str(len(paths)) + "\n\nManifests: " + (", ".join(manifests) or "none"),
                 ["component", c, "generated"],
                 [{"relation": "part-of", "target": "ATC-KMS-REPOSITORY-STRUCTURE"}],
             )
@@ -166,11 +147,7 @@ def main():
     ):
         n = pr["number"]
         merged = bool(pr.get("merged_at"))
-        status = (
-            "completed"
-            if merged
-            else ("archived" if pr["state"] == "closed" else "active")
-        )
+        status = "completed" if merged else ("archived" if pr["state"] == "closed" else "active")
         body = (pr.get("body") or "").strip()
         content = (
             "State: "
@@ -203,9 +180,7 @@ def main():
             continue
         n = issue["number"]
         status = "active" if issue["state"] == "open" else "archived"
-        content = (
-            "State: " + issue["state"] + "\n\n" + (issue.get("body") or "").strip()
-        )
+        content = "State: " + issue["state"] + "\n\n" + (issue.get("body") or "").strip()
         records.append(
             rec(
                 "ATC-KMS-ISSUE-" + str(n),
@@ -236,9 +211,7 @@ def main():
         )
     ids = {r["id"] for r in records}
     for r in records:
-        for a, b in re.findall(
-            r"(?:PR|pr)\s*#(\d+)|(?:issue|Issue)\s*#(\d+)", r["content"]
-        ):
+        for a, b in re.findall(r"(?:PR|pr)\s*#(\d+)|(?:issue|Issue)\s*#(\d+)", r["content"]):
             target = "ATC-KMS-PR-" + (a or b) if a else "ATC-KMS-ISSUE-" + b
             if target in ids:
                 r["links"].append({"relation": "references", "target": target})
@@ -249,11 +222,7 @@ def main():
             json.dumps(r, indent=2, ensure_ascii=False) + "\n"
         )
     registry = json.loads(REGISTRY.read_text())
-    existing = [
-        x
-        for x in registry.get("records", [])
-        if x.get("managed_by") != "atc-kms-indexer"
-    ]
+    existing = [x for x in registry.get("records", []) if x.get("managed_by") != "atc-kms-indexer"]
     registry["records"] = existing + [
         {
             "id": r["id"],

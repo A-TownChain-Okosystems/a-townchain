@@ -227,9 +227,7 @@ def main(argv: list[str] | None = None) -> int:
                     f"{entry['entscheidung']}/{entry['code']}/{entry['offset']}, "
                     f"erhalten {result.decision}/{result.code}/{result.offset}"
                 )
-        print(
-            f"Referenzdekoder: {len(corpus['eintraege'])} Eingaben, {deviations} Abweichungen"
-        )
+        print(f"Referenzdekoder: {len(corpus['eintraege'])} Eingaben, {deviations} Abweichungen")
         return 1 if deviations else 0
     if not args.hex:
         parser.error("Hex, --corpus oder --selftest erforderlich")

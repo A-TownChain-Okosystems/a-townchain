@@ -177,16 +177,13 @@ def validate(data: dict) -> dict:
         if isinstance(fn, dict)
     ]
     source_mapped = sum(
-        bool(fn.get("soll_ist", {}).get("ist", {}).get("source_paths"))
-        for fn in all_functions
+        bool(fn.get("soll_ist", {}).get("ist", {}).get("source_paths")) for fn in all_functions
     )
     tests_mapped = sum(
-        bool(fn.get("soll_ist", {}).get("ist", {}).get("test_refs"))
-        for fn in all_functions
+        bool(fn.get("soll_ist", {}).get("ist", {}).get("test_refs")) for fn in all_functions
     )
     specs_mapped = sum(
-        bool(fn.get("soll_ist", {}).get("ist", {}).get("spec_refs"))
-        for fn in all_functions
+        bool(fn.get("soll_ist", {}).get("ist", {}).get("spec_refs")) for fn in all_functions
     )
     verified_functions = sum(
         fn.get("soll_ist", {}).get("ist", {}).get("assessment") == "VERIFIED"
@@ -208,9 +205,7 @@ def validate(data: dict) -> dict:
         "repository_inventory": {
             "systems_with_repository_and_sha": system_inventory_count,
             "systems_total": len(data["systems"]),
-            "repository_snapshots": len(
-                data.get("repository_inventory", {}).get("snapshots", [])
-            ),
+            "repository_snapshots": len(data.get("repository_inventory", {}).get("snapshots", [])),
         },
         "function_coverage": {
             "source_refs_mapped": source_mapped,
@@ -234,9 +229,7 @@ def validate(data: dict) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--catalog", default=str(DEFAULT_CATALOG))
-    parser.add_argument(
-        "--output", help="Optional path to write a JSON validation report"
-    )
+    parser.add_argument("--output", help="Optional path to write a JSON validation report")
     args = parser.parse_args()
     try:
         data = json.loads(Path(args.catalog).read_text(encoding="utf-8"))

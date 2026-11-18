@@ -72,9 +72,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--quiet", action="store_true", help="nur Zusammenfassung")
     args = parser.parse_args(argv)
 
-    root = (
-        Path(args.root).resolve() if args.root else Path(__file__).resolve().parents[1]
-    )
+    root = Path(args.root).resolve() if args.root else Path(__file__).resolve().parents[1]
     findings = broken_links(root)
 
     if not args.quiet:

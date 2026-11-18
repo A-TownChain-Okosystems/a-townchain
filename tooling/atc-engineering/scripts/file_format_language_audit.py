@@ -134,8 +134,7 @@ def audit(repo: Path) -> tuple[list[str], Counter[str], Counter[str]]:
         # docs/config are intentionally exempt.
         if (
             allowed
-            and lang
-            in {"python", "javascript", "typescript", "go", "c", "cpp", "solidity"}
+            and lang in {"python", "javascript", "typescript", "go", "c", "cpp", "solidity"}
             and lang not in allowed
         ):
             findings.append(
@@ -148,9 +147,7 @@ def audit(repo: Path) -> tuple[list[str], Counter[str], Counter[str]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "root", type=Path, help="directory containing repository directories"
-    )
+    parser.add_argument("root", type=Path, help="directory containing repository directories")
     args = parser.parse_args()
     root = args.root
     if not root.is_dir():
@@ -158,9 +155,7 @@ def main() -> int:
 
     total = 0
     failed = False
-    for repo in sorted(
-        p for p in root.iterdir() if p.is_dir() and p.name not in IGNORED_DIRS
-    ):
+    for repo in sorted(p for p in root.iterdir() if p.is_dir() and p.name not in IGNORED_DIRS):
         findings, languages, formats = audit(repo)
         print(f"== {repo.name} ==")
         print(

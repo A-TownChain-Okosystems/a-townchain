@@ -60,18 +60,14 @@ def scan_sources(root, lang):
                     for i, line in enumerate(f, 1):
                         for pat, desc in PATTERNS[lang]:
                             if re.search(pat, line):
-                                findings.append(
-                                    f"{path}:{i}: {desc}: {line.strip()[:80]}"
-                                )
+                                findings.append(f"{path}:{i}: {desc}: {line.strip()[:80]}")
             except (OSError, UnicodeDecodeError):
                 continue
     return findings
 
 
 def run_tests(cmd, cwd):
-    result = subprocess.run(
-        cmd, shell=True, cwd=cwd, capture_output=True, text=True, check=False
-    )
+    result = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, check=False)
     stdout = result.stdout or ""
     stderr = result.stderr or ""
     return result.returncode, stdout, stderr
@@ -161,9 +157,7 @@ def main():
             normalized2 = normalize_output(out2, args.lang)
             if normalized1 != normalized2:
                 ok = False
-                print(
-                    "  FINDING: Testausgaben unterscheiden sich nach Normalisierung — FAIL"
-                )
+                print("  FINDING: Testausgaben unterscheiden sich nach Normalisierung — FAIL")
                 report_first_difference(normalized1, normalized2)
                 print("  Roh-Ausgabe Lauf 1 (letzte 3000 Zeichen):")
                 print(out1[-3000:] or "  <leer>")
@@ -171,9 +165,7 @@ def main():
                 print(out2[-3000:] or "  <leer>")
             else:
                 if out1 != out2:
-                    print(
-                        "  INFO: nur variable Rust-Testlaufzeit normalisiert (finished in ...s)"
-                    )
+                    print("  INFO: nur variable Rust-Testlaufzeit normalisiert (finished in ...s)")
                 print("  OK: zwei erfolgreiche, inhaltlich identische Testlaeufe")
 
     print("DETERMINISM GATE:", "PASS" if ok else "FAIL")

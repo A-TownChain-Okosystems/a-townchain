@@ -52,9 +52,7 @@ def make_tree(
         "    source_repository: A-TownChain-Okosystems/a-townchain\n"
         "    contract_path: apps/atc-contracts/token.atc\n"
         f"    source_sha256: {digest}\n"
-        f"{extra_entry}"
-        + (f"    network: {network}\n" if network else "")
-        + "exclusions:\n"
+        f"{extra_entry}" + (f"    network: {network}\n" if network else "") + "exclusions:\n"
         '  - "apps/atc-contracts/modules/**"\n',
         encoding="utf-8",
     )
@@ -107,9 +105,7 @@ def test_a2_pfad_existiert_nicht(tmp_path):
 
 def test_a3_drift_wird_erkannt(tmp_path):
     reg = make_tree(tmp_path)
-    (tmp_path / "apps/atc-contracts/token.atc").write_text(
-        "// geaendert\n", encoding="utf-8"
-    )
+    (tmp_path / "apps/atc-contracts/token.atc").write_text("// geaendert\n", encoding="utf-8")
     findings, _ = run(tmp_path, reg, deployments(tmp_path))
     assert "A3" in gates(findings)
     assert any("driftet" in f["detail"] for f in findings)
@@ -117,9 +113,7 @@ def test_a3_drift_wird_erkannt(tmp_path):
 
 def test_a4_waisenquelle_wird_gemeldet(tmp_path):
     reg = make_tree(tmp_path)
-    (tmp_path / "apps/atc-contracts/orphan.atc").write_text(
-        "// orphan\n", encoding="utf-8"
-    )
+    (tmp_path / "apps/atc-contracts/orphan.atc").write_text("// orphan\n", encoding="utf-8")
     findings, _ = run(tmp_path, reg, deployments(tmp_path))
     assert "A4" in gates(findings)
     assert any("orphan.atc" in f["detail"] for f in findings)
@@ -216,8 +210,7 @@ def fake_atc_abi(tmp_path: Path, digest: str = ABI) -> Path:
     """Stub, der `abi --digest` mit festem Hash beantwortet."""
     binary = tmp_path / "atc_abi"
     binary.write_text(
-        "#!/bin/sh\n"
-        'if [ "$1" = "abi" ]; then printf \'%s  "%s"  1\\n\'; exit 0; fi\n'.replace(
+        '#!/bin/sh\nif [ "$1" = "abi" ]; then printf \'%s  "%s"  1\\n\'; exit 0; fi\n'.replace(
             "%s", digest, 1
         )
         + "exit 0\n",
@@ -261,8 +254,6 @@ def test_write_abis_zogen_hash_in_die_registry(tmp_path):
     """Der Schreibpfad muss die nachgezogene ABI wirklich persistieren."""
     reg = make_tree(tmp_path)
     loaded = GATE.load_registry(reg)
-    GATE.check_registry(
-        tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path), reg=loaded
-    )
+    GATE.check_registry(tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path), reg=loaded)
     GATE.write_registry(loaded, reg)
     assert f"abi_sha256: {ABI}" in reg.read_text(encoding="utf-8")

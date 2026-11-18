@@ -65,6 +65,4 @@ def test_unchanged_state_is_clean():
 
 def test_checked_in_state_matches_the_tree():
     tool = load_tool()
-    assert tool.main([]) == 0, (
-        "eingefrorene Einordnung passt nicht zum Baum (--write pruefen)"
-    )
+    assert tool.main([]) == 0, "eingefrorene Einordnung passt nicht zum Baum (--write pruefen)"

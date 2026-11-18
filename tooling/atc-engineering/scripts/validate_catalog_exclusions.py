@@ -38,9 +38,7 @@ def audit_inventory(doc: dict) -> dict:
     exclusions = doc.get("exclusions")
     if not isinstance(files, list):
         files = []
-        errors.append(
-            {"code": "INVALID_FILES", "path": "", "detail": "files must be an array"}
-        )
+        errors.append({"code": "INVALID_FILES", "path": "", "detail": "files must be an array"})
     if not isinstance(exclusions, list):
         exclusions = []
         errors.append(
@@ -53,11 +51,7 @@ def audit_inventory(doc: dict) -> dict:
 
     file_by_path: dict[str, dict] = {}
     for item in files:
-        if (
-            not isinstance(item, dict)
-            or not isinstance(item.get("path"), str)
-            or not item["path"]
-        ):
+        if not isinstance(item, dict) or not isinstance(item.get("path"), str) or not item["path"]:
             errors.append(
                 {
                     "code": "INVALID_FILE_RECORD",
@@ -99,9 +93,7 @@ def audit_inventory(doc: dict) -> dict:
                 }
             )
         elif eid in exclusion_by_id:
-            errors.append(
-                {"code": "DUPLICATE_EXCLUSION_ID", "path": str(path), "detail": eid}
-            )
+            errors.append({"code": "DUPLICATE_EXCLUSION_ID", "path": str(path), "detail": eid})
         else:
             exclusion_by_id[eid] = item
         if isinstance(path, str) and path:
@@ -158,9 +150,7 @@ def audit_inventory(doc: dict) -> dict:
         if reason_code in FILE_EXCLUSION_CODES:
             source_sha = item.get("source_blob_sha")
             source_file = file_by_path.get(path)
-            if not isinstance(source_sha, str) or not re.fullmatch(
-                r"[0-9a-f]{40}", source_sha
-            ):
+            if not isinstance(source_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", source_sha):
                 errors.append(
                     {
                         "code": "MISSING_SOURCE_BLOB_BINDING",
@@ -224,9 +214,7 @@ def audit_inventory(doc: dict) -> dict:
                         "detail": str(item.get("status")),
                     }
                 )
-            elif not any(
-                x.get("source_blob_sha") == item.get("blob_sha") for x in matches
-            ):
+            elif not any(x.get("source_blob_sha") == item.get("blob_sha") for x in matches):
                 errors.append(
                     {
                         "code": "FILE_STATUS_NOT_BLOB_BOUND",
@@ -236,9 +224,7 @@ def audit_inventory(doc: dict) -> dict:
                 )
 
     reason_counts = Counter(
-        str(item.get("reason_code", "<missing>"))
-        for item in exclusions
-        if isinstance(item, dict)
+        str(item.get("reason_code", "<missing>")) for item in exclusions if isinstance(item, dict)
     )
     return {
         "schema_version": "1.0.0",

@@ -57,9 +57,7 @@ def parse_input(cell: str, digests: dict[str, str], p2: bytes) -> list[bytes] | 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Goldvektoren Stufe 1 pruefen")
     ap.add_argument("-v", "--verbose", action="store_true")
-    ap.add_argument(
-        "--write", action="store_true", help="Vektordatei aus dem Dokument erzeugen"
-    )
+    ap.add_argument("--write", action="store_true", help="Vektordatei aus dem Dokument erzeugen")
     args = ap.parse_args()
 
     text = DOC.read_text(encoding="utf-8")
@@ -90,9 +88,7 @@ def main() -> int:
             ref = parsed
             if digests.get(ref) != expected:
                 failures += 1
-                print(
-                    f"FEHLER {gid}: behauptet Gleichheit mit {ref}, Sollwerte weichen ab"
-                )
+                print(f"FEHLER {gid}: behauptet Gleichheit mit {ref}, Sollwerte weichen ab")
             elif args.verbose:
                 print(f"OK     {gid}: gleich {ref}")
         else:
@@ -101,9 +97,7 @@ def main() -> int:
             actual = hashlib.sha256(data).hexdigest()
             if actual != expected:
                 failures += 1
-                print(
-                    f"FEHLER {gid}: erwartet {expected}, berechnet {actual} ({len(data)} Byte)"
-                )
+                print(f"FEHLER {gid}: erwartet {expected}, berechnet {actual} ({len(data)} Byte)")
             elif args.verbose:
                 print(f"OK     {gid}: {actual} ({len(data)} Byte)")
         digests[gid] = expected
@@ -146,9 +140,7 @@ def main() -> int:
             "fassung": version,
             "hinweis": "Erzeugt aus dem Dokument; nicht von Hand aendern.",
             "stroeme": {"P1": p1, "P2": p2m.group(1)},
-            "goldvektoren": [
-                {"id": gid, "sollwert": dig} for gid, dig in sorted(digests.items())
-            ],
+            "goldvektoren": [{"id": gid, "sollwert": dig} for gid, dig in sorted(digests.items())],
             "negativvektoren": [
                 {
                     "id": nid,

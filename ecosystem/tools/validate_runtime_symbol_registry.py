@@ -33,15 +33,11 @@ STATUSES = {
 
 
 def expected_id(repository: str, source_path: str, kind: str, symbol: str) -> str:
-    digest = hashlib.sha256(
-        f"{repository}|{source_path}|{kind}|{symbol}".encode()
-    ).hexdigest()
+    digest = hashlib.sha256(f"{repository}|{source_path}|{kind}|{symbol}".encode()).hexdigest()
     return f"RTS-{digest[:12]}"
 
 
-def validate(
-    registry: dict, census: dict, build_manifest: dict
-) -> tuple[list[str], dict]:
+def validate(registry: dict, census: dict, build_manifest: dict) -> tuple[list[str], dict]:
     errors: list[str] = []
     if registry.get("schema_id") != "ATC-RUNTIME-SYMBOL-REGISTRY-001":
         errors.append("schema_id must be ATC-RUNTIME-SYMBOL-REGISTRY-001")
@@ -50,9 +46,7 @@ def validate(
     if registry.get("status") not in {"RESIDUAL", "BLOCKED"}:
         errors.append("status must be RESIDUAL or BLOCKED")
     if registry.get("functional_verification") != "NOT_PERFORMED":
-        errors.append(
-            "functional_verification must be NOT_PERFORMED (no sham validation)"
-        )
+        errors.append("functional_verification must be NOT_PERFORMED (no sham validation)")
 
     entries = registry.get("entries") or []
     if not isinstance(entries, list):
@@ -85,9 +79,7 @@ def validate(
             entry.get("symbol", ""),
         )
         if derived != entry.get("id"):
-            errors.append(
-                f"entries[{index}] id is not content-derived (expected {derived})"
-            )
+            errors.append(f"entries[{index}] id is not content-derived (expected {derived})")
         if entry.get("status") not in STATUSES:
             errors.append(f"entries[{index}] invalid status {entry.get('status')}")
 
@@ -117,9 +109,7 @@ def validate(
             errors.append(f"{repository}: classified but absent from census")
 
     # R4 ssot against the build manifest
-    manifest_by_repo = {
-        entry.get("repo"): entry for entry in build_manifest.get("repos", [])
-    }
+    manifest_by_repo = {entry.get("repo"): entry for entry in build_manifest.get("repos", [])}
     for entry in entries:
         name = entry["repository"].rsplit("/", 1)[-1]
         entry_repo = manifest_by_repo.get(name)
@@ -128,26 +118,16 @@ def validate(
         ssot = entry.get("ssot")
         if entry_repo.get("status") == "CANONICAL_ELSEWHERE":
             if not ssot or ssot.get("finding") != "QUERLREPO_REFERENCE_NON_SSOT":
-                errors.append(
-                    f"{entry['id']}: quellrepo entry missing SSOT reference finding"
-                )
-            elif ssot.get("canonical_source_path") != entry_repo.get(
-                "canonical_source_path"
-            ):
-                errors.append(
-                    f"{entry['id']}: SSOT canonical path disagrees with build manifest"
-                )
+                errors.append(f"{entry['id']}: quellrepo entry missing SSOT reference finding")
+            elif ssot.get("canonical_source_path") != entry_repo.get("canonical_source_path"):
+                errors.append(f"{entry['id']}: SSOT canonical path disagrees with build manifest")
         elif ssot is not None:
-            errors.append(
-                f"{entry['id']}: unexpected ssot finding for non-quellrepo repository"
-            )
+            errors.append(f"{entry['id']}: unexpected ssot finding for non-quellrepo repository")
 
     # R5 catalog duplicates
     findings = registry.get("catalog_duplicate_findings") or {}
     if findings.get("duplicate_function_ids"):
-        errors.append(
-            f"duplicate catalog function ids: {findings['duplicate_function_ids']}"
-        )
+        errors.append(f"duplicate catalog function ids: {findings['duplicate_function_ids']}")
     if findings.get("duplicate_source_bindings"):
         errors.append(
             f"duplicate non-delegated source bindings: "
@@ -161,17 +141,10 @@ def validate(
             "R1_schema": "PASS" if not any("schema" in e for e in errors) else "FAIL",
             "R2_id_rules": "PASS" if not any("id" in e for e in errors) else "FAIL",
             "R3_accounting": "PASS"
-            if not any(
-                "accounting" in e or "classification" in e or "absent" in e
-                for e in errors
-            )
+            if not any("accounting" in e or "classification" in e or "absent" in e for e in errors)
             else "FAIL",
-            "R4_ssot": "PASS"
-            if not any("SSOT" in e or "ssot" in e for e in errors)
-            else "FAIL",
-            "R5_duplicates": "PASS"
-            if not any("duplicate" in e for e in errors)
-            else "FAIL",
+            "R4_ssot": "PASS" if not any("SSOT" in e or "ssot" in e for e in errors) else "FAIL",
+            "R5_duplicates": "PASS" if not any("duplicate" in e for e in errors) else "FAIL",
         },
     }
 

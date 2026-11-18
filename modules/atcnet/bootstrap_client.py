@@ -75,9 +75,7 @@ class BootstrapClient:
                     )
                     return self.peers
             except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
-                logger.warning(
-                    f"[BootstrapClient] {bs_host}:{bs_port} nicht erreichbar: {e}"
-                )
+                logger.warning(f"[BootstrapClient] {bs_host}:{bs_port} nicht erreichbar: {e}")
             finally:
                 sock.close()
         return []
@@ -112,10 +110,7 @@ class BootstrapClient:
                 data, _ = sock.recvfrom(65535)
                 resp = json.loads(data.decode())
                 if resp.get("type") == "PEER_LIST":
-                    return [
-                        Peer(p["node_id"], p["host"], p["port"])
-                        for p in resp.get("peers", [])
-                    ]
+                    return [Peer(p["node_id"], p["host"], p["port"]) for p in resp.get("peers", [])]
             except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
                 pass
             finally:

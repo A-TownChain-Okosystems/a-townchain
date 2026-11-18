@@ -119,9 +119,7 @@ def reconcile(catalog: dict, census: dict) -> dict:
                     item["finding"] = "TEST_SURFACE_BINDING_DOCUMENTED"
                 else:
                     item["finding"] = "BOUND_SYMBOL_NOT_FOUND_IN_LEXICAL_SCAN"
-            elif binding.get("exact_source_sha") != census_repos[repo].get(
-                "source_sha"
-            ):
+            elif binding.get("exact_source_sha") != census_repos[repo].get("source_sha"):
                 item["finding"] = "FUNCTION_BINDING_SHA_MISMATCH"
             else:
                 item["finding"] = "LEXICAL_MATCH_ONLY_FUNCTIONAL_VERIFICATION_PENDING"
@@ -142,8 +140,7 @@ def reconcile(catalog: dict, census: dict) -> dict:
             )
 
     blocking = census.get("status") == "BLOCKED" or any(
-        item.get("status") == "BLOCKED"
-        for item in component_findings + function_findings
+        item.get("status") == "BLOCKED" for item in component_findings + function_findings
     )
     return {
         "schema_id": "ATC-COMPONENT-FUNCTION-RECONCILIATION-001",
@@ -205,9 +202,7 @@ def main() -> int:
         parser.error("unexpected organization census schema")
     report = reconcile(catalog, census)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
-        json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(
         json.dumps(
             {

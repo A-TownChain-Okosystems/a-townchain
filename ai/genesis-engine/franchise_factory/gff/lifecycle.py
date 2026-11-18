@@ -145,9 +145,7 @@ class LifecycleManager:
         if fr is None:
             raise KeyError(f"Franchise {fid} nicht gefunden")
         if not self._validate_transition(fr.phase, new_phase):
-            raise ValueError(
-                f"Ungueltiger Uebergang {fr.phase.value} -> {new_phase.value}"
-            )
+            raise ValueError(f"Ungueltiger Uebergang {fr.phase.value} -> {new_phase.value}")
         ts = self._now if now is None else now
         old = fr.phase
         fr.history[-1].update(exited=ts, success=True)
@@ -179,9 +177,7 @@ class LifecycleManager:
         if fr is None:
             raise KeyError(f"Franchise {fid} nicht gefunden")
         mid = hashlib.sha256(f"{name}|{self._now}".encode()).hexdigest()[:16]
-        self.milestones[mid] = Milestone(
-            mid, fid, name, phase, target, criteria=list(criteria)
-        )
+        self.milestones[mid] = Milestone(mid, fid, name, phase, target, criteria=list(criteria))
         fr.milestones.append(mid)
         return mid
 

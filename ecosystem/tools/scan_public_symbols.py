@@ -84,9 +84,7 @@ PATTERNS = {
     "python": [
         (
             "function",
-            re.compile(
-                r"^\s*(?:async\s+)?def\s+([A-Za-z_][A-Za-z0-9_]*)", re.MULTILINE
-            ),
+            re.compile(r"^\s*(?:async\s+)?def\s+([A-Za-z_][A-Za-z0-9_]*)", re.MULTILINE),
         ),
         ("type", re.compile(r"^\s*class\s+([A-Za-z_][A-Za-z0-9_]*)", re.MULTILINE)),
     ],
@@ -107,9 +105,7 @@ PATTERNS = {
         ),
         (
             "value",
-            re.compile(
-                r"^\s*export\s+(?:const|let|var)\s+([A-Za-z_$][\w$]*)", re.MULTILINE
-            ),
+            re.compile(r"^\s*export\s+(?:const|let|var)\s+([A-Za-z_$][\w$]*)", re.MULTILINE),
         ),
     ],
     "typescript": [
@@ -129,17 +125,13 @@ PATTERNS = {
         ),
         (
             "value",
-            re.compile(
-                r"^\s*export\s+(?:const|let|var)\s+([A-Za-z_$][\w$]*)", re.MULTILINE
-            ),
+            re.compile(r"^\s*export\s+(?:const|let|var)\s+([A-Za-z_$][\w$]*)", re.MULTILINE),
         ),
     ],
     "go": [
         (
             "function",
-            re.compile(
-                r"^func\s+(?:\([^\n)]*\)\s*)?([A-Z][A-Za-z0-9_]*)\s*\(", re.MULTILINE
-            ),
+            re.compile(r"^func\s+(?:\([^\n)]*\)\s*)?([A-Z][A-Za-z0-9_]*)\s*\(", re.MULTILINE),
         ),
         (
             "type",
@@ -345,9 +337,7 @@ def main() -> int:
     parser.add_argument(
         "--root", required=True, type=Path, help="Root of one checked-out repository"
     )
-    parser.add_argument(
-        "--repository", required=True, help="Canonical owner/repository name"
-    )
+    parser.add_argument("--repository", required=True, help="Canonical owner/repository name")
     parser.add_argument(
         "--source-sha",
         required=True,
@@ -375,14 +365,11 @@ def main() -> int:
         parser.error("--root must be a Git checkout with a readable HEAD")
     if actual_sha != args.source_sha.lower():
         parser.error(
-            f"--source-sha mismatch: supplied {args.source_sha.lower()}, "
-            f"actual HEAD {actual_sha}"
+            f"--source-sha mismatch: supplied {args.source_sha.lower()}, actual HEAD {actual_sha}"
         )
     result = scan(root, args.repository, actual_sha)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
-        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(
         json.dumps(
             {

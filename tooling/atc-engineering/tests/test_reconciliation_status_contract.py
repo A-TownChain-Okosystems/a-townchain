@@ -75,9 +75,7 @@ class ReconciliationStatusContractTests(unittest.TestCase):
         claim = valid_claim()
         claim["evidence"][0].pop("artifact_id")
         claim["evidence"][0].pop("artifact_sha256")
-        claim["evidence"][0]["log_reference"] = (
-            "https://github.com/owner/repo/actions/runs/12345"
-        )
+        claim["evidence"][0]["log_reference"] = "https://github.com/owner/repo/actions/runs/12345"
         validate_verification_claim(claim)
 
     def test_non_https_log_reference_blocks(self):
@@ -138,9 +136,7 @@ class ReconciliationStatusContractTests(unittest.TestCase):
     def test_explicitly_scoped_verification_claim_passes(self):
         validate_verification_claim(valid_claim())
         self.assertEqual(status_conclusion("DETECTED"), "ASSESS_FINDINGS")
-        self.assertEqual(
-            status_conclusion("RECONCILED"), "SCOPED_RECONCILIATION_PASSED"
-        )
+        self.assertEqual(status_conclusion("RECONCILED"), "SCOPED_RECONCILIATION_PASSED")
         self.assertEqual(status_conclusion("VERIFIED"), "SCOPED_CLAIM_VERIFIED_ONLY")
 
     def test_legacy_detected_is_not_rewritten_by_status_mapping(self):

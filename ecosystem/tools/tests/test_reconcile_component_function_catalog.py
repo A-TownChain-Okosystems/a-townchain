@@ -57,28 +57,22 @@ class CatalogReconciliationTests(unittest.TestCase):
         self.assertEqual(report["status"], "RESIDUAL")
         self.assertEqual(report["summary"]["candidate_symbols_unbound"], 0)
         finding = report["function_findings"][0]
-        self.assertEqual(
-            finding["finding"], "LEXICAL_MATCH_ONLY_FUNCTIONAL_VERIFICATION_PENDING"
-        )
+        self.assertEqual(finding["finding"], "LEXICAL_MATCH_ONLY_FUNCTIONAL_VERIFICATION_PENDING")
         self.assertEqual(report["summary"]["functional_verification"], "NOT_PERFORMED")
 
     def test_sha_mismatch_is_not_accepted_as_a_binding(self):
-        self.catalog["components"][0]["functions"][0]["source_binding"][
-            "exact_source_sha"
-        ] = "b" * 40
-        report = reconcile(self.catalog, self.census)
-        self.assertEqual(
-            report["function_findings"][0]["finding"], "FUNCTION_BINDING_SHA_MISMATCH"
+        self.catalog["components"][0]["functions"][0]["source_binding"]["exact_source_sha"] = (
+            "b" * 40
         )
+        report = reconcile(self.catalog, self.census)
+        self.assertEqual(report["function_findings"][0]["finding"], "FUNCTION_BINDING_SHA_MISMATCH")
         self.assertEqual(report["summary"]["candidate_symbols_unbound"], 1)
 
     def test_missing_source_checkout_blocks_reconciliation(self):
         self.census["repositories"] = []
         report = reconcile(self.catalog, self.census)
         self.assertEqual(report["status"], "BLOCKED")
-        self.assertEqual(
-            report["function_findings"][0]["finding"], "SOURCE_CENSUS_UNAVAILABLE"
-        )
+        self.assertEqual(report["function_findings"][0]["finding"], "SOURCE_CENSUS_UNAVAILABLE")
 
 
 class DocumentedExclusionTests(unittest.TestCase):
@@ -131,9 +125,7 @@ class DocumentedExclusionTests(unittest.TestCase):
             report["function_findings"][0]["finding"],
             "NON_PUBLIC_INTERNAL_HELPER_EXPECTED_ABSENT",
         )
-        self.assertEqual(
-            report["summary"]["function_bindings_documented_exclusions"], 1
-        )
+        self.assertEqual(report["summary"]["function_bindings_documented_exclusions"], 1)
 
     def test_delegated_binding_is_documented_not_duplicate(self):
         catalog, census = self._base()
@@ -145,12 +137,8 @@ class DocumentedExclusionTests(unittest.TestCase):
             }
         )
         report = reconcile(catalog, census)
-        self.assertEqual(
-            report["function_findings"][0]["finding"], "DELEGATED_BINDING_DOCUMENTED"
-        )
-        self.assertEqual(
-            report["summary"]["function_bindings_documented_exclusions"], 1
-        )
+        self.assertEqual(report["function_findings"][0]["finding"], "DELEGATED_BINDING_DOCUMENTED")
+        self.assertEqual(report["summary"]["function_bindings_documented_exclusions"], 1)
 
     def test_self_referential_head_is_documented_not_mismatch(self):
         catalog, census = self._base()

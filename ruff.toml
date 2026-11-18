@@ -7,6 +7,8 @@
 # Das ist eine Scope-Korrektur, keine Abschwaechung: Jede Datei, die gebaut
 # oder ausgeliefert wird, bleibt unter Lint- und Formatpflicht.
 target-version = "py311"
+# Zeilenlänge wie Org-Policy (hub ruff.toml), damit beide Gates identisch formatieren.
+line-length = 100
 exclude = ["docs", "target", ".venv", "node_modules", "__pycache__"]
 
 [lint.per-file-ignores]

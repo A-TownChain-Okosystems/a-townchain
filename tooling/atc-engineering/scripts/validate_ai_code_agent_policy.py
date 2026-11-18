@@ -100,15 +100,9 @@ def main() -> int:
         errors.append("merge authorization default must be false")
     if schema.get("$id") != "ATC-AI-VERIFY-001":
         errors.append("unexpected evidence schema id")
-    if (
-        schema.get("properties", {}).get("merge_authorized", {}).get("const")
-        is not False
-    ):
+    if schema.get("properties", {}).get("merge_authorized", {}).get("const") is not False:
         errors.append("evidence schema must reject merge_authorized=true")
-    if (
-        schema.get("properties", {}).get("commit_sha", {}).get("pattern")
-        != "^[0-9a-f]{40}$"
-    ):
+    if schema.get("properties", {}).get("commit_sha", {}).get("pattern") != "^[0-9a-f]{40}$":
         errors.append("evidence schema must require a full lowercase 40-character SHA")
     actual_profiles = set(profiles.get("profiles", {}))
     if actual_profiles != EXPECTED_PROFILES:

@@ -41,16 +41,12 @@ def _errors_for_inventory(label: str, doc: dict) -> list[dict]:
     errors: list[dict] = []
     commit = doc.get("observed_commit_sha")
     if not isinstance(commit, str) or not SHA40.fullmatch(commit):
-        errors.append(
-            {"code": "INVALID_COMMIT_SHA", "side": label, "detail": str(commit)}
-        )
+        errors.append({"code": "INVALID_COMMIT_SHA", "side": label, "detail": str(commit)})
     for key in ("files", "symbols", "exclusions", "parser_coverage"):
         if not isinstance(
             doc.get(key), (list if key in {"files", "symbols", "exclusions"} else dict)
         ):
-            errors.append(
-                {"code": "INVALID_INVENTORY_FIELD", "side": label, "detail": key}
-            )
+            errors.append({"code": "INVALID_INVENTORY_FIELD", "side": label, "detail": key})
     files = doc.get("files", []) if isinstance(doc.get("files"), list) else []
     seen_paths: set[str] = set()
     for item in files:
@@ -65,19 +61,13 @@ def _errors_for_inventory(label: str, doc: dict) -> list[dict]:
             continue
         path, blob = item.get("path"), item.get("blob_sha")
         if not isinstance(path, str) or not path:
-            errors.append(
-                {"code": "INVALID_FILE_PATH", "side": label, "detail": str(path)}
-            )
+            errors.append({"code": "INVALID_FILE_PATH", "side": label, "detail": str(path)})
         elif path in seen_paths:
-            errors.append(
-                {"code": "DUPLICATE_FILE_PATH", "side": label, "detail": path}
-            )
+            errors.append({"code": "DUPLICATE_FILE_PATH", "side": label, "detail": path})
         else:
             seen_paths.add(path)
         if not isinstance(blob, str) or not SHA40.fullmatch(blob):
-            errors.append(
-                {"code": "INVALID_FILE_BLOB_SHA", "side": label, "detail": str(path)}
-            )
+            errors.append({"code": "INVALID_FILE_BLOB_SHA", "side": label, "detail": str(path)})
         if item.get("status") in {
             "UNSUPPORTED",
             "PARSE_ERROR",
@@ -143,16 +133,12 @@ def _errors_for_inventory(label: str, doc: dict) -> list[dict]:
             )
 
     coverage = (
-        doc.get("parser_coverage", {})
-        if isinstance(doc.get("parser_coverage"), dict)
-        else {}
+        doc.get("parser_coverage", {}) if isinstance(doc.get("parser_coverage"), dict) else {}
     )
     for fmt in REQUIRED_FORMATS:
         entry = coverage.get(fmt)
         if not isinstance(entry, dict):
-            errors.append(
-                {"code": "PARSER_GROUP_MISSING", "side": label, "detail": fmt}
-            )
+            errors.append({"code": "PARSER_GROUP_MISSING", "side": label, "detail": fmt})
         elif (
             entry.get("status") not in AUTHORITATIVE_STATUSES
             or entry.get("parser_mode") not in AUTHORITATIVE_MODES[fmt]
@@ -165,9 +151,7 @@ def _errors_for_inventory(label: str, doc: dict) -> list[dict]:
                 }
             )
 
-    exclusions = (
-        doc.get("exclusions", []) if isinstance(doc.get("exclusions"), list) else []
-    )
+    exclusions = doc.get("exclusions", []) if isinstance(doc.get("exclusions"), list) else []
     exclusion_ids = []
     for item in exclusions:
         if not isinstance(item, dict):
@@ -216,9 +200,7 @@ def _errors_for_inventory(label: str, doc: dict) -> list[dict]:
                 }
             )
     for exclusion_id, count in Counter(exclusion_ids).items():
-        if not isinstance(exclusion_id, str) or not re.fullmatch(
-            r"[0-9a-f]{64}", exclusion_id
-        ):
+        if not isinstance(exclusion_id, str) or not re.fullmatch(r"[0-9a-f]{64}", exclusion_id):
             errors.append(
                 {
                     "code": "INVALID_EXCLUSION_ID",
@@ -238,9 +220,7 @@ def _errors_for_inventory(label: str, doc: dict) -> list[dict]:
 
 
 def reconcile(source: dict, catalog: dict, expected_deltas: dict | None = None) -> dict:
-    errors = _errors_for_inventory("source", source) + _errors_for_inventory(
-        "catalog", catalog
-    )
+    errors = _errors_for_inventory("source", source) + _errors_for_inventory("catalog", catalog)
     if source.get("repository") != catalog.get("repository"):
         errors.append(
             {
@@ -262,11 +242,7 @@ def reconcile(source: dict, catalog: dict, expected_deltas: dict | None = None) 
     actual_file_deltas = {}
     for path in sorted(set(source_files) | set(catalog_files)):
         left, right = source_files.get(path), catalog_files.get(path)
-        if (
-            left is None
-            or right is None
-            or left.get("blob_sha") != right.get("blob_sha")
-        ):
+        if left is None or right is None or left.get("blob_sha") != right.get("blob_sha"):
             actual_file_deltas[path] = {
                 "change_type": "added"
                 if left is None
@@ -286,9 +262,9 @@ def reconcile(source: dict, catalog: dict, expected_deltas: dict | None = None) 
                 }
             )
     else:
-        if expected_deltas.get("repository") != source.get(
+        if expected_deltas.get("repository") != source.get("repository") or expected_deltas.get(
             "repository"
-        ) or expected_deltas.get("repository") != catalog.get("repository"):
+        ) != catalog.get("repository"):
             errors.append(
                 {
                     "code": "EXPECTED_DELTA_REPOSITORY_MISMATCH",
@@ -298,9 +274,7 @@ def reconcile(source: dict, catalog: dict, expected_deltas: dict | None = None) 
             )
         if expected_deltas.get("source_commit_sha") != source.get(
             "observed_commit_sha"
-        ) or expected_deltas.get("catalog_commit_sha") != catalog.get(
-            "observed_commit_sha"
-        ):
+        ) or expected_deltas.get("catalog_commit_sha") != catalog.get("observed_commit_sha"):
             errors.append(
                 {
                     "code": "EXPECTED_DELTA_COMMIT_MISMATCH",
@@ -391,10 +365,7 @@ def reconcile(source: dict, catalog: dict, expected_deltas: dict | None = None) 
                             "detail": f"{path}:{field}:{entry.get(field)!r}!={actual.get(field)!r}",
                         }
                     )
-            if (
-                not isinstance(entry.get("rationale"), str)
-                or not entry["rationale"].strip()
-            ):
+            if not isinstance(entry.get("rationale"), str) or not entry["rationale"].strip():
                 errors.append(
                     {
                         "code": "EXPECTED_FILE_DELTA_RATIONALE_MISSING",

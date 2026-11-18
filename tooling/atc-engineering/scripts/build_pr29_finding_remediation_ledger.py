@@ -102,9 +102,9 @@ def base_name(name: str) -> str:
 
 def make_finding_id(finding: dict) -> str:
     return sha256(
-        json.dumps(
-            finding, ensure_ascii=True, sort_keys=True, separators=(",", ":")
-        ).encode("utf-8")
+        json.dumps(finding, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode(
+            "utf-8"
+        )
     )
 
 
@@ -128,11 +128,7 @@ def resolve_symbol_finding(
     current = current_inventories[side]
     symbol_id = str(finding.get("detail", "")).split(":", 1)[0]
     old = next(
-        (
-            item
-            for item in baseline.get("symbols", [])
-            if item.get("symbol_id") == symbol_id
-        ),
+        (item for item in baseline.get("symbols", []) if item.get("symbol_id") == symbol_id),
         None,
     )
     if old is None:
@@ -148,10 +144,7 @@ def resolve_symbol_finding(
     candidates = [
         item
         for item in symbol_index(current).get(key, [])
-        if abs(
-            int(item.get("source_start_line", 0)) - int(old.get("source_start_line", 0))
-        )
-        <= 1
+        if abs(int(item.get("source_start_line", 0)) - int(old.get("source_start_line", 0))) <= 1
         and isinstance(item.get("signature"), str)
         and item["signature"].strip()
     ]
@@ -181,19 +174,11 @@ def resolve_file_status_finding(
     detail = str(finding.get("detail", ""))
     path, old_status = detail.rsplit(":", 1)
     old_file = next(
-        (
-            item
-            for item in baseline_inventories[side].get("files", [])
-            if item.get("path") == path
-        ),
+        (item for item in baseline_inventories[side].get("files", []) if item.get("path") == path),
         None,
     )
     current_file = next(
-        (
-            item
-            for item in current_inventories[side].get("files", [])
-            if item.get("path") == path
-        ),
+        (item for item in current_inventories[side].get("files", []) if item.get("path") == path),
         None,
     )
     if old_file is None or current_file is None:
@@ -226,10 +211,7 @@ def resolve_file_status_finding(
                 "blob_sha": current_file["blob_sha"],
                 "parser_mode": coverage.get("parser_mode"),
             }
-    if (
-        current_status in {"SKIPPED", "EXCLUDED"}
-        and str(current_file.get("reason", "")).strip()
-    ):
+    if current_status in {"SKIPPED", "EXCLUDED"} and str(current_file.get("reason", "")).strip():
         exclusion = next(
             (
                 item
@@ -293,11 +275,7 @@ def resolve_delta_finding(
     if finding.get("code") == "FILE_BLOB_MISMATCH":
         path = path.split(":", 1)[0]
     entry = next(
-        (
-            item
-            for item in expected_delta.get("expected_deltas", [])
-            if item.get("path") == path
-        ),
+        (item for item in expected_delta.get("expected_deltas", []) if item.get("path") == path),
         None,
     )
     if entry is None:
@@ -321,11 +299,9 @@ def resolve_delta_finding(
         ),
         None,
     )
-    if entry.get("source_blob_sha") != (
-        source.get("blob_sha") if source else None
-    ) or entry.get("catalog_blob_sha") != (
-        catalog.get("blob_sha") if catalog else None
-    ):
+    if entry.get("source_blob_sha") != (source.get("blob_sha") if source else None) or entry.get(
+        "catalog_blob_sha"
+    ) != (catalog.get("blob_sha") if catalog else None):
         return {
             "status": "UNRESOLVED",
             "reason": "expected-delta blob bindings do not match current inventories",
@@ -364,12 +340,8 @@ def build_ledger(args) -> dict:
     baseline_report, baseline_report_raw = read_json(
         baseline_dir / "independent-bidirectional-reconciliation.json"
     )
-    baseline_source, baseline_source_raw = read_json(
-        baseline_dir / "source-inventory.json"
-    )
-    baseline_catalog, baseline_catalog_raw = read_json(
-        baseline_dir / "catalog-inventory.json"
-    )
+    baseline_source, baseline_source_raw = read_json(baseline_dir / "source-inventory.json")
+    baseline_catalog, baseline_catalog_raw = read_json(baseline_dir / "catalog-inventory.json")
     _baseline_legacy_report, baseline_legacy_raw = read_json(
         baseline_dir / "reconciliation-report.json"
     )
@@ -394,27 +366,17 @@ def build_ledger(args) -> dict:
     if baseline_report.get("counts", {}).get("blocking_findings") != contract.get(
         "baseline_findings_count"
     ):
-        raise ValueError(
-            "baseline finding count does not match the pinned ledger contract"
-        )
-    if len(baseline_report.get("findings", [])) != contract.get(
-        "baseline_findings_count"
-    ):
-        raise ValueError(
-            "baseline findings array length does not match the pinned ledger contract"
-        )
+        raise ValueError("baseline finding count does not match the pinned ledger contract")
+    if len(baseline_report.get("findings", [])) != contract.get("baseline_findings_count"):
+        raise ValueError("baseline findings array length does not match the pinned ledger contract")
     for side, key in (
         ("source", "source_commit_sha"),
         ("catalog", "catalog_commit_sha"),
     ):
         if baseline_inventories[side].get("observed_commit_sha") != contract.get(key):
-            raise ValueError(
-                f"{side} baseline commit does not match the ledger contract"
-            )
+            raise ValueError(f"{side} baseline commit does not match the ledger contract")
         if current_inventories[side].get("observed_commit_sha") != contract.get(key):
-            raise ValueError(
-                f"{side} current commit does not match the ledger contract"
-            )
+            raise ValueError(f"{side} current commit does not match the ledger contract")
 
     records = []
     for finding in baseline_report["findings"]:
@@ -424,9 +386,7 @@ def build_ledger(args) -> dict:
             "reason": f"no resolver for original finding code {code}",
         }
         if code == "MISSING_SYMBOL_BINDING":
-            resolution = resolve_symbol_finding(
-                finding, baseline_inventories, current_inventories
-            )
+            resolution = resolve_symbol_finding(finding, baseline_inventories, current_inventories)
         elif code == "UNRESOLVED_FILE_STATUS":
             resolution = resolve_file_status_finding(
                 finding, baseline_inventories, current_inventories
@@ -446,9 +406,7 @@ def build_ledger(args) -> dict:
             {
                 "finding_id": make_finding_id(finding),
                 "original_finding": finding,
-                "root_cause": mapping.get(
-                    "root_cause", resolution.get("reason", "unmapped")
-                ),
+                "root_cause": mapping.get("root_cause", resolution.get("reason", "unmapped")),
                 "resolution_status": resolution.get("status", "UNRESOLVED"),
                 "resolution": resolution,
                 "fix_refs": mapping.get("fix_refs", []),
@@ -457,9 +415,7 @@ def build_ledger(args) -> dict:
         )
 
     status_counts = Counter(record["resolution_status"] for record in records)
-    unresolved = [
-        record for record in records if record["resolution_status"] == "UNRESOLVED"
-    ]
+    unresolved = [record for record in records if record["resolution_status"] == "UNRESOLVED"]
     current_gate_pass = (
         current_report.get("status") == "RECONCILED"
         and current_report.get("counts", {}).get("blocking_findings") == 0
@@ -471,9 +427,7 @@ def build_ledger(args) -> dict:
             {
                 "finding_id": "CURRENT_GATE_NOT_PASS",
                 "resolution_status": "UNRESOLVED",
-                "resolution": {
-                    "reason": "current reconciliation or Git-tree gate did not pass"
-                },
+                "resolution": {"reason": "current reconciliation or Git-tree gate did not pass"},
             }
         )
     return {
@@ -493,12 +447,8 @@ def build_ledger(args) -> dict:
         },
         "current": {
             "head_sha": args.current_head_sha,
-            "source_commit_sha": current_inventories["source"].get(
-                "observed_commit_sha"
-            ),
-            "catalog_commit_sha": current_inventories["catalog"].get(
-                "observed_commit_sha"
-            ),
+            "source_commit_sha": current_inventories["source"].get("observed_commit_sha"),
+            "catalog_commit_sha": current_inventories["catalog"].get("observed_commit_sha"),
             "current_reconciliation_status": current_report.get("status"),
             "current_reconciliation_sha256": sha256(current_report_raw),
             "git_tree_status": tree_report.get("status"),
@@ -512,16 +462,10 @@ def build_ledger(args) -> dict:
         "counts": {
             "baseline_findings": len(records),
             "resolved": status_counts.get("RESOLVED", 0),
-            "resolved_as_expected_delta": status_counts.get(
-                "RESOLVED_AS_EXPECTED_DELTA", 0
-            ),
+            "resolved_as_expected_delta": status_counts.get("RESOLVED_AS_EXPECTED_DELTA", 0),
             "unresolved": len(unresolved),
             "by_original_code": dict(
-                sorted(
-                    Counter(
-                        record["original_finding"]["code"] for record in records
-                    ).items()
-                )
+                sorted(Counter(record["original_finding"]["code"] for record in records).items())
             ),
             "by_resolution_status": dict(sorted(status_counts.items())),
         },

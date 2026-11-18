@@ -85,9 +85,7 @@ def pruefe() -> list[str]:
         fehler.append(
             f"Spezifikation: {len(tabelle)} Pruefschritte, SSOT: {len(aktiv)} aktive Codes"
         )
-    for (schritt, code), eintrag in zip(
-        tabelle, sorted(aktiv, key=lambda c: c["order"])
-    ):
+    for (schritt, code), eintrag in zip(tabelle, sorted(aktiv, key=lambda c: c["order"])):
         if code != eintrag["code"] or schritt != eintrag["order"]:
             fehler.append(
                 f"Reihenfolge: Spezifikation Schritt {schritt}={code}, "
@@ -95,9 +93,7 @@ def pruefe() -> list[str]:
             )
     for code in [c["code"] for c in vorgeschlagen]:
         if code not in SPEC.read_text(encoding="utf-8"):
-            fehler.append(
-                f"Spezifikation: vorgeschlagener Code {code} nicht dokumentiert"
-            )
+            fehler.append(f"Spezifikation: vorgeschlagener Code {code} nicht dokumentiert")
 
     # 3 — Implementierung deckt genau die aktiven Codes
     implementiert = rust_code_map()
@@ -110,9 +106,7 @@ def pruefe() -> list[str]:
             fehler.append(f"Implementierung: nicht registrierte Codes {sorted(extra)}")
     for eintrag in aktiv:
         if implementiert.get(eintrag["rust_variant"]) != eintrag["code"]:
-            fehler.append(
-                f"Implementierung: {eintrag['rust_variant']} != {eintrag['code']}"
-            )
+            fehler.append(f"Implementierung: {eintrag['rust_variant']} != {eintrag['code']}")
 
     # 4 — Sperre: vorgeschlagene Codes sind NICHT implementiert
     for eintrag in vorgeschlagen:
@@ -122,9 +116,7 @@ def pruefe() -> list[str]:
                 f"status={eintrag['status']}"
             )
         if eintrag["rust_variant"]:
-            fehler.append(
-                f"SSOT: vorgeschlagener Code {eintrag['code']} nennt eine Rust-Variante"
-            )
+            fehler.append(f"SSOT: vorgeschlagener Code {eintrag['code']} nennt eine Rust-Variante")
 
     # 4b — Die alte Entwurfskennung ist nur ein Zeiger, keine zweite Fassung
     zeiger = POINTER.read_text(encoding="utf-8")

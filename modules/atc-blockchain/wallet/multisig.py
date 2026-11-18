@@ -95,15 +95,11 @@ class MultiSigWallet:
     def execute(self, tx_id: str, executor: str) -> dict:
         tx = self.txs[tx_id]
         if tx.status != TxStatus.APPROVED:
-            raise RuntimeError(
-                f"Tx {tx_id} ist nicht APPROVED (Status: {tx.status.value})"
-            )
+            raise RuntimeError(f"Tx {tx_id} ist nicht APPROVED (Status: {tx.status.value})")
         if self.balance(tx.asset) < tx.amount:
             raise ValueError("Unzureichendes Guthaben")
         self.balances[tx.asset] -= tx.amount
-        tx_hash = hashlib.sha256(
-            f"{tx.id}:{executor}:{time.time()}".encode()
-        ).hexdigest()
+        tx_hash = hashlib.sha256(f"{tx.id}:{executor}:{time.time()}".encode()).hexdigest()
         tx.tx_hash = tx_hash
         tx.status = TxStatus.EXECUTED
         return {"tx_hash": tx_hash, "new_balance": self.balances[tx.asset]}

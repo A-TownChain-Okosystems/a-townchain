@@ -15,9 +15,7 @@ SHA40 = re.compile(r"^[0-9a-f]{40}$")
 def build_manifest(root: Path, commit: str) -> dict:
     if not SHA40.fullmatch(commit):
         raise ValueError("commit must be a full 40-character lowercase SHA")
-    subprocess.run(
-        ["git", "-C", str(root), "cat-file", "-e", f"{commit}^{{commit}}"], check=True
-    )
+    subprocess.run(["git", "-C", str(root), "cat-file", "-e", f"{commit}^{{commit}}"], check=True)
     raw = subprocess.check_output(
         ["git", "-C", str(root), "ls-tree", "-r", "-t", "-z", "--full-tree", commit]
     )

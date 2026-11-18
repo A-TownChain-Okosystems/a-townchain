@@ -119,9 +119,7 @@ class FranchiseFactory:
         token_supply=1_000_000,
         royalty_tier=RoyaltyTier.BRONZE,
     ):
-        fid = hashlib.sha256(
-            f"{name}|{owner}|{len(self._franchises)}".encode()
-        ).hexdigest()[:16]
+        fid = hashlib.sha256(f"{name}|{owner}|{len(self._franchises)}".encode()).hexdigest()[:16]
         f = Franchise(
             fid,
             name,
@@ -141,15 +139,11 @@ class FranchiseFactory:
         return self._franchises.get(fid)
 
     def list_all(self, status=None):
-        return [
-            f for f in self._franchises.values() if status is None or f.status == status
-        ]
+        return [f for f in self._franchises.values() if status is None or f.status == status]
 
     def by_owner(self, owner):
         return [
-            self._franchises[i]
-            for i in self._owner_index.get(owner, [])
-            if i in self._franchises
+            self._franchises[i] for i in self._owner_index.get(owner, []) if i in self._franchises
         ]
 
     def join(self, fid, member, stake):
@@ -171,9 +165,7 @@ class FranchiseFactory:
         return {
             "total": len(self._franchises),
             "active": sum(
-                1
-                for f in self._franchises.values()
-                if f.status == FranchiseStatus.ACTIVE
+                1 for f in self._franchises.values() if f.status == FranchiseStatus.ACTIVE
             ),
             "total_vault": sum(f.vault.balance for f in self._franchises.values()),
         }

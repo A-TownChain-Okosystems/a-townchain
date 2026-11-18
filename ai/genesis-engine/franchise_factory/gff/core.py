@@ -112,9 +112,7 @@ class GFFCore:
         self.events.append({"event": event, "ts": self._event_clock, **data})
         self._event_clock += 1.0
 
-    def create_franchise(
-        self, blueprint: FranchiseBlueprint, *, now: float | None = None
-    ) -> str:
+    def create_franchise(self, blueprint: FranchiseBlueprint, *, now: float | None = None) -> str:
         ts = self._event_clock if now is None else now
         fid = hashlib.sha256(f"{blueprint.name}|{ts}".encode()).hexdigest()[:16]
         if not blueprint.name:
@@ -133,9 +131,7 @@ class GFFCore:
         self._emit("FranchiseCreated", fid=fid, name=blueprint.name)
         return fid
 
-    def run_pipeline(
-        self, franchise_id: str, *, executor: Executor = _noop_executor
-    ) -> bool:
+    def run_pipeline(self, franchise_id: str, *, executor: Executor = _noop_executor) -> bool:
         if franchise_id not in self.franchises:
             raise KeyError(f"Franchise {franchise_id} nicht gefunden")
         if self.pipeline_running:
@@ -157,9 +153,7 @@ class GFFCore:
                         stage=stage.name,
                         note=result.note,
                     )
-                    raise RuntimeError(
-                        f"Stage {stage.name} fehlgeschlagen: {result.note}"
-                    )
+                    raise RuntimeError(f"Stage {stage.name} fehlgeschlagen: {result.note}")
                 stage.status = PipelineStatus.COMPLETE
                 if stage.factory not in franchise.factories_used:
                     franchise.factories_used.append(stage.factory)
@@ -167,9 +161,7 @@ class GFFCore:
             done = sum(1 for s in self.pipeline if s.status == PipelineStatus.COMPLETE)
             total = sum(1 for s in self.pipeline if s.enabled)
             franchise.progress = round(done / total, 4) if total else 0.0
-            self._emit(
-                "PipelineComplete", fid=franchise_id, progress=franchise.progress
-            )
+            self._emit("PipelineComplete", fid=franchise_id, progress=franchise.progress)
             return True
         finally:
             self.pipeline_running = False

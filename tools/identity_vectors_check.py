@@ -98,9 +98,7 @@ def main(argv: list[str]) -> int:
                 if v.get("tag") and v["tag"] != tag:
                     problems.append(f"{vid}: Kennzeichen {tag} != erwartet {v['tag']}")
                 if v.get("address") and v["address"] != "ATC:" + word[12:32].hex():
-                    problems.append(
-                        f"{vid}: Adressfeld stimmt nicht mit dem Wort ueberein"
-                    )
+                    problems.append(f"{vid}: Adressfeld stimmt nicht mit dem Wort ueberein")
         else:
             if tag is not None:
                 problems.append(f"{vid}: sollte ungueltig sein, gilt aber als {tag}")

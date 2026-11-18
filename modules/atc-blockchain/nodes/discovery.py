@@ -105,9 +105,7 @@ class NodeDiscovery:
 
             # Wenn nicht Bootstrap: ANNOUNCE senden
             if not self.is_bootstrap:
-                announce_thread = threading.Thread(
-                    target=self._auto_announce, daemon=True
-                )
+                announce_thread = threading.Thread(target=self._auto_announce, daemon=True)
                 announce_thread.start()
                 self._threads.append(announce_thread)
         except OSError as e:

@@ -52,9 +52,7 @@ class PublicSymbolScanTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "lib.rs").write_text("pub fn execute() {}\\n", encoding="utf-8")
-            subprocess.run(
-                ["git", "-C", str(root), "init"], check=True, capture_output=True
-            )
+            subprocess.run(["git", "-C", str(root), "init"], check=True, capture_output=True)
             subprocess.run(
                 [
                     "git",

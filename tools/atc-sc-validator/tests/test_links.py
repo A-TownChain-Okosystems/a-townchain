@@ -73,6 +73,4 @@ def test_repository_is_clean():
     tool = load_tool()
     root = TOOL.parents[1]
     findings = tool.broken_links(root)
-    assert not findings, "tote relative Links: " + ", ".join(
-        f["file"] for f in findings[:5]
-    )
+    assert not findings, "tote relative Links: " + ", ".join(f["file"] for f in findings[:5])

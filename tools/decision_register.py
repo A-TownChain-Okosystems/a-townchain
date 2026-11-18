@@ -79,9 +79,7 @@ def validate(data: dict) -> list[str]:
             if not dec.get(field):
                 errors.append(f"{did}: Feld '{field}' fehlt")
         if dec.get("decision_status") not in STATUS_VALUES:
-            errors.append(
-                f"{did}: decision_status '{dec.get('decision_status')}' ungueltig"
-            )
+            errors.append(f"{did}: decision_status '{dec.get('decision_status')}' ungueltig")
         if dec.get("specification_status") not in STATUS_VALUES:
             errors.append(
                 f"{did}: specification_status '{dec.get('specification_status')}' ungueltig"
@@ -178,13 +176,9 @@ def validate_chain_state(data: dict) -> list[str]:
         if dec.get("phase") not in CS_PHASES:
             errors.append(f"{did}: phase '{dec.get('phase')}' ungueltig")
         if not dec.get("consequences"):
-            errors.append(
-                f"{did}: 'consequences' fehlt (Folgen gehoeren zur Entscheidung)"
-            )
+            errors.append(f"{did}: 'consequences' fehlt (Folgen gehoeren zur Entscheidung)")
         if not dec.get("rejected"):
-            errors.append(
-                f"{did}: 'rejected' fehlt (die verworfene Alternative muss benannt sein)"
-            )
+            errors.append(f"{did}: 'rejected' fehlt (die verworfene Alternative muss benannt sein)")
 
     gate_ids = set()
     test_ids: set[str] = set()
@@ -200,9 +194,7 @@ def validate_chain_state(data: dict) -> list[str]:
             errors.append(f"{gid}: status '{gate.get('status')}' ungueltig")
         # Ein Gate ist geschlossen, wenn seine Abnahme belegt ist, nicht wenn sie
         # beschlossen ist: ohne Nachweispfad bleibt es OPEN.
-        if gate.get("status") in {"SPECIFIED", "IMPLEMENTED"} and not gate.get(
-            "evidence"
-        ):
+        if gate.get("status") in {"SPECIFIED", "IMPLEMENTED"} and not gate.get("evidence"):
             errors.append(
                 f"{gid}: status '{gate.get('status')}' ohne 'evidence' "
                 "(ein Gate ist geschlossen, wenn seine Abnahme belegt ist)"
@@ -243,9 +235,7 @@ def validate_chain_state(data: dict) -> list[str]:
             errors.append(f"{cid}: status '{item.get('status')}' ungueltig")
 
     if not cs.get("pending"):
-        errors.append(
-            "chain_state: 'pending' fehlt (offene Punkte muessen sichtbar bleiben)"
-        )
+        errors.append("chain_state: 'pending' fehlt (offene Punkte muessen sichtbar bleiben)")
     return errors
 
 
@@ -283,9 +273,7 @@ def render(data: dict) -> str:
             )
         )
     sub_gates = [
-        (dec["id"], sub)
-        for dec in data["decisions"]
-        for sub in (dec.get("sub_gates") or [])
+        (dec["id"], sub) for dec in data["decisions"] for sub in (dec.get("sub_gates") or [])
     ]
     if sub_gates:
         lines += [
@@ -328,9 +316,7 @@ def render(data: dict) -> str:
             "ausdruecklich beschliesst."
         ),
         "",
-        "Offen und nicht Teil dieser Freigabe: "
-        + "; ".join(data["pending_globally"])
-        + ".",
+        "Offen und nicht Teil dieser Freigabe: " + "; ".join(data["pending_globally"]) + ".",
         "",
     ]
 
@@ -359,9 +345,7 @@ def render(data: dict) -> str:
         resolved = data.get("resolved_by_ratification") or []
         if resolved:
             lines += [
-                "Durch die Stufe-1-Ratifikation entfallen: "
-                + "; ".join(resolved)
-                + ".",
+                "Durch die Stufe-1-Ratifikation entfallen: " + "; ".join(resolved) + ".",
                 "",
             ]
         lines += [
@@ -574,9 +558,7 @@ def render_gates(data: dict) -> str:
     return "\n".join(lines)
 
 
-def apply(
-    path: Path, block: str, write: bool, begin: str = BEGIN, end: str = END
-) -> bool:
+def apply(path: Path, block: str, write: bool, begin: str = BEGIN, end: str = END) -> bool:
     text = path.read_text(encoding="utf-8")
     if begin not in text or end not in text:
         raise SystemExit(f"{path}: Marker fehlen")
@@ -591,12 +573,8 @@ def apply(
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(
-        description="Entscheidungsregister pruefen oder schreiben"
-    )
-    ap.add_argument(
-        "--write", action="store_true", help="Tabelle in die Dokumente schreiben"
-    )
+    ap = argparse.ArgumentParser(description="Entscheidungsregister pruefen oder schreiben")
+    ap.add_argument("--write", action="store_true", help="Tabelle in die Dokumente schreiben")
     ap.add_argument("--check", action="store_true", help="nur pruefen")
     args = ap.parse_args()
     if not (args.write or args.check):

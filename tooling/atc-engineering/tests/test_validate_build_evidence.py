@@ -4,9 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-MODULE_PATH = (
-    Path(__file__).resolve().parents[1] / "scripts" / "validate_build_evidence.py"
-)
+MODULE_PATH = Path(__file__).resolve().parents[1] / "scripts" / "validate_build_evidence.py"
 SPEC = importlib.util.spec_from_file_location("validate_build_evidence", MODULE_PATH)
 validator = importlib.util.module_from_spec(SPEC)
 assert SPEC and SPEC.loader
@@ -62,9 +60,7 @@ class BuildEvidenceValidationTests(unittest.TestCase):
             self.validate()
 
     def test_missing_or_wrong_schema_fails_closed(self):
-        self.report.write_text(
-            json.dumps({"schema_version": "wrong/v9"}), encoding="utf-8"
-        )
+        self.report.write_text(json.dumps({"schema_version": "wrong/v9"}), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "schema_version"):
             self.validate()
 

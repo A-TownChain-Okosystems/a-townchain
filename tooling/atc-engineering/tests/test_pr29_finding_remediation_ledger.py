@@ -3,13 +3,9 @@ import unittest
 from pathlib import Path
 
 SCRIPT = (
-    Path(__file__).resolve().parents[1]
-    / "scripts"
-    / "build_pr29_finding_remediation_ledger.py"
+    Path(__file__).resolve().parents[1] / "scripts" / "build_pr29_finding_remediation_ledger.py"
 )
-SPEC = importlib.util.spec_from_file_location(
-    "build_pr29_finding_remediation_ledger", SCRIPT
-)
+SPEC = importlib.util.spec_from_file_location("build_pr29_finding_remediation_ledger", SCRIPT)
 module = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(module)
 

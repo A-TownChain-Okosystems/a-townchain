@@ -38,16 +38,10 @@ P1 = bytes.fromhex("01010000000000000010")  # Push(1), Halt
 P2 = bytes.fromhex(
     "010700000000000000012a00000000000000020b0000000010"
 )  # Push, Push, Add, Store(0), Halt
-GV1_BODY = bytes.fromhex(
-    "4154434502010200000001010000000000000010"
-)  # ATCE, 0x02, Gen 1, 2 Ops
-GV3_BODY = bytes.fromhex(
-    "4154434502020200000001010000000000000010"
-)  # ATCE, 0x02, Gen 2, 2 Ops
+GV1_BODY = bytes.fromhex("4154434502010200000001010000000000000010")  # ATCE, 0x02, Gen 1, 2 Ops
+GV3_BODY = bytes.fromhex("4154434502020200000001010000000000000010")  # ATCE, 0x02, Gen 2, 2 Ops
 GV7_BODY = bytes.fromhex("41544345020105000000") + P2  # ATCE, 0x02, Gen 1, 5 Ops
-GV5_BODY = bytes.fromhex(
-    "4154434201010200000001010000000000000010"
-)  # ATCB, 0x01, Gen 1
+GV5_BODY = bytes.fromhex("4154434201010200000001010000000000000010")  # ATCB, 0x01, Gen 1
 
 
 def digest(body: bytes) -> bytes:
@@ -59,9 +53,7 @@ def seal(body: bytes) -> bytes:
     return body + digest(body)
 
 
-def header(
-    generation: int = 1, count: int = 0, magic: bytes = b"ATCE", version: int = 2
-) -> bytes:
+def header(generation: int = 1, count: int = 0, magic: bytes = b"ATCE", version: int = 2) -> bytes:
     return magic + bytes([version, generation]) + count.to_bytes(4, "little")
 
 
@@ -493,9 +485,7 @@ def main(argv: list[str] | None = None) -> int:
 
     CORPUS.write_text(text, encoding="utf-8")
     RUST_FIXTURE.write_text(fixture, encoding="utf-8")
-    print(
-        f"Korpus geschrieben: {CORPUS.relative_to(ROOT)} ({corpus['anzahl']} Eingaben)"
-    )
+    print(f"Korpus geschrieben: {CORPUS.relative_to(ROOT)} ({corpus['anzahl']} Eingaben)")
     print(f"Fixture geschrieben: {RUST_FIXTURE.relative_to(ROOT)}")
     for klasse in sorted(per_class):
         print(f"  {klasse}: {per_class[klasse]}")

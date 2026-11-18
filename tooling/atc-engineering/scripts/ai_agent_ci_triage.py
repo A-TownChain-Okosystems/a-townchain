@@ -48,15 +48,10 @@ def api_get(path: str) -> dict:
     return data
 
 
-def classify_finding(
-    workflow: str, job: str, step_names: list[str], conclusion: str | None
-) -> str:
+def classify_finding(workflow: str, job: str, step_names: list[str], conclusion: str | None) -> str:
     """Deterministic triage classification; never claims root cause is proven."""
     text = " ".join([workflow, job, *step_names, conclusion or ""]).lower()
-    if any(
-        term in text
-        for term in ("merge conflict", "conflict marker", "cannot be merged")
-    ):
+    if any(term in text for term in ("merge conflict", "conflict marker", "cannot be merged")):
         return "MERGE_CONFLICT"
     if any(
         term in text
@@ -82,9 +77,7 @@ def classify_finding(
         return "EVIDENCE_OR_GATE"
     if any(term in text for term in ("test", "pytest", "unittest", "regression")):
         return "TEST_FAILURE"
-    if any(
-        term in text for term in ("fmt", "format", "clippy", "lint", "static analysis")
-    ):
+    if any(term in text for term in ("fmt", "format", "clippy", "lint", "static analysis")):
         return "FORMAT_OR_STATIC_ANALYSIS"
     if any(
         term in text
@@ -162,9 +155,7 @@ def collect_findings(runs: list[dict]) -> list[dict]:
             or any(c not in "0123456789abcdef" for c in run_sha)
         ):
             raise ApiError(f"run {run_id} has missing or malformed head_sha")
-        jobs_data = api_get(
-            f"/repos/{REPOSITORY}/actions/runs/{run_id}/jobs?per_page=100"
-        )
+        jobs_data = api_get(f"/repos/{REPOSITORY}/actions/runs/{run_id}/jobs?per_page=100")
         jobs = jobs_data.get("jobs")
         if not isinstance(jobs, list):
             raise ApiError(f"jobs list missing for run {run_id}")
@@ -368,9 +359,7 @@ def main() -> int:
             ]
         )
         if not item["jobs"]:
-            lines.append(
-                "- No non-passing job details were returned; inspect the run directly."
-            )
+            lines.append("- No non-passing job details were returned; inspect the run directly.")
         for job in item["jobs"]:
             lines.append(
                 f"- Job {job.get('job_id')} — {job.get('name')}: {job.get('status')} / {job.get('conclusion')}; class={job.get('classification')}; finding={job.get('finding_id')} ({job.get('html_url')})"

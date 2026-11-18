@@ -639,3 +639,8 @@ entries:
     pattern: "Monotonic-Clock"
     justification: "Rate-Limiting ueber Monotonic-Clock: legitime Laufzeitmessung, kein Reproduzierbarkeitspfad"
     scr: "SCR-0145"
+  - file: ecosystem/control-plane/tools/build_repository_maturity.py
+    line: 264
+    pattern: "Wall-Clock"
+    justification: "generated_at-Zeitstempel des Registers; Report-Metadaten, kein Chain-Zustand"
+    scr: "SCR-0146"

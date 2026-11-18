@@ -56,8 +56,7 @@ def load_spec(path: Path) -> FactorySpec:
     ad_in_name = re.search(r"_ad(\d+)\.atc$", path.name)
     if ad_in_name and int(ad_in_name.group(1)) != ad_id:
         raise SpecValidationError(
-            f"{path.name}: AD-ID im Dateinamen ({ad_in_name.group(1)}) "
-            f"!= Header ({ad_id})"
+            f"{path.name}: AD-ID im Dateinamen ({ad_in_name.group(1)}) != Header ({ad_id})"
         )
 
     return FactorySpec(

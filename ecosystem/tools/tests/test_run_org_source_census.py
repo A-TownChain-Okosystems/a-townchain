@@ -63,17 +63,13 @@ class OrganizationCensusTests(unittest.TestCase):
                     {
                         "name": "sample",
                         "archived": False,
-                        "expected_sha": "0" * 40
-                        if actual_sha != "0" * 40
-                        else "1" * 40,
+                        "expected_sha": "0" * 40 if actual_sha != "0" * 40 else "1" * 40,
                     }
                 ],
             }
             report = run_census(workspace, manifest)
             self.assertEqual(report["status"], "BLOCKED")
-            self.assertIn(
-                "EXPECTED_SHA_MISMATCH", report["repositories"][0]["residuals"]
-            )
+            self.assertIn("EXPECTED_SHA_MISMATCH", report["repositories"][0]["residuals"])
             self.assertEqual(report["repositories"][0]["source_sha"], actual_sha)
             self.assertFalse(report["repositories"][0]["working_tree_clean"])
 
@@ -81,9 +77,7 @@ class OrganizationCensusTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             manifest = {
                 "owner": "example",
-                "repositories": [
-                    {"name": "private-demo", "archived": False, "private": True}
-                ],
+                "repositories": [{"name": "private-demo", "archived": False, "private": True}],
             }
             report = run_census(Path(temp), manifest)
             self.assertEqual(report["status"], "RESIDUAL")
@@ -92,9 +86,7 @@ class OrganizationCensusTests(unittest.TestCase):
             self.assertEqual(report["summary"]["active_excluded_private"], 1)
             entry = report["repositories"][0]
             self.assertEqual(entry["status"], "EXCLUDED_PRIVATE_NO_CI_ACCESS")
-            self.assertIn(
-                "PRIVATE_REPOSITORY_EXCLUDED_NO_CI_ACCESS", entry["residuals"]
-            )
+            self.assertIn("PRIVATE_REPOSITORY_EXCLUDED_NO_CI_ACCESS", entry["residuals"])
             self.assertEqual(report["blocked_active_repositories"], [])
 
     def test_private_checkout_present_is_scanned_normally(self):
@@ -103,9 +95,7 @@ class OrganizationCensusTests(unittest.TestCase):
             sha = self._clean_checkout(workspace / "private-demo")
             manifest = {
                 "owner": "example",
-                "repositories": [
-                    {"name": "private-demo", "archived": False, "private": True}
-                ],
+                "repositories": [{"name": "private-demo", "archived": False, "private": True}],
             }
             report = run_census(workspace, manifest)
             self.assertEqual(report["status"], "RESIDUAL")
@@ -130,9 +120,7 @@ class OrganizationCensusTests(unittest.TestCase):
             self.assertEqual(report["summary"]["active_scanned"], 1)
             self.assertEqual(report["summary"]["active_excluded_private"], 1)
             self.assertEqual(report["summary"]["active_blocked"], 1)
-            self.assertEqual(
-                report["blocked_active_repositories"], ["example/public-missing"]
-            )
+            self.assertEqual(report["blocked_active_repositories"], ["example/public-missing"])
 
     def test_dirty_checkout_is_blocked_not_silently_scanned(self):
         with tempfile.TemporaryDirectory() as temp:

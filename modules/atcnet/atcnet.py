@@ -196,9 +196,7 @@ class ATCRoutingTable:
         idx = self._bucket_index(node_id)
         self.buckets[idx] = [n for n in self.buckets[idx] if n.node_id != node_id]
 
-    def find_closest(
-        self, target_id: str, count: int = K_BUCKET_SIZE
-    ) -> list[NodeInfo]:
+    def find_closest(self, target_id: str, count: int = K_BUCKET_SIZE) -> list[NodeInfo]:
         """k nächste Nodes zum Ziel finden."""
         all_nodes = [n for bucket in self.buckets for n in bucket if n.is_alive]
         target_int = int(target_id, 16)
@@ -223,9 +221,7 @@ class ATCNetNode:
     Implementiert Discovery, Routing und Message-Passing.
     """
 
-    def __init__(
-        self, host: str = "127.0.0.1", port: int = ATCNET_PORT, atc_address: str = ""
-    ):
+    def __init__(self, host: str = "127.0.0.1", port: int = ATCNET_PORT, atc_address: str = ""):
         self.node_id = generate_node_id(f"{host}:{port}")
         self.host = host
         self.port = port
@@ -454,9 +450,7 @@ class ATCNetNode:
     def _handle_find_node(self, msg: ATCMessage, addr: tuple):
         target_id = msg.payload.decode()
         closest = self.routing.find_closest(target_id)
-        payload = json.dumps(
-            [{"id": n.node_id, "addr": n.address} for n in closest]
-        ).encode()
+        payload = json.dumps([{"id": n.node_id, "addr": n.address} for n in closest]).encode()
         resp = ATCMessage(
             version=ATCNET_VERSION,
             msg_type=MsgType.FOUND_NODE,

@@ -44,26 +44,16 @@ GAME_FACTORY_GRAPH: tuple[GameFactoryNode, ...] = (
         (ArtifactKind.WORLD_BIBLE, ArtifactKind.QUEST, ArtifactKind.CREATURE),
     ),
     GameFactoryNode("item", ArtifactKind.ITEM, (ArtifactKind.GAME_BIBLE,)),
-    GameFactoryNode(
-        "weapon", ArtifactKind.WEAPON, (ArtifactKind.CHARACTER, ArtifactKind.COMBAT)
-    ),
+    GameFactoryNode("weapon", ArtifactKind.WEAPON, (ArtifactKind.CHARACTER, ArtifactKind.COMBAT)),
     GameFactoryNode(
         "animation",
         ArtifactKind.ANIMATION,
         (ArtifactKind.CHARACTER, ArtifactKind.CREATURE, ArtifactKind.WEAPON),
     ),
-    GameFactoryNode(
-        "audio", ArtifactKind.AUDIO, (ArtifactKind.GAME_BIBLE, ArtifactKind.WEAPON)
-    ),
-    GameFactoryNode(
-        "vfx", ArtifactKind.VFX, (ArtifactKind.COMBAT, ArtifactKind.WEAPON)
-    ),
-    GameFactoryNode(
-        "ai-npc", ArtifactKind.NPC_AI, (ArtifactKind.CHARACTER, ArtifactKind.LORE)
-    ),
-    GameFactoryNode(
-        "economy", ArtifactKind.ECONOMY, (ArtifactKind.GAME_BIBLE, ArtifactKind.ITEM)
-    ),
+    GameFactoryNode("audio", ArtifactKind.AUDIO, (ArtifactKind.GAME_BIBLE, ArtifactKind.WEAPON)),
+    GameFactoryNode("vfx", ArtifactKind.VFX, (ArtifactKind.COMBAT, ArtifactKind.WEAPON)),
+    GameFactoryNode("ai-npc", ArtifactKind.NPC_AI, (ArtifactKind.CHARACTER, ArtifactKind.LORE)),
+    GameFactoryNode("economy", ArtifactKind.ECONOMY, (ArtifactKind.GAME_BIBLE, ArtifactKind.ITEM)),
     GameFactoryNode(
         "multiplayer",
         ArtifactKind.MULTIPLAYER,
@@ -109,9 +99,7 @@ def validate_game_factory_graph(
 ) -> None:
     produced = {node.produces for node in graph}
     if len(produced) != len(graph):
-        raise GameFactoryGraphError(
-            "Each Game Factory node must produce a unique artifact kind"
-        )
+        raise GameFactoryGraphError("Each Game Factory node must produce a unique artifact kind")
     ids = {node.id for node in graph}
     if len(ids) != len(graph):
         raise GameFactoryGraphError("Game Factory node ids must be unique")
@@ -131,11 +119,7 @@ def topological_order(
     done: set[ArtifactKind] = set()
     order: list[str] = []
     while remaining:
-        ready = [
-            node
-            for node in remaining.values()
-            if all(req in done for req in node.requires)
-        ]
+        ready = [node for node in remaining.values() if all(req in done for req in node.requires)]
         if not ready:
             raise GameFactoryGraphError("Game Factory dependency cycle detected")
         ready.sort(key=lambda node: node.id)
@@ -152,9 +136,7 @@ def dependency_refs(
     by_kind = {artifact.kind: artifact for artifact in artifacts}
     missing = [kind for kind in node.requires if kind not in by_kind]
     if missing:
-        raise GameFactoryGraphError(
-            f"Missing dependencies for {node.id}: {', '.join(missing)}"
-        )
+        raise GameFactoryGraphError(f"Missing dependencies for {node.id}: {', '.join(missing)}")
     return tuple(by_kind[kind] for kind in node.requires)
 
 

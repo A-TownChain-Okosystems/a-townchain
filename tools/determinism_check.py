@@ -121,9 +121,7 @@ def scan_sources(root, lang):
 def run_tests(cmd, cwd):
     env = dict(os.environ)
     env["PYTHONHASHSEED"] = "0"  # Hash-Determinismus normalisieren
-    p = subprocess.run(
-        cmd, shell=True, cwd=cwd, capture_output=True, env=env, check=False
-    )
+    p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, env=env, check=False)
     return normalize_output(p.stdout + p.stderr)
 
 
@@ -155,9 +153,7 @@ def main():
     for f, ln, desc in unallowed:
         print(f"  FINDING {f}:{ln}: {desc}")
     if unallowed:
-        print(
-            f"  => {len(unallowed)} nicht-allowlistete Fundstelle(n) — FAIL (REQ-ENG-002)"
-        )
+        print(f"  => {len(unallowed)} nicht-allowlistete Fundstelle(n) — FAIL (REQ-ENG-002)")
         ok = False
     elif allowed:
         print(
@@ -167,9 +163,7 @@ def main():
         print("  OK: keine Wall-Clock/RNG-Fundstellen im Code")
 
     if args.test_cmd:
-        print(
-            "== Saeule 2: Reproduzierbare Testlaeufe (2x, Byte-Vergleich, PYTHONHASHSEED=0) =="
-        )
+        print("== Saeule 2: Reproduzierbare Testlaeufe (2x, Byte-Vergleich, PYTHONHASHSEED=0) ==")
         out1 = run_tests(args.test_cmd, root)
         out2 = run_tests(args.test_cmd, root)
         if out1 == out2:

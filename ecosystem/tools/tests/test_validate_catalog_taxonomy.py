@@ -48,9 +48,7 @@ class TaxonomyValidatorTests(unittest.TestCase):
             ],
         }
         errors = validate_taxonomy(taxonomy, catalog)
-        self.assertTrue(
-            any("MAPPED record requires source_evidence" in error for error in errors)
-        )
+        self.assertTrue(any("MAPPED record requires source_evidence" in error for error in errors))
 
     def test_unknown_taxonomy_reference_fails_closed(self):
         taxonomy = copy.deepcopy(self.taxonomy)
@@ -81,19 +79,13 @@ class TaxonomyValidatorTests(unittest.TestCase):
         catalog = copy.deepcopy(self.catalog)
         catalog["scope"]["function_source_bindings"] -= 1
         errors = validate_taxonomy(self.taxonomy, catalog)
-        self.assertTrue(
-            any("scope.function_source_bindings is stale" in error for error in errors)
-        )
+        self.assertTrue(any("scope.function_source_bindings is stale" in error for error in errors))
 
     def test_demo_fixture_must_be_excluded_from_production_readiness(self):
         catalog = copy.deepcopy(self.catalog)
-        next(c for c in catalog["components"] if c["id"] == "COMP-DEMO").pop(
-            "catalog_scope", None
-        )
+        next(c for c in catalog["components"] if c["id"] == "COMP-DEMO").pop("catalog_scope", None)
         errors = validate_taxonomy(self.taxonomy, catalog)
-        self.assertTrue(
-            any("COMP-DEMO must be explicitly excluded" in error for error in errors)
-        )
+        self.assertTrue(any("COMP-DEMO must be explicitly excluded" in error for error in errors))
 
 
 if __name__ == "__main__":
