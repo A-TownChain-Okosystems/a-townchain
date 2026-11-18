@@ -6,7 +6,6 @@ Version: 0.1.0-alpha | Komplett selbst geschrieben
 Kein LLVM-Klon, kein GCC-Port — eigener Code-Generator
 """
 
-import os
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 

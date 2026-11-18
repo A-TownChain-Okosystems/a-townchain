@@ -8,15 +8,7 @@ Version: 0.2.0 | A-TownChain Ökosystem
 Erweitert für vollständige atcos_main.atc Ausführung.
 """
 
-import hashlib
-import json
-import os
-import secrets
-import struct
-import time
-from dataclasses import dataclass, field
 from enum import IntEnum, auto
-from typing import Any, Callable, Dict, List, Optional
 
 # ══════════════════════════════════════════════════════════
 #  OPCODES — VOLLSTÄNDIG

@@ -3,9 +3,7 @@ import math
 import os
 import random
 import sys
-import time
 
-import numpy as np
 from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
 from OpenGL.GLU import *

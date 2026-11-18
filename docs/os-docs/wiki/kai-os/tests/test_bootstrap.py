@@ -3,7 +3,6 @@
 Tests: Bootstrap-Node DNS Seed & Peer Discovery (Fix #68)
 26 Tests — DNS, AddrMan, Gossip, Fallback, Persistenz
 """
-import json
 import os
 import sys
 import tempfile

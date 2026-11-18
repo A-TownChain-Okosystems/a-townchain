@@ -6,9 +6,8 @@ Verbindet sich mit Bootstrap Node und holt Peer-Liste.
 import json
 import logging
 import socket
-import time
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 
 logger = logging.getLogger("atcnet.bootstrap_client")
 

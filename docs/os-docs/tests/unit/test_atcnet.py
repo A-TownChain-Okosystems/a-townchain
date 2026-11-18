@@ -1,10 +1,7 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """Tests für ATCNet P2P Stack"""
-import json
 import os
-import socket
 import sys
-import threading
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -23,7 +20,7 @@ def test_peer_info_dataclass():
     assert d["port"] == 4001
 
 def test_bootstrap_client_import():
-    from bootstrap_client import BootstrapClient, Peer
+    from bootstrap_client import BootstrapClient
     bc = BootstrapClient("test-node-001", "localhost", 4002)
     assert bc.node_id == "test-node-001"
     assert len(bc.bootstraps) > 0

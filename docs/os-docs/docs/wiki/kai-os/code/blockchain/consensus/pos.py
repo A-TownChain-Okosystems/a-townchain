@@ -10,7 +10,6 @@
 
 import hashlib
 import random
-import time
 
 MIN_STAKE = 10_000  # ATC
 

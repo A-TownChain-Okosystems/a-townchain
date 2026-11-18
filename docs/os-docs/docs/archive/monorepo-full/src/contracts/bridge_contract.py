@@ -5,7 +5,6 @@ ATC-5000 Standard: Lock-Mint / Burn-Release Schema
 Unterstützt: ATC ↔ ETH, ATC ↔ BSC, ATC ↔ Polygon
 """
 import hashlib
-import json
 import time
 from dataclasses import asdict, dataclass, field
 from enum import Enum

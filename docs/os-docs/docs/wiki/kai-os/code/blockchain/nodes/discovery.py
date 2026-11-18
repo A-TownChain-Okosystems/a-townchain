@@ -63,22 +63,22 @@ class NodeDiscovery:
         self.my_port = my_port
         self.is_bootstrap = is_bootstrap
         self.bootstrap_nodes = bootstrap_nodes or []
-        
+
         # Standard-Konfiguration
         self.config = config or {}
         self.discovery_port_offset = self.config.get("discovery_port_offset", 1000)
         self.ping_interval_sec = self.config.get("ping_interval_sec", 30)
         self.peer_timeout_sec = self.config.get("peer_timeout_sec", 90)
         self.max_peers = self.config.get("max_peers", 50)
-        
+
         # Peers: node_id → PeerInfo
         self.peers: Dict[str, PeerInfo] = {}
-        
+
         # UDP-Socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.discovery_port = my_port + self.discovery_port_offset
-        
+
         self._running = False
         self._threads: List[threading.Thread] = []
 
@@ -87,22 +87,22 @@ class NodeDiscovery:
         if self._running:
             logger.warning(f"Discovery-Service für {self.node_id} läuft bereits")
             return
-        
+
         try:
             self.sock.bind(("0.0.0.0", self.discovery_port))
             self._running = True
             logger.info(f"Discovery-Service gestartet auf Port {self.discovery_port}")
-            
+
             # Starte Listen-Thread
             listen_thread = threading.Thread(target=self.listen, daemon=True)
             listen_thread.start()
             self._threads.append(listen_thread)
-            
+
             # Starte Health-Check-Thread
             health_thread = threading.Thread(target=self.health_check, daemon=True)
             health_thread.start()
             self._threads.append(health_thread)
-            
+
             # Wenn nicht Bootstrap: ANNOUNCE senden
             if not self.is_bootstrap:
                 announce_thread = threading.Thread(target=self._auto_announce, daemon=True)
@@ -130,7 +130,7 @@ class NodeDiscovery:
             "port": self.my_port,
             "version": "2.0",
         }).encode()
-        
+
         for bootstrap in self.bootstrap_nodes:
             try:
                 if isinstance(bootstrap, str):
@@ -138,7 +138,7 @@ class NodeDiscovery:
                     port = int(port)
                 else:
                     host, port = bootstrap
-                
+
                 discovery_port = port + self.discovery_port_offset
                 self.sock.sendto(msg, (host, discovery_port))
                 logger.debug(f"ANNOUNCE an {host}:{discovery_port} gesendet")
@@ -161,7 +161,7 @@ class NodeDiscovery:
     def _handle(self, msg: Dict, addr: tuple) -> None:
         """Verarbeitet eingehende Discovery-Nachricht."""
         msg_type = msg.get("type")
-        
+
         if msg_type == self.MSG_ANNOUNCE:
             self._handle_announce(msg, addr)
         elif msg_type == self.MSG_PEER_LIST:
@@ -176,11 +176,11 @@ class NodeDiscovery:
         node_id = msg.get("node_id")
         port = msg.get("port")
         version = msg.get("version", "2.0")
-        
+
         if not node_id or not port:
             logger.warning(f"Ungültiges ANNOUNCE von {addr}")
             return
-        
+
         # Peer registrieren
         peer_info = PeerInfo(
             node_id=node_id,
@@ -191,14 +191,14 @@ class NodeDiscovery:
         )
         self.peers[node_id] = peer_info
         logger.info(f"Neuer Peer registriert: {node_id} ({addr[0]}:{port})")
-        
+
         # Peer-Liste zurückschicken
         self._send_peer_list(addr)
 
     def _handle_peer_list(self, msg: Dict, addr: tuple) -> None:
         """Empfängt eine Peer-Liste vom Bootstrap-Node."""
         peers_data = msg.get("peers", {})
-        
+
         for node_id, peer_dict in peers_data.items():
             if node_id != self.node_id:  # Sich selbst ignorieren
                 peer_info = PeerInfo(
@@ -209,7 +209,7 @@ class NodeDiscovery:
                     version=peer_dict.get("version", "2.0"),
                 )
                 self.peers[node_id] = peer_info
-        
+
         logger.info(f"PEER_LIST empfangen: {len(peers_data)} Peers")
 
     def _handle_ping(self, addr: tuple) -> None:
@@ -239,17 +239,17 @@ class NodeDiscovery:
         while self._running:
             try:
                 time.sleep(self.ping_interval_sec)
-                
+
                 now = int(time.time())
                 dead_peers = [
                     nid for nid, info in self.peers.items()
                     if now - info.last_seen > self.peer_timeout_sec
                 ]
-                
+
                 for nid in dead_peers:
                     del self.peers[nid]
                     logger.info(f"Offline-Peer entfernt: {nid}")
-                
+
                 # PING an alle Peers senden
                 ping_msg = json.dumps({"type": self.MSG_PING}).encode()
                 for nid, peer_info in list(self.peers.items()):

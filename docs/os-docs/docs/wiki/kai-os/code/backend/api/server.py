@@ -10,7 +10,7 @@ from backend.api.routes.marketplace_routes import marketplace_bp
 from backend.api.routes.nodes_routes import nodes_bp
 from backend.api.routes.orchestrator_routes import orchestrator_bp
 from backend.api.routes.wallet import wallet_bp
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 
 

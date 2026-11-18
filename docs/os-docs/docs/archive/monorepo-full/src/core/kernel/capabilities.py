@@ -16,7 +16,7 @@ aber ohne Hardware-/TEE-Abhaengigkeiten):
   - Delegation kann Rechte nur EINSCHRAENKEN, nie erweitern.
 """
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Flag, auto
 from typing import Dict, Optional, Set
 

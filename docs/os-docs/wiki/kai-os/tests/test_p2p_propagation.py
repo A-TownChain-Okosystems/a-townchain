@@ -2,7 +2,6 @@
 """
 P2P Propagation Tests — Gossip-Protokoll Validierung
 """
-import asyncio
 import os
 import sys
 import time

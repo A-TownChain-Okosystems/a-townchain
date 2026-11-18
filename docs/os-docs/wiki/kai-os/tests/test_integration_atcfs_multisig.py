@@ -5,7 +5,6 @@ ATCFS + MultiSig + ATCLang vollständige Integrationstests.
 """
 import os
 import sys
-import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -129,4 +128,4 @@ if __name__ == "__main__":
             else:
                 print(f"  ❌ {t.__name__}: {e}"); fail += 1
     print(f"\n  {ok}/{ok+fail+skip} Tests ✅  |  {skip} übersprungen  |  {fail} fehlgeschlagen")
-    import sys; sys.exit(0 if fail == 0 else 1)
+    import sys; sys.exit(0 if fail == 0 else 1)  # noqa: I001 — Importblock folgt Org-Policy

@@ -13,7 +13,6 @@ os.environ["ATC_DB_PATH"] = os.path.join(tempfile.gettempdir(), "atc_test.db")
 from backend.db.repository import (
     BlockRepository,
     ShivamonRepository,
-    TransactionRepository,
     WalletRepository,
 )
 

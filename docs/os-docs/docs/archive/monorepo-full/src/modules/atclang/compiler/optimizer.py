@@ -46,7 +46,7 @@ Optimization Levels:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional
 
 from atclang.parser.ast_nodes import (
     Assignment,
@@ -62,7 +62,6 @@ from atclang.parser.ast_nodes import (
     EmitStatement,
     EnumDef,
     ExprStatement,
-    FloatLiteral,
     ForStatement,
     FunctionCall,
     FunctionDef,
@@ -74,14 +73,11 @@ from atclang.parser.ast_nodes import (
     LetStatement,
     ListLiteral,
     MapLiteral,
-    NamespaceAccess,
-    NullLiteral,
     Program,
     RequireStatement,
     ReturnStatement,
     StateField,
     StorageBlock,
-    StringLiteral,
     StructDef,
     StructLiteral,
     TernaryExpr,
@@ -91,7 +87,7 @@ from atclang.parser.ast_nodes import (
     WalletDef,
     WhileStatement,
 )
-from atclang.vm.atcvm import OP, Instruction
+from atclang.vm.atcvm import Instruction
 
 # ============================================================================
 # CONFIGURATION

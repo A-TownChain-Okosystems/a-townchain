@@ -10,18 +10,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from atclang.compiler.compiler import compile_source
 from atclang.compiler.optimizer import ATCOptimizer
-from atclang.parser.ast_nodes import (
-    BinaryOp,
-    BoolLiteral,
-    FloatLiteral,
-    Identifier,
-    IfStatement,
-    IntLiteral,
-    LetStatement,
-    NullLiteral,
-    ReturnStatement,
-    StringLiteral,
-)
 from atclang.parser.parser import parse
 from atclang.vm.atcvm import OP
 

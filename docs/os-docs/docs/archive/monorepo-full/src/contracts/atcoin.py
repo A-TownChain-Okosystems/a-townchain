@@ -10,7 +10,6 @@
 #   Consensus:    SHA-256 PoW + PoS + PoH
 
 import hashlib
-import json
 import time
 from decimal import Decimal
 

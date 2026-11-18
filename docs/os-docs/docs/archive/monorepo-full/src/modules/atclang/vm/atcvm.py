@@ -8,7 +8,6 @@ Erweitert für vollständige atcos_main.atc Ausführung.
 
 import hashlib
 import json
-import os
 import secrets
 import struct
 import time
@@ -22,7 +21,7 @@ from atclang.stdlib.collections import ATCCollections
 from atclang.stdlib.crypto import ATCCrypto
 from atclang.stdlib.encoding import ATCEncoding
 from atclang.stdlib.math import ATCMath
-from atclang.stdlib.primitives import ATCAddress, ATCHash, ATCPrimitives
+from atclang.stdlib.primitives import ATCAddress, ATCPrimitives
 
 # ══════════════════════════════════════════════════════════
 #  OPCODES — VOLLSTÄNDIG

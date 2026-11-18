@@ -12,12 +12,12 @@ class Kernel:
         self.event_bus = EventBus()
         self.loader = ModuleLoader(self.event_bus)
         self.running = False
-    
+
     def start(self):
         print("[KERNEL] A-TownChain OS starting...")
         self.running = True
         self.event_bus.emit("system_started", {"version": "2.0", "chain": "A-TownChain"})
-    
+
     def stop(self):
         self.running = False
         print("[KERNEL] System shutdown.")

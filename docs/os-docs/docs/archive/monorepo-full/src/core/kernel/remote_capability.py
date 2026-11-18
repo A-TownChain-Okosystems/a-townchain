@@ -17,10 +17,10 @@ Spezifikation auch richtig beschrieben).
 import json
 import secrets
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Optional
 
-from src.core.kernel.capabilities import ResourceType, Right
+from src.core.kernel.capabilities import Right
 from src.core.kernel.did import Did, NodeIdentity
 
 

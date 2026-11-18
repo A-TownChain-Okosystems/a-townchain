@@ -12,7 +12,6 @@
 import threading
 import time
 
-from backend.api.routes import blockchain, wallet
 from core.event_bus import EventBus
 from core.module_loader import ModuleLoader
 

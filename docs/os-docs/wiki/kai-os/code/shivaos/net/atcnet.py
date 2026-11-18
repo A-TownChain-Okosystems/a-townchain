@@ -12,8 +12,8 @@ import socket
 import struct
 import threading
 import time
-from dataclasses import dataclass, field
-from enum import IntEnum, auto
+from dataclasses import dataclass
+from enum import IntEnum
 from typing import Callable, Dict, List, Optional, Set, Tuple
 
 # ══════════════════════════════════════════════════════════
@@ -360,7 +360,7 @@ class ATCNetNode:
         for handler in handlers:
             try:
                 handler(msg, from_addr)
-            except Exception as e:
+            except Exception:
                 pass
 
         # Weiterleiten wenn Broadcast und TTL > 0

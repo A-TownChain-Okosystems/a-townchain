@@ -4,7 +4,7 @@ ATCLang Type Checker — Statische Typ-Prüfung zur Compile-Zeit.
 ATC-92 | Sprint 2.1
 """
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from atclang.parser.ast_nodes import (
     Assignment,
@@ -17,8 +17,6 @@ from atclang.parser.ast_nodes import (
     DotAccess,
     EmitStatement,
     EnumDef,
-    ErrorDef,
-    EventDef,
     ExprStatement,
     FloatLiteral,
     ForStatement,
@@ -32,7 +30,6 @@ from atclang.parser.ast_nodes import (
     LetStatement,
     NamespaceAccess,
     NullLiteral,
-    Parameter,
     Program,
     RequireStatement,
     ReturnStatement,

@@ -5,7 +5,7 @@ Input/Output für ATCLang. Context-isoliert.
 ATC-94 | Sprint 2.5
 """
 import os
-from typing import Any, Optional
+from typing import Optional
 
 
 class ATCIO:

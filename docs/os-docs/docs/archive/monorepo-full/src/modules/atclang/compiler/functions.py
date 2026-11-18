@@ -43,7 +43,6 @@ from atclang.vm.atcvm import OP, Instruction
 
 if TYPE_CHECKING:
     from .context import CompilerContext
-    from .symbols import SymbolTable
 
 
 # ═════════════════════════════════════════════════════════════

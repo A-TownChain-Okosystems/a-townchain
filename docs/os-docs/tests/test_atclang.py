@@ -11,9 +11,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import unittest
 
-from atclang.compiler.compiler import ATCCompiler, compile_source, disassemble
-from atclang.lexer.lexer import TT, ATCLexer, Token
-from atclang.parser.parser import ATCParser
+from atclang.compiler.compiler import compile_source, disassemble
+from atclang.lexer.lexer import TT, ATCLexer
 from atclang.vm.atcvm import ATCVM, OP, ATCFunction, ATCVMError, Instruction, RequireError
 
 # ═══════════════════════════════════════════════════════════
@@ -394,7 +393,7 @@ class TestATCLangIntegration(unittest.TestCase):
             params = module.function_params.get(fname, [])
             fn = ATCFunction(name=fname, params=params, instructions=instrs)
             vm.register_function(fn)
-        
+
         if module.functions and len(module.instructions) <= 1:
             # Contract code only — run first function
             main_instrs = list(module.functions.values())[0]
@@ -404,7 +403,7 @@ class TestATCLangIntegration(unittest.TestCase):
             # Ensure program ends with RETURN (compiler now handles this for last expr)
             if main_instrs and main_instrs[-1].op == OP.HALT:
                 main_instrs[-1] = Instruction(OP.RETURN)
-        
+
         return vm.execute(main_instrs), vm
 
     def test_simple_addition(self):

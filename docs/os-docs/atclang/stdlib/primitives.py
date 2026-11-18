@@ -6,7 +6,7 @@ ATC-94 | Sprint 2.5 | Non-EVM: SHA-256, Chain-ID 9000
 """
 import hashlib
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 
 class ATCAddress:

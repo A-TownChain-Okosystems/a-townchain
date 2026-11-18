@@ -6,8 +6,7 @@ Issue: #48 | Wiki: Kap. 36
 """
 import hashlib
 import logging
-import secrets
-from typing import Dict, Optional
+from typing import Dict
 
 logger = logging.getLogger("atclang.stdlib.wallet")
 

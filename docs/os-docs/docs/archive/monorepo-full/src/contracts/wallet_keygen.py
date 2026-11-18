@@ -16,7 +16,6 @@
 import hashlib
 import hmac
 import os
-import struct
 
 from src.blockchain.wallet.wordlist import BIP39_WORDLIST
 

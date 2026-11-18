@@ -287,7 +287,7 @@ class ATCParser:
                 if self.check(TT.RBRACE):
                     self.advance()
                     return StructLiteral(parts[0], [], tok.line, tok.col)
-                if (self.current().type in (TT.IDENT, TT.TYPE, TT.KEYWORD) and 
+                if (self.current().type in (TT.IDENT, TT.TYPE, TT.KEYWORD) and
                     self.peek().type == TT.COLON):
                     fields = []
                     while not self.check(TT.RBRACE) and not self.check(TT.EOF):
@@ -351,7 +351,7 @@ class ATCParser:
                     self.advance()
                     return StructLiteral(parts[0], [], tok.line, tok.col)
                 # Only treat as struct literal if next is IDENT/KEYWORD followed by COLON
-                if (self.current().type in (TT.IDENT, TT.TYPE, TT.KEYWORD) and 
+                if (self.current().type in (TT.IDENT, TT.TYPE, TT.KEYWORD) and
                     self.peek().type == TT.COLON):
                     fields = []
                     while not self.check(TT.RBRACE) and not self.check(TT.EOF):

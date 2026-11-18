@@ -5,12 +5,11 @@ Version: 0.1.0-alpha | Komplett selbst geschrieben
 Kein LLVM-Klon, kein GCC-Port — eigener Code-Generator
 """
 
-import os
 import sys
 
 sys.path.insert(0, '/app')
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 from atclang.parser.ast_nodes import *

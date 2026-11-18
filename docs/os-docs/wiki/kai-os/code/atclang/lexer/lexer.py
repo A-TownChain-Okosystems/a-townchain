@@ -268,7 +268,7 @@ class ATCLexer:
                 if self.match('='):
                     self.tokens.append(Token(TT.NEQ, '!=', line, col))
                 else:
-                    self.error(f"Unbekanntes Zeichen: '!'")
+                    self.error("Unbekanntes Zeichen: '!'")
             elif ch == '<':
                 if self.match('='):
                     self.tokens.append(Token(TT.LTE, '<=', line, col))

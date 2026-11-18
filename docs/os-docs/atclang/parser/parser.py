@@ -332,7 +332,7 @@ class ATCParser:
             else:
                 node = Identifier(parts[0], tok.line, tok.col)
             # Struct literal: Foo { field: value, ... } — only for PascalCase names
-            if (self.check(TT.LBRACE) and len(parts) == 1 
+            if (self.check(TT.LBRACE) and len(parts) == 1
                     and parts[0][0].isupper()
                     and not parts[0].isupper()):  # PascalCase only, not SCREAMING_SNAKE_CASE
                 self.advance()
@@ -410,7 +410,7 @@ class ATCParser:
         # If-expression: if cond { val } else { val }
         if tok.type == TT.KEYWORD and tok.value == 'if':
             return self.parse_if()
-        
+
         self.error(f"Unerwartetes Token in Ausdruck: {tok.type.name}='{tok.value}'"  )
 
 
@@ -540,7 +540,6 @@ class ATCParser:
                 value = self.parse_expr()
             self.match(TT.SEMICOLON)
             # Return with tuple names joined
-            from atclang.parser.ast_nodes import TupleExpr
             name = "(" + ", ".join(names) + ")"
             return LetStatement(name, None, value, is_const, tok.line, tok.col)
         if self.current().type in (TT.IDENT, TT.KEYWORD):
@@ -658,7 +657,7 @@ class ATCParser:
         if self.current().type in (TT.IDENT, TT.KEYWORD, TT.TYPE):
             name = self.advance().value
         else:
-            self.error(f"Erwartet IDENT für Parametername")
+            self.error("Erwartet IDENT für Parametername")
         self.expect(TT.COLON)
         typ  = self.parse_type()
         return Parameter(name, typ)
@@ -669,7 +668,7 @@ class ATCParser:
         if self.current().type in (TT.IDENT, TT.KEYWORD):
             name = self.advance().value
         else:
-            self.error(f"Erwartet IDENT für Funktionsname")
+            self.error("Erwartet IDENT für Funktionsname")
         self.expect(TT.LPAREN)
         params = []
         while not self.check(TT.RPAREN):

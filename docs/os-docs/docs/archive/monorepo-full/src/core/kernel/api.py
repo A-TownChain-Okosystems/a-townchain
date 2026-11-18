@@ -29,8 +29,8 @@ from dataclasses import dataclass, field
 from enum import IntEnum, auto
 from typing import Any, Callable, Dict, List, Optional
 
-from src.core.kernel.capabilities import CapabilityError, CapabilityManager, ResourceType, Right
-from src.core.kernel.kernel import KernelProcess, ProcessState, ProcessType, ShivaKernel
+from src.core.kernel.capabilities import Right
+from src.core.kernel.kernel import ProcessState, ProcessType, ShivaKernel
 
 # ════════════════════════════════════════════════════════════════
 #  SYSCALL NUMBERS (Stable ABI)

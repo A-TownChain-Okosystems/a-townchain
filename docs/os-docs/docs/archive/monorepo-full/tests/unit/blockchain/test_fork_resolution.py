@@ -5,10 +5,6 @@ Sprint 2.2 Blocker | Issue #8 | Wiki: Kap. 54
 """
 import os
 import sys
-import threading
-import time
-
-import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from tests.test_multinode_consensus import MockNode

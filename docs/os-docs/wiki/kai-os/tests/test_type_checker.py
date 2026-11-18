@@ -8,7 +8,7 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from atclang.compiler.type_checker import ATCType, ATCTypeChecker
+from atclang.compiler.type_checker import ATCTypeChecker
 from atclang.parser.parser import parse
 
 
@@ -209,7 +209,7 @@ class TestTypeSystem(unittest.TestCase):
     """ATC type system primitives."""
 
     def test_type_equality(self):
-        from atclang.compiler.type_checker import T_BOOL, T_INT, T_STRING
+        from atclang.compiler.type_checker import T_INT, T_STRING
         self.assertEqual(T_INT, T_INT)
         self.assertNotEqual(T_INT, T_STRING)
 
@@ -226,7 +226,6 @@ class TestTypeSystem(unittest.TestCase):
             T_FLOAT,
             T_INT,
             T_STRING,
-            T_UNKNOWN,
             ATCTypeChecker,
         )
         tc = ATCTypeChecker()

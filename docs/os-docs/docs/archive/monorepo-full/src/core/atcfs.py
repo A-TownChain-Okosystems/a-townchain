@@ -8,7 +8,7 @@ Owner-basierte Zugriffskontrolle und Manifest-Export fuer On-Chain-Anchoring.
 import hashlib
 import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 
 def atc_content_id(data: bytes) -> str:

@@ -7,7 +7,6 @@
 #   2. PoW   — Miner sucht gültigen Hash (SHA-256)
 #   3. PoS   — Validator bestätigt & signiert den Block
 
-import hashlib
 import json
 import time
 

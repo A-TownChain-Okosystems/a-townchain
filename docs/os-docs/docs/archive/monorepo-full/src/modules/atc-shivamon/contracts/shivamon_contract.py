@@ -11,8 +11,6 @@
 #   - Level & Erfahrungspunkte
 
 import hashlib
-import json
-import os
 import time
 from dataclasses import asdict, dataclass
 from enum import Enum

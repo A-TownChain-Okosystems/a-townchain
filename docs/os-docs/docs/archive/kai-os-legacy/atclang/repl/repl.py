@@ -7,8 +7,6 @@ Eigene Implementierung — kein CPython-REPL-Klon
 
 import os
 import readline
-import sys
-import time
 
 from atclang.compiler.compiler import CompileError, compile_source, disassemble
 from atclang.vm.atcvm import ATCVM, ATCVMError

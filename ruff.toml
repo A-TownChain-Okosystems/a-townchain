@@ -9,6 +9,11 @@
 target-version = "py311"
 # Zeilenlänge wie Org-Policy (hub ruff.toml), damit beide Gates identisch formatieren.
 line-length = 100
+
+[lint]
+# Regelprofil wie die Org-Policy (ATC-STD-081/082)
+select = ["E4", "E7", "E9", "F", "I", "W"]
+ignore = ["E501"]
 exclude = ["docs", "target", ".venv", "node_modules", "__pycache__"]
 
 [lint.per-file-ignores]

@@ -5,11 +5,9 @@ Dezentrales Business-Ökosystem auf A-TownChain.
 Jede Franchise ist eine Mini-DAO mit eigenem Token, Governance, Vault.
 """
 import hashlib
-import json
 import time
-import uuid
-from dataclasses import asdict, dataclass, field
-from enum import Enum, auto
+from dataclasses import dataclass, field
+from enum import Enum
 from typing import Dict, List, Optional
 
 

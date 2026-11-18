@@ -7,12 +7,10 @@ Based on KAI-OS Wiki Chapter 8
 """
 
 import hashlib
-import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
 
-from flask import Blueprint, jsonify, request, send_file
+from flask import Blueprint, jsonify, request
 
 logger = logging.getLogger(__name__)
 
@@ -31,17 +29,17 @@ def list_agents():
         status = request.args.get('status')
         limit = request.args.get('limit', 20, type=int)
         offset = request.args.get('offset', 0, type=int)
-        
+
         # TODO: Implement agent filtering from AI Kernel
         agents = []
-        
+
         return jsonify({
             "agents": agents,
             "total": len(agents),
             "limit": limit,
             "offset": offset
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error listing agents: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -52,26 +50,26 @@ def create_agent():
     """Erstellt und deployt einen neuen Agenten"""
     try:
         data = request.get_json()
-        
+
         # Validierung
         required_fields = ['name', 'model', 'capabilities']
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Missing field: {field}"}), 400
-        
+
         digest = hashlib.sha256(f"{data['name']}{datetime.utcnow().isoformat()}".encode()).hexdigest()
         agent_id = f"agent_{digest[:16]}"
         did = f"did:kai:z6Mkh{agent_id}"
-        
+
         # TODO: Register with Agent Registry Smart Contract
-        
+
         return jsonify({
             "id": agent_id,
             "did": did,
             "status": "starting",
             "endpoint": f"wss://agents.kai-os.dev/{agent_id}"
         }), 201
-    
+
     except Exception as e:
         logger.error(f"❌ Error creating agent: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -85,11 +83,11 @@ def invoke_agent(agent_id: str):
         task_type = data.get('type')
         input_data = data.get('input')
         async_mode = data.get('async', True)
-        
+
         # TODO: Queue task with AI Kernel
         task_digest = hashlib.sha256(f"{agent_id}{datetime.utcnow().isoformat()}".encode()).hexdigest()
         task_id = f"task_{task_digest[:16]}"
-        
+
         if async_mode:
             return jsonify({
                 "task_id": task_id,
@@ -103,7 +101,7 @@ def invoke_agent(agent_id: str):
                 "status": "completed",
                 "result": {}
             }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error invoking agent: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -114,7 +112,7 @@ def get_task_status(agent_id: str, task_id: str):
     """Ruft den Status einer Agenten-Aufgabe ab"""
     try:
         # TODO: Get task status from AI Kernel
-        
+
         return jsonify({
             "task_id": task_id,
             "status": "completed",
@@ -127,7 +125,7 @@ def get_task_status(agent_id: str, task_id: str):
             "duration_ms": 3420,
             "on_chain_tx": "0x1a2b3c..."
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error getting task status: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -138,10 +136,10 @@ def delete_agent(agent_id: str):
     """Stoppt und entfernt einen Agenten"""
     try:
         # TODO: Stop and remove agent from AI Kernel
-        
+
         logger.info(f"✅ Agent deleted: {agent_id}")
         return '', 204
-    
+
     except Exception as e:
         logger.error(f"❌ Error deleting agent: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -157,14 +155,14 @@ def upload_storage():
     try:
         if 'file' not in request.files:
             return jsonify({"error": "No file provided"}), 400
-        
+
         file = request.files['file']
         encrypt = request.form.get('encrypt', 'false').lower() == 'true'
         pin = request.form.get('pin', 'true').lower() == 'true'
-        
+
         # TODO: Upload to IPFS
         cid = f"QmXxx{hashlib.sha256(file.read()).hexdigest()[:20]}"
-        
+
         return jsonify({
             "cid": cid,
             "size_bytes": len(file.read()),
@@ -172,7 +170,7 @@ def upload_storage():
             "pinned": pin,
             "url": f"ipfs://{cid}"
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error uploading file: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -183,9 +181,9 @@ def download_storage(cid: str):
     """Ruft eine Datei über ihren CID ab"""
     try:
         # TODO: Fetch from IPFS
-        
+
         return jsonify({"error": "Not implemented"}), 501
-    
+
     except Exception as e:
         logger.error(f"❌ Error downloading file: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -196,7 +194,7 @@ def get_storage_info(cid: str):
     """Gibt Metadaten zu einer Datei zurück"""
     try:
         # TODO: Get IPFS file info
-        
+
         return jsonify({
             "cid": cid,
             "size_bytes": 102400,
@@ -205,7 +203,7 @@ def get_storage_info(cid: str):
             "pins": 7,
             "encrypted": False
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error getting storage info: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -220,7 +218,7 @@ def get_chain_status():
     """Gibt den aktuellen Status der Blockchain zurück"""
     try:
         # TODO: Query blockchain
-        
+
         return jsonify({
             "block_number": 1048576,
             "block_hash": "0x1a2b...",
@@ -229,7 +227,7 @@ def get_chain_status():
             "sync_status": "synced",
             "network": "testnet"
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error getting chain status: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -240,7 +238,7 @@ def get_balance(address: str):
     """Gibt das Guthaben einer Adresse zurück"""
     try:
         # TODO: Query balance from blockchain
-        
+
         return jsonify({
             "address": address,
             "kai_balance": "1000000000000",
@@ -248,7 +246,7 @@ def get_balance(address: str):
             "staked": "0",
             "reserved": "0"
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error getting balance: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -259,25 +257,25 @@ def transfer_tokens():
     """Sendet Token an eine andere Adresse"""
     try:
         data = request.get_json()
-        
+
         to_address = data.get('to')
         amount = data.get('amount')
         token = data.get('token', 'KAI')
         memo = data.get('memo', '')
-        
+
         if not to_address or not amount:
             return jsonify({"error": "Missing 'to' or 'amount'"}), 400
-        
+
         # TODO: Execute transfer on blockchain
         tx_digest = hashlib.sha256(f"{to_address}{amount}".encode()).hexdigest()
         tx_hash = f"0x{tx_digest}"
-        
+
         return jsonify({
             "tx_hash": tx_hash,
             "status": "pending",
             "block_number": None
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error transferring tokens: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -292,7 +290,7 @@ def list_proposals():
     """Listet aktive Governance-Proposals auf"""
     try:
         # TODO: Query GovernanceDAO
-        
+
         return jsonify({
             "proposals": [
                 {
@@ -306,7 +304,7 @@ def list_proposals():
                 }
             ]
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error listing proposals: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -317,22 +315,22 @@ def vote_proposal(proposal_id: int):
     """Stimmt über ein Proposal ab"""
     try:
         data = request.get_json()
-        
+
         vote = data.get('vote')
         conviction = data.get('conviction', 1)
-        
+
         if vote not in ['yes', 'no', 'abstain']:
             return jsonify({"error": "Invalid vote"}), 400
-        
+
         # TODO: Cast vote on GovernanceDAO
-        
+
         return jsonify({
             "proposal_id": proposal_id,
             "vote": vote,
             "conviction": conviction,
             "status": "recorded"
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error voting: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -352,7 +350,7 @@ def system_status():
             "network": "testnet",
             "timestamp": datetime.utcnow().isoformat()
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error getting status: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -373,7 +371,7 @@ def system_info():
                 "governance": "/v1/governance"
             }
         }), 200
-    
+
     except Exception as e:
         logger.error(f"❌ Error getting info: {str(e)}")
         return jsonify({"error": str(e)}), 500

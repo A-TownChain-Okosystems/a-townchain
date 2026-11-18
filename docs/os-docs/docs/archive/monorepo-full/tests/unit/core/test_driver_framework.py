@@ -15,7 +15,6 @@ from atclang.runtime.driver_framework import (
     DriverRegistry,
     DriverState,
     IoctlCode,
-    OpenHandle,
     PowerState,
 )
 

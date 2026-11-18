@@ -11,9 +11,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import unittest
 
-from atclang.compiler.compiler import ATCCompiler, compile_source, disassemble
-from atclang.lexer.lexer import TT, ATCLexer, Token
-from atclang.parser.parser import ATCParser
+from atclang.compiler.compiler import compile_source, disassemble
+from atclang.lexer.lexer import TT, ATCLexer
 from atclang.vm.atcvm import ATCVM, OP, ATCVMError, Instruction, RequireError
 
 # ═══════════════════════════════════════════════════════════

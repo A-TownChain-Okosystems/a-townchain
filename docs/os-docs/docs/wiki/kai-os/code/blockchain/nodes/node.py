@@ -8,9 +8,6 @@
 #   VALIDATOR — nimmt am PoS Konsens teil
 #   MINER   — führt PoW aus
 
-import hashlib
-import json
-import threading
 import time
 from enum import Enum
 

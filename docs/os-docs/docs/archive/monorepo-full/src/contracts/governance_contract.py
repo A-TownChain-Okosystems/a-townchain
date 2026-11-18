@@ -15,7 +15,6 @@ import hashlib
 import time
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Optional
 
 from blockchain.contracts.base.base_contract import BaseContract
 

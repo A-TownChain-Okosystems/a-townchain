@@ -54,7 +54,7 @@ Version: 0.3.0
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from atclang.parser.ast_nodes import (
     Assignment,
@@ -84,7 +84,6 @@ from atclang.parser.ast_nodes import (
     MapLiteral,
     NamespaceAccess,
     NullLiteral,
-    Parameter,
     Program,
     RequireStatement,
     ReturnStatement,

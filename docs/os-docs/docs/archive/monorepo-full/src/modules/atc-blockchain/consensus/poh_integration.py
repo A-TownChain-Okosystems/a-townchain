@@ -13,7 +13,6 @@ try:
 except ImportError:
     # Fallback: Minimale lokale PoH-Implementierung
     import hashlib
-    import time
     class ProofOfHistory:
         def __init__(self):
             self.current_hash = hashlib.sha3_256(b"genesis").hexdigest()

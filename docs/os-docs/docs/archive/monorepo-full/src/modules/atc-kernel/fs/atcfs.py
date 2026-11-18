@@ -6,8 +6,6 @@ Kein IPFS-Klon — eigene Content-Adressierung
 """
 
 import hashlib
-import json
-import os
 import time
 from dataclasses import dataclass, field
 from enum import IntEnum, auto

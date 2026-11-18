@@ -21,9 +21,8 @@ def run_backend():
 
 def run_gateway():
     """Gateway auf Port 5000 — dient Frontend + proxied API."""
-    import os
 
-    from flask import Flask, jsonify, request, send_file, send_from_directory
+    from flask import Flask, jsonify, request, send_from_directory
     from flask_cors import CORS
     from gateway.middleware.logger import log_request
     from gateway.router import GatewayRouter

@@ -30,7 +30,7 @@ class TestP2PMessage:
         )
         data = original.to_bytes()[4:]  # Skip Length-Prefix
         reconstructed = P2PMessage.from_bytes(data)
-        
+
         assert reconstructed.type == "NEW_TX"
         assert reconstructed.sender == "node-002"
         assert reconstructed.payload["tx"]["hash"] == "0xabc"
@@ -55,10 +55,10 @@ class TestP2PBroadcaster:
             node_id="node-001",
             port=5005,
         )
-        
+
         def custom_handler(msg: P2PMessage):
             pass
-        
+
         broadcaster.register_handler("CUSTOM", custom_handler)
         assert "CUSTOM" in broadcaster.handlers
         assert broadcaster.handlers["CUSTOM"] == custom_handler
@@ -69,7 +69,7 @@ class TestP2PBroadcaster:
             node_id="node-001",
             port=5005,
         )
-        
+
         assert "NEW_BLOCK" in broadcaster.handlers
         assert "NEW_TX" in broadcaster.handlers
         assert "HANDSHAKE" in broadcaster.handlers
@@ -80,7 +80,7 @@ class TestP2PBroadcaster:
             node_id="node-001",
             port=5005,
         )
-        
+
         status = broadcaster.get_status()
         assert status["node_id"] == "node-001"
         assert status["port"] == 5005
@@ -93,31 +93,31 @@ class TestP2PBroadcaster:
             node_id="node-001",
             port=5005,
         )
-        
+
         # Zweimal die gleiche Nachricht verarbeiten
         msg = P2PMessage(
             type="NEW_BLOCK",
             sender="node-002",
             payload={"block": {"height": 1}},
         )
-        
+
         # Erste Nachricht: OK
         msg_hash = hash(json.dumps({
             "type": msg.type,
             "sender": msg.sender,
             "payload": msg.payload,
         }, sort_keys=True))
-        
+
         with broadcaster.seen_lock:
             broadcaster.seen_msgs.append(msg_hash)
-        
+
         # Zweite Nachricht: Duplikat
         msg_hash_2 = hash(json.dumps({
             "type": msg.type,
             "sender": msg.sender,
             "payload": msg.payload,
         }, sort_keys=True))
-        
+
         assert msg_hash == msg_hash_2
         assert msg_hash in broadcaster.seen_msgs
 
@@ -127,7 +127,7 @@ class TestP2PBroadcaster:
             node_id="node-001",
             port=5005,
         )
-        
+
         peers = broadcaster.get_peers()
         assert isinstance(peers, list)
         assert len(peers) == 0
@@ -138,7 +138,7 @@ class TestP2PBroadcaster:
             node_id="node-001",
             port=5005,
         )
-        
+
         assert hasattr(broadcaster, "MSG_NEW_BLOCK")
         assert hasattr(broadcaster, "MSG_NEW_TX")
         assert hasattr(broadcaster, "MSG_GET_BLOCKS")

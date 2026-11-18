@@ -8,12 +8,11 @@ Kein POSIX-Klon — eigenständige Architektur
 import hashlib
 import threading
 import time
-import uuid
 from dataclasses import dataclass, field
 from enum import IntEnum, auto
 from typing import Any, Callable, Dict, List, Optional
 
-from src.core.kernel.capabilities import CapabilityError, CapabilityManager, ResourceType, Right
+from src.core.kernel.capabilities import CapabilityManager, ResourceType, Right
 
 # ══════════════════════════════════════════════════════════
 #  PROZESS-TYPEN & STATUS

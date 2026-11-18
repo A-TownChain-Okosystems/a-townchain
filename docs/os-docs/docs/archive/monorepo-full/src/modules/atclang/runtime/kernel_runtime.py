@@ -24,38 +24,28 @@ Architektur:
 """
 
 import hashlib
-import json
 import os
-import sys
 import time
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
-from atclang.compiler.compiler import ATCCompiler, CompiledModule, compile_source
+from atclang.compiler.compiler import CompiledModule, compile_source
 from atclang.parser.ast_nodes import (
     ClassDef,
     ContractDef,
     EnumDef,
-    ErrorDef,
-    EventDef,
-    FunctionDef,
     ImportStatement,
-    LetStatement,
     Program,
-    StorageBlock,
     StructDef,
-    TypeAliasDef,
 )
 from atclang.parser.parser import parse
 from atclang.vm.atcvm import (
     ATCVM,
-    OP,
     STDLIB_DISPATCH,
     ATCFunction,
     ATCObject,
     ATCVMError,
     GasError,
-    Instruction,
     RequireError,
 )
 
