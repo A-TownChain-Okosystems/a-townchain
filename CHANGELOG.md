@@ -1,5 +1,30 @@
 # Changelog — a-townchain
 
+## [Unreleased] — 2026-11-18
+
+### Added (Nutzerstart: ein Befehl bis zum laufenden Devnet, SCR-0147)
+
+- `build.sh` — Voraussetzungspruefung, Bau des Node-Binaries, optional Workspace und
+  Apps, Python-Umgebung. Idempotent, mit `--check` und `--all`.
+- `start.sh` — startet ein bis n Devnet-Nodes, pollt die RPC-Bereitschaft, kennt
+  `status` und `stop`, schreibt Logs nach `.devnet/logs`.
+- `tools/devnet/smoke.sh` — prueft `ping`, `chain_id`, `boot_hash` und `peers` und
+  validiert die Antworten; Exit-Code 0 nur bei vollstaendigem PASS.
+- `docker-compose.devnet.yml` und `Dockerfile.devnet` — drei Nodes mit
+  Per-Service-Healthcheck.
+- `docs/QUICKSTART.md` — Weg vom Klon zum laufenden Node, inklusive der Grenzen.
+
+### Changed
+
+- `README.md` — Installation und Usage beschreiben den realen Stand. Der vorherige
+  Verweis auf ein Python-Skript (`modules/atcnet/node.py`) zeigte auf einen Pfad, den
+  es nicht mehr gibt.
+
+### Verified
+
+- `cargo build --release -p atc-node`: gruen (38,95 s).
+- Drei Nodes gestartet, `smoke.sh`: PASS (`chain_id atc`, `peers 2`).
+
 ## [Unreleased] — 2026-11-11
 
 ### Added (Integrationspfad: Quelle -> Artefakt -> Freigabe -> VM -> Kette)
