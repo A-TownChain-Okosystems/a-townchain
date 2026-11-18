@@ -644,3 +644,9 @@ entries:
     pattern: "Wall-Clock"
     justification: "generated_at-Zeitstempel des Registers; Report-Metadaten, kein Chain-Zustand"
     scr: "SCR-0146"
+  # -- CI-Werkzeug: JWT-Zeitstempel (kein Konsens-, kein Build-Pfad) --
+  - file: tools/ci/gh_app_token.py
+    line: 44
+    pattern: "Wall-Clock"
+    justification: "JWT iat/exp MUSS echte Zeit tragen, sonst lehnt GitHub das App-Token ab; das Skript laeuft nur im CI, erzeugt keine Artefakte und keine Build-Ausgabe"
+    scr: "SCR-0147"

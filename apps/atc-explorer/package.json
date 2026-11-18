@@ -22,9 +22,10 @@
     "typescript": "^6.0.3"
   },
   "overrides": {
+    "brace-expansion": "^2.1.7",
+    "glob": "^14.0.2",
     "handlebars": "^4.7.10",
-    "source-map-js": "^1.2.2",
     "sharp": "^0.35.5",
-    "brace-expansion": "^2.1.7"
+    "source-map-js": "^1.2.2"
   }
 }

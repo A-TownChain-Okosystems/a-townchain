@@ -18,5 +18,8 @@
     "@types/node": "^26",
     "jest": "^30",
     "typescript": "^7"
+  },
+  "overrides": {
+    "glob": "^14.0.2"
   }
 }
