@@ -1,7 +1,7 @@
 # STATUS — atc-standards
 
 <!-- GENERATED-BY generate_views.py — NICHT MANUELL BEARBEITEN -->
-> **GENERIERTER SNAPSHOT (2026-11-18 20:01 UTC+2):** 534 Standards (506 APPROVED, 28 CANDIDATE), 76 Familien, Registry SHA-256 `8101e903087c…` — Quelle: `registry/standards.yaml`.
+> **GENERIERTER SNAPSHOT (2026-11-18 20:26 UTC+2):** 534 Standards (507 APPROVED, 27 CANDIDATE), 76 Familien, Registry SHA-256 `fa9eab0b9db3…` — Quelle: `registry/standards.yaml`.
 > **Interpretationsregel:** Dieser Snapshot = aktueller Zustand. Alles darunter ist AUDIT-TRAIL (historische Zustaende, z.B. „105/105“, „110/110“, „121/121“ zum jeweiligen Zeitpunkt) und darf NICHT als aktueller Stand gelesen werden. Historie: CHANGELOG.md; Change-History: change-requests/SCR-*.md; Audit-Evidence: docs/audits/.
 
 Fehler-Audit 07.09. 22:01-22:15 (SCR-0010): Suite grün (105/105 COMPLIANT zum Audit-Zeitpunkt,

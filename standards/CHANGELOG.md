@@ -20,7 +20,8 @@
   Implementierungsstatus ehrlich SPECIFICATION_ONLY: die Pruefordnung ist in
   `components/update-authority` implementiert, TUF-Rollen, Health-Check,
   Rollback-Orchestrierung und koordinierte Aktivierung sind offen.
-  Registry 533 -> 534 Standards. §9-Freigabe offen.
+  Registry 533 -> 534 Standards. §9-Freigabe durch den Owner am 18.11.2026
+  erteilt: APPROVED, normativ wirksam.
 
 ## [unreleased] - 2026-09-09 — Audit-Welle 4 (SCR-0073)
 

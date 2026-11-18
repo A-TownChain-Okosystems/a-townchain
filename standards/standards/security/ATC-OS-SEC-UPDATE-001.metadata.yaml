@@ -10,7 +10,7 @@ implementation:
 normative: true
 owner: Michael Wroblewski (Owner-Entwurf 18.11.2026)
 source_file: standards/security/ATC-OS-SEC-UPDATE-001.md
-status: candidate
+status: approved
 title: Blockchain Automatic Security Updates — automatisierte, kryptografisch abgesicherte
   Sicherheitsaktualisierung
 version: 1.0.0

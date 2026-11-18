@@ -3,7 +3,7 @@ standard:
   id: ATC-OS-SEC-UPDATE-001
   title: "Blockchain Automatic Security Updates — Pflicht zur automatisierten, kryptografisch abgesicherten Sicherheitsaktualisierung"
   version: "1.0.0"
-  status: candidate
+  status: approved
   category: security
   authority: A-TownChain Ecosystems
   owner: "Michael Wroblewski (Owner-Entwurf 18.11.2026)"
@@ -13,17 +13,16 @@ standard:
   applies_to: "Alle sicherheitskritischen Blockchain-Komponenten von KAI-OS / GlobusOS"
   supersedes: []
   superseded_by: null
-  effective_date: null
+  effective_date: "2026-11-18"
   review_date: "2027-05-18"
   license: "Copyright (c) 2026 Michael Wroblewski"
 ---
 
 # ATC-OS-SEC-UPDATE-001 — Blockchain Automatic Security Updates (v1.0.0, CANDIDATE)
 
-> **Status:** CANDIDATE. Owner-Entwurf vom 18.11.2026, als verbindliche
-> Sicherheitsrichtlinie vorgesehen. Normativ wirksam mit der §9-Freigabe nach
-> ATC-STD-000; bis dahin gilt der Standard als Entwurf mit Anwendungspflicht fuer
-> neue Komponenten, aber ohne Bestandsschutz-Wirkung.
+> **Status:** APPROVED (v1.0.0). §9-Freigabe durch den Owner am 18.11.2026 erteilt
+> (ATC-STD-000 §9). Der Standard ist normativ wirksam und fuer alle Komponenten
+> nach §2 verbindlich. Abweichungen sind Findings nach ATC-STD-BUG-001.
 
 ---
 
