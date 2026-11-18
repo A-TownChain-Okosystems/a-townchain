@@ -12,3 +12,15 @@ build/
 .venv*
 venv/
 .venv-t/
+
+# ── Werkzeug-Scope (SCR-0146/0147) ──────────────────────────────────────────
+# docs/os-docs ist der importierte Dokumentations-Snapshot des aufgeloesten
+# Docs-Repos (SCR-0127): nicht gebaut, nicht ausgeliefert, nicht gelintet.
+# Der Ruff-Workflow uebergibt zwei --exclude-Flags; Ruff wertet davon nur eines
+# aus, wodurch der Snapshot sonst mitgeprueft wird (3.206 Befunde). Bis der
+# Workflow auf eine Komma-Liste umgestellt ist (Token braucht workflow-Scope,
+# Patch in .ci/pending-workflows), haelt dieser Eintrag den Snapshot aus dem
+# Scan. Getrackte Dateien bleiben getrackt; nur Werkzeuge, die .gitignore
+# respektieren, ueberspringen den Baum.
+docs/os-docs/
+.org-github-policy/
