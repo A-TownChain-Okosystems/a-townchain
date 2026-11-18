@@ -9,7 +9,7 @@
 schema_version: "1.0.0"
 generated: "2026-09-17"
 organization: A-TownChain-Okosystems
-count: 33
+count: 36
 layer_taxonomy_draft:
   L0: language
   L1: kernel
@@ -185,3 +185,48 @@ repositories:
   - {name: genesis-franchise-factory, tier: T3, profile: genesis-franchise-factory, id: ATC-REPO-GFF-001, domain: franchise_factory, layer: L6, criticality: C3, security_class: S2, maturity_class: C, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
   - {name: a-townchain-ecosystem, tier: T3, profile: a-townchain-ecosystem, id: ATC-REPO-ECOSYS-001, domain: ecosystem, layer: L7, criticality: C1, security_class: S3, maturity_class: C, canonical: true, evidence: .atc/evidence/evidence.yaml, exempt: false}
   - {name: demo-repository, tier: T3, profile: demo-repository, id: ATC-REPO-DEMO-001, domain: demo, layer: L7, criticality: C3, security_class: S1, maturity_class: C, canonical: false, evidence: .atc/evidence/evidence.yaml, exempt: true}
+  - name: atc-exec-admission
+    tier: T1
+    profile: atc-exec-admission
+    id: ATC-REPO-EXECADM-001
+    domain: execution_admission
+    layer: L3
+    criticality: C1
+    security_class: S4
+    maturity_class: C
+    canonical: true
+    status: active
+    canonical_path: a-townchain/components/exec-admission
+    note: 'Im Monorepo entstanden (SCR-0145/SCR-0147), kein eigenes Quell-Repo.'
+    evidence: .atc/evidence/evidence.yaml
+    exempt: false
+  - name: atc-system
+    tier: T1
+    profile: atc-system
+    id: ATC-REPO-SYSTEM-001
+    domain: system_integration
+    layer: L3
+    criticality: C1
+    security_class: S3
+    maturity_class: C
+    canonical: true
+    status: active
+    canonical_path: a-townchain/components/system
+    note: 'Im Monorepo entstanden (SCR-0145/SCR-0147), kein eigenes Quell-Repo.'
+    evidence: .atc/evidence/evidence.yaml
+    exempt: false
+  - name: atc-update-authority
+    tier: T1
+    profile: atc-update-authority
+    id: ATC-REPO-UPD-AUTH-001
+    domain: update_authority
+    layer: L3
+    criticality: C1
+    security_class: S4
+    maturity_class: C
+    canonical: true
+    status: active
+    canonical_path: a-townchain/components/update-authority
+    note: 'Im Monorepo entstanden (SCR-0145/SCR-0147), kein eigenes Quell-Repo.'
+    evidence: .atc/evidence/evidence.yaml
+    exempt: false

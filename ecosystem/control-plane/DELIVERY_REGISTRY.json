@@ -1,11 +1,13 @@
 {
   "schema_version": "1.0.0",
   "registry_id": "ATC-DELIVERY-SSOT",
-  "updated_at": "2026-10-11T20:51:36Z",
+  "updated_at": "2026-11-18T15:30:00Z",
   "authority": {
-    "repository": "A-TownChain-Okosystems/a-townchain-ecosystem",
+    "repository": "A-TownChain-Okosystems/a-townchain",
     "branch": "main",
-    "role": "integration/compliance/evidence/architecture control plane only"
+    "role": "integration/compliance/evidence/architecture control plane only",
+    "path": "ecosystem/control-plane",
+    "note": "SCR-0127/SCR-0147: Das Control Plane liegt seit der Konsolidierung im Monorepo a-townchain unter ecosystem/control-plane; die Komponenten-Repos sind archiviert, kanonische Orte sind components/<name>."
   },
   "status_enum": [
     "PLANNED",
@@ -1568,7 +1570,7 @@
     },
     {
       "id": "REPO-ATC-WALLET",
-      "repository": "A-TownChain-Okosystems/atc-wallet",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/wallet)",
       "default_branch": "main",
       "repository_state": "ARCHIVED",
       "audit_status": "RESIDUAL",
@@ -1597,22 +1599,22 @@
         {
           "kind": "default_branch_head",
           "sha": "812a31d292364304c72cae8be6f448c130d7428e",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-wallet/commit/812a31d292364304c72cae8be6f448c130d7428e",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/commit/812a31d292364304c72cae8be6f448c130d7428e",
           "observed_at": "2026-10-11T20:51:36Z"
         },
         {
           "kind": "README",
           "blob_sha": "8d5f32ce38441855733401ffabcc473005366299",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-wallet/blob/main/README.md",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/blob/main/README.md",
           "observed_at": "2026-10-11T20:51:36Z"
         }
       ],
       "source_evidence": {
         "head_sha": "812a31d292364304c72cae8be6f448c130d7428e",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-wallet/commit/812a31d292364304c72cae8be6f448c130d7428e",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/commit/812a31d292364304c72cae8be6f448c130d7428e",
         "readme_available": true,
         "readme_blob_sha": "8d5f32ce38441855733401ffabcc473005366299",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-wallet/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -1630,7 +1632,7 @@
     },
     {
       "id": "REPO-ATC-EXPLORER",
-      "repository": "A-TownChain-Okosystems/atc-explorer",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/explorer)",
       "default_branch": "main",
       "repository_state": "ARCHIVED",
       "audit_status": "RESIDUAL",
@@ -1659,22 +1661,22 @@
         {
           "kind": "default_branch_head",
           "sha": "c4da05304f214bb68bd942e7705c96c35d9a18ae",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-explorer/commit/c4da05304f214bb68bd942e7705c96c35d9a18ae",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/commit/c4da05304f214bb68bd942e7705c96c35d9a18ae",
           "observed_at": "2026-10-11T20:51:36Z"
         },
         {
           "kind": "README",
           "blob_sha": "1e8dbd0b156bdac85327c4b0f07e6930e8cb3395",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-explorer/blob/main/README.md",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/blob/main/README.md",
           "observed_at": "2026-10-11T20:51:36Z"
         }
       ],
       "source_evidence": {
         "head_sha": "c4da05304f214bb68bd942e7705c96c35d9a18ae",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-explorer/commit/c4da05304f214bb68bd942e7705c96c35d9a18ae",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/commit/c4da05304f214bb68bd942e7705c96c35d9a18ae",
         "readme_available": true,
         "readme_blob_sha": "1e8dbd0b156bdac85327c4b0f07e6930e8cb3395",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-explorer/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -1692,7 +1694,7 @@
     },
     {
       "id": "REPO-ATC-INDEXER",
-      "repository": "A-TownChain-Okosystems/atc-indexer",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/indexer)",
       "default_branch": "main",
       "repository_state": "ARCHIVED",
       "audit_status": "RESIDUAL",
@@ -1721,22 +1723,22 @@
         {
           "kind": "default_branch_head",
           "sha": "7f3da49f30464471c8c1597ed59f6223050e79e4",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-indexer/commit/7f3da49f30464471c8c1597ed59f6223050e79e4",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/commit/7f3da49f30464471c8c1597ed59f6223050e79e4",
           "observed_at": "2026-10-11T20:51:36Z"
         },
         {
           "kind": "README",
           "blob_sha": "8e67137a8755ce86f9722f7f45fcc3783f8ee417",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-indexer/blob/main/README.md",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/blob/main/README.md",
           "observed_at": "2026-10-11T20:51:36Z"
         }
       ],
       "source_evidence": {
         "head_sha": "7f3da49f30464471c8c1597ed59f6223050e79e4",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-indexer/commit/7f3da49f30464471c8c1597ed59f6223050e79e4",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/commit/7f3da49f30464471c8c1597ed59f6223050e79e4",
         "readme_available": true,
         "readme_blob_sha": "8e67137a8755ce86f9722f7f45fcc3783f8ee417",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-indexer/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -1754,7 +1756,7 @@
     },
     {
       "id": "REPO-ATC-MINING",
-      "repository": "A-TownChain-Okosystems/atc-mining",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/mining)",
       "default_branch": "main",
       "repository_state": "ARCHIVED",
       "audit_status": "RESIDUAL",
@@ -1783,22 +1785,22 @@
         {
           "kind": "default_branch_head",
           "sha": "227f2d700307191f59596c5a78ccfd3a4b657aa9",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-mining/commit/227f2d700307191f59596c5a78ccfd3a4b657aa9",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/commit/227f2d700307191f59596c5a78ccfd3a4b657aa9",
           "observed_at": "2026-10-11T20:51:36Z"
         },
         {
           "kind": "README",
           "blob_sha": "6592d15eebe1d57831d0859743370929b8378f1e",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-mining/blob/main/README.md",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/blob/main/README.md",
           "observed_at": "2026-10-11T20:51:36Z"
         }
       ],
       "source_evidence": {
         "head_sha": "227f2d700307191f59596c5a78ccfd3a4b657aa9",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-mining/commit/227f2d700307191f59596c5a78ccfd3a4b657aa9",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/commit/227f2d700307191f59596c5a78ccfd3a4b657aa9",
         "readme_available": true,
         "readme_blob_sha": "6592d15eebe1d57831d0859743370929b8378f1e",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-mining/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -1816,7 +1818,7 @@
     },
     {
       "id": "REPO-ATC-INTEROP",
-      "repository": "A-TownChain-Okosystems/atc-interop",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/interop)",
       "default_branch": "main",
       "repository_state": "ARCHIVED",
       "audit_status": "RESIDUAL",
@@ -1845,22 +1847,22 @@
         {
           "kind": "default_branch_head",
           "sha": "5905fca02274704a00bdf708948180bc211a46d3",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-interop/commit/5905fca02274704a00bdf708948180bc211a46d3",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/commit/5905fca02274704a00bdf708948180bc211a46d3",
           "observed_at": "2026-10-11T20:51:36Z"
         },
         {
           "kind": "README",
           "blob_sha": "ed52b8b63f9943f7de18aba3f96b554266b03bf5",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-interop/blob/main/README.md",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/blob/main/README.md",
           "observed_at": "2026-10-11T20:51:36Z"
         }
       ],
       "source_evidence": {
         "head_sha": "5905fca02274704a00bdf708948180bc211a46d3",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-interop/commit/5905fca02274704a00bdf708948180bc211a46d3",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/commit/5905fca02274704a00bdf708948180bc211a46d3",
         "readme_available": true,
         "readme_blob_sha": "ed52b8b63f9943f7de18aba3f96b554266b03bf5",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-interop/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -1940,7 +1942,7 @@
     },
     {
       "id": "REPO-ATC-ORACLE",
-      "repository": "A-TownChain-Okosystems/atc-oracle",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/oracle)",
       "default_branch": "main",
       "repository_state": "ARCHIVED",
       "audit_status": "RESIDUAL",
@@ -1969,22 +1971,22 @@
         {
           "kind": "default_branch_head",
           "sha": "8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-oracle/commit/8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/commit/8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8",
           "observed_at": "2026-10-11T20:51:36Z"
         },
         {
           "kind": "README",
           "blob_sha": "9d9b9bce47b4b4f041b4061b19b4f09aabc279ab",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-oracle/blob/main/README.md",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/blob/main/README.md",
           "observed_at": "2026-10-11T20:51:36Z"
         }
       ],
       "source_evidence": {
         "head_sha": "8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-oracle/commit/8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/commit/8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8",
         "readme_available": true,
         "readme_blob_sha": "9d9b9bce47b4b4f041b4061b19b4f09aabc279ab",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-oracle/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -2002,7 +2004,7 @@
     },
     {
       "id": "REPO-ATC-STORAGE",
-      "repository": "A-TownChain-Okosystems/atc-storage",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/storage)",
       "default_branch": "main",
       "repository_state": "ARCHIVED",
       "audit_status": "RESIDUAL",
@@ -2031,22 +2033,22 @@
         {
           "kind": "default_branch_head",
           "sha": "230746c1dc5e4c1355c2707368de50d6c1008660",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-storage/commit/230746c1dc5e4c1355c2707368de50d6c1008660",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/commit/230746c1dc5e4c1355c2707368de50d6c1008660",
           "observed_at": "2026-10-11T20:51:36Z"
         },
         {
           "kind": "README",
           "blob_sha": "7769915aefa5b01858a5a2ded8166e2e1958e7f7",
-          "url": "https://github.com/A-TownChain-Okosystems/atc-storage/blob/main/README.md",
+          "url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/blob/main/README.md",
           "observed_at": "2026-10-11T20:51:36Z"
         }
       ],
       "source_evidence": {
         "head_sha": "230746c1dc5e4c1355c2707368de50d6c1008660",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-storage/commit/230746c1dc5e4c1355c2707368de50d6c1008660",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/commit/230746c1dc5e4c1355c2707368de50d6c1008660",
         "readme_available": true,
         "readme_blob_sha": "7769915aefa5b01858a5a2ded8166e2e1958e7f7",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-storage/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -4436,7 +4438,7 @@
     },
     {
       "id": "RPLAN-ATC-WALLET",
-      "repository": "A-TownChain-Okosystems/atc-wallet",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/wallet)",
       "status": "RESIDUAL",
       "priority": "P2",
       "repository_state": "ARCHIVED",
@@ -4449,12 +4451,12 @@
         ],
         "readme_available": true,
         "readme_blob_sha": "8d5f32ce38441855733401ffabcc473005366299",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-wallet/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/blob/main/README.md",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-wallet/blob/main/README.md",
-          "https://github.com/A-TownChain-Okosystems/atc-wallet/commit/812a31d292364304c72cae8be6f448c130d7428e"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/blob/main/README.md",
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/commit/812a31d292364304c72cae8be6f448c130d7428e"
         ]
       },
       "roadmap": {
@@ -4480,7 +4482,7 @@
           "Define acceptance checkpoints and exact-SHA evidence requirements"
         ],
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-wallet/commit/812a31d292364304c72cae8be6f448c130d7428e"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/commit/812a31d292364304c72cae8be6f448c130d7428e"
         ]
       },
       "components": {
@@ -4491,7 +4493,7 @@
         "source_tree_enumeration_status": "NOT_ENUMERATED",
         "completeness_status": "README_ONLY_NOT_EXHAUSTIVE",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-wallet/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Wallet core, key management and transaction signing (historical)"
@@ -4506,7 +4508,7 @@
         "interface_inventory_status": "NOT_ENUMERATED",
         "completeness_status": "NO_FUNCTION_COMPLETENESS_CLAIM",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-wallet/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Wallet core, key management and transaction signing (historical)"
@@ -4531,7 +4533,7 @@
         "items": [
           {
             "id": "TODO-REPO-AUDIT-ATC-WALLET",
-            "target_repo": "A-TownChain-Okosystems/atc-wallet",
+            "target_repo": "A-TownChain-Okosystems/a-townchain (components/wallet)",
             "priority": "P2",
             "status": "RESIDUAL",
             "issue_url": null,
@@ -4551,10 +4553,10 @@
       "audit_scope": "CENSUS_AND_README_ONLY",
       "source_evidence": {
         "head_sha": "812a31d292364304c72cae8be6f448c130d7428e",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-wallet/commit/812a31d292364304c72cae8be6f448c130d7428e",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/commit/812a31d292364304c72cae8be6f448c130d7428e",
         "readme_available": true,
         "readme_blob_sha": "8d5f32ce38441855733401ffabcc473005366299",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-wallet/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/wallet)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -4570,7 +4572,7 @@
     },
     {
       "id": "RPLAN-ATC-EXPLORER",
-      "repository": "A-TownChain-Okosystems/atc-explorer",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/explorer)",
       "status": "RESIDUAL",
       "priority": "P2",
       "repository_state": "ARCHIVED",
@@ -4583,12 +4585,12 @@
         ],
         "readme_available": true,
         "readme_blob_sha": "1e8dbd0b156bdac85327c4b0f07e6930e8cb3395",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-explorer/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/blob/main/README.md",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-explorer/blob/main/README.md",
-          "https://github.com/A-TownChain-Okosystems/atc-explorer/commit/c4da05304f214bb68bd942e7705c96c35d9a18ae"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/blob/main/README.md",
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/commit/c4da05304f214bb68bd942e7705c96c35d9a18ae"
         ]
       },
       "roadmap": {
@@ -4614,7 +4616,7 @@
           "Define acceptance checkpoints and exact-SHA evidence requirements"
         ],
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-explorer/commit/c4da05304f214bb68bd942e7705c96c35d9a18ae"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/commit/c4da05304f214bb68bd942e7705c96c35d9a18ae"
         ]
       },
       "components": {
@@ -4625,7 +4627,7 @@
         "source_tree_enumeration_status": "NOT_ENUMERATED",
         "completeness_status": "README_ONLY_NOT_EXHAUSTIVE",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-explorer/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Block explorer (archived reference)"
@@ -4640,7 +4642,7 @@
         "interface_inventory_status": "NOT_ENUMERATED",
         "completeness_status": "NO_FUNCTION_COMPLETENESS_CLAIM",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-explorer/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Block explorer (archived reference)"
@@ -4665,7 +4667,7 @@
         "items": [
           {
             "id": "TODO-REPO-AUDIT-ATC-EXPLORER",
-            "target_repo": "A-TownChain-Okosystems/atc-explorer",
+            "target_repo": "A-TownChain-Okosystems/a-townchain (components/explorer)",
             "priority": "P2",
             "status": "RESIDUAL",
             "issue_url": null,
@@ -4685,10 +4687,10 @@
       "audit_scope": "CENSUS_AND_README_ONLY",
       "source_evidence": {
         "head_sha": "c4da05304f214bb68bd942e7705c96c35d9a18ae",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-explorer/commit/c4da05304f214bb68bd942e7705c96c35d9a18ae",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/commit/c4da05304f214bb68bd942e7705c96c35d9a18ae",
         "readme_available": true,
         "readme_blob_sha": "1e8dbd0b156bdac85327c4b0f07e6930e8cb3395",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-explorer/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/explorer)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -4704,7 +4706,7 @@
     },
     {
       "id": "RPLAN-ATC-INDEXER",
-      "repository": "A-TownChain-Okosystems/atc-indexer",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/indexer)",
       "status": "RESIDUAL",
       "priority": "P2",
       "repository_state": "ARCHIVED",
@@ -4717,12 +4719,12 @@
         ],
         "readme_available": true,
         "readme_blob_sha": "8e67137a8755ce86f9722f7f45fcc3783f8ee417",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-indexer/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/blob/main/README.md",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-indexer/blob/main/README.md",
-          "https://github.com/A-TownChain-Okosystems/atc-indexer/commit/7f3da49f30464471c8c1597ed59f6223050e79e4"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/blob/main/README.md",
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/commit/7f3da49f30464471c8c1597ed59f6223050e79e4"
         ]
       },
       "roadmap": {
@@ -4748,7 +4750,7 @@
           "Define acceptance checkpoints and exact-SHA evidence requirements"
         ],
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-indexer/commit/7f3da49f30464471c8c1597ed59f6223050e79e4"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/commit/7f3da49f30464471c8c1597ed59f6223050e79e4"
         ]
       },
       "components": {
@@ -4759,7 +4761,7 @@
         "source_tree_enumeration_status": "NOT_ENUMERATED",
         "completeness_status": "README_ONLY_NOT_EXHAUSTIVE",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-indexer/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Chain indexing and analytics (archived reference)"
@@ -4774,7 +4776,7 @@
         "interface_inventory_status": "NOT_ENUMERATED",
         "completeness_status": "NO_FUNCTION_COMPLETENESS_CLAIM",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-indexer/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Chain indexing and analytics (archived reference)"
@@ -4799,7 +4801,7 @@
         "items": [
           {
             "id": "TODO-REPO-AUDIT-ATC-INDEXER",
-            "target_repo": "A-TownChain-Okosystems/atc-indexer",
+            "target_repo": "A-TownChain-Okosystems/a-townchain (components/indexer)",
             "priority": "P2",
             "status": "RESIDUAL",
             "issue_url": null,
@@ -4819,10 +4821,10 @@
       "audit_scope": "CENSUS_AND_README_ONLY",
       "source_evidence": {
         "head_sha": "7f3da49f30464471c8c1597ed59f6223050e79e4",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-indexer/commit/7f3da49f30464471c8c1597ed59f6223050e79e4",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/commit/7f3da49f30464471c8c1597ed59f6223050e79e4",
         "readme_available": true,
         "readme_blob_sha": "8e67137a8755ce86f9722f7f45fcc3783f8ee417",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-indexer/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/indexer)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -4838,7 +4840,7 @@
     },
     {
       "id": "RPLAN-ATC-MINING",
-      "repository": "A-TownChain-Okosystems/atc-mining",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/mining)",
       "status": "RESIDUAL",
       "priority": "P2",
       "repository_state": "ARCHIVED",
@@ -4851,12 +4853,12 @@
         ],
         "readme_available": true,
         "readme_blob_sha": "6592d15eebe1d57831d0859743370929b8378f1e",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-mining/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/blob/main/README.md",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-mining/blob/main/README.md",
-          "https://github.com/A-TownChain-Okosystems/atc-mining/commit/227f2d700307191f59596c5a78ccfd3a4b657aa9"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/blob/main/README.md",
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/commit/227f2d700307191f59596c5a78ccfd3a4b657aa9"
         ]
       },
       "roadmap": {
@@ -4882,7 +4884,7 @@
           "Define acceptance checkpoints and exact-SHA evidence requirements"
         ],
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-mining/commit/227f2d700307191f59596c5a78ccfd3a4b657aa9"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/commit/227f2d700307191f59596c5a78ccfd3a4b657aa9"
         ]
       },
       "components": {
@@ -4893,7 +4895,7 @@
         "source_tree_enumeration_status": "NOT_ENUMERATED",
         "completeness_status": "README_ONLY_NOT_EXHAUSTIVE",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-mining/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Mining/rewards/emissions stack (archived reference)"
@@ -4908,7 +4910,7 @@
         "interface_inventory_status": "NOT_ENUMERATED",
         "completeness_status": "NO_FUNCTION_COMPLETENESS_CLAIM",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-mining/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Mining/rewards/emissions stack (archived reference)"
@@ -4933,7 +4935,7 @@
         "items": [
           {
             "id": "TODO-REPO-AUDIT-ATC-MINING",
-            "target_repo": "A-TownChain-Okosystems/atc-mining",
+            "target_repo": "A-TownChain-Okosystems/a-townchain (components/mining)",
             "priority": "P2",
             "status": "RESIDUAL",
             "issue_url": null,
@@ -4953,10 +4955,10 @@
       "audit_scope": "CENSUS_AND_README_ONLY",
       "source_evidence": {
         "head_sha": "227f2d700307191f59596c5a78ccfd3a4b657aa9",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-mining/commit/227f2d700307191f59596c5a78ccfd3a4b657aa9",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/commit/227f2d700307191f59596c5a78ccfd3a4b657aa9",
         "readme_available": true,
         "readme_blob_sha": "6592d15eebe1d57831d0859743370929b8378f1e",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-mining/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/mining)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -4972,7 +4974,7 @@
     },
     {
       "id": "RPLAN-ATC-INTEROP",
-      "repository": "A-TownChain-Okosystems/atc-interop",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/interop)",
       "status": "RESIDUAL",
       "priority": "P2",
       "repository_state": "ARCHIVED",
@@ -4985,12 +4987,12 @@
         ],
         "readme_available": true,
         "readme_blob_sha": "ed52b8b63f9943f7de18aba3f96b554266b03bf5",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-interop/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/blob/main/README.md",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-interop/blob/main/README.md",
-          "https://github.com/A-TownChain-Okosystems/atc-interop/commit/5905fca02274704a00bdf708948180bc211a46d3"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/blob/main/README.md",
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/commit/5905fca02274704a00bdf708948180bc211a46d3"
         ]
       },
       "roadmap": {
@@ -5016,7 +5018,7 @@
           "Define acceptance checkpoints and exact-SHA evidence requirements"
         ],
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-interop/commit/5905fca02274704a00bdf708948180bc211a46d3"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/commit/5905fca02274704a00bdf708948180bc211a46d3"
         ]
       },
       "components": {
@@ -5027,7 +5029,7 @@
         "source_tree_enumeration_status": "NOT_ENUMERATED",
         "completeness_status": "README_ONLY_NOT_EXHAUSTIVE",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-interop/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Cross-chain interoperability (archived reference)"
@@ -5042,7 +5044,7 @@
         "interface_inventory_status": "NOT_ENUMERATED",
         "completeness_status": "NO_FUNCTION_COMPLETENESS_CLAIM",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-interop/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Cross-chain interoperability (archived reference)"
@@ -5067,7 +5069,7 @@
         "items": [
           {
             "id": "TODO-REPO-AUDIT-ATC-INTEROP",
-            "target_repo": "A-TownChain-Okosystems/atc-interop",
+            "target_repo": "A-TownChain-Okosystems/a-townchain (components/interop)",
             "priority": "P2",
             "status": "RESIDUAL",
             "issue_url": null,
@@ -5087,10 +5089,10 @@
       "audit_scope": "CENSUS_AND_README_ONLY",
       "source_evidence": {
         "head_sha": "5905fca02274704a00bdf708948180bc211a46d3",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-interop/commit/5905fca02274704a00bdf708948180bc211a46d3",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/commit/5905fca02274704a00bdf708948180bc211a46d3",
         "readme_available": true,
         "readme_blob_sha": "ed52b8b63f9943f7de18aba3f96b554266b03bf5",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-interop/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/interop)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -5240,7 +5242,7 @@
     },
     {
       "id": "RPLAN-ATC-ORACLE",
-      "repository": "A-TownChain-Okosystems/atc-oracle",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/oracle)",
       "status": "RESIDUAL",
       "priority": "P2",
       "repository_state": "ARCHIVED",
@@ -5253,12 +5255,12 @@
         ],
         "readme_available": true,
         "readme_blob_sha": "9d9b9bce47b4b4f041b4061b19b4f09aabc279ab",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-oracle/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/blob/main/README.md",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-oracle/blob/main/README.md",
-          "https://github.com/A-TownChain-Okosystems/atc-oracle/commit/8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/blob/main/README.md",
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/commit/8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8"
         ]
       },
       "roadmap": {
@@ -5284,7 +5286,7 @@
           "Define acceptance checkpoints and exact-SHA evidence requirements"
         ],
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-oracle/commit/8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/commit/8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8"
         ]
       },
       "components": {
@@ -5295,7 +5297,7 @@
         "source_tree_enumeration_status": "NOT_ENUMERATED",
         "completeness_status": "README_ONLY_NOT_EXHAUSTIVE",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-oracle/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "External-data/oracle service (archived reference)"
@@ -5310,7 +5312,7 @@
         "interface_inventory_status": "NOT_ENUMERATED",
         "completeness_status": "NO_FUNCTION_COMPLETENESS_CLAIM",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-oracle/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "External-data/oracle service (archived reference)"
@@ -5335,7 +5337,7 @@
         "items": [
           {
             "id": "TODO-REPO-AUDIT-ATC-ORACLE",
-            "target_repo": "A-TownChain-Okosystems/atc-oracle",
+            "target_repo": "A-TownChain-Okosystems/a-townchain (components/oracle)",
             "priority": "P2",
             "status": "RESIDUAL",
             "issue_url": null,
@@ -5355,10 +5357,10 @@
       "audit_scope": "CENSUS_AND_README_ONLY",
       "source_evidence": {
         "head_sha": "8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-oracle/commit/8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/commit/8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8",
         "readme_available": true,
         "readme_blob_sha": "9d9b9bce47b4b4f041b4061b19b4f09aabc279ab",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-oracle/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/oracle)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
@@ -5374,7 +5376,7 @@
     },
     {
       "id": "RPLAN-ATC-STORAGE",
-      "repository": "A-TownChain-Okosystems/atc-storage",
+      "repository": "A-TownChain-Okosystems/a-townchain (components/storage)",
       "status": "RESIDUAL",
       "priority": "P2",
       "repository_state": "ARCHIVED",
@@ -5387,12 +5389,12 @@
         ],
         "readme_available": true,
         "readme_blob_sha": "7769915aefa5b01858a5a2ded8166e2e1958e7f7",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-storage/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/blob/main/README.md",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-storage/blob/main/README.md",
-          "https://github.com/A-TownChain-Okosystems/atc-storage/commit/230746c1dc5e4c1355c2707368de50d6c1008660"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/blob/main/README.md",
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/commit/230746c1dc5e4c1355c2707368de50d6c1008660"
         ]
       },
       "roadmap": {
@@ -5418,7 +5420,7 @@
           "Define acceptance checkpoints and exact-SHA evidence requirements"
         ],
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-storage/commit/230746c1dc5e4c1355c2707368de50d6c1008660"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/commit/230746c1dc5e4c1355c2707368de50d6c1008660"
         ]
       },
       "components": {
@@ -5429,7 +5431,7 @@
         "source_tree_enumeration_status": "NOT_ENUMERATED",
         "completeness_status": "README_ONLY_NOT_EXHAUSTIVE",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-storage/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Decentralized storage for assets and metadata (archived reference)"
@@ -5444,7 +5446,7 @@
         "interface_inventory_status": "NOT_ENUMERATED",
         "completeness_status": "NO_FUNCTION_COMPLETENESS_CLAIM",
         "evidence_refs": [
-          "https://github.com/A-TownChain-Okosystems/atc-storage/blob/main/README.md"
+          "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/blob/main/README.md"
         ],
         "observed_capabilities": [
           "Decentralized storage for assets and metadata (archived reference)"
@@ -5469,7 +5471,7 @@
         "items": [
           {
             "id": "TODO-REPO-AUDIT-ATC-STORAGE",
-            "target_repo": "A-TownChain-Okosystems/atc-storage",
+            "target_repo": "A-TownChain-Okosystems/a-townchain (components/storage)",
             "priority": "P2",
             "status": "RESIDUAL",
             "issue_url": null,
@@ -5489,10 +5491,10 @@
       "audit_scope": "CENSUS_AND_README_ONLY",
       "source_evidence": {
         "head_sha": "230746c1dc5e4c1355c2707368de50d6c1008660",
-        "head_url": "https://github.com/A-TownChain-Okosystems/atc-storage/commit/230746c1dc5e4c1355c2707368de50d6c1008660",
+        "head_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/commit/230746c1dc5e4c1355c2707368de50d6c1008660",
         "readme_available": true,
         "readme_blob_sha": "7769915aefa5b01858a5a2ded8166e2e1958e7f7",
-        "readme_url": "https://github.com/A-TownChain-Okosystems/atc-storage/blob/main/README.md",
+        "readme_url": "https://github.com/A-TownChain-Okosystems/a-townchain (components/storage)/blob/main/README.md",
         "readme_checked_at": "2026-10-11T20:51:36Z",
         "docs_directory_status": "NOT_ENUMERATED",
         "wiki_status": "UNKNOWN_NOT_CHECKED",

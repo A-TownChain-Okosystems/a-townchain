@@ -53,6 +53,20 @@
 | [aurora-ai](https://github.com/A-TownChain-Okosystems/aurora-ai) | AI-Produkt: Rust Core + Python AI-Layer (AD-021) | ✅ vault-restauriert (6 Module) |
 | [genesis-engine](https://github.com/A-TownChain-Okosystems/genesis-engine) | Game-Engine-Produkt (L6) | ✅ vault-restauriert |
 
+### Kanonische Orte seit der Konsolidierung (08.11.2026, SCR-0127)
+
+Die Repos in den folgenden Tabellen sind aufgeloest oder archiviert; ihre Inhalte liegen im Monorepo `a-townchain`. Die Tabelle bleibt als Historie stehen, massgeblich sind diese Pfade:
+
+| Faehigkeit | Kanonischer Ort |
+|---|---|
+| Node, Algorithm, VM, Contracts, SDK, ZKP, System, Exec-Admission, Update-Authority | `components/<name>` |
+| Explorer, Indexer, Interop, Mining, Oracle, Storage, Wallet | `components/<name>` |
+| Toolchain, Engineering | `tooling/atc-toolchain`, `tooling/atc-engineering` |
+| Control Plane, Integration | `ecosystem/control-plane`, `ecosystem/integration` |
+| ATCLang, Genesis-Bestaende | `ai/atclang`, `ai/genesis-*` |
+| Standards | `standards/` |
+| Dokumentation | `docs/` |
+
 ### Vertikale Repos (14, AD-024)
 
 | Repo | Priorität | Inhalt | Status |

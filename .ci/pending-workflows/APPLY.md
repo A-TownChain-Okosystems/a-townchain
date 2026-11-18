@@ -38,3 +38,9 @@ Regelsatz, Ruff-Version (0.16.7) und Policy-SHA bleiben unveraendert.
 - **codeql.yml**: `init` ruft `codeql-config.yml` nicht auf, deshalb greift
   `paths-ignore: docs/os-docs` nicht und CodeQL meldet 59 Befunde aus dem
   importierten Snapshot. Patch ergaenzt `config-file`.
+
+## Neu: quality-gates.yml (SCR-0147)
+
+Fuehrt Ebene 1 bis 3 ueber `tools/quality/atc_quality.py` aus und legt den
+SHA-gebundenen Bericht als Artefakt ab. Braucht wie die uebrigen Patches
+`workflow`-Scope.
