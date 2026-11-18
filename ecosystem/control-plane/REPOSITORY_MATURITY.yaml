@@ -3,7 +3,7 @@
 # Stufen: ARCHIVED < SPEC_ONLY < IMPLEMENTED < TESTED < CI_VERIFIED < E2E_VERIFIED < VERIFIED
 # Kein Aufstieg ohne Nachweis: CI_VERIFIED nur bei 0 Fehl-Checks am exakten HEAD.
 schema_version: '1.0.0'
-generated_at: '2026-11-18T11:34:40Z'
+generated_at: '2026-11-18T11:53:15Z'
 organization: A-TownChain-Okosystems
 summary:
   repositories_total: 33
@@ -43,8 +43,10 @@ repositories:
     maturity_level: IMPLEMENTED
     e2e_status: NOT_VERIFIED
     open_blockers:
-      - "6 von 15 Checks am main-HEAD rot (markdownlint, ruff, npm-tests, pytest, quality, determinism) — Fix liegt in PR #116"
-      - ">=100 offene Dependabot-Alerts (API-Deckel), ueberwiegend aus Konsolidierungsimporten"
+      - "main-HEAD rot (6/15); PR #116 stabilisiert auf 18/22 gruene Checks"
+      - "2 Gate-Familien offen: markdownlint (118.427 Findings) und Org-Ruff (4.908) — ausschliesslich importierte Doku, Scope-Entscheidung offen"
+      - "CodeQL: 30 Findings (26 in docs/, u. a. mktemp, XSS, 0.0.0.0-Bind) — Security-Triage ausstehend"
+      - ">=184 offene Dependabot-Fundstellen (unique 98), ueberwiegend Konsolidierungsimporte"
     evidence_refs:
       - "docs/audits/TECHNICAL_MATURITY-REPORT-2026-11-18.md"
       - "PR #116"

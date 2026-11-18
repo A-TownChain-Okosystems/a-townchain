@@ -148,8 +148,10 @@ def check_summary(repo: str, sha: str) -> dict:
 
 BLOCKERS = {
     "a-townchain": [
-        "6 von 15 Checks am main-HEAD rot (markdownlint, ruff, npm-tests, pytest, quality, determinism) — Fix liegt in PR #116",
-        ">=100 offene Dependabot-Alerts (API-Deckel), ueberwiegend aus Konsolidierungsimporten",
+        "main-HEAD rot (6/15); PR #116 stabilisiert auf 18/22 gruene Checks",
+        "2 Gate-Familien offen: markdownlint (118.427 Findings) und Org-Ruff (4.908) — ausschliesslich importierte Doku, Scope-Entscheidung offen",
+        "CodeQL: 30 Findings (26 in docs/, u. a. mktemp, XSS, 0.0.0.0-Bind) — Security-Triage ausstehend",
+        ">=184 offene Dependabot-Fundstellen (unique 98), ueberwiegend Konsolidierungsimporte",
     ],
     "atc-node": [
         "keine Testsuite",
