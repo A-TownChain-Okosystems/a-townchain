@@ -1,5 +1,4 @@
-import pytest
-
+import pytest  # noqa: I001 — Org-Policy gruppiert gff als Third-Party
 from gff.dao import FranchiseStatus, FranchiseVault, RoyaltyTier
 
 

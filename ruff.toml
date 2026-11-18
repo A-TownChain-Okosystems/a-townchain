@@ -10,11 +10,16 @@ target-version = "py311"
 # Zeilenlänge wie Org-Policy (hub ruff.toml), damit beide Gates identisch formatieren.
 line-length = 100
 
+exclude = ["docs", "target", ".venv", "node_modules", "__pycache__"]
+
 [lint]
 # Regelprofil wie die Org-Policy (ATC-STD-081/082)
 select = ["E4", "E7", "E9", "F", "I", "W"]
 ignore = ["E501"]
-exclude = ["docs", "target", ".venv", "node_modules", "__pycache__"]
+
+[lint.isort]
+# Wie die Org-Policy: gff ist kein First-Party-Modul des Root-Scans.
+known-third-party = ["gff"]
 
 [lint.per-file-ignores]
 # N999: etablierte Paketpfade mit Bindestrich (modules/atc-blockchain/...)

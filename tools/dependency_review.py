@@ -8,17 +8,18 @@ dependency version. The gate fails closed on malformed manifests or OSV
 transport errors.
 """
 
-from __future__ import annotations
+from __future__ import annotations  # noqa: I001 — Org-Policy gruppiert gff als Third-Party
 
 import argparse
 import json
 import re
 import subprocess
 import sys
-import tomllib
 import urllib.error
 import urllib.request
 from pathlib import Path
+
+import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_NAMES = {
