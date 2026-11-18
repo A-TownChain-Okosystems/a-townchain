@@ -378,10 +378,13 @@ def advisory_matches(n, ad):
 
 
 _EXPECTED_BASE_UNPINNED_RE = re.compile(
-    # Negierte Zeichenklassen statt ".+": verhindert exponentielles Backtracking (CodeQL py/redos)
+    # Kein Backtracking: Segmentklasse schliesst Trennzeichen UND Operatoren aus.
+    # Sonst kann "[^;\s]+" Komma und Vergleichsoperator mitfressen, die
+    # Wiederholung wird mehrdeutig und die Laufzeit exponentiell
+    # (CodeQL py/redos, Alert #38).
     r"^(?:[^\r\n]*[\\/])?requirements(?:-[^/\r\n]+)?\.txt:\d+: "
     r"unpinned/unsupported requirement: "
-    r"[A-Za-z0-9_.-]+(?:[<>=!~]=?[^;\s]+(?:,[<>=!~]=?[^;\s]+)*)?$"
+    r"[A-Za-z0-9_.-]+(?:[<>=!~]=?[^;,\s<>=!~]+(?:,[<>=!~]=?[^;,\s<>=!~]+)*)?$"
 )
 
 
