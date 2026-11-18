@@ -159,9 +159,7 @@ def main():
     allow_any = [(e["file"], e.get("pattern", "")) for e in allow if e.get("line") == 0]
     unallowed, allowed = [], []
     for f, ln, desc in findings:
-        hit = (f, ln) in allow_keys or any(
-            f == af and pat and pat in desc for af, pat in allow_any
-        )
+        hit = (f, ln) in allow_keys or any(f == af and pat and pat in desc for af, pat in allow_any)
         (allowed if hit else unallowed).append((f, ln, desc))
     for f, ln, desc in allowed:
         print(f"  ALLOWED {f}:{ln}: {desc} (reviewte Begründung in {ALLOWLIST_FILE})")
