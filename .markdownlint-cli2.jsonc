@@ -25,6 +25,17 @@
   // aufgeloesten Docs-Repos, SCR-0127) und .org-github-policy (zur Laufzeit
   // geklonte Org-Policy, nicht Inhalt dieses Repositories). Beide werden von
   // ihren Eigentuemern gepflegt; Befunde dort sind keine Fehler dieses Repos.
-  "ignores": ["docs/os-docs/**", ".org-github-policy/**"],
+  // ai/, apps/, components/, kernel/ und modules/ sind importierte Modul- und
+  // App-Bestaende (SCR-0127-Konsolidierung). Sie werden gebaut, aber ihre
+  // Dokumentation ist nicht der Dokumentationsbestand dieses Repositories.
+  "ignores": [
+    "docs/os-docs/**",
+    ".org-github-policy/**",
+    "ai/**",
+    "apps/**",
+    "components/**",
+    "kernel/**",
+    "modules/**"
+  ],
   "noProgress": true
 }
