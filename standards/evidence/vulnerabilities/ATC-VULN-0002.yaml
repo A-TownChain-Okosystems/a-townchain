@@ -1,0 +1,24 @@
+# ATC-VULN-Record nach ATC-STD-020 Paragraf 8 (ATC-GATE-SEC-001 Paragraf 4, Evidence Store)
+id: ATC-VULN-0002
+source: "Dependabot-Alerts (next, dompurify, proxy-addr, vitest) im importierten Snapshot"
+type: "Abhaengigkeitsschwachstellen in nicht gebautem Dokumentationsbestand"
+affected_component: "docs/os-docs/docs/archive/monorepo-full/src/modules/*"
+affected_versions: "Stand des Snapshots (2025/2026)"
+severity: HIGH
+exploitability: "keine: der Snapshot wird nicht installiert, nicht gebaut und nicht ausgeliefert"
+impact: "keiner auf Laufzeit oder Release-Artefakte; Risiko besteht ausschliesslich bei lokalem npm install im Archivpfad"
+exposure: intern
+mitigation: >-
+  Sechs kritische Alerts im Archivpfad wurden am 2026-11-18 als not_used
+  dismissed, jeweils mit Verweis auf diesen Record. Die lebenden Pendants
+  (apps/atc-explorer, apps/atc-indexer/modules/atc-analytics, components/explorer)
+  sind real gepatcht: next 16.4.6, handlebars 4.7.10, proxy-addr 2.0.8,
+  source-map-js 1.2.2, sharp 0.35.5. Ein Massen-Update des importierten
+  Bestands wurde per Owner-Entscheid abgelehnt (Linter-Scope, SCR-0146).
+patch: "nicht vorgesehen: Bestand bleibt als historischer Snapshot unveraendert"
+verification: "npm audit --omit=dev = 0 in allen fuenf lebenden Paketen; Dismiss-Kommentar an jedem Alert"
+regression_test: "nicht anwendbar (kein Build im Archivpfad)"
+status: MITIGATED
+disclosure: "oeffentliche Advisories"
+detected_at: "2026-11-18"
+patched_at: null
