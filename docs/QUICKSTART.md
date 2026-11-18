@@ -1,16 +1,16 @@
 ---
 title: Quickstart
-summary: In zehn Minuten vom Klon zum laufenden ATC-Devnet mit beantwortetem RPC.
+summary: In zehn Minuten vom Klon zum laufenden ATC-Devnet mit finalisierenden Bloecken.
 ---
 
 # Quickstart
 
-Ziel: ein laufender Devnet-Node, der auf RPC antwortet. Kein Mainnet, keine Validator-Keys, kein Docker-Zwang.
+Ziel: ein laufender Devnet-Node, der Bloecke finalisiert und auf RPC antwortet. Kein Mainnet, keine Validator-Keys, kein Docker-Zwang.
 
 ## Voraussetzungen
 
 - Rust (stable) über [rustup](https://rustup.rs)
-- Python 3.11 oder neuer
+- Python 3.11 oder neuer (für die Prüfskripte)
 - Optional: Docker für den Compose-Weg
 
 ## Weg 1: lokal
@@ -26,11 +26,15 @@ cd a-townchain
 Erwartete Ausgabe des Smoke-Tests:
 
 ```text
-  ✓ ping        {"jsonrpc":"2.0","id":1,"result":"pong"}
-  ✓ chain_id    {"jsonrpc":"2.0","id":1,"result":"atc"}
-  ✓ boot_hash   {"jsonrpc":"2.0","id":1,"result":"..."}
-  ✓ peers       {"jsonrpc":"2.0","id":1,"result":"2"}
-PASS — Node antwortet korrekt.
+  ✓ ping       pong
+  ✓ chain_id   atc
+  ✓ boot_hash  ...
+  ✓ peers      2
+  ✓ did_count  0
+  ✓ height     2
+  ✓ finalisiert Hoehe 2
+  ✓ consensus  height=2 rounds=2 validators=3 quorum=2
+PASS — Node antwortet, Konsens finalisiert.
 ```
 
 Drei Nodes statt einem: `./start.sh --nodes 3`. Beenden mit `./start.sh stop`, Zustand mit `./start.sh status`.
@@ -48,23 +52,24 @@ Drei Nodes, RPC auf 39471, 39481 und 39491.
 Der Node spricht zeilenweise JSON-RPC auf der RPC-Adresse:
 
 ```bash
-printf '{"jsonrpc":"2.0","method":"chain_id","id":1}\n' | nc 127.0.0.1 39471
+printf '{"jsonrpc":"2.0","method":"consensus","id":1}\n' | nc 127.0.0.1 39471
 ```
 
-Methoden: `ping`, `chain_id`, `boot_hash`, `peers`.
+Methoden: `ping`, `chain_id`, `boot_hash`, `peers`, `height`, `consensus`, `did_count`, `did_epoch`.
 
 ## Was das Devnet heute kann
 
 - Genesis-Boot mit Peer-Tabelle und deterministischem Boot-Hash
-- Chain-State mit Höhe und Best-Hash
-- RPC-Abfragen zu Chain-ID, Boot-Hash und Peer-Anzahl
+- Konsens-Loop mit drei Validatoren, 2/3-Quorum und Finalisierung im Zwei-Sekunden-Takt
+- Chain-State mit Höhe, Best-Hash und vollständiger Kettenprüfung
+- DID-Registry mit Epochenzähler
 - Pull-Sync über den Gossip-Dienst
 
 ## Was es noch nicht kann
 
-- Blockproduktion und Konsens
-- Transaktionen, Konten, Balances
+- Persistenz: nach einem Neustart beginnt die Kette wieder bei Höhe 0
+- Transaktions-Eingang über RPC: der Mempool existiert, die Ingress-Schnittstelle fehlt
+- Vote-Austausch zwischen Maschinen (der Konsens läuft derzeit in einem Prozess)
 - TLS, Authentisierung, Rate-Limits
-- Persistenz über Neustart
 
 Diese Grenzen sind bewusst dokumentiert. Wer mehr erwartet, wird enttäuscht, und das wäre nicht ehrlich.

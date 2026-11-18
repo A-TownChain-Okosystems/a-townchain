@@ -20,10 +20,20 @@
   Verweis auf ein Python-Skript (`modules/atcnet/node.py`) zeigte auf einen Pfad, den
   es nicht mehr gibt.
 
+### Fixed
+
+- `apps/atc-node` ist per P1d-A stillgelegt und war nicht Workspace-Mitglied; der
+  Build zeigt auf die kanonische Implementierung `components/node`. Die Skripte
+  sprechen jetzt deren RPC-Vertrag (`height`, `consensus`, `did_count`), nicht den
+  einer Parallelkopie.
+
 ### Verified
 
-- `cargo build --release -p atc-node`: gruen (38,95 s).
-- Drei Nodes gestartet, `smoke.sh`: PASS (`chain_id atc`, `peers 2`).
+- `cargo build --release -p atc-node`: gruen.
+- `cargo test --release -p atc-node`: 70 + 5 + 11 + 3 + 8 Tests gruen, inklusive
+  Waechter `keine_zweite_adoptionsstelle_im_repo`.
+- `tools/devnet/e2e.sh`: PASS — Hoehe 0, dann 2 nach Finalisierung,
+  `consensus height=2 rounds=2 validators=3 quorum=2`, Neustart sauber.
 
 ## [Unreleased] — 2026-11-11
 

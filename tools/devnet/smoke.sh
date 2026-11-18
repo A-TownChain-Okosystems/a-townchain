@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Devnet-Smoke-Test (SCR-0147 / G2-Vorstufe): prueft, dass ein laufender Node
-# die drei Kernfragen beantwortet und die Antworten plausibel sind.
-# Exit 0 = Devnet antwortet korrekt. Exit 1 = Befund.
+# Devnet-Smoke-Test (SCR-0147): prueft, dass der laufende Node antwortet und
+# der Konsens-Loop tatsaechlich Bloecke finalisiert.
+# Exit 0 = alles belegt. Exit 1 = Befund.
 set -uo pipefail
 PORT="${1:-39471}"
 
@@ -17,22 +17,45 @@ except Exception as e:
     print("FEHLER:", e); sys.exit(1)
 PY
 }
+val() { rpc "$1" | sed -n 's/.*"result":"\([^"]*\)".*/\1/p'; }
 
 fail=0
-check() { # check <methode> <erwartung-regex> <label>
-  out="$(rpc "$2")"
-  if printf '%s' "$out" | grep -Eq "$3"; then
-    printf '  ✓ %-12s %s\n' "$1" "$out"
+check() { # check <methode> <regex> <label>
+  out="$(val "$1")"
+  if printf '%s' "$out" | grep -Eq "$2"; then
+    printf '  ✓ %-10s %s\n' "$1" "$out"
   else
-    printf '  ✗ %-12s %s\n' "$1" "$out"; fail=1
+    printf '  ✗ %-10s %s\n' "$1" "$out"; fail=1
   fi
 }
 
 echo "Devnet-Smoke auf 127.0.0.1:$PORT"
-check ping      ping      '"result":"pong"'
-check chain_id  chain_id  '"result":"atc"'
-check boot_hash boot_hash '"result":"[0-9a-f]{8,}"'
-check peers     peers     '"result":"[0-9]+"'
+check ping      '^pong$'        "Node antwortet"
+check chain_id  '^atc$'         "Chain-Identitaet"
+check boot_hash '^[0-9a-f]{8,}$' "Genesis-Bindung"
+check peers     '^[0-9]+$'      "Peer-Tabelle"
+check did_count '^[0-9]+$'      "DID-Registry"
+check height    '^[0-9]+$'      "Konsens-Hoehe"
 
-if [ "$fail" -eq 0 ]; then echo "PASS — Node antwortet korrekt."; else echo "FAIL — siehe oben."; fi
+# Konsens braucht Runden: warte bis mindestens ein Block finalisiert ist.
+h="$(val height)"
+for _ in $(seq 1 20); do
+  [ "${h:-0}" -ge 1 ] && break
+  sleep 0.5
+  h="$(val height)"
+done
+if [ "${h:-0}" -ge 1 ]; then
+  printf '  ✓ %-10s %s\n' "finalisiert" "Hoehe $h"
+else
+  printf '  ✗ %-10s %s\n' "finalisiert" "Hoehe bleibt 0"; fail=1
+fi
+
+c="$(val consensus)"
+if printf '%s' "$c" | grep -Eq 'rounds=[1-9]'; then
+  printf '  ✓ %-10s %s\n' "consensus" "$c"
+else
+  printf '  ✗ %-10s %s\n' "consensus" "$c"; fail=1
+fi
+
+if [ "$fail" -eq 0 ]; then echo "PASS — Node antwortet, Konsens finalisiert."; else echo "FAIL — siehe oben."; fi
 exit "$fail"

@@ -139,7 +139,8 @@ Devnet starten und pruefen:
 ```bash
 ./start.sh              # ein Node, RPC auf 127.0.0.1:39471
 ./start.sh --nodes 3    # drei Nodes (RPC 39471, 39481, 39491)
-./tools/devnet/smoke.sh # prueft ping, chain_id, boot_hash, peers
+./tools/devnet/smoke.sh # prueft RPC und ob der Konsens Bloecke finalisiert
+./tools/devnet/e2e.sh   # beweist Finalisierung und Neustart
 ./start.sh stop
 ```
 
