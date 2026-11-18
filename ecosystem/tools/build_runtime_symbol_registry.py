@@ -16,6 +16,7 @@ Ids are content-derived (SHA-256 over repository|source_path|kind|symbol) and
 therefore stable across registry rebuilds. Lexical discovery is not a
 function contract: runtime entries remain pending functional review.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,24 +27,37 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 ARCHIVED_REPOSITORIES = {
-    "atc-wallet", "atc-explorer", "atc-indexer", "atc-mining",
-    "atc-interop", "atc-oracle", "atc-storage",
+    "atc-wallet",
+    "atc-explorer",
+    "atc-indexer",
+    "atc-mining",
+    "atc-interop",
+    "atc-oracle",
+    "atc-storage",
 }
 UMBRELLA_REPO = "a-townchain-ecosystem"
-RUNTIME_KINDS = {"function": "RUNTIME_FUNCTION_PENDING_FUNCTIONAL_REVIEW",
-                "type": "RUNTIME_TYPE_PENDING_FUNCTIONAL_REVIEW",
-                "value": "RUNTIME_VALUE_PENDING_FUNCTIONAL_REVIEW",
-                "macro": "RUNTIME_MACRO_PENDING_FUNCTIONAL_REVIEW"}
+RUNTIME_KINDS = {
+    "function": "RUNTIME_FUNCTION_PENDING_FUNCTIONAL_REVIEW",
+    "type": "RUNTIME_TYPE_PENDING_FUNCTIONAL_REVIEW",
+    "value": "RUNTIME_VALUE_PENDING_FUNCTIONAL_REVIEW",
+    "macro": "RUNTIME_MACRO_PENDING_FUNCTIONAL_REVIEW",
+}
 
 
 def classify_path(path: str) -> str:
     p = path.lower()
     if "/archive/" in p or "archiv" in p:
         return "archive"
-    if ("/test" in p or p.startswith("tests/") or "/tests/" in p
-            or "test_" in p.rsplit("/", 1)[-1]
-            or p.rsplit("/", 1)[-1].endswith("_test.rs")
-            or "/__tests__/" in p or ".spec." in p or ".test." in p):
+    if (
+        "/test" in p
+        or p.startswith("tests/")
+        or "/tests/" in p
+        or "test_" in p.rsplit("/", 1)[-1]
+        or p.rsplit("/", 1)[-1].endswith("_test.rs")
+        or "/__tests__/" in p
+        or ".spec." in p
+        or ".test." in p
+    ):
         return "test"
     if "/docs/" in p or p.startswith("docs/") or p.endswith(".md"):
         return "docs"
@@ -59,7 +73,9 @@ def classify_path(path: str) -> str:
 
 
 def runtime_id(repository: str, source_path: str, kind: str, symbol: str) -> str:
-    digest = hashlib.sha256(f"{repository}|{source_path}|{kind}|{symbol}".encode("utf-8")).hexdigest()
+    digest = hashlib.sha256(
+        f"{repository}|{source_path}|{kind}|{symbol}".encode()
+    ).hexdigest()
     return f"RTS-{digest[:12]}"
 
 
@@ -73,25 +89,42 @@ def catalog_bindings(catalog: dict) -> tuple[set, list, list, list]:
         for function in component.get("functions", []):
             binding = function.get("source_binding") or {}
             if binding.get("delegates_to_function_id"):
-                delegated.append({"function_id": function["id"],
-                                  "delegates_to_function_id": binding["delegates_to_function_id"]})
+                delegated.append(
+                    {
+                        "function_id": function["id"],
+                        "delegates_to_function_id": binding["delegates_to_function_id"],
+                    }
+                )
                 continue
             path = binding.get("source_path")
             symbol = binding.get("symbol_or_entrypoint")
             if path and symbol:
                 bound.setdefault((repo, path, symbol), []).append(function["id"])
-    duplicate_fn_ids = [fid for fid, n in Counter(
-        function["id"] for component in catalog.get("components", [])
-        for function in component.get("functions", [])).items() if n > 1]
-    duplicates = [{"repository": repo, "source_path": path, "symbol": symbol, "function_ids": ids}
-                  for (repo, path, symbol), ids in bound.items() if len(ids) > 1]
+    duplicate_fn_ids = [
+        fid
+        for fid, n in Counter(
+            function["id"]
+            for component in catalog.get("components", [])
+            for function in component.get("functions", [])
+        ).items()
+        if n > 1
+    ]
+    duplicates = [
+        {"repository": repo, "source_path": path, "symbol": symbol, "function_ids": ids}
+        for (repo, path, symbol), ids in bound.items()
+        if len(ids) > 1
+    ]
     bound_keys = set(bound)
     return bound_keys, duplicates, delegated, duplicate_fn_ids
 
 
 def build_registry(census: dict, catalog: dict, build_manifest: dict) -> dict:
-    bound_keys, duplicate_bindings, delegated_bindings, duplicate_fn_ids = catalog_bindings(catalog)
-    manifest_by_repo = {entry.get("repo"): entry for entry in build_manifest.get("repos", [])}
+    bound_keys, duplicate_bindings, delegated_bindings, duplicate_fn_ids = (
+        catalog_bindings(catalog)
+    )
+    manifest_by_repo = {
+        entry.get("repo"): entry for entry in build_manifest.get("repos", [])
+    }
     quellrepo_canonical = {}
     for repo, entry in manifest_by_repo.items():
         if entry.get("status") == "CANONICAL_ELSEWHERE":
@@ -114,10 +147,15 @@ def build_registry(census: dict, catalog: dict, build_manifest: dict) -> dict:
                 key = (repository, file.get("path", ""), symbol.get("name", ""))
                 if key in bound_keys:
                     classification = "BOUND_TO_CATALOG_FUNCTION"
-                elif name == UMBRELLA_REPO and file.get("path", "").startswith("components/"):
+                elif name == UMBRELLA_REPO and file.get("path", "").startswith(
+                    "components/"
+                ):
                     sub = file.get("path", "").split("/")[1]
-                    classification = ("MIRRORED_ARCHIVED_COMPONENT" if sub in ARCHIVED_REPOSITORIES
-                                      else "MIRRORED_REFERENCE_NON_SSOT")
+                    classification = (
+                        "MIRRORED_ARCHIVED_COMPONENT"
+                        if sub in ARCHIVED_REPOSITORIES
+                        else "MIRRORED_REFERENCE_NON_SSOT"
+                    )
                 elif path_class != "source":
                     classification = f"EXCLUDED_{path_class.upper()}"
                 else:
@@ -130,26 +168,42 @@ def build_registry(census: dict, catalog: dict, build_manifest: dict) -> dict:
                 per_kind[kind] += 1
                 ssot = None
                 if name in quellrepo_canonical:
-                    ssot = {"finding": "QUERLREPO_REFERENCE_NON_SSOT",
-                            "canonical_source_path": quellrepo_canonical[name],
-                            "policy": "quellrepo is reference/verification only per build manifest"}
-                entries.append({
-                    "id": runtime_id(repository, file.get("path", ""), kind, symbol.get("name", "")),
-                    "repository": repository,
-                    "source_path": file.get("path", ""),
-                    "language": file.get("language"),
-                    "kind": kind,
-                    "symbol": symbol.get("name", ""),
-                    "file_sha256": file.get("file_sha256"),
-                    "census_source_sha": repository_entry.get("source_sha"),
-                    "status": RUNTIME_KINDS.get(kind, "RUNTIME_SYMBOL_PENDING_FUNCTIONAL_REVIEW"),
-                    "ssot": ssot,
-                })
+                    ssot = {
+                        "finding": "QUERLREPO_REFERENCE_NON_SSOT",
+                        "canonical_source_path": quellrepo_canonical[name],
+                        "policy": "quellrepo is reference/verification only per build manifest",
+                    }
+                entries.append(
+                    {
+                        "id": runtime_id(
+                            repository,
+                            file.get("path", ""),
+                            kind,
+                            symbol.get("name", ""),
+                        ),
+                        "repository": repository,
+                        "source_path": file.get("path", ""),
+                        "language": file.get("language"),
+                        "kind": kind,
+                        "symbol": symbol.get("name", ""),
+                        "file_sha256": file.get("file_sha256"),
+                        "census_source_sha": repository_entry.get("source_sha"),
+                        "status": RUNTIME_KINDS.get(
+                            kind, "RUNTIME_SYMBOL_PENDING_FUNCTIONAL_REVIEW"
+                        ),
+                        "ssot": ssot,
+                    }
+                )
 
     entries.sort(key=lambda e: (e["repository"], e["source_path"], e["symbol"]))
     id_counts = Counter(entry["id"] for entry in entries)
     registry_duplicate_ids = sorted(fid for fid, n in id_counts.items() if n > 1)
-    blocking = census.get("status") == "BLOCKED" or duplicate_fn_ids or duplicate_bindings or registry_duplicate_ids
+    blocking = (
+        census.get("status") == "BLOCKED"
+        or duplicate_fn_ids
+        or duplicate_bindings
+        or registry_duplicate_ids
+    )
     return {
         "schema_id": "ATC-RUNTIME-SYMBOL-REGISTRY-001",
         "schema_version": "1.0.0",
@@ -160,13 +214,25 @@ def build_registry(census: dict, catalog: dict, build_manifest: dict) -> dict:
         "functional_verification": "NOT_PERFORMED",
         "summary": {
             "candidate_symbols_total": sum(classification_counts.values()),
-            "bound_to_catalog_functions": classification_counts["BOUND_TO_CATALOG_FUNCTION"],
+            "bound_to_catalog_functions": classification_counts[
+                "BOUND_TO_CATALOG_FUNCTION"
+            ],
             "runtime_registry_entries": len(entries),
             "runtime_entries_by_kind": dict(per_kind),
-            "mirrored_reference_non_ssot": classification_counts["MIRRORED_REFERENCE_NON_SSOT"],
-            "mirrored_archived_component": classification_counts["MIRRORED_ARCHIVED_COMPONENT"],
-            "exclusions": {k: v for k, v in sorted(classification_counts.items()) if k.startswith("EXCLUDED_")},
-            "per_repository": {repo: dict(counts) for repo, counts in sorted(per_repo.items())},
+            "mirrored_reference_non_ssot": classification_counts[
+                "MIRRORED_REFERENCE_NON_SSOT"
+            ],
+            "mirrored_archived_component": classification_counts[
+                "MIRRORED_ARCHIVED_COMPONENT"
+            ],
+            "exclusions": {
+                k: v
+                for k, v in sorted(classification_counts.items())
+                if k.startswith("EXCLUDED_")
+            },
+            "per_repository": {
+                repo: dict(counts) for repo, counts in sorted(per_repo.items())
+            },
         },
         "catalog_duplicate_findings": {
             "duplicate_function_ids": duplicate_fn_ids,
@@ -202,8 +268,14 @@ def main() -> int:
         parser.error("unexpected build manifest schema")
     registry = build_registry(census, catalog, manifest)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(registry, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(json.dumps({"status": registry["status"], **registry["summary"]}, sort_keys=True)[:2000])
+    args.output.write_text(
+        json.dumps(registry, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {"status": registry["status"], **registry["summary"]}, sort_keys=True
+        )[:2000]
+    )
     return 0 if registry["status"] == "RESIDUAL" else 2
 
 

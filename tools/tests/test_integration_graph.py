@@ -14,10 +14,22 @@ from pathlib import Path
 TOOL = Path(__file__).resolve().parents[1] / "integration_graph.py"
 
 
-def manifest(root: Path, rel: str, name: str, deps: dict[str, str] | None = None, dev: dict[str, str] | None = None):
+def manifest(
+    root: Path,
+    rel: str,
+    name: str,
+    deps: dict[str, str] | None = None,
+    dev: dict[str, str] | None = None,
+):
     d = root / rel
     d.mkdir(parents=True, exist_ok=True)
-    lines = ["[package]", f'name = "{name}"', 'version = "0.1.0"', 'edition = "2021"', ""]
+    lines = [
+        "[package]",
+        f'name = "{name}"',
+        'version = "0.1.0"',
+        'edition = "2021"',
+        "",
+    ]
     if deps:
         lines.append("[dependencies]")
         for dep, path in deps.items():
@@ -36,7 +48,9 @@ def bridge(data: dict, bridge_id: str) -> dict:
 
 
 def run(*args: str) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(TOOL), *args], capture_output=True, text=True)
+    return subprocess.run(
+        [sys.executable, str(TOOL), *args], capture_output=True, text=True, check=False
+    )
 
 
 def test_kante_und_insel():
@@ -51,7 +65,10 @@ def test_kante_und_insel():
         data = json.loads(r.stdout)
         assert data["crates"] == 2
         assert len(data["edges"]) == 1
-        assert data["edges"][0]["from"] == "crate-b" and data["edges"][0]["to"] == "crate-a"
+        assert (
+            data["edges"][0]["from"] == "crate-b"
+            and data["edges"][0]["to"] == "crate-a"
+        )
         # Insel = kein eingehender Verweis; crate-a hat einen, crate-b keinen.
         assert data["islands"] == ["crate-b"]
 
@@ -126,6 +143,7 @@ def test_doppelte_namen_werden_gemeldet():
         assert data["crates"] == 1  # Name gewinnt, Spiegel kollabiert
         assert "atc-wallet" in data["duplicate_names"]
 
+
 def test_b4_verlangt_bau_und_uebergabe(tmp_path):
     """B4 ist nur verbunden, wenn gebaut UND uebergeben wird, nicht bei Erwaehnung."""
     root = tmp_path / "repo"
@@ -133,7 +151,9 @@ def test_b4_verlangt_bau_und_uebergabe(tmp_path):
     (root / ".github" / "workflows").mkdir(parents=True)
     workflow = root / ".github" / "workflows" / "boot.yml"
     # Nur Erwaehnung des Pfads, kein Bau und keine Uebergabe:
-    workflow.write_text("run: ls modules/atc-shivacore/init_program\n", encoding="utf-8")
+    workflow.write_text(
+        "run: ls modules/atc-shivacore/init_program\n", encoding="utf-8"
+    )
     data = json.loads(run("--repo", str(root), "--json").stdout)
     assert bridge(data, "B4")["status"] == "OFFEN"
 

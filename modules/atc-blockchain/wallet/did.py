@@ -33,11 +33,15 @@ class DIDResolver:
         digest = hashlib.sha256(public_key.encode()).hexdigest()
         return f"did:kai:{digest}"
 
-    def register(self, public_key: str, capabilities: list[str] | None = None) -> DIDDocument:
+    def register(
+        self, public_key: str, capabilities: list[str] | None = None
+    ) -> DIDDocument:
         did = self.create_did(public_key)
         doc = self._registry.get(did)
         if doc is None:
-            doc = DIDDocument(did=did, public_key=public_key, capabilities=capabilities or [])
+            doc = DIDDocument(
+                did=did, public_key=public_key, capabilities=capabilities or []
+            )
             self._registry[did] = doc
             self._by_key[public_key] = did
         return doc
@@ -51,7 +55,9 @@ class DIDResolver:
             return False
         return doc.public_key == public_key
 
-    def update(self, did: str, capabilities: list[str] | None = None) -> DIDDocument | None:
+    def update(
+        self, did: str, capabilities: list[str] | None = None
+    ) -> DIDDocument | None:
         doc = self._registry.get(did)
         if doc is None:
             return None

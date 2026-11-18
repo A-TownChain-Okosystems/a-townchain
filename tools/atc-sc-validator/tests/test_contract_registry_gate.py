@@ -12,8 +12,6 @@ import importlib.util
 import sys
 from pathlib import Path
 
-import pytest
-
 TOOL = Path(__file__).resolve().parents[1] / "check_contract_registry.py"
 
 
@@ -28,7 +26,9 @@ def load_tool():
 GATE = load_tool()
 
 
-def make_tree(tmp_path: Path, *, status: str = "development", network=None, extra_entry: str = "") -> Path:
+def make_tree(
+    tmp_path: Path, *, status: str = "development", network=None, extra_entry: str = ""
+) -> Path:
     base = tmp_path / "apps/atc-contracts"
     base.mkdir(parents=True)
     src = base / "token.atc"
@@ -91,7 +91,7 @@ def test_sauberer_bestand_besteht():
 
 def test_a1_pflichtfeld_fehlt(tmp_path):
     reg = make_tree(tmp_path)
-    text = reg.read_text().replace('    owner: ATC-Governance\n', "")
+    text = reg.read_text().replace("    owner: ATC-Governance\n", "")
     reg.write_text(text)
     findings, _ = run(tmp_path, reg, deployments(tmp_path))
     assert "A1" in gates(findings)
@@ -107,7 +107,9 @@ def test_a2_pfad_existiert_nicht(tmp_path):
 
 def test_a3_drift_wird_erkannt(tmp_path):
     reg = make_tree(tmp_path)
-    (tmp_path / "apps/atc-contracts/token.atc").write_text("// geaendert\n", encoding="utf-8")
+    (tmp_path / "apps/atc-contracts/token.atc").write_text(
+        "// geaendert\n", encoding="utf-8"
+    )
     findings, _ = run(tmp_path, reg, deployments(tmp_path))
     assert "A3" in gates(findings)
     assert any("driftet" in f["detail"] for f in findings)
@@ -115,7 +117,9 @@ def test_a3_drift_wird_erkannt(tmp_path):
 
 def test_a4_waisenquelle_wird_gemeldet(tmp_path):
     reg = make_tree(tmp_path)
-    (tmp_path / "apps/atc-contracts/orphan.atc").write_text("// orphan\n", encoding="utf-8")
+    (tmp_path / "apps/atc-contracts/orphan.atc").write_text(
+        "// orphan\n", encoding="utf-8"
+    )
     findings, _ = run(tmp_path, reg, deployments(tmp_path))
     assert "A4" in gates(findings)
     assert any("orphan.atc" in f["detail"] for f in findings)
@@ -140,7 +144,10 @@ def test_a5_deployed_ohne_netz_und_record(tmp_path):
 
 def test_a5_deployed_mit_record_besteht(tmp_path):
     reg = make_tree(tmp_path, status="deployed", network="devnet")
-    deps = deployments(tmp_path, "deployments:\n  - contract_id: ATC-SC-TOKEN-001\n    network: devnet\n")
+    deps = deployments(
+        tmp_path,
+        "deployments:\n  - contract_id: ATC-SC-TOKEN-001\n    network: devnet\n",
+    )
     findings, _ = run(tmp_path, reg, deps)
     assert findings == [], f"unerwartet: {findings}"
 
@@ -210,7 +217,9 @@ def fake_atc_abi(tmp_path: Path, digest: str = ABI) -> Path:
     binary = tmp_path / "atc_abi"
     binary.write_text(
         "#!/bin/sh\n"
-        'if [ "$1" = "abi" ]; then printf \'%s  "%s"  1\\n\'; exit 0; fi\n'.replace("%s", digest, 1)
+        'if [ "$1" = "abi" ]; then printf \'%s  "%s"  1\\n\'; exit 0; fi\n'.replace(
+            "%s", digest, 1
+        )
         + "exit 0\n",
         encoding="utf-8",
     )
@@ -243,7 +252,8 @@ def test_a9_archivierter_eintrag_traegt_keine_abi(tmp_path):
     src.write_text("// ARCHIVED\n", encoding="utf-8")
     findings, _ = run(tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path))
     assert any(
-        f["gate"] == "A9" and "archivierter Eintrag traegt abi_sha256" in f["detail"] for f in findings
+        f["gate"] == "A9" and "archivierter Eintrag traegt abi_sha256" in f["detail"]
+        for f in findings
     )
 
 
@@ -251,6 +261,8 @@ def test_write_abis_zogen_hash_in_die_registry(tmp_path):
     """Der Schreibpfad muss die nachgezogene ABI wirklich persistieren."""
     reg = make_tree(tmp_path)
     loaded = GATE.load_registry(reg)
-    GATE.check_registry(tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path), reg=loaded)
+    GATE.check_registry(
+        tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path), reg=loaded
+    )
     GATE.write_registry(loaded, reg)
     assert f"abi_sha256: {ABI}" in reg.read_text(encoding="utf-8")

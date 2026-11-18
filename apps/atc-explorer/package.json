@@ -19,6 +19,7 @@
     "@types/node": "^26",
     "@types/jest": "^30",
     "jest": "^30",
-    "ts-jest": "^29"
+    "ts-jest": "^29",
+    "typescript": "^6.0.0"
   }
 }

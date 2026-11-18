@@ -9,6 +9,6 @@
     "typescript"
   ],
   "scripts": {
-    "test": "node --experimental-strip-types tests/chain-identity.conformance.ts"
+    "test": "node --experimental-strip-types tests/chain-identity.conformance.ts 2>/dev/null || npx --yes tsx@4 tests/chain-identity.conformance.ts"
   }
 }

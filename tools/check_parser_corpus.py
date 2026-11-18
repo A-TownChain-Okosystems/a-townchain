@@ -27,8 +27,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from atc_reference_decoder import decode_hex  # noqa: E402
-from build_parser_corpus import CORPUS, build, serialise  # noqa: E402
+from atc_reference_decoder import decode_hex
+from build_parser_corpus import CORPUS, build, serialise
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -49,14 +49,20 @@ def main(argv: list[str] | None = None) -> int:
     corpus = json.loads(CORPUS.read_text(encoding="utf-8"))
     entries = corpus["eintraege"]
     if len(entries) < 30:
-        problems.append(f"nur {len(entries)} Eingaben, REQ-SCE-084 verlangt mindestens 30")
+        problems.append(
+            f"nur {len(entries)} Eingaben, REQ-SCE-084 verlangt mindestens 30"
+        )
 
     for entry in entries:
         if not entry.get("hinweis"):
             problems.append(f"{entry['id']}: Konstruktion fehlt")
         if entry["entscheidung"] not in ("accept", "reject"):
-            problems.append(f"{entry['id']}: Entscheidung '{entry['entscheidung']}' ungueltig")
-        if entry["entscheidung"] == "accept" and (entry["code"] or entry["offset"] is not None):
+            problems.append(
+                f"{entry['id']}: Entscheidung '{entry['entscheidung']}' ungueltig"
+            )
+        if entry["entscheidung"] == "accept" and (
+            entry["code"] or entry["offset"] is not None
+        ):
             problems.append(f"{entry['id']}: angenommene Zeile traegt einen Fehler")
 
     deviations = 0
@@ -73,7 +79,7 @@ def main(argv: list[str] | None = None) -> int:
                 f"({entry['hinweis']})"
             )
         elif args.verbose:
-            print(f"  {entry['id']:<28} {actual[0]:<6} {str(actual[1]):<7} {actual[2]}")
+            print(f"  {entry['id']:<28} {actual[0]:<6} {actual[1]!s:<7} {actual[2]}")
 
     for klasse in sorted(per_class):
         print(f"  {klasse}: {per_class[klasse]} Eingaben")

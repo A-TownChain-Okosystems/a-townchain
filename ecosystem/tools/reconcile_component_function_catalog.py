@@ -4,6 +4,7 @@
 This report is deliberately conservative: lexical symbol hits are not contracts,
 and matching names do not constitute functional verification.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -37,13 +38,15 @@ def reconcile(catalog: dict, census: dict) -> dict:
         inventory_repo = source_inventory.get("repository")
         repo_entry = census_repos.get(inventory_repo or owner)
         if not repo_entry:
-            component_findings.append({
-                "component_id": component.get("id"),
-                "component": component.get("name"),
-                "finding": "SOURCE_REPOSITORY_NOT_IN_CENSUS",
-                "repository": inventory_repo or owner,
-                "status": "BLOCKED",
-            })
+            component_findings.append(
+                {
+                    "component_id": component.get("id"),
+                    "component": component.get("name"),
+                    "finding": "SOURCE_REPOSITORY_NOT_IN_CENSUS",
+                    "repository": inventory_repo or owner,
+                    "status": "BLOCKED",
+                }
+            )
         else:
             observed = source_inventory.get("observed_head_sha")
             actual = repo_entry.get("source_sha")
@@ -52,23 +55,27 @@ def reconcile(catalog: dict, census: dict) -> dict:
                     # The catalog lives inside this repository, so its own HEAD
                     # moves with every catalog revision. The binding evidence is
                     # the census run itself; the drift is documented, not hidden.
-                    component_findings.append({
-                        "component_id": component.get("id"),
-                        "component": component.get("name"),
-                        "finding": "SELF_REFERENTIAL_HEAD_BOUND_AT_CENSUS_RUN",
-                        "catalog_sha": observed,
-                        "census_sha": actual,
-                        "status": "RESIDUAL",
-                    })
+                    component_findings.append(
+                        {
+                            "component_id": component.get("id"),
+                            "component": component.get("name"),
+                            "finding": "SELF_REFERENTIAL_HEAD_BOUND_AT_CENSUS_RUN",
+                            "catalog_sha": observed,
+                            "census_sha": actual,
+                            "status": "RESIDUAL",
+                        }
+                    )
                 else:
-                    component_findings.append({
-                        "component_id": component.get("id"),
-                        "component": component.get("name"),
-                        "finding": "CATALOG_CENSUS_SHA_MISMATCH",
-                        "catalog_sha": observed,
-                        "census_sha": actual,
-                        "status": "RESIDUAL",
-                    })
+                    component_findings.append(
+                        {
+                            "component_id": component.get("id"),
+                            "component": component.get("name"),
+                            "finding": "CATALOG_CENSUS_SHA_MISMATCH",
+                            "catalog_sha": observed,
+                            "census_sha": actual,
+                            "status": "RESIDUAL",
+                        }
+                    )
         for function in component.get("functions", []):
             total_functions += 1
             binding = function.get("source_binding") or {}
@@ -112,7 +119,9 @@ def reconcile(catalog: dict, census: dict) -> dict:
                     item["finding"] = "TEST_SURFACE_BINDING_DOCUMENTED"
                 else:
                     item["finding"] = "BOUND_SYMBOL_NOT_FOUND_IN_LEXICAL_SCAN"
-            elif binding.get("exact_source_sha") != census_repos[repo].get("source_sha"):
+            elif binding.get("exact_source_sha") != census_repos[repo].get(
+                "source_sha"
+            ):
                 item["finding"] = "FUNCTION_BINDING_SHA_MISMATCH"
             else:
                 item["finding"] = "LEXICAL_MATCH_ONLY_FUNCTIONAL_VERIFICATION_PENDING"
@@ -122,16 +131,19 @@ def reconcile(catalog: dict, census: dict) -> dict:
     unmatched_candidates = []
     for repo, found in sorted(symbols_by_repo.items()):
         for path, symbol in sorted(found - bound.get(repo, set())):
-            unmatched_candidates.append({
-                "repository": repo,
-                "source_path": path,
-                "symbol_or_entrypoint": symbol,
-                "status": "RESIDUAL",
-                "finding": "CANDIDATE_NOT_BOUND_TO_CATALOG_FUNCTION",
-            })
+            unmatched_candidates.append(
+                {
+                    "repository": repo,
+                    "source_path": path,
+                    "symbol_or_entrypoint": symbol,
+                    "status": "RESIDUAL",
+                    "finding": "CANDIDATE_NOT_BOUND_TO_CATALOG_FUNCTION",
+                }
+            )
 
     blocking = census.get("status") == "BLOCKED" or any(
-        item.get("status") == "BLOCKED" for item in component_findings + function_findings
+        item.get("status") == "BLOCKED"
+        for item in component_findings + function_findings
     )
     return {
         "schema_id": "ATC-COMPONENT-FUNCTION-RECONCILIATION-001",
@@ -148,7 +160,8 @@ def reconcile(catalog: dict, census: dict) -> dict:
                 for item in function_findings
             ),
             "function_bindings_documented_exclusions": sum(
-                item["finding"] in {
+                item["finding"]
+                in {
                     "DELEGATED_BINDING_DOCUMENTED",
                     "EXEMPT_NO_SOURCE_BINDING_DOCUMENTED",
                     "NON_PUBLIC_INTERNAL_HELPER_EXPECTED_ABSENT",
@@ -192,8 +205,19 @@ def main() -> int:
         parser.error("unexpected organization census schema")
     report = reconcile(catalog, census)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"status": report["status"], **report["summary"], "output": str(args.output)}, sort_keys=True))
+    args.output.write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {
+                "status": report["status"],
+                **report["summary"],
+                "output": str(args.output),
+            },
+            sort_keys=True,
+        )
+    )
     return 0 if report["status"] == "RESIDUAL" else 2
 
 

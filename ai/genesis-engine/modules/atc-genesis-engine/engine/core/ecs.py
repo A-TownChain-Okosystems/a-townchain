@@ -6,9 +6,11 @@ MVP Milestone 1 — ECHTER CODE, keine Vision-Doku.
 Design: einfach, dependency-frei, testbar. Entities sind IDs, Components
 sind reine Datenklassen, Systems operieren auf (Entity, Components)-Tupeln.
 """
-from dataclasses import dataclass, field
-from typing import Dict, Type, List, Iterator, Tuple, Any
+
 import itertools
+from collections.abc import Iterator
+from dataclasses import dataclass
+from typing import Any
 
 
 class World:
@@ -18,8 +20,8 @@ class World:
         self._next_id = itertools.count(1)
         self.entities: set[int] = set()
         # component_type -> {entity_id: component_instance}
-        self.components: Dict[Type, Dict[int, Any]] = {}
-        self.systems: List["System"] = []
+        self.components: dict[type, dict[int, Any]] = {}
+        self.systems: list[System] = []
 
     def create_entity(self) -> int:
         eid = next(self._next_id)
@@ -35,13 +37,13 @@ class World:
         ctype = type(component)
         self.components.setdefault(ctype, {})[entity_id] = component
 
-    def get_component(self, entity_id: int, ctype: Type):
+    def get_component(self, entity_id: int, ctype: type):
         return self.components.get(ctype, {}).get(entity_id)
 
-    def has_component(self, entity_id: int, ctype: Type) -> bool:
+    def has_component(self, entity_id: int, ctype: type) -> bool:
         return entity_id in self.components.get(ctype, {})
 
-    def query(self, *ctypes: Type) -> Iterator[Tuple[int, tuple]]:
+    def query(self, *ctypes: type) -> Iterator[tuple[int, tuple]]:
         """Liefert (entity_id, (comp1, comp2, ...)) fuer alle Entities,
         die ALLE angegebenen Component-Typen besitzen."""
         if not ctypes:
@@ -63,6 +65,7 @@ class World:
 
 class System:
     """Basisklasse fuer Systems. Konkrete Systems ueberschreiben update()."""
+
     world: World = None
 
     def update(self, dt: float) -> None:
@@ -70,6 +73,7 @@ class System:
 
 
 # --- Kern-Components (minimal, erweiterbar) ---
+
 
 @dataclass
 class Position:

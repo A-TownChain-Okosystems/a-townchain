@@ -26,6 +26,7 @@ REPO_ROOT = __file__.rsplit("/tests/", 1)[0]
 
 # ------------------------------------------------- Stub: blockchain-Basispaket
 
+
 def _install_base_contract_stub():
     if "blockchain" in sys.modules and hasattr(
         sys.modules.get("blockchain.contracts.base.base_contract", types.SimpleNamespace()),
@@ -76,6 +77,7 @@ def _load(rel):
 
 
 # ---------------------------------------------------- Genesis-Chronicles-Vertrag
+
 
 class TestGenesisChroniclesContract:
     def test_full_lifecycle(self):
@@ -131,6 +133,7 @@ class TestGenesisChroniclesContract:
 
 # --------------------------------------------------------- Marketplace-Vertrag
 
+
 class _Fixture:
     def __init__(self):
         gc = _load("contracts/genesis_chronicles_contract.py")
@@ -166,7 +169,7 @@ class TestMarketplaceContract:
         assert d["token_id"] == fx.tid
 
         # get_listings / get_listing / get_token_listing
-        assert any(l["listing_id"] == lid for l in m.get_listings())
+        assert any(l["listing_id"] == lid for l in m.get_listings())  # noqa: E741 — bewusst: mathematische Konvention (l/i) im Kontext
         assert m.get_listing(lid)["listing_id"] == lid
         assert m.get_token_listing(fx.tid)["listing_id"] == lid
 
@@ -209,23 +212,36 @@ class TestMarketplaceContract:
 
 # ------------------------------------------------------------- Battle-Engine
 
+
 class TestBattleEngine:
     def test_battle_runs_and_reports(self):
         gc = _load("contracts/genesis_chronicles_contract.py")
         be = _load("engine/battle_engine.py")
         contract = gc.GenesisChroniclesContract()
-        a = contract.mint("alice", element="NEON")["genesis_chronicles"]
-        b = contract.mint("bob", element="PYRO")["genesis_chronicles"]
+        contract.mint("alice", element="NEON")["genesis_chronicles"]
+        contract.mint("bob", element="PYRO")["genesis_chronicles"]
 
         engine = be.BattleEngine(seed="deterministic-test")
         move = be.Move(name="Neon-Blast", element=be.Element.NEON, power=60, accuracy=0.9, pp=10)
         f1 = be.BattleGenesisChronicles(
-            name="Alpha", element=be.Element.NEON, hp=100, max_hp=100,
-            attack=50, defense=30, speed=40, moves=[move],
+            name="Alpha",
+            element=be.Element.NEON,
+            hp=100,
+            max_hp=100,
+            attack=50,
+            defense=30,
+            speed=40,
+            moves=[move],
         )
         f2 = be.BattleGenesisChronicles(
-            name="Beta", element=be.Element.FIRE, hp=100, max_hp=100,
-            attack=45, defense=35, speed=38, moves=[move],
+            name="Beta",
+            element=be.Element.FIRE,
+            hp=100,
+            max_hp=100,
+            attack=45,
+            defense=35,
+            speed=38,
+            moves=[move],
         )
         result = engine.battle(f1, f2)
         assert result is not None
@@ -240,6 +256,7 @@ class TestBattleEngine:
 
 
 # --------------------------------------------------------------- API-Routen
+
 
 class _Args(dict):
     def get(self, k, default=None):
@@ -297,7 +314,7 @@ class TestMarketplaceRoutes:
         lid = res["listing"]["listing_id"]
 
         listings = routes.listings()
-        assert any(l["listing_id"] == lid for l in listings["listings"])
+        assert any(l["listing_id"] == lid for l in listings["listings"])  # noqa: E741 — bewusst: mathematische Konvention (l/i) im Kontext
         assert routes.get_listing(lid)["listing_id"] == lid
         assert routes.token_listing(fx.tid)["listing_id"] == lid
 

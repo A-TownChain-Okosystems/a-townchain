@@ -26,7 +26,7 @@ def run_validator(text):
         path = f.name
     try:
         out = subprocess.run(
-            [sys.executable, VALIDATOR, path], capture_output=True, text=True
+            [sys.executable, VALIDATOR, path], capture_output=True, text=True, check=False
         ).stdout
         m = re.search(r"\[(PASS|FAIL|WARN)\] S-19: (.*)", out)
         return (m.group(1), m.group(2)) if m else ("?", "keine S-19-Ausgabe: " + out[:120])

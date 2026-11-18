@@ -12,6 +12,7 @@ NICHT in der Implementierung: das haelt die Sperre fuer ADM-012 sichtbar.
 
 Aufruf: python3 tools/check_admission_codes.py
 """
+
 from __future__ import annotations
 
 import json
@@ -50,9 +51,7 @@ def rust_code_map(pfad: Path | None = None) -> dict[str, str]:
     text = (pfad or RUST).read_text(encoding="utf-8")
     return {
         variante: code
-        for variante, code in re.findall(
-            r"AdmCode::(\w+)\s*=>\s*\"(ADM-\d{3})\"", text
-        )
+        for variante, code in re.findall(r"AdmCode::(\w+)\s*=>\s*\"(ADM-\d{3})\"", text)
     }
 
 
@@ -86,7 +85,9 @@ def pruefe() -> list[str]:
         fehler.append(
             f"Spezifikation: {len(tabelle)} Pruefschritte, SSOT: {len(aktiv)} aktive Codes"
         )
-    for (schritt, code), eintrag in zip(tabelle, sorted(aktiv, key=lambda c: c["order"])):
+    for (schritt, code), eintrag in zip(
+        tabelle, sorted(aktiv, key=lambda c: c["order"])
+    ):
         if code != eintrag["code"] or schritt != eintrag["order"]:
             fehler.append(
                 f"Reihenfolge: Spezifikation Schritt {schritt}={code}, "
@@ -94,7 +95,9 @@ def pruefe() -> list[str]:
             )
     for code in [c["code"] for c in vorgeschlagen]:
         if code not in SPEC.read_text(encoding="utf-8"):
-            fehler.append(f"Spezifikation: vorgeschlagener Code {code} nicht dokumentiert")
+            fehler.append(
+                f"Spezifikation: vorgeschlagener Code {code} nicht dokumentiert"
+            )
 
     # 3 — Implementierung deckt genau die aktiven Codes
     implementiert = rust_code_map()

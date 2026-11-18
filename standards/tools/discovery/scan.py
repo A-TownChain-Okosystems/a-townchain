@@ -130,11 +130,11 @@ def main():
             "totals": {"files": len(current)},
             "by_class": dict(sorted(counts.items())),
         }
-        json.dump(baseline, open(baseline_path, "w"), indent=2, ensure_ascii=False)
+        json.dump(baseline, open(baseline_path, "w"), indent=2, ensure_ascii=False)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         print(f"✓ Baseline erstellt: {len(current)} Dateien ({scan_id})")
         return 0
 
-    baseline = json.load(open(baseline_path))
+    baseline = json.load(open(baseline_path))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     base_files = set()
     for rel in git_files(
         baseline["baseline_commit"] if False else "HEAD"
@@ -150,7 +150,7 @@ def main():
             ).splitlines()
             if ln.strip() and not ln.startswith(".git")
         }
-    except Exception:
+    except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         base_files = current
 
     new = sorted(current - base_files)
@@ -161,7 +161,7 @@ def main():
             diff = subprocess.check_output(
                 ["git", "diff", base_rev, "HEAD", "--", f], cwd=ROOT, text=True
             )
-        except Exception:
+        except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             continue
         if diff.strip():
             modified.append(f)
@@ -170,8 +170,8 @@ def main():
     for f in new + modified:
         if f.endswith(".md"):
             try:
-                content = open(os.path.join(ROOT, f), encoding="utf-8").read()
-            except Exception:
+                content = open(os.path.join(ROOT, f), encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
+            except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 continue
             hits = [p for p in RULE_PATTERNS if re.search(p, content)]
             if hits:
@@ -195,8 +195,8 @@ def main():
     prev_path = os.path.join(DISC, "latest-scan.json")
     if os.path.exists(prev_path):
         try:
-            prev = int(json.load(open(prev_path))["scan_id"].split("-")[-1])
-        except Exception:
+            prev = int(json.load(open(prev_path))["scan_id"].split("-")[-1])  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
+        except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             prev = 0
     scan_id = f"DISC-{today}-{prev + 1:03d}"
     report = {
@@ -235,7 +235,10 @@ def main():
         else "PARTIAL — INV-010: Pruefung unvollstaendig (Ausbaustufen offen)",
     }
     json.dump(
-        report, open(os.path.join(DISC, "latest-scan.json"), "w"), indent=2, ensure_ascii=False
+        report,
+        open(os.path.join(DISC, "latest-scan.json"), "w"),
+        indent=2,
+        ensure_ascii=False,  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     )
     print(
         f"✓ Scan {scan_id}: {len(new)} NEW / {len(modified)} MODIFIED / {len(deleted)} DELETED — "

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fail-closed structural validator for the organization-wide repository integration baseline."""
+
 from __future__ import annotations
 
 import argparse
@@ -7,7 +8,13 @@ import json
 import sys
 from pathlib import Path
 
-ALLOWED_REPO_STATUS = {"AUDIT_REQUIRED", "ARCHIVED_REFERENCE_ONLY", "VERIFIED", "BLOCKED", "RESIDUAL"}
+ALLOWED_REPO_STATUS = {
+    "AUDIT_REQUIRED",
+    "ARCHIVED_REFERENCE_ONLY",
+    "VERIFIED",
+    "BLOCKED",
+    "RESIDUAL",
+}
 ALLOWED_GATE_STATUS = {"NOT_RUN", "VERIFIED", "BLOCKED", "RESIDUAL"}
 
 
@@ -30,7 +37,9 @@ def validate(doc: dict) -> tuple[list[str], dict]:
     if len(names) != len(set(names)):
         errors.append("duplicate full_name values found")
     if len(repos) != doc.get("inventory", {}).get("observed_repository_count"):
-        errors.append("inventory observed_repository_count does not match repositories length")
+        errors.append(
+            "inventory observed_repository_count does not match repositories length"
+        )
 
     active = archived = 0
     verified = 0
@@ -47,11 +56,15 @@ def validate(doc: dict) -> tuple[list[str], dict]:
         if archive == "ARCHIVED":
             archived += 1
             if status != "ARCHIVED_REFERENCE_ONLY":
-                errors.append(f"{name}: archived repository must be ARCHIVED_REFERENCE_ONLY")
+                errors.append(
+                    f"{name}: archived repository must be ARCHIVED_REFERENCE_ONLY"
+                )
         else:
             active += 1
             if status == "ARCHIVED_REFERENCE_ONLY":
-                errors.append(f"{name}: active repository cannot be ARCHIVED_REFERENCE_ONLY")
+                errors.append(
+                    f"{name}: active repository cannot be ARCHIVED_REFERENCE_ONLY"
+                )
         if status == "VERIFIED":
             verified += 1
             evidence = repo.get("required_evidence") or {}
@@ -66,15 +79,21 @@ def validate(doc: dict) -> tuple[list[str], dict]:
             }
             missing = [k for k, v in required.items() if v is None or v == ""]
             if missing:
-                errors.append(f"{name}: VERIFIED without required exact-SHA evidence fields: {', '.join(missing)}")
+                errors.append(
+                    f"{name}: VERIFIED without required exact-SHA evidence fields: {', '.join(missing)}"
+                )
             if evidence.get("exit_code") != 0:
                 errors.append(f"{name}: VERIFIED requires exit_code 0")
 
     inventory = doc.get("inventory", {})
     if active != inventory.get("active_repository_count"):
-        errors.append("inventory active_repository_count does not match observed active repositories")
+        errors.append(
+            "inventory active_repository_count does not match observed active repositories"
+        )
     if archived != inventory.get("archived_repository_count"):
-        errors.append("inventory archived_repository_count does not match observed archived repositories")
+        errors.append(
+            "inventory archived_repository_count does not match observed archived repositories"
+        )
 
     gate_ids = [g.get("id") for g in gates if isinstance(g, dict)]
     if len(gate_ids) != len(gates):
@@ -85,9 +104,16 @@ def validate(doc: dict) -> tuple[list[str], dict]:
         if not isinstance(gate, dict):
             continue
         if gate.get("status") not in ALLOWED_GATE_STATUS:
-            errors.append(f"{gate.get('id')}: invalid gate status {gate.get('status')!r}")
-        if gate.get("status") == "VERIFIED" and gate.get("required_terminal_status") != "VERIFIED":
-            errors.append(f"{gate.get('id')}: verified gate must declare required_terminal_status VERIFIED")
+            errors.append(
+                f"{gate.get('id')}: invalid gate status {gate.get('status')!r}"
+            )
+        if (
+            gate.get("status") == "VERIFIED"
+            and gate.get("required_terminal_status") != "VERIFIED"
+        ):
+            errors.append(
+                f"{gate.get('id')}: verified gate must declare required_terminal_status VERIFIED"
+            )
 
     metrics = {
         "schema_id": doc.get("schema_id"),
@@ -96,20 +122,30 @@ def validate(doc: dict) -> tuple[list[str], dict]:
         "repositories_active": active,
         "repositories_archived": archived,
         "repositories_verified": verified,
-        "repositories_audit_required": sum(1 for r in repos if isinstance(r, dict) and r.get("integration_status") == "AUDIT_REQUIRED"),
+        "repositories_audit_required": sum(
+            1
+            for r in repos
+            if isinstance(r, dict) and r.get("integration_status") == "AUDIT_REQUIRED"
+        ),
         "integration_gates_total": len(gates),
-        "integration_gates_verified": sum(1 for g in gates if isinstance(g, dict) and g.get("status") == "VERIFIED"),
-        "integration_gates_not_run": sum(1 for g in gates if isinstance(g, dict) and g.get("status") == "NOT_RUN"),
+        "integration_gates_verified": sum(
+            1 for g in gates if isinstance(g, dict) and g.get("status") == "VERIFIED"
+        ),
+        "integration_gates_not_run": sum(
+            1 for g in gates if isinstance(g, dict) and g.get("status") == "NOT_RUN"
+        ),
         "validation": "FAIL" if errors else "PASS_STRUCTURAL_ONLY",
         "errors": errors,
-        "warning": "Structural validation does not prove repository integration, source correctness, CI success, or release readiness."
+        "warning": "Structural validation does not prove repository integration, source correctness, CI success, or release readiness.",
     }
     return errors, metrics
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="docs/integration/ATC-ORG-REPOSITORY-INTEGRATION-001.json")
+    parser.add_argument(
+        "--input", default="docs/integration/ATC-ORG-REPOSITORY-INTEGRATION-001.json"
+    )
     parser.add_argument("--report", default="org-repository-integration-report.json")
     args = parser.parse_args()
     try:

@@ -194,11 +194,12 @@ def main():
     rpath = os.path.join(args.repo, "README.md")
     if not os.path.exists(rpath):
         print(
-            "README-Validator: KEINE README.md in %s — NON-COMPLIANT "
-            "(ATC-STD-README-001)" % args.repo
+            "README-Validator: KEINE README.md in {} — NON-COMPLIANT (ATC-STD-README-001)".format(
+                args.repo
+            )
         )
         return 1
-    text = open(rpath, encoding="utf-8").read()
+    text = open(rpath, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     gates = [
         ("README-01", lambda: gate_01(text)),
         ("README-02", lambda: gate_02(text)),
@@ -216,12 +217,13 @@ def main():
     ]
     fails = 0
     print(
-        "== README-Compliance (ATC-STD-README-001 v1.0.0) — %s =="
-        % os.path.basename(os.path.abspath(args.repo))
+        "== README-Compliance (ATC-STD-README-001 v1.0.0) — {} ==".format(
+            os.path.basename(os.path.abspath(args.repo))
+        )
     )
     for gid, fn in gates:
         ok, msg = fn()
-        print("  [%s] %s: %s" % ("PASS" if ok else "FAIL", gid, msg))
+        print("  [{}] {}: {}".format("PASS" if ok else "FAIL", gid, msg))
         fails += 0 if ok else 1
     print(
         "RESULT: "

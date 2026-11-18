@@ -51,14 +51,14 @@ READ_ERRORS = []  # SG-01 (AUD-2026-0004): Lesefehler duerfen nicht still versch
 
 def file_id(path):
     try:
-        head = open(path, encoding="utf-8").read(2500)
+        head = open(path, encoding="utf-8").read(2500)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         m = re.search(
             r"^\s*id:\s*(ATC-STD-(?:BUG-|NET-|ZKP-|AI-DEV-|MD-|SC-|README-|DESC-|VERSION-|AUDIT-|AI-DECISION-|UPDATE-|IMPROVEMENT-|COMPAT-|MILESTONE-|FRAMEWORK-|REPO-AUDIT-|AOS-|PROTOCOL-|TAXONOMY-|STDDEV-|REGISTRY-|CHANGE-)?[0-9]{3,}|ATC-AAS-[0-9]{3,}|ATC-AURORA-SWARM-[0-9]{3,}|ATC-ENT-[0-9]{3,}|ATC-AI-GOV-(?:[A-Z]+-)?[0-9]{3,})\s*$",
             head,
             re.M,
         )
         return m.group(1) if m else None
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         READ_ERRORS.append((path, str(e)[:80]))
         return None
 
@@ -68,7 +68,7 @@ def main():
     # SG-01 (AUD-2026-0004): unlesbare Kandidatendateien = FAIL (fail-closed)
     if READ_ERRORS:
         for p, e in READ_ERRORS:
-            print("S-01 READ: FAIL — %s nicht lesbar: %s" % (p, e))
+            print("S-01 READ: FAIL — {} nicht lesbar: {}".format(p, e))
         sys.exit(1)
     if not files:
         print("Keine Standard-Dateien gefunden")
@@ -101,7 +101,7 @@ def main():
         + ("PASS — keine Doppelvergaben" if not dups else "FAIL")
     )
     for i, fs in dups.items():
-        print("  %s in: %s" % (i, ", ".join(fs)))
+        print("  {} in: {}".format(i, ", ".join(fs)))
         fails += 1
     # S-18 Registry-Parse-Check: standards.yaml muss strukturell gueltig sein
     # (AUD-001 Governance-Audit 07.09.2026: korrupte Registry wurde nicht erkannt)
@@ -127,8 +127,9 @@ def main():
                 for req in ("id", "title", "version", "status", "owner", "file"):
                     if req not in e:
                         print(
-                            "S-18 Registry-Parse: FAIL — %s fehlt Pflichtfeld '%s'"
-                            % (e.get("id", "?"), req)
+                            "S-18 Registry-Parse: FAIL — {} fehlt Pflichtfeld '{}'".format(
+                                e.get("id", "?"), req
+                            )
                         )
                         registry_ok = False
             print(
@@ -141,7 +142,7 @@ def main():
         # Pflichtfelder pruefen. Ein strukturfehlerhaftes standards.yaml MUSS FAILen.
         from atc_std_validator import _parse_flow_entry  # PyYAML-freier Fluss-Parser (SCR-0013)
 
-        reg_text = open(REGISTRY, encoding="utf-8").read()
+        reg_text = open(REGISTRY, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         sec = re.search(r"^standards:[ \t]*\n(.*?)(?=^[A-Za-z_][\w-]*:|\Z)", reg_text, re.S | re.M)
         if not sec:
             print("S-18 Registry-Parse: FAIL — kein 'standards:'-Abschnitt (Fallback)")
@@ -157,7 +158,7 @@ def main():
                 "S-18 Registry-Parse: FAIL — standards.yaml enthaelt keine 'standards:'-Liste (Fallback)"
             )
             registry_ok = False
-        for n, line in enumerate(open(REGISTRY, encoding="utf-8"), 1):
+        for n, line in enumerate(open(REGISTRY, encoding="utf-8"), 1):  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             s = line.strip()
             if s.startswith("- {") and not s.endswith("}"):
                 print("S-18 Registry-Parse: FAIL — Zeile %d unbalanciert (kein '}' am Ende)" % n)
@@ -169,16 +170,17 @@ def main():
             for req in ("id", "title", "version", "status", "owner", "file"):
                 if req not in e:
                     print(
-                        "S-18 Registry-Parse: FAIL — %s fehlt Pflichtfeld '%s' (Fallback)"
-                        % (e.get("id", "?"), req)
+                        "S-18 Registry-Parse: FAIL — {} fehlt Pflichtfeld '{}' (Fallback)".format(
+                            e.get("id", "?"), req
+                        )
                     )
                     registry_ok = False
         print(
             "S-18 Registry-Parse: %s (Fallback-Modus, PyYAML fehlt; %d Eintraege voll geprueft)"
             % ("PASS" if registry_ok else "FAIL", len(entries))
         )
-    except Exception as e:
-        print("S-18 Registry-Parse: FAIL — %s" % str(e)[:120])
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
+        print("S-18 Registry-Parse: FAIL — {}".format(str(e)[:120]))
         registry_ok = False
     if not registry_ok:
         fails += 1
@@ -186,7 +188,7 @@ def main():
     # Registry-Cross-Check: Registry-Eintraege muessen Dateien haben
     # SG-01 (AUD-2026-0004): fail-closed — Registry unlesbar/inkonsistent = FAIL, nie still
     try:
-        reg = open(REGISTRY, encoding="utf-8").read()
+        reg = open(REGISTRY, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         reg_ids = set(re.findall(r"id:\s*(ATC-STD-[0-9]{3,})", reg))
         missing = reg_ids - set(ids)
         if missing:
@@ -194,8 +196,8 @@ def main():
             fails += 1
         else:
             print("S-18a Registry-Cross: PASS (%d Registry-IDs alle mit Datei)" % len(reg_ids))
-    except Exception as e:
-        print("S-18a Registry-Cross: FAIL — Registry nicht lesbar: %s" % str(e)[:100])
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
+        print("S-18a Registry-Cross: FAIL — Registry nicht lesbar: {}".format(str(e)[:100]))
         fails += 1
 
     # S-20 Milestone-Registry-Check (ATC-STD-MILESTONE-001 §17)
@@ -207,7 +209,7 @@ def main():
         try:
             import yaml as _yaml
 
-            ms_data = _yaml.safe_load(open(MS_PATH, encoding="utf-8")) or {}
+            ms_data = _yaml.safe_load(open(MS_PATH, encoding="utf-8")) or {}  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             entries = ms_data.get("milestones", [])
             if not isinstance(entries, list) or not entries:
                 print("S-20 Milestones: FAIL — milestones.yaml ohne 'milestones:'-Liste")
@@ -249,59 +251,73 @@ def main():
                     mid = str(m.get("id", "?"))
                     for req in required:
                         if req not in m:
-                            print("S-20 Milestones: FAIL — %s fehlt Pflichtfeld '%s'" % (mid, req))
+                            print(
+                                "S-20 Milestones: FAIL — {} fehlt Pflichtfeld '{}'".format(mid, req)
+                            )
                             milestone_ok = False
                     if not re.match(r"^ATC-M-(?:[A-Z]+-)?[0-9]{3,}$", mid):
-                        print("S-20 Milestones: FAIL — %s: ID-Pattern verletzt" % mid)
+                        print("S-20 Milestones: FAIL — {}: ID-Pattern verletzt".format(mid))
                         milestone_ok = False
                     if mid in ids:
-                        print("S-20 Milestones: FAIL — %s: doppelte ID" % mid)
+                        print("S-20 Milestones: FAIL — {}: doppelte ID".format(mid))
                         milestone_ok = False
                     ids.add(mid)
                     stat[mid] = m.get("status")
                     if m.get("category") not in {"M%d" % i for i in range(9)}:
                         print(
-                            "S-20 Milestones: FAIL — %s: Kategorie %s ungueltig"
-                            % (mid, m.get("category"))
+                            "S-20 Milestones: FAIL — {}: Kategorie {} ungueltig".format(
+                                mid, m.get("category")
+                            )
                         )
                         milestone_ok = False
                     if m.get("status") not in allowed_status:
                         print(
-                            "S-20 Milestones: FAIL — %s: Status %s ungueltig"
-                            % (mid, m.get("status"))
+                            "S-20 Milestones: FAIL — {}: Status {} ungueltig".format(
+                                mid, m.get("status")
+                            )
                         )
                         milestone_ok = False
                     if not isinstance(m.get("risk"), dict) or "overall" not in (
                         m.get("risk") or {}
                     ):
-                        print("S-20 Milestones: FAIL — %s: risk.overall fehlt" % mid)
+                        print("S-20 Milestones: FAIL — {}: risk.overall fehlt".format(mid))
                         milestone_ok = False
                 for m in entries:
                     mid = str(m.get("id", "?"))
                     if m.get("status") in {"ACCEPTED", "RELEASED", "VERIFIED", "CLOSED"}:
                         if not m.get("evidence"):
-                            print("S-20 Milestones: FAIL — %s: ACCEPTED ohne Evidence (§6)" % mid)
+                            print(
+                                "S-20 Milestones: FAIL — {}: ACCEPTED ohne Evidence (§6)".format(
+                                    mid
+                                )
+                            )
                             milestone_ok = False
                         if not m.get("audit_result"):
-                            print("S-20 Milestones: FAIL — %s: ACCEPTED ohne audit_result" % mid)
+                            print(
+                                "S-20 Milestones: FAIL — {}: ACCEPTED ohne audit_result".format(mid)
+                            )
                             milestone_ok = False
                         if not m.get("actual_completion"):
                             print(
-                                "S-20 Milestones: FAIL — %s: ACCEPTED ohne actual_completion" % mid
+                                "S-20 Milestones: FAIL — {}: ACCEPTED ohne actual_completion".format(
+                                    mid
+                                )
                             )
                             milestone_ok = False
                         if m.get("compatibility_status") == "UNKNOWN":
                             print(
-                                "S-20 Milestones: FAIL — %s: ACCEPTED mit compatibility UNKNOWN (COMPAT-001)"
-                                % mid
+                                "S-20 Milestones: FAIL — {}: ACCEPTED mit compatibility UNKNOWN (COMPAT-001)".format(
+                                    mid
+                                )
                             )
                             milestone_ok = False
                     for dep in m.get("dependencies") or []:
                         if str(dep).startswith("ATC-M-"):
                             if dep not in ids:
                                 print(
-                                    "S-20 Milestones: FAIL — %s: unbekannte Dependency %s"
-                                    % (mid, dep)
+                                    "S-20 Milestones: FAIL — {}: unbekannte Dependency {}".format(
+                                        mid, dep
+                                    )
                                 )
                                 milestone_ok = False
                             elif stat.get(dep) not in (
@@ -313,8 +329,9 @@ def main():
                                 "SUPERSEDED",
                             ) and m.get("status") in {"ACCEPTED", "RELEASED", "VERIFIED", "CLOSED"}:
                                 print(
-                                    "S-20 Milestones: FAIL — %s: ACCEPTED bei offener kritischer Dependency %s (%s) (§8)"
-                                    % (mid, dep, stat.get(dep))
+                                    "S-20 Milestones: FAIL — {}: ACCEPTED bei offener kritischer Dependency {} ({}) (§8)".format(
+                                        mid, dep, stat.get(dep)
+                                    )
                                 )
                                 milestone_ok = False
                 print(
@@ -324,7 +341,7 @@ def main():
         except ImportError:
             # SG-01 (AUD-2026-0004): fail-closed — milestones.yaml muss auch ohne PyYAML
             # strukturell geprueft werden; WARN ist ein Fail-Open-Zustand.
-            raw = open(MS_PATH, encoding="utf-8").read()
+            raw = open(MS_PATH, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             blocks = re.split(r"^\s*-\s+id:\s+", raw, flags=re.M)[1:]
             if not blocks:
                 print("S-20 Milestones: FAIL — milestones.yaml ohne '- id:'-Eintraege (Fallback)")
@@ -333,10 +350,10 @@ def main():
             for b in blocks:
                 mid = b.splitlines()[0].strip()
                 if not re.match(r"^ATC-M-(?:[A-Z]+-)?[0-9]{3,}$", mid):
-                    print("S-20 Milestones: FAIL — %s: ID-Pattern verletzt (Fallback)" % mid)
+                    print("S-20 Milestones: FAIL — {}: ID-Pattern verletzt (Fallback)".format(mid))
                     milestone_ok = False
                 if mid in seen:
-                    print("S-20 Milestones: FAIL — %s: doppelte ID (Fallback)" % mid)
+                    print("S-20 Milestones: FAIL — {}: doppelte ID (Fallback)".format(mid))
                     milestone_ok = False
                 seen.add(mid)
                 for req in (
@@ -349,15 +366,19 @@ def main():
                     "target_date",
                     "audit_ref",
                 ):
-                    if not re.search(r"^\s*%s\s*:" % req, b, re.M):
-                        print("S-20 Milestones: FAIL — %s: Feld '%s' fehlt (Fallback)" % (mid, req))
+                    if not re.search(r"^\s*{}\s*:".format(req), b, re.M):
+                        print(
+                            "S-20 Milestones: FAIL — {}: Feld '{}' fehlt (Fallback)".format(
+                                mid, req
+                            )
+                        )
                         milestone_ok = False
             print(
                 "S-20 Milestones: %s (Fallback-Modus, PyYAML fehlt; %d Bloecke geprueft)"
                 % ("PASS" if milestone_ok else "FAIL", len(blocks))
             )
-        except Exception as e:
-            print("S-20 Milestones: FAIL — %s" % str(e)[:120])
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
+            print("S-20 Milestones: FAIL — {}".format(str(e)[:120]))
             milestone_ok = False
     if not milestone_ok:
         fails += 1
@@ -371,13 +392,13 @@ def main():
         try:
             import yaml as _fy
 
-            fw = _fy.safe_load(open(FW_PATH, encoding="utf-8")) or {}
+            fw = _fy.safe_load(open(FW_PATH, encoding="utf-8")) or {}  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             fams = (fw.get("framework") or {}).get("families") or []
             if not fams:
                 print("S-21 Framework: FAIL — framework.yaml ohne 'families:'-Liste")
                 framework_ok = False
             else:
-                reg = open(REGISTRY, encoding="utf-8").read()
+                reg = open(REGISTRY, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
                 reg_ids = set(re.findall(r"id:\s*(ATC-[\w.-]+)", reg)) | set(
                     re.findall(r'id:\s*"(ATC-[\w.-]+)"', reg)
                 )
@@ -387,10 +408,10 @@ def main():
                     fid = str(fam.get("id", "?"))
                     for req in ("id", "name", "range"):
                         if req not in fam:
-                            print("S-21 Framework: FAIL — Familie %s fehlt '%s'" % (fid, req))
+                            print("S-21 Framework: FAIL — Familie {} fehlt '{}'".format(fid, req))
                             framework_ok = False
                     if fid in fam_ids:
-                        print("S-21 Framework: FAIL — doppelte Familie %s" % fid)
+                        print("S-21 Framework: FAIL — doppelte Familie {}".format(fid))
                         framework_ok = False
                     fam_ids.add(fid)
                     frefs = [str(r) for r in (fam.get("family_refs") or [])]
@@ -398,26 +419,33 @@ def main():
                         sid = str(s.get("id", "?"))
                         if "title" not in s or "status" not in s:
                             print(
-                                "S-21 Framework: FAIL — Slot %s unvollständig (title/status)" % sid
+                                "S-21 Framework: FAIL — Slot {} unvollständig (title/status)".format(
+                                    sid
+                                )
                             )
                             framework_ok = False
                         if sid in slot_ids:
-                            print("S-21 Framework: FAIL — doppelter Slot %s" % sid)
+                            print("S-21 Framework: FAIL — doppelter Slot {}".format(sid))
                             framework_ok = False
                         slot_ids.add(sid)
                         st = s.get("status")
                         if st not in allowed:
-                            print("S-21 Framework: FAIL — Slot %s: Status %s ungueltig" % (sid, st))
+                            print(
+                                "S-21 Framework: FAIL — Slot {}: Status {} ungueltig".format(
+                                    sid, st
+                                )
+                            )
                             framework_ok = False
                         if st == "KONFLIKT" and not s.get("note"):
-                            print("S-21 Framework: FAIL — Slot %s: KONFLIKT ohne Note" % sid)
+                            print("S-21 Framework: FAIL — Slot {}: KONFLIKT ohne Note".format(sid))
                             framework_ok = False
                         if st in ("BELEGT", "VERWEIST"):
                             for ref in [str(r) for r in (s.get("refs") or [])] or frefs:
                                 if ref.startswith("ATC-") and ref not in reg_ids:
                                     print(
-                                        "S-21 Framework: FAIL — Slot %s: Referenz %s nicht in Registry"
-                                        % (sid, ref)
+                                        "S-21 Framework: FAIL — Slot {}: Referenz {} nicht in Registry".format(
+                                            sid, ref
+                                        )
                                     )
                                     framework_ok = False
                 st_total = sum(len(f.get("slots") or []) for f in fams)
@@ -427,8 +455,8 @@ def main():
                 )
         except ImportError:
             print("S-21 Framework: WARN (Fallback-Modus, PyYAML fehlt)")
-        except Exception as e:
-            print("S-21 Framework: FAIL — %s" % str(e)[:120])
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
+            print("S-21 Framework: FAIL — {}".format(str(e)[:120]))
             framework_ok = False
     if not framework_ok:
         fails += 1
@@ -442,7 +470,7 @@ def main():
         try:
             import yaml as _cy
 
-            rc = (_cy.safe_load(open(RC_PATH, encoding="utf-8")) or {}).get(
+            rc = (_cy.safe_load(open(RC_PATH, encoding="utf-8")) or {}).get(  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
                 "repo-audit-checks"
             ) or {}
             areas = rc.get("areas") or []
@@ -457,7 +485,9 @@ def main():
                     checks_ok = False
                 wsum = sum(a.get("weight") or 0 for a in areas)
                 if wsum != 100:
-                    print("S-22 RepoAuditChecks: FAIL — Bereichsgewichte Summe %s != 100" % wsum)
+                    print(
+                        "S-22 RepoAuditChecks: FAIL — Bereichsgewichte Summe {} != 100".format(wsum)
+                    )
                     checks_ok = False
                 seen = set()
                 per_area = {aid: 0 for aid in area_ids}
@@ -465,36 +495,41 @@ def main():
                 for chk in checks:
                     cid = str(chk.get("id", "?"))
                     if not re.match(r"^CHECK-[0-9]{3,}$", cid):
-                        print("S-22 RepoAuditChecks: FAIL — %s: ID-Pattern verletzt" % cid)
+                        print("S-22 RepoAuditChecks: FAIL — {}: ID-Pattern verletzt".format(cid))
                         checks_ok = False
                     if cid in seen:
-                        print("S-22 RepoAuditChecks: FAIL — %s doppelt" % cid)
+                        print("S-22 RepoAuditChecks: FAIL — {} doppelt".format(cid))
                         checks_ok = False
                     seen.add(cid)
                     if chk.get("area") not in area_ids:
                         print(
-                            "S-22 RepoAuditChecks: FAIL — %s: unbekannter Bereich %s"
-                            % (cid, chk.get("area"))
+                            "S-22 RepoAuditChecks: FAIL — {}: unbekannter Bereich {}".format(
+                                cid, chk.get("area")
+                            )
                         )
                         checks_ok = False
                     else:
                         per_area[chk["area"]] += 1
                     if chk.get("method") not in methods:
                         print(
-                            "S-22 RepoAuditChecks: FAIL — %s: Methode %s ungueltig"
-                            % (cid, chk.get("method"))
+                            "S-22 RepoAuditChecks: FAIL — {}: Methode {} ungueltig".format(
+                                cid, chk.get("method")
+                            )
                         )
                         checks_ok = False
                     if not isinstance(chk.get("weight"), int) or not (
                         1 <= chk.get("weight", 0) <= 3
                     ):
                         print(
-                            "S-22 RepoAuditChecks: FAIL — %s: Gewicht %s ungueltig (1-3)"
-                            % (cid, chk.get("weight"))
+                            "S-22 RepoAuditChecks: FAIL — {}: Gewicht {} ungueltig (1-3)".format(
+                                cid, chk.get("weight")
+                            )
                         )
                         checks_ok = False
                     if not chk.get("title") or not chk.get("description"):
-                        print("S-22 RepoAuditChecks: FAIL — %s: title/description fehlt" % cid)
+                        print(
+                            "S-22 RepoAuditChecks: FAIL — {}: title/description fehlt".format(cid)
+                        )
                         checks_ok = False
                 if len(checks) < 48:
                     print(
@@ -514,8 +549,8 @@ def main():
                 )
         except ImportError:
             print("S-22 RepoAuditChecks: WARN (Fallback-Modus, PyYAML fehlt)")
-        except Exception as e:
-            print("S-22 RepoAuditChecks: FAIL — %s" % str(e)[:120])
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
+            print("S-22 RepoAuditChecks: FAIL — {}".format(str(e)[:120]))
             checks_ok = False
     if not checks_ok:
         fails += 1
@@ -529,7 +564,7 @@ def main():
         try:
             import yaml as _py
 
-            pr = (_py.safe_load(open(PR_PATH, encoding="utf-8")) or {}).get(
+            pr = (_py.safe_load(open(PR_PATH, encoding="utf-8")) or {}).get(  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
                 "protocol-registry"
             ) or {}
             protos = pr.get("protocols") or []
@@ -544,33 +579,36 @@ def main():
             for e in protos:
                 pid = str(e.get("id", "?"))
                 if not re.match(r"^ATC-PROTO-[A-Z0-9]+(-[A-Z0-9]+)*-[0-9]{3,}$", pid):
-                    print("S-23 ProtocolRegistry: FAIL — %s: ID-Pattern verletzt" % pid)
+                    print("S-23 ProtocolRegistry: FAIL — {}: ID-Pattern verletzt".format(pid))
                     proto_ok = False
                 if pid in seen:
-                    print("S-23 ProtocolRegistry: FAIL — %s doppelt" % pid)
+                    print("S-23 ProtocolRegistry: FAIL — {} doppelt".format(pid))
                     proto_ok = False
                 seen.add(pid)
                 if e.get("status") not in statuses:
                     print(
-                        "S-23 ProtocolRegistry: FAIL — %s: Status %s ungueltig"
-                        % (pid, e.get("status"))
+                        "S-23 ProtocolRegistry: FAIL — {}: Status {} ungueltig".format(
+                            pid, e.get("status")
+                        )
                     )
                     proto_ok = False
                 if e.get("priority") not in {"P0", "P1", "P2"}:
                     print(
-                        "S-23 ProtocolRegistry: FAIL — %s: Prioritaet %s ungueltig"
-                        % (pid, e.get("priority"))
+                        "S-23 ProtocolRegistry: FAIL — {}: Prioritaet {} ungueltig".format(
+                            pid, e.get("priority")
+                        )
                     )
                     proto_ok = False
                 if not re.match(r"^[0-9]+[.][0-9]+[.][0-9]+$", str(e.get("version", "?"))):
                     print(
-                        "S-23 ProtocolRegistry: FAIL — %s: Version %s kein SemVer"
-                        % (pid, e.get("version"))
+                        "S-23 ProtocolRegistry: FAIL — {}: Version {} kein SemVer".format(
+                            pid, e.get("version")
+                        )
                     )
                     proto_ok = False
                 for f in ("name", "domain", "layer", "specification"):
                     if not e.get(f):
-                        print("S-23 ProtocolRegistry: FAIL — %s: Feld %s fehlt" % (pid, f))
+                        print("S-23 ProtocolRegistry: FAIL — {}: Feld {} fehlt".format(pid, f))
                         proto_ok = False
             sc = {}
             for e in protos:
@@ -581,8 +619,8 @@ def main():
             )
         except ImportError:
             print("S-23 ProtocolRegistry: WARN (Fallback-Modus, PyYAML fehlt)")
-        except Exception as e:
-            print("S-23 ProtocolRegistry: FAIL — %s" % str(e)[:120])
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
+            print("S-23 ProtocolRegistry: FAIL — {}".format(str(e)[:120]))
             proto_ok = False
     if not proto_ok:
         fails += 1
@@ -596,43 +634,52 @@ def main():
         try:
             import yaml as _py
 
-            t = (_py.safe_load(open(TAX_PATH, encoding="utf-8")) or {}).get("taxonomy") or {}
+            t = (_py.safe_load(open(TAX_PATH, encoding="utf-8")) or {}).get("taxonomy") or {}  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             domains = t.get("domains") or []
             LIFECYCLE = {"PROPOSED", "ANALYZED", "APPROVED", "ACTIVE", "DEPRECATED", "RETIRED"}
             dom_ids, fam_names, fam_codes = set(), [], []
             n_dom = n_fam = 0
             for d in domains:
                 if not d.get("id") or d["id"] in dom_ids:
-                    print("S-24 Taxonomy: FAIL — Domain-ID fehlt/doppelt: %s" % d.get("id"))
+                    print("S-24 Taxonomy: FAIL — Domain-ID fehlt/doppelt: {}".format(d.get("id")))
                     tax_ok = False
                 dom_ids.add(d.get("id"))
                 if d.get("lifecycle") not in LIFECYCLE:
-                    print("S-24 Taxonomy: FAIL — Domain %s: Lifecycle ungueltig" % d.get("id"))
+                    print(
+                        "S-24 Taxonomy: FAIL — Domain {}: Lifecycle ungueltig".format(d.get("id"))
+                    )
                     tax_ok = False
                 n_dom += 1
                 for f in d.get("families") or []:
                     n_fam += 1
                     if f.get("id") in fam_codes:
-                        print("S-24 Taxonomy: FAIL — Familien-Code doppelt: %s" % f.get("id"))
+                        print("S-24 Taxonomy: FAIL — Familien-Code doppelt: {}".format(f.get("id")))
                         tax_ok = False
                     if f.get("name") in fam_names:
-                        print("S-24 Taxonomy: FAIL — Familien-Name doppelt: %s" % f.get("name"))
+                        print(
+                            "S-24 Taxonomy: FAIL — Familien-Name doppelt: {}".format(f.get("name"))
+                        )
                         tax_ok = False
                     if f.get("lifecycle") not in LIFECYCLE:
-                        print("S-24 Taxonomy: FAIL — Familie %s: Lifecycle ungueltig" % f.get("id"))
+                        print(
+                            "S-24 Taxonomy: FAIL — Familie {}: Lifecycle ungueltig".format(
+                                f.get("id")
+                            )
+                        )
                         tax_ok = False
                     fam_codes.append(f.get("id"))
                     fam_names.append(f.get("name"))
                     cat_ids = [c2.get("id") for c2 in f.get("categories") or []]
                     if len(cat_ids) != len(set(cat_ids)):
                         print(
-                            "S-24 Taxonomy: FAIL — Familie %s: Kategorie-Codes doppelt"
-                            % f.get("id")
+                            "S-24 Taxonomy: FAIL — Familie {}: Kategorie-Codes doppelt".format(
+                                f.get("id")
+                            )
                         )
                         tax_ok = False
             # TAX-CHECK-013/014: Registry-Konsistenz (jede standards.yaml-Kategorie -> Familie)
             sr = _py.safe_load(
-                open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8")
+                open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8")  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             )
             fam_set = set(fam_names)
             missing = set()
@@ -642,7 +689,9 @@ def main():
                     missing.add(cat)
             if missing:
                 print(
-                    "S-24 Taxonomy: FAIL — Kategorien ohne Taxonomie-Familie: %s" % sorted(missing)
+                    "S-24 Taxonomy: FAIL — Kategorien ohne Taxonomie-Familie: {}".format(
+                        sorted(missing)
+                    )
                 )
                 tax_ok = False
             n_std = sum(
@@ -660,8 +709,8 @@ def main():
             )
         except ImportError:
             print("S-24 Taxonomy: WARN (Fallback-Modus, PyYAML fehlt)")
-        except Exception as e:
-            print("S-24 Taxonomy: FAIL — %s" % str(e)[:120])
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
+            print("S-24 Taxonomy: FAIL — {}".format(str(e)[:120]))
             tax_ok = False
     if not tax_ok:
         fails += 1
@@ -675,7 +724,7 @@ def main():
 
         _n = 0
         for _f in sorted(_g2.glob(os.path.join(ROOT, "standards", "**", "*.md"), recursive=True)):
-            _t = open(_f, encoding="utf-8").read()
+            _t = open(_f, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             _m = re.match(r"^---\n(.*?)\n----\n", _t, re.S) or re.match(
                 r"^---\n(.*?)\n---\n", _t, re.S
             )
@@ -685,9 +734,11 @@ def main():
                 _d = _fy.safe_load(_m.group(1))
                 if not (isinstance(_d, dict) and "standard" in _d):
                     raise ValueError("kein 'standard:'-Objekt")
-            except Exception as _e:
+            except Exception as _e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 print(
-                    "S-25 Frontmatter-YAML: FAIL — %s: %s" % (os.path.basename(_f), str(_e)[:100])
+                    "S-25 Frontmatter-YAML: FAIL — {}: {}".format(
+                        os.path.basename(_f), str(_e)[:100]
+                    )
                 )
                 fm_ok = False
             _n += 1
@@ -744,26 +795,26 @@ def main():
     ]
     for sid, name, cmd in stages:
         try:
-            r = subprocess.run(cmd, capture_output=True, text=True)
+            r = subprocess.run(cmd, capture_output=True, text=True, check=False)
         except OSError as _e:
-            print("%s %s: FAIL (Stage nicht ausfuehrbar: %s)" % (sid, name, _e))
+            print("{} {}: FAIL (Stage nicht ausfuehrbar: {})".format(sid, name, _e))
             fails += 1
             continue
         out = (r.stdout or "") + (r.stderr or "")
         missing_dep = "ModuleNotFoundError" in out and "yaml" in out
         if r.returncode == 0:
-            print("%s %s: PASS" % (sid, name))
+            print("{} {}: PASS".format(sid, name))
         elif missing_dep:
             # CI-007/CI-010 (ATC-STD-CI-001): Dependency-Fehler werden
             # klassifiziert und FAILen — kein Silent-Fallback mehr.
             print(
-                "%s %s: FAIL (DEPENDENCY_MISSING — Runner-Dependency fehlt,"
+                "{} {}: FAIL (DEPENDENCY_MISSING — Runner-Dependency fehlt,"
                 " ATC-STD-CI-001 CI-002/CI-006; kein Erfolg durch"
-                " guenstigen Runner-Zustand, CI-010)" % (sid, name)
+                " guenstigen Runner-Zustand, CI-010)".format(sid, name)
             )
             fails += 1
         else:
-            print("%s %s: FAIL" % (sid, name))
+            print("{} {}: FAIL".format(sid, name))
             for line in out.splitlines()[-12:]:
                 print("    " + line)
             fails += 1
@@ -777,7 +828,7 @@ def main():
         os.path.dirname(os.path.abspath(__file__)), "tests", "test_s19_mutation.py"
     )
     if os.path.exists(suite):
-        rc = subprocess.run([sys.executable, suite]).returncode
+        rc = subprocess.run([sys.executable, suite], check=False).returncode
         if rc != 0:
             return rc
     return 0 if fails == 0 else 1

@@ -16,7 +16,6 @@ Fail-closed: Exit 0 nur wenn (a) keine nicht-allowlisteten Fundstellen und
 """
 
 import argparse
-import io
 import os
 import re
 import subprocess
@@ -50,7 +49,7 @@ def load_allowlist(root):
     if not os.path.exists(path):
         return []
     entries = []
-    with io.open(path, encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         for line in f:
             m = re.match(r"\s*-\s*file:\s*(\S+)", line)
             if m:
@@ -66,7 +65,7 @@ def code_view_py(path):
     """Liefert je Zeilennummer die 'Code-Ansicht': Tokens ohne Strings/Kommentare."""
     views = {}
     try:
-        with io.open(path, encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             toks = list(tokenize.generate_tokens(f.readline))
     except (SyntaxError, tokenize.TokenError, UnicodeDecodeError):
         return None  # unparsebar -> vom Syntax-/Test-Gate abgedeckt, hier ueberspringen
@@ -88,7 +87,7 @@ def code_view_py(path):
 def code_view_rust(path):
     """Rust: Zeilenkommentare und String-Literale heuristisch entfernen."""
     views = {}
-    with io.open(path, encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         for ln, raw in enumerate(f, 1):
             line = raw
             if "//" in line:
@@ -122,7 +121,9 @@ def scan_sources(root, lang):
 def run_tests(cmd, cwd):
     env = dict(os.environ)
     env["PYTHONHASHSEED"] = "0"  # Hash-Determinismus normalisieren
-    p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, env=env)
+    p = subprocess.run(
+        cmd, shell=True, cwd=cwd, capture_output=True, env=env, check=False
+    )
     return normalize_output(p.stdout + p.stderr)
 
 
@@ -154,7 +155,9 @@ def main():
     for f, ln, desc in unallowed:
         print(f"  FINDING {f}:{ln}: {desc}")
     if unallowed:
-        print(f"  => {len(unallowed)} nicht-allowlistete Fundstelle(n) — FAIL (REQ-ENG-002)")
+        print(
+            f"  => {len(unallowed)} nicht-allowlistete Fundstelle(n) — FAIL (REQ-ENG-002)"
+        )
         ok = False
     elif allowed:
         print(
@@ -164,7 +167,9 @@ def main():
         print("  OK: keine Wall-Clock/RNG-Fundstellen im Code")
 
     if args.test_cmd:
-        print("== Saeule 2: Reproduzierbare Testlaeufe (2x, Byte-Vergleich, PYTHONHASHSEED=0) ==")
+        print(
+            "== Saeule 2: Reproduzierbare Testlaeufe (2x, Byte-Vergleich, PYTHONHASHSEED=0) =="
+        )
         out1 = run_tests(args.test_cmd, root)
         out2 = run_tests(args.test_cmd, root)
         if out1 == out2:

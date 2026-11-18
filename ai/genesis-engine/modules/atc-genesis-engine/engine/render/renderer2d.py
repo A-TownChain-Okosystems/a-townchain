@@ -7,11 +7,14 @@ Rendert alle Entities mit Position + Sprite als farbige Rechtecke.
 Bewusst simpel gehalten: kein Asset-Pipeline, keine Shader — nur der
 Beweis, dass ECS World -> sichtbares Bild funktioniert.
 """
-from core.ecs import World, Position, Sprite
+
+from core.ecs import Position, Sprite, World
 
 
 class Renderer2D:
-    def __init__(self, world: World, width: int = 800, height: int = 600, headless: bool = False):
+    def __init__(
+        self, world: World, width: int = 800, height: int = 600, headless: bool = False
+    ):
         self.world = world
         self.width = width
         self.height = height
@@ -21,6 +24,7 @@ class Renderer2D:
 
         if not headless:
             import pygame
+
             self._pygame = pygame
             pygame.init()
             self._screen = pygame.display.set_mode((width, height))

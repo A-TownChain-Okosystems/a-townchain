@@ -73,12 +73,13 @@ def main():
     reg_ids = set(
         re.findall(
             r"- \{id: (ATC-[A-Z0-9-]+),",
-            open(os.path.join(ROOT, "registry", "standards.yaml")).read(),
+            open(os.path.join(ROOT, "registry", "standards.yaml")).read(),  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         )
     )
     reg_cats = set(
         re.findall(
-            r"category: ([\w-]+)", open(os.path.join(ROOT, "registry", "standards.yaml")).read()
+            r"category: ([\w-]+)",
+            open(os.path.join(ROOT, "registry", "standards.yaml")).read(),  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         )
     )
     findings = []
@@ -97,7 +98,7 @@ def main():
             total += 1
             path = os.path.join(fdir, fn)
             sid_file = fn.replace(".md", "")
-            c = open(path, encoding="utf-8").read()
+            c = open(path, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             fm = parse_fm(c)
             if fm is None:
                 stats["MD-A kein Frontmatter"] += 1

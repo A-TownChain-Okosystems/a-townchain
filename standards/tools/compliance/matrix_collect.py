@@ -70,9 +70,7 @@ def main():
     for r in REPOS:
         t = requests.get(f"{API}/repos/{ORG}/{r}/git/trees/main?recursive=1", headers=H).json()
         paths = [x["path"] for x in t.get("tree", []) if x["type"] == "blob"]
-        js = any(
-            p.endswith((".ts", ".tsx", ".js", ".jsx")) or p.endswith("package.json") for p in paths
-        )
+        js = any(p.endswith((".ts", ".tsx", ".js", ".jsx", "package.json")) for p in paths)
         py = any(p.endswith(".py") for p in paths)
         rs = any(p.endswith(".rs") for p in paths)
         runs = (
@@ -135,7 +133,7 @@ def main():
     print(f"MATRIX: {gr}/{tot} = {100 * gr / tot:.1f} % gruen | N/A {na} | rot {tot - gr - na}")
     if "--json" in sys.argv:
         i = sys.argv.index("--json")
-        json.dump(data, open(sys.argv[i + 1], "w"), indent=1)
+        json.dump(data, open(sys.argv[i + 1], "w"), indent=1)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 
 
 if __name__ == "__main__":

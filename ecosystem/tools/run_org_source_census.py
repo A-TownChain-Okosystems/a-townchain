@@ -6,6 +6,7 @@ when its checkout exists, has a Git HEAD, matches the expected full SHA when
 one is supplied, and has no tracked/untracked modifications. Missing or dirty
 repositories remain BLOCKED/RESIDUAL; they are never silently omitted.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -24,14 +25,18 @@ except ModuleNotFoundError:
 def git(root: Path, *args: str) -> str:
     result = subprocess.run(
         ["git", "-C", str(root), *args],
-        check=True, capture_output=True, text=True,
+        check=True,
+        capture_output=True,
+        text=True,
     )
     return result.stdout.strip()
 
 
 def run_census(workspace: Path, manifest: dict) -> dict:
     repositories = []
-    active_total = sum(1 for r in manifest["repositories"] if not r.get("archived", False))
+    active_total = sum(
+        1 for r in manifest["repositories"] if not r.get("archived", False)
+    )
     scanned_active = 0
     excluded_private = 0
     for item in sorted(manifest["repositories"], key=lambda r: r["name"].lower()):
@@ -39,7 +44,7 @@ def run_census(workspace: Path, manifest: dict) -> dict:
         active = not item.get("archived", False)
         root = workspace / name
         entry = {
-            "repository": f'{manifest["owner"]}/{name}',
+            "repository": f"{manifest['owner']}/{name}",
             "name": name,
             "archived": not active,
             "private": bool(item.get("private", False)),
@@ -94,7 +99,8 @@ def run_census(workspace: Path, manifest: dict) -> dict:
         repositories.append(entry)
 
     missing_active = [
-        r["repository"] for r in repositories
+        r["repository"]
+        for r in repositories
         if not r["archived"] and r["status"] == "BLOCKED"
     ]
     return {
@@ -102,7 +108,9 @@ def run_census(workspace: Path, manifest: dict) -> dict:
         "schema_version": "1.0.0",
         "owner": manifest["owner"],
         "catalog_ref": manifest.get("catalog_ref"),
-        "status": "RESIDUAL" if not missing_active and scanned_active + excluded_private == active_total else "BLOCKED",
+        "status": "RESIDUAL"
+        if not missing_active and scanned_active + excluded_private == active_total
+        else "BLOCKED",
         "functional_verification": "NOT_PERFORMED",
         "summary": {
             "repositories_expected": len(repositories),
@@ -110,9 +118,17 @@ def run_census(workspace: Path, manifest: dict) -> dict:
             "active_scanned": scanned_active,
             "active_blocked": len(missing_active),
             "active_excluded_private": excluded_private,
-            "archived_reference_repositories": sum(1 for r in repositories if r["archived"]),
-            "source_files_scanned": sum((r["summary"] or {}).get("source_files_scanned", 0) for r in repositories),
-            "candidate_public_symbols": sum((r["summary"] or {}).get("candidate_public_symbols", 0) for r in repositories),
+            "archived_reference_repositories": sum(
+                1 for r in repositories if r["archived"]
+            ),
+            "source_files_scanned": sum(
+                (r["summary"] or {}).get("source_files_scanned", 0)
+                for r in repositories
+            ),
+            "candidate_public_symbols": sum(
+                (r["summary"] or {}).get("candidate_public_symbols", 0)
+                for r in repositories
+            ),
         },
         "blocked_active_repositories": missing_active,
         "limitations": [
@@ -120,7 +136,7 @@ def run_census(workspace: Path, manifest: dict) -> dict:
             "Regex discovery may miss generated, macro-expanded, dynamic, conditional, or indirect entrypoints.",
             "Catalog reconciliation, canonical ownership review, contract checks, tests, and exact-SHA CI evidence remain separate required gates.",
             "Archived repositories are recorded as historical reference only and are not counted as active coverage.",
-            "Private repositories without CI credential access are recorded as EXCLUDED_PRIVATE_NO_CI_ACCESS and counted in active_excluded_private; the exclusion reduces CI coverage and is documented, not silent."
+            "Private repositories without CI credential access are recorded as EXCLUDED_PRIVATE_NO_CI_ACCESS and counted in active_excluded_private; the exclusion reduces CI coverage and is documented, not silent.",
         ],
         "repositories": repositories,
     }
@@ -128,17 +144,40 @@ def run_census(workspace: Path, manifest: dict) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace", required=True, type=Path, help="Directory containing one clean Git checkout per manifest repository name")
-    parser.add_argument("--manifest", required=True, type=Path, help="Organization repository manifest JSON")
-    parser.add_argument("--output", required=True, type=Path, help="Combined census JSON output")
+    parser.add_argument(
+        "--workspace",
+        required=True,
+        type=Path,
+        help="Directory containing one clean Git checkout per manifest repository name",
+    )
+    parser.add_argument(
+        "--manifest",
+        required=True,
+        type=Path,
+        help="Organization repository manifest JSON",
+    )
+    parser.add_argument(
+        "--output", required=True, type=Path, help="Combined census JSON output"
+    )
     args = parser.parse_args()
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     if not isinstance(manifest.get("repositories"), list) or not manifest.get("owner"):
         parser.error("manifest requires owner and repositories array")
     result = run_census(args.workspace.resolve(), manifest)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"status": result["status"], **result["summary"], "output": str(args.output)}, sort_keys=True))
+    args.output.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {
+                "status": result["status"],
+                **result["summary"],
+                "output": str(args.output),
+            },
+            sort_keys=True,
+        )
+    )
     return 0 if result["status"] == "RESIDUAL" else 2
 
 

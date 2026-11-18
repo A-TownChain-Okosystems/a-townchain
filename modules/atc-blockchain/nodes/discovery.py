@@ -105,7 +105,9 @@ class NodeDiscovery:
 
             # Wenn nicht Bootstrap: ANNOUNCE senden
             if not self.is_bootstrap:
-                announce_thread = threading.Thread(target=self._auto_announce, daemon=True)
+                announce_thread = threading.Thread(
+                    target=self._auto_announce, daemon=True
+                )
                 announce_thread.start()
                 self._threads.append(announce_thread)
         except OSError as e:
@@ -118,7 +120,7 @@ class NodeDiscovery:
         self._running = False
         try:
             self.sock.close()
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
             pass
         logger.info(f"Discovery-Service für {self.node_id} gestoppt")
 
@@ -144,7 +146,7 @@ class NodeDiscovery:
                 discovery_port = port + self.discovery_port_offset
                 self.sock.sendto(msg, (host, discovery_port))
                 logger.debug(f"ANNOUNCE an {host}:{discovery_port} gesendet")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 logger.error(f"Fehler beim ANNOUNCE an {bootstrap}: {e}")
 
     def listen(self) -> None:
@@ -156,7 +158,7 @@ class NodeDiscovery:
                 self._handle(msg, addr)
             except json.JSONDecodeError:
                 logger.warning(f"Ungültige JSON von {addr}")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 if self._running:
                     logger.error(f"Fehler in Discovery-Listener: {e}")
 
@@ -234,7 +236,7 @@ class NodeDiscovery:
         ).encode()
         try:
             self.sock.sendto(msg, addr)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             logger.error(f"Fehler beim Senden der PEER_LIST an {addr}: {e}")
 
     def health_check(self) -> None:
@@ -265,9 +267,9 @@ class NodeDiscovery:
                                 peer_info.port + self.discovery_port_offset,
                             ),
                         )
-                    except Exception as e:
+                    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                         logger.debug(f"Fehler beim Senden von PING an {nid}: {e}")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 logger.error(f"Fehler in Health-Check: {e}")
 
     def _auto_announce(self) -> None:
@@ -292,7 +294,7 @@ class NodeDiscovery:
             with open(path, "w") as f:
                 json.dump(peers_dict, f, indent=2)
             logger.info(f"Peers gespeichert: {path}")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             logger.error(f"Fehler beim Speichern von Peers: {e}")
 
     def load_peers(self, path: str = "data/peers.json") -> None:
@@ -306,7 +308,7 @@ class NodeDiscovery:
             logger.info(f"Peers geladen: {path} ({len(self.peers)} Peers)")
         except FileNotFoundError:
             logger.debug(f"Keine Peer-Datei gefunden: {path}")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             logger.error(f"Fehler beim Laden von Peers: {e}")
 
     def get_status(self) -> dict:

@@ -15,11 +15,10 @@ import json
 import re
 import subprocess
 import sys
+import tomllib
 import urllib.error
 import urllib.request
 from pathlib import Path
-
-import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_NAMES = {
@@ -33,7 +32,9 @@ MANIFEST_NAMES = {
 
 
 def run(*args: str, input: str | None = None) -> str:
-    p = subprocess.run(args, cwd=ROOT, text=True, input=input, capture_output=True)
+    p = subprocess.run(
+        args, cwd=ROOT, text=True, input=input, capture_output=True, check=False
+    )
     if p.returncode:
         raise RuntimeError(f"{' '.join(args)}: {p.stderr.strip()}")
     return p.stdout
@@ -151,9 +152,11 @@ def python_graph(ref: str, paths: list[str], graph: dict):
             raw = read_at(ref, path) or ""
             for line in raw.splitlines():
                 line = line.strip()
-                if not line or line.startswith("#") or line.startswith("-"):
+                if not line or line.startswith(("#", "-")):
                     continue
-                m = re.match(r"([A-Za-z0-9_.-]+)\s*(==|~=|>=|<=|>|<)?\s*([^;\s]+)?", line)
+                m = re.match(
+                    r"([A-Za-z0-9_.-]+)\s*(==|~=|>=|<=|>|<)?\s*([^;\s]+)?", line
+                )
                 if m:
                     add(
                         graph,
@@ -166,7 +169,9 @@ def python_graph(ref: str, paths: list[str], graph: dict):
 
 def action_graph(ref: str, paths: list[str], graph: dict):
     for path in paths:
-        if not (path.startswith(".github/workflows/") and path.endswith((".yml", ".yaml"))):
+        if not (
+            path.startswith(".github/workflows/") and path.endswith((".yml", ".yaml"))
+        ):
             continue
         raw = read_at(ref, path) or ""
         for owner, repo, version in re.findall(
@@ -221,7 +226,9 @@ def osv_query(dep: dict) -> list[dict]:
         with urllib.request.urlopen(req, timeout=20) as r:
             return json.loads(r.read().decode()).get("vulns", []) or []
     except (urllib.error.URLError, TimeoutError) as e:
-        raise RuntimeError(f"OSV query failed for {ecosystem}:{dep['name']}@{version}: {e}")
+        raise RuntimeError(
+            f"OSV query failed for {ecosystem}:{dep['name']}@{version}: {e}"
+        )
 
 
 def main() -> int:
@@ -238,8 +245,12 @@ def main() -> int:
         return 0
 
     base = snapshot(args.base)
-    b = {f"{d['ecosystem']}:{d['name']}@{d['version']}": d for d in base["dependencies"]}
-    h = {f"{d['ecosystem']}:{d['name']}@{d['version']}": d for d in head["dependencies"]}
+    b = {
+        f"{d['ecosystem']}:{d['name']}@{d['version']}": d for d in base["dependencies"]
+    }
+    h = {
+        f"{d['ecosystem']}:{d['name']}@{d['version']}": d for d in head["dependencies"]
+    }
     introduced = [h[k] for k in sorted(set(h) - set(b))]
     removed = sorted(set(b) - set(h))
     changed_names = sorted({(d["ecosystem"], d["name"]) for d in introduced})
@@ -260,7 +271,9 @@ def main() -> int:
         "head": args.head,
         "introduced": introduced,
         "removed": removed,
-        "changed_dependency_names": [{"ecosystem": e, "name": n} for e, n in changed_names],
+        "changed_dependency_names": [
+            {"ecosystem": e, "name": n} for e, n in changed_names
+        ],
         "vulnerabilities": findings,
     }
     Path(args.output).write_text(
@@ -273,7 +286,9 @@ def main() -> int:
     )
     if findings:
         for f in findings:
-            print(f"VULNERABILITY: {f['id']} {f['dependency']} {f.get('summary') or ''}")
+            print(
+                f"VULNERABILITY: {f['id']} {f['dependency']} {f.get('summary') or ''}"
+            )
         return 1
     print("DEPENDENCY REVIEW: PASS")
     return 0
@@ -282,6 +297,6 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         print(f"DEPENDENCY REVIEW: BLOCKED: {e}", file=sys.stderr)
         raise SystemExit(2)

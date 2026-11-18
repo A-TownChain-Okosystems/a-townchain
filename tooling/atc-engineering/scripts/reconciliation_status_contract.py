@@ -1,4 +1,5 @@
 """Fail-closed validation for reconciliation and verification status claims."""
+
 from __future__ import annotations
 
 import re
@@ -44,7 +45,9 @@ def validate_verification_claim(claim: dict[str, Any]) -> None:
     if not isinstance(scope, dict) or not scope:
         raise StatusContractError("explicit non-empty scope is required")
     if not isinstance(checked_sha, str) or not SHA40.fullmatch(checked_sha):
-        raise StatusContractError("checked_commit_sha must be a full lowercase 40-character SHA")
+        raise StatusContractError(
+            "checked_commit_sha must be a full lowercase 40-character SHA"
+        )
     if decision != "PASS":
         raise StatusContractError("verification decision must be PASS")
     if not isinstance(criteria, list) or not criteria:
@@ -64,16 +67,31 @@ def validate_verification_claim(claim: dict[str, Any]) -> None:
         if not isinstance(item, dict):
             raise StatusContractError(f"evidence {index} must be an object")
         evidence_id = item.get("evidence_id")
-        if not isinstance(evidence_id, str) or not evidence_id.strip() or evidence_id in evidence_ids:
-            raise StatusContractError(f"evidence {index} has missing or duplicate evidence_id")
+        if (
+            not isinstance(evidence_id, str)
+            or not evidence_id.strip()
+            or evidence_id in evidence_ids
+        ):
+            raise StatusContractError(
+                f"evidence {index} has missing or duplicate evidence_id"
+            )
         evidence_ids.add(evidence_id)
         head = item.get("head_sha")
         if not isinstance(head, str) or not SHA40.fullmatch(head):
-            raise StatusContractError(f"evidence {index} head_sha must be a full lowercase 40-character SHA")
+            raise StatusContractError(
+                f"evidence {index} head_sha must be a full lowercase 40-character SHA"
+            )
         if head != checked_sha:
-            raise StatusContractError("evidence head SHA does not exactly match checked_commit_sha")
-        if not isinstance(item.get("workflow_run_id"), int) or item["workflow_run_id"] <= 0:
-            raise StatusContractError(f"evidence {index} requires a positive workflow_run_id")
+            raise StatusContractError(
+                "evidence head SHA does not exactly match checked_commit_sha"
+            )
+        if (
+            not isinstance(item.get("workflow_run_id"), int)
+            or item["workflow_run_id"] <= 0
+        ):
+            raise StatusContractError(
+                f"evidence {index} requires a positive workflow_run_id"
+            )
         if not isinstance(item.get("job"), str) or not item["job"].strip():
             raise StatusContractError(f"evidence {index} requires a job identity")
         if not isinstance(item.get("step"), str) or not item["step"].strip():
@@ -81,7 +99,9 @@ def validate_verification_claim(claim: dict[str, Any]) -> None:
         artifact_sha = item.get("artifact_sha256")
         artifact_id = item.get("artifact_id")
         log_ref = item.get("log_reference")
-        if artifact_sha is not None and (not isinstance(artifact_sha, str) or not SHA256.fullmatch(artifact_sha)):
+        if artifact_sha is not None and (
+            not isinstance(artifact_sha, str) or not SHA256.fullmatch(artifact_sha)
+        ):
             raise StatusContractError(f"evidence {index} artifact_sha256 is malformed")
         artifact_evidence_valid = (
             isinstance(artifact_id, (str, int))
@@ -89,7 +109,11 @@ def validate_verification_claim(claim: dict[str, Any]) -> None:
             and isinstance(artifact_sha, str)
             and SHA256.fullmatch(artifact_sha)
         )
-        log_evidence_valid = isinstance(log_ref, str) and log_ref.startswith("https://") and len(log_ref) > 8
+        log_evidence_valid = (
+            isinstance(log_ref, str)
+            and log_ref.startswith("https://")
+            and len(log_ref) > 8
+        )
         if not artifact_evidence_valid and not log_evidence_valid:
             raise StatusContractError(
                 f"evidence {index} requires artifact_id plus SHA-256, or an HTTPS reproducible log_reference"
@@ -97,16 +121,24 @@ def validate_verification_claim(claim: dict[str, Any]) -> None:
 
     for index, criterion in enumerate(criteria):
         refs = criterion["evidence_ids"]
-        if not isinstance(refs, list) or not refs or any(ref not in evidence_ids for ref in refs):
+        if (
+            not isinstance(refs, list)
+            or not refs
+            or any(ref not in evidence_ids for ref in refs)
+        ):
             raise StatusContractError(f"criterion {index} references missing evidence")
 
     if scope.get("kind") == "organization":
         repositories = scope.get("repositories")
         covered = scope.get("evidence_repositories")
         if not isinstance(repositories, list) or not repositories:
-            raise StatusContractError("organization-wide claim requires explicit repositories")
+            raise StatusContractError(
+                "organization-wide claim requires explicit repositories"
+            )
         if not isinstance(covered, list) or set(covered) != set(repositories):
-            raise StatusContractError("organization-wide claim requires evidence for every in-scope repository")
+            raise StatusContractError(
+                "organization-wide claim requires evidence for every in-scope repository"
+            )
 
 
 def status_conclusion(status: Any) -> str:

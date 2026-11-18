@@ -37,7 +37,9 @@ def test_bootstrap_client_no_server():
     """Announce ohne laufenden Server → leere Liste (kein Crash)."""
     from bootstrap_client import BootstrapClient
 
-    bc = BootstrapClient("test-node-002", timeout=0.5, bootstrap_nodes=[("localhost", 19999)])
+    bc = BootstrapClient(
+        "test-node-002", timeout=0.5, bootstrap_nodes=[("localhost", 19999)]
+    )
     # timeout Param nicht in __init__ — teste nur dass Methode nicht crasht
     bc.bootstraps = [("localhost", 19999)]
     peers = bc.announce(timeout=0.3)
@@ -52,7 +54,7 @@ if __name__ == "__main__":
             t()
             print(f"  ✅ {t.__name__}")
             ok += 1
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             print(f"  ❌ {t.__name__}: {e}")
             fail += 1
     print(f"{ok} passed, {fail} failed")

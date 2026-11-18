@@ -114,7 +114,9 @@ def spec_metadaten(pfad: Path | None = None) -> dict:
     anzahl = re.search(r"normativ,\s*(\d+)\s*Opcodes", kopf)
     endian = re.search(r"\*\*Endianness:\*\*[^\n]*?(big|little)-endian", text)
     magic = re.search(r"Magic\s*\|\s*4\s*\|\s*ASCII\s*`([A-Z]{4})`", text)
-    version = re.search(r"Format-Version\s*\|\s*2\s*\|\s*u16 big-endian[^\n]*?`(\d+)`", text)
+    version = re.search(
+        r"Format-Version\s*\|\s*2\s*\|\s*u16 big-endian[^\n]*?`(\d+)`", text
+    )
     return {
         "spec_id": SPEC_ID,
         "spec_version": (version.group(1) if version else ""),
@@ -150,7 +152,8 @@ def render(zeilen: list[dict], meta: dict, sha: str) -> str:
         },
         "opcode_count": len(zeilen),
         "opcodes": [
-            {"opcode": z["opcode"], "name": z["name"], "operand": z["operand"]} for z in zeilen
+            {"opcode": z["opcode"], "name": z["name"], "operand": z["operand"]}
+            for z in zeilen
         ],
     }
     return json.dumps(daten, indent=2, ensure_ascii=False, sort_keys=False) + "\n"
@@ -279,7 +282,9 @@ def pruefe() -> list[str]:
         fehlt = sorted(set(soll_kodierer) - set(kodierer))
         extra = sorted(set(kodierer) - set(soll_kodierer))
         falsch = sorted(
-            n for n in set(kodierer) & set(soll_kodierer) if kodierer[n] != soll_kodierer[n]
+            n
+            for n in set(kodierer) & set(soll_kodierer)
+            if kodierer[n] != soll_kodierer[n]
         )
         fehler.append(
             "atc-core encode_canonical weicht ab: "

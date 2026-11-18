@@ -1,4 +1,5 @@
 """Laedt und validiert die kanonischen .atc-Factory-Specs (AD-20..AD-43)."""
+
 from __future__ import annotations
 
 import re
@@ -42,17 +43,14 @@ def load_spec(path: Path) -> FactorySpec:
     raw = path.read_text(encoding="utf-8")
     match = AD_RE.search(raw)
     if not match:
-        raise SpecValidationError(
-            f"{path.name}: kein '// AD-xx — Titel'-Header"
-        )
+        raise SpecValidationError(f"{path.name}: kein '// AD-xx — Titel'-Header")
 
     ad_id = int(match.group(1))
     if not COPYRIGHT_RE.search(raw):
         raise SpecValidationError(f"{path.name}: Copyright-Header fehlt")
     if FORBIDDEN_RE.search(raw):
         raise SpecValidationError(
-            f"{path.name}: verbotene Abhaengigkeit 'chronicles' "
-            "(Plattform-Trennung)"
+            f"{path.name}: verbotene Abhaengigkeit 'chronicles' (Plattform-Trennung)"
         )
 
     ad_in_name = re.search(r"_ad(\d+)\.atc$", path.name)
@@ -79,8 +77,7 @@ def load_specs(spec_dir: Path) -> dict[int, FactorySpec]:
         spec = load_spec(path)
         if spec.ad_id in specs:
             raise SpecValidationError(
-                f"AD-{spec.ad_id:02d} doppelt: "
-                f"{specs[spec.ad_id].file} vs {spec.file}"
+                f"AD-{spec.ad_id:02d} doppelt: {specs[spec.ad_id].file} vs {spec.file}"
             )
         specs[spec.ad_id] = spec
     return specs

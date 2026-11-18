@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import check_bc001_opcodes as bc  # noqa: E402
+import check_bc001_opcodes as bc
 
 # ---------------------------------------------------------------- Hilfsmittel
 
@@ -54,7 +54,12 @@ def test_19_opcodes_vollstaendig() -> None:
     tabelle = bc.spec_tabelle()
     assert len(tabelle) == 19
     assert bc.spec_metadaten()["declared_opcode_count"] == 19
-    assert [z["name"] for z in tabelle][:4] == ["ConstI64", "LoadLocal", "StoreLocal", "Add"]
+    assert [z["name"] for z in tabelle][:4] == [
+        "ConstI64",
+        "LoadLocal",
+        "StoreLocal",
+        "Add",
+    ]
     assert [z["name"] for z in tabelle][-3:] == ["Jump", "JumpIfFalse", "Pop"]
     assert [z["opcode"] for z in tabelle] == [
         "0x01",
@@ -154,7 +159,9 @@ def test_drift_bei_geaendertem_bytewert(umgebung: dict[str, Path]) -> None:
 def test_drift_bei_zusaetzlichem_opcode(umgebung: dict[str, Path]) -> None:
     text = umgebung["spec"].read_text(encoding="utf-8")
     umgebung["spec"].write_text(
-        text.replace("| `0x40` | Pop | - |", "| `0x40` | Pop | - |\n| `0x41` | Dup | - |"),
+        text.replace(
+            "| `0x40` | Pop | - |", "| `0x40` | Pop | - |\n| `0x41` | Dup | - |"
+        ),
         encoding="utf-8",
     )
     fehler = bc.pruefe()
@@ -163,7 +170,9 @@ def test_drift_bei_zusaetzlichem_opcode(umgebung: dict[str, Path]) -> None:
 
 def test_drift_bei_fehlendem_opcode(umgebung: dict[str, Path]) -> None:
     text = umgebung["spec"].read_text(encoding="utf-8")
-    umgebung["spec"].write_text(text.replace("| `0x40` | Pop | - |\n", ""), encoding="utf-8")
+    umgebung["spec"].write_text(
+        text.replace("| `0x40` | Pop | - |\n", ""), encoding="utf-8"
+    )
     fehler = bc.pruefe()
     assert any("18 Opcodes" in f or "statt 19" in f for f in fehler)
 
@@ -189,7 +198,9 @@ def test_drift_bei_veraenderter_bc002_tabelle(umgebung: dict[str, Path]) -> None
 def test_drift_im_kanonischen_kodierer(umgebung: dict[str, Path]) -> None:
     text = umgebung["bytecode"].read_text(encoding="utf-8")
     umgebung["bytecode"].write_text(
-        text.replace("Instruction::Add => out.push(0x10),", "Instruction::Add => out.push(0x50),"),
+        text.replace(
+            "Instruction::Add => out.push(0x10),", "Instruction::Add => out.push(0x50),"
+        ),
         encoding="utf-8",
     )
     fehler = bc.pruefe()

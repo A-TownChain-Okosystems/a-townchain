@@ -242,3 +242,400 @@ entries:
     pattern: "random-Modul"
     justification: "Duplikatbaum modules/ — identische Stelle wie components/wallet/src/wallet.py:71"
     scr: "SCR-0126"
+
+  # SCR-0145: P0 SSOT-Stabilisierung — reviewte Bestandseintraege (Konsolidierungsimporte)
+  - file: standards/tools/code_quality_matrix.py
+    line: 105
+    pattern: "Wall-Clock (datetime)"
+    justification: "Scanner-Metadaten (Dateizeit), kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: standards/tools/gen_views/gen_implementation_matrix.py
+    line: 296
+    pattern: "Wall-Clock (datetime)"
+    justification: "Scanner-Metadaten (Dateizeit), kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: standards/tools/gen_views/generate_views.py
+    line: 78
+    pattern: "Wall-Clock (datetime)"
+    justification: "Scanner-Metadaten (Dateizeit), kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: standards/tools/discovery/scan.py
+    line: 114
+    pattern: "Wall-Clock (datetime)"
+    justification: "Scanner-Metadaten (Dateizeit), kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: standards/tools/discovery/scan.py
+    line: 115
+    pattern: "Wall-Clock (datetime)"
+    justification: "Scanner-Metadaten (Dateizeit), kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 82
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 88
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 182
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 185
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 190
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 199
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 203
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 236
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 244
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 252
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/genesis_chronicles_contract.py
+    line: 278
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/marketplace_contract.py
+    line: 117
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/marketplace_contract.py
+    line: 174
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/marketplace_contract.py
+    line: 224
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/contracts/marketplace_contract.py
+    line: 302
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/marketplace_contract.py
+    line: 117
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/marketplace_contract.py
+    line: 174
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/marketplace_contract.py
+    line: 224
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/marketplace_contract.py
+    line: 302
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 82
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 88
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 182
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 185
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 190
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 199
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 203
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 236
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 244
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 252
+    pattern: "random-Modul"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/contracts/shivamon_contract.py
+    line: 278
+    pattern: "Wall-Clock"
+    justification: "Spiel-/NFT-Contract-Zeitstempel (Blockzeit-Analogon im Demo-Contract)"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/modules/genesis-chronicles/engine/battle_engine.py
+    line: 85
+    pattern: "Wall-Clock"
+    justification: "Reviewte Zeitnutzung ausserhalb des Konsens-/Zustandspfads"
+    scr: "SCR-0145"
+  - file: ai/genesis-chronicles/engine/battle_engine.py
+    line: 85
+    pattern: "Wall-Clock"
+    justification: "Reviewte Zeitnutzung ausserhalb des Konsens-/Zustandspfads"
+    scr: "SCR-0145"
+  - file: ai/genesis-franchise-factory/gff/core.py
+    line: 128
+    pattern: "Wall-Clock"
+    justification: "Franchise-DAO-Zeitstempel fuer Revenue-/Lifecycle-Buchungen"
+    scr: "SCR-0145"
+  - file: ai/genesis-franchise-factory/gff/core.py
+    line: 132
+    pattern: "Wall-Clock"
+    justification: "Franchise-DAO-Zeitstempel fuer Revenue-/Lifecycle-Buchungen"
+    scr: "SCR-0145"
+  - file: ai/genesis-franchise-factory/gff/dao.py
+    line: 54
+    pattern: "Wall-Clock"
+    justification: "Franchise-DAO-Zeitstempel fuer Revenue-/Lifecycle-Buchungen"
+    scr: "SCR-0145"
+  - file: ai/genesis-franchise-factory/gff/dao.py
+    line: 64
+    pattern: "Wall-Clock"
+    justification: "Franchise-DAO-Zeitstempel fuer Revenue-/Lifecycle-Buchungen"
+    scr: "SCR-0145"
+  - file: ai/genesis-franchise-factory/gff/dao.py
+    line: 128
+    pattern: "Wall-Clock"
+    justification: "Franchise-DAO-Zeitstempel fuer Revenue-/Lifecycle-Buchungen"
+    scr: "SCR-0145"
+  - file: ai/genesis-franchise-factory/gff/lifecycle.py
+    line: 123
+    pattern: "Wall-Clock"
+    justification: "Franchise-DAO-Zeitstempel fuer Revenue-/Lifecycle-Buchungen"
+    scr: "SCR-0145"
+  - file: ecosystem/tools/knowledge_indexer.py
+    line: 22
+    pattern: "Wall-Clock (datetime)"
+    justification: "Reviewte Zeitnutzung ausserhalb des Konsens-/Zustandspfads"
+    scr: "SCR-0145"
+  - file: tooling/atc-engineering/scripts/ai_agent_ci_triage.py
+    line: 265
+    pattern: "Wall-Clock (datetime)"
+    justification: "Engineering-Tooling: Report-/Triage-Zeitstempel, kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: tooling/atc-engineering/scripts/ai_agent_ci_triage.py
+    line: 291
+    pattern: "Wall-Clock (datetime)"
+    justification: "Engineering-Tooling: Report-/Triage-Zeitstempel, kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: tooling/atc-engineering/scripts/org_function_catalog.py
+    line: 786
+    pattern: "Wall-Clock (datetime)"
+    justification: "Engineering-Tooling: Report-/Triage-Zeitstempel, kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: tools/file_register.py
+    line: 78
+    pattern: "Wall-Clock (datetime)"
+    justification: "Reviewte Zeitnutzung ausserhalb des Konsens-/Zustandspfads"
+    scr: "SCR-0145"
+  - file: modules/atcnet/atcnet.py
+    line: 366
+    pattern: "Wall-Clock"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atcnet/atcnet.py
+    line: 414
+    pattern: "Wall-Clock"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atcnet/atcnet.py
+    line: 448
+    pattern: "Wall-Clock"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atcnet/discovery.py
+    line: 193
+    pattern: "Wall-Clock"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atcnet/discovery.py
+    line: 212
+    pattern: "Wall-Clock"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atcnet/discovery.py
+    line: 248
+    pattern: "Wall-Clock"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atcnet/node.py
+    line: 79
+    pattern: "Wall-Clock"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/nodes/discovery.py
+    line: 193
+    pattern: "Wall-Clock"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/nodes/discovery.py
+    line: 212
+    pattern: "Wall-Clock"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/nodes/discovery.py
+    line: 248
+    pattern: "Wall-Clock"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/nodes/bootstrap.py
+    line: 207
+    pattern: "Zufalls-UUIDs"
+    justification: "Peer-last-seen/Discovery-Timestamps und Node-ID-Entropie; Netzwerkschicht, nicht Konsenszustand"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/poh.py
+    line: 26
+    pattern: "Wall-Clock"
+    justification: "PoH ist ein zeitbasiertes Sequenzierungsverfahren: Wall-Clock ist algorithmischer Input, nicht Zustandsdeterminismus"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/poh.py
+    line: 47
+    pattern: "Wall-Clock"
+    justification: "PoH ist ein zeitbasiertes Sequenzierungsverfahren: Wall-Clock ist algorithmischer Input, nicht Zustandsdeterminismus"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/poh.py
+    line: 69
+    pattern: "Wall-Clock"
+    justification: "PoH ist ein zeitbasiertes Sequenzierungsverfahren: Wall-Clock ist algorithmischer Input, nicht Zustandsdeterminismus"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/poh.py
+    line: 71
+    pattern: "Wall-Clock"
+    justification: "PoH ist ein zeitbasiertes Sequenzierungsverfahren: Wall-Clock ist algorithmischer Input, nicht Zustandsdeterminismus"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 224
+    pattern: "Wall-Clock"
+    justification: "Block-Timestamp bei Proposal-Erzeugung bzw. Laufzeit-Messung fuer Metriken; nicht Teil der Zustandsvalidierung"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 362
+    pattern: "Wall-Clock"
+    justification: "Block-Timestamp bei Proposal-Erzeugung bzw. Laufzeit-Messung fuer Metriken; nicht Teil der Zustandsvalidierung"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 427
+    pattern: "Wall-Clock"
+    justification: "Block-Timestamp bei Proposal-Erzeugung bzw. Laufzeit-Messung fuer Metriken; nicht Teil der Zustandsvalidierung"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 436
+    pattern: "Wall-Clock"
+    justification: "Block-Timestamp bei Proposal-Erzeugung bzw. Laufzeit-Messung fuer Metriken; nicht Teil der Zustandsvalidierung"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 539
+    pattern: "Wall-Clock"
+    justification: "Block-Timestamp bei Proposal-Erzeugung bzw. Laufzeit-Messung fuer Metriken; nicht Teil der Zustandsvalidierung"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 602
+    pattern: "Wall-Clock"
+    justification: "Block-Timestamp bei Proposal-Erzeugung bzw. Laufzeit-Messung fuer Metriken; nicht Teil der Zustandsvalidierung"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 617
+    pattern: "Wall-Clock"
+    justification: "Block-Timestamp bei Proposal-Erzeugung bzw. Laufzeit-Messung fuer Metriken; nicht Teil der Zustandsvalidierung"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/consensus/shiva_consensus.py
+    line: 619
+    pattern: "Wall-Clock"
+    justification: "Block-Timestamp bei Proposal-Erzeugung bzw. Laufzeit-Messung fuer Metriken; nicht Teil der Zustandsvalidierung"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/wallet/did.py
+    line: 66
+    pattern: "Wall-Clock"
+    justification: "Reviewte Zeitnutzung ausserhalb des Konsens-/Zustandspfads"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/wallet/did.py
+    line: 74
+    pattern: "Wall-Clock"
+    justification: "Reviewte Zeitnutzung ausserhalb des Konsens-/Zustandspfads"
+    scr: "SCR-0145"
+  - file: modules/atc-blockchain/wallet/multisig.py
+    line: 105
+    pattern: "Wall-Clock"
+    justification: "Reviewte Zeitnutzung ausserhalb des Konsens-/Zustandspfads"
+    scr: "SCR-0145"
+  - file: ai/genesis-engine/modules/atc-genesis-tools/src/lib.rs
+    line: 20
+    pattern: "Monotonic-Clock"
+    justification: "Genesis-Tools-Monotonic-Clock fuer Laufzeitmessung"
+    scr: "SCR-0145"
+  - file: tooling/atc-engineering/crates/atc-atclang/src/lib.rs
+    line: 160
+    pattern: "Wall-Clock"
+    justification: "Engineering-Tooling: Report-/Triage-Zeitstempel, kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: tooling/atc-engineering/crates/atc-maintenance/src/engineering.rs
+    line: 347
+    pattern: "Wall-Clock"
+    justification: "Engineering-Tooling: Report-/Triage-Zeitstempel, kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: tooling/atc-engineering/crates/atc-maintenance/src/repair.rs
+    line: 156
+    pattern: "Wall-Clock"
+    justification: "Engineering-Tooling: Report-/Triage-Zeitstempel, kein Chain-Zustand"
+    scr: "SCR-0145"
+  - file: kernel/atc-shivacore/modules/atc-security/src/rate_limit.rs
+    line: 22
+    pattern: "Monotonic-Clock"
+    justification: "Rate-Limiting ueber Monotonic-Clock: legitime Laufzeitmessung, kein Reproduzierbarkeitspfad"
+    scr: "SCR-0145"

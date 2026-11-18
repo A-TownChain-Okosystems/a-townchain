@@ -4,7 +4,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "scripts" / "validate_build_evidence.py"
+MODULE_PATH = (
+    Path(__file__).resolve().parents[1] / "scripts" / "validate_build_evidence.py"
+)
 SPEC = importlib.util.spec_from_file_location("validate_build_evidence", MODULE_PATH)
 validator = importlib.util.module_from_spec(SPEC)
 assert SPEC and SPEC.loader
@@ -16,13 +18,23 @@ class BuildEvidenceValidationTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         self.report = self.root / "gate-report.json"
-        self.report.write_text(json.dumps({"schema_version": "atc.gate-report/v1", "status": "PASS"}), encoding="utf-8")
+        self.report.write_text(
+            json.dumps({"schema_version": "atc.gate-report/v1", "status": "PASS"}),
+            encoding="utf-8",
+        )
         self.sha = "a" * 40
 
     def tearDown(self):
         self.temp.cleanup()
 
-    def validate(self, report_path=None, expected_sha=None, checked_out_sha=None, run_id="123", run_attempt="1"):
+    def validate(
+        self,
+        report_path=None,
+        expected_sha=None,
+        checked_out_sha=None,
+        run_id="123",
+        run_attempt="1",
+    ):
         return validator.validate_report(
             report_path or self.report,
             expected_sha if expected_sha is not None else self.sha,
@@ -50,7 +62,9 @@ class BuildEvidenceValidationTests(unittest.TestCase):
             self.validate()
 
     def test_missing_or_wrong_schema_fails_closed(self):
-        self.report.write_text(json.dumps({"schema_version": "wrong/v9"}), encoding="utf-8")
+        self.report.write_text(
+            json.dumps({"schema_version": "wrong/v9"}), encoding="utf-8"
+        )
         with self.assertRaisesRegex(ValueError, "schema_version"):
             self.validate()
 
@@ -76,8 +90,14 @@ class BuildEvidenceValidationTests(unittest.TestCase):
         binary = self.root / "atc-audit-cli"
         binary.write_bytes(b"test binary")
         manifest = validator.build_manifest(
-            self.report, binary, self.sha, self.sha, "123", "1",
-            "owner/repo", "owner/repo/.github/workflows/engineering-ci.yml@refs/heads/main",
+            self.report,
+            binary,
+            self.sha,
+            self.sha,
+            "123",
+            "1",
+            "owner/repo",
+            "owner/repo/.github/workflows/engineering-ci.yml@refs/heads/main",
             json.loads(self.report.read_text(encoding="utf-8")),
         )
         self.assertEqual(manifest["source_sha"], self.sha)
@@ -87,8 +107,15 @@ class BuildEvidenceValidationTests(unittest.TestCase):
     def test_missing_binary_fails_closed(self):
         with self.assertRaisesRegex(ValueError, "release binary is missing"):
             validator.build_manifest(
-                self.report, self.root / "missing-binary", self.sha, self.sha, "123", "1",
-                "owner/repo", "workflow-ref", json.loads(self.report.read_text(encoding="utf-8")),
+                self.report,
+                self.root / "missing-binary",
+                self.sha,
+                self.sha,
+                "123",
+                "1",
+                "owner/repo",
+                "workflow-ref",
+                json.loads(self.report.read_text(encoding="utf-8")),
             )
 
 

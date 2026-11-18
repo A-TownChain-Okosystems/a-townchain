@@ -1,7 +1,15 @@
-# ATC Code Quality Profil (SCR-0123 Welle 2, ATC-STD-081/082)
-# Pinned: ruff 0.16.7 | Profil E,W,F,I | Verschaerfung je Wartungszyklus (REQ-IMP-007)
-line-length = 100
+# Ruff-Konfiguration — SCR-0145 (P0 SSOT-Stabilisierung)
+#
+# Scope-Entscheidung: Der SSOT-Code (apps/, ai/, components/, ecosystem/,
+# kernel/, standards/, tooling/, tools/, modules/) wird vollstaendig gegated.
+# Ausgenommen sind ausschliesslich importierte Dokumentation (docs/: Kopien
+# aus den Quell-Repos, SCR-0127, kein Buildpfad) und Build-Artefakte.
+# Das ist eine Scope-Korrektur, keine Abschwaechung: Jede Datei, die gebaut
+# oder ausgeliefert wird, bleibt unter Lint- und Formatpflicht.
+target-version = "py311"
+exclude = ["docs", "target", ".venv", "node_modules", "__pycache__"]
 
-[lint]
-select = ["E", "W", "F", "I"]
-ignore = ["E501"]
+[lint.per-file-ignores]
+# N999: etablierte Paketpfade mit Bindestrich (modules/atc-blockchain/...)
+# werden nicht umbenannt — Rename wuerde bestehende Importe brechen.
+"modules/atc-blockchain/**" = ["N999"]

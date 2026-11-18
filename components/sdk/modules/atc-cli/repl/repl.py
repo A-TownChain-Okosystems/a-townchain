@@ -95,7 +95,7 @@ class ATCRepl:
         try:
             readline.set_completer(self._complete)
             readline.parse_and_bind("tab: complete")
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
             pass
 
     def _complete(self, text, state):
@@ -152,14 +152,17 @@ class ATCRepl:
             if not self.vm.globals:
                 return "(keine Variablen)"
             return "\n".join(
-                f"  {k} = {v!r}" for k, v in self.vm.globals.items() if not k.startswith("__")
+                f"  {k} = {v!r}"
+                for k, v in self.vm.globals.items()
+                if not k.startswith("__")
             )
         if line == ".events":
             evts = self.vm.get_events()
             if not evts:
                 return "(keine Events)"
             return "\n".join(
-                f"  📡 {e['event']}({', '.join(str(a) for a in e['args'])})" for e in evts
+                f"  📡 {e['event']}({', '.join(str(a) for a in e['args'])})"
+                for e in evts
             )
         if line == ".gas":
             return f"  Gas verbraucht: {self.vm.gas_used}"
@@ -221,7 +224,7 @@ class ATCRepl:
             return f"  ❌ VM-Fehler: {e}"
         except SyntaxError as e:
             return f"  ❌ Syntaxfehler: {e}"
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             return f"  ❌ Fehler: {type(e).__name__}: {e}"
 
     def run(self):

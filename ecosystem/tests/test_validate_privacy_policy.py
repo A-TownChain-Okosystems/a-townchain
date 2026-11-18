@@ -37,18 +37,22 @@ class PrivacyPolicyValidatorTests(unittest.TestCase):
             "status": "DRAFT",
             "requirements": [requirement(), requirement()],
         }
-        self.assertTrue(any("duplicate requirement id" in error for error in validate(doc)))
+        self.assertTrue(
+            any("duplicate requirement id" in error for error in validate(doc))
+        )
 
     def test_verified_without_evidence_fails_closed(self):
         doc = {
             "schema_id": "ATC-PRIVACY-POLICY-001",
             "version": "1.0.0",
             "status": "DRAFT",
-            "requirements": [requirement(
-                mapping_status="MAPPED",
-                catalog_refs=["ATC-X11-FUNC-EXAMPLE"],
-                implementation_status="VERIFIED",
-            )],
+            "requirements": [
+                requirement(
+                    mapping_status="MAPPED",
+                    catalog_refs=["ATC-X11-FUNC-EXAMPLE"],
+                    implementation_status="VERIFIED",
+                )
+            ],
         }
         errors = validate(doc)
         self.assertTrue(any("requires evidence_refs" in error for error in errors))

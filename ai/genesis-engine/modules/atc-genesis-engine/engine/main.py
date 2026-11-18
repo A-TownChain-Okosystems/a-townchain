@@ -6,9 +6,11 @@ Erzeugt 5 bewegte, farbige Entities und rendert sie via Renderer2D.
 Ausfuehrung mit Display: python main.py
 Ausfuehrung headless (Test/CI, kein SDL-Fenster): python main.py --headless
 """
+
 import sys
 import time
-from core.ecs import World, Position, Velocity, Sprite, MovementSystem
+
+from core.ecs import MovementSystem, Position, Sprite, Velocity, World
 from render.renderer2d import Renderer2D
 
 
@@ -16,7 +18,13 @@ def build_demo_world() -> World:
     world = World()
     world.add_system(MovementSystem())
 
-    colors = [(255, 80, 80), (80, 255, 120), (80, 160, 255), (255, 220, 80), (200, 80, 255)]
+    colors = [
+        (255, 80, 80),
+        (80, 255, 120),
+        (80, 160, 255),
+        (255, 220, 80),
+        (200, 80, 255),
+    ]
     for i in range(5):
         eid = world.create_entity()
         world.add_component(eid, Position(x=50 + i * 100, y=50 + i * 60))

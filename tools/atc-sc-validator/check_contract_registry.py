@@ -66,7 +66,15 @@ CATEGORIES = {
     "SC-REGISTRY",
     "SC-SYSTEM",
 }
-STATUSES = {"development", "review", "audited", "deployed", "deprecated", "archived", "example"}
+STATUSES = {
+    "development",
+    "review",
+    "audited",
+    "deployed",
+    "deprecated",
+    "archived",
+    "example",
+}
 ID_PATTERN = re.compile(r"^ATC-SC-([A-Z]+)-(\d{3})$")
 
 
@@ -120,7 +128,11 @@ def sha256_of(path: Path) -> str:
 def deployment_ids(path: Path) -> set[str]:
     if not path.is_file():
         return set()
-    return set(re.findall(r"contract_id:\s*\"?([A-Z0-9-]+)\"?", path.read_text(encoding="utf-8")))
+    return set(
+        re.findall(
+            r"contract_id:\s*\"?([A-Z0-9-]+)\"?", path.read_text(encoding="utf-8")
+        )
+    )
 
 
 def discover_sources(base: Path, exclusions: list[str], root: Path) -> dict[str, Path]:
@@ -142,7 +154,9 @@ def discover_sources(base: Path, exclusions: list[str], root: Path) -> dict[str,
 # ------------------------------------------------------------------------ GATE
 
 
-def compile_contract(atc_bin: Path, target: Path, timeout: int = 60) -> tuple[bool, str]:
+def compile_contract(
+    atc_bin: Path, target: Path, timeout: int = 60
+) -> tuple[bool, str]:
     """ATCLang-Pruefung einer Quelle. Rueckgabe: (ok, Meldung)."""
     import subprocess
 
@@ -150,6 +164,7 @@ def compile_contract(atc_bin: Path, target: Path, timeout: int = 60) -> tuple[bo
         proc = subprocess.run(
             [str(atc_bin), "check", str(target)],
             capture_output=True,
+            check=False,
             text=True,
             timeout=timeout,
         )
@@ -171,6 +186,7 @@ def abi_digest(atc_bin: Path, target: Path, timeout: int = 60) -> str | None:
             capture_output=True,
             text=True,
             timeout=timeout,
+            check=False,
         )
     except (OSError, subprocess.SubprocessError):
         return None
@@ -206,28 +222,58 @@ def check_registry(
         # A1 Pflichtfelder
         missing = [f for f in REQUIRED_FIELDS if e.get(f) in (None, "")]
         if missing:
-            findings.append({"gate": "A1", "id": cid, "detail": f"Pflichtfelder fehlen: {', '.join(missing)}"})
+            findings.append(
+                {
+                    "gate": "A1",
+                    "id": cid,
+                    "detail": f"Pflichtfelder fehlen: {', '.join(missing)}",
+                }
+            )
 
         # A6 Format + Eindeutigkeit
         m = ID_PATTERN.match(cid)
         if not m:
-            findings.append({"gate": "A6", "id": cid, "detail": "ID nicht im Format ATC-SC-<KATEGORIE>-<NNN>"})
+            findings.append(
+                {
+                    "gate": "A6",
+                    "id": cid,
+                    "detail": "ID nicht im Format ATC-SC-<KATEGORIE>-<NNN>",
+                }
+            )
         else:
             num = int(m.group(2))
             if not 1 <= num <= 999:
-                findings.append({"gate": "A6", "id": cid, "detail": "Nummer ausserhalb 001..999"})
+                findings.append(
+                    {"gate": "A6", "id": cid, "detail": "Nummer ausserhalb 001..999"}
+                )
             elif e.get("category") and str(e.get("category")) != f"SC-{m.group(1)}":
                 findings.append(
-                    {"gate": "A6", "id": cid, "detail": f"Kategorie {e.get('category')} passt nicht zur ID"}
+                    {
+                        "gate": "A6",
+                        "id": cid,
+                        "detail": f"Kategorie {e.get('category')} passt nicht zur ID",
+                    }
                 )
         ids_seen[cid] = ids_seen.get(cid, 0) + 1
 
         # A7 Kategorie
         if e.get("category") not in CATEGORIES:
-            findings.append({"gate": "A7", "id": cid, "detail": f"unbekannte Kategorie: {e.get('category')}"})
+            findings.append(
+                {
+                    "gate": "A7",
+                    "id": cid,
+                    "detail": f"unbekannte Kategorie: {e.get('category')}",
+                }
+            )
 
         if e.get("status") not in STATUSES:
-            findings.append({"gate": "A5", "id": cid, "detail": f"unbekannter Status: {e.get('status')}"})
+            findings.append(
+                {
+                    "gate": "A5",
+                    "id": cid,
+                    "detail": f"unbekannter Status: {e.get('status')}",
+                }
+            )
 
         # A2 Pfad
         cpath = e.get("contract_path")
@@ -236,14 +282,26 @@ def check_registry(
         registered_paths.add(str(cpath))
         target = root / str(cpath)
         if not target.is_file():
-            findings.append({"gate": "A2", "id": cid, "detail": f"contract_path existiert nicht: {cpath}"})
+            findings.append(
+                {
+                    "gate": "A2",
+                    "id": cid,
+                    "detail": f"contract_path existiert nicht: {cpath}",
+                }
+            )
             continue
 
         # A8 Kompilierbarkeit (ATCLang-Parser + Typpruefung)
         if atc_bin is not None:
             ok, meldung = compile_contract(atc_bin, target)
             if not ok:
-                findings.append({"gate": "A8", "id": cid, "detail": f"atc check fehlgeschlagen: {meldung}"})
+                findings.append(
+                    {
+                        "gate": "A8",
+                        "id": cid,
+                        "detail": f"atc check fehlgeschlagen: {meldung}",
+                    }
+                )
 
         # A9 ABI-Drift
         if atc_bin is not None:
@@ -253,12 +311,18 @@ def check_registry(
             if status == "archived":
                 if declared_abi:
                     findings.append(
-                        {"gate": "A9", "id": cid, "detail": "archivierter Eintrag traegt abi_sha256"}
+                        {
+                            "gate": "A9",
+                            "id": cid,
+                            "detail": "archivierter Eintrag traegt abi_sha256",
+                        }
                     )
                     e.pop("abi_sha256", None)
             elif actual_abi is not None:
                 if declared_abi in (None, ""):
-                    findings.append({"gate": "A9", "id": cid, "detail": "abi_sha256 fehlt"})
+                    findings.append(
+                        {"gate": "A9", "id": cid, "detail": "abi_sha256 fehlt"}
+                    )
                     e["abi_sha256"] = actual_abi
                 elif declared_abi != actual_abi:
                     findings.append(
@@ -277,38 +341,86 @@ def check_registry(
             findings.append({"gate": "A3", "id": cid, "detail": "source_sha256 fehlt"})
             e["source_sha256"] = actual
         elif declared != actual:
-            findings.append({"gate": "A3", "id": cid, "detail": f"Quelle driftet: {declared[:12]}… != {actual[:12]}…"})
+            findings.append(
+                {
+                    "gate": "A3",
+                    "id": cid,
+                    "detail": f"Quelle driftet: {declared[:12]}… != {actual[:12]}…",
+                }
+            )
             e["source_sha256"] = actual
 
         # A5 Status-Konsistenz
         status = e.get("status")
         if status == "deployed":
             if not e.get("network"):
-                findings.append({"gate": "A5", "id": cid, "detail": "deployed ohne network"})
+                findings.append(
+                    {"gate": "A5", "id": cid, "detail": "deployed ohne network"}
+                )
             if cid not in deployed_ids:
-                findings.append({"gate": "A5", "id": cid, "detail": "deployed ohne Deploy-Record (ATC-DEP-NNNN)"})
-        if status in ("development", "review", "example", "archived") and e.get("network"):
-            findings.append({"gate": "A5", "id": cid, "detail": f"network gesetzt, obwohl Status {status}"})
+                findings.append(
+                    {
+                        "gate": "A5",
+                        "id": cid,
+                        "detail": "deployed ohne Deploy-Record (ATC-DEP-NNNN)",
+                    }
+                )
+        if status in ("development", "review", "example", "archived") and e.get(
+            "network"
+        ):
+            findings.append(
+                {
+                    "gate": "A5",
+                    "id": cid,
+                    "detail": f"network gesetzt, obwohl Status {status}",
+                }
+            )
         if e.get("verified") is True and status not in ("audited", "deployed"):
-            findings.append({"gate": "A5", "id": cid, "detail": "verified=true ohne audited/deployed"})
+            findings.append(
+                {
+                    "gate": "A5",
+                    "id": cid,
+                    "detail": "verified=true ohne audited/deployed",
+                }
+            )
         if e.get("audited") is True and not e.get("audit_ref"):
-            findings.append({"gate": "A5", "id": cid, "detail": "audited=true ohne audit_ref"})
+            findings.append(
+                {"gate": "A5", "id": cid, "detail": "audited=true ohne audit_ref"}
+            )
         if status == "archived":
             head = target.read_text(encoding="utf-8", errors="ignore")[:400].upper()
             if "ARCHIVED" not in head and "archive" not in str(cpath).lower():
-                findings.append({"gate": "A5", "id": cid, "detail": "Status archived ohne Archivmarker im Kopf"})
+                findings.append(
+                    {
+                        "gate": "A5",
+                        "id": cid,
+                        "detail": "Status archived ohne Archivmarker im Kopf",
+                    }
+                )
 
     for cid, count in ids_seen.items():
         if count > 1:
-            findings.append({"gate": "A6", "id": cid, "detail": f"ID {count}x vergeben"})
+            findings.append(
+                {"gate": "A6", "id": cid, "detail": f"ID {count}x vergeben"}
+            )
 
     # A4 Waisen
     sources = discover_sources(root / CONTRACT_BASE, reg["exclusions"], root)
     for rel in sources:
         if rel not in registered_paths:
-            findings.append({"gate": "A4", "id": "-", "detail": f"nicht registrierte Contract-Quelle: {rel}"})
+            findings.append(
+                {
+                    "gate": "A4",
+                    "id": "-",
+                    "detail": f"nicht registrierte Contract-Quelle: {rel}",
+                }
+            )
 
-    stats = {"contracts": len(entries), "sources": len(sources), "exclusions": len(reg["exclusions"])}
+    stats = {
+        "contracts": len(entries),
+        "sources": len(sources),
+        "exclusions": len(reg["exclusions"]),
+    }
     return findings, stats
 
 
@@ -353,15 +465,25 @@ def write_registry(reg: dict, path: Path) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--write-hashes", action="store_true", help="source_sha256 in der Registry aktualisieren")
-    ap.add_argument("--write-abis", action="store_true", help="abi_sha256 in der Registry aktualisieren")
+    ap.add_argument(
+        "--write-hashes",
+        action="store_true",
+        help="source_sha256 in der Registry aktualisieren",
+    )
+    ap.add_argument(
+        "--write-abis",
+        action="store_true",
+        help="abi_sha256 in der Registry aktualisieren",
+    )
     ap.add_argument("--json", action="store_true", help="Befunde als JSON")
     ap.add_argument(
         "--atc",
         default=str(ROOT / "target/debug/atc"),
         help="Pfad zum atc-Binary fuer Gate A8 (Default: target/debug/atc)",
     )
-    ap.add_argument("--skip-compile", action="store_true", help="Gate A8 (atc check) aussetzen")
+    ap.add_argument(
+        "--skip-compile", action="store_true", help="Gate A8 (atc check) aussetzen"
+    )
     args = ap.parse_args(argv)
 
     if not REGISTRY.exists():
@@ -370,7 +492,9 @@ def main(argv: list[str] | None = None) -> int:
 
     atc_bin = None if args.skip_compile else Path(args.atc)
     if atc_bin is not None and not atc_bin.exists():
-        print(f"FEHLER: atc-Binary nicht gefunden: {atc_bin} (mit --skip-compile aussetzen)")
+        print(
+            f"FEHLER: atc-Binary nicht gefunden: {atc_bin} (mit --skip-compile aussetzen)"
+        )
         return 2
 
     findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin)
@@ -378,21 +502,27 @@ def main(argv: list[str] | None = None) -> int:
     drift = [f for f in findings if f["gate"] == "A3" and "fehlt" not in f["detail"]]
     if args.write_hashes and drift:
         reg = load_registry(REGISTRY)
-        check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin, reg=reg)  # Hashes in-place nachziehen
+        check_registry(
+            ROOT, REGISTRY, DEPLOYMENTS, atc_bin, reg=reg
+        )  # Hashes in-place nachziehen
         write_registry(reg, REGISTRY)
         findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin)
 
     abi_drift = [f for f in findings if f["gate"] == "A9"]
     if args.write_abis and abi_drift:
         reg = load_registry(REGISTRY)
-        check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin, reg=reg)  # ABIs in-place nachziehen
+        check_registry(
+            ROOT, REGISTRY, DEPLOYMENTS, atc_bin, reg=reg
+        )  # ABIs in-place nachziehen
         write_registry(reg, REGISTRY)
         findings, stats = check_registry(ROOT, REGISTRY, DEPLOYMENTS, atc_bin)
 
     if args.json:
         print(json.dumps({"findings": findings, **stats}, indent=2, ensure_ascii=False))
     else:
-        print(f"Contract-Registry-Gate (SC-019): {stats['contracts']} Eintraege, {stats['sources']} Quellen")
+        print(
+            f"Contract-Registry-Gate (SC-019): {stats['contracts']} Eintraege, {stats['sources']} Quellen"
+        )
         if not findings:
             print("  GATE PASS — Registry und Quellen sind deckungsgleich")
         for f in findings:

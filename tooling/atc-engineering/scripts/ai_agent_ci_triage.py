@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Read-only, fail-closed GitHub Actions triage and repair-intake planner."""
+
 from __future__ import annotations
 
 import hashlib
@@ -8,7 +9,7 @@ import os
 import sys
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -47,27 +48,66 @@ def api_get(path: str) -> dict:
     return data
 
 
-def classify_finding(workflow: str, job: str, step_names: list[str], conclusion: str | None) -> str:
+def classify_finding(
+    workflow: str, job: str, step_names: list[str], conclusion: str | None
+) -> str:
     """Deterministic triage classification; never claims root cause is proven."""
     text = " ".join([workflow, job, *step_names, conclusion or ""]).lower()
-    if any(term in text for term in ("merge conflict", "conflict marker", "cannot be merged")):
+    if any(
+        term in text
+        for term in ("merge conflict", "conflict marker", "cannot be merged")
+    ):
         return "MERGE_CONFLICT"
-    if any(term in text for term in ("dependency review", "cargo audit", "audit", "vulnerability", "security scan")):
+    if any(
+        term in text
+        for term in (
+            "dependency review",
+            "cargo audit",
+            "audit",
+            "vulnerability",
+            "security scan",
+        )
+    ):
         return "DEPENDENCY_OR_SECURITY"
-    if any(term in text for term in ("evidence", "provenance", "gate report", "sha mismatch", "verification")):
+    if any(
+        term in text
+        for term in (
+            "evidence",
+            "provenance",
+            "gate report",
+            "sha mismatch",
+            "verification",
+        )
+    ):
         return "EVIDENCE_OR_GATE"
     if any(term in text for term in ("test", "pytest", "unittest", "regression")):
         return "TEST_FAILURE"
-    if any(term in text for term in ("fmt", "format", "clippy", "lint", "static analysis")):
+    if any(
+        term in text for term in ("fmt", "format", "clippy", "lint", "static analysis")
+    ):
         return "FORMAT_OR_STATIC_ANALYSIS"
-    if any(term in text for term in ("checkout", "download", "timeout", "network", "rate limit", "runner", "setup", "install")):
+    if any(
+        term in text
+        for term in (
+            "checkout",
+            "download",
+            "timeout",
+            "network",
+            "rate limit",
+            "runner",
+            "setup",
+            "install",
+        )
+    ):
         return "INFRASTRUCTURE_OR_SETUP"
     if conclusion in ("cancelled", "timed_out", "startup_failure", "action_required"):
         return "INFRASTRUCTURE_OR_RUN_CONTROL"
     return "UNCLASSIFIED"
 
 
-def stable_finding_id(repository: str, workflow: str, head_sha: str, job_id: Any, step_names: list[str]) -> str:
+def stable_finding_id(
+    repository: str, workflow: str, head_sha: str, job_id: Any, step_names: list[str]
+) -> str:
     canonical = json.dumps(
         [repository, workflow, head_sha, job_id, step_names],
         ensure_ascii=True,
@@ -107,12 +147,24 @@ def collect_findings(runs: list[dict]) -> list[dict]:
         run_status = run.get("status")
         if run_status == "completed" and conclusion in ("success", "skipped"):
             continue
-        if run_status not in ("queued", "in_progress", "waiting", "requested", "completed"):
+        if run_status not in (
+            "queued",
+            "in_progress",
+            "waiting",
+            "requested",
+            "completed",
+        ):
             continue
         run_sha = run.get("head_sha")
-        if not isinstance(run_sha, str) or len(run_sha) != 40 or any(c not in "0123456789abcdef" for c in run_sha):
+        if (
+            not isinstance(run_sha, str)
+            or len(run_sha) != 40
+            or any(c not in "0123456789abcdef" for c in run_sha)
+        ):
             raise ApiError(f"run {run_id} has missing or malformed head_sha")
-        jobs_data = api_get(f"/repos/{REPOSITORY}/actions/runs/{run_id}/jobs?per_page=100")
+        jobs_data = api_get(
+            f"/repos/{REPOSITORY}/actions/runs/{run_id}/jobs?per_page=100"
+        )
         jobs = jobs_data.get("jobs")
         if not isinstance(jobs, list):
             raise ApiError(f"jobs list missing for run {run_id}")
@@ -135,14 +187,16 @@ def collect_findings(runs: list[dict]) -> list[dict]:
                 step_status = step.get("status")
                 if step_status == "completed" and step_conclusion == "success":
                     continue
-                steps.append({
-                    "name": step.get("name"),
-                    "number": step.get("number"),
-                    "status": step_status,
-                    "conclusion": step_conclusion,
-                    "exit_code": None,
-                    "exit_code_note": "GitHub Actions Jobs API does not expose a reliable per-step process exit code",
-                })
+                steps.append(
+                    {
+                        "name": step.get("name"),
+                        "number": step.get("number"),
+                        "status": step_status,
+                        "conclusion": step_conclusion,
+                        "exit_code": None,
+                        "exit_code_note": "GitHub Actions Jobs API does not expose a reliable per-step process exit code",
+                    }
+                )
             step_names = [str(step.get("name") or "unnamed-step") for step in steps]
             category = classify_finding(
                 str(run.get("name") or ""),
@@ -150,39 +204,49 @@ def collect_findings(runs: list[dict]) -> list[dict]:
                 step_names,
                 str(job_conclusion or conclusion or ""),
             )
-            finding_id = stable_finding_id(REPOSITORY, str(run.get("name") or ""), run_sha, job.get("id"), step_names)
-            nonpassing_jobs.append({
-                "job_id": job.get("id"),
-                "name": job.get("name"),
-                "status": job_status,
-                "conclusion": job_conclusion,
-                "html_url": job.get("html_url"),
-                "classification": category,
-                "finding_id": finding_id,
-                "steps": steps,
-                "repair_intake": {
-                    "state": "NEEDS_DIAGNOSIS",
-                    "max_attempts": MAX_REPAIR_ATTEMPTS,
-                    "attempts_used": None,
-                    "eligible_for_repair": False,
-                    "reason": "A durable attempt ledger and a fresh diagnosis are required before repair execution.",
-                },
-            })
-        findings.append({
-            "workflow": run.get("name"),
-            "run_id": run_id,
-            "run_attempt": run.get("run_attempt"),
-            "status": run_status,
-            "conclusion": conclusion,
-            "head_sha": run_sha,
-            "sha_matches_current_triage_sha": run_sha == CURRENT_SHA,
-            "head_branch": run.get("head_branch"),
-            "event": run.get("event"),
-            "created_at": run.get("created_at"),
-            "updated_at": run.get("updated_at"),
-            "html_url": run.get("html_url"),
-            "jobs": nonpassing_jobs,
-        })
+            finding_id = stable_finding_id(
+                REPOSITORY,
+                str(run.get("name") or ""),
+                run_sha,
+                job.get("id"),
+                step_names,
+            )
+            nonpassing_jobs.append(
+                {
+                    "job_id": job.get("id"),
+                    "name": job.get("name"),
+                    "status": job_status,
+                    "conclusion": job_conclusion,
+                    "html_url": job.get("html_url"),
+                    "classification": category,
+                    "finding_id": finding_id,
+                    "steps": steps,
+                    "repair_intake": {
+                        "state": "NEEDS_DIAGNOSIS",
+                        "max_attempts": MAX_REPAIR_ATTEMPTS,
+                        "attempts_used": None,
+                        "eligible_for_repair": False,
+                        "reason": "A durable attempt ledger and a fresh diagnosis are required before repair execution.",
+                    },
+                }
+            )
+        findings.append(
+            {
+                "workflow": run.get("name"),
+                "run_id": run_id,
+                "run_attempt": run.get("run_attempt"),
+                "status": run_status,
+                "conclusion": conclusion,
+                "head_sha": run_sha,
+                "sha_matches_current_triage_sha": run_sha == CURRENT_SHA,
+                "head_branch": run.get("head_branch"),
+                "event": run.get("event"),
+                "created_at": run.get("created_at"),
+                "updated_at": run.get("updated_at"),
+                "html_url": run.get("html_url"),
+                "jobs": nonpassing_jobs,
+            }
+        )
     return findings
 
 
@@ -198,7 +262,7 @@ def write_evidence_record(triage_path: Path, report: dict, generated: str) -> No
     evidence = {
         "schema": "ATC-EVD-001",
         "schema_version": "1.0.0",
-        "id": f"EVD-{datetime.now(timezone.utc).year}-{sequence}",
+        "id": f"EVD-{datetime.now(UTC).year}-{sequence}",
         "type": "AI_AGENT_CI_TRIAGE",
         "repository": REPOSITORY or "unknown",
         "commit": CURRENT_SHA if len(CURRENT_SHA) == 40 else "unknown",
@@ -211,7 +275,10 @@ def write_evidence_record(triage_path: Path, report: dict, generated: str) -> No
             f"triage_status={report.get('status')}; finding_count={report.get('finding_count', 0)}; "
             "UNKNOWN is intentional: inventory is not complete runtime verification."
         ),
-        "integrity": {"algorithm": "SHA-256", "digest": hashlib.sha256(raw).hexdigest()},
+        "integrity": {
+            "algorithm": "SHA-256",
+            "digest": hashlib.sha256(raw).hexdigest(),
+        },
         "immutable": True,
     }
     (OUT / "evidence-record.json").write_text(
@@ -221,7 +288,7 @@ def write_evidence_record(triage_path: Path, report: dict, generated: str) -> No
 
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
-    generated = datetime.now(timezone.utc).isoformat()
+    generated = datetime.now(UTC).isoformat()
     try:
         payload = api_get(f"/repos/{REPOSITORY}/actions/runs?per_page=100")
         runs = payload.get("workflow_runs")
@@ -251,7 +318,11 @@ def main() -> int:
         "current_run_id": int(CURRENT_RUN_ID) if CURRENT_RUN_ID.isdigit() else None,
         "generated_at": generated,
         "status": status,
-        "window": {"api": "GitHub Actions runs API", "limit": 100, "pagination": "first page only"},
+        "window": {
+            "api": "GitHub Actions runs API",
+            "limit": 100,
+            "pagination": "first page only",
+        },
         "finding_count": len(findings),
         "repair_policy": {
             "max_attempts_per_finding": MAX_REPAIR_ATTEMPTS,
@@ -273,7 +344,8 @@ def main() -> int:
     triage_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     write_evidence_record(triage_path, report, generated)
     lines = [
-        "# AI agent CI triage", "",
+        "# AI agent CI triage",
+        "",
         f"- Status: **{status}**",
         f"- Repository: `{REPOSITORY}`",
         f"- Triage SHA: `{CURRENT_SHA}`",
@@ -282,23 +354,34 @@ def main() -> int:
         "- Source mutations: none",
         "- Automatic merge: disabled",
         "- Repair execution: disabled pending durable attempt ledger and reviewed executor",
-        "- A run inventory is not a substitute for full log and exit-code verification.", "",
+        "- A run inventory is not a substitute for full log and exit-code verification.",
+        "",
     ]
     for item in findings:
-        lines.extend([
-            f"## {item.get('workflow') or 'Unnamed workflow'} — run {item['run_id']}",
-            f"- Status/conclusion: `{item.get('status')}` / `{item.get('conclusion')}`",
-            f"- Head SHA: `{item.get('head_sha')}`",
-            f"- Current triage SHA match: `{item.get('sha_matches_current_triage_sha')}`",
-            f"- Run: {item.get('html_url')}",
-        ])
+        lines.extend(
+            [
+                f"## {item.get('workflow') or 'Unnamed workflow'} — run {item['run_id']}",
+                f"- Status/conclusion: `{item.get('status')}` / `{item.get('conclusion')}`",
+                f"- Head SHA: `{item.get('head_sha')}`",
+                f"- Current triage SHA match: `{item.get('sha_matches_current_triage_sha')}`",
+                f"- Run: {item.get('html_url')}",
+            ]
+        )
         if not item["jobs"]:
-            lines.append("- No non-passing job details were returned; inspect the run directly.")
+            lines.append(
+                "- No non-passing job details were returned; inspect the run directly."
+            )
         for job in item["jobs"]:
-            lines.append(f"- Job {job.get('job_id')} — {job.get('name')}: {job.get('status')} / {job.get('conclusion')}; class={job.get('classification')}; finding={job.get('finding_id')} ({job.get('html_url')})")
-            lines.append(f"  - Repair intake: {job['repair_intake']['state']}; eligible={job['repair_intake']['eligible_for_repair']}; attempts used=unknown")
+            lines.append(
+                f"- Job {job.get('job_id')} — {job.get('name')}: {job.get('status')} / {job.get('conclusion')}; class={job.get('classification')}; finding={job.get('finding_id')} ({job.get('html_url')})"
+            )
+            lines.append(
+                f"  - Repair intake: {job['repair_intake']['state']}; eligible={job['repair_intake']['eligible_for_repair']}; attempts used=unknown"
+            )
             for step in job["steps"]:
-                lines.append(f"  - Step {step.get('number')} — {step.get('name')}: {step.get('status')} / {step.get('conclusion')}; exit_code=null")
+                lines.append(
+                    f"  - Step {step.get('number')} — {step.get('name')}: {step.get('status')} / {step.get('conclusion')}; exit_code=null"
+                )
         lines.append("")
     (OUT / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"{status}: wrote {OUT / 'triage.json'} and {OUT / 'summary.md'}")

@@ -109,7 +109,7 @@ class ATCMessage:
                 timestamp=header["ts"],
                 msg_id=header["id"],
             )
-        except Exception:
+        except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             return None
 
 
@@ -196,7 +196,9 @@ class ATCRoutingTable:
         idx = self._bucket_index(node_id)
         self.buckets[idx] = [n for n in self.buckets[idx] if n.node_id != node_id]
 
-    def find_closest(self, target_id: str, count: int = K_BUCKET_SIZE) -> list[NodeInfo]:
+    def find_closest(
+        self, target_id: str, count: int = K_BUCKET_SIZE
+    ) -> list[NodeInfo]:
         """k nächste Nodes zum Ziel finden."""
         all_nodes = [n for bucket in self.buckets for n in bucket if n.is_alive]
         target_int = int(target_id, 16)
@@ -221,7 +223,9 @@ class ATCNetNode:
     Implementiert Discovery, Routing und Message-Passing.
     """
 
-    def __init__(self, host: str = "127.0.0.1", port: int = ATCNET_PORT, atc_address: str = ""):
+    def __init__(
+        self, host: str = "127.0.0.1", port: int = ATCNET_PORT, atc_address: str = ""
+    ):
         self.node_id = generate_node_id(f"{host}:{port}")
         self.host = host
         self.port = port
@@ -290,7 +294,7 @@ class ATCNetNode:
             self._sock.sendto(data, addr)
             self.stats["sent"] += 1
             return True
-        except Exception:
+        except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             return False
 
     def broadcast(self, msg_type: MsgType, payload: bytes, ttl: int = TTL_DEFAULT):
@@ -339,7 +343,7 @@ class ATCNetNode:
                     self.stats["dropped"] += 1
             except TimeoutError:
                 continue
-            except Exception:
+            except Exception:  # noqa: BLE001, S112 — bewusst: Grenzschicht darf fremde Fehler nicht eskalieren
                 continue
 
     def _dispatch(self, msg: ATCMessage, from_addr: tuple):
@@ -368,7 +372,7 @@ class ATCNetNode:
         for handler in handlers:
             try:
                 handler(msg, from_addr)
-            except Exception:
+            except Exception:  # noqa: BLE001, S110 — bewusst: Handler-Fehler werden isoliert
                 pass
 
         # Weiterleiten wenn Broadcast und TTL > 0
@@ -412,7 +416,7 @@ class ATCNetNode:
             self.routing.add_node(node)
             # Mit eigenen Peers antworten
             self._send_peers(addr, msg.from_node)
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
             pass
 
     def _handle_get_peers(self, msg: ATCMessage, addr: tuple):
@@ -444,13 +448,15 @@ class ATCNetNode:
                     last_seen=int(time.time() * 1000),
                 )
                 self.routing.add_node(node)
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
             pass
 
     def _handle_find_node(self, msg: ATCMessage, addr: tuple):
         target_id = msg.payload.decode()
         closest = self.routing.find_closest(target_id)
-        payload = json.dumps([{"id": n.node_id, "addr": n.address} for n in closest]).encode()
+        payload = json.dumps(
+            [{"id": n.node_id, "addr": n.address} for n in closest]
+        ).encode()
         resp = ATCMessage(
             version=ATCNET_VERSION,
             msg_type=MsgType.FOUND_NODE,

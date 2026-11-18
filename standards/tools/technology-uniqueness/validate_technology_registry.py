@@ -53,9 +53,8 @@ def main():
         if tier not in VALID_TIERS:
             fails.append(f"TUD-2 {eid}: Tier '{tier}' ungueltig")
         # TUD-3
-        if cls == "PENDING-EVIDENCE":
-            if not e.get("fehlende_evidence"):
-                fails.append(f"TUD-3 {eid}: PENDING ohne fehlende_evidence-Liste")
+        if cls == "PENDING-EVIDENCE" and not e.get("fehlende_evidence"):
+            fails.append(f"TUD-3 {eid}: PENDING ohne fehlende_evidence-Liste")
         ev = e.get("evidence", {})
         if cls in ("UNIQUE", "NOVEL"):
             for k in EVIDENCE_KEYS:

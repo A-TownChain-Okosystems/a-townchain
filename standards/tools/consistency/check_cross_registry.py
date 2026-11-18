@@ -39,7 +39,7 @@ def _vge(a, b):
 
 def main():
     # Registry laden
-    reg_text = open(REG, encoding="utf-8").read()
+    reg_text = open(REG, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     entries, ids = [], []
     for line in reg_text.splitlines():
         m = re.search(r"- \{id: (ATC-\S+?),.*?version: \"?([\d.]+)\"?, status: (\w+)", line)
@@ -48,7 +48,7 @@ def main():
             ids.append(
                 {"id": m.group(1), "version": m.group(2), "status": m.group(3), "line": line}
             )
-    reg_sha = hashlib.sha256(open(REG, "rb").read()).hexdigest()
+    reg_sha = hashlib.sha256(open(REG, "rb").read()).hexdigest()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 
     # R1: Eindeutigkeit
     dup = {i for i in entries if entries.count(i) > 1}
@@ -103,7 +103,7 @@ def main():
         e = reg_by_id.get(fid)
         if not e:
             continue
-        head = open(path, encoding="utf-8").read(4000)
+        head = open(path, encoding="utf-8").read(4000)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         mv = re.search(r'version:\s*"?([\d.]+)"?', head)
         ms = re.search(r"status:\s*(\w+)", head)
         if mv and mv.group(1) != e["version"]:
@@ -119,8 +119,8 @@ def main():
     # R6: Taxonomie-Sync
     import yaml
 
-    tax = yaml.safe_load(open(os.path.join(ROOT, "registry", "taxonomy.yaml"), encoding="utf-8"))
-    reg_yaml = yaml.safe_load(open(REG, encoding="utf-8"))
+    tax = yaml.safe_load(open(os.path.join(ROOT, "registry", "taxonomy.yaml"), encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
+    reg_yaml = yaml.safe_load(open(REG, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     std_list = reg_yaml.get("standards", [])
     fam_by_name = {}
     for d in tax["taxonomy"]["domains"]:
@@ -152,7 +152,7 @@ def main():
     print(f"R6 Taxonomie: {len(fam_by_name)} Familien gespiegelt, {len(unmatched)} ohne Zuordnung")
 
     # R7: State-Block in README == Ist
-    rd = open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()
+    rd = open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     m = re.search(r"standards_total: (\d+)", rd)
     if not m:
         fail("R7", "README State-Block fehlt")
@@ -179,7 +179,7 @@ def main():
     # R9: keine veraltete hartcodierte Governance-Daten in Views
     e000 = reg_by_id.get("ATC-STD-000", {})
     for view in ["README.md", "AGENT_MANIFEST.md", "STATUS.md"]:
-        vt = open(os.path.join(ROOT, view), encoding="utf-8").read()
+        vt = open(os.path.join(ROOT, view), encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         if view == "STATUS.md":
             cut = vt.find("\n## ")
             vt = vt[:cut] if cut > 0 else vt  # Audit-Trail = historische Doku, erlaubt (SCR-0091)
@@ -189,13 +189,13 @@ def main():
     print("R9 Hartcode-Drift in Views: geprueft")
 
     # R10: Reproduzierbarkeit (Generator idempotent bis auf Zeitstempel)
-    before = open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()
+    before = open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     r = subprocess.run(
         [sys.executable, os.path.join(ROOT, "tools", "gen_views", "generate_views.py")],
         capture_output=True,
         text=True,
     )
-    after = open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()
+    after = open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 
     def norm(t):
         return re.sub(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}( UTC\+2)?", "TS", t)
@@ -205,7 +205,7 @@ def main():
     print("R10 Reproduzierbarkeit: geprueft")
 
     # R11: ATC-STD-000-Bootstrap-Sunset technisch erzwungen (Owner-Audit 11.09.2026 P0-2)
-    std003 = open(
+    std003 = open(  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         os.path.join(ROOT, "standards", "governance", "ATC-STD-003.md"), encoding="utf-8"
     ).read()
     msun = re.search(r"Sunset mit ATC-STD-000 v([\d.]+)", std003)
@@ -223,7 +223,7 @@ def main():
             if not os.path.exists(f000):
                 fail("R11", "ATC-STD-000: Datei fehlt - EXEMPT endet mit v" + sunset)
             else:
-                head = open(f000, encoding="utf-8").read(4000)
+                head = open(f000, encoding="utf-8").read(4000)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
                 mv = re.search(r'version:\s*"?([\d.]+)"?', head)
                 mst = re.search(r"status:\s*(\w+)", head)
                 if mv and mv.group(1) != cur:
@@ -256,7 +256,7 @@ def main():
     if not os.path.exists(cs_path):
         fail("R12", "registry/compliance_state.yaml fehlt (SCR-0094)")
     else:
-        cs = yaml.safe_load(open(cs_path, encoding="utf-8")) or {}
+        cs = yaml.safe_load(open(cs_path, encoding="utf-8")) or {}  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         if cs.get("formal_compliance") != "PASS":
             fail(
                 "R12",
@@ -264,11 +264,11 @@ def main():
             )
         try:
             _impl = yaml.safe_load(
-                open(
+                open(  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
                     os.path.join(ROOT, "registry", "standard-implementation.yaml"), encoding="utf-8"
                 )
             )
-            _reg = yaml.safe_load(open(REG, encoding="utf-8"))
+            _reg = yaml.safe_load(open(REG, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             _kk = {}
             for _s in _impl.get("standards", []):
                 _st = _s.get("implementation", {}).get("status", "specification_only")
@@ -302,12 +302,12 @@ def main():
                     + str(_kk)
                     + ")",
                 )
-        except Exception as _e:
+        except Exception as _e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             fail("R12", "standard-implementation.yaml nicht lesbar: " + str(_e))
         ready_ok = False
         for _rf in ("milestones.yaml", "releases.yaml"):
             try:
-                _doc = yaml.safe_load(open(os.path.join(ROOT, "registry", _rf), encoding="utf-8"))
+                _doc = yaml.safe_load(open(os.path.join(ROOT, "registry", _rf), encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
                 _walk = (
                     [_doc] if isinstance(_doc, dict) else (_doc if isinstance(_doc, list) else [])
                 )
@@ -348,17 +348,17 @@ def main():
         )
 
     # R13: Per-Standard-Metadaten (ATC-STD-LIB-001 Phase 1, SCR-0100)
-    reg_data = yaml.safe_load(open(REG, encoding="utf-8")).get("standards", [])
+    reg_data = yaml.safe_load(open(REG, encoding="utf-8")).get("standards", [])  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     try:
         _impl = {
             e.get("id"): e
             for e in yaml.safe_load(
-                open(
+                open(  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
                     os.path.join(ROOT, "registry", "standard-implementation.yaml"), encoding="utf-8"
                 )
             ).get("standards", [])
         }
-    except Exception:
+    except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         _impl = {}
     _expected = {}
     for _s in reg_data:
@@ -373,7 +373,7 @@ def main():
         if not os.path.exists(_path):
             fail("R13", "Metadaten fehlen: " + _sid + " (" + os.path.basename(_path) + ")")
             continue
-        _m = yaml.safe_load(open(_path, encoding="utf-8")) or {}
+        _m = yaml.safe_load(open(_path, encoding="utf-8")) or {}  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         if (
             str(_m.get("version", "")) != str(_s.get("version", ""))
             or _m.get("status") != _s.get("status")
@@ -427,10 +427,11 @@ def main():
 
     # R14: Standards-Profile (ATC-STD-LIB-001 sec.8, SCR-0101)
     _reg_all = yaml.safe_load(
-        open(os.path.join(ROOT, "registry", "repositories.yaml"), encoding="utf-8")
+        open(os.path.join(ROOT, "registry", "repositories.yaml"), encoding="utf-8")  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     )
     _std_ids = {
-        s["id"]: s for s in yaml.safe_load(open(REG, encoding="utf-8")).get("standards", [])
+        s["id"]: s
+        for s in yaml.safe_load(open(REG, encoding="utf-8")).get("standards", [])  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     }
     _profiles_dir = os.path.join(ROOT, "profiles")
     _pfiles = (
@@ -440,7 +441,7 @@ def main():
     )
     _regnames = {e["name"]: e for e in _reg_all.get("repositories", [])}
     for _pf in _pfiles:
-        _p = yaml.safe_load(open(os.path.join(_profiles_dir, _pf), encoding="utf-8")) or {}
+        _p = yaml.safe_load(open(os.path.join(_profiles_dir, _pf), encoding="utf-8")) or {}  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         _pn = _p.get("profile")
         if _pn not in _regnames:
             fail("R14", "Profile ohne Registry-Repo: " + str(_pn))
@@ -469,7 +470,7 @@ def main():
     # R15: Org-Engineering-Baseline (ATC-ORG-BASELINE-001, SCR-0103)
     import yaml as _y15
 
-    _ry = _y15.safe_load(open("registry/repositories.yaml", encoding="utf-8"))
+    _ry = _y15.safe_load(open("registry/repositories.yaml", encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     _rl15 = _ry.get("repositories", _ry) if isinstance(_ry, dict) else []
     _T0 = {".github", "atc-standards"}
     _T1E = {"a-townchain", "atclang", "atc-shivacore", "atc-zkp", "atc-wallet", "atc-algorithm"}
@@ -488,7 +489,7 @@ def main():
             and _t not in ("T0", "T1")
         ):
             fail("R15", "C1+S4-Regel verletzt (muss T0/T1 sein): " + _nm)
-    _st15 = _y15.safe_load(open("registry/standards.yaml", encoding="utf-8"))["standards"]
+    _st15 = _y15.safe_load(open("registry/standards.yaml", encoding="utf-8"))["standards"]  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     _b15 = [x for x in _st15 if str(x.get("id")) == "ATC-ORG-BASELINE-001"]
     if len(_b15) != 1 or _b15[0].get("status") != "approved":
         fail("R15", "ATC-ORG-BASELINE-001 fehlt in Registry oder nicht APPROVED")

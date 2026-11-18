@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Validate ATC AI code-agent policy and SHA-bound evidence schema using stdlib only."""
+
 from __future__ import annotations
 
 import json
@@ -13,8 +14,13 @@ PROFILES = ROOT / "config/ai-code-agent-quality-profiles.json"
 SCHEMA = ROOT / "schemas/ai-agent/ATC-AI-VERIFY-001.json"
 
 REQUIRED_STATUSES = {
-    "PLANNED", "IMPLEMENTED", "VERIFYING", "VERIFIED",
-    "RESIDUAL", "BLOCKED", "FAILED",
+    "PLANNED",
+    "IMPLEMENTED",
+    "VERIFYING",
+    "VERIFIED",
+    "RESIDUAL",
+    "BLOCKED",
+    "FAILED",
 }
 REQUIRED_CONTROLS = {
     "requirements_and_acceptance_criteria",
@@ -30,9 +36,15 @@ REQUIRED_CONTROLS = {
     "human_approval_required_for_merge_or_release",
 }
 EXPECTED_PROFILES = {
-    "atclang", "a-townchain", "atc-vm", "atc-algorithm",
-    "shivacore-kernel", "globus-os", "aurora-ai",
-    "atc-standards", "toolchain-genesis-engine",
+    "atclang",
+    "a-townchain",
+    "atc-vm",
+    "atc-algorithm",
+    "shivacore-kernel",
+    "globus-os",
+    "aurora-ai",
+    "atc-standards",
+    "toolchain-genesis-engine",
 }
 
 
@@ -40,7 +52,7 @@ def load_json(path: Path) -> dict:
     with path.open(encoding="utf-8") as stream:
         value = json.load(stream)
     if not isinstance(value, dict):
-        raise ValueError(f"{path.relative_to(ROOT)} must contain a JSON object")
+        raise ValueError(f"{path.relative_to(ROOT)} must contain a JSON object")  # noqa: TRY004 — CLI-Vertrag: ValueError wird von Aufrufern erwartet
     return value
 
 
@@ -62,11 +74,20 @@ def main() -> int:
     for key in sorted(REQUIRED_CONTROLS):
         if controls.get(key) is not True:
             errors.append(f"required control must be true: {key}")
-    for key in ("automatic_merge", "force_push", "gate_weakening", "test_skipping_to_hide_failure"):
+    for key in (
+        "automatic_merge",
+        "force_push",
+        "gate_weakening",
+        "test_skipping_to_hide_failure",
+    ):
         if controls.get(key) is not False:
             errors.append(f"prohibited behavior must be false: {key}")
     verification = policy.get("verification_rules", {})
-    for key in ("verified_requires_all_required_gates_pass", "verified_requires_current_full_commit_sha_match", "each_retry_requires_new_diagnosis"):
+    for key in (
+        "verified_requires_all_required_gates_pass",
+        "verified_requires_current_full_commit_sha_match",
+        "each_retry_requires_new_diagnosis",
+    ):
         if verification.get(key) is not True:
             errors.append(f"verification rule must be true: {key}")
     if verification.get("build_success_alone_is_sufficient") is not False:
@@ -79,15 +100,27 @@ def main() -> int:
         errors.append("merge authorization default must be false")
     if schema.get("$id") != "ATC-AI-VERIFY-001":
         errors.append("unexpected evidence schema id")
-    if schema.get("properties", {}).get("merge_authorized", {}).get("const") is not False:
+    if (
+        schema.get("properties", {}).get("merge_authorized", {}).get("const")
+        is not False
+    ):
         errors.append("evidence schema must reject merge_authorized=true")
-    if schema.get("properties", {}).get("commit_sha", {}).get("pattern") != "^[0-9a-f]{40}$":
+    if (
+        schema.get("properties", {}).get("commit_sha", {}).get("pattern")
+        != "^[0-9a-f]{40}$"
+    ):
         errors.append("evidence schema must require a full lowercase 40-character SHA")
     actual_profiles = set(profiles.get("profiles", {}))
     if actual_profiles != EXPECTED_PROFILES:
-        errors.append(f"profile set mismatch: expected {sorted(EXPECTED_PROFILES)}, got {sorted(actual_profiles)}")
+        errors.append(
+            f"profile set mismatch: expected {sorted(EXPECTED_PROFILES)}, got {sorted(actual_profiles)}"
+        )
     for name, checks in profiles.get("profiles", {}).items():
-        if not isinstance(checks, list) or not checks or any(not isinstance(item, str) or not item for item in checks):
+        if (
+            not isinstance(checks, list)
+            or not checks
+            or any(not isinstance(item, str) or not item for item in checks)
+        ):
             errors.append(f"profile {name} must have a non-empty list of named checks")
     if not re.fullmatch(r"^[0-9a-f]{40}$", "0" * 40):
         errors.append("internal SHA pattern self-test failed")
@@ -97,7 +130,9 @@ def main() -> int:
         for error in errors:
             print(f"- {error}")
         return 1
-    print("PASS: AI code-agent policy, component profiles, and evidence-schema invariants are valid")
+    print(
+        "PASS: AI code-agent policy, component profiles, and evidence-schema invariants are valid"
+    )
     return 0
 
 

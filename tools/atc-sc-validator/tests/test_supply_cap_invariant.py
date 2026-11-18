@@ -30,7 +30,9 @@ CAP_WEI = CAP_TOKENS * 10**DECIMALS
 UNAUTHORIZED_CAP_WEI = 21_000_000 * 10**DECIMALS
 
 CONTRACT_RE = re.compile(r"^\s*contract\s+ATCoin\b", re.MULTILINE)
-CAP_RE = re.compile(r"(?:MAX_SUPPLY|ATC_MAX_SUPPLY)\s*:\s*u(?:64|128|256)\s*=\s*([0-9_]+)")
+CAP_RE = re.compile(
+    r"(?:MAX_SUPPLY|ATC_MAX_SUPPLY)\s*:\s*u(?:64|128|256)\s*=\s*([0-9_]+)"
+)
 
 
 def atc_sources() -> list[Path]:
@@ -38,7 +40,8 @@ def atc_sources() -> list[Path]:
         p
         for p in sorted(ROOT.rglob("*.atc"))
         if p.is_file()
-        and p.relative_to(ROOT).parts[0] not in {"docs", "target", "node_modules", ".git"}
+        and p.relative_to(ROOT).parts[0]
+        not in {"docs", "target", "node_modules", ".git"}
     ]
 
 
@@ -64,7 +67,9 @@ def test_atcoin_sources_exist():
     assert sources, "kein Vertrag ATCoin gefunden"
 
 
-@pytest.mark.parametrize("path", atcoin_sources(), ids=lambda p: str(p.relative_to(ROOT)))
+@pytest.mark.parametrize(
+    "path", atcoin_sources(), ids=lambda p: str(p.relative_to(ROOT))
+)
 def test_every_atcoin_source_declares_the_owner_cap(path: Path):
     caps = caps_in(path)
     assert caps, f"{path.relative_to(ROOT)} deklariert keinen Supply-Cap"
@@ -87,13 +92,17 @@ def test_canonical_atcoin_source_declares_decimals():
     """Kanonisch ist atcoin.atc (ATC-89); dort steht die Dezimalzahl als Konstante."""
     canonical = ROOT / "apps/atc-contracts/atcoin/atcoin.atc"
     text = canonical.read_text(encoding="utf-8")
-    assert re.search(rf"ATC_DECIMALS\s*:\s*u8\s*=\s*{DECIMALS}\b", text), "Dezimalstellen != 18"
+    assert re.search(rf"ATC_DECIMALS\s*:\s*u8\s*=\s*{DECIMALS}\b", text), (
+        "Dezimalstellen != 18"
+    )
 
 
 CHAIN_ID_RE = re.compile(r"CHAIN_ID\s*:\s*u64\s*=\s*([0-9_]+)")
 
 
-@pytest.mark.parametrize("path", atcoin_sources(), ids=lambda p: str(p.relative_to(ROOT)))
+@pytest.mark.parametrize(
+    "path", atcoin_sources(), ids=lambda p: str(p.relative_to(ROOT))
+)
 def test_chain_id_is_the_atc_chain_inside_atc_chain_sources(path: Path):
     """Die Chain-ID gilt innerhalb der ATC-Blockchain (Owner 08.11.2026).
 
@@ -117,14 +126,25 @@ def test_no_token_source_declares_a_foreign_chain_id():
     Chain-Konfiguration, nicht zum Token-Zustand.
     """
     for path in atcoin_sources():
-        values = [int(m.group(1).replace("_", "")) for m in CHAIN_ID_RE.finditer(path.read_text(encoding="utf-8"))]
-        assert all(v == CHAIN_ID for v in values), f"{path.relative_to(ROOT)}: fremde Chain-ID {values}"
+        values = [
+            int(m.group(1).replace("_", ""))
+            for m in CHAIN_ID_RE.finditer(path.read_text(encoding="utf-8"))
+        ]
+        assert all(v == CHAIN_ID for v in values), (
+            f"{path.relative_to(ROOT)}: fremde Chain-ID {values}"
+        )
 
 
 def test_registry_binds_cap_to_the_canonical_bytes():
     registry = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))
-    entry = next(e for e in registry["contracts"] if e["contract_id"] == "ATC-SC-TOKEN-001")
+    entry = next(
+        e for e in registry["contracts"] if e["contract_id"] == "ATC-SC-TOKEN-001"
+    )
     canonical = ROOT / entry["contract_path"]
     actual = hashlib.sha256(canonical.read_bytes()).hexdigest()
-    assert entry["source_sha256"] == actual, "source_sha256 bindet nicht an die kanonischen Bytes"
-    assert caps_in(canonical) == [CAP_WEI], "kanonische Quelle traegt nicht genau den Owner-Cap"
+    assert entry["source_sha256"] == actual, (
+        "source_sha256 bindet nicht an die kanonischen Bytes"
+    )
+    assert caps_in(canonical) == [CAP_WEI], (
+        "kanonische Quelle traegt nicht genau den Owner-Cap"
+    )

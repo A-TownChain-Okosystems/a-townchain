@@ -83,7 +83,7 @@ def main():
         fails.append("MD-01: LICENSE fehlt")
     for f, why in COND_FILES.items():
         if not os.path.exists(os.path.join(repo, f)):
-            warns.append("MD-01: %s fehlt (Pflicht bei: %s)" % (f, why))
+            warns.append("MD-01: {} fehlt (Pflicht bei: {})".format(f, why))
 
     # MD-02 UPPER_SNAKE_CASE
     for p in iter_md(repo):
@@ -98,20 +98,20 @@ def main():
     # MD-03/04/05 Überschriften, Fences, Frontmatter-Status
     for p in iter_md(repo):
         name = os.path.basename(p)
-        text = open(p, encoding="utf-8", errors="replace").read()
+        text = open(p, encoding="utf-8", errors="replace").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         # Codeblock-Inhalte von der Struktur-Analyse ausnehmen
         prose = re.sub(r"```[a-z]*\n.*?```", "", text, flags=re.S)
         h1 = re.findall(r"^# ", prose, re.M)
         if len(h1) == 0:
             fails.append("MD-03: ohne H1: " + name)
         elif len(h1) > 1:
-            warns.append("MD-03: %dx H1 in %s (SOLLTE genau 1)" % (len(h1), name))
+            warns.append(f"MD-03: {len(h1)}x H1 in {name} (SOLLTE genau 1)")
         lv = [len(m.group(1)) for m in re.finditer(r"^(#{1,6}) ", prose, re.M)]
         if lv and max(lv) > 6:
             fails.append("MD-03: >6 Ebenen: " + name)
         for i in range(1, len(lv)):
             if lv[i] > lv[i - 1] + 1:
-                warns.append("MD-03: Ebenensprung in %s (H%d->H%d)" % (name, lv[i - 1], lv[i]))
+                warns.append(f"MD-03: Ebenensprung in {name} (H{lv[i - 1]}->H{lv[i]})")
                 break
         fence_open = False
         bad_fences = []
@@ -121,7 +121,7 @@ def main():
                     bad_fences.append(ln)
                 fence_open = not fence_open
         if bad_fences:
-            warns.append("MD-04: %d unbeschriftete Fences in %s" % (len(bad_fences), name))
+            warns.append(f"MD-04: {len(bad_fences)} unbeschriftete Fences in {name}")
         fm = re.match(r"^---\n(.*?)\n---", text, re.S)
         if fm:
             m = re.search(r"^status:\s*(\S+)", fm.group(1), re.M)
@@ -141,12 +141,12 @@ def main():
                     "stable",
                 )
             ):
-                fails.append("MD-05: Status '%s' nicht im Enum: %s" % (m.group(1), name))
+                fails.append("MD-05: Status '{}' nicht im Enum: {}".format(m.group(1), name))
 
     # MD-06 CHANGELOG
     cl = os.path.join(repo, "CHANGELOG.md")
     if os.path.exists(cl):
-        t = open(cl, encoding="utf-8").read()
+        t = open(cl, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         if not re.search(r"##\s*\[\d+\.\d+\.\d+\]", t):
             fails.append("MD-06: CHANGELOG ohne [x.y.z]-Versionseintraege")
         if not re.search(r"###\s*(Added|Changed|Fixed|Security)", t):
@@ -155,7 +155,7 @@ def main():
     # MD-07 STATUS.md maschinenlesbar
     st = os.path.join(repo, "STATUS.md")
     if os.path.exists(st):
-        t = open(st, encoding="utf-8").read()
+        t = open(st, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         if not re.search(r"\|\s*-+\s*\|", t) or not re.search(r"Repository|Version|Status", t):
             fails.append("MD-07: STATUS.md ohne Property-Value-Tabelle")
 
@@ -164,7 +164,7 @@ def main():
         os.path.exists(os.path.join(repo, "README.md"))
         and re.search(
             r"AI Agent Instructions|AGENTS\.md",
-            open(os.path.join(repo, "README.md"), encoding="utf-8").read(),
+            open(os.path.join(repo, "README.md"), encoding="utf-8").read(),  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         )
     )
     if not ag:
@@ -173,7 +173,7 @@ def main():
     # MD-09 Interne Links
     for p in [f for f in iter_md(repo)]:
         name = os.path.basename(p)
-        text = open(p, encoding="utf-8", errors="replace").read()
+        text = open(p, encoding="utf-8", errors="replace").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         if re.search(r"\]\(\s*file://", text) or re.search(
             r"\]\(https?://github\.com/A-TownChain-Okosystems/[^/]+/blob/", text
         ):
@@ -183,7 +183,7 @@ def main():
     if not os.path.isdir(os.path.join(repo, "docs")):
         warns.append("MD-10: docs/-Verzeichnis fehlt (Hierarchie §2)")
 
-    print("== MD-Compliance (ATC-STD-MD-001 v1.0.0) — %s ==" % os.path.basename(repo))
+    print("== MD-Compliance (ATC-STD-MD-001 v1.0.0) — {} ==".format(os.path.basename(repo)))
     for f in fails:
         print("  [FAIL] " + f)
     for w in warns:

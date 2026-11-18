@@ -1,7 +1,7 @@
 # 📋 File Register — a-townchain
 
 > **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos (SCR-0082, Matrix-Dim-12).
-> **Erzeugt:** 2026-11-12 23:37 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `49da88f1` (letzter Commit 2026-11-12)
+> **Erzeugt:** 2026-11-18 13:17 UTC+2 | Quelle: `git ls-tree -r origin/main` @ `5a9add0e2` (letzter Commit 2026-11-17)
 > **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig neu geschrieben.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,7 +13,7 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 11431 |
+| **Total Dateien** | 11439 |
 | **Bereiche** | 16 |
 | **Verzeichnisse** | 2017 |
 
@@ -21,12 +21,12 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Endung | Dateien |
 |--------|---------|
-| `.md` | 4108 |
+| `.md` | 4112 |
 | `.atc` | 1514 |
 | `.yaml` | 1475 |
-| `.json` | 1399 |
-| `.py` | 814 |
-| `.rs` | 567 |
+| `.json` | 1400 |
+| `.py` | 816 |
+| `.rs` | 568 |
 | `.tsx` | 377 |
 | `(keine)` | 363 |
 | `.yml` | 285 |
@@ -62,16 +62,16 @@ Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`](FILE_REGISTER_I
 
 | Bereich | Dateien | Inhalt |
 |---------|---------|--------|
-| `docs` | 5114 | Dokumentation und Archive |
-| `standards` | 2175 | Normative Standards und Werkzeuge |
+| `docs` | 5117 | Dokumentation und Archive |
+| `standards` | 2176 | Normative Standards und Werkzeuge |
 | `ecosystem` | 1263 | Katalog, Control Plane, Audit, Tests |
 | `components` | 904 | Chain-Komponenten (kanonischer Code) |
 | `apps` | 857 | Produkt-Anwendungen |
-| `ai` | 506 | KI-, Sprach- und Engine-Schicht |
+| `ai` | 508 | KI-, Sprach- und Engine-Schicht |
 | `modules` | 208 | Module ohne eigene Produktschicht |
 | `tooling` | 164 | Werkzeuge und Engineering-Gates |
 | `kernel` | 157 | Kernel- und OS-Ebenen |
-| `tools` | 28 | Einstiegspunkte |
+| `tools` | 30 | Einstiegspunkte |
 | `(root)` | 21 | Wurzeldateien |
 | `.github` | 16 | CI- und Repository-Konfiguration |
 | `"docs` | 6 | — |

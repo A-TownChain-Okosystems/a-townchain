@@ -27,7 +27,15 @@ import shutil
 import subprocess
 import sys
 
-EXCLUDE_DIRS = {".git", "target", "node_modules", "__pycache__", ".venv", "dist", "build"}
+EXCLUDE_DIRS = {
+    ".git",
+    "target",
+    "node_modules",
+    "__pycache__",
+    ".venv",
+    "dist",
+    "build",
+}
 EXCLUDE_FILES = {".DS_Store"}
 
 LAYOUT = {
@@ -81,7 +89,15 @@ NOT_CONSOLIDATED = {
 }
 
 # ecosystem: nur die produktiven Teile, nicht die 26 Spiegel unter components/
-ECOSYSTEM_KEEP = {"catalog", "control-plane", "schemas", "integration", "tools", "docs", "tests"}
+ECOSYSTEM_KEEP = {
+    "catalog",
+    "control-plane",
+    "schemas",
+    "integration",
+    "tools",
+    "docs",
+    "tests",
+}
 
 
 def head_sha(repo_dir):
@@ -89,7 +105,7 @@ def head_sha(repo_dir):
         return subprocess.check_output(
             ["git", "-C", repo_dir, "rev-parse", "HEAD"], text=True
         ).strip()
-    except Exception:
+    except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         return "unknown"
 
 
@@ -112,7 +128,9 @@ def copy_tree(src, dst, dry_run, counter):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--sources", required=True, help="Verzeichnis mit den geklonten Repos")
+    ap.add_argument(
+        "--sources", required=True, help="Verzeichnis mit den geklonten Repos"
+    )
     ap.add_argument("--target", required=True, help="Ziel-Monorepo (Arbeitskopie)")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
@@ -125,7 +143,9 @@ def main():
 
     overlap = sorted(set(LAYOUT) & set(NOT_CONSOLIDATED))
     if overlap:
-        print("FEHLER: Repos stehen in LAYOUT und NOT_CONSOLIDATED: " + ", ".join(overlap))
+        print(
+            "FEHLER: Repos stehen in LAYOUT und NOT_CONSOLIDATED: " + ", ".join(overlap)
+        )
         return 2
 
     for repo, rel_target in sorted(LAYOUT.items()):
@@ -152,7 +172,12 @@ def main():
         for name in sorted(ECOSYSTEM_KEEP):
             src = os.path.join(eco, name)
             if os.path.isdir(src):
-                copy_tree(src, os.path.join(dst_root, "ecosystem", name), args.dry_run, counter)
+                copy_tree(
+                    src,
+                    os.path.join(dst_root, "ecosystem", name),
+                    args.dry_run,
+                    counter,
+                )
         manifest.append(
             {
                 "source_repo": "A-TownChain-Okosystems/a-townchain-ecosystem",
@@ -162,10 +187,14 @@ def main():
             }
         )
 
-    print(f"{'DRY-RUN' if args.dry_run else 'KOPIERT'}: {counter[0]} Dateien aus "
-          f"{len(manifest)} Repos -> {dst_root}")
+    print(
+        f"{'DRY-RUN' if args.dry_run else 'KOPIERT'}: {counter[0]} Dateien aus "
+        f"{len(manifest)} Repos -> {dst_root}"
+    )
     for m in manifest:
-        print(f"  {m['source_repo']:45s} -> {m['target_path']:32s} {m['files']:5d} Dateien")
+        print(
+            f"  {m['source_repo']:45s} -> {m['target_path']:32s} {m['files']:5d} Dateien"
+        )
     if missing:
         print("  FEHLEND (nicht geklont):", ", ".join(missing))
     skipped = sorted(set(NOT_CONSOLIDATED) - set(LAYOUT))
@@ -177,7 +206,9 @@ def main():
         import json
 
         with open(path, "w") as fh:
-            json.dump({"consolidated_at": "2026-11-08", "entries": manifest}, fh, indent=2)
+            json.dump(
+                {"consolidated_at": "2026-11-08", "entries": manifest}, fh, indent=2
+            )
         print("  Manifest:", path)
     return 0
 

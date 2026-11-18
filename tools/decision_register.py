@@ -79,11 +79,17 @@ def validate(data: dict) -> list[str]:
             if not dec.get(field):
                 errors.append(f"{did}: Feld '{field}' fehlt")
         if dec.get("decision_status") not in STATUS_VALUES:
-            errors.append(f"{did}: decision_status '{dec.get('decision_status')}' ungueltig")
+            errors.append(
+                f"{did}: decision_status '{dec.get('decision_status')}' ungueltig"
+            )
         if dec.get("specification_status") not in STATUS_VALUES:
-            errors.append(f"{did}: specification_status '{dec.get('specification_status')}' ungueltig")
+            errors.append(
+                f"{did}: specification_status '{dec.get('specification_status')}' ungueltig"
+            )
         if dec.get("implementation_status") not in STATUS_VALUES:
-            errors.append(f"{did}: implementation_status '{dec.get('implementation_status')}' ungueltig")
+            errors.append(
+                f"{did}: implementation_status '{dec.get('implementation_status')}' ungueltig"
+            )
         if dec.get("decision") not in APPROVAL_VALUES:
             errors.append(f"{did}: decision '{dec.get('decision')}' ungueltig")
         if dec.get("decision") == "BEDINGT_FREIGEGEBEN" and not dec.get("conditions"):
@@ -172,9 +178,13 @@ def validate_chain_state(data: dict) -> list[str]:
         if dec.get("phase") not in CS_PHASES:
             errors.append(f"{did}: phase '{dec.get('phase')}' ungueltig")
         if not dec.get("consequences"):
-            errors.append(f"{did}: 'consequences' fehlt (Folgen gehoeren zur Entscheidung)")
+            errors.append(
+                f"{did}: 'consequences' fehlt (Folgen gehoeren zur Entscheidung)"
+            )
         if not dec.get("rejected"):
-            errors.append(f"{did}: 'rejected' fehlt (die verworfene Alternative muss benannt sein)")
+            errors.append(
+                f"{did}: 'rejected' fehlt (die verworfene Alternative muss benannt sein)"
+            )
 
     gate_ids = set()
     test_ids: set[str] = set()
@@ -190,7 +200,9 @@ def validate_chain_state(data: dict) -> list[str]:
             errors.append(f"{gid}: status '{gate.get('status')}' ungueltig")
         # Ein Gate ist geschlossen, wenn seine Abnahme belegt ist, nicht wenn sie
         # beschlossen ist: ohne Nachweispfad bleibt es OPEN.
-        if gate.get("status") in {"SPECIFIED", "IMPLEMENTED"} and not gate.get("evidence"):
+        if gate.get("status") in {"SPECIFIED", "IMPLEMENTED"} and not gate.get(
+            "evidence"
+        ):
             errors.append(
                 f"{gid}: status '{gate.get('status')}' ohne 'evidence' "
                 "(ein Gate ist geschlossen, wenn seine Abnahme belegt ist)"
@@ -213,11 +225,15 @@ def validate_chain_state(data: dict) -> list[str]:
         if len(gate.get("entry_tests") or []) < 3:
             errors.append(f"{gid}: weniger als drei Eintrittstests")
     if not gate_ids:
-        errors.append("chain_state: keine specification_gates (P1d-C waere ohne Spezifikation freigegeben)")
+        errors.append(
+            "chain_state: keine specification_gates (P1d-C waere ohne Spezifikation freigegeben)"
+        )
 
     entry_ids = [item.get("id", "?") for item in cs.get("p1d_c_entry") or []]
     if entry_ids != C_ENTRY_IDS:
-        errors.append(f"chain_state: erwartete P1d-C-Abnahmetests {C_ENTRY_IDS}, gefunden {entry_ids}")
+        errors.append(
+            f"chain_state: erwartete P1d-C-Abnahmetests {C_ENTRY_IDS}, gefunden {entry_ids}"
+        )
     for item in cs.get("p1d_c_entry") or []:
         cid = item.get("id", "?")
         for field in ("title", "requires"):
@@ -227,7 +243,9 @@ def validate_chain_state(data: dict) -> list[str]:
             errors.append(f"{cid}: status '{item.get('status')}' ungueltig")
 
     if not cs.get("pending"):
-        errors.append("chain_state: 'pending' fehlt (offene Punkte muessen sichtbar bleiben)")
+        errors.append(
+            "chain_state: 'pending' fehlt (offene Punkte muessen sichtbar bleiben)"
+        )
     return errors
 
 
@@ -243,8 +261,10 @@ def render(data: dict) -> str:
     lines = [
         BEGIN,
         "",
-        f"**Entscheidungsregister** (Owner, {data['decided_on']}; "
-        f"Quelle: `docs/decisions/exec-decision-register.yaml`)",
+        (
+            f"**Entscheidungsregister** (Owner, {data['decided_on']}; "
+            f"Quelle: `docs/decisions/exec-decision-register.yaml`)"
+        ),
         "",
         "| ID | Entscheidung (Titel) | Owner-Entscheidung | Ratifikation | Spezifikation | spezifiziert in | Umsetzung | Gate |",
         "|---|---|---|---|---|---|---|---|",
@@ -262,12 +282,18 @@ def render(data: dict) -> str:
                 gate=dec["gate"],
             )
         )
-    sub_gates = [(dec["id"], sub) for dec in data["decisions"] for sub in (dec.get("sub_gates") or [])]
+    sub_gates = [
+        (dec["id"], sub)
+        for dec in data["decisions"]
+        for sub in (dec.get("sub_gates") or [])
+    ]
     if sub_gates:
         lines += [
             "",
-            "**Teilauflagen** (getrennt implementierbar und testbar, je eigene Zustaendigkeit; "
-            "eine erfuellte Teilauflage hebt die naechste nicht auf)",
+            (
+                "**Teilauflagen** (getrennt implementierbar und testbar, je eigene Zustaendigkeit; "
+                "eine erfuellte Teilauflage hebt die naechste nicht auf)"
+            ),
             "",
             "| ID | Teilauflage | Zustaendigkeit | Ziel | Status | offen, weil |",
             "|---|---|---|---|---|---|",
@@ -287,25 +313,32 @@ def render(data: dict) -> str:
 
     lines += [
         "",
-        "Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** "
-        "(vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden "
-        "System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die "
-        "Gates bleiben bis zum jeweiligen Nachweis offen.",
+        (
+            "Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** "
+            "(vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden "
+            "System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die "
+            "Gates bleiben bis zum jeweiligen Nachweis offen."
+        ),
         "",
-        "Drei Ebenen: **Owner-Entscheidung** ist intern verbindlich, auch wenn der "
-        "zugehoerige Standard nicht ratifiziert ist. **Ratifikation** sagt, ob der "
-        "Standard in Kraft ist; \"nicht ratifiziert (Kandidat)\" bindet niemanden. "
-        "Ein Wert im Kandidaten bleibt **Vorschlag**, solange der Owner ihn nicht "
-        "ausdruecklich beschliesst.",
+        (
+            "Drei Ebenen: **Owner-Entscheidung** ist intern verbindlich, auch wenn der "
+            "zugehoerige Standard nicht ratifiziert ist. **Ratifikation** sagt, ob der "
+            'Standard in Kraft ist; "nicht ratifiziert (Kandidat)" bindet niemanden. '
+            "Ein Wert im Kandidaten bleibt **Vorschlag**, solange der Owner ihn nicht "
+            "ausdruecklich beschliesst."
+        ),
         "",
-        "Offen und nicht Teil dieser Freigabe: " + "; ".join(data["pending_globally"]) + ".",
+        "Offen und nicht Teil dieser Freigabe: "
+        + "; ".join(data["pending_globally"])
+        + ".",
         "",
     ]
 
     stage1 = data.get("stage1") or []
     if stage1:
         lines += [
-            "**Stufe-1-Ratifikation** (Owner, " + str(data.get("decided_on", ""))
+            "**Stufe-1-Ratifikation** (Owner, "
+            + str(data.get("decided_on", ""))
             + "; Quelle: `docs/decisions/exec-decision-register.yaml`)",
             "",
             "| ID | Gegenstand | Option | ratifiziert | Basis | Wirkung |",
@@ -326,12 +359,16 @@ def render(data: dict) -> str:
         resolved = data.get("resolved_by_ratification") or []
         if resolved:
             lines += [
-                "Durch die Stufe-1-Ratifikation entfallen: " + "; ".join(resolved) + ".",
+                "Durch die Stufe-1-Ratifikation entfallen: "
+                + "; ".join(resolved)
+                + ".",
                 "",
             ]
         lines += [
-            "Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard: der "
-            "Kandidat bleibt Kandidat, P1a bleibt offen und P2 bleibt gesperrt.",
+            (
+                "Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard: der "
+                "Kandidat bleibt Kandidat, P1a bleibt offen und P2 bleibt gesperrt."
+            ),
             "",
             "Nicht freigegeben sind weiterhin Implementierung und Release.",
             "",
@@ -348,8 +385,10 @@ def render_chain_state(data: dict) -> str:
     lines = [
         CS_BEGIN,
         "",
-        f"**Registerstand P1d-B2** (Owner, {cs['decided_on']}; Basis `{cs['basis_head']}`; "
-        "Quelle: `docs/decisions/exec-decision-register.yaml`)",
+        (
+            f"**Registerstand P1d-B2** (Owner, {cs['decided_on']}; Basis `{cs['basis_head']}`; "
+            "Quelle: `docs/decisions/exec-decision-register.yaml`)"
+        ),
         "",
         f"**{rule['id']} — {rule['title']}**",
         "",
@@ -394,8 +433,10 @@ def render_chain_state(data: dict) -> str:
     gates = cs.get("specification_gates") or []
     if gates:
         lines += [
-            "**Spezifikationsgates** (muessen vor P1d-C geschlossen sein; ein Gate ist "
-            "geschlossen, wenn seine Abnahme belegt ist, nicht wenn sie beschlossen ist)",
+            (
+                "**Spezifikationsgates** (muessen vor P1d-C geschlossen sein; ein Gate ist "
+                "geschlossen, wenn seine Abnahme belegt ist, nicht wenn sie beschlossen ist)"
+            ),
             "",
             "| ID | Spezifikation | sperrt | Abnahme |",
             "|---|---|---|---|",
@@ -418,9 +459,11 @@ def render_chain_state(data: dict) -> str:
         lines.append("")
 
     lines += [
-        "Die vier Entscheidungen sind **getroffen**, nicht umgesetzt: sie aendern keinen "
-        "Code, vergeben kein `CI_VERIFIED` und oeffnen P1d-C erst, wenn die "
-        "Spezifikationsgates belegt sind.",
+        (
+            "Die vier Entscheidungen sind **getroffen**, nicht umgesetzt: sie aendern keinen "
+            "Code, vergeben kein `CI_VERIFIED` und oeffnen P1d-C erst, wenn die "
+            "Spezifikationsgates belegt sind."
+        ),
         "",
         CS_END,
     ]
@@ -435,13 +478,17 @@ def render_gates(data: dict) -> str:
     lines = [
         G_BEGIN,
         "",
-        f"**Spezifikationsgates P1d-B2** (Owner, {cs['decided_on']}; "
-        f"Erhebung `{cs.get('specification_basis_head', cs['basis_head'])}`; "
-        "Quelle: `docs/decisions/exec-decision-register.yaml`)",
+        (
+            f"**Spezifikationsgates P1d-B2** (Owner, {cs['decided_on']}; "
+            f"Erhebung `{cs.get('specification_basis_head', cs['basis_head'])}`; "
+            "Quelle: `docs/decisions/exec-decision-register.yaml`)"
+        ),
         "",
-        "> Ein Gate ist geschlossen, wenn seine Abnahme belegt ist, nicht wenn sie "
-        "beschlossen ist. `SPECIFIED` verlangt fertige Artefakte und einen gruenen "
-        "Pruefer; `IMPLEMENTED` ist erst nach P1d-C vergebbar.",
+        (
+            "> Ein Gate ist geschlossen, wenn seine Abnahme belegt ist, nicht wenn sie "
+            "beschlossen ist. `SPECIFIED` verlangt fertige Artefakte und einen gruenen "
+            "Pruefer; `IMPLEMENTED` ist erst nach P1d-C vergebbar."
+        ),
         "",
         "| ID | Gegenstand | entscheidet | Status | Eintrittstests |",
         "|---|---|---|---|---|",
@@ -462,8 +509,10 @@ def render_gates(data: dict) -> str:
             "",
             f"### {gate['id']} {gate['title']}",
             "",
-            f"**Status:** `{gate['status']}` | **entscheidet:** {gate['decides']} | "
-            f"**sperrt:** {gate['blocks']}",
+            (
+                f"**Status:** `{gate['status']}` | **entscheidet:** {gate['decides']} | "
+                f"**sperrt:** {gate['blocks']}"
+            ),
             "",
             f"**Abnahme:** {gate['acceptance']}",
             "",
@@ -505,22 +554,29 @@ def render_gates(data: dict) -> str:
         for item in entry:
             lines.append(
                 "| {id} | {title} | {req} | {status} |".format(
-                    id=item["id"], title=item["title"], req=item["requires"], status=item["status"]
+                    id=item["id"],
+                    title=item["title"],
+                    req=item["requires"],
+                    status=item["status"],
                 )
             )
         lines += [
             "",
-            "Die acht Abnahmen stehen hier, weil ein Abnahmetest, der erst beim Umbau "
-            "entsteht, nicht mehr als Eintrittsbedingung wirken kann. `C-T-08` ist die "
-            "Verschaerfung aus der Owner-Bewertung vom 12.11.2026: `state_root_before` "
-            "wird in C Pruefgroesse und bleibt nicht Belegfeld.",
+            (
+                "Die acht Abnahmen stehen hier, weil ein Abnahmetest, der erst beim Umbau "
+                "entsteht, nicht mehr als Eintrittsbedingung wirken kann. `C-T-08` ist die "
+                "Verschaerfung aus der Owner-Bewertung vom 12.11.2026: `state_root_before` "
+                "wird in C Pruefgroesse und bleibt nicht Belegfeld."
+            ),
         ]
 
     lines += ["", G_END]
     return "\n".join(lines)
 
 
-def apply(path: Path, block: str, write: bool, begin: str = BEGIN, end: str = END) -> bool:
+def apply(
+    path: Path, block: str, write: bool, begin: str = BEGIN, end: str = END
+) -> bool:
     text = path.read_text(encoding="utf-8")
     if begin not in text or end not in text:
         raise SystemExit(f"{path}: Marker fehlen")
@@ -535,8 +591,12 @@ def apply(path: Path, block: str, write: bool, begin: str = BEGIN, end: str = EN
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Entscheidungsregister pruefen oder schreiben")
-    ap.add_argument("--write", action="store_true", help="Tabelle in die Dokumente schreiben")
+    ap = argparse.ArgumentParser(
+        description="Entscheidungsregister pruefen oder schreiben"
+    )
+    ap.add_argument(
+        "--write", action="store_true", help="Tabelle in die Dokumente schreiben"
+    )
     ap.add_argument("--check", action="store_true", help="nur pruefen")
     args = ap.parse_args()
     if not (args.write or args.check):
