@@ -29,3 +29,12 @@ Abweichungen ab, damit keine fremde Aenderung ueberschrieben wird.
 | `codeql.yml` | `config-file: ./.github/codeql/codeql-config.yml` | `paths-ignore: docs/os-docs` greift |
 
 Regelsatz, Ruff-Version (0.16.7) und Policy-SHA bleiben unveraendert.
+
+## Befund 18.11.2026 (verifiziert)
+
+- **ruff.yml**: Zwei `--exclude`-Flags. Ruff behandelt die Option als einzelnen
+  Wert; nur einer greift, `docs/os-docs` wird gescannt (3.206 Befunde in der CI,
+  lokal gruen). Patch nutzt jetzt die Komma-Liste.
+- **codeql.yml**: `init` ruft `codeql-config.yml` nicht auf, deshalb greift
+  `paths-ignore: docs/os-docs` nicht und CodeQL meldet 59 Befunde aus dem
+  importierten Snapshot. Patch ergaenzt `config-file`.
