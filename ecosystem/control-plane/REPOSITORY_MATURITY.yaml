@@ -1,0 +1,569 @@
+# REPOSITORY_MATURITY.yaml — HEAD-gebundener Reifegrad aller Org-Repositories
+# Erzeugt von ecosystem/control-plane/tools/build_repository_maturity.py
+# Stufen: ARCHIVED < SPEC_ONLY < IMPLEMENTED < TESTED < CI_VERIFIED < E2E_VERIFIED < VERIFIED
+# Kein Aufstieg ohne Nachweis: CI_VERIFIED nur bei 0 Fehl-Checks am exakten HEAD.
+schema_version: '1.0.0'
+generated_at: '2026-11-18T11:34:40Z'
+organization: A-TownChain-Okosystems
+summary:
+  repositories_total: 33
+  active: 26
+  archived: 7
+  ci_verified: 13
+  ci_red: 11
+  verified: 0
+repositories:
+  - repository: .github
+    default_branch: main
+    head_sha: 7f76c5092ceeadb2bd5be4cc4a1161decd53f1a8
+    archived: false
+    architecture_role: governance-control-plane
+    ssot_scope: "Org-Governance-Hub (Policies, Validatoren)"
+    build_manifests: 1
+    test_files: 3
+    ci_checks: 2
+    ci_success: 2
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: a-townchain
+    default_branch: main
+    head_sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+    archived: false
+    architecture_role: monorepo-ssot
+    ssot_scope: "SSOT: gesamter Code, apps/, kernel/, ai/, components/"
+    build_manifests: 114
+    test_files: 318
+    ci_checks: 15
+    ci_success: 7
+    ci_failure: 6
+    ci_status: RED
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "6 von 15 Checks am main-HEAD rot (markdownlint, ruff, npm-tests, pytest, quality, determinism) — Fix liegt in PR #116"
+      - ">=100 offene Dependabot-Alerts (API-Deckel), ueberwiegend aus Konsolidierungsimporten"
+    evidence_refs:
+      - "docs/audits/TECHNICAL_MATURITY-REPORT-2026-11-18.md"
+      - "PR #116"
+    failing_checks:
+      - "markdownlint / markdownlint-cli2"
+      - "ruff / Ruff"
+      - "npm-tests"
+      - "pytest"
+      - "quality"
+      - "determinism"
+  - repository: a-townchain-ecosystem
+    default_branch: main
+    head_sha: e18bdb90dbdd35d7ebf287162511cf4752c7c2bd
+    archived: false
+    architecture_role: control-plane
+    ssot_scope: "Governance/Integration/Evidenz, keine zweite Implementierung"
+    build_manifests: 202
+    test_files: 393
+    ci_checks: 4
+    ci_success: 2
+    ci_failure: 2
+    ci_status: RED
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "Knowledge-Indexer-Check rot"
+      - "176 Sync-Commits/Woche ohne Automatisierung"
+    failing_checks:
+      - "index"
+      - "index"
+  - repository: a-townchain-os
+    default_branch: main
+    head_sha: 8dbbb5ddfad1c170b30f3307fd9a646426d05b97
+    archived: false
+    architecture_role: kernel-runtime
+    ssot_scope: "KAI-OS Runtime -> Monorepo kernel/atc-os"
+    build_manifests: 12
+    test_files: 15
+    ci_checks: 1
+    ci_success: 1
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: a-townchain-os-docs
+    default_branch: main
+    head_sha: 35aa1492f947249ff680b4e0a42f6c1105c7467e
+    archived: false
+    architecture_role: documentation
+    ssot_scope: "Doku-Hub -> Monorepo docs/"
+    build_manifests: 110
+    test_files: 127
+    ci_checks: 6
+    ci_success: 6
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+    evidence_refs:
+      - "docs/audits/TECHNICAL_MATURITY-REPORT-2026-11-18.md"
+  - repository: atc-algorithm
+    default_branch: main
+    head_sha: f25b43383433766c43df6c5c494ecb70cdb4a4b7
+    archived: false
+    architecture_role: consensus-library
+    ssot_scope: "Konsens-/Oekonomie-Algorithmen -> components/algorithm"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 24
+    ci_success: 24
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-compute
+    default_branch: main
+    head_sha: 89d833edf338085d6141b0c703ebf92a0db83a5e
+    archived: false
+    architecture_role: compute
+    ssot_scope: "Compute-Schicht -> Monorepo apps/atc-compute"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 16
+    ci_success: 16
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-contracts
+    default_branch: main
+    head_sha: 876c03b2c8ec4916158c0a934eb2d34b8a45299c
+    archived: false
+    architecture_role: smart-contracts
+    ssot_scope: "ATCLang-Contracts -> components/contracts"
+    build_manifests: 1
+    test_files: 37
+    ci_checks: 17
+    ci_success: 16
+    ci_failure: 1
+    ci_status: RED
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "markdownlint rot"
+    failing_checks:
+      - "markdownlint / markdownlint-cli2"
+  - repository: atc-engineering
+    default_branch: main
+    head_sha: 0f94b4f7cc7fb5bfc22cd82fc923e168b16288a1
+    archived: false
+    architecture_role: engineering
+    ssot_scope: "Engineering-Tooling -> Monorepo tooling/atc-engineering"
+    build_manifests: 14
+    test_files: 11
+    ci_checks: 100
+    ci_success: 100
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-explorer
+    default_branch: main
+    head_sha: c4da05304f214bb68bd942e7705c96c35d9a18ae
+    archived: true
+    architecture_role: archived
+    ssot_scope: "Explorer-Funktion im Monorepo (apps/atc-explorer)"
+    build_manifests: 2
+    test_files: 0
+    ci_checks: 2
+    ci_success: 1
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: ARCHIVED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-ide
+    default_branch: main
+    head_sha: 84a233b4fbe559b37e3db2e6633f6b30aa443380
+    archived: false
+    architecture_role: application
+    ssot_scope: "IDE -> Monorepo apps/atc-ide"
+    build_manifests: 1
+    test_files: 1
+    ci_checks: 2
+    ci_success: 2
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-indexer
+    default_branch: main
+    head_sha: 7f3da49f30464471c8c1597ed59f6223050e79e4
+    archived: true
+    architecture_role: archived
+    ssot_scope: "Indexer-Funktion im Monorepo (apps/atc-indexer)"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 7
+    ci_success: 6
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: ARCHIVED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-interop
+    default_branch: main
+    head_sha: 5905fca02274704a00bdf708948180bc211a46d3
+    archived: true
+    architecture_role: archived
+    ssot_scope: "Interop-Funktion im Monorepo (components/interop)"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 11
+    ci_success: 10
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: ARCHIVED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-launchpad
+    default_branch: main
+    head_sha: 83067c0bd13e8d2f0db81bbd2e203e3da9ae94d9
+    archived: false
+    architecture_role: application
+    ssot_scope: "Launchpad -> Monorepo apps/atc-launchpad"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 4
+    ci_success: 3
+    ci_failure: 1
+    ci_status: RED
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "cargo-tests rot"
+      - "keine Tests"
+    failing_checks:
+      - "cargo-tests"
+  - repository: atc-marketplace
+    default_branch: main
+    head_sha: 2e2bc090c982f189566b67af9847043c59f7c103
+    archived: false
+    architecture_role: application
+    ssot_scope: "Marketplace -> Monorepo apps/atc-marketplace"
+    build_manifests: 4
+    test_files: 0
+    ci_checks: 5
+    ci_success: 4
+    ci_failure: 1
+    ci_status: RED
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "pytest rot"
+    failing_checks:
+      - "pytest"
+  - repository: atc-mining
+    default_branch: main
+    head_sha: 227f2d700307191f59596c5a78ccfd3a4b657aa9
+    archived: true
+    architecture_role: archived
+    ssot_scope: "Mining-Funktion im Monorepo (components/mining)"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 3
+    ci_success: 2
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: ARCHIVED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-node
+    default_branch: main
+    head_sha: 821d049efc5b592e4728b36b64038d4ce5e7d2c6
+    archived: false
+    architecture_role: blockchain-runtime
+    ssot_scope: "Full-Node-Runtime -> Monorepo apps/atc-node + components/node"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 16
+    ci_success: 15
+    ci_failure: 1
+    ci_status: RED
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "keine Testsuite"
+      - "reproduzierbarer Build erst mit PR #15/#16"
+      - "markdownlint rot am HEAD"
+    failing_checks:
+      - "markdownlint / markdownlint-cli2"
+  - repository: atc-oracle
+    default_branch: main
+    head_sha: 8087d34ddb8c2d40a60178e8f3b4c52ea67d52a8
+    archived: true
+    architecture_role: archived
+    ssot_scope: "Oracle-Funktion im Monorepo (components/oracle)"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 4
+    ci_success: 3
+    ci_failure: 1
+    ci_status: RED
+    maturity_level: ARCHIVED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+    failing_checks:
+      - "cargo-tests"
+  - repository: atc-sdk
+    default_branch: main
+    head_sha: 11e18587a4c2ada631af88f99e74c7582bccb92b
+    archived: false
+    architecture_role: sdk
+    ssot_scope: "SDK -> Monorepo apps/atc-sdk + components/sdk"
+    build_manifests: 7
+    test_files: 1
+    ci_checks: 37
+    ci_success: 37
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-shivacore
+    default_branch: main
+    head_sha: d817de2deccb348f7f3bc82eb13ec015992aa7b8
+    archived: false
+    architecture_role: trust-anchor
+    ssot_scope: "ShivaCore Kern -> Monorepo kernel/atc-shivacore"
+    build_manifests: 2
+    test_files: 1
+    ci_checks: 6
+    ci_success: 6
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-standards
+    default_branch: main
+    head_sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+    archived: false
+    architecture_role: governance-root
+    ssot_scope: "Normative Standards -> Monorepo standards/"
+    build_manifests: 2
+    test_files: 7
+    ci_checks: 18
+    ci_success: 17
+    ci_failure: 1
+    ci_status: RED
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "regenerate-Check rot (Generator-Drift)"
+      - "330 von 534 Standards specification_only"
+    evidence_refs:
+      - "registry/standard-implementation.yaml"
+      - "registry/standards.yaml"
+    failing_checks:
+      - "regenerate"
+  - repository: atc-storage
+    default_branch: main
+    head_sha: 230746c1dc5e4c1355c2707368de50d6c1008660
+    archived: true
+    architecture_role: archived
+    ssot_scope: "Storage-Funktion im Monorepo (components/storage)"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 2
+    ci_success: 1
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: ARCHIVED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atc-toolchain
+    default_branch: main
+    head_sha: e42aed3ece0e84c8ff59bc7000720ff3a7cf549a
+    archived: false
+    architecture_role: toolchain
+    ssot_scope: "Toolchain -> Monorepo tooling/atc-toolchain"
+    build_manifests: 0
+    test_files: 1
+    ci_checks: 4
+    ci_success: 4
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: SPEC_ONLY
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "keine Toolchain-Implementierung (Spec/Doku)"
+  - repository: atc-vm
+    default_branch: main
+    head_sha: 21132a49355eb5fd6ea4b8a7b4e4deb5d9be60f0
+    archived: false
+    architecture_role: governance-spec
+    ssot_scope: "VM-Kompatibilitaets-/Governance-Rolle, bewusst kein Code"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 37
+    ci_success: 37
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "bewusst kein Code: Governance-/Kompatibilitaetsrolle"
+  - repository: atc-wallet
+    default_branch: main
+    head_sha: 812a31d292364304c72cae8be6f448c130d7428e
+    archived: true
+    architecture_role: archived
+    ssot_scope: "Wallet-Funktion im Monorepo (components/wallet)"
+    build_manifests: 4
+    test_files: 0
+    ci_checks: 30
+    ci_success: 27
+    ci_failure: 2
+    ci_status: RED
+    maturity_level: ARCHIVED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+    failing_checks:
+      - "determinism"
+      - "cargo-tests"
+  - repository: atc-zkp
+    default_branch: main
+    head_sha: a284eeab3dfea29ad4fd56855541978e229e5dbc
+    archived: false
+    architecture_role: zkp-layer
+    ssot_scope: "ZKP-Layer -> components/zkp (R1-Skelett)"
+    build_manifests: 8
+    test_files: 7
+    ci_checks: 45
+    ci_success: 45
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: atclang
+    default_branch: main
+    head_sha: 516482abbfa93196ed44ed4c718d63ca43654d5f
+    archived: false
+    architecture_role: language
+    ssot_scope: "ATCLang Compiler/VM -> Monorepo ai/atclang"
+    build_manifests: 1
+    test_files: 6
+    ci_checks: 3
+    ci_success: 3
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: aurora-ai
+    default_branch: main
+    head_sha: 2855956b32fd47c8ba9d688493834601aaf50434
+    archived: false
+    architecture_role: ai-runtime
+    ssot_scope: "Aurora-Modell/Runtime -> Monorepo ai/aurora-ai"
+    build_manifests: 12
+    test_files: 12
+    ci_checks: 6
+    ci_success: 6
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "kein Runtime-E2E gegen GlobusOS nachgewiesen"
+  - repository: demo-repository
+    default_branch: main
+    head_sha: 58c6bf577cee26163f44ccb417f5411cfd79e937
+    archived: false
+    architecture_role: demo
+    ssot_scope: "Demo, kein Reifeziel"
+    build_manifests: 1
+    test_files: 0
+    ci_checks: 0
+    ci_success: 0
+    ci_failure: 0
+    ci_status: NONE
+    maturity_level: SPEC_ONLY
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: genesis-chronicles
+    default_branch: main
+    head_sha: 361dbc0a9e4340713c63894d5f4fb8e5bf031fb9
+    archived: false
+    architecture_role: application
+    ssot_scope: "Spiel/NFT -> Monorepo ai/genesis-chronicles"
+    build_manifests: 3
+    test_files: 1
+    ci_checks: 8
+    ci_success: 5
+    ci_failure: 3
+    ci_status: RED
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "ruff/quality/pytest rot"
+    failing_checks:
+      - "ruff / Ruff"
+      - "quality"
+      - "pytest"
+  - repository: genesis-engine
+    default_branch: main
+    head_sha: 3c2be8c11c00bf5b6a1a4de87760004e9c5d35ef
+    archived: false
+    architecture_role: genesis
+    ssot_scope: "Genesis Engine -> Monorepo ai/genesis-engine"
+    build_manifests: 23
+    test_files: 3
+    ci_checks: 14
+    ci_success: 14
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: genesis-franchise-factory
+    default_branch: main
+    head_sha: 673fa560322b1449e8f23cc38bf839de1b246361
+    archived: false
+    architecture_role: genesis
+    ssot_scope: "GFF -> Monorepo ai/genesis-franchise-factory"
+    build_manifests: 1
+    test_files: 5
+    ci_checks: 11
+    ci_success: 11
+    ci_failure: 0
+    ci_status: GREEN
+    maturity_level: CI_VERIFIED
+    e2e_status: NOT_VERIFIED
+    open_blockers: []
+  - repository: globus-os
+    default_branch: main
+    head_sha: a38738dfcd91125fb00317b93aacb342b4515e2a
+    archived: false
+    architecture_role: operating-system
+    ssot_scope: "Kernel/OS -> Monorepo kernel/atc-shivacore-Bereich"
+    build_manifests: 38
+    test_files: 0
+    ci_checks: 11
+    ci_success: 9
+    ci_failure: 1
+    ci_status: RED
+    maturity_level: IMPLEMENTED
+    e2e_status: NOT_VERIFIED
+    open_blockers:
+      - "keine Testdateien"
+      - "Syscall-ABI nur spezifiziert, nicht implementiert"
+      - "cargo-tests rot am HEAD"
+    failing_checks:
+      - "cargo-tests"
