@@ -102,7 +102,8 @@ import {
   generateArchitectureMarkdown,
 } from "./utils/auditEngine";
 import { AutoSyncHubModal } from "./components/AutoSyncHubModal";
-import { AutoSyncConfig, DEFAULT_AUTO_SYNC_CONFIG } from "./types/sync";
+import { AutoSyncConfig } from "./types/sync";
+import { DEFAULT_AUTO_SYNC_CONFIG } from "./utils/projectSyncEngine";
 import {
   generateLiveRoadmap,
   generateRoadmapMarkdown,

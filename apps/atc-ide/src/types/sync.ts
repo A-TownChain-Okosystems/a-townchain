@@ -81,6 +81,8 @@ export interface ApiDocEntry {
   signature: string;
   description: string;
   line: number;
+  /** Nur gesetzt, wenn die Signatur ihn hergibt (Rust `-> T`, TS `): T`). */
+  returnType?: string;
 }
 
 export interface LiveDocumentationDoc {

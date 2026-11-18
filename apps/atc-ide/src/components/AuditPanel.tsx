@@ -1677,7 +1677,7 @@ export function AuditPanel({
                         <tr key={idx} className="hover:bg-white/[0.02]">
                           <td className="py-2 text-cyan-300 font-bold">{api.name}</td>
                           <td className="py-2 text-slate-300 font-sans text-xs">{api.signature}</td>
-                          <td className="py-2 text-amber-300">{api.returnType}</td>
+                          <td className="py-2 text-amber-300">{api.returnType ?? "—"}</td>
                           <td className="py-2 text-slate-400 text-[11px]">{api.fileName}:{api.line}</td>
                           <td className="py-2">
                             <button
@@ -1702,15 +1702,15 @@ export function AuditPanel({
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {liveDocs.indexedFiles.map(file => (
                     <div
-                      key={file.fileName}
-                      onClick={() => onJumpToFileAndLine(file.fileName, 1)}
+                      key={file.name}
+                      onClick={() => onJumpToFileAndLine(file.name, 1)}
                       className="p-3 rounded-xl bg-black/30 border border-white/5 hover:border-cyan-500/30 transition-all cursor-pointer space-y-1"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-xs font-bold text-cyan-300 truncate">{file.fileName}</span>
+                        <span className="font-mono text-xs font-bold text-cyan-300 truncate">{file.name}</span>
                         <span className="text-[10px] text-slate-500 font-mono">{file.lines} Zeilen</span>
                       </div>
-                      <p className="text-[11px] text-slate-400">{file.purpose}</p>
+                      <p className="text-[11px] text-slate-400">{file.description}</p>
                     </div>
                   ))}
                 </div>

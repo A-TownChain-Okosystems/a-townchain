@@ -10,13 +10,16 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "typescript": "^7",
     "graphql": "^17",
     "express": "^5"
   },
   "devDependencies": {
     "@types/node": "^26",
     "@types/jest": "^30",
-    "jest": "^30"
+    "jest": "^30",
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "proxy-addr": "^2.0.8"
   }
 }

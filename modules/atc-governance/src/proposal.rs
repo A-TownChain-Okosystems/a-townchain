@@ -1,6 +1,5 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // Governance proposal creation and voting
-use std::collections::HashMap;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ProposalStatus { Pending, Active, Passed, Rejected, Executed, Cancelled }
