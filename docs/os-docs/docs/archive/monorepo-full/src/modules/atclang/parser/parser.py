@@ -6,8 +6,9 @@ Version: 0.1.0-alpha
 """
 
 from typing import List, Optional
+
+from ..lexer.lexer import TT, ATCLexer, Token
 from .ast_nodes import *
-from ..lexer.lexer import ATCLexer, Token, TT
 
 
 class ATCParser:

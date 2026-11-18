@@ -9,10 +9,13 @@
 #   GATEWAY → ORCHESTRATOR → Services
 #                          ↘ EventBus
 
+import threading
+import time
+
+from backend.api.routes import blockchain, wallet
 from core.event_bus import EventBus
 from core.module_loader import ModuleLoader
-from backend.api.routes import blockchain, wallet
-import time, threading
+
 
 class APIOrchestrator:
     """Zentraler Koordinator aller API-Services."""

@@ -2,12 +2,13 @@
 """ATCLang VM STDLIB_DISPATCH Tests — ATC-94
 Tests für die Integration der Stdlib-Module in die VM.
 """
-import unittest
-import sys
 import os
+import sys
+import unittest
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from atclang.vm.atcvm import STDLIB_DISPATCH, ATCVM, OP, Instruction
+from atclang.vm.atcvm import ATCVM, OP, STDLIB_DISPATCH, Instruction
 
 
 class TestCryptoDispatch(unittest.TestCase):

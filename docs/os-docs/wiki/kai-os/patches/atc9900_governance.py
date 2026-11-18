@@ -1,9 +1,10 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 # blockchain/contracts/governance/atc9900_governance.py -- ATC-9900 DAO (Issue #9)
-from dataclasses import dataclass, field
-from typing import Dict, Optional
-from enum import Enum
 import time
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Dict, Optional
+
 
 class ProposalStatus(Enum):
     ACTIVE   = "active"

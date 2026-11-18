@@ -3,10 +3,13 @@
 T-004: Fork-Resolution — gleichzeitige Block-Produktion
 Sprint 2.2 Blocker | Issue #8 | Wiki: Kap. 54
 """
-import pytest
-import time
+import os
+import sys
 import threading
-import sys, os
+import time
+
+import pytest
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from tests.test_multinode_consensus import MockNode
 

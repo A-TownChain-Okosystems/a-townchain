@@ -8,11 +8,13 @@ Version: 1.0.0-alpha | ATS-1000 konform
 Kein POSIX-Klon — eigenständige Architektur
 """
 
-import time, threading, uuid, hashlib
+import hashlib
+import threading
+import time
+import uuid
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Callable, Any
 from enum import IntEnum, auto
-
+from typing import Any, Callable, Dict, List, Optional
 
 # ══════════════════════════════════════════════════════════
 #  PROZESS-TYPEN & STATUS

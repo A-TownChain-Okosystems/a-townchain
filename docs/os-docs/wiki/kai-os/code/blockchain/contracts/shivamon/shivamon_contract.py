@@ -10,9 +10,13 @@
 #   - DNA Hash (einzigartiger genetischer Fingerabdruck)
 #   - Level & Erfahrungspunkte
 
-import hashlib, time, os, json
+import hashlib
+import json
+import os
+import time
+from dataclasses import asdict, dataclass
 from enum import Enum
-from dataclasses import dataclass, asdict
+
 
 class Element(Enum):
     FIRE     = "🔥 Fire"

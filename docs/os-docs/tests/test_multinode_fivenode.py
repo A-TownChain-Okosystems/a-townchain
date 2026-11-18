@@ -3,9 +3,12 @@
 T-003: Multi-Node Konsens — 5-Node, 2-of-3 Threshold
 Sprint 2.2 Blocker | Issue #8 | Wiki: Kap. 54
 """
-import pytest
+import os
+import sys
 import time
-import sys, os
+
+import pytest
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from tests.test_multinode_consensus import MockNode
 

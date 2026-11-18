@@ -2,14 +2,19 @@
 """
 Unit Tests — SQLite Persistenz (Issue #4)
 """
-import unittest, os, time, tempfile
+import os
+import tempfile
+import time
+import unittest
 
 # Test-DB in temporaerem Verzeichnis
 os.environ["ATC_DB_PATH"] = os.path.join(tempfile.gettempdir(), "atc_test.db")
 
 from backend.db.repository import (
-    WalletRepository, ShivamonRepository,
-    TransactionRepository, BlockRepository
+    BlockRepository,
+    ShivamonRepository,
+    TransactionRepository,
+    WalletRepository,
 )
 
 

@@ -2,6 +2,7 @@
 """Hash-Utilities — SHA-256 & BLAKE3."""
 import hashlib
 
+
 def sha256_hash(data) -> str:
     """SHA-256 als Hex-String. Akzeptiert bytes oder str."""
     if isinstance(data, str):

@@ -7,10 +7,14 @@
 #   2. PoW   — Miner sucht gültigen Hash (SHA-256)
 #   3. PoS   — Validator bestätigt & signiert den Block
 
-import hashlib, time, json
-from blockchain.consensus.pow import ProofOfWork
-from blockchain.consensus.pos import ProofOfStake
+import hashlib
+import json
+import time
+
 from blockchain.consensus.poh import ProofOfHistory
+from blockchain.consensus.pos import ProofOfStake
+from blockchain.consensus.pow import ProofOfWork
+
 
 class HybridConsensus:
     """

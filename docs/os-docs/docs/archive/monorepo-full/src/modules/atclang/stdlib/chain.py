@@ -3,9 +3,9 @@
 ATCLang Stdlib — ATC::Chain
 Blockchain state access for ATCLang contracts.
 """
-import time
 import hashlib
-from typing import Optional, Dict, Any
+import time
+from typing import Any, Dict, Optional
 
 
 class ATCChain:

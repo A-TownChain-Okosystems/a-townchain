@@ -2,17 +2,16 @@
 # backend/api/server.py
 # REST API — alle Blueprints registriert
 
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-
+from backend.api.routes.ai_routes import ai_bp
 from backend.api.routes.blockchain import blockchain_bp
 from backend.api.routes.game_routes import game_bp
-from backend.api.routes.wallet import wallet_bp
-from backend.api.routes.nodes_routes import nodes_bp
-from backend.api.routes.ai_routes import ai_bp
 from backend.api.routes.governance_routes import governance_bp
 from backend.api.routes.marketplace_routes import marketplace_bp
+from backend.api.routes.nodes_routes import nodes_bp
 from backend.api.routes.orchestrator_routes import orchestrator_bp
+from backend.api.routes.wallet import wallet_bp
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 
 def create_app(kernel=None):

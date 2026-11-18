@@ -65,7 +65,8 @@ class WorkflowRegistry:
         self._definitions={i.id:i for i in definitions or DEFAULT_WORKFLOWS}
         self.validate()
     def get(self,workflow_id:str)->WorkflowDefinition:
-        try:return self._definitions[workflow_id]
+        try:
+            return self._definitions[workflow_id]
         except KeyError as exc:
             raise WorkflowError(f"Unknown workflow: {workflow_id}") from exc
     def all(self)->tuple[WorkflowDefinition,...]:

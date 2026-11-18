@@ -10,6 +10,7 @@ import hmac
 import os
 import struct
 
+
 class ATCCryptoExt:
     """Erweiterte Krypto-Funktionen über ATCCrypto hinaus."""
 

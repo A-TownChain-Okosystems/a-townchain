@@ -89,11 +89,11 @@ def validate_registry(registry_path):
     # Collect all layer IDs
     layers = registry.get("layers", [])
     cross = registry.get("cross_cutting_layers", [])
-    all_layer_ids = [l["id"] for l in layers] + [c["id"] for c in cross]
+    all_layer_ids = [layer["id"] for layer in layers] + [c["id"] for c in cross]
 
     # VAL-LR-001: Main layers must be L0-L10
     expected_main = {f"L{i}" for i in range(11)}
-    actual_main = {l["id"] for l in layers}
+    actual_main = {layer["id"] for layer in layers}
     if expected_main != actual_main:
         result.error(
             "VAL-LR-001",
@@ -310,7 +310,7 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
 
     # Registry L0 sub-layer IDs (cross-check)
     layer_entry = next(
-        (l for l in registry.get("layers", []) if l.get("id") == layer_id), None
+        (layer for layer in registry.get("layers", []) if layer.get("id") == layer_id), None
     )
     if not layer_entry:
         result.error("VAL-FC-000", f"{layer_id} not found in registry")
@@ -407,7 +407,7 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
         result.ok(f"All {len(reg_sub_ids)} {layer_id} sub-layers covered by functions")
 
     # VAL-L0-009: layer dependency targets valid
-    valid_layers = {l["id"] for l in registry.get("layers", [])}
+    valid_layers = {layer["id"] for layer in registry.get("layers", [])}
     valid_layers |= {c["id"] for c in registry.get("cross_cutting_layers", [])}
     for dep in cat.get("layer_dependencies", []):
         tl = dep.get("target_layer")

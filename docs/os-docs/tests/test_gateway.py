@@ -6,10 +6,10 @@ Unit & Integrationstests für das A-TownChain API-Gateway (Port 4000)
 Framework: unittest + Flask Test Client
 Coverage-Ziel: >= 80%
 """
-import unittest
 import json
-import sys
 import os
+import sys
+import unittest
 
 # Gateway importierbar machen
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))

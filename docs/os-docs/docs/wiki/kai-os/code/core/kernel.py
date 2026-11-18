@@ -6,6 +6,7 @@
 from core.event_bus import EventBus
 from core.module_loader import ModuleLoader
 
+
 class Kernel:
     def __init__(self):
         self.event_bus = EventBus()

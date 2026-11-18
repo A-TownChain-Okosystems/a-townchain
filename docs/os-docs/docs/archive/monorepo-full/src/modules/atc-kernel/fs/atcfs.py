@@ -5,12 +5,14 @@ Version: 1.0.0-alpha | ATS-1002 konform
 Kein IPFS-Klon — eigene Content-Adressierung
 """
 
-import hashlib, time, json, os
+import hashlib
+import json
+import os
+import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 from enum import IntEnum, auto
 from pathlib import Path
-
+from typing import Dict, List, Optional
 
 # ══════════════════════════════════════════════════════════
 #  TYPEN & KONSTANTEN

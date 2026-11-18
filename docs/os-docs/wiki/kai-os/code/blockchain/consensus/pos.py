@@ -8,7 +8,9 @@
 #   - Minimum Stake: 10.000 ATC
 #   - Slashing bei Fehlverhalten
 
-import random, time, hashlib
+import hashlib
+import random
+import time
 
 MIN_STAKE = 10_000  # ATC
 

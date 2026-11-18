@@ -9,10 +9,11 @@ Kernel nutzt ProofOfHistory für Prozess-Timestamps.
 # Import-Stub (PoH aus Haupt-Repo)
 try:
     # Wenn a-townchain-os als Submodule oder Package installiert:
-    from blockchain.consensus.poh import ProofOfHistory, PoHEntry
+    from blockchain.consensus.poh import PoHEntry, ProofOfHistory
 except ImportError:
     # Fallback: Minimale lokale PoH-Implementierung
-    import hashlib, time
+    import hashlib
+    import time
     class ProofOfHistory:
         def __init__(self):
             self.current_hash = hashlib.sha3_256(b"genesis").hexdigest()

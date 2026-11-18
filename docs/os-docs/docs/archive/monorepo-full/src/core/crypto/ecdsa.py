@@ -4,6 +4,7 @@
 # Kanonische Implementierung:
 from ...wallet.ecdsa import ECDSASigner  # noqa: F401
 
+
 class ECDSAKeyPair(ECDSASigner):
     """ECDSAKeyPair — Kompatibilitäts-Alias für ECDSASigner."""
     pass

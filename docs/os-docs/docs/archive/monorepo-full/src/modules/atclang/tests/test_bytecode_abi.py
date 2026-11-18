@@ -36,7 +36,6 @@ import math
 import struct
 
 import pytest
-
 from atclang.bytecode import (
     BYTECODE_MAGIC,
     BYTECODE_VERSION,
@@ -45,19 +44,18 @@ from atclang.bytecode import (
     CompiledModule,
     Instruction,
 )
-
 from atclang.bytecode_abi import (
     ABI_MAGIC,
     ABI_VERSION,
     ABI_VERSION_MAJOR,
     ABI_VERSION_MINOR,
-    ABIConstantType,
-    ABISection,
     HEADER_FLAGS_NONE,
     HEADER_SIZE,
+    SECTION_HEADER_SIZE,
+    ABIConstantType,
+    ABISection,
     OperandType,
     SectionType,
-    SECTION_HEADER_SIZE,
     abi_info,
     decode_bytes,
     decode_f64,
@@ -65,10 +63,10 @@ from atclang.bytecode_abi import (
     decode_i64,
     decode_sections,
     decode_string,
+    decode_u8,
     decode_u16,
     decode_u32,
     decode_u64,
-    decode_u8,
     encode_bytes,
     encode_constant,
     encode_f64,
@@ -80,15 +78,14 @@ from atclang.bytecode_abi import (
     encode_module,
     encode_operand,
     encode_string,
+    encode_u8,
     encode_u16,
     encode_u32,
     encode_u64,
-    encode_u8,
+    read_abi,
     validate_binary,
     write_abi,
-    read_abi,
 )
-
 
 # ============================================================================
 # HELPERS

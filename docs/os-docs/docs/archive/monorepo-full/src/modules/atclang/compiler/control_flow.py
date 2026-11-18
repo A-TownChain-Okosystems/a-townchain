@@ -39,11 +39,11 @@ from atclang.vm.atcvm import OP, Instruction
 try:
     from atclang.parser.ast_nodes import (
         ASTNode,
-        IfStatement,
-        WhileStatement,
-        ForStatement,
         BreakStatement,
         ContinueStatement,
+        ForStatement,
+        IfStatement,
+        WhileStatement,
     )
 except ImportError:  # pragma: no cover
     ASTNode = Any

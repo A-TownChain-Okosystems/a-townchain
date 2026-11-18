@@ -5,11 +5,16 @@ Version: 1.0.0-alpha | ATS-1006 konform
 Kein libp2p-Klon — eigene DHT + Routing-Implementierung
 """
 
-import socket, threading, time, json, hashlib, struct, random
+import hashlib
+import json
+import random
+import socket
+import struct
+import threading
+import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Callable, Tuple, Set
 from enum import IntEnum, auto
-
+from typing import Callable, Dict, List, Optional, Set, Tuple
 
 # ══════════════════════════════════════════════════════════
 #  PROTOKOLL-KONSTANTEN

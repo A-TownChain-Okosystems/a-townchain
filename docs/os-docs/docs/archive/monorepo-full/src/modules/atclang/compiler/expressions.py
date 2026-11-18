@@ -50,28 +50,27 @@ from __future__ import annotations
 from typing import Any, Optional
 
 from atclang.parser.ast_nodes import (
-    ASTNode,
-    IntLiteral,
-    FloatLiteral,
-    StringLiteral,
-    BoolLiteral,
-    NullLiteral,
-    Identifier,
-    NamespaceAccess,
-    BinaryOp,
-    UnaryOp,
-    IndexAccess,
-    DotAccess,
-    FunctionCall,
     Assignment,
+    ASTNode,
+    BinaryOp,
+    BoolLiteral,
+    CastExpr,
+    DotAccess,
+    FloatLiteral,
+    FunctionCall,
+    Identifier,
+    IndexAccess,
+    IntLiteral,
     ListLiteral,
     MapLiteral,
+    NamespaceAccess,
+    NullLiteral,
+    StringLiteral,
     StructLiteral,
     TernaryExpr,
-    CastExpr,
     TupleExpr,
+    UnaryOp,
 )
-
 from atclang.vm.atcvm import OP
 
 from .context import CompilerContext

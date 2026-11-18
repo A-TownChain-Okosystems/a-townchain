@@ -2,10 +2,11 @@
 """Unit-Tests für Proof of History (PoH) — ATC-81
 Agent: Aurora #2 (6a275618)
 """
-import pytest
-import sys
-import os
 import hashlib
+import os
+import sys
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 

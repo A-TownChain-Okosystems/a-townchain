@@ -3,11 +3,12 @@
 T-002: Multi-Node Konsens Test — 2-Node Mehrheits-Voting
 Sprint 2.2 Blocker | Issue #8 | Wiki: Kap. 54
 """
-import pytest
-import sys
 import os
+import sys
 import threading
 import time
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 

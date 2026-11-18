@@ -3,7 +3,8 @@
 # Issue #2 — Gemini AI Integration
 
 import os
-from flask import Blueprint, jsonify, request, Response
+
+from flask import Blueprint, Response, jsonify, request
 
 ai_bp = Blueprint("ai", __name__)
 

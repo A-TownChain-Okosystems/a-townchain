@@ -1,8 +1,9 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """Unit-Tests für P2PBroadcaster."""
 
-import pytest
 import json
+
+import pytest
 from blockchain.nodes.p2p_propagation import P2PBroadcaster, P2PMessage
 
 

@@ -3,7 +3,11 @@
 API Gateway Tests — Issue #20 (ATS-1004)
 Unit + Integration Tests für Port 4000.
 """
-import sys, os, json, time
+import json
+import os
+import sys
+import time
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 def test_router_import():

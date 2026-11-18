@@ -4,7 +4,7 @@ ATCLang Stdlib — ATC::Collections
 Datenstrukturen für ATCLang Smart Contracts.
 ATC-94 | Sprint 2.5
 """
-from typing import Any, Dict, List, Set, Optional, Iterator
+from typing import Any, Dict, Iterator, List, Optional, Set
 
 
 class ATCCollections:

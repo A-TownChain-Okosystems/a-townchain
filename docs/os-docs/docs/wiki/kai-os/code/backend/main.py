@@ -3,9 +3,11 @@
 # A-TownChain OS — Backend Entry Point
 # Starte mit: python -m backend.main
 
+import threading
+
 from backend.api.server import create_app
 from core.kernel import Kernel
-import threading
+
 
 def run():
     kernel = Kernel()

@@ -1,10 +1,11 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """Unit-Tests für NodeDiscovery-Service."""
 
-import pytest
 import json
 import time
 from pathlib import Path
+
+import pytest
 from blockchain.nodes.discovery import NodeDiscovery, PeerInfo
 
 

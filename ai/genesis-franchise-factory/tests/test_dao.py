@@ -1,5 +1,4 @@
 import pytest
-
 from gff.dao import FranchiseStatus, FranchiseVault, RoyaltyTier
 
 

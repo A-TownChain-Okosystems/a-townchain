@@ -1,6 +1,12 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """Tests für ATCNet P2P Stack"""
-import sys, os, threading, time, json, socket
+import json
+import os
+import socket
+import sys
+import threading
+import time
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 def test_p2p_message_encode_decode():

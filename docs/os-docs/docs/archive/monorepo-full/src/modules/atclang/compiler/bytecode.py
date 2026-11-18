@@ -98,10 +98,10 @@ KEIN finales normatives Bytecode-ABI.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import json
 import math
 import struct
+from dataclasses import dataclass, field
 from typing import (
     Any,
     Dict,
@@ -119,7 +119,6 @@ from .constants import (
     ConstantType,
     infer_constant_type,
 )
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # VERSION

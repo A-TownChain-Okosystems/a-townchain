@@ -2,17 +2,24 @@
 """ATCLang Standard Library Tests — ATC-94
 Tests für alle 6 Module: crypto, collections, io, math, encoding, primitives
 """
-import unittest
-import sys
 import os
+import sys
+import unittest
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from atclang.stdlib.crypto import ATCCrypto
 from atclang.stdlib.collections import ATCCollections
+from atclang.stdlib.crypto import ATCCrypto
+from atclang.stdlib.encoding import ATCEncoding
 from atclang.stdlib.io import ATCIO
 from atclang.stdlib.math import ATCMath
-from atclang.stdlib.encoding import ATCEncoding
-from atclang.stdlib.primitives import ATCPrimitives, ATCAddress, ATCHash, ATCTransaction, ATCBlockHeader
+from atclang.stdlib.primitives import (
+    ATCAddress,
+    ATCBlockHeader,
+    ATCHash,
+    ATCPrimitives,
+    ATCTransaction,
+)
 
 
 class TestATCCrypto(unittest.TestCase):

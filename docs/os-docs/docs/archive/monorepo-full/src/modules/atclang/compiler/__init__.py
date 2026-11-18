@@ -36,28 +36,26 @@ from .compiler import (
     compile_source,
     disassemble,
 )
-
+from .errors import (
+    CompileError,
+)
+from .optimizer import (
+    ATCOptimizer,
+    OptimizationStats,
+    OptimizerConfig,
+)
 from .symbols import (
     Symbol,
     SymbolTable,
 )
-
 from .type_checker import (
-    ATCTypeChecker,
-    ATCType,
     ATCGenericType,
+    ATCType,
+    ATCTypeChecker,
     TypeEnvironment,
+)
+from .type_checker import (
     TypeError as ATCTypeError,
-)
-
-from .optimizer import (
-    ATCOptimizer,
-    OptimizerConfig,
-    OptimizationStats,
-)
-
-from .errors import (
-    CompileError,
 )
 
 __all__ = [

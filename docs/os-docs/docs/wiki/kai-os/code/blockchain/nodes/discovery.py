@@ -4,14 +4,14 @@
 Ermöglicht neuen Nodes, den Bootstrap-Node zu finden und sich im Netzwerk zu registrieren.
 """
 
-import socket
 import json
+import logging
+import socket
 import threading
 import time
-import logging
-from typing import Dict, Optional, List
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

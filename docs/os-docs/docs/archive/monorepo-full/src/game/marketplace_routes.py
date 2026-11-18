@@ -4,7 +4,8 @@
 # Stand: Sprint 2.5 | Angepasst an MarketplaceContract v2
 
 from flask import Blueprint, jsonify, request
-from src.blockchain.smart_contracts import marketplace, atc_token
+
+from src.blockchain.smart_contracts import atc_token, marketplace
 
 marketplace_bp = Blueprint("marketplace", __name__)
 

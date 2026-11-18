@@ -2,9 +2,10 @@
 """Unit-Tests für DID-Resolver (ATAUTH-1000 / ATC-03)
 Agent: Aurora #2 (6a275618)
 """
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 

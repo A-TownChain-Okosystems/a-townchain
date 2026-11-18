@@ -35,17 +35,15 @@ from typing import Any, Optional
 from atclang.parser.ast_nodes import (
     ASTNode,
     ContractDef,
-    StateField,
     FunctionDef,
     MapLiteral,
+    StateField,
 )
-
 from atclang.vm.atcvm import OP
 
 from .context import CompilerContext
 from .errors import CompileError
 from .functions import compile_function
-
 
 # ══════════════════════════════════════════════════════════════
 # CONTRACT COMPILER

@@ -13,8 +13,13 @@
 #   - Private Key NIEMALS teilen oder unverschlüsselt speichern
 #   - Seed Phrase ist der Master-Key — verloren = kein Zugriff
 
-import os, hashlib, hmac, struct
+import hashlib
+import hmac
+import os
+import struct
+
 from src.blockchain.wallet.wordlist import BIP39_WORDLIST
+
 
 class ATCKeyGenerator:
     """Generiert kryptographisch sichere A-Town Wallet Keys."""

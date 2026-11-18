@@ -11,9 +11,8 @@ import os
 import socket
 import time
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from typing import Dict, List, Optional
-
 
 BOOTSTRAP_CONFIG = {
     "bootstrap_port": 5005,

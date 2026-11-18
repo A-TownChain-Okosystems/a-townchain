@@ -5,7 +5,7 @@ Version: 0.3.0-alpha
 """
 ATCLANG_VERSION = "0.3.0"
 
-from atclang.lexer.lexer import ATCLexer, Token, TT, tokenize
-from atclang.parser.parser import ATCParser, parse
 from atclang.compiler.compiler import ATCCompiler, compile_source, disassemble
+from atclang.lexer.lexer import TT, ATCLexer, Token, tokenize
+from atclang.parser.parser import ATCParser, parse
 from atclang.vm.atcvm import ATCVM, OP, Instruction

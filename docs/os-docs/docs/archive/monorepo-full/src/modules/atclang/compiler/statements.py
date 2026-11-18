@@ -35,8 +35,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from atclang.parser.ast_nodes import (
-    ASTNode,
     Assignment,
+    ASTNode,
     BreakStatement,
     ContinueStatement,
     EmitStatement,
@@ -49,10 +49,9 @@ from atclang.parser.ast_nodes import (
     RequireStatement,
     ReturnStatement,
     StateField,
-    WhileStatement,
     WalletDef,
+    WhileStatement,
 )
-
 from atclang.vm.atcvm import OP
 
 from .errors import CompileError

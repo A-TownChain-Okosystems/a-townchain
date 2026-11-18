@@ -13,14 +13,13 @@ Reihenfolge: PoH → PoS → PoW = ShivaConsensus™
 """
 
 import hashlib
-import time
-import math
 import json
+import math
 import struct
+import time
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Tuple
 from enum import IntEnum, auto
-
+from typing import Dict, List, Optional, Tuple
 
 # ══════════════════════════════════════════════════════════
 #  KRYPTO-PRIMITIVE (ATC-eigene Hash-Funktion)

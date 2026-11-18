@@ -6,12 +6,13 @@ REST API Endpoints für Agent Management, Storage, Blockchain, Governance
 Based on KAI-OS Wiki Chapter 8
 """
 
-from flask import Blueprint, request, jsonify, send_file
-from typing import Dict, Any, Optional, List
+import hashlib
 import json
 import logging
 from datetime import datetime
-import hashlib
+from typing import Any, Dict, List, Optional
+
+from flask import Blueprint, jsonify, request, send_file
 
 logger = logging.getLogger(__name__)
 

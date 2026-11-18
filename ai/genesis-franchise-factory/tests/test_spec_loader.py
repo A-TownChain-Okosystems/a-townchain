@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-
 from gff.spec_loader import SpecValidationError, load_spec, load_specs
 
 SPEC_DIR = Path(__file__).resolve().parents[1] / "specs"

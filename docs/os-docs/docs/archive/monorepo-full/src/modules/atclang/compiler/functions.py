@@ -32,15 +32,14 @@ Those responsibilities belong to their respective compiler modules.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from atclang.parser.ast_nodes import (
     ASTNode,
     FunctionDef,
     Parameter,
 )
-
-from atclang.vm.atcvm import Instruction, OP
+from atclang.vm.atcvm import OP, Instruction
 
 if TYPE_CHECKING:
     from .context import CompilerContext

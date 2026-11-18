@@ -14,14 +14,14 @@ Verifikation, DHT-Netzwerk-Transport (das Ticket muss "irgendwie" zum
 Zielknoten kommen -- wie, ist hier nicht Teil des Kernels, wie in der
 Spezifikation auch richtig beschrieben).
 """
-from dataclasses import dataclass, field
-from typing import Optional, List
-import time
-import secrets
 import json
+import secrets
+import time
+from dataclasses import dataclass, field
+from typing import List, Optional
 
+from src.core.kernel.capabilities import ResourceType, Right
 from src.core.kernel.did import Did, NodeIdentity
-from src.core.kernel.capabilities import Right, ResourceType
 
 
 class TicketError(Exception):

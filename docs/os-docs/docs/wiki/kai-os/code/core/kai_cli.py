@@ -10,10 +10,10 @@ Based on KAI-OS Wiki Chapter 12
 import argparse
 import asyncio
 import json
-import sys
-from typing import Optional
 import logging
+import sys
 from datetime import datetime
+from typing import Optional
 
 # Configure logging
 logging.basicConfig(

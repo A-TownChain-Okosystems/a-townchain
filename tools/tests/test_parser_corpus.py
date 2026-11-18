@@ -18,8 +18,18 @@ import pytest
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 
-from atc_reference_decoder import DOMAIN_ARTIFACT, decode, decode_hex
-from build_parser_corpus import CORPUS, build, header, seal, serialise
+from atc_reference_decoder import (  # noqa: E402 — bewusst: sys.path-Setup vor Import
+    DOMAIN_ARTIFACT,
+    decode,
+    decode_hex,
+)
+from build_parser_corpus import (  # noqa: E402 — bewusst: sys.path-Setup vor Import
+    CORPUS,
+    build,
+    header,
+    seal,
+    serialise,
+)
 
 DECODER = TOOLS / "atc_reference_decoder.py"
 

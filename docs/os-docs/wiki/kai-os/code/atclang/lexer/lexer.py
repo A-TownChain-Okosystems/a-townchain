@@ -5,8 +5,8 @@ Eigene Programmiersprache für das A-TownChain Ökosystem
 Version: 0.1.0-alpha | Komplett selbst geschrieben
 """
 
-from enum import Enum, auto
 from dataclasses import dataclass
+from enum import Enum, auto
 from typing import List, Optional
 
 

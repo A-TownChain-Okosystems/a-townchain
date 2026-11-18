@@ -2,19 +2,29 @@
 # Kernel API Tests — ATC-97 | Sprint 3.2
 # Tests the complete KAI-OS Kernel API for Decentralized AI Operating System
 
-import sys
 import os
+import sys
+
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 from core.kernel.api import (
-    KernelAPI, Syscall, SyscallRequest, SyscallResponse,
-    AgentStatus, DecisionStatus, GasReport, AgentDescriptor,
-    AIDecision, ValidatorInfo, FederatedTask, MemoryRegion,
+    AgentDescriptor,
+    AgentStatus,
+    AIDecision,
+    DecisionStatus,
+    FederatedTask,
+    GasReport,
+    KernelAPI,
     KernelAPIError,
+    MemoryRegion,
+    Syscall,
+    SyscallRequest,
+    SyscallResponse,
+    ValidatorInfo,
 )
-from core.kernel.kernel import ProcessType, ProcessState
+from core.kernel.kernel import ProcessState, ProcessType
 
 
 @pytest.fixture

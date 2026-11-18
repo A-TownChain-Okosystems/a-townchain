@@ -7,7 +7,8 @@
 #   - Miner erhält Block Reward in ATC
 #   - Reward halbiert sich alle 210.000 Blöcke (Halving)
 
-import hashlib, time
+import hashlib
+import time
 
 INITIAL_REWARD = 50.0   # ATC pro Block
 HALVING_INTERVAL = 210_000

@@ -6,13 +6,13 @@ System-Smart-Contracts für Ressourcenverwaltung, Governance, Federated Learning
 Based on KAI-OS Wiki Chapter 4
 """
 
-from dataclasses import dataclass, asdict
-from enum import Enum
-from typing import Dict, List, Optional, Tuple
-from datetime import datetime, timedelta
 import hashlib
 import json
 import logging
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 

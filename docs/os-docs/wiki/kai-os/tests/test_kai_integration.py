@@ -7,13 +7,18 @@
 Testing suite for KAI-OS AI Kernel, Smart Contracts, and API
 """
 
-import pytest
 import asyncio
-from modules.kernel.ai_kernel.ai_kernel import AIKernel, AIRequest, DecisionType, ReasoningEngine
+
+import pytest
 from blockchain.smart_contracts import (
-    SmartContractRegistry, ResourceMarket, AgentRegistry,
-    FederatedLearning, GovernanceDAO, PaymentChannel
+    AgentRegistry,
+    FederatedLearning,
+    GovernanceDAO,
+    PaymentChannel,
+    ResourceMarket,
+    SmartContractRegistry,
 )
+from modules.kernel.ai_kernel.ai_kernel import AIKernel, AIRequest, DecisionType, ReasoningEngine
 
 
 class TestAIKernel:

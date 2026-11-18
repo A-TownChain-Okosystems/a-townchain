@@ -200,7 +200,7 @@ class ATCRepl:
 
                 # Multi-Line: { öffnet Block, } schließt
                 buf.append(line)
-                open_braces = sum(l.count("{") - l.count("}") for l in buf)
+                open_braces = sum(line.count("{") - line.count("}") for line in buf)
 
                 if open_braces > 0:
                     continue  # Mehr Input warten

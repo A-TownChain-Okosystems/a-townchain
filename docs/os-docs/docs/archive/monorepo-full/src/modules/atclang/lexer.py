@@ -3,4 +3,4 @@
 # Vollständige Implementierung: atclang/lexer/lexer.py
 
 from .lexer.lexer import *  # noqa: F401,F403
-from .lexer.lexer import ATCLexer, Token, TT, tokenize  # noqa: F401
+from .lexer.lexer import TT, ATCLexer, Token, tokenize  # noqa: F401

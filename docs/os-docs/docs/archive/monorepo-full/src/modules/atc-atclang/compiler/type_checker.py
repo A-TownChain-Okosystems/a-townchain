@@ -3,20 +3,47 @@
 ATCLang Type Checker — Statische Typ-Prüfung zur Compile-Zeit.
 ATC-92 | Sprint 2.1
 """
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple
 
 from atclang.parser.ast_nodes import (
-    ASTNode, Program, IntLiteral, FloatLiteral, StringLiteral, BoolLiteral,
-    NullLiteral, Identifier, BinaryOp, UnaryOp, Assignment, IndexAccess,
-    DotAccess, NamespaceAccess, FunctionCall, TypeAnnotation,
-    LetStatement, ReturnStatement, EmitStatement, RequireStatement,
-    IfStatement, ForStatement, WhileStatement, BreakStatement,
-    ContinueStatement, ExprStatement,
-    Parameter, FunctionDef, StateField, EventDef, ErrorDef,
-    ContractDef, WalletDef, ImportStatement, StructDef, EnumDef,
+    Assignment,
+    ASTNode,
+    BinaryOp,
+    BoolLiteral,
+    BreakStatement,
+    ContinueStatement,
+    ContractDef,
+    DotAccess,
+    EmitStatement,
+    EnumDef,
+    ErrorDef,
+    EventDef,
+    ExprStatement,
+    FloatLiteral,
+    ForStatement,
+    FunctionCall,
+    FunctionDef,
+    Identifier,
+    IfStatement,
+    ImportStatement,
+    IndexAccess,
+    IntLiteral,
+    LetStatement,
+    NamespaceAccess,
+    NullLiteral,
+    Parameter,
+    Program,
+    RequireStatement,
+    ReturnStatement,
+    StateField,
+    StringLiteral,
+    StructDef,
+    TypeAnnotation,
+    UnaryOp,
+    WalletDef,
+    WhileStatement,
 )
-
 
 # ── ATCLang Type System ───────────────────────────────────
 

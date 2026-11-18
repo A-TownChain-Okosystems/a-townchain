@@ -5,8 +5,8 @@ Standard wallet operations accessible from ATCLang contracts.
 Issue: #48 | Wiki: Kap. 36
 """
 import hashlib
-import secrets
 import logging
+import secrets
 from typing import Dict, Optional
 
 logger = logging.getLogger("atclang.stdlib.wallet")
