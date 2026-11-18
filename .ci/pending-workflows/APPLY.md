@@ -44,3 +44,22 @@ Regelsatz, Ruff-Version (0.16.7) und Policy-SHA bleiben unveraendert.
 Fuehrt Ebene 1 bis 3 ueber `tools/quality/atc_quality.py` aus und legt den
 SHA-gebundenen Bericht als Artefakt ab. Braucht wie die uebrigen Patches
 `workflow`-Scope.
+
+## Neu: CodeQL-Scope wirklich anwenden (SCR-0147)
+
+Die Datei `.github/codeql/codeql-config.yml` liegt am richtigen Ort, wird vom
+`init`-Schritt aber nicht geladen: im Log erscheint sie nur als *extrahierte*
+Datei, nicht als Konfiguration. Deshalb meldet CodeQL weiter die 58 Befunde aus
+`docs/os-docs/**`, obwohl der eigene Code bei 0 steht.
+
+Eine Zeile in `.github/workflows/codeql.yml` genuegt:
+
+```yaml
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript,python
+          config-file: ./.github/codeql/codeql-config.yml
+```
+
+Danach greift `paths-ignore: docs/os-docs/**` und der aggregierte CodeQL-Check
+wird gruen, sobald der eigene Code sauber ist (Stand: 0 Befunde).
