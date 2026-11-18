@@ -54,7 +54,9 @@ class Audit:
 
 
 def tracked_files(repo):
-    out = subprocess.run(["git", "ls-files"], cwd=repo, capture_output=True, text=True).stdout
+    out = subprocess.run(
+        ["git", "ls-files"], cwd=repo, capture_output=True, text=True, check=False
+    ).stdout
     return [ln for ln in out.splitlines() if ln.strip()]
 
 
@@ -68,7 +70,7 @@ def read(path):
 
 def yaml_has(text, keys):
     """Minimal-YAML-Check: alle Schluessel als 'key:' im Text vorhanden."""
-    return all(re.search(r"^\s*%s\s*:" % re.escape(k), text, re.M) for k in keys)
+    return all(re.search(r"^\s*{}\s*:".format(re.escape(k)), text, re.M) for k in keys)
 
 
 def audit_repo(repo, level, registry_path=None):
@@ -151,8 +153,9 @@ def audit_repo(repo, level, registry_path=None):
             "V-05",
             "PASS" if ok else "FAIL",
             "Ownership",
-            "ownership.yaml %s, CODEOWNERS %s"
-            % ("ok" if own else "FEHLT", "ok" if co else "FEHLT"),
+            "ownership.yaml {}, CODEOWNERS {}".format(
+                "ok" if own else "FEHLT", "ok" if co else "FEHLT"
+            ),
         )
     else:
         a.add("V-05", "SKIP", "Ownership", "nicht anwendbar < R2")
@@ -161,7 +164,7 @@ def audit_repo(repo, level, registry_path=None):
     lc = read(os.path.join(repo, ".atc/lifecycle.yaml"))
     if lvl_ge("R2", level):
         stages = ["experimental", "development", "beta", "production", "deprecated", "archived"]
-        ok = bool(lc) and any(("stage: %s" % s) in lc for s in stages)
+        ok = bool(lc) and any(("stage: {}".format(s)) in lc for s in stages)
         a.add(
             "V-06",
             "PASS" if ok else "FAIL",
@@ -234,7 +237,7 @@ def audit_repo(repo, level, registry_path=None):
         "V-11",
         "PASS" if not bad else "FAIL",
         "Security",
-        "Hygiene ok" if not bad else "verbotene Pfade: %s" % ", ".join(sorted(set(bad))[:5]),
+        "Hygiene ok" if not bad else "verbotene Pfade: {}".format(", ".join(sorted(set(bad))[:5])),
     )
 
     # V-12 tests + CI
@@ -258,7 +261,7 @@ def audit_repo(repo, level, registry_path=None):
             "V-12",
             "PASS" if ok else "FAIL",
             "Testing",
-            "Tests %s, CI %s" % ("ok" if has_tests else "FEHLT", "ok" if has_ci else "FEHLT"),
+            "Tests {}, CI {}".format("ok" if has_tests else "FEHLT", "ok" if has_ci else "FEHLT"),
         )
     else:
         a.add("V-12", "SKIP", "Testing", "nicht anwendbar R0")
@@ -303,7 +306,7 @@ def audit_repo(repo, level, registry_path=None):
     reg_ok = None
     if registry_path and os.path.exists(registry_path):
         reg = read(registry_path) or ""
-        m = re.search(r"-\s*\{?\s*name:\s*%s\s*[,}]" % re.escape(name), reg)
+        m = re.search(r"-\s*\{{?\s*name:\s*{}\s*[,}}]".format(re.escape(name)), reg)
         reg_ok = bool(m)
     if reg_ok is None:
         a.add(
@@ -317,7 +320,7 @@ def audit_repo(repo, level, registry_path=None):
             "V-15",
             "PASS" if reg_ok else "FAIL",
             "Documentation",
-            "Registry-Eintrag %s" % ("ok" if reg_ok else "fehlt fuer %s" % name),
+            "Registry-Eintrag %s" % ("ok" if reg_ok else "fehlt fuer {}".format(name)),
         )
 
     # V-16 Conventional Commits (F-048/SCR-0039: Shallow-Clone-Guard —
@@ -325,7 +328,11 @@ def audit_repo(repo, level, registry_path=None):
     # und darf kein MUST-FAIL erzeugen, nur WARN mit Reparaturhinweis.)
     if lvl_ge("R2", level):
         log = subprocess.run(
-            ["git", "log", "--oneline", "-20"], cwd=repo, capture_output=True, text=True
+            ["git", "log", "--oneline", "-20"],
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            check=False,
         ).stdout.splitlines()
         subs = [ln.split(" ", 1)[-1].strip() for ln in log if ln.strip()]
         # SCR-0115: Merge-Commits unterliegen nicht dem Conventional-Commits-Format
@@ -371,7 +378,7 @@ def main():
     args = ap.parse_args()
     repo = os.path.abspath(args.repo)
     if not os.path.isdir(repo):
-        print("FEHLER: %s ist kein Verzeichnis" % repo)
+        print("FEHLER: {} ist kein Verzeichnis".format(repo))
         sys.exit(2)
     level = args.level
     if not level:
@@ -388,10 +395,10 @@ def main():
 
     print("ATC Repository Audit")
     print("=" * 60)
-    print("Repository: %s   Level: %s   Standard: ATC-STD-201 v1.0.0" % (anzeige, level))
+    print("Repository: {}   Level: {}   Standard: ATC-STD-201 v1.0.0".format(anzeige, level))
     print()
     for regel, status, kat, msg in a.results:
-        print("[%s] %s (%s): %s" % (status, regel, kat, msg))
+        print("[{}] {} ({}): {}".format(status, regel, kat, msg))
     score = a.score()
     print()
     print("RESULT")
@@ -409,7 +416,7 @@ def main():
     )
     fails = sum(1 for r in a.results if r[1] == "FAIL")
     print("%s COMPLIANT · Score: %d/100 [%s] · MUST-FAILs: %d" % (level, score, st, fails))
-    print("GATE: %s" % a.gate(level))
+    print("GATE: {}".format(a.gate(level)))
     sys.exit(0 if a.gate(level) == "PASS" else 1)
 
 

@@ -30,22 +30,19 @@ Diese Datei arbeitet auf dem bereits erzeugten AST.
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Optional
 
 from atclang.parser.ast_nodes import (
     ASTNode,
     ContractDef,
-    StateField,
     FunctionDef,
-    MapLiteral,
+    StateField,
 )
-
 from atclang.vm.atcvm import OP
 
 from .context import CompilerContext
 from .errors import CompileError
 from .functions import compile_function
-
 
 # ══════════════════════════════════════════════════════════════
 # CONTRACT COMPILER

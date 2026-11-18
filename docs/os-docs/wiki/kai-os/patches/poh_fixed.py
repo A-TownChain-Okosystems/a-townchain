@@ -1,6 +1,8 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 # blockchain/consensus/poh.py -- FIX: tick_n() + verify_sequence()
-import hashlib, time
+import hashlib
+import time
+
 
 class ProofOfHistory:
     def __init__(self, genesis_hash: str = None):

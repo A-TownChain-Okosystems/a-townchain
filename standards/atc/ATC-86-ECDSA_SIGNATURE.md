@@ -23,7 +23,7 @@ ECDSA-Signaturen über secp256k1 — Standard-Signaturverfahren für Transaktion
 
 ### Module
 
-```
+```text
 modules/crypto/signatures.atc — ECDSA Sign/Verify/Recover
 modules/crypto/keys.atc — Key-Generation
 ```
@@ -66,7 +66,7 @@ curve: secp256k1 | hash: SHA-256 | canonical: true | nonce: RFC 6979
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-86.atc    # Unit-Tests
 └── test_atc-86_integration.atc  # Integration-Tests

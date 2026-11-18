@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-028
   title: "Attack Surface Management Standard"
@@ -18,7 +19,7 @@ standard:
     - ATC-STD-000
     - ATC-STD-018
     - ATC-STD-029
-----
+---
 
 # ATC-STD-028 — Attack Surface Management (v1.0.0, APPROVED)
 

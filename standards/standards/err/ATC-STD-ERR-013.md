@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-013
   title: "Knowledge Capture"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-013 — Knowledge Capture (v1.0.0, CANDIDATE)
 
@@ -26,6 +27,7 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 Fehlerwissen dauerhaft dokumentieren: Jeder wichtige Fehler erhaelt einen
 Error Knowledge Record.
 
@@ -65,6 +67,7 @@ status: CLOSED
 | REQ-ER-131 | Ablage im Docs-Hub (docs/error-records/), Verweis vom BUG-002-Record |
 
 ## Implementierungsstatus
+
 SPECIFIED — Umsetzung: Verzeichnis docs/error-records/ im Docs-Hub anlegen;
 error_id-Serie fortlaufend.
 
@@ -73,7 +76,9 @@ error_id-Serie fortlaufend.
 Knowledge-Records unterliegen der Sicherheitsregel: keine Klartext-Zugangsdaten, nur $ENV-Platzhalter; Ablage revisionssicher (git-getrackt).
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-ERR-000/-001/-010, ATC-STD-BUG-002 · INFORMATIVE: SCR-0044

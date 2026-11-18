@@ -1,4 +1,5 @@
 # ATC-27 — Decentralized AI Model Auditing & Verification Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-27
 > **Tier:** 4 (Decentralized AI / Inferenz-Layer)
@@ -25,12 +26,14 @@ definierten Sicherheits- und ethischen Leitplanken operieren.
 ## 1. Kernkonzepte
 
 ### 1.1 On-Chain Modell-Fingerprinting
+
 Jedes KI-Modell erhaelt bei der Registrierung einen kryptografischen
 "Fingerabdruck" (Hash), der seine Architektur und seine gelernten Gewichte
 eindeutig identifiziert. ATC-27 speichert diesen Hash auf der Blockchain
 (ATC-04).
 
 **Aktueller Stand:** Teilweise implementiert
+
 - SHA-256 Hashing fuer Daten-Integritaet vorhanden
 - ECDSA-Signaturen fuer Authentifizierung
 - ATC-04 DAG fuer On-Chain Speicherung
@@ -45,6 +48,7 @@ def model_fingerprint(model):
 ```
 
 ### 1.2 Audit-Intervalle
+
 Nodes, die KI-Inferenz bereitstellen, muessen in regelmessigen Abstaenden
 nachweisen, dass sie genau das Modell ausfuehren, das durch den Fingerabdruck
 definiert ist. Dies geschieht durch einen "Proof-of-Model-Integrity"-Prozess,
@@ -52,7 +56,8 @@ bei dem der Node eine statistische Stichprobe von Berechnungen liefert, die nur
 mit dem korrekten Modell moeglich sind.
 
 **Konzept:**
-```
+
+```text
 Proof-of-Model-Integrity:
   1. Auditor sendet Test-Input an Node
   2. Node berechnet Inferenz mit seinem Modell
@@ -64,6 +69,7 @@ Proof-of-Model-Integrity:
 > **Geplant:** Statistische Stichprobe statt voller Modell-Verifikation
 
 ### 1.3 Governance-basiertes Slashing
+
 Sollte ein Audit fehlschlagen (d. h., der Node fuehrt ein modifiziertes oder
 "vergiftetes" Modell aus), triggert ATC-27 automatisch einen Sicherheits-
 mechanismus: Der Node wird als nicht vertrauenswuerdig eingestuft, seine
@@ -79,17 +85,20 @@ automatischem Slashing.
 ## 2. Warum ATC-27 fuer KAI-OS essenziell ist
 
 ### 2.1 Schutz vor "KI-Vergiftung" (Poisoning)
+
 Ein boesartiger Akteur koennte versuchen, einem Agenten ein manipuliertes
 Modell unterzuschieben, das beispielsweise bei Finanzentscheidungen
 systematisch Fehler zugunsten des Angreifers macht. ATC-27 erkennt solche
 Manipulationen sofort.
 
 ### 2.2 Auditierbarkeit
+
 Fuer Unternehmen oder Regulierungsbehoerden, die das KAI-OS nutzen, ist es
 entscheidend zu wissen, welche Version einer KI gerade arbeitet. ATC-27 bietet
 ein unveraenderliches Protokoll darueber, wer welches Modell wann auditiert hat.
 
 ### 2.3 Sicherheit im Mesh
+
 Da das Netzwerk aus tausenden Nodes besteht, die sich nicht persoenlich kennen,
 ist der "Zero-Trust"-Ansatz (ATC-03) nur moeglich, wenn man die Korrektheit der
 Software-Komponenten (KI-Modelle) jederzeit verifizieren kann.
@@ -99,13 +108,16 @@ Software-Komponenten (KI-Modelle) jederzeit verifizieren kann.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-04 (DAG Consensus)
+
 Die Audit-Ergebnisse werden als Transaktionen im DAG verankert.
 
 ### 3.2 ATC-17 (DAO Governance)
+
 Der Prozess des Slashing bei einem fehlerhaften Audit wird von der DAO-
 Governance gesteuert.
 
 ### 3.3 ATC-26 (Explainable AI)
+
 ATC-26 bietet die Erklaerung fuer einzelne Entscheidungen, waehrend ATC-27 die
 Integritaet des gesamten Modells sicherstellt.
 
@@ -113,9 +125,11 @@ Integritaet des gesamten Modells sicherstellt.
 > ATC-27 = Model-Level Integrity
 
 ### 3.4 ATC-03 (Decentralized Identity)
+
 Reputation-Reduktion bei Audit-Fehler. Zero-Trust-Ansatz.
 
 ### 3.5 ATC-15 (Proof-of-AI Mining)
+
 Miner muessen beweisen, dass sie das richtige Modell ausfuehren. ATC-27
 liefert den Verifikations-Mechanismus dafuer.
 
@@ -173,11 +187,13 @@ liefert den Verifikations-Mechanismus dafuer.
 
 ## 7. Skalierbarkeit — ZK-Proofs fuer Modell-Gewichte
 
-### Problem:
+### Problem
+
 Bei tausenden Nodes und grossen Modellen (GB-Bereich) ist eine vollstaendige
 Verifikation bei jeder Inferenz unmoeglich.
 
-### Loesung (geplant):
+### Loesung (geplant)
+
 1. **Zero-Knowledge Proofs:** Node beweist dass er Modell M ausfuehrt, ohne
    die Gewichte preiszugeben
 2. **Statistische Stichprobe:** Auditor sendet N Test-Inputs, Node liefert
@@ -193,7 +209,6 @@ Verifikation bei jeder Inferenz unmoeglich.
 *Dieses Dokument wurde aus der urspruenglichen Atc-27.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:32 | Aurora (Superagent)*
-
 
 ---
 

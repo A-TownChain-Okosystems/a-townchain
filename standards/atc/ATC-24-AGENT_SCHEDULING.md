@@ -1,4 +1,5 @@
 # ATC-24 — Autonomous Agent Scheduling & Task Orchestration Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 2.4 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Kategorie:** AI Orchestration  
 > **Standard-ID:** ATC-24
@@ -30,24 +31,28 @@ erledigt werden.
 ## 1. Kernkonzepte
 
 ### 1.1 Agenten-Registry & Discovery
+
 Jeder KI-Agent innerhalb von KAI-OS registriert sich mit einem Profil, das
 angibt, welche Faehigkeiten er besitzt, welche Ressourcen er benoetigt und wie
 seine Reputation (ATC-03) ist. ATC-24 ermoeglicht es dem Betriebssystem, diese
 Agenten effizient zu finden.
 
 **Implementation:** OK Implementiert
+
 - AI-Kernel (`ai_kernel.py`) mit Agent-Registry
 - LLMRouter fuer Model-Discovery und Routing
 - Orchestrator (`orchestrator.py`) mit Node-Tracking und Health-Check
 - Agent-Profile mit Capabilities und Status
 
 ### 1.2 Task-Queuing & Priorisierung
+
 Wenn eine Anforderung eingeht (z. B. "Analysiere diesen Datensatz"), erstellt
 der Scheduler nach ATC-24 eine Aufgabe. Diese wird priorisiert (QoS – Quality
 of Service) und in eine Warteschlange eingereiht, die ueber das Mesh-Netzwerk
 (ATC-01) propagiert wird.
 
 **Implementation:** OK Implementiert
+
 - Orchestrator (`orchestrator.py`) mit Task-Queue
 - Prioritaets-basierte Task-Verteilung
 - Rate-Limit-Handling fuer API-Quotas
@@ -67,11 +72,13 @@ class Orchestrator:
 ```
 
 ### 1.3 Arbitrierung & Zuweisung
+
 Der Scheduler nutzt Informationen ueber die Latenz (ATC-06), die Verfuegbarkeit
 von Hardware (ATC-22) und die Reputation des Agenten, um die Aufgabe dem am
 besten geeigneten Node/Agenten zuzuweisen.
 
 **Implementation:** OK Implementiert
+
 - Latenz-basierte Node-Auswahl im Orchestrator
 - Hardware-Capability-Matching (Node-Health-Check)
 - Reputation-basierte Zuweisung (ATC-03 Identity)
@@ -82,6 +89,7 @@ besten geeigneten Node/Agenten zuzuweisen.
 ## 2. Warum ATC-24 fuer KAI-OS essenziell ist
 
 ### 2.1 Effiziente Ressourcennutzung
+
 Ohne ATC-24 wuerden KI-Aufgaben chaotisch auf irgendwelche Nodes verteilt
 werden. ATC-24 stellt sicher, dass hochkomplexe Inferenz-Aufgaben nur auf
 Nodes landen, die auch die noetigen Hardware-Flags (ATC-22) besitzen.
@@ -89,6 +97,7 @@ Nodes landen, die auch die noetigen Hardware-Flags (ATC-22) besitzen.
 **Bezug:** Orchestrator prueft Node-Capabilities vor Task-Zuweisung.
 
 ### 2.2 Autonomie
+
 KI-Agenten koennen gemaess ATC-24 selbststaendig Aufgaben an andere Agenten
 delegieren (ReAct-Pattern: Agent A benoetigt Ergebnis von Agent B). Das
 ermoeglicht komplexe, mehrstufige Arbeitsablaeufe ohne menschliches Eingreifen.
@@ -96,6 +105,7 @@ ermoeglicht komplexe, mehrstufige Arbeitsablaeufe ohne menschliches Eingreifen.
 **Bezug:** AI-Kernel mit LLMRouter — Agent-Delegation und Multi-Step-Workflows.
 
 ### 2.3 Resilienz
+
 Wenn ein Agent waehrend einer Aufgabe ausfaellt, erkennt der Scheduler von
 ATC-24 das durch Zeitueberschreitung (Timeouts via ATC-10) und weist die
 Aufgabe sofort einem Ersatz-Agenten zu (Liquid State Migration via ATC-02).
@@ -107,6 +117,7 @@ Aufgabe sofort einem Ersatz-Agenten zu (Liquid State Migration via ATC-02).
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-31 (Tensor Compute Distribution)
+
 Waehrend ATC-24 die logische Aufgabe koordiniert, sorgt ATC-31 dafuer, dass die
 massiven Tensordaten fuer die Inferenz physisch dort ankommen, wo der Agent
 rechnet.
@@ -114,12 +125,14 @@ rechnet.
 > ATC-31 ist ein zukuenftiger Standard — Tensor Compute Distribution.
 
 ### 3.2 ATC-21 (Holographic Execution)
+
 Der Scheduler von ATC-24 "instanziiert" die benoetigten Agenten-Logiken via
 der Wasm-Engine aus ATC-21, sobald eine Aufgabe ansteht.
 
 > ATC-21 ist PARTIAL KONZEPTIONELL — Wasm-Instanziierung geplant.
 
 ### 3.3 Issue #2 (Gemini AI)
+
 Die Integration von Gemini in KAI-OS ist das prominente Beispiel fuer einen
 ATC-24-konformen Agenten, der auf Inferenz-Auftraege wartet und diese nach
 Prioritaet abarbeitet.
@@ -128,6 +141,7 @@ Prioritaet abarbeitet.
 Rate-Limit-Handling und ATCLang-Code-Generierung.
 
 ### 3.4 ATC-15 (Proof-of-AI Mining)
+
 ATC-24 koordiniert die KI-Aufgaben, die von ATC-15-Minern ausgefuehrt werden.
 Mining = Inferenz, Scheduler = Task-Verteilung.
 
@@ -187,7 +201,7 @@ Mining = Inferenz, Scheduler = Task-Verteilung.
 
 Mit ATC-24 beginnt **Tier 4 (Decentralized AI / Inferenz-Layer)**:
 
-```
+```text
 TIER 4 — DECENTRALIZED AI (ATC-24+)
 ├── ATC-24  Agent Scheduling & Task Orchestration   OK IMPLEMENTIERT
 ├── ATC-25  ...                                       GEPLANT
@@ -203,7 +217,6 @@ TIER 4 — DECENTRALIZED AI (ATC-24+)
 *Dieses Dokument wurde aus der urspruenglichen Atc-24.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:26 | Aurora (Superagent)*
-
 
 ---
 

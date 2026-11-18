@@ -29,7 +29,7 @@ kompatibel mit der bestehenden GSEPF-Engineering-Governance (DISCOVER..MERGE).
 
 ## §1 Die 13 Phasen (normativ)
 
-```
+```text
 DETECT → ASSESS → CLASSIFY → PLAN → APPROVE → IMPLEMENT → TEST
    → VALIDATE → DEPLOY → MONITOR → EVIDENCE → CLOSE
 ```

@@ -97,7 +97,6 @@ For each candidate, the owning-repository Draft PR must record:
 5. Run relevant validators/tests on the proposed deletion SHA and retain full Run → Job → Step → exit-code/log evidence.
 6. Keep all archived repositories and historical/audit records untouched unless separately authorized.
 
-
 ## 7. Exact-blob comparison follow-up (2026-10-13)
 
 The following comparisons were fetched from the explicit source commit refs and compared by Git blob SHA and returned file content. This is stronger than a filename/search-excerpt match, but it does not replace the repository-wide consumer/build/release scan.
@@ -116,7 +115,6 @@ The following comparisons were fetched from the explicit source commit refs and 
 - The VM manifest comparison confirms distinct manifest content, not that the legacy implementation is actively used or safe to remove.
 - No repository-wide import/call-site/build/release scan has yet been completed; no test or build was run for a proposed deletion commit.
 - Safe deletions proven remain **0**; source files deleted remain **0**; archived repositories remain untouched.
-
 
 ## 8. Consumer and ownership-reference checks (targeted, 2026-10-13)
 

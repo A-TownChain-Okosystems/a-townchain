@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-015
   title: "Error Prevention Gate"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-015 — Error Prevention Gate (v1.0.0, CANDIDATE)
 
@@ -26,12 +27,13 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 Fuer kritische Fehlerklassen wird der Fehler kuenftig technisch unmoeglich oder
 automatisch blockierbar: ein Gate in der Merge-Kette.
 
 ## Kernregeln — Gate-Kette (bis Merge)
 
-```
+```text
 Developer → Commit → Pre-Commit Checks → Static Analysis → Unit Tests →
 Integration Tests → Repository Standards Check (Governance-CI) →
 Documentation Check → Security Check → CI → Merge
@@ -50,6 +52,7 @@ je kritischer Fehlerklasse den zugehoerigen Gate (Massnahmen-Matrix ERR-009).
 | REQ-ER-151 | Re-Einfuehrung desselben Fehlers blockiert das Merge mit Ursachen-Anzeige |
 
 ## Implementierungsstatus
+
 PARTIAL — Evidence: Governance-CI 26/26, Standards Validator, Branch-Protection
 (atc-standards), Build/Test-CI in atc-contracts vorbereitet (Owner-Aktion ci.yml,
 Issue #99); Version-Gate ueber Issue #96 geplant.
@@ -59,8 +62,10 @@ Issue #99); Version-Gate ueber Issue #96 geplant.
 Prevention-Gates duerfen keine Zugangsdaten in Gate-Konfigurationen enthalten; Security-Gates folgen ATC-STD-203 (Secret-Scanning, Push-Protection).
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-ERR-000/-008/-009, ATC-STD-BUG-004 (Merge Gate), ATC-STD-203,
 ATC-STD-REPO-MAINT-001 §11 · INFORMATIVE: SCR-0044, Issues #95/#96/#99

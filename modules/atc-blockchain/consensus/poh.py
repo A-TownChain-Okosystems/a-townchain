@@ -17,13 +17,13 @@ class ProofOfHistory:
     Jeder Eintrag beweist, dass er NACH dem vorherigen erstellt wurde.
     """
 
-    def __init__(self, genesis_hash: str = None):
+    def __init__(self, genesis_hash: str | None = None):
         self.current_hash = genesis_hash or hashlib.sha256(b"A-TownChain Genesis").hexdigest()
         self.sequence = 0
         self.history = []
         self.start_time = time.time()
 
-    def tick(self, data: bytes = None) -> dict:
+    def tick(self, data: bytes | None = None) -> dict:
         """
         Einen PoH-Tick ausführen.
         Optional: externe Daten (z.B. Transaktion) einmischen.

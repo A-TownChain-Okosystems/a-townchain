@@ -5,8 +5,8 @@ Sichere ECDSA, Key Management & Hashing
 """
 
 from .ecdsa import ECDSAKeyPair, sign_transaction, verify_signature
-from .key_generator import generate_keypair, BIP39KeyGenerator
-from .hash_utils import sha256_hash, blake3_hash
+from .hash_utils import blake3_hash, sha256_hash
+from .key_generator import BIP39KeyGenerator, generate_keypair
 
 __all__ = [
     'ECDSAKeyPair',

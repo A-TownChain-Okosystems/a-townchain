@@ -1,10 +1,12 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 # gateway/main.py -- FIX(#20): create_app() Factory
+import os
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from gateway.router import GatewayRouter
 from gateway.middleware.logger import log_request
-import os
+from gateway.router import GatewayRouter
+
 
 def create_app(testing=False):
     app = Flask(__name__)

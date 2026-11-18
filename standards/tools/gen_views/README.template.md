@@ -1,7 +1,8 @@
 @@STAMP@@
+
 # ATC Standards
 
-[![ATC COMPLIANCE](https://img.shields.io/badge/ATC-COMPLIANCE-green) ](README.md) <!-- formal: PASS, R12-enforced (SCR-0096; Scan-Konvention ATC-COMPLIANCE) -->
+[![ATC COMPLIANCE](https://img.shields.io/badge/ATC-COMPLIANCE-green)](README.md) <!-- formal: PASS, R12-enforced (SCR-0096; Scan-Konvention ATC-COMPLIANCE) -->
 
 ## State (GENERIERT — Quelle: `registry/standards.yaml`, SCR-0090/@@STD@@)
 
@@ -59,6 +60,7 @@ Governance-Root der A-TownChain-Organisation: Registry, Standards, Schemata, Val
 ## Architecture
 
 ### Core Components
+
 - `registry/` — SSOT
 - `standards/` — @@FILES@@ Standard-Dateien in @@FAMS@@ Familien
 - `profiles/` — @@REPONUM@@ verbindliche Standards-Profile je Repository
@@ -83,6 +85,7 @@ python3 tools/atc-std-validator/validate_all.py
 ```
 
 ## Governance Flow
+
 Change Request → SCR → Owner-Freigabe (§9) → Registry-Eintrag → CI-Validierung → APPROVED → normativ in Kraft.
 
 ## Quick Start
@@ -107,8 +110,7 @@ See `CONTRIBUTING.md` and `governance/ATC-STD-000.md` for details.
 ## Standards & Compliance
 
 | Standard | Version | Status |
-|---|---|---|
-@@COMPTABLE@@
+|---|---|---| @@COMPTABLE@@
 
 See `registry/standards.yaml` for the complete registry.
 

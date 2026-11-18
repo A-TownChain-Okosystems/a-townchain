@@ -5,11 +5,16 @@ Version: 1.0.0-alpha | ATS-1006 konform
 Kein libp2p-Klon — eigene DHT + Routing-Implementierung
 """
 
-import socket, threading, time, json, hashlib, struct, random
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Callable, Tuple, Set
-from enum import IntEnum, auto
-
+import hashlib
+import json
+import random
+import socket
+import struct
+import threading
+import time
+from dataclasses import dataclass
+from enum import IntEnum
+from typing import Callable, Dict, List, Optional, Set, Tuple
 
 # ══════════════════════════════════════════════════════════
 #  PROTOKOLL-KONSTANTEN
@@ -355,7 +360,7 @@ class ATCNetNode:
         for handler in handlers:
             try:
                 handler(msg, from_addr)
-            except Exception as e:
+            except Exception:
                 pass
 
         # Weiterleiten wenn Broadcast und TTL > 0

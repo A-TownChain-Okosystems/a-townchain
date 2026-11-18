@@ -170,7 +170,7 @@ def main():
     args = ap.parse_args()
     try:
         graph = json.loads(Path(args.graph).read_text())
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         raise SystemExit(f"invalid dependency graph: {e}")
     if graph.get("schema") != "ATC-DEP-GRAPH-1":
         raise SystemExit("invalid dependency graph schema")

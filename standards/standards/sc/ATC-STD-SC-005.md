@@ -48,8 +48,6 @@ Der Auditstatus MUSS aus dieser Wertemenge stammen: NOT_AUDITED, INTERNAL_REVIEW
 
 Findings MUESSEN remediiert und ein Re-Audit durchlaufen sein, bevor SC-G7 als bestanden gilt.
 
-
-
 ## Anforderungs-Verzeichnis
 
 | REQ-ID | Anforderung | Verbindlichkeit |

@@ -4,10 +4,12 @@ Bridge Contract — ATC Cross-Chain Bridge
 ATC-5000 Standard: Lock-Mint / Burn-Release Schema
 Unterstützt: ATC ↔ ETH, ATC ↔ BSC, ATC ↔ Polygon
 """
-import hashlib, time, json
-from dataclasses import dataclass, field, asdict
-from typing import Dict, List, Optional
+import hashlib
+import time
+from dataclasses import asdict, dataclass, field
 from enum import Enum
+from typing import Dict, List, Optional
+
 
 class ChainId(Enum):
     ATC     = "atc-mainnet-1"

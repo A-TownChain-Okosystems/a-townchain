@@ -109,7 +109,7 @@ CI-Lauf allein ist keine Registrierung.
 
 ## 3. Abhängigkeitskette
 
-```
+```text
 Kernel (1-4)
   ├─ Block-Device (7) ──> Dateisystem (8) ──> globus-init (9) ──> Service-Lifecycle (10)
   │                                                        └──> IPC-Transport (6)
@@ -172,7 +172,7 @@ unbemerkt zur maßgeblichen Sicherheitsinstanz werden.
 
 ## 5. Node-VM-Integration: Zielpfad
 
-```
+```text
 Transaktionseingang
   -> kanonische Transaktionsvalidierung
   -> ATC-VM, deterministische Ausführung

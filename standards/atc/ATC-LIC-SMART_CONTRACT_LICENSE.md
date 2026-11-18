@@ -1,4 +1,5 @@
 # ATC-LIC — Smart Contract License Protocol
+>
 > **Status:** DRAFT — Spezifikation fuer Compliance-Handbuch (BaFin-konform) | **Version:** 1.0.0 | **Datum:** 05.07.2026 23:18
 > **Autor:** Michael Wroblewski / ShivaCore, Aurora (Superagent)
 > **Standard-ID:** ATC-LIC
@@ -55,7 +56,7 @@ prueft die ATVM:
 5. **Payment Verification** — Hat der Caller ausreichend Token?
 6. **Execution Gate** — Ja: Ausfuehren + Royalty transfer. Nein: ABLEHNEN.
 
-```
+```text
 ATVM EXECUTION GATE
 ├── Code-Hash -> License Registry Lookup
 ├── If NOT in Registry -> FREE EXECUTION (public domain)
@@ -182,28 +183,36 @@ kryptografisch erzwungen:
 ## 4. Zusammenhang mit anderen Standards
 
 ### 4.1 ATC-01 (Smart Contracts)
+
 ATC-LIC nutzt Smart Contracts fuer License-Registry und Royalty-Transfer.
 
 ### 4.2 ATC-03 (Decentralized Identity)
+
 Developer-DID als Urheberschaft-Nachweis. Caller-DID fuer Lizenz-Pruefung.
 
 ### 4.3 ATC-11 (Fungible Token)
+
 ATC-11 Token als Royalty-Zahlungsmittel. Atomarer Transfer bei Ausfuehrung.
 
 ### 4.4 ATC-17 (DAO Governance)
+
 DAO kann Lizenzregeln anpassen (Preise, Typen, Ausnahmen).
 
 ### 4.5 ATC-29 (Marketplace)
+
 Lizenzierte Code-Module koennen im Marketplace gehandelt werden.
 
 ### 4.6 ATC-30 (Reputation)
+
 Entwickler mit hoeherer Reputation koennen hoehere Royalties verlangen.
 
 ### 4.7 ATC-37 (Resource Allocation)
+
 ATC-LIC kann als Faktor in der Ressourcen-Allokation einfliesen (lizenzierte
 Module bekommen Prioritaet).
 
 ### 4.8 ATC-LIC (System & Hardware Licenses)
+
 ATC-LIC sichert die physikalische Ebene ab (Hardware-Zertifikate).
 
 ---
@@ -276,8 +285,9 @@ else:
     raise LicenseError("Insufficient license: Code execution blocked by ATVM")
 ```
 
-### Unabanderbarkeit:
-```
+### Unabanderbarkeit
+
+```text
 Angreifer versucht, Code ohne Lizenz auszufuehren:
   -> ATVM prueft License Registry
   -> Code-Hash gefunden, PER_CALL, 0.5 ATC-11

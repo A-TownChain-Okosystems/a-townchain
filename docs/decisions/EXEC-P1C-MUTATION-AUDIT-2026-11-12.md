@@ -40,7 +40,7 @@ In P1b lag `import_block` im Modul `import` und brauchte dort
 anhängen. Aufgelöst, indem der Schreibvorgang dorthin wandert, wo das Feld liegt:
 `import_block` und `adopt_verified` sind jetzt Methoden in `chain.rs`,
 `append_validated` ist entfallen, `has_capacity` ist privat. `self.blocks.push`
-existiert an genau zwei Stellen, `self.blocks = ` an genau einer — alle drei in
+existiert an genau zwei Stellen, `self.blocks =` an genau einer — alle drei in
 `chain.rs`.
 
 Nachweis (strukturell, nicht per Textsuche allein):
@@ -107,7 +107,7 @@ eine eigene Entscheidung, keine stille Änderung.
 
 ## 7 Nachweis (lokal)
 
-```
+```text
 cargo test --workspace        746 grün (P1b: 740) — 0 rot
 node:  block_import 9 Tests (6 P1b + 3 Adoption), two_node_devnet angepasst
 system: node_import 9 Tests (7 P1b + 2 Devnet-Knoten)

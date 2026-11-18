@@ -4,26 +4,42 @@
 This validates catalog integrity, not implementation correctness. A successful run
 must never be interpreted as function-level implementation or verification evidence.
 """
+
 from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
 
 DEFAULT_CATALOG = Path("docs/architecture/ATC-COMPONENT-FUNCTION-SPEC-001.json")
 FUNCTION_STATES = {
-    "PROPOSED", "SPECIFIED", "IMPLEMENTED", "VERIFIED", "RESIDUAL",
-    "BLOCKED", "AUDIT_REQUIRED", "DEPRECATED"
+    "PROPOSED",
+    "SPECIFIED",
+    "IMPLEMENTED",
+    "VERIFIED",
+    "RESIDUAL",
+    "BLOCKED",
+    "AUDIT_REQUIRED",
+    "DEPRECATED",
 }
 IST_STATES = {
-    "NOT_ASSESSED", "MISSING", "PARTIAL", "PRESENT_UNVERIFIED",
-    "IMPLEMENTED", "VERIFIED", "RESIDUAL", "BLOCKED"
+    "NOT_ASSESSED",
+    "MISSING",
+    "PARTIAL",
+    "PRESENT_UNVERIFIED",
+    "IMPLEMENTED",
+    "VERIFIED",
+    "RESIDUAL",
+    "BLOCKED",
 }
 DELTA_STATES = {"NOT_ASSESSED", "MATCH", "PARTIAL", "GAP", "CONFLICT", "BLOCKED"}
 REQUIRED_EVIDENCE_FIELDS = {
-    "repository_full_name", "branch", "commit_sha", "source_paths",
-    "test_refs", "ci_evidence"
+    "repository_full_name",
+    "branch",
+    "commit_sha",
+    "source_paths",
+    "test_refs",
+    "ci_evidence",
 }
 
 
@@ -63,13 +79,19 @@ def validate(data: dict) -> dict:
                 if missing:
                     fail(f"{sid}: VERIFIED without evidence fields {missing}", errors)
                 if not any(
-                    e.get("workflow_run_id") and e.get("job_name") and
-                    e.get("step_name") and e.get("exit_code") == 0 and
-                    (e.get("log_url") or e.get("artifact_url")) and
-                    e.get("commit_sha") == ist.get("commit_sha")
-                    for e in (ist.get("ci_evidence") or []) if isinstance(e, dict)
+                    e.get("workflow_run_id")
+                    and e.get("job_name")
+                    and e.get("step_name")
+                    and e.get("exit_code") == 0
+                    and (e.get("log_url") or e.get("artifact_url"))
+                    and e.get("commit_sha") == ist.get("commit_sha")
+                    for e in (ist.get("ci_evidence") or [])
+                    if isinstance(e, dict)
                 ):
-                    fail(f"{sid}: VERIFIED without exact Run/Job/Step/exit/log evidence", errors)
+                    fail(
+                        f"{sid}: VERIFIED without exact Run/Job/Step/exit/log evidence",
+                        errors,
+                    )
             elif state in {"NOT_ASSESSED", "PRESENT_UNVERIFIED", "PARTIAL"}:
                 pass
         if delta and delta.get("status") not in DELTA_STATES:
@@ -84,7 +106,12 @@ def validate(data: dict) -> dict:
             if status not in FUNCTION_STATES:
                 fail(f"{fid}: invalid catalog status {status!r}", errors)
             fs = fn.get("soll_ist")
-            if not isinstance(fs, dict) or not isinstance(fs.get("soll"), dict) or not isinstance(fs.get("ist"), dict) or not isinstance(fs.get("delta"), dict):
+            if (
+                not isinstance(fs, dict)
+                or not isinstance(fs.get("soll"), dict)
+                or not isinstance(fs.get("ist"), dict)
+                or not isinstance(fs.get("delta"), dict)
+            ):
                 fail(f"{fid}: missing Soll/Ist/Delta object", errors)
                 continue
             fi = fs["ist"]
@@ -99,43 +126,72 @@ def validate(data: dict) -> dict:
                     fail(f"{fid}: VERIFIED without evidence fields {missing}", errors)
                 evidence = fi.get("ci_evidence") or []
                 if not any(
-                    isinstance(e, dict) and e.get("workflow_run_id") and e.get("job_name") and
-                    e.get("step_name") and e.get("exit_code") == 0 and
-                    (e.get("log_url") or e.get("artifact_url")) and
-                    e.get("commit_sha") == fi.get("commit_sha")
+                    isinstance(e, dict)
+                    and e.get("workflow_run_id")
+                    and e.get("job_name")
+                    and e.get("step_name")
+                    and e.get("exit_code") == 0
+                    and (e.get("log_url") or e.get("artifact_url"))
+                    and e.get("commit_sha") == fi.get("commit_sha")
                     for e in evidence
                 ):
-                    fail(f"{fid}: VERIFIED without exact-SHA Run/Job/Step/exit/log evidence", errors)
-            if ds == "MATCH" and fi.get("assessment") not in {"IMPLEMENTED", "VERIFIED"}:
+                    fail(
+                        f"{fid}: VERIFIED without exact-SHA Run/Job/Step/exit/log evidence",
+                        errors,
+                    )
+            if ds == "MATCH" and fi.get("assessment") not in {
+                "IMPLEMENTED",
+                "VERIFIED",
+            }:
                 fail(f"{fid}: MATCH requires IMPLEMENTED or VERIFIED Ist", errors)
-            if status == "IMPLEMENTED" and fi.get("assessment") in {"NOT_ASSESSED", "MISSING", "BLOCKED"}:
-                warnings.append(f"{fid}: catalog status says IMPLEMENTED while Ist is {fi.get('assessment')}")
+            if status == "IMPLEMENTED" and fi.get("assessment") in {
+                "NOT_ASSESSED",
+                "MISSING",
+                "BLOCKED",
+            }:
+                warnings.append(
+                    f"{fid}: catalog status says IMPLEMENTED while Ist is {fi.get('assessment')}"
+                )
 
     registry = data.get("dependency_registry", {})
     known_ids = system_ids
     for system in data["systems"]:
         for dep in system.get("dependencies", []):
             if dep not in registry and dep not in known_ids:
-                fail(f"{system.get('id')}: unresolved dependency reference {dep!r}", errors)
+                fail(
+                    f"{system.get('id')}: unresolved dependency reference {dep!r}",
+                    errors,
+                )
             elif dep in registry and registry[dep].get("kind") == "catalog_system":
                 target = registry[dep].get("system_id")
                 if target not in known_ids:
-                    fail(f"{system.get('id')}: dependency {dep!r} points to missing system {target!r}", errors)
+                    fail(
+                        f"{system.get('id')}: dependency {dep!r} points to missing system {target!r}",
+                        errors,
+                    )
 
     all_functions = [
-        fn for system in data["systems"] for fn in system.get("functions", [])
+        fn
+        for system in data["systems"]
+        for fn in system.get("functions", [])
         if isinstance(fn, dict)
     ]
-    source_mapped = sum(bool(fn.get("soll_ist", {}).get("ist", {}).get("source_paths")) for fn in all_functions)
-    tests_mapped = sum(bool(fn.get("soll_ist", {}).get("ist", {}).get("test_refs")) for fn in all_functions)
-    specs_mapped = sum(bool(fn.get("soll_ist", {}).get("ist", {}).get("spec_refs")) for fn in all_functions)
+    source_mapped = sum(
+        bool(fn.get("soll_ist", {}).get("ist", {}).get("source_paths")) for fn in all_functions
+    )
+    tests_mapped = sum(
+        bool(fn.get("soll_ist", {}).get("ist", {}).get("test_refs")) for fn in all_functions
+    )
+    specs_mapped = sum(
+        bool(fn.get("soll_ist", {}).get("ist", {}).get("spec_refs")) for fn in all_functions
+    )
     verified_functions = sum(
         fn.get("soll_ist", {}).get("ist", {}).get("assessment") == "VERIFIED"
         for fn in all_functions
     )
     system_inventory_count = sum(
-        bool(system.get("soll_ist", {}).get("ist", {}).get("repository_full_name")) and
-        bool(system.get("soll_ist", {}).get("ist", {}).get("commit_sha"))
+        bool(system.get("soll_ist", {}).get("ist", {}).get("repository_full_name"))
+        and bool(system.get("soll_ist", {}).get("ist", {}).get("commit_sha"))
         for system in data["systems"]
     )
 

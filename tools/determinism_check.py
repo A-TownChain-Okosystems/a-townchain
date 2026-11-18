@@ -16,7 +16,6 @@ Fail-closed: Exit 0 nur wenn (a) keine nicht-allowlisteten Fundstellen und
 """
 
 import argparse
-import io
 import os
 import re
 import subprocess
@@ -50,7 +49,7 @@ def load_allowlist(root):
     if not os.path.exists(path):
         return []
     entries = []
-    with io.open(path, encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         for line in f:
             m = re.match(r"\s*-\s*file:\s*(\S+)", line)
             if m:
@@ -59,6 +58,14 @@ def load_allowlist(root):
             m = re.match(r"\s+line:\s*(\d+)", line)
             if m and entries:
                 entries[-1]["line"] = int(m.group(1))
+                continue
+            m = re.match(r'\s+pattern:\s*"?([^"\n]+)"?', line)
+            if m and entries:
+                entries[-1]["pattern"] = m.group(1).strip()
+                continue
+            m = re.match(r'\s+justification:\s*"?([^"\n]+)"?', line)
+            if m and entries:
+                entries[-1]["justification"] = m.group(1).strip()
     return entries
 
 
@@ -66,7 +73,7 @@ def code_view_py(path):
     """Liefert je Zeilennummer die 'Code-Ansicht': Tokens ohne Strings/Kommentare."""
     views = {}
     try:
-        with io.open(path, encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             toks = list(tokenize.generate_tokens(f.readline))
     except (SyntaxError, tokenize.TokenError, UnicodeDecodeError):
         return None  # unparsebar -> vom Syntax-/Test-Gate abgedeckt, hier ueberspringen
@@ -88,7 +95,7 @@ def code_view_py(path):
 def code_view_rust(path):
     """Rust: Zeilenkommentare und String-Literale heuristisch entfernen."""
     views = {}
-    with io.open(path, encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         for ln, raw in enumerate(f, 1):
             line = raw
             if "//" in line:
@@ -122,7 +129,7 @@ def scan_sources(root, lang):
 def run_tests(cmd, cwd):
     env = dict(os.environ)
     env["PYTHONHASHSEED"] = "0"  # Hash-Determinismus normalisieren
-    p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, env=env)
+    p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, env=env, check=False)
     return normalize_output(p.stdout + p.stderr)
 
 
@@ -145,10 +152,15 @@ def main():
     )
     findings = scan_sources(root, args.lang)
     allow = load_allowlist(root)
+    # Zwei Match-Arten: exakte Zeile (line: N) oder zeilenunabhaengig
+    # (line: 0) mit Pattern-Bindung. Zeilenunabhaengig verhindert, dass
+    # reine Formatierung (Ruff) die reviewten Ausnahmen unbemerkt bricht.
     allow_keys = {(e["file"], e.get("line")) for e in allow if e.get("line")}
+    allow_any = [(e["file"], e.get("pattern", "")) for e in allow if e.get("line") == 0]
     unallowed, allowed = [], []
     for f, ln, desc in findings:
-        (unallowed if (f, ln) not in allow_keys else allowed).append((f, ln, desc))
+        hit = (f, ln) in allow_keys or any(f == af and pat and pat in desc for af, pat in allow_any)
+        (allowed if hit else unallowed).append((f, ln, desc))
     for f, ln, desc in allowed:
         print(f"  ALLOWED {f}:{ln}: {desc} (reviewte Begründung in {ALLOWLIST_FILE})")
     for f, ln, desc in unallowed:

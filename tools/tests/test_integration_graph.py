@@ -14,10 +14,22 @@ from pathlib import Path
 TOOL = Path(__file__).resolve().parents[1] / "integration_graph.py"
 
 
-def manifest(root: Path, rel: str, name: str, deps: dict[str, str] | None = None, dev: dict[str, str] | None = None):
+def manifest(
+    root: Path,
+    rel: str,
+    name: str,
+    deps: dict[str, str] | None = None,
+    dev: dict[str, str] | None = None,
+):
     d = root / rel
     d.mkdir(parents=True, exist_ok=True)
-    lines = ["[package]", f'name = "{name}"', 'version = "0.1.0"', 'edition = "2021"', ""]
+    lines = [
+        "[package]",
+        f'name = "{name}"',
+        'version = "0.1.0"',
+        'edition = "2021"',
+        "",
+    ]
     if deps:
         lines.append("[dependencies]")
         for dep, path in deps.items():
@@ -36,7 +48,9 @@ def bridge(data: dict, bridge_id: str) -> dict:
 
 
 def run(*args: str) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(TOOL), *args], capture_output=True, text=True)
+    return subprocess.run(
+        [sys.executable, str(TOOL), *args], capture_output=True, text=True, check=False
+    )
 
 
 def test_kante_und_insel():
@@ -125,6 +139,7 @@ def test_doppelte_namen_werden_gemeldet():
         data = json.loads(run("--repo", str(root), "--json").stdout)
         assert data["crates"] == 1  # Name gewinnt, Spiegel kollabiert
         assert "atc-wallet" in data["duplicate_names"]
+
 
 def test_b4_verlangt_bau_und_uebergabe(tmp_path):
     """B4 ist nur verbunden, wenn gebaut UND uebergeben wird, nicht bei Erwaehnung."""

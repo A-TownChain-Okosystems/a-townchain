@@ -102,7 +102,9 @@ class GFFCore:
         self.pipeline: list[PipelineStage] = default_pipeline()
         self.pipeline_running = False
         self.events: list[dict] = []
-        self.factory_specs: dict[int, FactorySpec] = load_specs(spec_dir) if spec_dir is not None else {}
+        self.factory_specs: dict[int, FactorySpec] = (
+            load_specs(spec_dir) if spec_dir is not None else {}
+        )
         self._event_clock = 0.0
         self._emit("GFFInitialized", version=version)
 
@@ -116,9 +118,14 @@ class GFFCore:
         if not blueprint.name:
             raise ValueError("blueprint.name darf nicht leer sein")
         self.franchises[fid] = Franchise(
-            id=fid, name=blueprint.name, universe=f"{blueprint.name} Universe",
-            status=FranchiseStatus.CONCEPT, created_at=ts, blueprint=blueprint,
-            factories_used=[], progress=0.0,
+            id=fid,
+            name=blueprint.name,
+            universe=f"{blueprint.name} Universe",
+            status=FranchiseStatus.CONCEPT,
+            created_at=ts,
+            blueprint=blueprint,
+            factories_used=[],
+            progress=0.0,
         )
         self.active_franchise = fid
         self._emit("FranchiseCreated", fid=fid, name=blueprint.name)
@@ -140,7 +147,12 @@ class GFFCore:
                 stage.status = PipelineStatus.IN_PROGRESS
                 result = executor(stage, franchise)
                 if not result.success:
-                    self._emit("StageFailed", fid=franchise_id, stage=stage.name, note=result.note)
+                    self._emit(
+                        "StageFailed",
+                        fid=franchise_id,
+                        stage=stage.name,
+                        note=result.note,
+                    )
                     raise RuntimeError(f"Stage {stage.name} fehlgeschlagen: {result.note}")
                 stage.status = PipelineStatus.COMPLETE
                 if stage.factory not in franchise.factories_used:

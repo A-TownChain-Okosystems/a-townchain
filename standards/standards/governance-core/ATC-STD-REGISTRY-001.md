@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-REGISTRY-001
   title: "ATC Registry Management Standard — Verbindliche SSOT-Verwaltung aller ATC-Registries: Registry-Inventar mit Zuständigkeiten, Single-Source-of-Truth-Prinzip, Generatoren statt Handarbeit, Cross-Registry-Konsistenz über Validator-Gates, Prozess für neue Registries, Manipulationsschutz"
@@ -29,7 +30,7 @@ standard:
     - ATC-STD-MASTER-001
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-REGISTRY-001 — ATC Registry Management Standard (v1.1.0, APPROVED)
 
@@ -152,7 +153,6 @@ archiviert werden; Konsumenten (Gates, Doku) MÜSSEN vorher umgestellt werden
 - **REQ-RM-011** (§10): Backup und Immutabilität: Ältere Registry-Zustände MUESSEN nach jedem Freigabe-Tag in der Git-Historie unveränderlich archiviert bleiben.
 - **REQ-RM-012** (§10): Verwaiste Eintragsvermeidung: Einträge in Registries MUESSEN bei Löschung des Zielobjekts auf DEPRECATED oder RETIRED gesetzt werden.
 - **REQ-RM-013** (§10): Sync-Intervall: Automatische Registry-Synchronisation MUSS bei jedem PR-Merge ausgeführt werden.
-
 
 ## §10 Metriken & Akzeptanzkriterien
 

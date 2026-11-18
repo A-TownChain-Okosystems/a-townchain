@@ -66,8 +66,7 @@ from typing import (
     Tuple,
 )
 
-from atclang.vm.atcvm import Instruction, OP
-
+from atclang.vm.atcvm import OP, Instruction
 
 # ═════════════════════════════════════════════════════════════
 # DIAGNOSTICS

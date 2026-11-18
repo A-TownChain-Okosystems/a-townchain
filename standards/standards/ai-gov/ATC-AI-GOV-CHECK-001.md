@@ -76,12 +76,15 @@ Gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung; automation: M
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - ATC-AI-GOV-POLICY-001 — MUST/SHOULD/MAY · ATC-AI-GOV-AUDIT-001 — Läufe/Evidence · ATC-STD-BUG-001 — Findings · ATC-STD-REPO-AUDIT-002 — Detail-Reposicht
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `ai/checks.yaml`, `tools/agov_check.py`, `tools/test_agov.py`, `docs/AGOV-RUN-2026-09-09.md`
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release (Owner-Entwurf 09.09., SCR-0061): 5 REQ, 3 COM-Gates; operational vorbereitet durch SCR-0058 (checks.yaml 1.0.0, agov_check.py, 20 Checks mit AUTO/MANUAL/HYBRID)

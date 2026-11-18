@@ -1,0 +1,45 @@
+# Markdown Lint — Scope: eigener Dokumentationsbestand (SCR-0146, Owner-Entscheidung 18.11.2026)
+#
+# Geprueft wird die Dokumentation, die dieses Repository verantwortet: Root-Dokumente,
+# standards/, docs/ (ohne den importierten Snapshot docs/os-docs/), .github/, specs/,
+# ecosystem/ und tooling/. Importierte Bestaende (docs/os-docs/**, ai/**, apps/**,
+# components/**, kernel/**, modules/**) sind fremde Doku und kein technischer Fehler
+# dieses Repositories.
+#
+# Regelsatz: .markdownlint-cli2.jsonc im Repo — spiegelt die Org-Policy und weicht nur
+# dokumentiert ab (MD025.front_matter_title, MD003.style=atx).
+name: Markdown Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  markdownlint:
+    name: markdownlint-cli2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+
+      - name: Lint eigener Dokumentationsbestand
+        uses: DavidAnson/markdownlint-cli2-action@v24
+        with:
+          config: .markdownlint-cli2.jsonc
+          globs: |
+            *.md
+            standards/**/*.md
+            docs/*.md
+            docs/decisions/**/*.md
+            docs/audits/**/*.md
+            docs/zkp/**/*.md
+            docs/boot/**/*.md
+            .github/**/*.md
+            specs/**/*.md
+            ecosystem/**/*.md
+            tooling/**/*.md

@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-041
   title: "Reproducible & Verifiable Builds Standard"
@@ -17,7 +18,7 @@ standard:
   dependencies:
     - ATC-STD-000
     - ATC-STD-018
-----
+---
 
 # ATC-STD-041 — Reproducible & Verifiable Builds Standard (v1.0.0, APPROVED)
 

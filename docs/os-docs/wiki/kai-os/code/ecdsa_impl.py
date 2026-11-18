@@ -2,10 +2,14 @@
 # blockchain/wallet/ecdsa.py
 # Issue #6 — ECDSA Signatur (secp256k1)
 
-from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.primitives import hashes, serialization
+import hashlib
+import json
+import time
+
 from cryptography.hazmat.backends import default_backend
-import hashlib, json, time
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+
 
 class ECDSASigner:
     """

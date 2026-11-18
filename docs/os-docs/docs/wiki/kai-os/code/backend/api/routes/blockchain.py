@@ -2,9 +2,9 @@
 # backend/api/routes/blockchain.py
 # Blockchain API Routes (via Gateway :5001)
 
-from flask import Blueprint, jsonify, request
-from blockchain.consensus.hybrid_consensus import HybridConsensus
 from blockchain.atcoin.atcoin import ATCoin
+from blockchain.consensus.hybrid_consensus import HybridConsensus
+from flask import Blueprint, jsonify, request
 
 blockchain_bp = Blueprint("blockchain", __name__)
 _consensus = HybridConsensus(difficulty=3)

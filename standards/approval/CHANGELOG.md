@@ -1,6 +1,7 @@
 # Changelog — Approval Package ATC-STD-000
 
 ## 1.0.0 — 07.09.2026
+
 - Formales Approval-Paket nach Owner-Vorgabe errichtet: Review-Snapshot
   (ATC-STD-000-v1.0.0.md, SHA-256 dffc547c…), drei Reviews gegen die
   tatsaechliche Fassung @ 8eda21a mit erweiterten Pruefkatalogen
@@ -13,6 +14,7 @@
   Snapshot byte-identisch zur geprueften Fassung.
 
 ## 1.1.0 — 07.09.2026 (Nachmittag)
+
 - Review-Chain ERNEUT durchgefuehrt — gegen die Owner-Formalfassung
   (35 Abschnitte), die den Agent-Entwurf als verbindlichen v1.0.0-Text
   ersetzt hat. Sequenz sauber: Registry DRAFT → Reviews (3/3 PASS) →
@@ -25,6 +27,7 @@
 - APPROVAL-DECISION: PENDING — Approval bleibt beim Owner BLOCKED.
 
 ## 1.2.0 — 07.09.2026 (Naming Convention)
+
 - §36 per Owner-Mandat ergänzt (ID-Tabelle, Repo-/Datei-Namen,
   ID-Immutabilität, maschinenprüfbares Schema naming-conventions.schema.json,
   Validator S-16, Findings-Registry registry/findings.yaml mit F-001…F-005
@@ -32,6 +35,7 @@
   Validator-Re-Lauf COMPLIANT.
 
 ## 1.4.0 — 07.09.2026 (normatives Naming-Hardening §7)
+
 - Owner-Mandat: §7 "ATC Naming, Identification and Namespace Convention"
   (7.1-7.11) als normativer Abschnitt; Abschnitte 7-35 → 8-36; alte §36-
   Vorversion in §7 aufgegangen. Mapping für Alt-Referenzen: N→N+1 (7…35),

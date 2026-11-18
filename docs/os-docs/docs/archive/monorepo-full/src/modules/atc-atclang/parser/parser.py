@@ -7,8 +7,9 @@ Version: 0.1.0-alpha
 """
 
 from typing import List, Optional
+
+from ..lexer.lexer import TT, ATCLexer, Token
 from .ast_nodes import *
-from ..lexer.lexer import ATCLexer, Token, TT
 
 
 class ATCParser:
@@ -659,7 +660,7 @@ class ATCParser:
         # If-expression: if cond { val } else { val }
         if tok.type == TT.KEYWORD and tok.value == 'if':
             return self.parse_if()
-        
+
         self.error(f"Unerwartetes Token in Ausdruck: {tok.type.name}='{tok.value}'"  )
 
 
@@ -800,7 +801,6 @@ class ATCParser:
                 value = self.parse_expr()
             self.match(TT.SEMICOLON)
             # Return with tuple names joined
-            from atclang.parser.ast_nodes import TupleExpr
             name = "(" + ", ".join(names) + ")"
             return LetStatement(name, None, value, is_const, tok.line, tok.col)
         # Skip 'mut' keyword (mutable binding, e.g. let mut x = ...)
@@ -988,7 +988,7 @@ class ATCParser:
         if self.current().type in (TT.IDENT, TT.KEYWORD, TT.TYPE):
             name = self.advance().value
         else:
-            self.error(f"Erwartet IDENT für Parametername")
+            self.error("Erwartet IDENT für Parametername")
         # Untypisierter Parameter (dynamisch, z.B. 'fn foo(f, name, dt)') --
         # kein ':' vorhanden -> impliziter 'Any'-Typ statt Fehler
         if not self.check(TT.COLON):
@@ -1003,7 +1003,7 @@ class ATCParser:
         if self.current().type in (TT.IDENT, TT.KEYWORD):
             name = self.advance().value
         else:
-            self.error(f"Erwartet IDENT für Funktionsname")
+            self.error("Erwartet IDENT für Funktionsname")
         # Generische Typ-Parameter: fn get_bus<T>(...) -- geparst und verworfen
         if self.check(TT.LT):
             self.advance()

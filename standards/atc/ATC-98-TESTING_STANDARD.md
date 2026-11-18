@@ -19,6 +19,7 @@ ATC-98 definiert die verbindlichen Test-Standards für das gesamte A-TownChain O
 ## 2. Test-Typen und Coverage
 
 ### 2.1 Mindest-Coverage
+
 | Komponente | Mindest-Coverage | Branch-Coverage |
 |------------|-----------------|-----------------|
 | Core (Konsens, Krypto) | 95% | 85% |
@@ -28,6 +29,7 @@ ATC-98 definiert die verbindlichen Test-Standards für das gesamte A-TownChain O
 | UI/Frontend | 80% | 65% |
 
 ### 2.2 Naming-Conventions
+
 - Unit: `test_<module>_<function>_<case>.atc`
 - Integration: `test_int_<componentA>_<componentB>.atc`
 - E2E: `test_e2e_<scenario>.atc`
@@ -42,6 +44,7 @@ ATC-98 definiert die verbindlichen Test-Standards für das gesamte A-TownChain O
 | Post-Release | Smoke-Tests | ⚠️ Alert |
 
 ### 3.1 Pipeline-Anforderungen
+
 - `atc test --ci --coverage --gas-report`
 - XML-Report für CI/CD-System
 - Coverage-Trend-Tracking

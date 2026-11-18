@@ -50,7 +50,7 @@ automatisch verbindlich (dynamische Bindung, Registry = SSOT).
 
 Agenten-Commits MUSSEN einen Trailer-Block tragen (maschinenlesbar):
 
-```
+```text
 Agent-ID: ATC-AI-ARCH-001
 Task-ID: ATC-TASK-NNNN
 AI-Role: software-development

@@ -6,7 +6,9 @@ Issue #1: Smart Contract Implementation
 Der Genesis-Token ist der erste und einzige ATC-001 Token.
 Unveraenderlich, nicht mintbar — symbolisiert den Ursprung der Chain.
 """
-import hashlib, time
+import hashlib
+import time
+
 from blockchain.contracts.base.base_contract import BaseContract
 
 

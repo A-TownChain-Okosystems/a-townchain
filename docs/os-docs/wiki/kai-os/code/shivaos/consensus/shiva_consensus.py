@@ -13,14 +13,11 @@ Reihenfolge: PoH → PoS → PoW = ShivaConsensus™
 """
 
 import hashlib
-import time
-import math
 import json
-import struct
+import math
+import time
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Tuple
-from enum import IntEnum, auto
-
+from typing import Dict, List, Optional, Tuple
 
 # ══════════════════════════════════════════════════════════
 #  KRYPTO-PRIMITIVE (ATC-eigene Hash-Funktion)
@@ -533,7 +530,7 @@ class ShivaConsensus:
         print(f"        PoH-Checkpoint: {poh_checkpoint[:16]}... | Seq: {self.poh.sequence}")
 
         # ── Phase 2: PoS — Block-Produzent wählen ─────────
-        print(f"  [2/3] PoS — Validator-Auswahl...")
+        print("  [2/3] PoS — Validator-Auswahl...")
         producer = self.pos.select_block_producer(self.slot)
         active   = self.pos.get_active_validators()
         print(f"        Produzent: {validator_addr[:16]}... | Aktive Validators: {len(active)}")
@@ -570,7 +567,7 @@ class ShivaConsensus:
         elapsed = (time.time() - start) * 1000
 
         if not success:
-            print(f"        ⚠️  PoW-Timeout nach 500k Iterationen")
+            print("        ⚠️  PoW-Timeout nach 500k Iterationen")
             nonce    = 0
             pow_hash = header.hash()
 

@@ -1,0 +1,25 @@
+{
+  // Markdown-Scope + Regelsatz (SCR-0146, Owner-Entscheidung 18.11.2026)
+  // Basis: Org-Policy .github/policies/markdownlint/.markdownlint-cli2.jsonc
+  // (identischer Regelsatz). Eine einzige, begruendete Abweichung:
+  // MD025.front_matter_title = "" — unsere Dokumente tragen den Titel im
+  // YAML-Frontmatter UND als H1; ohne diese Einstellung wertet markdownlint
+  // den Frontmatter-Titel als erste H1 und meldet die echte H1 als Duplikat.
+  // Kein Regelausfall: MD025 bleibt aktiv, nur die Titelquelle ist definiert.
+  "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint-cli2/main/schema/markdownlint-cli2-config-schema.json",
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD024": { "siblings_only": true },
+    // MD003 bleibt aktiv; Stil explizit ATX, weil YAML-Frontmatter bei der
+    // Setext-Erkennung als Ueberschrift gelesen werden kann.
+    "MD003": { "style": "atx" },
+    "MD025": { "front_matter_title": "" },
+    "MD029": false,
+    "MD033": false,
+    "MD036": false,
+    "MD041": false,
+    "MD060": false
+  },
+  "noProgress": true
+}

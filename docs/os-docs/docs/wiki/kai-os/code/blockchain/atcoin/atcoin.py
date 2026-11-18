@@ -9,7 +9,8 @@
 #   Standard:     ATC-8300 (ERC20-kompatibel)
 #   Consensus:    SHA-256 PoW + PoS + PoH
 
-import hashlib, time, json
+import hashlib
+import time
 from decimal import Decimal
 
 ATC_SYMBOL      = "ATC"

@@ -2,8 +2,8 @@
 # backend/api/routes/governance_routes.py
 # Issue #9 — ATC-9900 Governance DAO Routes
 
-from flask import Blueprint, jsonify, request
 from blockchain.contracts.governance.governance_contract import GovernanceContract
+from flask import Blueprint, jsonify, request
 
 governance_bp = Blueprint("governance", __name__)
 _gov = GovernanceContract()

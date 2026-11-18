@@ -3,11 +3,20 @@
 Tests: Bootstrap-Node DNS Seed & Peer Discovery (Fix #68)
 26 Tests — DNS, AddrMan, Gossip, Fallback, Persistenz
 """
-import sys, os, json, time, tempfile
+import os
+import sys
+import tempfile
+import time
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from blockchain.nodes.bootstrap import (
-    BootstrapNode, AddrMan, DNSSeedResolver, PeerAddress, BOOTSTRAP_CONFIG
+    BOOTSTRAP_CONFIG,
+    AddrMan,
+    BootstrapNode,
+    DNSSeedResolver,
+    PeerAddress,
 )
+
 
 # ── 1. PeerAddress Tests ───────────────────────────
 def test_peer_address_key():

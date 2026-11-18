@@ -427,7 +427,7 @@ def aspects_for(title, famname):
             hits.extend(v)
     if not hits:
         hits = DEFAULT[:]
-    hits.append("Familienkonformitaet: %s-Kernregeln KR-1..KR-6 eingehalten" % famname)
+    hits.append("Familienkonformitaet: {}-Kernregeln KR-1..KR-6 eingehalten".format(famname))
     seen, out = set(), []
     for h in hits:
         if h not in seen:
@@ -580,14 +580,14 @@ ATC-STD-PROTOCOL-003).
 
 
 def main():
-    fw = yaml.safe_load(open(os.path.join(ROOT, "registry", "framework.yaml"), encoding="utf-8"))[
+    fw = yaml.safe_load(open(os.path.join(ROOT, "registry", "framework.yaml"), encoding="utf-8"))[  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         "framework"
     ]
-    sr = yaml.safe_load(open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8"))[
+    sr = yaml.safe_load(open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8"))[  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         "standards"
     ]
     byid = {e["id"]: e for e in sr}
-    new_ids = json.load(open("/tmp/new_ids.json"))
+    new_ids = json.load(open("/tmp/new_ids.json"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 
     freq_lines = {
         6: "Ökosystem-Verortung nachgewiesen (§1).",
@@ -670,7 +670,7 @@ def main():
                 napn=len(asp),
                 lastreq="%03d" % (10 + len(asp)),
             )
-            open(os.path.join(ROOT, e["file"]), "w", encoding="utf-8").write(content)
+            open(os.path.join(ROOT, e["file"]), "w", encoding="utf-8").write(content)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             count += 1
     print("{0} Standards auf v1.2.0 fertig ausgebaut".format(count))
     return 0

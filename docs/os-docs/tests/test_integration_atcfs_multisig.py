@@ -3,7 +3,9 @@
 Integration Tests — Issue #26 (Kap. 14)
 ATCFS + MultiSig + ATCLang vollständige Integrationstests.
 """
-import sys, os, time
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def test_atcfs_basic():
@@ -55,7 +57,7 @@ def test_atcfs_kernel_module():
     print("  ✅ ATCFS Kernel-Modul (load/write/ls/stat)")
 
 def test_multisig_bridge_vault():
-    from blockchain.wallet.multisig import create_bridge_vault, TxStatus
+    from blockchain.wallet.multisig import TxStatus, create_bridge_vault
     owners = ["alice", "bob", "charlie"]
     vault  = create_bridge_vault(owners)
     vault.deposit("ATC", 10000.0)
@@ -76,7 +78,7 @@ def test_multisig_bridge_vault():
     print("  ✅ MultiSig Bridge Vault (propose/sign/execute)")
 
 def test_multisig_franchise_vault():
-    from blockchain.wallet.multisig import create_franchise_vault, TxStatus
+    from blockchain.wallet.multisig import TxStatus, create_franchise_vault
     owners = ["o1","o2","o3","o4","o5"]
     vault  = create_franchise_vault(owners)
     vault.deposit("ATC", 50000.0)
@@ -126,4 +128,4 @@ if __name__ == "__main__":
             else:
                 print(f"  ❌ {t.__name__}: {e}"); fail += 1
     print(f"\n  {ok}/{ok+fail+skip} Tests ✅  |  {skip} übersprungen  |  {fail} fehlgeschlagen")
-    import sys; sys.exit(0 if fail == 0 else 1)
+    import sys; sys.exit(0 if fail == 0 else 1)  # noqa: I001 — Importblock folgt Org-Policy

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fail-closed validator for the ATC component/function catalog."""
+
 from __future__ import annotations
 
 import argparse
@@ -9,14 +10,28 @@ import sys
 from pathlib import Path
 
 READINESS = {
-    "PLANNED", "DESIGNED", "IMPLEMENTED", "TESTED", "AUDITED",
-    "PRODUCTION_READY", "BLOCKED", "RESIDUAL", "DEPRECATED",
+    "PLANNED",
+    "DESIGNED",
+    "IMPLEMENTED",
+    "TESTED",
+    "AUDITED",
+    "PRODUCTION_READY",
+    "BLOCKED",
+    "RESIDUAL",
+    "DEPRECATED",
 }
 GATE_STATUS = {"NOT_RUN", "VERIFIED", "BLOCKED", "RESIDUAL"}
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 REQUIRED_FUNCTION_FIELDS = {
-    "id", "name", "purpose", "inputs", "outputs", "failure_modes",
-    "acceptance", "test_classes", "readiness",
+    "id",
+    "name",
+    "purpose",
+    "inputs",
+    "outputs",
+    "failure_modes",
+    "acceptance",
+    "test_classes",
+    "readiness",
 }
 
 
@@ -53,14 +68,22 @@ def validate(doc: dict) -> tuple[list[str], dict]:
             errors.append(f"repository_coverage[{index}] must include full repository name")
             continue
         repo_names.append(name)
-        for field in ("role", "canonicality", "observed_archive_state", "function_inventory_status", "production_readiness"):
+        for field in (
+            "role",
+            "canonicality",
+            "observed_archive_state",
+            "function_inventory_status",
+            "production_readiness",
+        ):
             if not repo.get(field):
                 errors.append(f"{name}: repository_coverage missing {field}")
         archive_state = repo.get("observed_archive_state")
         if archive_state == "ACTIVE":
             active_repos += 1
             if repo.get("function_inventory_status") != "RESIDUAL":
-                errors.append(f"{name}: active repository function inventory must remain RESIDUAL until audited")
+                errors.append(
+                    f"{name}: active repository function inventory must remain RESIDUAL until audited"
+                )
             if repo.get("production_readiness") == "PRODUCTION_READY":
                 errors.append(f"{name}: repository coverage cannot certify production readiness")
         elif archive_state == "ARCHIVED":
@@ -68,7 +91,9 @@ def validate(doc: dict) -> tuple[list[str], dict]:
             if repo.get("function_inventory_status") != "REFERENCE_ONLY":
                 errors.append(f"{name}: archived repository must be REFERENCE_ONLY")
             if repo.get("production_readiness") != "ARCHIVED_REFERENCE_ONLY":
-                errors.append(f"{name}: archived repository must not be treated as production target")
+                errors.append(
+                    f"{name}: archived repository must not be treated as production target"
+                )
         else:
             errors.append(f"{name}: invalid observed_archive_state {archive_state!r}")
     if len(repo_names) != len(set(repo_names)):
@@ -78,7 +103,9 @@ def validate(doc: dict) -> tuple[list[str], dict]:
     if scope.get("active_repository_count") != active_repos:
         errors.append("scope active_repository_count does not match observed ACTIVE repositories")
     if scope.get("archived_repository_count") != archived_repos:
-        errors.append("scope archived_repository_count does not match observed ARCHIVED repositories")
+        errors.append(
+            "scope archived_repository_count does not match observed ARCHIVED repositories"
+        )
     if active_repos + archived_repos != len(repository_coverage):
         errors.append("every covered repository must be ACTIVE or ARCHIVED")
 
@@ -99,7 +126,15 @@ def validate(doc: dict) -> tuple[list[str], dict]:
             continue
         component_ids.append(cid)
         component_by_id[cid] = component
-        for field in ("name", "layer", "canonical_owner", "role", "criticality", "depends_on", "functions"):
+        for field in (
+            "name",
+            "layer",
+            "canonical_owner",
+            "role",
+            "criticality",
+            "depends_on",
+            "functions",
+        ):
             if field not in component or component[field] in (None, ""):
                 errors.append(f"{cid}: missing required field {field}")
         if component.get("readiness") not in READINESS:
@@ -130,10 +165,22 @@ def validate(doc: dict) -> tuple[list[str], dict]:
                 errors.append(f"{fid}: missing required fields: {', '.join(missing)}")
             if fn.get("readiness") not in READINESS:
                 errors.append(f"{fid}: invalid readiness {fn.get('readiness')!r}")
-            for list_field in ("inputs", "outputs", "failure_modes", "acceptance", "test_classes"):
+            for list_field in (
+                "inputs",
+                "outputs",
+                "failure_modes",
+                "acceptance",
+                "test_classes",
+            ):
                 value = fn.get(list_field)
-                if not isinstance(value, list) or not value or any(not isinstance(x, str) or not x.strip() for x in value):
-                    errors.append(f"{fid}: {list_field} must be a non-empty array of non-empty strings")
+                if (
+                    not isinstance(value, list)
+                    or not value
+                    or any(not isinstance(x, str) or not x.strip() for x in value)
+                ):
+                    errors.append(
+                        f"{fid}: {list_field} must be a non-empty array of non-empty strings"
+                    )
             if fn.get("readiness") == "PRODUCTION_READY":
                 production_ready_functions += 1
                 _check_evidence(fn, fid, errors)
@@ -144,7 +191,11 @@ def validate(doc: dict) -> tuple[list[str], dict]:
         errors.append("duplicate function IDs found")
     all_component_ids = set(component_ids)
     for cid, component in component_by_id.items():
-        for dep in component.get("depends_on", []) if isinstance(component.get("depends_on", []), list) else []:
+        for dep in (
+            component.get("depends_on", [])
+            if isinstance(component.get("depends_on", []), list)
+            else []
+        ):
             if dep not in all_component_ids:
                 errors.append(f"{cid}: unknown dependency {dep}")
     gate_ids = [g.get("id") for g in gates if isinstance(g, dict)]
@@ -182,11 +233,17 @@ def validate(doc: dict) -> tuple[list[str], dict]:
     release = doc.get("release_decision", {})
     if release.get("status") == "PRODUCTION_READY":
         if errors:
-            errors.append("release_decision cannot be PRODUCTION_READY while validation errors exist")
+            errors.append(
+                "release_decision cannot be PRODUCTION_READY while validation errors exist"
+            )
         if any(g.get("status") != "VERIFIED" for g in gates if isinstance(g, dict)):
-            errors.append("release_decision PRODUCTION_READY requires every production gate VERIFIED")
+            errors.append(
+                "release_decision PRODUCTION_READY requires every production gate VERIFIED"
+            )
         if any(c.get("readiness") != "PRODUCTION_READY" for c in components if isinstance(c, dict)):
-            errors.append("release_decision PRODUCTION_READY requires every listed component PRODUCTION_READY")
+            errors.append(
+                "release_decision PRODUCTION_READY requires every listed component PRODUCTION_READY"
+            )
 
     metrics = {
         "schema_id": doc.get("schema_id"),
@@ -212,7 +269,15 @@ def _check_evidence(item: dict, item_id: str, errors: list[str]) -> None:
     if not isinstance(evidence, dict):
         errors.append(f"{item_id}: PRODUCTION_READY requires production_evidence object")
         return
-    for field in ("source_sha", "run_id", "job", "step", "exit_code", "log_or_artifact_url", "review_ref"):
+    for field in (
+        "source_sha",
+        "run_id",
+        "job",
+        "step",
+        "exit_code",
+        "log_or_artifact_url",
+        "review_ref",
+    ):
         if evidence.get(field) in (None, ""):
             errors.append(f"{item_id}: PRODUCTION_READY evidence missing {field}")
     if evidence.get("source_sha") and not SHA_RE.fullmatch(str(evidence["source_sha"])):
@@ -223,7 +288,9 @@ def _check_evidence(item: dict, item_id: str, errors: list[str]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.json")
+    parser.add_argument(
+        "--input", default="docs/architecture/ATC-COMPONENT-FUNCTION-CATALOG-001.json"
+    )
     parser.add_argument("--report", default="component-function-catalog-report.json")
     args = parser.parse_args()
     try:

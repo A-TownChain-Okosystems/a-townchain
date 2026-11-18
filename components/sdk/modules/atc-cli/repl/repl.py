@@ -95,7 +95,7 @@ class ATCRepl:
         try:
             readline.set_completer(self._complete)
             readline.parse_and_bind("tab: complete")
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
             pass
 
     def _complete(self, text, state):
@@ -221,7 +221,7 @@ class ATCRepl:
             return f"  ❌ VM-Fehler: {e}"
         except SyntaxError as e:
             return f"  ❌ Syntaxfehler: {e}"
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             return f"  ❌ Fehler: {type(e).__name__}: {e}"
 
     def run(self):

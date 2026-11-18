@@ -1,8 +1,12 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """Tests für APIOrchestrator (ATS-1000)"""
-import sys, os, time
+import os
+import sys
+import time
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from backend.api.orchestrator.orchestrator import APIOrchestrator, TaskType, TaskStatus
+from backend.api.orchestrator.orchestrator import APIOrchestrator, TaskStatus, TaskType
+
 
 def test_register_and_dispatch():
     orch = APIOrchestrator()

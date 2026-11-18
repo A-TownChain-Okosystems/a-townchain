@@ -9,6 +9,7 @@ Dateiliste je Bereich, damit die Übersicht bei über 12.000 Dateien benutzbar
 bleibt. Beide Dateien werden vollständig neu geschrieben; der Anhang der
 Übersicht bleibt als Historie erhalten.
 """
+
 from __future__ import annotations
 
 import collections
@@ -56,7 +57,7 @@ def anhang() -> str:
     """Bewahrt den bisherigen Änderungsnachtrag als Historie."""
     if not os.path.exists(REGISTER):
         return ""
-    alt = open(REGISTER, encoding="utf-8").read()
+    alt = open(REGISTER, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     marker = "## Nachtrag 2026-11-08 (P0-Härtung)"
     if marker not in alt:
         return ""
@@ -77,24 +78,30 @@ def main() -> int:
 
     ext = collections.Counter(os.path.splitext(p)[1].lower() or "(keine)" for p in paths)
     nach_bereich = collections.Counter(bereich(p) for p in paths)
-    verzeichnisse = collections.Counter(
-        os.path.dirname(p) or "(Wurzel)" for p in paths
-    )
+    verzeichnisse = collections.Counter(os.path.dirname(p) or "(Wurzel)" for p in paths)
 
     # ---------- Übersicht ----------
     zeilen = [
         "# 📋 File Register — a-townchain",
         "",
-        "> **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos "
-        "(SCR-0082, Matrix-Dim-12).",
-        f"> **Erzeugt:** {stempel} | Quelle: `git ls-tree -r {rev}` @ `{sha}` "
-        f"(letzter Commit {datum})",
-        "> **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig "
-        "neu geschrieben.",
+        (
+            "> **Zweck:** Vollständiger Nachweis aller Dateien des Monorepos "
+            "(SCR-0082, Matrix-Dim-12)."
+        ),
+        (
+            f"> **Erzeugt:** {stempel} | Quelle: `git ls-tree -r {rev}` @ `{sha}` "
+            f"(letzter Commit {datum})"
+        ),
+        (
+            "> **Werkzeug:** `tools/file_register.py` — beide Dateien werden vollständig "
+            "neu geschrieben."
+        ),
         "> **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`",
         "",
-        "Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`]"
-        "(FILE_REGISTER_INDEX.md). Diese Übersicht bleibt dadurch lesbar.",
+        (
+            "Die vollständige Dateiliste steht in [`FILE_REGISTER_INDEX.md`]"
+            "(FILE_REGISTER_INDEX.md). Diese Übersicht bleibt dadurch lesbar."
+        ),
         "",
         "---",
         "",
@@ -137,7 +144,13 @@ def main() -> int:
 
     hist = anhang()
     if hist:
-        zeilen += ["---", "", "## Anhang: Änderungsnachtrag 2026-11-08 (P0-Härtung)", hist.rstrip(), ""]
+        zeilen += [
+            "---",
+            "",
+            "## Anhang: Änderungsnachtrag 2026-11-08 (P0-Härtung)",
+            hist.rstrip(),
+            "",
+        ]
 
     # ---------- Index ----------
     idx = [
@@ -158,8 +171,8 @@ def main() -> int:
         idx += [f"- `{p}`" for p in eintraege]
         idx.append("")
 
-    open(REGISTER, "w", encoding="utf-8").write("\n".join(zeilen))
-    open(INDEX, "w", encoding="utf-8").write("\n".join(idx))
+    open(REGISTER, "w", encoding="utf-8").write("\n".join(zeilen))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
+    open(INDEX, "w", encoding="utf-8").write("\n".join(idx))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     print(f"FILE_REGISTER.md: {len(zeilen)} Zeilen")
     print(f"FILE_REGISTER_INDEX.md: {len(idx)} Zeilen, {len(paths)} Dateien @ {sha}")
     return 0

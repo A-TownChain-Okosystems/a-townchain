@@ -15,6 +15,7 @@ existiert. Beleg: Bestandsaufnahme GAS-AUD-003, Blocker SB-01.
 
 **D1 — Grenzwert.** Wie viele Schritte darf eine Ausfuehrung ohne Gasbudget
 hoechstens ausfuehren?
+
 - (a) Ein fester Protokollwert, z.B. 1 000 000 Schritte, als Kette konstante.
 - (b) Abgeleitet aus dem Gasbudget (Schritte x Mindestkosten), also nur ein
   Ersatz fuer fehlendes Gas.
@@ -25,6 +26,7 @@ hoechstens ausfuehren?
   gegen eine falsch konfigurierte Gasannahme.
 
 **D2 — Fehlerkennung.** Welche Kennung erhaelt das Erreichen der Grenze?
+
 - Nicht vorhanden: Es gibt heute keine Kennung dafuer, und NEU-01 ist bereits
   fuer den unbekannten Befehl vorgemerkt. Nach der Code-Inventur ist eine weitere
   Kennung zu vergeben, nicht E03 (Gas) und nicht E06 (Aufruftiefe).

@@ -1,4 +1,5 @@
 # ATC Standards — A-TownChain Core Standards
+
 Version: 1.0.0 | Status: DRAFT | Datum: 2026-06-06
 Autor: ShivaCore / Aurora
 
@@ -11,7 +12,7 @@ Autor: ShivaCore / Aurora
 
 Jede Entität im A-TownChain Ökosystem besitzt eine eindeutige Identität.
 
-```
+```text
 IDENTITY := {
     id:       Address,       // ATC-Adresse (35 Zeichen, Präfix "ATC")
     pubkey:   Bytes64,       // Öffentlicher Schlüssel (eigenes ATC-EC)
@@ -25,7 +26,7 @@ IdentityType := WALLET | CONTRACT | NODE | AGENT | VALIDATOR
 
 ## ATC-0002 — Wallet Address Format
 
-```
+```text
 PREFIX    := "ATC"
 BODY      := SHA3_ATC(pubkey)[0:32]  // 32 Hex-Zeichen
 CHECKSUM  := CRC8(PREFIX + BODY)[0:2]
@@ -38,7 +39,7 @@ Beispiel: ATC7a3f9e2b1c8d4a6e0f5b7c9d2e1f3a4b5c6d7e8f9a
 
 ## ATC-0003 — Transaction Schema
 
-```
+```text
 TX := {
     id:        Hash256,        // SHA3_ATC(Payload)
     from:      Address,        // Sender
@@ -64,7 +65,7 @@ ATCSig := {
 
 ## ATC-0004 — Block Format
 
-```
+```text
 BLOCK := {
     header:  BlockHeader,
     txs:     List<TX>,
@@ -103,7 +104,7 @@ TXReceipt := {
 
 Hybrider Mechanismus: PoW + PoS + PoH (Proof of History)
 
-```
+```text
 Runde := {
     phase_1: PoH_Tick      // Zeitstempel-Kette (VDF-basiert)
     phase_2: PoS_Vote      // Validator-Voting (Stake-gewichtet)
@@ -121,7 +122,7 @@ FORK_RULE      := Längste-gewichtete-Kette (Stake × Länge)
 
 ## ATC-0006 — Smart Contract Interface
 
-```
+```text
 CONTRACT := {
     address:   Address,
     code_hash: Hash256,     // Hash des Bytecodes
@@ -144,7 +145,7 @@ FuncSpec := {
 
 ## ATC-0007 — P2P Message Protocol (ATCNet)
 
-```
+```text
 MSG := {
     version:   UInt8 = 1,
     type:      MsgType,
@@ -170,7 +171,7 @@ MsgType :=
 
 ## ATC-0008 — KI-OS Process Standard
 
-```
+```text
 KI_PROCESS := {
     pid:       UInt32,
     name:      String,
@@ -189,7 +190,7 @@ ProcessType := AGENT | SERVICE | CONTRACT | SYSTEM | VALIDATOR
 
 ## ATC-8300 — Fungible Token Standard
 
-```
+```text
 INTERFACE ATC8300 {
     fn total_supply() -> UInt256
     fn balance_of(owner: Address) -> UInt256
@@ -207,7 +208,7 @@ INTERFACE ATC8300 {
 
 ## ATC-9000 — NFT Standard (Genesis Chronicles, ehem. Shivamon — AD-025)
 
-```
+```text
 INTERFACE ATC9000 {
     fn owner_of(token_id: UInt256) -> Address
     fn token_uri(token_id: UInt256) -> String

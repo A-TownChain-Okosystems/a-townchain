@@ -1,8 +1,11 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """Tests für ProofOfHistory (ATC-1000)"""
-import sys, os
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from blockchain.consensus.poh import ProofOfHistory
+
 
 def test_genesis():
     poh = ProofOfHistory()

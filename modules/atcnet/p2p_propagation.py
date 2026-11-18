@@ -6,6 +6,7 @@ TCP-basiertes Messaging-System mit Duplikat-Filter und Flood-Fill-Broadcasting.
 
 import json
 import logging
+import os
 import socket
 import threading
 from collections import deque
@@ -14,6 +15,17 @@ from dataclasses import dataclass
 from typing import Any
 
 logger = logging.getLogger(__name__)
+
+
+def _resolve_bind_host() -> str:
+    """Bind-Adresse fuer Listener (ATC-STD-300 DTC, CodeQL py/bind-socket-all-interfaces).
+
+    Standard ist Loopback: kein unbeabsichtigtes Exponieren des Dienstes.
+    Echter Netzwerkbetrieb (Bootstrap/Validator) muss ausdruecklich opt-in sein:
+    ATC_P2P_BIND=0.0.0.0 (bzw. "::"). Siehe docs/REPOSITORY_STANDARD.md.
+    """
+    host = os.environ.get("ATC_P2P_BIND", "127.0.0.1").strip()
+    return host or "127.0.0.1"
 
 
 @dataclass
@@ -116,7 +128,7 @@ class P2PBroadcaster:
         try:
             self.server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.server_sock.bind(("0.0.0.0", self.port))
+            self.server_sock.bind((_resolve_bind_host(), self.port))
             self.server_sock.listen(50)
             self._running = True
             logger.info(f"P2P-Service gestartet auf Port {self.port}")
@@ -136,10 +148,10 @@ class P2PBroadcaster:
 
         # Schließe alle Peer-Verbindungen
         with self.peer_lock:
-            for node_id, sock in self.peers.items():
+            for sock in self.peers.values():
                 try:
                     sock.close()
-                except Exception:
+                except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
                     pass
             self.peers.clear()
 
@@ -147,7 +159,7 @@ class P2PBroadcaster:
         if self.server_sock:
             try:
                 self.server_sock.close()
-            except Exception:
+            except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
                 pass
 
         logger.info(f"P2P-Service für {self.node_id} gestoppt")
@@ -163,7 +175,7 @@ class P2PBroadcaster:
                     daemon=True,
                 )
                 thread.start()
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 if self._running:
                     logger.error(f"Fehler in P2P-Listener: {e}")
 
@@ -198,12 +210,12 @@ class P2PBroadcaster:
                     self._handle_message(msg)
                 except json.JSONDecodeError:
                     logger.warning(f"Ungültige JSON von {addr}")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             logger.error(f"Fehler in Peer-Verbindung {addr}: {e}")
         finally:
             try:
                 conn.close()
-            except Exception:
+            except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
                 pass
 
     def _handle_message(self, msg: P2PMessage) -> None:
@@ -231,7 +243,7 @@ class P2PBroadcaster:
         if handler:
             try:
                 handler(msg)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 logger.error(f"Fehler in Handler {msg.type}: {e}")
         else:
             logger.debug(f"Kein Handler für {msg.type}")
@@ -294,7 +306,7 @@ class P2PBroadcaster:
             self._send_handshake(sock, node_id)
 
             return True
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             logger.error(f"Fehler beim Verbinden mit {node_id}: {e}")
             return False
 
@@ -315,7 +327,7 @@ class P2PBroadcaster:
         )
         try:
             sock.sendall(msg.to_bytes())
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             logger.error(f"Fehler beim Senden von Handshake: {e}")
 
     def _remove_peer(self, node_id: str) -> None:
@@ -324,7 +336,7 @@ class P2PBroadcaster:
             if node_id in self.peers:
                 try:
                     self.peers[node_id].close()
-                except Exception:
+                except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
                     pass
                 del self.peers[node_id]
 
@@ -336,16 +348,19 @@ class P2PBroadcaster:
             return
 
         # Consensus validieren und akzeptieren
-        if self.consensus and hasattr(self.consensus, "_validate_block"):
-            if self.consensus._validate_block(block):
-                # Block zur Chain hinzufügen
-                if hasattr(self.consensus, "blocks"):
-                    self.consensus.blocks.append(block)
-                    if hasattr(self.consensus, "height"):
-                        self.consensus.height += 1
-                    # Weiterleiten an andere Peers
-                    self.broadcast_block(block)
-                    logger.info(f"Block #{block.get('height', '?')} akzeptiert und weitergeleitet")
+        if (
+            self.consensus
+            and hasattr(self.consensus, "_validate_block")
+            and self.consensus._validate_block(block)
+            and hasattr(self.consensus, "blocks")
+        ):
+            # Block zur Chain hinzufügen
+            self.consensus.blocks.append(block)
+            if hasattr(self.consensus, "height"):
+                self.consensus.height += 1
+            # Weiterleiten an andere Peers
+            self.broadcast_block(block)
+            logger.info(f"Block #{block.get('height', '?')} akzeptiert und weitergeleitet")
 
     def _handle_new_tx(self, msg: P2PMessage) -> None:
         """Handler für NEW_TX-Nachrichten."""

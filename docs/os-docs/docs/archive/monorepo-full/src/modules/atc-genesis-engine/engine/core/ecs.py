@@ -6,9 +6,9 @@ MVP Milestone 1 — ECHTER CODE, keine Vision-Doku.
 Design: einfach, dependency-frei, testbar. Entities sind IDs, Components
 sind reine Datenklassen, Systems operieren auf (Entity, Components)-Tupeln.
 """
-from dataclasses import dataclass, field
-from typing import Dict, Type, List, Iterator, Tuple, Any
 import itertools
+from dataclasses import dataclass
+from typing import Any, Dict, Iterator, List, Tuple, Type
 
 
 class World:

@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-209
   title: "Token Allocation Standard"
@@ -21,7 +22,7 @@ standard:
   related_standards: []
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-209 — Token Allocation (v1.2.0, APPROVED)
 

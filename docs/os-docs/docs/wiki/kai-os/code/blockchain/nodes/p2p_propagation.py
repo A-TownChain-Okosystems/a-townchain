@@ -4,14 +4,13 @@
 TCP-basiertes Messaging-System mit Duplikat-Filter und Flood-Fill-Broadcasting.
 """
 
-import socket
 import json
-import threading
 import logging
-from typing import Dict, Optional, Callable, Any
+import socket
+import threading
 from collections import deque
 from dataclasses import dataclass
-import time
+from typing import Any, Callable, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -75,19 +74,19 @@ class P2PBroadcaster:
         self.port = port
         self.consensus = consensus
         self.config = config or {}
-        
+
         # Peer-Verwaltung: node_id → socket
         self.peers: Dict[str, socket.socket] = {}
         self.peer_lock = threading.Lock()
-        
+
         # Duplikat-Filter: Message-Hash im Circular Buffer (max 10.000)
         self.seen_msgs = deque(maxlen=10000)
         self.seen_lock = threading.Lock()
-        
+
         # Message-Handler: msg_type → callable
         self.handlers: Dict[str, Callable] = {}
         self.register_default_handlers()
-        
+
         # Server-Socket
         self.server_sock: Optional[socket.socket] = None
         self._running = False
@@ -109,7 +108,7 @@ class P2PBroadcaster:
         if self._running:
             logger.warning(f"P2P-Service für {self.node_id} läuft bereits")
             return
-        
+
         try:
             self.server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -117,7 +116,7 @@ class P2PBroadcaster:
             self.server_sock.listen(50)
             self._running = True
             logger.info(f"P2P-Service gestartet auf Port {self.port}")
-            
+
             # Starte Listener-Thread
             listener_thread = threading.Thread(target=self._listener_loop, daemon=True)
             listener_thread.start()
@@ -130,7 +129,7 @@ class P2PBroadcaster:
     def stop(self) -> None:
         """Stoppt den P2P-Service."""
         self._running = False
-        
+
         # Schließe alle Peer-Verbindungen
         with self.peer_lock:
             for node_id, sock in self.peers.items():
@@ -139,14 +138,14 @@ class P2PBroadcaster:
                 except:
                     pass
             self.peers.clear()
-        
+
         # Schließe Server-Socket
         if self.server_sock:
             try:
                 self.server_sock.close()
             except:
                 pass
-        
+
         logger.info(f"P2P-Service für {self.node_id} gestoppt")
 
     def _listener_loop(self) -> None:
@@ -172,12 +171,12 @@ class P2PBroadcaster:
                 raw_len = conn.recv(4)
                 if not raw_len:
                     break
-                
+
                 length = int.from_bytes(raw_len, "big")
                 if length > 1_000_000:  # Max 1MB pro Nachricht
                     logger.warning(f"Nachricht zu groß: {length} bytes von {addr}")
                     break
-                
+
                 # Lese Nachricht-Daten
                 data = b""
                 while len(data) < length:
@@ -185,10 +184,10 @@ class P2PBroadcaster:
                     if not chunk:
                         break
                     data += chunk
-                
+
                 if len(data) < length:
                     break
-                
+
                 # Parse und verarbeite Nachricht
                 try:
                     msg = P2PMessage.from_bytes(data)
@@ -211,13 +210,13 @@ class P2PBroadcaster:
             "sender": msg.sender,
             "payload": msg.payload,
         }, sort_keys=True))
-        
+
         with self.seen_lock:
             if msg_hash in self.seen_msgs:
                 logger.debug(f"Duplikat ignoriert: {msg.type} von {msg.sender}")
                 return
             self.seen_msgs.append(msg_hash)
-        
+
         # Handler aufrufen
         handler = self.handlers.get(msg.type)
         if handler:
@@ -250,14 +249,14 @@ class P2PBroadcaster:
         """Sendet eine Nachricht an alle verbundenen Peers (Flood-Fill)."""
         data = msg.to_bytes()
         dead_peers = []
-        
+
         with self.peer_lock:
             for node_id, sock in list(self.peers.items()):
                 try:
                     sock.sendall(data)
                 except (OSError, BrokenPipeError):
                     dead_peers.append(node_id)
-        
+
         # Tote Verbindungen entfernen
         for node_id in dead_peers:
             self._remove_peer(node_id)
@@ -276,15 +275,15 @@ class P2PBroadcaster:
             sock.settimeout(timeout)
             sock.connect((host, port))
             sock.settimeout(None)  # Blocking-Mode nach erfolgreicher Verbindung
-            
+
             with self.peer_lock:
                 self.peers[node_id] = sock
-            
+
             logger.info(f"Mit Peer verbunden: {node_id} ({host}:{port})")
-            
+
             # Starte Handshake
             self._send_handshake(sock, node_id)
-            
+
             return True
         except Exception as e:
             logger.error(f"Fehler beim Verbinden mit {node_id}: {e}")
@@ -295,7 +294,7 @@ class P2PBroadcaster:
         chain_height = 0
         if self.consensus:
             chain_height = getattr(self.consensus, "height", 0)
-        
+
         msg = P2PMessage(
             type=self.MSG_HANDSHAKE,
             sender=self.node_id,
@@ -326,7 +325,7 @@ class P2PBroadcaster:
         block = msg.payload.get("block")
         if not block:
             return
-        
+
         # Consensus validieren und akzeptieren
         if self.consensus and hasattr(self.consensus, "_validate_block"):
             if self.consensus._validate_block(block):
@@ -344,7 +343,7 @@ class P2PBroadcaster:
         tx = msg.payload.get("tx")
         if not tx:
             return
-        
+
         # TX in Mempool hinzufügen
         if self.consensus:
             if not hasattr(self.consensus, "mempool"):
@@ -365,7 +364,7 @@ class P2PBroadcaster:
         """Gibt den aktuellen Status des P2P-Netzwerks zurück."""
         with self.peer_lock:
             peer_list = list(self.peers.keys())
-        
+
         return {
             "node_id": self.node_id,
             "running": self._running,

@@ -23,7 +23,7 @@ Proof of Work — SHA-256-basiertes Mining für Difficulty-Adjustment und Block-
 
 ### Module
 
-```
+```text
 modules/consensus/pow.atc — Mining-Algorithmus
 modules/consensus/difficulty.atc — Difficulty-Adjustment
 ```
@@ -34,7 +34,8 @@ modules/consensus/difficulty.atc — Difficulty-Adjustment
 
 | Funktion | Beschreibung | Gas-Cost |
 |----------|--------------|----------|
-| `pow_mine(header: &BlockHeader, target: Hash) -> Option<Nonce>` | Sucht Nonce bis hash(header||nonce) < target | 12 per attempt |
+| `pow_mine(header: &BlockHeader, target: Hash) -> Option<Nonce>` | Sucht Nonce bis hash(header |  |
+| nonce) < target | 12 per attempt |  |
 | `pow_verify(header: &BlockHeader, nonce: Nonce, target: Hash) -> bool` | Verifiziert PoW-Lösung | 12 |
 | `difficulty_adjust(blocks: &Array<BlockHeader>) -> Hash` | Berechnet neuen Target-Wert | 100 |
 | `difficulty_to_target(bits: u32) -> Hash` | Konvertiert Compact-Bits zu Target | 20 |
@@ -65,7 +66,7 @@ initial_difficulty: 0x1d00ffff | adjustment_interval: 2016 blocks | target_block
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-82.atc    # Unit-Tests
 └── test_atc-82_integration.atc  # Integration-Tests

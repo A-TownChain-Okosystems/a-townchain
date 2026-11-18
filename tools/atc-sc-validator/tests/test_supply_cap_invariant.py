@@ -70,8 +70,7 @@ def test_every_atcoin_source_declares_the_owner_cap(path: Path):
     assert caps, f"{path.relative_to(ROOT)} deklariert keinen Supply-Cap"
     for cap in caps:
         assert cap == CAP_WEI, (
-            f"{path.relative_to(ROOT)}: Cap {cap} != {CAP_WEI} "
-            f"({CAP_TOKENS:,} ATC * 10^{DECIMALS})"
+            f"{path.relative_to(ROOT)}: Cap {cap} != {CAP_WEI} ({CAP_TOKENS:,} ATC * 10^{DECIMALS})"
         )
 
 
@@ -105,8 +104,7 @@ def test_chain_id_is_the_atc_chain_inside_atc_chain_sources(path: Path):
     for found in CHAIN_ID_RE.finditer(text):
         value = int(found.group(1).replace("_", ""))
         assert value == CHAIN_ID, (
-            f"{path.relative_to(ROOT)}: CHAIN_ID {value} != {CHAIN_ID} "
-            "(ATC-Chain-Konstante)"
+            f"{path.relative_to(ROOT)}: CHAIN_ID {value} != {CHAIN_ID} (ATC-Chain-Konstante)"
         )
 
 
@@ -117,8 +115,13 @@ def test_no_token_source_declares_a_foreign_chain_id():
     Chain-Konfiguration, nicht zum Token-Zustand.
     """
     for path in atcoin_sources():
-        values = [int(m.group(1).replace("_", "")) for m in CHAIN_ID_RE.finditer(path.read_text(encoding="utf-8"))]
-        assert all(v == CHAIN_ID for v in values), f"{path.relative_to(ROOT)}: fremde Chain-ID {values}"
+        values = [
+            int(m.group(1).replace("_", ""))
+            for m in CHAIN_ID_RE.finditer(path.read_text(encoding="utf-8"))
+        ]
+        assert all(v == CHAIN_ID for v in values), (
+            f"{path.relative_to(ROOT)}: fremde Chain-ID {values}"
+        )
 
 
 def test_registry_binds_cap_to_the_canonical_bytes():

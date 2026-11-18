@@ -11,18 +11,35 @@ Optimierungen:
 5. Jump Threading: JUMP to JUMP → JUMP to final target
 6. Algebraic Simplification: x * 1 → x, x + 0 → x, x * 0 → 0
 """
-from typing import List, Dict, Set, Optional, Any
-from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 from atclang.parser.ast_nodes import (
-    ASTNode, Program, IntLiteral, FloatLiteral, StringLiteral, BoolLiteral,
-    NullLiteral, Identifier, BinaryOp, UnaryOp, Assignment, IndexAccess,
-    DotAccess, NamespaceAccess, FunctionCall, TypeAnnotation,
-    LetStatement, ReturnStatement, EmitStatement, RequireStatement,
-    IfStatement, ForStatement, WhileStatement, BreakStatement,
-    ContinueStatement, ExprStatement,
-    Parameter, FunctionDef, StateField, EventDef, ErrorDef,
-    ContractDef, WalletDef, ImportStatement, StructDef, EnumDef,
+    Assignment,
+    ASTNode,
+    BinaryOp,
+    BoolLiteral,
+    BreakStatement,
+    ContinueStatement,
+    ContractDef,
+    DotAccess,
+    EmitStatement,
+    ExprStatement,
+    FloatLiteral,
+    ForStatement,
+    FunctionCall,
+    FunctionDef,
+    Identifier,
+    IfStatement,
+    IndexAccess,
+    IntLiteral,
+    LetStatement,
+    NullLiteral,
+    Program,
+    RequireStatement,
+    ReturnStatement,
+    StringLiteral,
+    UnaryOp,
+    WhileStatement,
 )
 from atclang.vm.atcvm import OP, Instruction
 

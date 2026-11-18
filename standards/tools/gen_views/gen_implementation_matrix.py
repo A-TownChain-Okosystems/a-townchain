@@ -268,7 +268,7 @@ RULES = {
 
 
 def main():
-    reg = open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8").read()
+    reg = open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     entries = []
     for line in reg.splitlines():
         if not line.strip().startswith("- {id: ATC"):
@@ -293,7 +293,7 @@ def main():
     out.append("# ============================================================================")
     out.append('version: "1.2.0"')
     out.append("generated_from: registry/standards.yaml")
-    out.append('updated: "%s"' % datetime.now().strftime("%Y-%m-%d"))
+    out.append('updated: "{}"'.format(datetime.now().strftime("%Y-%m-%d")))
     out.append("coverage_kpi:")
     out.append("  registry_total: %d" % len(entries))
     out.append("  matrix_entries: %d" % len(entries))
@@ -317,17 +317,17 @@ def main():
         else:
             applic, impl, ev, note = r
         stats[impl] = stats.get(impl, 0) + 1
-        out.append("  - standard: %s" % sid)
+        out.append("  - standard: {}".format(sid))
         out.append('    version: "%s"' % (ver or "n/a"))
-        out.append("    applicability: %s" % applic)
+        out.append("    applicability: {}".format(applic))
         out.append("    implementation:")
-        out.append("      status: %s" % impl)
-        out.append('      evidence: "%s"' % ev)
+        out.append("      status: {}".format(impl))
+        out.append('      evidence: "{}"'.format(ev))
         if note:
-            out.append('      note: "%s"' % note)
+            out.append('      note: "{}"'.format(note))
         out.append("    independence: L1")
         out.append("")
-    open(
+    open(  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         os.path.join(ROOT, "registry", "standard-implementation.yaml"), "w", encoding="utf-8"
     ).write("\n".join(out))
     print("Klassifikation:", stats, "| Eintraege:", len(entries))

@@ -27,7 +27,6 @@ standard:
 
 ---
 
-
 ## Abstract
 
 Sicherheit skaliert mit der Stufe: was auf Devnet erlaubt ist, ist auf
@@ -53,7 +52,6 @@ ATC-STD-203 Dependency Policy.
 Security Test, Chaos Test, Fault Injection und Penetration der
 NET-002-Testpflicht sind auf Testnet zu absolvieren — NICHT auf Devnet,
 NICHT erstmals auf Mainnet.
-
 
 - **Network-Isolation & Port-Härtung:** Gefährliche RPC/Debug-Ports MUESSEN auf Mainnet extern isoliert und blockiert werden (REQ-NET-064).
 - **Automated Threat Response:** Inkonsistente Block-Header oder Angriffsversuche MUESSEN ein automatisches Peer-Isolation-Event auslösen (REQ-NET-065).
@@ -107,5 +105,4 @@ Vertraege, ATVM-Verifier + License Gate als Trust Boundary).
 | Zustand | Wert |
 |---|---|
 | Standard-Status | SPECIFIED — retro-aktiv erfasst (Meta-Sweep 08.09.2026, SCR-0047) |
-| Autoritativ | Implementierungs-Status gemaess ATC-STD-IMPLEMENTATION-001 §3/§4 in `registry/standard-implementation.yaml` (SSOT); Detail-Erfassung laeuft via Coverage-Programm gemaess ATC-STD-IMPLEMENTATION-001 §6 |
-Zusätzliche Sicherheitsregel: Sämtliche Sicherheitsvorgaben der jeweiligen Stufe MUESSEN zwingend eingehalten werden; ein fehlerhafter Zustand auf Mainnet MUSS das Release-Gate unverzüglich stoppen.
+| Autoritativ | Implementierungs-Status gemaess ATC-STD-IMPLEMENTATION-001 §3/§4 in `registry/standard-implementation.yaml` (SSOT); Detail-Erfassung laeuft via Coverage-Programm gemaess ATC-STD-IMPLEMENTATION-001 §6 Zusätzliche Sicherheitsregel: Sämtliche Sicherheitsvorgaben der jeweiligen Stufe MUESSEN zwingend eingehalten werden; ein fehlerhafter Zustand auf Mainnet MUSS das Release-Gate unverzüglich stoppen. |

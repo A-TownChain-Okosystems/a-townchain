@@ -35,8 +35,8 @@
 
 **SLOT-00 — PR #192 CI and regression evidence.** At the last recorded check, workflow runs existed for PR head `638f170b38e7c0912b78ce3ec411b164180c6da2`; several were queued/pending/in progress, and the combined commit-status endpoint returned no status entries. This is a snapshot, not a current terminal result. Re-fetch the exact run and job metadata before concluding.
 
-PR: https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/192  
-Tracking issue: https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/190
+PR: <https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/pull/192>  
+Tracking issue: <https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/190>
 
 ## Slot handoff template
 

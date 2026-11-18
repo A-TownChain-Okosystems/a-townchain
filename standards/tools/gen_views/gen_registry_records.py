@@ -37,7 +37,7 @@ def main():
     src = os.path.join(BASE, "registry", "standards.yaml")
     out_dir = os.path.join(BASE, "registry", "standards")
     os.makedirs(out_dir, exist_ok=True)
-    data = yaml.safe_load(open(src, encoding="utf-8"))
+    data = yaml.safe_load(open(src, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     n = 0
     for s in data["standards"]:
         sid = s["id"]

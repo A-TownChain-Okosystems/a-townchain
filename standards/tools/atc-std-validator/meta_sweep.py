@@ -23,7 +23,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 def registry_ids():
     ids = set()
     cats = set()
-    for line in open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8"):
+    for line in open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8"):  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         m = re.search(r"id: (ATC-[A-Z0-9-]+),", line)
         if m:
             ids.add(m.group(1))
@@ -48,7 +48,7 @@ def main():
                 continue
             total += 1
             path = os.path.join(fdir, fn)
-            c = open(path, encoding="utf-8").read()
+            c = open(path, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             f = per_family[fam]
             f["total"] += 1
             # MS-1 REQ-Format

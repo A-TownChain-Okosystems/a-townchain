@@ -2,10 +2,9 @@
 """Unit-Tests für SQLite Persistence — ATC-85
 Agent: Aurora #2 (6a275618)
 """
-import pytest
-import sys
 import os
 import sqlite3
+import sys
 import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))

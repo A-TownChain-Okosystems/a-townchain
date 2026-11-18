@@ -29,7 +29,7 @@ Automatisierte Detection, Gates und Remediation: Repository-Scanner → Maintena
 
 ## §1 Zielarchitektur
 
-```
+```text
 Repository: Dependency Scanner · Vulnerability Scanner · SBOM Generator · License Scanner
    · Static Analysis · Test Suite · Performance Tests · Compatibility Tests · Repository Governance
         → Maintenance Engine
@@ -50,7 +50,7 @@ Repository: Dependency Scanner · Vulnerability Scanner · SBOM Generator · Lic
 
 ## §4 Systemintegritaet (Verkettung, MAINT-000 §23 GSEPF Integration)
 
-```
+```text
 ATC-STD-MAINT-* (normativ) → GSEPF (kontrollierter Prozess) → Maintenance Engine (CI/CD)
    → M0 Automate / M1 Review / M2+M3 Escalate → Evidence → Verified State
 ```

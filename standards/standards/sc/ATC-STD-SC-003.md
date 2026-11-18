@@ -45,9 +45,6 @@ State-Aenderungen MUESSEN vor externen Interaktionen erfolgen (CEI-Pattern); Ree
 
 Contract-Abhaengigkeiten MUESSEN im Dependency Graph (ATC-STD-204) registriert und auf bekannte Schwachstellen geprueft sein (SC-G6).
 
-
-
-
 ## 4. Reentrancy-Guard-Verpflichtung (REQ-SC-063)
 
 Funktionen mit externen Wertzustellungen oder variablen Interaktionen MUESSEN zwingend durch Reentrancy-Guards (Checks-Effects-Interactions Pattern) abgesichert werden.

@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-008
   title: "Regression Test Requirement"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-008 — Regression Test Requirement (v1.0.0, CANDIDATE)
 
@@ -26,9 +27,11 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 Jeder reproduzierbare Fehler MUSS nach Moeglichkeit einen Test erhalten.
 
 ## Kernregeln
+
 Kette: Bug → Fix → Regression-Test → CI → Future Protection. Der Test MUSS
 moeglichst VOR dem Fix fehlschlagen und NACH dem Fix erfolgreich sein. Damit ist
 bewiesen: (1) Test reproduziert den Fehler, (2) Fix behebt ihn, (3) Test verhindert
@@ -43,6 +46,7 @@ nicht reproduzierbare Fehler bekommen einen dokumentierten Begründungs-Eintrag.
 | REQ-ER-081 | Test in CI aufgenommen; nicht-reproduzierbare Faelle mit Begruendung dokumentiert |
 
 ## Implementierungsstatus
+
 PARTIAL — Evidence existiert: atc-contracts-Suite fand GovernanceContract-Bug
 (59/59 gruen, Issue #99); GovernanceContract.name()-Fix mit Test abgedeckt.
 
@@ -51,8 +55,10 @@ PARTIAL — Evidence existiert: atc-contracts-Suite fand GovernanceContract-Bug
 Regressionstests fuer Security-Fehler sind selbst Security-relevant: Testdaten nie mit echten Zugangsdaten; Fixture-Prinzip.
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-ERR-000/-009/-011, ATC-STD-BUG-003 (Fix Lifecycle),
 ATC-STD-REPO-MAINT-001 §13 (Build/Test-Gate) · INFORMATIVE: SCR-0044, Issue #99

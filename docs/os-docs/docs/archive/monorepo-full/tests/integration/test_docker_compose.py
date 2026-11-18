@@ -3,8 +3,9 @@
 Verifies that all 7 services are defined and have health checks.
 Agent: Aurora #2 (6a275618)
 """
-import pytest
 import os
+
+import pytest
 import yaml
 
 

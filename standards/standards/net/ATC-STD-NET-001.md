@@ -27,7 +27,6 @@ standard:
 
 ---
 
-
 ## Abstract
 
 Devnet ist die Experimentierstufe: Entwickler duerfen schnell brechen.
@@ -61,7 +60,7 @@ experimentelle APIs · KI-Agenten-Tests.
 
 ## 3. Devnet-Gate GATE-011 (REQ-NET-006: MUST)
 
-```
+```text
 BUILD → UNIT TESTS → INTEGRATION TESTS → DEVNET DEPLOYMENT → SMOKE TEST
 ```
 
@@ -93,7 +92,6 @@ Devnet→Testnet nur nach GATE-011-PASS (NET-004).
 - id: REQ-NET-007
   title: "Devnet-PASS allein begruendet keine Mainnet-Readiness"
   severity: MANDATORY
-
 
 ## Compliance
 

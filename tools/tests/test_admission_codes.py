@@ -1,14 +1,13 @@
 """Tests fuer die Bindung der Admission-Codeliste (Spezifikation, SSOT, Rust)."""
+
 from __future__ import annotations
 
 import json
 import sys
 from pathlib import Path
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import check_admission_codes as cac  # noqa: E402
+import check_admission_codes as cac
 
 
 def test_liste_ist_konsistent() -> None:

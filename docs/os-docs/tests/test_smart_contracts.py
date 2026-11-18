@@ -4,8 +4,9 @@ Unit Tests — Smart Contracts Issue #1
 ATC-8300 Token + ATC-001 Genesis Token + Registry
 """
 import unittest
-from blockchain.contracts.atc8300.atc8300_token import ATC8300Token
+
 from blockchain.contracts.atc001.genesis_token import GenesisToken
+from blockchain.contracts.atc8300.atc8300_token import ATC8300Token
 from blockchain.smart_contract_registry import SmartContractRegistry
 
 

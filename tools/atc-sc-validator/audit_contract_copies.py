@@ -16,6 +16,7 @@ Aufruf:
 
 Exit-Codes: 0 unveraendert, 1 Abweichung, 2 Aufruffehler.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -165,7 +166,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if not AUDIT.exists():
-        print(f"FEHLER: {AUDIT.relative_to(ROOT)} fehlt (mit --write erzeugen)", file=sys.stderr)
+        print(
+            f"FEHLER: {AUDIT.relative_to(ROOT)} fehlt (mit --write erzeugen)",
+            file=sys.stderr,
+        )
         return 2
 
     findings = compare(_parse_frozen(AUDIT.read_text(encoding="utf-8")), actual)
@@ -175,8 +179,10 @@ def main(argv: list[str] | None = None) -> int:
 
     identical = sum(1 for v in actual.values() if v["kind"] == "identical")
     divergent = len(actual) - identical
-    print(f"Vertragskopien-Audit (SC-019): {len(actual)} Mehrfachdeklarationen "
-          f"({identical} byte-gleich, {divergent} divergent)")
+    print(
+        f"Vertragskopien-Audit (SC-019): {len(actual)} Mehrfachdeklarationen "
+        f"({identical} byte-gleich, {divergent} divergent)"
+    )
     for f in findings:
         print(f"  ✗ {f}")
     print(f"  Befunde: {len(findings)}")

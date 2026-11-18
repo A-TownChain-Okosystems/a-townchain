@@ -1,7 +1,8 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 from functools import wraps
-from flask import request, jsonify
+
 from blockchain.wallet.ecdsa import ECDSASigner
+from flask import jsonify, request
 
 
 def require_signature(f):

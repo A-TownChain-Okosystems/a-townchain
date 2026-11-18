@@ -1,4 +1,5 @@
 # ATC-30 — Decentralized Reputation & Trust Scoring Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-30
 > **Tier:** 4/5 Uebergang (Decentralized AI -> User Experience)
@@ -26,6 +27,7 @@ welche Teilnehmer (Nodes, KI-Agenten oder Nutzer) innerhalb des Systems als
 ## 1. Kernkonzepte
 
 ### 1.1 Multi-Dimensionales Scoring
+
 Ein ATC-30-Reputationswert setzt sich aus mehreren Faktoren zusammen, anstatt
 nur eine einzige Zahl zu sein:
 
@@ -37,12 +39,14 @@ nur eine einzige Zahl zu sein:
 | Economic Stake | "Skin in the Game" (eingesetzte Token) | ATC-11 |
 
 **Implementation:** PARTIAL — Basis da
+
 - ATC-03 (Identity) mit Reputation-Referenzen
 - ATC-17 Governance mit Voting-Power
 - Orchestrator Health-Check fuer Uptime-Tracking
 - **Geplant:** Multi-dimensionaler Score mit gewichteten Faktoren
 
 ### 1.2 On-Chain Reputation Graph
+
 Die Reputationswerte werden nicht in einer Datenbank gespeichert, sondern als
 "Reputations-Graph" im DAG (ATC-04) gefuehrt. Ein Akteur kann eine
 "Reputations-Transaktion" signieren, die seine Vertrauensbeziehung zu einem
@@ -53,6 +57,7 @@ reduziert.
 ATC-18 (MultiSig) fuer Slashing-Transaktionen.
 
 ### 1.3 Algorithmus-Agilitaet
+
 ATC-30 ist so konzipiert, dass der Scoring-Algorithmus durch Governance-
 Beschluesse (ATC-17) angepasst werden kann. Wenn die Community beispielsweise
 beschliesst, dass "AI-Inferenz-Geschwindigkeit" wichtiger wird als
@@ -66,6 +71,7 @@ dynamisch im Konsens aktualisiert werden.
 ## 2. Warum ATC-30 fuer KAI-OS essenziell ist
 
 ### 2.1 Zero-Trust-Filterung
+
 Wenn ein Agent (Tier 4) eine Aufgabe verteilt, nutzt er den ATC-30-Score, um
 Nodes zu filtern: "Sende diese kritische Aufgabe nur an Nodes mit einem
 Reputation-Score > 0.8". Das ist der Schutzschild gegen boesartige Akteure.
@@ -74,6 +80,7 @@ Reputation-Score > 0.8". Das ist der Schutzschild gegen boesartige Akteure.
 Task-Zuweisung (ATC-24). Circuit-Breaker fuer low-Reputation Nodes.
 
 ### 2.2 Belohnungssystem
+
 Miner (ATC-15) und Inferenz-Anbieter mit einem hohen ATC-30-Score erhalten
 bevorzugt Aufgaben zugewiesen und koennen hoehere Gebuehren fuer ihre Dienste
 verlangen.
@@ -82,6 +89,7 @@ verlangen.
 ATC-24 (Scheduler) — Reputation-Weighted Scheduling.
 
 ### 2.3 Slashing & Disziplinierung
+
 Ein niedriger ATC-30-Score ist oft die Vorstufe zum automatisierten "Slashing"
 (Strafmechanismus). Wenn ein Node wiederholt schlechte KI-Modell-Audits
 (ATC-27) abliefert, sinkt sein Score, bis das System ihn automatisch vom
@@ -95,24 +103,30 @@ ATC-27 (Model Auditing) — Audit-Fehler reduziert Score.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-03 (Decentralized Identity)
+
 Die Identitaet (DID) ist der Traeger des Scores. Der Score ist untrennbar mit
 der DID verknuepft.
 
 ### 3.2 ATC-17 (Governance)
+
 Das Stimmgewicht in der DAO kann direkt an den ATC-30-Score gekoppelt sein
 (Reputation-based Voting).
 
 ### 3.3 ATC-18 (MultiSig/Slashing)
+
 Slashing-Transaktionen reduzieren den ATC-30-Score massiv. MultiSig schuetzt
 vor falschem Slashing.
 
 ### 3.4 ATC-27 (Model Auditing)
+
 Audit-Ergebnisse fliessen in den Inferenz-Qualitaet-Faktor des Scores ein.
 
 ### 3.5 ATC-24 (Task Orchestration)
+
 ATC-24 nutzt den ATC-30-Score fuer Reputation-Weighted Scheduling.
 
 ### 3.6 ATC-29 (Marketplace)
+
 Reputation-Score ist sichtbar im Marktplatz und beeinflusst Preis und
 Auftragsvergabe.
 
@@ -177,8 +191,9 @@ Auftragsvergabe.
 
 ## 7. Score-Berechnung — Konzept
 
-### Multi-Dimensionaler Score:
-```
+### Multi-Dimensionaler Score
+
+```text
 ATC-30 Score = w1 * Uptime + w2 * InferenzQuality + w3 * GovernanceHist + w4 * Stake
 
 w1, w2, w3, w4: DAO-adjustable Weights (sum = 1.0)
@@ -188,8 +203,9 @@ GovernanceHist: [0, 1] — DAO-Abstimmungskonsistenz
 Stake:          [0, 1] — Normalisierter ATC-11 Token-Stake
 ```
 
-### Decay-Modell (geplant):
-```
+### Decay-Modell (geplant)
+
+```text
 Score(t) = Score_current * decay_factor(t - t_event)
   - Neues Fehlverhalten: decay = 1.0 (volles Gewicht)
   - 30 Tage alt: decay = 0.7
@@ -198,8 +214,9 @@ Score(t) = Score_current * decay_factor(t - t_event)
   - Verbesserung: Positives Verhalten hebt Score wieder an
 ```
 
-### Slashing-Kaskade:
-```
+### Slashing-Kaskade
+
+```text
 1. Audit-Fehler (ATC-27) -> Score -= 0.15
 2. Node offline > 1h -> Score -= 0.05
 3. DAO-Missverhalten -> Score -= 0.10
@@ -214,7 +231,7 @@ Score(t) = Score_current * decay_factor(t - t_event)
 ATC-30 markiert den **Uebergang von Tier 4 (Decentralized AI) zu Tier 5
 (User Experience & Interface-Abstraktion)**:
 
-```
+```text
 TIER 4 — DECENTRALIZED AI (ATC-24 bis ATC-29)
 ├── ATC-24  Agent Scheduling              OK IMPLEMENTIERT
 ├── ATC-25  Tensor Compute                PARTIAL
@@ -238,7 +255,6 @@ TIER 5 — USER EXPERIENCE (ATC-31+)
 *Dieses Dokument wurde aus der urspruenglichen Atc-30.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:39 | Aurora (Superagent)*
-
 
 ---
 

@@ -22,6 +22,7 @@ Owner: Michael Wroblewski — Freigabe per Owner-Direktmandat im Builder-Chat
 
 Mit dieser Entscheidung sind normativ in Kraft und damit eingefroren (§30,
 Änderungen nur via SCR):
+
 - ATC-STD-000 v1.2.0 (Verfassung inkl. §7 Naming, §14.1 Rollen, §37 ID-Allokation, §38 Security)
 - ATC-STD-204 v1.0.0 (Dependency & Interface)
 - ATC-STD-AI-DEV-001/004/007/009 v1.0.0 (AI-Agenten-Governance)
@@ -31,6 +32,7 @@ Mit dieser Entscheidung sind normativ in Kraft und damit eingefroren (§30,
   nach Fertigstellung der Review-Pakete)
 
 Offene operativ arbeitbare Auflagen (keine Freigaben mehr):
+
 1. Interface-Test-Suiten IFC-0001..0010 (seed → active) bis 07.10.2026.
 2. Commit-Trailer-Rollout + AGENT_PROTOCOL-Migration bis 07.10.2026.
 3. Agent-Manifeste (.github/ai/) + AGENTS.md in R2+-Repos bis 07.10.2026.

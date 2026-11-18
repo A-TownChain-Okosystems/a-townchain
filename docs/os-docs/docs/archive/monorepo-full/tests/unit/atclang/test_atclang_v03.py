@@ -1,11 +1,20 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """Tests: ATCLang v0.3.0 Features (Fix #35)"""
-import sys, os
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from atclang.v03.atclang_v03_features import (
-    ClosureFactory, TypeInference, ModuleRegistry, ATCModule,
-    atc_format, ErrorReporter, GenericType, ATCLANG_V03_FEATURES
+    ATCLANG_V03_FEATURES,
+    ATCModule,
+    ClosureFactory,
+    ErrorReporter,
+    GenericType,
+    ModuleRegistry,
+    TypeInference,
+    atc_format,
 )
+
 
 def test_closures():
     c = ClosureFactory.parse("|x: u128| safe_mul(x, 2)")

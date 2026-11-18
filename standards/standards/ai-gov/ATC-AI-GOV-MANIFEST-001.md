@@ -88,12 +88,15 @@ Gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung.
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - ATC-AI-GOV-AGENTS-001 — Arbeitsregeln · ATC-AI-GOV-HANDOFF-001 — Übergabeprotokoll · ATC-AI-GOV-CHANGE-001 — Governance-Change-Management · ATC-STD-AUDIT-001 — Auditability
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `AGENT_MANIFEST.md` (10 Abschnitte), `ai/agent.yaml`, `ai/capabilities.yaml`
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release (Owner-Entwurf 09.09., SCR-0061): 7 REQ (Identity/Status/Registry/Capabilities/Scope/Maschinenlesbarkeit/Änderungen), 3 COM-Gates; operational vorbereitet durch SCR-0057/0058 (AGENT_MANIFEST.md v1.1.0 → 1.2.0)

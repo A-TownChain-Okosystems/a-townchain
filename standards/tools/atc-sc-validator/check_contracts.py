@@ -46,8 +46,8 @@ CATS = {
 def main():
     root = sys.argv[1] if len(sys.argv) > 1 else "."
     fails = []
-    contracts = yaml.safe_load(open(root + "/contracts/registry/contracts.yaml"))["contracts"]
-    deps = yaml.safe_load(open(root + "/contracts/registry/deployments.yaml"))["deployments"]
+    contracts = yaml.safe_load(open(root + "/contracts/registry/contracts.yaml"))["contracts"]  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
+    deps = yaml.safe_load(open(root + "/contracts/registry/deployments.yaml"))["deployments"]  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     ids = set()
     for c in contracts:
         cid = c.get("contract_id", "??")
@@ -57,17 +57,19 @@ def main():
             fails.append("doppelte contract_id: " + str(cid))
         ids.add(cid)
         if c.get("category") not in CATS:
-            fails.append("unzulaessige Kategorie: %s (%s)" % (c.get("category"), cid))
+            fails.append("unzulaessige Kategorie: {} ({})".format(c.get("category"), cid))
         for f in REQ_FIELDS:
             if f not in c:
-                fails.append("Pflichtfeld fehlt: %s (%s)" % (f, cid))
+                fails.append("Pflichtfeld fehlt: {} ({})".format(f, cid))
         if not re.match(r"^\d+\.\d+\.\d+$", str(c.get("version", ""))):
             fails.append("Version nicht SemVer: " + str(cid))
     for d in deps:
         if not DEP.match(str(d.get("deployment_id", ""))):
             fails.append("deployment_id-Muster: " + str(d.get("deployment_id")))
         if d.get("contract_id") not in ids:
-            fails.append("Deployment referenziert unbekannten Contract: %s" % d.get("contract_id"))
+            fails.append(
+                "Deployment referenziert unbekannten Contract: {}".format(d.get("contract_id"))
+            )
     print("== Contract-Registry (ATC-STD-SC-019) ==")
     print("  Contracts: %d · Deployments: %d" % (len(contracts), len(deps)))
     for f in fails:

@@ -2,12 +2,13 @@
 """ATCLang Type Checker Tests — ATC-92
 Tests für statische Typ-Prüfung zur Compile-Zeit.
 """
-import unittest
-import sys
 import os
+import sys
+import unittest
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from atclang.compiler.type_checker import ATCTypeChecker, ATCType
+from atclang.compiler.type_checker import ATCTypeChecker
 from atclang.parser.parser import parse
 
 
@@ -208,7 +209,7 @@ class TestTypeSystem(unittest.TestCase):
     """ATC type system primitives."""
 
     def test_type_equality(self):
-        from atclang.compiler.type_checker import T_INT, T_STRING, T_BOOL
+        from atclang.compiler.type_checker import T_INT, T_STRING
         self.assertEqual(T_INT, T_INT)
         self.assertNotEqual(T_INT, T_STRING)
 
@@ -220,7 +221,12 @@ class TestTypeSystem(unittest.TestCase):
 
     def test_type_compatibility(self):
         from atclang.compiler.type_checker import (
-            ATCTypeChecker, T_INT, T_FLOAT, T_STRING, T_BOOL, T_ANY, T_UNKNOWN
+            T_ANY,
+            T_BOOL,
+            T_FLOAT,
+            T_INT,
+            T_STRING,
+            ATCTypeChecker,
         )
         tc = ATCTypeChecker()
         self.assertTrue(tc._is_compatible(T_INT, T_INT))
@@ -231,7 +237,11 @@ class TestTypeSystem(unittest.TestCase):
 
     def test_is_numeric(self):
         from atclang.compiler.type_checker import (
-            ATCTypeChecker, T_INT, T_FLOAT, T_STRING, T_UINT256
+            T_FLOAT,
+            T_INT,
+            T_STRING,
+            T_UINT256,
+            ATCTypeChecker,
         )
         tc = ATCTypeChecker()
         self.assertTrue(tc._is_numeric(T_INT))

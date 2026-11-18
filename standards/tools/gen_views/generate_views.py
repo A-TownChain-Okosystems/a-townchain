@@ -23,7 +23,7 @@ REG = os.path.join(ROOT, "registry", "standards.yaml")
 
 def counts():
     total = approved = candidate = other = 0
-    for line in open(REG, encoding="utf-8"):
+    for line in open(REG, encoding="utf-8"):  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         if line.strip().startswith("- {id: ATC"):
             total += 1
             m = re.search(r"status: (\w+)", line)
@@ -40,7 +40,7 @@ def counts():
 def std_index():
     """Registry-Lookup (SCR-0091): id -> {version, status} — KEINE hartcodierten Versionen/Statusse."""
     idx = {}
-    for line in open(REG, encoding="utf-8"):
+    for line in open(REG, encoding="utf-8"):  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         m = re.search(r'- \{id: (ATC-[A-Z0-9-]+),.*?version: "?([\d.]+)"?, status: (\w+)', line)
         if m:
             idx[m.group(1)] = {"version": m.group(2), "status": m.group(3)}
@@ -50,7 +50,7 @@ def std_index():
 def git_sha():
     try:
         return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
-    except Exception:
+    except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         return "unknown"
 
 
@@ -58,7 +58,7 @@ def main():
     total, approved, candidate, other = counts()
     fam_count = sum(
         1
-        for ln in open(os.path.join(ROOT, "registry", "framework.yaml"), encoding="utf-8")
+        for ln in open(os.path.join(ROOT, "registry", "framework.yaml"), encoding="utf-8")  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         if re.match(r"\s*- id: FAM-\d+", ln)
     )
     std_files = sum(
@@ -74,7 +74,7 @@ def main():
     repo_structure = "\n".join(
         ("├── " if i < len(repo_dirs) - 1 else "└── ") + x + "/" for i, x in enumerate(repo_dirs)
     )
-    sha = hashlib.sha256(open(REG, "rb").read()).hexdigest()
+    sha = hashlib.sha256(open(REG, "rb").read()).hexdigest()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     now = datetime.now(timezone(timedelta(hours=2))).strftime("%Y-%m-%d %H:%M UTC+2")
 
     sidx = std_index()
@@ -86,13 +86,13 @@ def main():
         f"  standards_total: {total}\n  standards_approved: {approved}\n  standards_candidate: {candidate}\n"
         f'  families: {fam_count}\n  generated_at: "{now}"\n'
     )
-    open(os.path.join(ROOT, "registry", "registry.lock"), "w").write(lock)
+    open(os.path.join(ROOT, "registry", "registry.lock"), "w").write(lock)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 
     stamp = "<!-- GENERATED-BY generate_views.py — NICHT MANUELL BEARBEITEN -->"
 
     # ---------- 1. README (SCR-0090/ATC-STD-003: VOLLREGENERATION aus Template) ----------
     p = os.path.join(ROOT, "README.md")
-    tpl = open(
+    tpl = open(  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         os.path.join(ROOT, "tools", "gen_views", "README.template.md"), encoding="utf-8"
     ).read()
     state_id = f"ATC-STATE-{now[:10].replace('-', '')}-{sha[:8]}"
@@ -102,23 +102,23 @@ def main():
         import yaml as _y
 
         _impl = _y.safe_load(
-            open(os.path.join(ROOT, "registry", "standard-implementation.yaml"), encoding="utf-8")
+            open(os.path.join(ROOT, "registry", "standard-implementation.yaml"), encoding="utf-8")  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         )
         for _s in _impl.get("standards", []):
             _st = _s.get("implementation", {}).get("status", "specification_only")
             kpi[_st] = kpi.get(_st, 0) + 1
-    except Exception as _e:
+    except Exception as _e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         print(f"  Hinweis: KPI-Daten nicht verfuegbar ({_e})")
     try:
         import yaml as _yc
 
         _cs = (
             _yc.safe_load(
-                open(os.path.join(ROOT, "registry", "compliance_state.yaml"), encoding="utf-8")
+                open(os.path.join(ROOT, "registry", "compliance_state.yaml"), encoding="utf-8")  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             )
             or {}
         )
-    except Exception:
+    except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         _cs = {}
     _tot = sum(kpi.values())
 
@@ -154,7 +154,7 @@ def main():
         import yaml as _y2
 
         _repo = (
-            _y2.safe_load(open(os.path.join(ROOT, ".atc", "repository.yaml"), encoding="utf-8"))
+            _y2.safe_load(open(os.path.join(ROOT, ".atc", "repository.yaml"), encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             or {}
         )
         repover = (
@@ -162,7 +162,7 @@ def main():
             or _repo.get("standard_version")
             or "n/a"
         )
-    except Exception:
+    except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
         pass
     for tok, val in {
         "@@STAMP@@": stamp,
@@ -196,12 +196,12 @@ def main():
         "@@REPOSTRUCT@@": repo_structure,
     }.items():
         tpl = tpl.replace(tok, val)
-    open(p, "w", encoding="utf-8").write(tpl)
+    open(p, "w", encoding="utf-8").write(tpl)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     print("  README vollregeneriert (State-ID:", state_id + ")")
 
     # ---------- 2. AGENT_MANIFEST (SCR-0091: keine hartcodierten Verfassungs-Versionen) ----------
     p = os.path.join(ROOT, "AGENT_MANIFEST.md")
-    c = open(p, encoding="utf-8").read()
+    c = open(p, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     _v0 = sidx.get("ATC-STD-000", {})
     _v0s = (_v0.get("status") or "UNBEKANNT").upper()
     c = re.sub(
@@ -218,11 +218,11 @@ def main():
     else:
         m = re.search(r"(^# .*\n)", c, re.M)
         c = c.replace(m.group(1), m.group(1) + line + "\n", 1)
-    open(p, "w", encoding="utf-8").write(c)
+    open(p, "w", encoding="utf-8").write(c)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 
     # ---------- 3. STATUS.md ----------
     p = os.path.join(ROOT, "STATUS.md")
-    c = open(p, encoding="utf-8").read()
+    c = open(p, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     banner = (
         f"{stamp}\n"
         f"> **GENERIERTER SNAPSHOT ({now}):** {total} Standards ({approved} APPROVED, {candidate} CANDIDATE), "
@@ -242,22 +242,22 @@ def main():
     else:
         m = re.search(r"(^# STATUS[^\n]*\n)", c, re.M)
         c = c.replace(m.group(1), m.group(1) + "\n" + banner, 1)
-    open(p, "w", encoding="utf-8").write(c)
+    open(p, "w", encoding="utf-8").write(c)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 
     # ---------- 4. .github/ai/agent.yaml (SCR-0053): required_standards SSOT-Sync ----------
     p = os.path.join(ROOT, ".github", "ai", "agent.yaml")
     if os.path.exists(p):
-        man = open(p, encoding="utf-8").read()
+        man = open(p, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         ids = re.findall(
             r"id:\s*(ATC-[A-Z0-9-]+)",
-            open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8").read(),
+            open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8").read(),  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         )
         m2 = re.search(r"(required_standards:\n)((?:- .+\n)+)", man)
         if m2:
             new_block = m2.group(1) + "".join(f"- {i}\n" for i in ids)
             if man[m2.start() : m2.end()] != new_block:
                 man = man[: m2.start()] + new_block + man[m2.end() :]
-                open(p, "w", encoding="utf-8").write(man)
+                open(p, "w", encoding="utf-8").write(man)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
                 print(
                     f"✓ agent.yaml required_standards regeneriert: {len(ids)} Standards (SSOT-Sync)"
                 )

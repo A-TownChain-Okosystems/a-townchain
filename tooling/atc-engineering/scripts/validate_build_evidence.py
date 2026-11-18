@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fail-closed validation and manifest generation for ATC build evidence."""
+
 from __future__ import annotations
 
 import argparse
@@ -8,14 +9,18 @@ import json
 import re
 from pathlib import Path
 
-
 REPORT_SCHEMA = "atc.gate-report/v1"
 MANIFEST_SCHEMA = "atc.build-evidence/v1"
 FULL_SHA = re.compile(r"[0-9a-f]{40}")
 
 
-def validate_report(report_path: Path, expected_sha: str, checked_out_sha: str,
-                    run_id: str, run_attempt: str) -> dict:
+def validate_report(
+    report_path: Path,
+    expected_sha: str,
+    checked_out_sha: str,
+    run_id: str,
+    run_attempt: str,
+) -> dict:
     """Validate all inputs before any evidence manifest is emitted."""
     if not FULL_SHA.fullmatch(expected_sha):
         raise ValueError("expected source SHA is not a full 40-character SHA")
@@ -28,15 +33,23 @@ def validate_report(report_path: Path, expected_sha: str, checked_out_sha: str,
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise ValueError(f"gate report is missing or invalid JSON: {exc}") from exc
     if not isinstance(report, dict):
-        raise ValueError("gate report must be a JSON object")
+        raise ValueError("gate report must be a JSON object")  # noqa: TRY004 — CLI-Vertrag: ValueError wird von Aufrufern erwartet
     if report.get("schema_version") != REPORT_SCHEMA:
         raise ValueError("unsupported or missing gate-report schema_version")
     return report
 
 
-def build_manifest(report_path: Path, binary_path: Path, expected_sha: str,
-                   checked_out_sha: str, run_id: str, run_attempt: str,
-                   repository: str, workflow_ref: str, report: dict) -> dict:
+def build_manifest(
+    report_path: Path,
+    binary_path: Path,
+    expected_sha: str,
+    checked_out_sha: str,
+    run_id: str,
+    run_attempt: str,
+    repository: str,
+    workflow_ref: str,
+    report: dict,
+) -> dict:
     if not binary_path.is_file():
         raise ValueError("expected release binary is missing")
     return {
@@ -69,17 +82,32 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
-        report = validate_report(args.report, args.expected_sha, args.checked_out_sha,
-                                 args.run_id, args.run_attempt)
-        manifest = build_manifest(args.report, args.binary, args.expected_sha,
-                                  args.checked_out_sha, args.run_id, args.run_attempt,
-                                  args.repository, args.workflow_ref, report)
+        report = validate_report(
+            args.report,
+            args.expected_sha,
+            args.checked_out_sha,
+            args.run_id,
+            args.run_attempt,
+        )
+        manifest = build_manifest(
+            args.report,
+            args.binary,
+            args.expected_sha,
+            args.checked_out_sha,
+            args.run_id,
+            args.run_attempt,
+            args.repository,
+            args.workflow_ref,
+            report,
+        )
     except (ValueError, OSError) as exc:
         raise SystemExit(f"BLOCKED: {exc}") from exc
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n",
-                           encoding="utf-8")
+    args.output.write_text(
+        json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
     print(json.dumps(manifest, sort_keys=True))
     return 0
 

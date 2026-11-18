@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-IMPLEMENTATION-001
   title: "Standard Implementation Matrix"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-IMPLEMENTATION-001 — Standard Implementation Matrix (v1.0.0, CANDIDATE)
 
@@ -31,7 +32,7 @@ Die Registry beantwortet bisher: **Welche Standards gibt es?** (registry/standar
 Dieser Standard fuegt die zweite SSOT hinzu: **Wo ist jeder Standard implementiert,
 getestet, erzwungen und belegt?**
 
-```
+```text
 Standard → Applicability → Implementation → Test → CI-Gate → Evidence → Verified
 ```
 

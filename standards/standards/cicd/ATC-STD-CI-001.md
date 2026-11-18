@@ -16,7 +16,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-CI-001 — Reproducible CI Dependencies (v1.0.0, CANDIDATE)
 

@@ -11,12 +11,12 @@ bleiben unverändert prüfpflichtig. Beide Testläufe müssen Exit-Code 0 liefer
 
 Aufruf: python3 tools/determinism_check.py --lang rust|python [--test-cmd "..."]
 """
+
 import argparse
 import os
 import re
 import subprocess
 import sys
-import difflib
 
 PATTERNS = {
     "rust": [
@@ -67,7 +67,7 @@ def scan_sources(root, lang):
 
 
 def run_tests(cmd, cwd):
-    result = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
+    result = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, check=False)
     stdout = result.stdout or ""
     stderr = result.stderr or ""
     return result.returncode, stdout, stderr
@@ -107,7 +107,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--lang", choices=["rust", "python"], required=True)
     parser.add_argument("--test-cmd", default=None)
-    parser.add_argument("--skip-tests", action="store_true", help="nur Quellcode-Scan (nicht empfohlen)")
+    parser.add_argument(
+        "--skip-tests", action="store_true", help="nur Quellcode-Scan (nicht empfohlen)"
+    )
     args = parser.parse_args()
 
     root = os.getcwd()
@@ -137,7 +139,9 @@ def main():
 
         if rc1 != 0 or rc2 != 0:
             ok = False
-            print(f"  FINDING: Tests schlagen fehl (rc={rc1}/{rc2}) — Determinismus nicht pruefbar (Fail Closed)")
+            print(
+                f"  FINDING: Tests schlagen fehl (rc={rc1}/{rc2}) — Determinismus nicht pruefbar (Fail Closed)"
+            )
             if rc1 != 0:
                 print("  Ausgabe Lauf 1 (stdout):")
                 print(stdout1[-3000:] or "  <leer>")

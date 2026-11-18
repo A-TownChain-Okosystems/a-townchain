@@ -3,7 +3,8 @@
 BaseContract — Basisklasse fuer alle A-TownChain Smart Contracts
 Issue #1: Smart Contract Implementation
 """
-import time, hashlib, json
+import hashlib
+import time
 from abc import ABC, abstractmethod
 from typing import Optional
 

@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-V2S-000
   title: "Vision-to-Software Lifecycle Master Standard"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-V2S-000 — Vision-to-Software Lifecycle Master (v1.0.0, CANDIDATE)
 

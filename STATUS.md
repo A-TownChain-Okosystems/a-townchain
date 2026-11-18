@@ -65,6 +65,7 @@ Authority. Lokale Tests sind `TESTED`, nie `CI_VERIFIED`.
 Mainnet remains NO-GO until all mandatory gates reach RELEASED on one immutable release-candidate SHA.
 
 Minimum gates:
+
 1. canonical monetary and transaction contracts
 2. frozen consensus/finality and consensus-key contract
 3. reproducible mainnet genesis/bootstrap

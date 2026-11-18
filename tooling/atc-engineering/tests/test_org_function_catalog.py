@@ -14,8 +14,20 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(catalog.blob_sha(b""), "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391")
 
     def test_symbol_id_does_not_depend_on_line_number(self):
-        first = catalog.extract_python("owner/repo", "example.py", "def top(x):\n    return x\n", "a" * 40, "b" * 40)[0]
-        shifted = catalog.extract_python("owner/repo", "example.py", "# inserted comment\ndef top(x):\n    return x\n", "c" * 40, "d" * 40)[0]
+        first = catalog.extract_python(
+            "owner/repo",
+            "example.py",
+            "def top(x):\n    return x\n",
+            "a" * 40,
+            "b" * 40,
+        )[0]
+        shifted = catalog.extract_python(
+            "owner/repo",
+            "example.py",
+            "# inserted comment\ndef top(x):\n    return x\n",
+            "c" * 40,
+            "d" * 40,
+        )[0]
         self.assertEqual(first["symbol_id"], shifted["symbol_id"])
         self.assertNotEqual(first["source_start_line"], shifted["source_start_line"])
 
@@ -34,8 +46,12 @@ class CatalogTests(unittest.TestCase):
 
     def test_rust_extraction_is_explicitly_heuristic(self):
         records = catalog.extract_heuristic(
-            "owner/repo", "src/lib.rs", "rust", "pub fn simple_hash(value: u32) -> u32 { value }\n",
-            "a" * 40, "b" * 40
+            "owner/repo",
+            "src/lib.rs",
+            "rust",
+            "pub fn simple_hash(value: u32) -> u32 { value }\n",
+            "a" * 40,
+            "b" * 40,
         )
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0]["qualified_name"], "simple_hash")
@@ -70,9 +86,8 @@ class CatalogTests(unittest.TestCase):
             with self.subTest(language=language):
                 catalog.validate_document_format(language, text)
         for language in ("json", "toml", "yaml"):
-            with self.subTest(language=language):
-                with self.assertRaises(Exception):
-                    catalog.validate_document_format(language, invalid[language])
+            with self.subTest(language=language), self.assertRaises(Exception):  # noqa: B017 — bewusst: breite Exception
+                catalog.validate_document_format(language, invalid[language])
 
     def test_rust_tree_sitter_extraction_uses_ast_ranges_and_nonempty_signatures(self):
         source = "\n\npub fn first(value: u32) -> u32 { value }\n\n\npub fn second() {}\n"
@@ -101,7 +116,9 @@ class CatalogTests(unittest.TestCase):
     def test_git_worktree_metadata_is_not_inventoried(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / ".git").write_text("gitdir: /tmp/example/.git/worktrees/sample\n", encoding="utf-8")
+            (root / ".git").write_text(
+                "gitdir: /tmp/example/.git/worktrees/sample\n", encoding="utf-8"
+            )
             (root / "source.py").write_text("def visible(): pass\n", encoding="utf-8")
             result = catalog.scan(root, "owner/sample")
             paths = {entry["path"] for entry in result["files"]}
@@ -146,13 +163,17 @@ class CatalogTests(unittest.TestCase):
             self.assertIsNone(records[0]["source_blob_sha"])
             self.assertEqual(records[0]["evidence"][0]["reference"], "SKIP_DIRS:target")
 
-    def test_scan_reports_parser_coverage_per_language_and_does_not_claim_verification(self):
+    def test_scan_reports_parser_coverage_per_language_and_does_not_claim_verification(
+        self,
+    ):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "lib.rs").write_text("pub fn visible() {}\n", encoding="utf-8")
             (root / "data.yaml").write_text("key: value\n", encoding="utf-8")
             result = catalog.scan(root, "owner/sample")
-            self.assertEqual(result["parser_coverage"]["rust"]["parser_mode"], "tree_sitter_rust_cst")
+            self.assertEqual(
+                result["parser_coverage"]["rust"]["parser_mode"], "tree_sitter_rust_cst"
+            )
             self.assertEqual(result["parser_coverage"]["rust"]["status"], "AUTHORITATIVE_COMPLETE")
             self.assertEqual(result["parser_coverage"]["rust"]["symbols_detected"], 1)
             self.assertEqual(result["parser_coverage"]["yaml"]["parser_mode"], "pyyaml_ast")
@@ -161,14 +182,31 @@ class CatalogTests(unittest.TestCase):
             self.assertEqual(result["status"], "DETECTED")
 
     def test_reconciliation_reports_added_removed_and_changed_symbols(self):
-        old = {"repository": "owner/repo", "observed_commit_sha": "a" * 40, "symbols": [
-            {"symbol_id": "one", "source_blob_sha": "x", "signature": "fn old()"},
-            {"symbol_id": "two", "source_blob_sha": "y", "signature": "fn changed()"},
-        ]}
-        current = {"repository": "owner/repo", "observed_commit_sha": "b" * 40, "symbols": [
-            {"symbol_id": "two", "source_blob_sha": "z", "signature": "fn changed()"},
-            {"symbol_id": "three", "source_blob_sha": "q", "signature": "fn new()"},
-        ], "exclusions": []}
+        old = {
+            "repository": "owner/repo",
+            "observed_commit_sha": "a" * 40,
+            "symbols": [
+                {"symbol_id": "one", "source_blob_sha": "x", "signature": "fn old()"},
+                {
+                    "symbol_id": "two",
+                    "source_blob_sha": "y",
+                    "signature": "fn changed()",
+                },
+            ],
+        }
+        current = {
+            "repository": "owner/repo",
+            "observed_commit_sha": "b" * 40,
+            "symbols": [
+                {
+                    "symbol_id": "two",
+                    "source_blob_sha": "z",
+                    "signature": "fn changed()",
+                },
+                {"symbol_id": "three", "source_blob_sha": "q", "signature": "fn new()"},
+            ],
+            "exclusions": [],
+        }
         report = catalog.reconcile(current, old)
         self.assertEqual(report["added_symbol_ids"], ["three"])
         self.assertEqual(report["removed_symbol_ids"], ["one"])
@@ -177,12 +215,17 @@ class CatalogTests(unittest.TestCase):
 
     def test_reconciliation_rejects_wrong_repository_baseline(self):
         with self.assertRaises(ValueError):
-            catalog.reconcile({"repository": "owner/a", "symbols": []}, {"repository": "owner/b", "symbols": []})
+            catalog.reconcile(
+                {"repository": "owner/a", "symbols": []},
+                {"repository": "owner/b", "symbols": []},
+            )
 
     def test_scan_disambiguates_duplicate_heuristic_identities(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "lib.rs").write_text("pub fn duplicate() {}\npub fn duplicate() {}\n", encoding="utf-8")
+            (root / "lib.rs").write_text(
+                "pub fn duplicate() {}\npub fn duplicate() {}\n", encoding="utf-8"
+            )
             result = catalog.scan(root, "owner/sample")
             ids = [symbol["symbol_id"] for symbol in result["symbols"]]
             self.assertEqual(len(ids), 2)

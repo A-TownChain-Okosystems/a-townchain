@@ -79,6 +79,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-203, ATC-STD-AI-DEV-001 · INFORMATIVE: Roadmap MK8 (Security), Model-Registry
+
 ## 5. Verbindliche Erweiterungsregeln
 
 - 5.1 Der Agent MUSS die Discovery-Kette in exakt der festgelegten Reihenfolge (Stufen 1 bis 12) ohne Überspringen durchlaufen.
@@ -115,9 +116,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 10. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-204
 - ATC-STD-AI-DEV-001
@@ -160,9 +163,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 16. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-204
 - ATC-STD-AI-DEV-001

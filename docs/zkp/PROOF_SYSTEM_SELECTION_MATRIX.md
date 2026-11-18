@@ -11,7 +11,8 @@ Select **Zcash `halo2_proofs` v0.4.0 (PLONK-based Halo 2, IPA/Pasta configuratio
 This is a candidate decision only. Production integration remains **BLOCKED** until the exact source revision, license inheritance, dependency/MSRV compatibility, no_std strategy, canonical proof encoding/versioning, circuit soundness, resource limits, and independent security review are evidenced. Do not enable the backend by default or treat interface tests as cryptographic verification.
 
 Upstream evidence inspected:
-- Repository: https://github.com/zcash/halo2
+
+- Repository: <https://github.com/zcash/halo2>
 - Manifest: `halo2_proofs/Cargo.toml`, package version `0.4.0`, blob SHA `9a571de8302c3574c3cbf1d7a05205cff94fc91f`
 - Manifest description: “Fast PLONK-based zero-knowledge proving system with no trusted setup”
 - Library source: `halo2_proofs/src/lib.rs`, blob SHA `8fc0e0be0ddff43211b5d7bfe05d3771eac943b7`

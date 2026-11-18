@@ -31,16 +31,26 @@ FAM = {
             "Policy- und Nachweisführung über alle Layer L0–L7."
         ),
         rules=[
-            "Entscheidungen MÜSSEN mit Eigentümer (Owner-Delegation), Datum und Nachweis "
-            "(Commit/AUD-Record) dokumentiert sein.",
-            "Agenten DÜRFEN keine Eigentümer-Entscheidungen (ACCEPTED/CLOSED/Freigaben) "
-            "allein treffen — Human-Gate ist Pflicht.",
-            "Policies MÜSSEN einen Lifecycle (inkraftgetreten/geändert/außer Kraft) mit "
-            "wirksamen Daten führen.",
-            "Eskalationsketten MÜSSEN definiert sein (Wer entscheidet, Wer informiert, "
-            "in welcher Frist).",
-            "Nachweispflicht: Jede Regelverletzung erzeugt ein Finding (F-NNN) in "
-            "registry/findings.yaml.",
+            (
+                "Entscheidungen MÜSSEN mit Eigentümer (Owner-Delegation), Datum und Nachweis "
+                "(Commit/AUD-Record) dokumentiert sein."
+            ),
+            (
+                "Agenten DÜRFEN keine Eigentümer-Entscheidungen (ACCEPTED/CLOSED/Freigaben) "
+                "allein treffen — Human-Gate ist Pflicht."
+            ),
+            (
+                "Policies MÜSSEN einen Lifecycle (inkraftgetreten/geändert/außer Kraft) mit "
+                "wirksamen Daten führen."
+            ),
+            (
+                "Eskalationsketten MÜSSEN definiert sein (Wer entscheidet, Wer informiert, "
+                "in welcher Frist)."
+            ),
+            (
+                "Nachweispflicht: Jede Regelverletzung erzeugt ein Finding (F-NNN) in "
+                "registry/findings.yaml."
+            ),
             "Statusberichte MÜSSEN an REALITY_STATUS.md (kanonisch, append-only) angebunden sein.",
         ],
         metrics=[
@@ -60,14 +70,22 @@ FAM = {
         ),
         rules=[
             "Jeder Standard MUSS vor §9-Freigabe als DRAFT mit SCR-Eintrag existieren.",
-            "Version/Status MÜSSEN zwischen Datei, standards.yaml und versions.yaml "
-            "übereinstimmen (Validator S-14/S-19).",
-            "Reviews SOLLTEN zur Review-Kadenz von ATC-STD-UPDATE-001 erfolgen "
-            "(MAJOR-Revalidation via COMPAT-001).",
-            "Deprecation MUSS dem dokumentierten Pfad folgen (Retirement-Meldung, "
-            "Nachfolger benannt, Transition befristet).",
-            "Änderungen am normativen Kern APPROVEDer Standards nur via UPDATE-001-Kette "
-            "(§30-Freeze).",
+            (
+                "Version/Status MÜSSEN zwischen Datei, standards.yaml und versions.yaml "
+                "übereinstimmen (Validator S-14/S-19)."
+            ),
+            (
+                "Reviews SOLLTEN zur Review-Kadenz von ATC-STD-UPDATE-001 erfolgen "
+                "(MAJOR-Revalidation via COMPAT-001)."
+            ),
+            (
+                "Deprecation MUSS dem dokumentierten Pfad folgen (Retirement-Meldung, "
+                "Nachfolger benannt, Transition befristet)."
+            ),
+            (
+                "Änderungen am normativen Kern APPROVEDer Standards nur via UPDATE-001-Kette "
+                "(§30-Freeze)."
+            ),
             "Kein Standard ohne Katalog-Slot (FRAMEWORK-001, S-21).",
         ],
         metrics=["0 Version-/Status-Drift", "100 % Registry-Konsistenz", "Review-Quote zur Kadenz"],
@@ -82,12 +100,18 @@ FAM = {
             "Layer-Zuordnung L0–L7 (REPO_ARCHITECTURE, ATC-STD-202)."
         ),
         rules=[
-            "Neue Repos MÜSSEN dem Namens- und Layer-Schema folgen und ein README mit "
-            "Zweck/Layer/Status besitzen.",
-            "Jedes Repo MUSS eine aktuelle Beschreibung und korrekte Labels tragen "
-            "(ACTIVE/DEVELOPMENT/EXPERIMENTAL/ARCHIVIERT).",
-            "Archivierung MUSS dokumentiert werden (Begründung, Nachfolger, Datenrettung "
-            "in den Vault des Docs-Repos).",
+            (
+                "Neue Repos MÜSSEN dem Namens- und Layer-Schema folgen und ein README mit "
+                "Zweck/Layer/Status besitzen."
+            ),
+            (
+                "Jedes Repo MUSS eine aktuelle Beschreibung und korrekte Labels tragen "
+                "(ACTIVE/DEVELOPMENT/EXPERIMENTAL/ARCHIVIERT)."
+            ),
+            (
+                "Archivierung MUSS dokumentiert werden (Begründung, Nachfolger, Datenrettung "
+                "in den Vault des Docs-Repos)."
+            ),
             "Repos DÜRFEN keine Zweck-Duplikate bilden — Konsolidierung geht vor Neugründung.",
             "Beschreibungen MÜSSEN dem REALITY-Status entsprechen (keine STALE-Behauptungen).",
             "Änderungen an der Repo-Landschaft erfordern einen SCR mit Owner-Freigabe.",
@@ -108,12 +132,18 @@ FAM = {
             "kanonische Statusquelle (append-only); Wiki-Archive im Vault."
         ),
         rules=[
-            "Statusdokumentation MUSS angehängt werden (append-only), nie parallel neu "
-            "aufgebaut werden.",
-            "Dokumentation MUSS den REALITY_STATUS widerspruchsfrei spiegeln; bei "
-            "Widerspruch gewinnt REALITY_STATUS.",
-            "Behauptungen MÜSSEN datiert und verifizierbar sein (Ehrlichkeitsregel: keine "
-            "überholten Ist-Behauptungen).",
+            (
+                "Statusdokumentation MUSS angehängt werden (append-only), nie parallel neu "
+                "aufgebaut werden."
+            ),
+            (
+                "Dokumentation MUSS den REALITY_STATUS widerspruchsfrei spiegeln; bei "
+                "Widerspruch gewinnt REALITY_STATUS."
+            ),
+            (
+                "Behauptungen MÜSSEN datiert und verifizierbar sein (Ehrlichkeitsregel: keine "
+                "überholten Ist-Behauptungen)."
+            ),
             "Jedes Dokument MUSS Version/Datum/Verantwortlichen tragen.",
             "Gelöschte oder ersetzte Inhalte MÜSSEN im Vault archiviert bleiben.",
             "Automatisch generierte Kapitel MÜSSEN als solche gekennzeichnet sein.",
@@ -135,10 +165,14 @@ FAM = {
         ),
         rules=[
             "Kernel-Code MUSS in Rust no_std vorliegen; Userspace-Apps/Contracts in ATCLang.",
-            "Jedes Modul MUSS eine eigene Testsuite haben; nur 100 % grüne Pipelines "
-            "gelten als fertig (Build ≠ fertig).",
-            "Subsysteme SOLLTEN trait-basiert mit simulierbaren Backends sein "
-            "(Determinismus, Testbarkeit).",
+            (
+                "Jedes Modul MUSS eine eigene Testsuite haben; nur 100 % grüne Pipelines "
+                "gelten als fertig (Build ≠ fertig)."
+            ),
+            (
+                "Subsysteme SOLLTEN trait-basiert mit simulierbaren Backends sein "
+                "(Determinismus, Testbarkeit)."
+            ),
             "Quellcode MUSS den verbindlichen Copyright-Header (Michael Wroblewski) tragen.",
             "Sprint-Ergebnisse MÜSSEN mit Testzahl und Modulzahl nachgewiesen werden.",
             "Keine stillen Sprünge: Sprint-Abschluss nur mit dokumentiertem Nachweis.",
@@ -155,14 +189,20 @@ FAM = {
             "Reset 03.07.2026 (alle vorbenannten Commit-SHAs verwaist)."
         ),
         rules=[
-            "Jeder Commit MUSS die Registry-Konvention einhalten (signierte Agent-Identität, "
-            "SCR-Referenz).",
+            (
+                "Jeder Commit MUSS die Registry-Konvention einhalten (signierte Agent-Identität, "
+                "SCR-Referenz)."
+            ),
             "Merges in main NUR mit zugehörigem SCR-Eintrag.",
-            "Force-Push auf main ist VERBOTEN; Historien-Resets erfordern Owner-Entscheidung "
-            "plus Doku-Banner über verwaiste SHAs.",
+            (
+                "Force-Push auf main ist VERBOTEN; Historien-Resets erfordern Owner-Entscheidung "
+                "plus Doku-Banner über verwaiste SHAs."
+            ),
             "Commit-Messages MÜSSEN Was/Warum/Nachweis (Issue/SCR) enthalten.",
-            "Parallele Agenten-Läufe DÜRFEN keine Duplikat-Commits erzeugen (Koordination "
-            "über AGENT_COORDINATION).",
+            (
+                "Parallele Agenten-Läufe DÜRFEN keine Duplikat-Commits erzeugen (Koordination "
+                "über AGENT_COORDINATION)."
+            ),
             "Verwaiste Referenzen (tote SHAs) MÜSSEN bereinigt oder als verwaist markiert werden.",
         ],
         metrics=[
@@ -180,14 +220,20 @@ FAM = {
             "ATC-STD-BUG-005, Priorisierung P0–P4."
         ),
         rules=[
-            "Jeder Fehler MUSS eindeutig identifizierbar sein (F-NNN, Kategorie, Schwere, "
-            "Entdecker, Datum).",
+            (
+                "Jeder Fehler MUSS eindeutig identifizierbar sein (F-NNN, Kategorie, Schwere, "
+                "Entdecker, Datum)."
+            ),
             "Fehler DÜRFEN nicht doppelt geführt werden (Duplikat-Check bei Anlage).",
             "P0-Fehler blockieren Releases (Health E).",
-            "Jeder behobene Fehler MUSS die Ursache dokumentieren (RCA) — Symptom-Fixes "
-            "allein genügen nicht.",
-            "Fehlerzustände in Datenbanken (KaiOsTodo) MÜSSEN mit der Registry konsistent "
-            "sein; Phantom-Einträge werden bereinigt.",
+            (
+                "Jeder behobene Fehler MUSS die Ursache dokumentieren (RCA) — Symptom-Fixes "
+                "allein genügen nicht."
+            ),
+            (
+                "Fehlerzustände in Datenbanken (KaiOsTodo) MÜSSEN mit der Registry konsistent "
+                "sein; Phantom-Einträge werden bereinigt."
+            ),
             "Track-Präfixe (K/WIN/DESKTOP/…) MÜSSEN Namenskollisionen vermeiden.",
         ],
         metrics=["0 doppelte Findings", "RCA-Quote 100 % bei P0/P1", "P0-Aufräumzeit im Ziel"],
@@ -226,8 +272,10 @@ FAM = {
         ),
         rules=[
             "Jeder Commit MUSS die CI-Gates passieren; rote Haupt-Pipelines blockieren.",
-            "Workflow-Dateien DÜRFEN nur vom Owner geändert werden (Token ohne "
-            "workflow-Scope — GH013).",
+            (
+                "Workflow-Dateien DÜRFEN nur vom Owner geändert werden (Token ohne "
+                "workflow-Scope — GH013)."
+            ),
             "Abhängigkeits-Alerts MÜSSEN aktiviert sein (Dependabot/CodeQL-Rollout gemanagt).",
             "CI-Meldungen MÜSSEN eindeutig benannte Checks liefern (S-01..S-26).",
             "CI-Failures MÜSSEN vor dem nächsten Merge behoben oder dokumentiert blockiert werden.",
@@ -249,15 +297,23 @@ FAM = {
             "(P2P-Consensus Foundation) und K16 (DAG+PoH+Validator+Voting+Finality)."
         ),
         rules=[
-            "Blockchain-Datenformate MÜSSEN deterministisch serialisierbar sein "
-            "(kanonische Kodierung).",
-            "Chain-ID (658467) MUSS in allen werttragenden Nachrichten verankert sein "
-            "(Replay-Schutz).",
-            "Konsens-Entscheidungen MÜSSEN nachvollziehbar (DAG-Referenzen, Voting-"
-            "Nachweise) protokolliert werden.",
+            (
+                "Blockchain-Datenformate MÜSSEN deterministisch serialisierbar sein "
+                "(kanonische Kodierung)."
+            ),
+            (
+                "Chain-ID (658467) MUSS in allen werttragenden Nachrichten verankert sein "
+                "(Replay-Schutz)."
+            ),
+            (
+                "Konsens-Entscheidungen MÜSSEN nachvollziehbar (DAG-Referenzen, Voting-"
+                "Nachweise) protokolliert werden."
+            ),
             "Mainnet-Wert-Transport erfordert Ed25519-Backend (REQ-PTS-006, Crypto-HAL).",
-            "Protokoll-Status MUSS der Protocol-Registry entsprechen (draft→active nur "
-            "mit CONF-BRONZE).",
+            (
+                "Protokoll-Status MUSS der Protocol-Registry entsprechen (draft→active nur "
+                "mit CONF-BRONZE)."
+            ),
             "Konsens-Kernregeln DÜRFEN nur via MAJOR-Kette (COMPAT-001-Gate) geändert werden.",
         ],
         metrics=[
@@ -276,8 +332,10 @@ FAM = {
             "Token-Formate, Kompatibilitäts-Matrix-Pflicht."
         ),
         rules=[
-            "Token-Operationen MÜSSEN deterministisch sein (Reihenfolge, Rundung, "
-            "Überlauf-Verhalten definiert).",
+            (
+                "Token-Operationen MÜSSEN deterministisch sein (Reihenfolge, Rundung, "
+                "Überlauf-Verhalten definiert)."
+            ),
             "Token-Standards MÜSSEN eine Kompatibilitätsmatrix je Version führen.",
             "Werttransport MUSS protokolliert werden (AuditTrail-Anbindung).",
             "Contract-Änderungen erfordern ein Audit-Gate vor Aktivierung.",
@@ -300,12 +358,18 @@ FAM = {
             "ATC-STD-COMPAT-001, Interop-Tests als CONF-Pflichtkategorie 8."
         ),
         rules=[
-            "Grenzüberschreitende Kopplungen MÜSSEN eine Kompatibilitätsklasse tragen "
-            "(kein UNKNOWN bei Release).",
-            "Interop-Schnittstellen MÜSSEN Conformance-Tests bestehen (CONF-Kategorie "
-            "Interoperability).",
-            "Breaking Changes an Interop-Grenzflächen erfordern Owner-Freigabe plus "
-            "Wiederherstellungsplan (Methoden A–F).",
+            (
+                "Grenzüberschreitende Kopplungen MÜSSEN eine Kompatibilitätsklasse tragen "
+                "(kein UNKNOWN bei Release)."
+            ),
+            (
+                "Interop-Schnittstellen MÜSSEN Conformance-Tests bestehen (CONF-Kategorie "
+                "Interoperability)."
+            ),
+            (
+                "Breaking Changes an Interop-Grenzflächen erfordern Owner-Freigabe plus "
+                "Wiederherstellungsplan (Methoden A–F)."
+            ),
             "Mapping-Regeln MÜSSEN beidseitig dokumentiert sein.",
             "Versionierte Schnittstellen MÜSSEN Parallelbetrieb während der Migration erlauben.",
             "Fehlercodes an Grenzflächen MÜSSEN vollständig katalogisiert sein.",
@@ -326,11 +390,15 @@ FAM = {
             "Contract-/Blockchain-Schicht."
         ),
         rules=[
-            "Externe Daten MÜSSEN herkunfts-signiert (Ed25519/DID-basiert) in das "
-            "Ökosystem gelangen.",
+            (
+                "Externe Daten MÜSSEN herkunfts-signiert (Ed25519/DID-basiert) in das "
+                "Ökosystem gelangen."
+            ),
             "Oracle-Feeds MÜSSEN Replay-geschützt sein (Nonce/Timestamp/Chain-ID).",
-            "Feed-Ausfälle MÜSSEN definierte Fehlerzustände erzeugen (keine stillen "
-            "Alt-Daten-Verwendungen).",
+            (
+                "Feed-Ausfälle MÜSSEN definierte Fehlerzustände erzeugen (keine stillen "
+                "Alt-Daten-Verwendungen)."
+            ),
             "Datenherkünfte MÜSSEN mit Quellen- und Vertrauensgrad registriert sein.",
             "Manipulationsschwellen MÜSSEN definiert sein (Abweichungs-/Ausfall-Alarme).",
             "Oracle-Konfiguration ist MAJOR-gebunden (COMPAT-001).",
@@ -344,10 +412,14 @@ FAM = {
             "(K15), RCT — Self-Sovereign Identity als Referenzmodell."
         ),
         rules=[
-            "Identitäten MÜSSEN kryptografisch an Schlüssel gebunden sein (DID-Dokument, "
-            "Rotation definiert).",
-            "Reputation MUSS aus nachvollziehbaren Signalen berechnet werden (Formel "
-            "dokumentiert, Manipulationsresistenz bewertet).",
+            (
+                "Identitäten MÜSSEN kryptografisch an Schlüssel gebunden sein (DID-Dokument, "
+                "Rotation definiert)."
+            ),
+            (
+                "Reputation MUSS aus nachvollziehbaren Signalen berechnet werden (Formel "
+                "dokumentiert, Manipulationsresistenz bewertet)."
+            ),
             "Schlüsselverlust MUSS einen definierten Recovery-Pfad haben (Social/Threshold).",
             "Identity-Daten DÜRFEN nicht ohne Zustimmung weitergegeben werden (Datenminimierung).",
             "Sperrungen (Banned/Revoked) MÜSSEN ökosystemweit konsistent propagieren.",
@@ -369,11 +441,15 @@ FAM = {
             "Threat-Modelle (ATC-STD-PROTOCOL-003, M1–M12), Zero-Trust-Ansatz."
         ),
         rules=[
-            "Security-Controls MÜSSEN je System benannt und einem Zustand (ACTIVE/"
-            "PARTIAL/PLANNED) zugeordnet sein — ehrlich, nicht geschönt.",
+            (
+                "Security-Controls MÜSSEN je System benannt und einem Zustand (ACTIVE/"
+                "PARTIAL/PLANNED) zugeordnet sein — ehrlich, nicht geschönt."
+            ),
             "Secrets DÜRFEN nie im Code liegen (Secret-Scanning, 0-Fund-Pflicht).",
-            "Bedrohungen MÜSSEN je Familie katalogisiert und bewertet sein "
-            "(M1–M12-Matrix der Protocol-Security-Registry).",
+            (
+                "Bedrohungen MÜSSEN je Familie katalogisiert und bewertet sein "
+                "(M1–M12-Matrix der Protocol-Security-Registry)."
+            ),
             "Krypto-Operationen MÜSSEN über den HAL laufen (keine handgerollten Primitiven).",
             "Sicherheitsvorfälle MÜSSEN der Incident-Kette (F-NNN→RCA→Fix) folgen.",
             "Sicherheitsrelevante MAJOR-Änderungen brauchen ein Review-Gate.",
@@ -393,8 +469,10 @@ FAM = {
             "Rate-Limits (K15), Validator-Rotation."
         ),
         rules=[
-            "Mining-/Validierungsregeln MÜSSEN deterministisch sein (kein "
-            "Nichtdeterminismus im Reward-Pfad).",
+            (
+                "Mining-/Validierungsregeln MÜSSEN deterministisch sein (kein "
+                "Nichtdeterminismus im Reward-Pfad)."
+            ),
             "Validator-Zulassung/-Rotation MUSS nach dokumentierten Kriterien erfolgen.",
             "Rate-Limits MÜSSEN die Ressourcen schützen (DoS-Resistenz bewertet).",
             "Reward-Berechnung MUSS testbar und auditierbar sein (Regressionstests).",
@@ -417,8 +495,10 @@ FAM = {
             "DID-Bindung, Crypto-HAL-Disziplin."
         ),
         rules=[
-            "Private Keys DÜRFEN nie im Klartext persistieren (HAL-Verschlüsselung, "
-            "Memory-Hygiene).",
+            (
+                "Private Keys DÜRFEN nie im Klartext persistieren (HAL-Verschlüsselung, "
+                "Memory-Hygiene)."
+            ),
             "Transaktions-Erstellung MUSS deterministisch signieren (Domain-Separation, Chain-ID).",
             "Backups/Recovery MÜSSEN dokumentierte, testbare Verfahren sein.",
             "Wallet-Zustand MUSS mit Chain-Status synchronisierbar sein (Indexer-Anbindung).",
@@ -481,12 +561,18 @@ FAM = {
             "deterministische Game-Logik, Ökonomie-Balancing."
         ),
         rules=[
-            "Game-Logik MUSS deterministisch sein (gleichbefindete Simulationen "
-            "erzeugen gleiche Ergebnisse).",
-            "Ökonomie-Parameter MÜSSEN simulierbar und balanciert sein (Inflation-Modelle "
-            "ehrlich bewertet).",
-            "Vision-Komponenten (ATC-41+) MÜSSEN von Engineering-Metriken getrennt "
-            "bleiben (keine Sprint-ETAs aus Vision-Docs).",
+            (
+                "Game-Logik MUSS deterministisch sein (gleichbefindete Simulationen "
+                "erzeugen gleiche Ergebnisse)."
+            ),
+            (
+                "Ökonomie-Parameter MÜSSEN simulierbar und balanciert sein (Inflation-Modelle "
+                "ehrlich bewertet)."
+            ),
+            (
+                "Vision-Komponenten (ATC-41+) MÜSSEN von Engineering-Metriken getrennt "
+                "bleiben (keine Sprint-ETAs aus Vision-Docs)."
+            ),
             "On-Chain/Off-Chain-Trennung MUSS definiert sein (was landet auf der Chain).",
             "Anti-Cheat-Regeln MÜSSEN katalogisiert sein.",
             "Content-Updates DÜRFEN Konsens-Kern nicht brechen (MAJOR-Gate).",
@@ -508,8 +594,10 @@ FAM = {
         ),
         rules=[
             "APIs MÜSSEN versioniert sein (Version im Pfad/Header, Deprecation-Fenster definiert).",
-            "Fehlercodes MÜSSEN 100 % katalogisiert und stabil sein (keine Umbenennung "
-            "ohne MAJOR).",
+            (
+                "Fehlercodes MÜSSEN 100 % katalogisiert und stabil sein (keine Umbenennung "
+                "ohne MAJOR)."
+            ),
             "Rate-Limits MÜSSEN je Endpunkt definiert und durchgesetzt sein.",
             "Authentisierung MUSS über die Identity-Schicht (DID/Session) laufen.",
             "API-Änderungen erfordern Kompatibilitätsprüfung (COMPAT-001, Interop-Klasse).",
@@ -586,8 +674,10 @@ FAM = {
             "(13-Status-Lifecycle, 8 Gates, Evidence-Pflicht, ATC-M-001..008)."
         ),
         rules=[
-            "Meilensteinfortschritt MUSS am dokumentierten Lifecycle gemessen werden "
-            "(keine Statussprünge).",
+            (
+                "Meilensteinfortschritt MUSS am dokumentierten Lifecycle gemessen werden "
+                "(keine Statussprünge)."
+            ),
             "Acceptance-Gates MÜSSEN mit Evidence (Commits, Tests, Reports) bedient werden.",
             "Agenten DÜRFEN Meilensteine nicht selbst ACCEPTED/CLOSED setzen (Human-Gate).",
             "Kritische offene Dependencies blockieren ACCEPTED.",
@@ -609,8 +699,10 @@ FAM = {
             "Anforderungen MÜSSEN eindeutige REQ-IDs tragen und im REQ-Register geführt werden.",
             "Traceability MUSS lückenlos sein (REQ→Standard→Implementierung→Nachweis).",
             "Anforderungsänderungen MÜSSEN über die Change-Control-Kette laufen.",
-            "Anforderungen MÜSSEN testbar/verifizierbar formuliert sein (keine "
-            "Wunsch-Formulierungen).",
+            (
+                "Anforderungen MÜSSEN testbar/verifizierbar formuliert sein (keine "
+                "Wunsch-Formulierungen)."
+            ),
             "Kategorien-/Familienbildung folgt der Taxonomie (TAXONOMY-001).",
             "Offene Anforderungen MÜSSEN sichtbar sein (keine stillen Backlog-Items).",
         ],
@@ -628,10 +720,14 @@ FAM = {
         rules=[
             "UI-Änderungen MÜSSEN dem Plattformplan folgen (egui, gemeinsame Codebasis).",
             "Interaktionsmuster MÜSSEN konsistent sein (ein Verhalten, eine Bedeutung).",
-            "Zustandsfeedback MUSS für alle asynchronen Operationen existieren "
-            "(Loading/Fehler/Leer).",
-            "Accessibility-Basis (Kontrast, Tastaturbedienung, Skalierung) MUSS "
-            "gewährleistet sein.",
+            (
+                "Zustandsfeedback MUSS für alle asynchronen Operationen existieren "
+                "(Loading/Fehler/Leer)."
+            ),
+            (
+                "Accessibility-Basis (Kontrast, Tastaturbedienung, Skalierung) MUSS "
+                "gewährleistet sein."
+            ),
             "UI-Texte MÜSSEN zentral verwaltet sein (keine hartverdrahteten Dubletten).",
             "Layout-Regressionen MÜSSEN über UI-Tests/Screenshots prüfbar sein.",
         ],
@@ -648,14 +744,18 @@ FAM = {
             "(Rust std) vs. globus-os (L4 Userspace) — Trennung verbindlich (AD-026)."
         ),
         rules=[
-            "OS-Komponenten MÜSSEN der Layer-Zuordnung folgen (L1 Kernel, L4 Userspace, "
-            "Editions separat).",
+            (
+                "OS-Komponenten MÜSSEN der Layer-Zuordnung folgen (L1 Kernel, L4 Userspace, "
+                "Editions separat)."
+            ),
             "Editions-Repos DÜRFEN den bare-metal-Kernel nicht ersetzen (parallele Vorhaben).",
             "Boot-/Treiber-Verhalten MUSS in QEMU/hardwarenah verifizierbar sein.",
             "Plattform-APIs MÜSSEN stabil dokumentiert sein (Syscalls, ABI).",
             "Geräteunterstützung MUSS je Zielplattform katalogisiert sein.",
-            "Kernel-/Userspace-Grenze MUSS sauber gehalten werden (keine Ring-0-Helfer "
-            "im Userspace).",
+            (
+                "Kernel-/Userspace-Grenze MUSS sauber gehalten werden (keine Ring-0-Helfer "
+                "im Userspace)."
+            ),
         ],
         metrics=[
             "QEMU-Boot-Nachweise",
@@ -672,8 +772,10 @@ FAM = {
         rules=[
             "Sprachgrammatik MUSS versioniert sein (Syntax-Änderungen = MAJOR).",
             "Compiler-Verhalten MUSS deterministisch sein (gleiche Eingabe, gleiche Ausgabe).",
-            "Dialekt-/Kompatibilitätsmodi MÜSSEN explizit deklariert sein (kein stiller "
-            "v1.0-Dialekt).",
+            (
+                "Dialekt-/Kompatibilitätsmodi MÜSSEN explizit deklariert sein (kein stiller "
+                "v1.0-Dialekt)."
+            ),
             "Fehlermeldungen MÜSSEN katalogisiert und versionierbar sein.",
             "Gate-Fortschritt (G1–G6) MUSS mit Test-Evidence geführt werden.",
             "VM-Semantik MUSS gegen die Spezifikation getestet sein (Konformanz).",
@@ -691,8 +793,10 @@ FAM = {
             "(AI-DEV-009), unveränderliche Protokollketten."
         ),
         rules=[
-            "Auditrelevante Ereignisse MÜSSEN unveränderlich protokolliert sein "
-            "(Append-only, ggf. hashverkettet).",
+            (
+                "Auditrelevante Ereignisse MÜSSEN unveränderlich protokolliert sein "
+                "(Append-only, ggf. hashverkettet)."
+            ),
             "AUD-Records MÜSSEN die Pflichtfelder (WER/WAS/WANN/Nachweis) vollständig führen.",
             "Protokollierung MUSS strukturiert und abfragbar sein.",
             "Manipulationsversuche an Protokollen MÜSSEN erkennbar sein (Integritätsprüfung).",
@@ -754,10 +858,14 @@ FAM = {
         rules=[
             "Ökonomische Modelle MÜSSEN mit Annahmen, Parametern und Grenzen dokumentiert sein.",
             "Simulationen MÜSSEN deterministisch wiederholbar sein.",
-            "Vision-Dokumente DÜRFEN nicht als Engineering-Fortschritt gezählt werden "
-            "(getrennte Metriken).",
-            "Wertschöpfungsannahmen MÜSSEN ehrlich bewertet sein (keine garantierte-"
-            "Rendite-Formulierungen).",
+            (
+                "Vision-Dokumente DÜRFEN nicht als Engineering-Fortschritt gezählt werden "
+                "(getrennte Metriken)."
+            ),
+            (
+                "Wertschöpfungsannahmen MÜSSEN ehrlich bewertet sein (keine garantierte-"
+                "Rendite-Formulierungen)."
+            ),
             "Parameteränderungen mit ökonomischer Wirkung sind MAJOR (COMPAT-001).",
             "Berichte MÜSSEN datiert und versioniert sein.",
         ],
@@ -899,15 +1007,15 @@ sind verboten (vgl. ATC-STD-PROTOCOL-003).
 
 
 def main():
-    fw = yaml.safe_load(open(os.path.join(ROOT, "registry", "framework.yaml"), encoding="utf-8"))[
+    fw = yaml.safe_load(open(os.path.join(ROOT, "registry", "framework.yaml"), encoding="utf-8"))[  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         "framework"
     ]
-    sr = yaml.safe_load(open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8"))[
+    sr = yaml.safe_load(open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8"))[  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         "standards"
     ]
     byid = {e["id"]: e for e in sr}
 
-    new_ids = json.load(open("/tmp/new_ids.json"))
+    new_ids = json.load(open("/tmp/new_ids.json"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     freq_lines = {
         6: "Gegenstand im Ökosystem verortet (§1-Verortung).",
         7: "Familien-Kernregeln deklariert und verifizierbar (§2).",
@@ -967,7 +1075,7 @@ def main():
                 dt="2026-09-08",
             )
             path = os.path.join(ROOT, e["file"])
-            open(path, "w", encoding="utf-8").write(content)
+            open(path, "w", encoding="utf-8").write(content)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
             count += 1
     print("{0} Standards auf v1.1.0 elaboriert".format(count))
     return 0

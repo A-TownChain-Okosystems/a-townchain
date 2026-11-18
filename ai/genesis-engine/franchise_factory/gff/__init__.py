@@ -11,10 +11,26 @@ strikte Plattform — keinerlei Abhaengigkeit zu Genesis Chronicles.
 
 __version__ = "0.1.0"
 
-from gff.artifacts import ArtifactContractError, ArtifactEnvelope, ArtifactKind, ArtifactRef
-from gff.core import Franchise, FranchiseBlueprint, FranchiseStatus, GFFCore, PipelineStage
+from gff.artifacts import (
+    ArtifactContractError,
+    ArtifactEnvelope,
+    ArtifactKind,
+    ArtifactRef,
+)
+from gff.core import (
+    Franchise,
+    FranchiseBlueprint,
+    FranchiseStatus,
+    GFFCore,
+    PipelineStage,
+)
 from gff.dao import FranchiseFactory as DAOFranchiseFactory
-from gff.game_factory import GAME_FACTORY_GRAPH, GameFactoryGraphError, GameFactoryNode, topological_order
+from gff.game_factory import (
+    GAME_FACTORY_GRAPH,
+    GameFactoryGraphError,
+    GameFactoryNode,
+    topological_order,
+)
 from gff.lifecycle import LifecycleManager, LPhase
 from gff.workflows import (
     DEFAULT_WORKFLOWS,
@@ -28,4 +44,4 @@ from gff.workflows import (
     WorkflowStage,
 )
 
-__all__ = [name for name in globals() if not name.startswith('_')]
+__all__ = [name for name in globals() if not name.startswith("_")]

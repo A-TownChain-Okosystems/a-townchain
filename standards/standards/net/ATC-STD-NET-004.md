@@ -27,14 +27,13 @@ standard:
 
 ---
 
-
 ## Abstract
 
 Die ATC Network Promotion Pipeline definiert den strikt getrennten
 Stufenbergang als Release-, Security- und Governance-Gate. Stufen werden
 nie uebersprungen (REQ-NET-031).
 
-```
+```text
 DEVELOPMENT → DEVNET (GATE-011) → TESTNET (GATE-012 mit Security/Load/
 Recovery-Gates) → RELEASE CANDIDATE → MAINNET (GATE-013) → PRODUCTION
 ```
@@ -58,7 +57,7 @@ GATE-011/012/013 + AUD-NNN-Abschluss (Verkettung gemaess ATC-STD-BUG-003).
 
 Code wird NICHT dreifach kopiert. Trennung erfolgt per Konfiguration:
 
-```
+```text
 ATC Core
  ├── Environment Configuration: devnet / testnet / mainnet
  ├── Genesis Configuration   (NET-005)
@@ -95,7 +94,6 @@ Tokenwert und Governance-Status — nicht in einer anderen Implementierung.
 - id: REQ-NET-035
   title: "Testnet/Mainnet gleiche Protokollarchitektur"
   severity: MANDATORY
-
 
 ## Compliance
 

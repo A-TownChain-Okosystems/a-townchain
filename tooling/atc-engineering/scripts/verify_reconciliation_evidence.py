@@ -4,6 +4,7 @@ This module is intentionally separate from the status-shape validator. It querie
 GitHub's API for the run, job, step, job logs, and (when claimed) artifact bytes.
 Missing, inaccessible, mismatched, or unsuccessful evidence fails closed.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -48,9 +49,13 @@ class GitHubActionsEvidenceVerifier:
             with self.opener(request, timeout=30) as response:
                 body = response.read()
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
-            raise EvidenceVerificationError(f"evidence endpoint unavailable: {path}: {exc}") from exc
+            raise EvidenceVerificationError(
+                f"evidence endpoint unavailable: {path}: {exc}"
+            ) from exc
         if not body:
-            raise EvidenceVerificationError(f"empty response for required evidence endpoint: {path}")
+            raise EvidenceVerificationError(
+                f"empty response for required evidence endpoint: {path}"
+            )
         return body
 
     def _json(self, path: str) -> dict[str, Any]:
@@ -73,7 +78,11 @@ class GitHubActionsEvidenceVerifier:
             raise EvidenceVerificationError("workflow_run_id must be a positive integer")
         if not isinstance(checked_sha, str) or not SHA40.fullmatch(checked_sha):
             raise EvidenceVerificationError("checked_commit_sha must be a full lowercase SHA")
-        if evidence_sha != checked_sha or not isinstance(evidence_sha, str) or not SHA40.fullmatch(evidence_sha):
+        if (
+            evidence_sha != checked_sha
+            or not isinstance(evidence_sha, str)
+            or not SHA40.fullmatch(evidence_sha)
+        ):
             raise EvidenceVerificationError("evidence head SHA does not match checked commit SHA")
         if not isinstance(job_name, str) or not job_name.strip():
             raise EvidenceVerificationError("job identity is required")
@@ -94,7 +103,9 @@ class GitHubActionsEvidenceVerifier:
             raise EvidenceVerificationError("workflow jobs list is missing")
         total_jobs = jobs_payload.get("total_count")
         if not isinstance(total_jobs, int) or total_jobs != len(jobs):
-            raise EvidenceVerificationError("workflow jobs response is incomplete or paginated; refusing partial evidence")
+            raise EvidenceVerificationError(
+                "workflow jobs response is incomplete or paginated; refusing partial evidence"
+            )
         matches = [job for job in jobs if isinstance(job, dict) and job.get("name") == job_name]
         if len(matches) != 1:
             raise EvidenceVerificationError("named job is missing or ambiguous")
@@ -109,7 +120,9 @@ class GitHubActionsEvidenceVerifier:
         steps = job.get("steps")
         if not isinstance(steps, list):
             raise EvidenceVerificationError("job step list is missing")
-        step_matches = [step for step in steps if isinstance(step, dict) and step.get("name") == step_name]
+        step_matches = [
+            step for step in steps if isinstance(step, dict) and step.get("name") == step_name
+        ]
         if len(step_matches) != 1:
             raise EvidenceVerificationError("named step is missing or ambiguous")
         step = step_matches[0]
@@ -122,7 +135,9 @@ class GitHubActionsEvidenceVerifier:
             raise EvidenceVerificationError("job logs are empty")
         expected_log_hash = item.get("log_sha256")
         if not isinstance(expected_log_hash, str) or not SHA256.fullmatch(expected_log_hash):
-            raise EvidenceVerificationError("log_sha256 must be supplied as a full lowercase SHA-256")
+            raise EvidenceVerificationError(
+                "log_sha256 must be supplied as a full lowercase SHA-256"
+            )
         if log_sha256 != expected_log_hash:
             raise EvidenceVerificationError("job log SHA-256 mismatch")
 
@@ -130,7 +145,11 @@ class GitHubActionsEvidenceVerifier:
         artifact_id = item.get("artifact_id")
         artifact_sha256 = item.get("artifact_sha256")
         if artifact_id is not None or artifact_sha256 is not None:
-            if not isinstance(artifact_id, int) or isinstance(artifact_id, bool) or artifact_id <= 0:
+            if (
+                not isinstance(artifact_id, int)
+                or isinstance(artifact_id, bool)
+                or artifact_id <= 0
+            ):
                 raise EvidenceVerificationError("artifact_id must be a positive integer")
             if not isinstance(artifact_sha256, str) or not SHA256.fullmatch(artifact_sha256):
                 raise EvidenceVerificationError("artifact_sha256 must be a full lowercase SHA-256")
@@ -140,14 +159,26 @@ class GitHubActionsEvidenceVerifier:
                 raise EvidenceVerificationError("workflow artifact list is missing")
             total_artifacts = artifacts_payload.get("total_count")
             if not isinstance(total_artifacts, int) or total_artifacts != len(artifacts):
-                raise EvidenceVerificationError("workflow artifact response is incomplete or paginated; refusing partial evidence")
+                raise EvidenceVerificationError(
+                    "workflow artifact response is incomplete or paginated; refusing partial evidence"
+                )
             found = [a for a in artifacts if isinstance(a, dict) and a.get("id") == artifact_id]
             if len(found) != 1:
-                raise EvidenceVerificationError("artifact is missing or ambiguous for the referenced run")
+                raise EvidenceVerificationError(
+                    "artifact is missing or ambiguous for the referenced run"
+                )
             artifact = found[0]
-            if artifact.get("expired") is True or artifact.get("workflow_run", {}).get("id") != run_id:
-                raise EvidenceVerificationError("artifact is expired or belongs to another workflow run")
-            archive = self._get(f"actions/artifacts/{artifact_id}/zip", accept="application/vnd.github+json")
+            if (
+                artifact.get("expired") is True
+                or artifact.get("workflow_run", {}).get("id") != run_id
+            ):
+                raise EvidenceVerificationError(
+                    "artifact is expired or belongs to another workflow run"
+                )
+            archive = self._get(
+                f"actions/artifacts/{artifact_id}/zip",
+                accept="application/vnd.github+json",
+            )
             actual_hash = hashlib.sha256(archive).hexdigest()
             if actual_hash != artifact_sha256:
                 raise EvidenceVerificationError("artifact ZIP SHA-256 mismatch")
@@ -166,8 +197,14 @@ class GitHubActionsEvidenceVerifier:
         }
 
     def verify_claim(self, claim: dict[str, Any]) -> list[dict[str, Any]]:
-        if not isinstance(claim, dict) or claim.get("status") != "VERIFIED" or claim.get("decision") != "PASS":
-            raise EvidenceVerificationError("only explicit VERIFIED/PASS claims can be externally verified")
+        if (
+            not isinstance(claim, dict)
+            or claim.get("status") != "VERIFIED"
+            or claim.get("decision") != "PASS"
+        ):
+            raise EvidenceVerificationError(
+                "only explicit VERIFIED/PASS claims can be externally verified"
+            )
         checked_sha = claim.get("checked_commit_sha")
         evidence = claim.get("evidence")
         if not isinstance(checked_sha, str) or not SHA40.fullmatch(checked_sha):
@@ -180,7 +217,10 @@ class GitHubActionsEvidenceVerifier:
 def main(argv: list[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
     if len(argv) != 2:
-        print("usage: python scripts/verify_reconciliation_evidence.py OWNER/REPO CLAIM.json", file=sys.stderr)
+        print(
+            "usage: python scripts/verify_reconciliation_evidence.py OWNER/REPO CLAIM.json",
+            file=sys.stderr,
+        )
         return 2
     token = os.environ.get("GITHUB_TOKEN")
     if not token:

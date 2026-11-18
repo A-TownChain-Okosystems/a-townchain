@@ -112,7 +112,7 @@ Analyse und **keine** Codeänderung an `System`.
 
 ## 5 Nachweis
 
-```
+```text
 cargo test --workspace   748 grün, 0 rot   (unverändert: dieser Schritt ändert keinen Code)
 pytest tools/tests       40 passed
 check_build_coverage     GATE PASS, 77 Manifeste, 7 offen

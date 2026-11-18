@@ -45,9 +45,6 @@ Upgradeable Contracts BENOTIGEN zusaetzliche Governance- und Security-Gates: Sto
 
 Ohne explizite Deklaration gilt ein Contract als immutable; Upgradeability muss begruendet per DEC-Record (ATC-ENT-002) entschieden sein.
 
-
-
-
 ## 4. Storage-Collision-Schutz (REQ-SC-075)
 
 Upgradeable Contracts MUESSEN automatisierte Storage-Layout-Vergleiche in CI/CD nutzen, um Storage Collisions zwischen Versionen auszuschließen.

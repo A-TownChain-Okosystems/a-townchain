@@ -27,6 +27,7 @@ Nachdem ATC-41 die Zusammenarbeit von KI-Agenten und ATC-42 deren ethisches Hand
 ATC-43 garantiert, dass kausal zusammenhängende Ereignisse in der richtigen Reihenfolge bei allen Agenten ankommen. Wenn Agent A eine Entscheidung trifft, die auf dem Ergebnis von Agent B basiert, garantiert ATC-43, dass jeder Agent, der das Ergebnis von Agent A sieht, zuvor zwingend das Ergebnis von Agent B verarbeitet hat.
 
 **Garantien:**
+
 - **Causal Ordering:** Wenn Event X → Event Y (kausal), dann sehen alle Agenten X vor Y
 - **Read-Your-Writes:** Ein Agent sieht seine eigenen Schreiboperationen sofort
 - **Monotonic Reads:** Ein Agent sieht niemals einen älteren Zustand nach einem neueren
@@ -37,6 +38,7 @@ ATC-43 garantiert, dass kausal zusammenhängende Ereignisse in der richtigen Rei
 Um die Kausalität ohne eine perfekt synchronisierte Weltzeit zu messen, nutzt ATC-43 „Vector Clocks". Jeder Agent führt eine Liste von Zeitstempeln für alle anderen Agenten, mit denen er interagiert. Dies ermöglicht es dem Netzwerk, Konflikte bei der Reihenfolge von Zustandsänderungen lokal zu lösen.
 
 **Vector Clock Mechanik:**
+
 - Jeder Agent N_i hat einen Vektor V_i = [t_1, t_2, ..., t_n]
 - Vor jedem Event: V_i[i] += 1 (eigener Zähler)
 - Bei Nachrichten-Empfang von N_j: V_i[k] = max(V_i[k], V_j[k]) für alle k
@@ -48,6 +50,7 @@ Um die Kausalität ohne eine perfekt synchronisierte Weltzeit zu messen, nutzt A
 Um den Systemzustand (z. B. die Registrierung eines neuen Agenten oder ein Update in der Governance) zu synchronisieren, setzt ATC-43 auf CRDTs. Diese Datenstrukturen erlauben es, dass Änderungen von verschiedenen Nodes in beliebiger Reihenfolge empfangen werden können und dennoch am Ende bei allen Nodes zum identischen Ergebnis führen – ganz ohne zentralen Koordinator.
 
 **CRDT-Typen in KAI-OS:**
+
 - **G-Set (Grow-Only Set):** Für Agent-Registrierungen (nur Hinzufügen)
 - **2P-Set (Two-Phase Set):** Für Resource-Allocation (Add + Remove)
 - **LWW-Register (Last-Writer-Wins):** Für Konfigurations-Updates (mit Vector Clock Timestamp)
@@ -89,7 +92,7 @@ Falls ein Teil des Netzwerks vom Rest isoliert wird (Network Partition), können
 
 Um den Overhead zu minimieren, überträgt ATC-43 nur Änderungen (Deltas) statt ganzer Zustände:
 
-```
+```text
 State V_n → Delta(D_n) → Transmit → Apply Delta → State V_{n+1}
 ```
 
@@ -111,6 +114,7 @@ Bei einem Netzwerk-Split (Split-Brain-Szenario):
 ### 4.3 Vector Clock Größen-Management
 
 Da Vector Clocks mit der Anzahl der Agenten wachsen, nutzt ATC-43:
+
 - **Sparse Vector Clocks:** Nur aktive Interaktions-Partner
 - **Periodic Pruning:** Inaktive Agenten (>24h keine Interaktion) werden aus dem Vektor entfernt
 - **Version Vectors mit Version-IDs:** Kompakte Repräsentation für große Agent-Pools

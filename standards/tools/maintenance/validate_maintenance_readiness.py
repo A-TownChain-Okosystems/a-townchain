@@ -74,7 +74,7 @@ def main() -> int:
     errors = []
     warnings = []
 
-    schema = json.load(open(SCHEMA, encoding="utf-8"))
+    schema = json.load(open(SCHEMA, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     validator = Draft202012Validator(schema)
 
     records = sorted(glob.glob(os.path.join(READY_DIR, "*.yaml")))
@@ -88,15 +88,15 @@ def main() -> int:
         comp = os.path.splitext(os.path.basename(path))[0]
         seen.add(comp)
         try:
-            doc = yaml.safe_load(open(path, encoding="utf-8"))
+            doc = yaml.safe_load(open(path, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         except yaml.YAMLError as e:
-            errors.append("%s: YAML unlesbar: %s" % (comp, e))
+            errors.append("{}: YAML unlesbar: {}".format(comp, e))
             continue
 
         # 1) Schema
         for err in sorted(validator.iter_errors(doc or {}), key=lambda e: list(e.path)):
             loc = "/".join(str(x) for x in err.path) or "<root>"
-            errors.append("%s: SCHEMA-Verstoss (%s): %s" % (comp, loc, err.message))
+            errors.append("{}: SCHEMA-Verstoss ({}): {}".format(comp, loc, err.message))
 
         if not isinstance(doc, dict):
             continue
@@ -114,35 +114,38 @@ def main() -> int:
 
         if result == "PASS" and incomplete:
             errors.append(
-                "%s: FAKE-PASS - result=PASS, aber unvollstaendig: %s "
-                "(MAINT-000 Par.7.2: PASS erfordert alle 10 Felder complete)"
-                % (comp, ", ".join(incomplete))
+                "{}: FAKE-PASS - result=PASS, aber unvollstaendig: {} "
+                "(MAINT-000 Par.7.2: PASS erfordert alle 10 Felder complete)".format(
+                    comp, ", ".join(incomplete)
+                )
             )
         if result == "PASS" and cm and cm_incomplete:
             errors.append(
-                "%s: FAKE-PASS - critical_maintenance unvollstaendig: %s"
-                % (comp, ", ".join(cm_incomplete))
+                "{}: FAKE-PASS - critical_maintenance unvollstaendig: {}".format(
+                    comp, ", ".join(cm_incomplete)
+                )
             )
 
         # Legitimer BLOCK-Zustand: ehrlich dokumentiert
         if result == "FAIL":
             warnings.append(
-                "%s: RELEASE BLOCKED (ehrlicher BLOCK-Zustand) - unvollstaendig: %s"
-                % (comp, ", ".join(incomplete + cm_incomplete) or "?")
+                "{}: RELEASE BLOCKED (ehrlicher BLOCK-Zustand) - unvollstaendig: {}".format(
+                    comp, ", ".join(incomplete + cm_incomplete) or "?"
+                )
             )
         if result not in ("PASS", "FAIL"):
-            errors.append("%s: result fehlt oder ungueltig: %r" % (comp, result))
+            errors.append("{}: result fehlt oder ungueltig: {!r}".format(comp, result))
 
     # 2) Pflicht-Abdeckung
     for c in REQUIRED_COMPONENTS:
         if c not in seen:
-            errors.append("Pflicht-Record fehlt: %s.yaml (Komponente hat Live-Release)" % c)
+            errors.append("Pflicht-Record fehlt: {}.yaml (Komponente hat Live-Release)".format(c))
 
     # --- Report ---
     for w in warnings:
-        print("  BLOCK: %s" % w)
+        print("  BLOCK: {}".format(w))
     for e in errors:
-        print("  FAIL:  %s" % e)
+        print("  FAIL:  {}".format(e))
     if errors:
         print("RESULT: MAINTENANCE READINESS GATE FAIL (%d Verstoesse)" % len(errors))
         return 1

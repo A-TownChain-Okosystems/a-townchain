@@ -5,7 +5,7 @@ SCR-Prozess operativ: Nummerierung, Lebenszyklus, Registry-Pflichten.
 
 ## SCR-Lebenszyklus
 
-```
+```text
 PROPOSED -> REVIEW -> DECIDED (ACCEPTED | REJECTED | OBSOLETE) -> IMPLEMENTED -> CLOSED
 ```
 

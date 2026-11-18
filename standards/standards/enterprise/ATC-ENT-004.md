@@ -76,6 +76,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 5. Verbindliche Delegations- und Berechtigungsregeln
 
 1. Jede Delegation von Aufgaben oder Befugnissen MUSS schriftlich in einem DEC-Record gemäß ATC-ENT-003 festgehalten und begründet werden.
@@ -109,9 +110,11 @@ Unkontrollierte Delegationen führen zu Privilegieneskalation und unbefugtem Zug
 ## 10. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-002**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-AAS-003**: Referenzierter Standard im ATC-Regelwerk

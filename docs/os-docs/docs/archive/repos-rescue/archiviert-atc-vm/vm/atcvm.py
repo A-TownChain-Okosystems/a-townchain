@@ -1,6 +1,6 @@
 """ATC Virtual Machine — Stack-based bytecode execution engine."""
-from typing import List, Dict, Optional
 from dataclasses import dataclass, field
+from typing import Dict, List
 
 
 @dataclass

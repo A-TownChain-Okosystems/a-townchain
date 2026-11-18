@@ -5,7 +5,8 @@ Issue #1: Smart Contract Implementation
 
 Features: mint, burn, transfer, pause, snapshot, allowances
 """
-import time, hashlib
+import time
+
 from blockchain.contracts.base.base_contract import BaseContract
 
 

@@ -1,4 +1,5 @@
 # ATC-01 — Core Node Protocol & P2P Mesh Topology
+>
 > **Status:** ✅ FINAL — Spezifikation vollständig, Implementation in Arbeit | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-01
 > **Referenzen:** ATC-0001 (Core-Protokoll), ATC-0005 (P2P Kademlia DHT), Issue #14 (Bootstrap Node), Issue #68 (DNS Seed)
@@ -22,11 +23,13 @@ ATC-01 legt die Regeln fest, nach denen sich Knoten (Nodes) im dezentralen
 Netzwerk finden und verbinden:
 
 ### 1.1 P2P Mesh-Topologie
+
 Anstatt einer simplen Client-Server-Struktur erzwingt ATC-01 ein Mesh-Netzwerk.
 Jeder Node ist gleichzeitig Sender und Empfänger. Dies verhindert
 "Single Points of Failure" und sorgt für Redundanz.
 
 **Implementation:** ATCNet (`shivaos/net/atcnet.py`)
+
 - Transport Layer: TCP/UDP (proprietär, non-POSIX)
 - Port 4001: P2P Node Communication
 - Port 5005: Bootstrap Node
@@ -38,6 +41,7 @@ Jeder Node ist gleichzeitig Sender und Empfänger. Dies verhindert
 > Projektvorgabe: strikt non-POSIX, keine externen Forks.
 
 ### 1.2 Node Discovery
+
 Der Standard definiert, wie ein Node neue Nachbarn im Netzwerk findet:
 
 | Methode | Bereich | Implementation |
@@ -47,6 +51,7 @@ Der Standard definiert, wie ein Node neue Nachbarn im Netzwerk findet:
 | Hardcoded Fallback | Emergency | Eingebaute Fallback-Seeds |
 
 **Implementation:**
+
 - `blockchain/nodes/discovery.py` — Kademlia DHT Peer-Discovery
 - `blockchain/nodes/bootstrap.py` — DNS Seed & Peer Discovery (Issue #68)
 - `config/settings.json` → `network.bootstrap_nodes`
@@ -56,8 +61,10 @@ Der Standard definiert, wie ein Node neue Nachbarn im Netzwerk findet:
 > einer zukünftigen Version für Local-Area-Discovery ergänzt werden.
 
 ### 1.3 Handshake-Protokoll
+
 Bevor Daten ausgetauscht werden, müssen sich zwei Nodes gemäß ATC-01 "begrüßen".
 Dabei prüfen sie:
+
 - **Protokollversion** (aktuell: v2.1.0+)
 - **Rolle im Netzwerk** (FULL, LIGHT, VALIDATOR, MINER)
 - **Kompatibilität mit dem KAI-OS-Genesis-Block** (Chain-ID 658467)
@@ -81,6 +88,7 @@ Dabei prüfen sie:
 ## 2. Technische Anforderungen
 
 ### 2.1 Transport Layer
+
 | Spezifikation (docx) | Implementation (Code) | Status |
 |----------------------|----------------------|--------|
 | libp2p-Stack | ATCNet (proprietär) | ⚠️ Abweichung — by design |
@@ -93,12 +101,14 @@ Dabei prüfen sie:
 > P2P-Funktionalität proprietär mit TCP/UDP-Sockets und Kademlia DHT.
 
 ### 2.2 Verschlüsselung
+
 | Spezifikation (docx) | Implementation (Code) | Status |
 |----------------------|----------------------|--------|
 | Noise Protocol Framework | ECDSA + SHA-256 | ⚠️ Abweichung |
 | Ende-zu-Ende Verschlüsselung | Signatur-basiert | ✅ Funktional äquivalent |
 
 **Implementation:**
+
 - `blockchain/wallet/ecdsa.py` — ECDSA-Signaturen für Nachrichten
 - `blockchain/wallet/keygen.py` — Schlüsselgenerierung
 - Jede Nachricht wird mit `signature` und `sender` Feld signiert
@@ -110,12 +120,14 @@ Dabei prüfen sie:
 > Ephemeral Key Exchange (ECDH) ergänzt werden.
 
 ### 2.3 Node Identity
+
 | Spezifikation (docx) | Implementation (Code) | Status |
 |----------------------|----------------------|--------|
 | Ed25519-Schlüsselpaar | ECDSA (secp256k1) | ⚠️ Abweichung |
 | Kryptografische Identität Pflicht | Ja — ATC-Präfix Adressen | ✅ |
 
 **Implementation:**
+
 - `blockchain/wallet/keygen.py` — generiert Schlüsselpaare
 - Wallet-Adressen: `ATC` + 32 Zeichen (SHA-256 Derivation)
 - Ohne gültige Identität wird Verbindungsversuch abgelehnt
@@ -132,16 +144,19 @@ Ohne einen korrekt implementierten ATC-01-Standard würde der Rest des Systems
 nicht funktionieren:
 
 ### 3.1 Block-Propagation
+
 ATC-01 garantiert die Nachrichtenzustellung für neue Blöcke (Tier 1).
 **Implementation:** Gossip Protocol in `atcnet.py` — Blöcke werden an alle
 bekannten Peers propagiert.
 
 ### 3.2 Auto-Remediation
+
 ATC-01 sorgt dafür, dass das Netzwerk-Audit-System Zugriff auf Nachbar-Nodes
 hat, um deren Compliance zu prüfen.
 **Implementation:** `PEERS` / `GET_PEERS` Nachrichten im ATCNet-Protokoll.
 
 ### 3.3 Bootstrap-Prozess
+
 Beim Start kontaktiert ein neuer Node die "Bootstrap-Nodes" (nach ATC-01
 definiert), um den aktuellen Netzwerkstatus zu erhalten.
 **Implementation:** Issue #14 (Bootstrap Node) ✅, Issue #15 (Block Propagation) ✅, Issue #68 (DNS Seed) ✅
@@ -191,7 +206,6 @@ definiert), um den aktuellen Netzwerkstatus zu erhalten.
 *Dieses Dokument wurde aus der ursprünglichen Atc-01.docx Spezifikation
 abgeleitet und mit der tatsächlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 21:09 | Aurora (Superagent)*
-
 
 ---
 

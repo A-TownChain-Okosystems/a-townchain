@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-REPO-DISCOVERY-004
   title: "Duplicate Detection"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-REPO-DISCOVERY-004 — Duplicate Detection (v1.0.0, CANDIDATE)
 
@@ -26,6 +27,7 @@ standard:
 > Kein neuer Repository-Inhalt darf unbewertet bleiben.
 
 ## Zweck
+
 Neue Inhalte gegen bestehende Standards pruefen — Ergebnis-Triade:
 DUPLICATE (bereits abgedeckt) / EXTENSION (bestehenden Standard erweitern) /
 NEW STANDARD (wirklich neu). Verhindert doppelte, widerspruechliche und parallele
@@ -40,6 +42,7 @@ Standards, veraltete Regeln und mehrere Standards fuer dasselbe Problem.
 | REQ-RD-042 | Duplikate werden gemergt (MERGED), nie doppelt eingetragen |
 
 ## Implementierungsstatus
+
 SPECIFIED — Mechanik etabliert (S-17 Duplicate Detection der Validator-Suite +
 Registry-First §37); Kopplung an Kandidaten-Pipeline folgt mit Scan-Integration.
 
@@ -48,7 +51,9 @@ Registry-First §37); Kopplung an Kandidaten-Pipeline folgt mit Scan-Integration
 Duplikat-Suche laeuft gegen die Registry (read-only); keine Dateisystem-Inhalte an Dritte.
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0046) |
 
 ## References
+
 NORMATIV: ATC-STD-000 (§37/§7.8 S-17), RD-003 · INFORMATIVE: SCR-0046

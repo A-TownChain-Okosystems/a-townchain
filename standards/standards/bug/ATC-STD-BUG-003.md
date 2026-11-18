@@ -35,7 +35,7 @@ Done CLOSED.
 
 ## 1. Fix-Lifecycle (REQ-STD-121: MUST)
 
-```
+```text
 OPEN → ANALYZED → FIX PLANNED → IMPLEMENTED → UNIT TEST → INTEGRATION TEST
 → REGRESSION TEST → SECURITY CHECK → REVIEW → VERIFIED → CLOSED
 ```
@@ -51,7 +51,7 @@ Jeder **nicht-triviale** Fix erhaelt einen SCR-NNN (change-requests/,
 Lebenszyklus gemaess ATC-STD-000 §26). Trivial = S4-Dokumentationstypo ohne
 Verhaltens- und Security-Relevanz; Trivialitaet wird im Finding begruendet.
 
-```
+```text
 F-017
  └── SCR-021
       ├── Commit abc123 (fix(...) mit F/SCR-Referenz)

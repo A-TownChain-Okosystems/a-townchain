@@ -11,10 +11,11 @@ Features:
   - Timelock: 48h nach Vote vor Ausführung
   - Quorum: min. 10% der ATC-Supply
 """
-import time, hashlib
-from dataclasses import dataclass, asdict, field
+import hashlib
+import time
+from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Optional
+
 from blockchain.contracts.base.base_contract import BaseContract
 
 

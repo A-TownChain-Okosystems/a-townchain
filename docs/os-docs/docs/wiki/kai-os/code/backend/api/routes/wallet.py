@@ -2,9 +2,9 @@
 # backend/api/routes/wallet.py
 # Wallet API Routes (via Gateway :5002)
 
-from flask import Blueprint, jsonify, request
 from backend.wallet.wallet import ATCWallet
 from blockchain.atcoin.atcoin import ATCoin
+from flask import Blueprint, jsonify, request
 
 wallet_bp = Blueprint("wallet", __name__)
 _atcoin   = ATCoin()

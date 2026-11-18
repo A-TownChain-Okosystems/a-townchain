@@ -149,7 +149,7 @@ das Programm nicht aus dem Image geladen wird.
 
 **Beleg aus dem Gast** (QEMU BIOS, Log `/tmp/boot-fresh.log`, Zeilen 55, 56, 85):
 
-```
+```text
 ShivaCore: Ramdisk-Verzeichnis: 1 Programme (init)
 ShivaCore: Programm 'init' aus Ramdisk: 6608 Bytes ELF, Einstieg 0x400000, Code 121 Bytes
 ShivaCore: USER-001 mapped PID=1000 RIP=0x400000 RSP=0x7ffff000 (Quelle: Ramdisk)

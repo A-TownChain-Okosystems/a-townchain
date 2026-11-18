@@ -23,7 +23,7 @@ Initial Sync — Synchronisiert neue Nodes mit der aktuellen Chain. Batch-Downlo
 
 ### Module
 
-```
+```text
 modules/network/sync.atc — Block-Sync
 modules/network/snapshot.atc — State-Snapshot-Download
 ```
@@ -66,7 +66,7 @@ batch_size: 64 blocks | max_peers_sync: 3 | snapshot_interval: 10000 blocks | ve
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-85.atc    # Unit-Tests
 └── test_atc-85_integration.atc  # Integration-Tests

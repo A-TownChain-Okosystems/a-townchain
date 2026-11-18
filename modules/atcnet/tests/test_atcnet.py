@@ -52,7 +52,7 @@ if __name__ == "__main__":
             t()
             print(f"  ✅ {t.__name__}")
             ok += 1
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             print(f"  ❌ {t.__name__}: {e}")
             fail += 1
     print(f"{ok} passed, {fail} failed")

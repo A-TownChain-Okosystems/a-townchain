@@ -6,7 +6,7 @@ ATC-94 | Sprint 2.5 | Non-EVM: JSON + CBOR, RLP deprecated
 """
 import json
 import struct
-from typing import Any, Dict, List, Union
+from typing import Any
 
 
 class ATCEncoding:

@@ -7,7 +7,8 @@ Ausfuehrung headless (Test/CI, kein SDL-Fenster): python main.py --headless
 """
 import sys
 import time
-from core.ecs import World, Position, Velocity, Sprite, MovementSystem
+
+from core.ecs import MovementSystem, Position, Sprite, Velocity, World
 from render.renderer2d import Renderer2D
 
 

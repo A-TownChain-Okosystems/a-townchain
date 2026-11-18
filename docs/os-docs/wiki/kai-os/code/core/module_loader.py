@@ -4,11 +4,12 @@
 
 import importlib
 
+
 class ModuleLoader:
     def __init__(self, event_bus):
         self.event_bus = event_bus
         self.modules = []
-    
+
     def load(self, module_path):
         module = importlib.import_module(module_path)
         if hasattr(module, 'Plugin'):

@@ -22,12 +22,17 @@ class TriagePolicyTests(unittest.TestCase):
 
     def test_classifies_test_failure(self):
         self.assertEqual(
-            triage.classify_finding("unit tests", "workspace tests", ["Run regression tests"], "failure"),
+            triage.classify_finding(
+                "unit tests", "workspace tests", ["Run regression tests"], "failure"
+            ),
             "TEST_FAILURE",
         )
 
     def test_unknown_failure_is_not_misrepresented_as_root_cause(self):
-        self.assertEqual(triage.classify_finding("custom", "job", ["run command"], "failure"), "UNCLASSIFIED")
+        self.assertEqual(
+            triage.classify_finding("custom", "job", ["run command"], "failure"),
+            "UNCLASSIFIED",
+        )
 
     def test_finding_id_is_stable_and_sha_bound(self):
         first = triage.stable_finding_id("org/repo", "CI", "a" * 40, 123, ["cargo test"])
@@ -38,9 +43,12 @@ class TriagePolicyTests(unittest.TestCase):
         self.assertTrue(first.startswith("ATC-FINDING-"))
 
     def test_missing_credentials_fail_closed(self):
-        with patch.object(triage, "TOKEN", ""), patch.object(triage, "REPOSITORY", "org/repo"):
-            with self.assertRaises(triage.ApiError):
-                triage.api_get("/repos/org/repo/actions/runs")
+        with (
+            patch.object(triage, "TOKEN", ""),
+            patch.object(triage, "REPOSITORY", "org/repo"),
+            self.assertRaises(triage.ApiError),
+        ):
+            triage.api_get("/repos/org/repo/actions/runs")
 
     def test_evidence_adapter_matches_existing_schema_and_fails_closed(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -51,11 +59,16 @@ class TriagePolicyTests(unittest.TestCase):
             source = Path(temp_dir) / "triage.json"
             source.write_text('{"status":"FINDINGS","finding_count":1}', encoding="utf-8")
             triage.write_evidence_record(source, {"status": "FINDINGS", "finding_count": 1}, "now")
-            record = json.loads((Path(temp_dir) / "evidence-record.json").read_text(encoding="utf-8"))
+            record = json.loads(
+                (Path(temp_dir) / "evidence-record.json").read_text(encoding="utf-8")
+            )
             self.assertEqual(record["schema"], "ATC-EVD-001")
             self.assertEqual(record["status"], "UNKNOWN")
             self.assertEqual(record["commit"], "a" * 40)
-            self.assertEqual(record["integrity"]["digest"], hashlib.sha256(source.read_bytes()).hexdigest())
+            self.assertEqual(
+                record["integrity"]["digest"],
+                hashlib.sha256(source.read_bytes()).hexdigest(),
+            )
             self.assertTrue(record["immutable"])
 
     def test_blocked_report_never_claims_zero_attempts(self):

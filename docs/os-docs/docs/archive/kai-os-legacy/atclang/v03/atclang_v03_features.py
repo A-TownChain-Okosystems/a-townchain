@@ -4,9 +4,11 @@ ATCLang v0.3.0 — Erweiterte Sprach-Features (Fix #35)
 async/await | Generics | Closures | Module-System | Type Inference
 """
 from __future__ import annotations
+
+import asyncio
+import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
-import asyncio, time
 
 # ── Neue Token-Typen für v0.3.0 ────────────────────
 NEW_TOKENS_V03 = {

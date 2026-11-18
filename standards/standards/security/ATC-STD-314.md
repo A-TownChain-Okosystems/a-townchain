@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-314
   title: "Cybersecurity Framework Standard"
@@ -28,7 +29,7 @@ standard:
     - ATC-STD-449
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-314 — Cybersecurity Framework Standard (v1.0.0, APPROVED)
 
@@ -47,7 +48,6 @@ Verifikationspflichten sowie Security-Betrachtungen.
 Schluesselwoerter: MUSS/MUSS NICHT, SOLLTE, DARF/KANN — RFC 2119 (MUST/SHOULD/MAY)
 gemaess ATC-STD-000 §10.
 
-
 ## §1 Gegenstand & Verortung
 
 Das uebergreifende Sicherheits-Rahmenwerk des Oekosystems: Defense-in-Depth,
@@ -64,7 +64,6 @@ Interface (204), API Security (449), Netzwerk-Stufen-Sicherheit (ATC-STD-NET-007
 4. **KR-4:** Zugriffe folgen Least Privilege: Capability-basierte Rechte (Kernel), Deny-by-Default (AD-012/013).
 5. **KR-5:** Abhaengigkeiten MUESSEN ueberwacht werden (Dependabot-Organisation, ATC-STD-204 Dependency Policy; F-025) — 0 ungepruefte kritische CVEs auf Release-Standards.
 6. **KR-6:** Sicherheitsvorfälle und Schwachstellen MUESSEN als Findings (F-NNN) mit Severity-Pflichten gefuehrt und bis RESOLVED nachverfolgt werden (ATC-STD-BUG-001..005, AUD-Records).
-
 
 ## §3 Schnittstellen & Kopplungen
 

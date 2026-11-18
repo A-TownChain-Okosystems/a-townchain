@@ -83,6 +83,7 @@ Agenten-spezifisch: Agent-Identitaet via AGENT_MANIFEST verifizierbar; Permissio
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-201..203, ATC-AAS-002 · INFORMATIVE: AGENT_MANIFEST.md v3.1.7, Registry-Kategorie aas
+
 ## 4. Ergänzende Verbindliche Betriebs- und Governance-Regeln
 
 1. Das Identity-Manifest (`.github/ai/agent.yaml`) MUSS bei jedem Agenten-Start vor der Ausführung von Aktionen auf Schema-Konformität verifiziert werden.

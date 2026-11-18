@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-039
   title: "Cryptographic Agility Standard"
@@ -17,7 +18,7 @@ standard:
   dependencies:
     - ATC-STD-000
     - ATC-STD-018
-----
+---
 
 # ATC-STD-039 — Cryptographic Agility Standard (v1.0.0, APPROVED)
 

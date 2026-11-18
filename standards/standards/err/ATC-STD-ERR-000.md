@@ -16,7 +16,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-000 — No Local Fix Without System Verification (Error Master) (v1.0.0, CANDIDATE)
 
@@ -45,7 +45,7 @@ organisatorische oder technische Massnahme verhindert eine Wiederholung?
 
 ## 2. Fehlerlebenszyklus (14 Stationen, verbindlich)
 
-```
+```text
 DETECTED → CLASSIFIED → REPRODUCED → ROOT_CAUSE_IDENTIFIED → PROPAGATION_SCAN →
 IMPACT_ANALYSIS → FIX_PLANNED → FIX_IMPLEMENTED → REGRESSION_TESTED →
 PREVENTION_IMPLEMENTED → DOCUMENTATION_UPDATED → CROSS_REPOSITORY_RESCAN →

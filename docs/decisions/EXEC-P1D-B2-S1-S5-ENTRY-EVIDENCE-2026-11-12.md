@@ -332,11 +332,11 @@ Luecke.
 
 Zwei Folgen, die zur Festlegung gehoeren:
 
-* **Der Chain-Kopf gehoert nicht in die Wurzel.** Der Blockhash haengt an der Wurzel; die
+- **Der Chain-Kopf gehoert nicht in die Wurzel.** Der Blockhash haengt an der Wurzel; die
   Wurzel darf nicht am Blockhash haengen. Die Parent-Bindung bleibt deshalb
   Commit-Vorbedingung (vier erwartete Werte) und wird nicht Teil der Wurzel. Diese
   Trennung ist keine Geschmacksfrage, sie verhindert einen Zirkel.
-* **`state_root(code_hash)` behaelt seine Bedeutung.** Die bestehende Funktion wird nicht
+- **`state_root(code_hash)` behaelt seine Bedeutung.** Die bestehende Funktion wird nicht
   zur Systemwurzel umgedeutet, sondern zur Bereichswurzel des Vertragsspeichers. Dieselbe
   Funktion mit zwei Bedeutungen waere eine zweite Wahrheit (Architektur-Grundregel). Ob
   die Codebindung in der Bereichswurzel bleibt, ist Owner-Punkt `O-S2-4`: die Alternative
@@ -347,9 +347,9 @@ Zwei Folgen, die zur Festlegung gehoeren:
 Der Owner verlangt, dass `state_root_before` in C tatsaechlich gegen den autoritativen
 Ausgangszustand geprueft wird. Der Befund am Code (Blob `42dab555`) stuetzt das:
 
-* `system.rs:396` berechnet `let state_root_before = state.state_root(&deployment.code_hash);`
-* der Wert erscheint im `Receipt` (`state_root_before`), wird aber **nirgends verglichen**
-* `system.rs:470` berechnet `state_root_after`, `:478` produziert den Block mit einer
+- `system.rs:396` berechnet `let state_root_before = state.state_root(&deployment.code_hash);`
+- der Wert erscheint im `Receipt` (`state_root_before`), wird aber **nirgends verglichen**
+- `system.rs:470` berechnet `state_root_after`, `:478` produziert den Block mit einer
   Payload aus `code_hash` und `state_root_after`, `:480` setzt `*state = after`
 
 Eine Groesse, die berechnet und protokolliert, aber nicht geprueft wird, sieht in jedem
@@ -397,13 +397,13 @@ tun hat.
 
 ## 7 Was dieses Dokument nicht ist
 
-* **Keine Umsetzung.** Kein Gate ist geschlossen, kein Statuswort wurde veraendert.
-* **Kein Standard.** Die vorgeschlagene Kennung `ATC-STATE-002` ist ein Vorschlag im
+- **Keine Umsetzung.** Kein Gate ist geschlossen, kein Statuswort wurde veraendert.
+- **Kein Standard.** Die vorgeschlagene Kennung `ATC-STATE-002` ist ein Vorschlag im
   Candidate-Ordner; ob und in welcher Familie sie registriert wird, entscheidet
   `atc-standards`, nicht dieses Dokument.
-* **Kein `CI_VERIFIED`.** Es gibt keinen Lauf auf dem Default-Branch-HEAD fuer diese
+- **Kein `CI_VERIFIED`.** Es gibt keinen Lauf auf dem Default-Branch-HEAD fuer diese
   Aenderung, weil sie keinen ausfuehrbaren Code enthaelt.
-* **Keine Grenzwerte.** `O-S3-3` (Obergrenze je Datensatz) ist bewusst offen: ein Wert
+- **Keine Grenzwerte.** `O-S3-3` (Obergrenze je Datensatz) ist bewusst offen: ein Wert
   wird begruendet und an der Kante getestet, nicht aus bestehenden VM-Grenzen abgeleitet.
 
 ## 8 Evidenzbindung

@@ -20,14 +20,22 @@ class ComponentEvidenceValidationTests(unittest.TestCase):
         self.commit = "a" * 40
         self.manifest = {
             "observed_commit_sha": self.commit,
-            "candidates": [{
-                "component_id": "ATCE-COMP-001",
-                "status": "IMPLEMENTED",
-                "decision": "REVIEW_REQUIRED",
-                "evidence": [{"path": "src.py", "blob_sha": self.sha, "symbols": ["canonical_component"]}],
-                "contract_refs": ["contracts/component-v1.json"],
-                "runtime_wiring_evidence": ["src.py:canonical_component"],
-            }],
+            "candidates": [
+                {
+                    "component_id": "ATCE-COMP-001",
+                    "status": "IMPLEMENTED",
+                    "decision": "REVIEW_REQUIRED",
+                    "evidence": [
+                        {
+                            "path": "src.py",
+                            "blob_sha": self.sha,
+                            "symbols": ["canonical_component"],
+                        }
+                    ],
+                    "contract_refs": ["contracts/component-v1.json"],
+                    "runtime_wiring_evidence": ["src.py:canonical_component"],
+                }
+            ],
         }
 
     def tearDown(self):

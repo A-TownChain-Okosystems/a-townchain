@@ -23,7 +23,7 @@ Proof of Stake — Validator-Selection basierend auf gestaktem Token-Volumen. Hy
 
 ### Module
 
-```
+```text
 modules/consensus/pos.atc — Validator-Selection
 modules/consensus/staking.atc — Stake-Management
 modules/consensus/slashing.atc — Slashing-Conditions
@@ -67,7 +67,7 @@ min_stake: 10000 ATC | lockup_period: 7 days | slashing_rate: 10% | snapshot_int
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-83.atc    # Unit-Tests
 └── test_atc-83_integration.atc  # Integration-Tests

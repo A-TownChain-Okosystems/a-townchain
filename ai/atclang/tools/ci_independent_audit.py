@@ -228,10 +228,11 @@ def audit_evidence(findings: list[str]) -> None:
                 ["git", "cat-file", "-e", b + "^{commit}"],
                 capture_output=True,
                 cwd=ROOT,
+                check=False,
             )
             if chk.returncode == 0:
                 return  # gueltiger historischer Eintrag; Bindung wird von diesem Lauf nachgezogen
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
             pass
     if status and status.group(1) in {"pass", "pass_with_evidence"}:
         fail(

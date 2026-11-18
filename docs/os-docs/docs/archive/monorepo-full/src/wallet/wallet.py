@@ -4,7 +4,6 @@ ATC-prefixed addresses with SHA-256 derivation and ECDSA signing.
 """
 import hashlib
 import json
-from typing import Optional
 
 ATC_PREFIX = "ATC"
 ADDRESS_LENGTH = 35  # ATC + 32 hex chars
@@ -71,7 +70,6 @@ def generate_wallet() -> Wallet:
 
 
 if __name__ == "__main__":
-    import os as _os
     wallet = generate_wallet()
     print(f"Address: {wallet.address}")
     print(f"Valid: {Wallet.is_valid_address(wallet.address)}")

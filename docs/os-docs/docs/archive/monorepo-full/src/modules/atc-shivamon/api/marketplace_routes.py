@@ -3,8 +3,8 @@
 # Issue #13 — ATC Marketplace Routes
 # Stand: Sprint 2.5 | Angepasst an MarketplaceContract v2
 
+from blockchain.smart_contracts import atc_token, marketplace
 from flask import Blueprint, jsonify, request
-from blockchain.smart_contracts import marketplace, atc_token
 
 marketplace_bp = Blueprint("marketplace", __name__)
 

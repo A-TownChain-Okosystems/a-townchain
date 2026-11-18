@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-100
   title: "Language & Technology Stack Standard"
@@ -12,7 +13,7 @@ standard:
   normative: true
   applies_to: "Alle ATC-Repositories"
   mandate: "Owner-Entwurf 11.09.2026 (Language Architecture, SCR-0093)"
-----
+---
 
 # ATC-STD-100 — Language & Technology Stack Standard (v2.0.0, APPROVED)
 

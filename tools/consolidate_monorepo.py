@@ -27,7 +27,15 @@ import shutil
 import subprocess
 import sys
 
-EXCLUDE_DIRS = {".git", "target", "node_modules", "__pycache__", ".venv", "dist", "build"}
+EXCLUDE_DIRS = {
+    ".git",
+    "target",
+    "node_modules",
+    "__pycache__",
+    ".venv",
+    "dist",
+    "build",
+}
 EXCLUDE_FILES = {".DS_Store"}
 
 LAYOUT = {
@@ -81,7 +89,15 @@ NOT_CONSOLIDATED = {
 }
 
 # ecosystem: nur die produktiven Teile, nicht die 26 Spiegel unter components/
-ECOSYSTEM_KEEP = {"catalog", "control-plane", "schemas", "integration", "tools", "docs", "tests"}
+ECOSYSTEM_KEEP = {
+    "catalog",
+    "control-plane",
+    "schemas",
+    "integration",
+    "tools",
+    "docs",
+    "tests",
+}
 
 
 def head_sha(repo_dir):
@@ -89,7 +105,7 @@ def head_sha(repo_dir):
         return subprocess.check_output(
             ["git", "-C", repo_dir, "rev-parse", "HEAD"], text=True
         ).strip()
-    except Exception:
+    except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         return "unknown"
 
 
@@ -152,7 +168,12 @@ def main():
         for name in sorted(ECOSYSTEM_KEEP):
             src = os.path.join(eco, name)
             if os.path.isdir(src):
-                copy_tree(src, os.path.join(dst_root, "ecosystem", name), args.dry_run, counter)
+                copy_tree(
+                    src,
+                    os.path.join(dst_root, "ecosystem", name),
+                    args.dry_run,
+                    counter,
+                )
         manifest.append(
             {
                 "source_repo": "A-TownChain-Okosystems/a-townchain-ecosystem",
@@ -162,8 +183,10 @@ def main():
             }
         )
 
-    print(f"{'DRY-RUN' if args.dry_run else 'KOPIERT'}: {counter[0]} Dateien aus "
-          f"{len(manifest)} Repos -> {dst_root}")
+    print(
+        f"{'DRY-RUN' if args.dry_run else 'KOPIERT'}: {counter[0]} Dateien aus "
+        f"{len(manifest)} Repos -> {dst_root}"
+    )
     for m in manifest:
         print(f"  {m['source_repo']:45s} -> {m['target_path']:32s} {m['files']:5d} Dateien")
     if missing:

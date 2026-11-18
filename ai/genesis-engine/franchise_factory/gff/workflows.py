@@ -1,4 +1,5 @@
 """Declarative AI production workflows for the Genesis Franchise Factory."""
+
 from __future__ import annotations
 
 # ruff: isort: skip_file
@@ -8,40 +9,90 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
+
 # fmt: off
 class WorkflowStage(StrEnum):
-    INPUT="input"; ANALYZE="analyze"; PLAN="plan"; PRODUCE="produce"; QUALITY="quality"; INTEGRATE="integrate"; PUBLISH="publish"; MONITOR="monitor"; OPTIMIZE="optimize"; REPLICATE="replicate"
+    INPUT="input"
+    ANALYZE="analyze"
+    PLAN="plan"
+    PRODUCE="produce"
+    QUALITY="quality"
+    INTEGRATE="integrate"
+    PUBLISH="publish"
+    MONITOR="monitor"
+    OPTIMIZE="optimize"
+    REPLICATE="replicate"
 class FactoryId(StrEnum):
-    TEXT="text-content"; SOFTWARE="software"; GAME="game"; MARKETING="marketing"; BUSINESS="business"; DOCUMENT="document"; RESEARCH="research"; ECOMMERCE="e-commerce"; CUSTOMER_SERVICE="customer-service"; AUTOMATION="automation"; KNOWLEDGE="knowledge"; AGENT="agent"; FRANCHISE="franchise"; STARTUP="startup"; EDUCATION="education"; BOOK="book"; VIRTUAL_WORLD="virtual-world"
+    TEXT="text-content"
+    SOFTWARE="software"
+    GAME="game"
+    MARKETING="marketing"
+    BUSINESS="business"
+    DOCUMENT="document"
+    RESEARCH="research"
+    ECOMMERCE="e-commerce"
+    CUSTOMER_SERVICE="customer-service"
+    AUTOMATION="automation"
+    KNOWLEDGE="knowledge"
+    AGENT="agent"
+    FRANCHISE="franchise"
+    STARTUP="startup"
+    EDUCATION="education"
+    BOOK="book"
+    VIRTUAL_WORLD="virtual-world"
 @dataclass(frozen=True, slots=True)
 class WorkflowDefinition:
-    id:str; name:str; stages:tuple[WorkflowStage,...]; capabilities:tuple[str,...]; outputs:tuple[str,...]; description:str=""
+    id:str
+    name:str
+    stages:tuple[WorkflowStage,...]
+    capabilities:tuple[str,...]
+    outputs:tuple[str,...]
+    description:str=""
 @dataclass(slots=True)
 class WorkflowContext:
-    workflow_id:str; payload:dict[str,Any]; artifacts:dict[str,Any]=field(default_factory=dict); evidence:list[dict[str,Any]]=field(default_factory=list); stage:WorkflowStage|None=None
-    def record_evidence(self,kind:str,value:Any)->None: self.evidence.append({"kind":kind,"value":value})
+    workflow_id:str
+    payload:dict[str,Any]
+    artifacts:dict[str,Any]=field(default_factory=dict)
+    evidence:list[dict[str,Any]]=field(default_factory=list)
+    stage:WorkflowStage|None=None
+    def record_evidence(self,kind:str,value:Any)->None:
+        self.evidence.append({"kind":kind,"value":value})
 Executor=Callable[[WorkflowStage,WorkflowContext],WorkflowContext]
-class WorkflowError(RuntimeError): pass
+class WorkflowError(RuntimeError):
+    pass
 class WorkflowRegistry:
-    def __init__(self,definitions:tuple[WorkflowDefinition,...]|None=None)->None: self._definitions={i.id:i for i in definitions or DEFAULT_WORKFLOWS}; self.validate()
+    def __init__(self,definitions:tuple[WorkflowDefinition,...]|None=None)->None:
+        self._definitions={i.id:i for i in definitions or DEFAULT_WORKFLOWS}
+        self.validate()
     def get(self,workflow_id:str)->WorkflowDefinition:
-        try:return self._definitions[workflow_id]
-        except KeyError as exc: raise WorkflowError(f"Unknown workflow: {workflow_id}") from exc
-    def all(self)->tuple[WorkflowDefinition,...]: return tuple(self._definitions.values())
+        try:
+            return self._definitions[workflow_id]
+        except KeyError as exc:
+            raise WorkflowError(f"Unknown workflow: {workflow_id}") from exc
+    def all(self)->tuple[WorkflowDefinition,...]:
+        return tuple(self._definitions.values())
     def validate(self)->None:
-        if not self._definitions: raise WorkflowError("Workflow registry must not be empty")
+        if not self._definitions:
+            raise WorkflowError("Workflow registry must not be empty")
         for d in self._definitions.values():
-            if not d.stages or d.stages[0] is not WorkflowStage.INPUT: raise WorkflowError(f"Workflow {d.id} must start with INPUT")
-            if WorkflowStage.QUALITY not in d.stages: raise WorkflowError(f"Workflow {d.id} requires a QUALITY gate")
-            if len(set(d.stages))!=len(d.stages): raise WorkflowError(f"Workflow {d.id} contains duplicate stages")
+            if not d.stages or d.stages[0] is not WorkflowStage.INPUT:
+                raise WorkflowError(f"Workflow {d.id} must start with INPUT")
+            if WorkflowStage.QUALITY not in d.stages:
+                raise WorkflowError(f"Workflow {d.id} requires a QUALITY gate")
+            if len(set(d.stages))!=len(d.stages):
+                raise WorkflowError(f"Workflow {d.id} contains duplicate stages")
 class WorkflowEngine:
     def __init__(self,registry:WorkflowRegistry|None=None)->None:self.registry=registry or WorkflowRegistry()
     def run(self,workflow_id:str,payload:Mapping[str,Any],executor:Executor)->WorkflowContext:
-        d=self.registry.get(workflow_id); context=WorkflowContext(d.id,dict(payload))
+        d=self.registry.get(workflow_id)
+        context=WorkflowContext(d.id,dict(payload))
         for stage in d.stages:
-            context.stage=stage; context=executor(stage,context)
-            if not isinstance(context,WorkflowContext): raise WorkflowError(f"Executor returned invalid context at stage {stage}")
-        context.record_evidence("workflow.completed",d.id); return context
+            context.stage=stage
+            context=executor(stage,context)
+            if not isinstance(context,WorkflowContext):
+                raise WorkflowError(f"Executor returned invalid context at stage {stage}")
+        context.record_evidence("workflow.completed",d.id)
+        return context
 def _definition(factory:FactoryId,name:str,capabilities:tuple[str,...],outputs:tuple[str,...],description:str)->WorkflowDefinition:
     return WorkflowDefinition(factory.value,name,(WorkflowStage.INPUT,WorkflowStage.ANALYZE,WorkflowStage.PLAN,WorkflowStage.PRODUCE,WorkflowStage.QUALITY,WorkflowStage.INTEGRATE,WorkflowStage.PUBLISH,WorkflowStage.MONITOR,WorkflowStage.OPTIMIZE),capabilities,outputs,description)
 DEFAULT_WORKFLOWS=(

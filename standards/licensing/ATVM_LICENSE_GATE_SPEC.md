@@ -1,4 +1,5 @@
 # ATVM License Gate — Technische Spezifikation
+
 ## A-Town Virtual Machine License Enforcement
 
 > **Version:** 1.0.0 | **Datum:** 06.07.2026
@@ -10,7 +11,7 @@
 
 ## 1. Architektur
 
-```
+```text
 ATVM ARCHITECTURE
 ├── Pre-Execution Layer
 │   ├── Code Hasher (SHA-256)
@@ -34,7 +35,7 @@ ATVM ARCHITECTURE
 
 ## 2. License Gate State Machine
 
-```
+```text
          ┌─────────────┐
          │  IDLE       │
          └──────┬──────┘

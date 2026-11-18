@@ -5,6 +5,7 @@ This is **catalog/evidence tooling**, not a privacy implementation and not a GDP
 ## Input contract
 
 The validator consumes a JSON export with:
+
 - `schema_id`, `version`, `status`, and a `requirements` array;
 - stable `ATC-PRIV-NNN` requirement identifiers;
 - normative level (`MUST`, `SHOULD`, `MAY`);

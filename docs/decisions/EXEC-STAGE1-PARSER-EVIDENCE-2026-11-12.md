@@ -29,7 +29,7 @@ Matrixtests, und der Abgleich Dekoder gegen Korpus ist **kein** Differentialtest
 | `tools/check_parser_corpus.py` | vergleicht Dekoder gegen Korpus, prueft die Datei gegen die Erzeugung |
 | `tools/tests/test_parser_corpus.py` | Werkzeugtests, 11 Faelle |
 
-```
+```text
 python3 tools/check_stage1_vectors.py           # PASS: 9 Gold-, 2 Negativvektoren
 python3 tools/build_parser_corpus.py --check    # PASS: 40 Eingaben in 8 Klassen
 python3 tools/check_parser_corpus.py            # PASS: 40 Eingaben, 0 Abweichungen
@@ -105,7 +105,7 @@ Dekodierpfad, bevor die VM als zweiter Dekoder gelten kann.
 dokumentierte P2-Strom kodierte `Store` mit einem Byte und war 21 Byte lang. Als
 Container geprueft ergab er `E-002` bei Offset 31, **obwohl der Digest stimmte**:
 
-```
+```text
 GV-7 alt: 63 Byte, artifact_hash korrekt, Dekodierung -> E-002 bei 31
 ```
 

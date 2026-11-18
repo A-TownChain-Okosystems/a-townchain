@@ -57,7 +57,7 @@ Speicher-Mapping. Stufe 2 des Geltungsbereichs ist damit heute nur kernelintern 
 HHDM-Abbildungen Supervisor, beschreibbar und NX sind. `userspace.rs` benutzt diese Typen
 nicht. Es rechnet mit `PageTableFlags` aus der `x86_64`-Crate und ruft `map_to` direkt:
 
-```
+```text
 userspace.rs:263  PageTableFlags::USER_ACCESSIBLE | PageTableFlags::WRITABLE   // Code, W+X
 userspace.rs:274  PageTableFlags::USER_ACCESSIBLE | PageTableFlags::WRITABLE   // Daten
 userspace.rs:286  PageTableFlags::USER_ACCESSIBLE | PageTableFlags::WRITABLE   // Stack

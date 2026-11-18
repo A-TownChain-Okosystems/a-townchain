@@ -20,6 +20,7 @@ ATC-06 definiert das Latency-Optimierungs- und Routing-System für das A-TownCha
 ### Problemstellung
 
 In einem Blockchain-P2P-Netzwerk ohne Latency-Optimierung:
+
 - Transaktionen benötigen unnötig lange zur Propagation (hohe Stakeholder-Latenz)
 - Blöcke erreichen Validatoren zu unterschiedlichen Zeitpunkten → Forks
 - Schlechte Peers (hohe Latenz, Packet Loss) blockieren das Netzwerk
@@ -28,6 +29,7 @@ In einem Blockchain-P2P-Netzwerk ohne Latency-Optimierung:
 ### Lösung
 
 ATC-06 implementiert ein **Latency-Aware Routing** mit folgenden Komponenten:
+
 1. **RTT-Monitoring** — Kontinuierliche Latency-Messung zu allen Peers
 2. **Peer-Ranking** — Peers werden nach Latency, Uptime und Reliability bewertet
 3. **Optimal-Path-Selection** — Dijkstra-basierte Pfadfindung im Peer-Graph
@@ -36,7 +38,7 @@ ATC-06 implementiert ein **Latency-Aware Routing** mit folgenden Komponenten:
 
 ### Architektur
 
-```
+```text
 modules/network/
 ├── routing.atc          # Hauptrouting-Logik (ATC-06)
 ├── rtt_monitor.atc      # Round-Trip-Time Messung
@@ -601,7 +603,7 @@ max_low_per_tick = 10
 
 ### Unit-Tests (20+)
 
-```
+```text
 tests/network/
 ├── test_rtt_monitor.atc      # RTT-Messung, EWMA, Timeout (5 tests)
 ├── test_peer_ranking.atc     # Score-Berechnung, Ranking, Blacklist (5 tests)
@@ -710,7 +712,7 @@ fn test_priority_ordering() {
 
 ### Prometheus-Metriken
 
-```
+```text
 # RTT-Metriken
 kai_peer_rtt_ms{peer="..."}           # EWMA RTT pro Peer
 kai_peer_rtt_min_ms{peer="..."}       # Min RTT

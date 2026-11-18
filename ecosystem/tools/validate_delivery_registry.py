@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Fail-closed structural and cross-record validation for the ATC delivery registry."""
+
 from __future__ import annotations
+
 import copy
 import json
 import sys
@@ -12,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "control-plane" / "DELIVERY_REGISTRY.json"
 SCHEMA = ROOT / "control-plane" / "DELIVERY_REGISTRY.schema.json"
 
+
 def validate(document: object, schema: dict) -> list[str]:
     errors: list[str] = []
     validator = Draft202012Validator(schema, format_checker=FormatChecker())
@@ -20,12 +23,17 @@ def validate(document: object, schema: dict) -> list[str]:
         return errors
     statuses = document.get("status_enum")
     priorities = document.get("priority_enum")
-    if not isinstance(statuses, list) or not statuses or any(not isinstance(x, str) for x in statuses):
+    if (
+        not isinstance(statuses, list)
+        or not statuses
+        or any(not isinstance(x, str) for x in statuses)
+    ):
         errors.append("status_enum must be a non-empty list of strings")
         statuses = []
     if not isinstance(priorities, list) or not priorities:
         errors.append("priority_enum must be a non-empty list")
         priorities = []
+
     def walk(value: object, path: str = "$") -> None:
         if isinstance(value, dict):
             if "status" in value and value["status"] not in statuses:
@@ -37,8 +45,20 @@ def validate(document: object, schema: dict) -> list[str]:
         elif isinstance(value, list):
             for i, child in enumerate(value):
                 walk(child, f"{path}[{i}]")
+
     walk(document)
-    for key in ("documentation_index", "roadmap", "milestones", "checkpoints", "components", "functions", "sprints", "todos", "repository_inventory", "repository_delivery_plans"):
+    for key in (
+        "documentation_index",
+        "roadmap",
+        "milestones",
+        "checkpoints",
+        "components",
+        "functions",
+        "sprints",
+        "todos",
+        "repository_inventory",
+        "repository_delivery_plans",
+    ):
         records = document.get(key)
         if not isinstance(records, list):
             continue
@@ -63,17 +83,26 @@ def validate(document: object, schema: dict) -> list[str]:
         if isinstance(inventory, list) and census.get("total") != len(inventory):
             errors.append("repository_census.total does not match repository_inventory length")
         if isinstance(inventory, list):
-            active = sum(1 for x in inventory if isinstance(x, dict) and x.get("repository_state") == "ACTIVE")
-            archived = sum(1 for x in inventory if isinstance(x, dict) and x.get("repository_state") == "ARCHIVED")
+            active = sum(
+                1
+                for x in inventory
+                if isinstance(x, dict) and x.get("repository_state") == "ACTIVE"
+            )
+            archived = sum(
+                1
+                for x in inventory
+                if isinstance(x, dict) and x.get("repository_state") == "ARCHIVED"
+            )
             if active != census.get("active") or archived != census.get("archived"):
                 errors.append("repository_census active/archived counts do not match inventory")
     return errors
+
 
 def main() -> int:
     try:
         document = json.loads(REGISTRY.read_text(encoding="utf-8"))
         schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         print(f"FAIL-CLOSED: cannot load registry/schema: {exc}", file=sys.stderr)
         return 2
     errors = validate(document, schema)
@@ -99,8 +128,11 @@ def main() -> int:
         print("\n".join(errors), file=sys.stderr)
         return 1
     print("PASS: DELIVERY_REGISTRY.json matches Draft 2020-12 schema and semantic invariants")
-    print(f"repositories={len(document['repository_inventory'])}; plans={len(document['repository_delivery_plans'])}; components={len(document['components'])}; functions={len(document['functions'])}")
+    print(
+        f"repositories={len(document['repository_inventory'])}; plans={len(document['repository_delivery_plans'])}; components={len(document['components'])}; functions={len(document['functions'])}"
+    )
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

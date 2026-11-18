@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-030
   title: "Automated Repository Health & Compliance Standard"
@@ -17,7 +18,7 @@ standard:
   dependencies:
     - ATC-STD-000
     - ATC-STD-018
-----
+---
 
 # ATC-STD-030 — Automated Repository Health & Compliance Standard (v1.0.0, APPROVED)
 

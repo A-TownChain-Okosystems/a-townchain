@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-026
   title: "Security Regression Prevention Standard"
@@ -19,7 +20,7 @@ standard:
     - ATC-STD-018
     - ATC-STD-020
     - ATC-STD-022
-----
+---
 
 # ATC-STD-026 — Security Regression Prevention (v1.0.0, APPROVED)
 

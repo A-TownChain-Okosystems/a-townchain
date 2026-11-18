@@ -3,31 +3,39 @@
 # AI Development Instructions
 
 ## Repository
+
 <repo-name>
 
 ## Purpose
+
 <ein-satz-zweck>
 
 ## Required Standards
+
 - ATC-STD-000
 - <weitere normative Standards dieses Repos>
 
 ## Architecture
+
 See: docs/ARCHITECTURE.md
 
 ## Build
+
 <build-kommando>
 
 ## Test
+
 <test-kommando>
 
 ## Forbidden
+
 - Modify generated files manually
 - Bypass tests
 - Merge directly into main
 - Change protocol behavior without specification update
 
 ## Required Before Completion
+
 - Code updated
 - Tests updated
 - Documentation checked

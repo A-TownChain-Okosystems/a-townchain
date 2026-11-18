@@ -41,9 +41,6 @@ Jeder Contract MUSS definieren: contract_id (ATC-SC-<KATEGORIE>-NNN), name, vers
 
 Zusaetzlich MUSS jeder Contract referenzieren: source_repository, contract_path, commit, compiler, compiler_version, optimization, audit_status, deployment_date, deployment_address — damit jeder Contract eindeutig mit Code → Repository → Commit → Deployment verbunden ist.
 
-
-
-
 ## 3. Deterministische Identifikator-Generierung (REQ-SC-059)
 
 Die contract_id MUSS nach dem Schema ATC-SC-<KATEGORIE>-NNN gebildet werden und darf sich während des gesamten Lebenszyklus des Contracts nicht ändern. Bei Vererbung oder Modulstruktur MUSS jedes separat deployte Bytecode-Artefakt eine eigene eindeutige Identität besitzen.

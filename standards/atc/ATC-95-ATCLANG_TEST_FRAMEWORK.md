@@ -16,7 +16,7 @@ ATC-95 spezifiziert das offizielle Test-Framework für ATCLang. Es definiert Syn
 
 ### Aktuelle Implementierung
 
-```
+```text
 tests/
 ├── test_atclang.py        — 53 Tests (Lexer, VM, Integration) ✅
 ├── test_atclang_v03.py    — 7 Tests (v0.3 Features) ✅
@@ -160,7 +160,7 @@ atc test --coverage         # Mit Coverage-Report
 
 ## 8. Test-Datei-Struktur
 
-```
+```text
 tests/
 ├── conftest.py                    — pytest Konfiguration, sys.path
 ├── test_atclang.py                — Haupt-Test-Suite (53 Tests)
@@ -183,6 +183,7 @@ tests/
 ### run_source(source: str) → (result, vm)
 
 Kompiliert ATCLang-Source-Code, registriert Functions und führt aus.
+
 - Top-Level Expressions: Ergebnis bleibt auf Stack
 - Contract Functions: Erste Function wird ausgeführt
 - Function Params: Korrekt aus CompiledModule extrahiert

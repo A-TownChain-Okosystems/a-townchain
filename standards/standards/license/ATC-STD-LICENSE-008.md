@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-LICENSE-008
   title: "Trademark Separation Standard"
@@ -21,7 +22,7 @@ standard:
   related_standards: []
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-LICENSE-008 — Trademark Separation Standard (v1.1.0, APPROVED)
 

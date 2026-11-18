@@ -74,6 +74,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 5. Verbindliche Eskalationsregeln
 
 1. Bei Eintritt eines definierten Eskalationsgrundes MUSS innerhalb von maximal 2 Stunden ein formeller ESC-Record (ESC-NNNN) angelegt werden.
@@ -107,9 +108,11 @@ Unbehandelte Eskalationen können kritische Sicherheitsrisiken ungelöst lassen.
 ## 10. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-013**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-AAS-017**: Referenzierter Standard im ATC-Regelwerk

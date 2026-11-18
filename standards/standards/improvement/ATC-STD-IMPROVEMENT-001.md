@@ -232,6 +232,7 @@ ATC-STD-IMPROVEMENT-002 Continuous Improvement · 003 Root Cause Improvement · 
 ## Changelog
 
 ### 1.0.0 — 2026-09-08
+
 - Initial Release (Owner-Entwurf Michael Wroblewski 18:14, harmonisiert mit BUG-001/005, AUDIT-001, UPDATE-001, REPO-DISCOVERY-001..010, AI-DECISION-001, ATC-STD-999, CI-001)
 - 17 normative Anforderungen (REQ-IMP-001..017), 5 COM-IMP-Gates
 - ATC Improvement Principle als Grundsatz; 13-stufiger Zyklus; 14 Quellen; 10 Klassen; P0-P3 + 9 Impact-Dimensionen; ATC-IMP-NNNNNN-Pflichtdatensatz; Root-Cause-Pflicht; Regression Prevention; Verbesserungsregel (lokal → systemweit → Standard → automatisierter Check); Standards-Selbstverbesserung; Automatisierungsleiter (6 Stufen); KI-Agenten-Regel (13 Schritte); 8 Regressions-Dimensionen; Verbesserungskette; DoD (11 Nachweispunkte); zentrales Improvement Board (9 Zustände, registry/improvements.yaml); org-weite Anwendung (26 Repos, Registry-SSOT + E-Stage)

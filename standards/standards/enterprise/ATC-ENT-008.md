@@ -34,7 +34,7 @@ Nicht-Gilt: normative Standardtexte (Änderungen via SCR, ATC-STD-000 §19-33); 
 
 ## 1. Organisationshierarchie (verbindlich)
 
-```
+```text
 A-TownChain Ökosystems
 ├── Executive / Governance
 ├── Architecture
@@ -95,6 +95,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 4. Ergänzende Organisationsregeln
 
 1. Jede Organisationseinheit MUSS in registry/org-units.yaml mit einem zugewiesenen Owner (ROLE-XXX) und einem Deputy eingetragen sein.
@@ -128,9 +129,11 @@ Klare Organisationsstrukturen verhindern ungeklärte Zuständigkeiten und Sicher
 ## 9. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-ENT-002**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-ENT-004**: Referenzierter Standard im ATC-Regelwerk

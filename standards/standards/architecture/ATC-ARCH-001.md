@@ -28,17 +28,19 @@ KAI-OS ist der **übergeordnete Architekturbegriff** für den gesamten
 kryptografisch abgesicherten AI-OS-Stack.
 
 **KAI-OS ist:**
+
 - eine Architekturbezeichnung (Systemplattform),
 - der Systembegriff, unter dem die sechs Kerntechnologien zusammengehören.
 
 **KAI-OS ist NICHT:**
+
 - ein separates Betriebssystem (neben GlobusOS),
 - ein Repository,
 - ein einzelnes Produkt.
 
 ## 2. Systemarchitektur
 
-```
+```text
 KAI-OS — Kryptografisches AI Operating System
         │
         ┌────────────────┼────────────────┐
@@ -73,7 +75,7 @@ Integrationsschicht des Ökosystems (L7 — Integration/Orchestrierung).
 
 ## 4. Architektur-Reihenfolge (Kanonische Nummerierung)
 
-```
+```text
 KAI-OS
 ├── 1. ATCLang       — Programmiersprache
 ├── 2. ShivaCore     — Capability-/Security-Kernel

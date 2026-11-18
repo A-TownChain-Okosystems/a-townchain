@@ -12,8 +12,6 @@ import importlib.util
 import sys
 from pathlib import Path
 
-import pytest
-
 TOOL = Path(__file__).resolve().parents[1] / "check_contract_registry.py"
 
 
@@ -28,7 +26,9 @@ def load_tool():
 GATE = load_tool()
 
 
-def make_tree(tmp_path: Path, *, status: str = "development", network=None, extra_entry: str = "") -> Path:
+def make_tree(
+    tmp_path: Path, *, status: str = "development", network=None, extra_entry: str = ""
+) -> Path:
     base = tmp_path / "apps/atc-contracts"
     base.mkdir(parents=True)
     src = base / "token.atc"
@@ -52,9 +52,7 @@ def make_tree(tmp_path: Path, *, status: str = "development", network=None, extr
         "    source_repository: A-TownChain-Okosystems/a-townchain\n"
         "    contract_path: apps/atc-contracts/token.atc\n"
         f"    source_sha256: {digest}\n"
-        f"{extra_entry}"
-        + (f"    network: {network}\n" if network else "")
-        + "exclusions:\n"
+        f"{extra_entry}" + (f"    network: {network}\n" if network else "") + "exclusions:\n"
         '  - "apps/atc-contracts/modules/**"\n',
         encoding="utf-8",
     )
@@ -91,7 +89,7 @@ def test_sauberer_bestand_besteht():
 
 def test_a1_pflichtfeld_fehlt(tmp_path):
     reg = make_tree(tmp_path)
-    text = reg.read_text().replace('    owner: ATC-Governance\n', "")
+    text = reg.read_text().replace("    owner: ATC-Governance\n", "")
     reg.write_text(text)
     findings, _ = run(tmp_path, reg, deployments(tmp_path))
     assert "A1" in gates(findings)
@@ -140,7 +138,10 @@ def test_a5_deployed_ohne_netz_und_record(tmp_path):
 
 def test_a5_deployed_mit_record_besteht(tmp_path):
     reg = make_tree(tmp_path, status="deployed", network="devnet")
-    deps = deployments(tmp_path, "deployments:\n  - contract_id: ATC-SC-TOKEN-001\n    network: devnet\n")
+    deps = deployments(
+        tmp_path,
+        "deployments:\n  - contract_id: ATC-SC-TOKEN-001\n    network: devnet\n",
+    )
     findings, _ = run(tmp_path, reg, deps)
     assert findings == [], f"unerwartet: {findings}"
 
@@ -209,8 +210,9 @@ def fake_atc_abi(tmp_path: Path, digest: str = ABI) -> Path:
     """Stub, der `abi --digest` mit festem Hash beantwortet."""
     binary = tmp_path / "atc_abi"
     binary.write_text(
-        "#!/bin/sh\n"
-        'if [ "$1" = "abi" ]; then printf \'%s  "%s"  1\\n\'; exit 0; fi\n'.replace("%s", digest, 1)
+        '#!/bin/sh\nif [ "$1" = "abi" ]; then printf \'%s  "%s"  1\\n\'; exit 0; fi\n'.replace(
+            "%s", digest, 1
+        )
         + "exit 0\n",
         encoding="utf-8",
     )
@@ -243,7 +245,8 @@ def test_a9_archivierter_eintrag_traegt_keine_abi(tmp_path):
     src.write_text("// ARCHIVED\n", encoding="utf-8")
     findings, _ = run(tmp_path, reg, deployments(tmp_path), fake_atc_abi(tmp_path))
     assert any(
-        f["gate"] == "A9" and "archivierter Eintrag traegt abi_sha256" in f["detail"] for f in findings
+        f["gate"] == "A9" and "archivierter Eintrag traegt abi_sha256" in f["detail"]
+        for f in findings
     )
 
 

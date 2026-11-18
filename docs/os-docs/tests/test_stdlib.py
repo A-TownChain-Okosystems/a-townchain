@@ -2,17 +2,20 @@
 """ATCLang Standard Library Tests — ATC-94
 Tests für alle 6 Module: crypto, collections, io, math, encoding, primitives
 """
-import unittest
-import sys
 import os
+import sys
+import unittest
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from atclang.stdlib.crypto import ATCCrypto
 from atclang.stdlib.collections import ATCCollections
+from atclang.stdlib.crypto import ATCCrypto
+from atclang.stdlib.encoding import ATCEncoding
 from atclang.stdlib.io import ATCIO
 from atclang.stdlib.math import ATCMath
-from atclang.stdlib.encoding import ATCEncoding
-from atclang.stdlib.primitives import ATCPrimitives, ATCAddress, ATCHash, ATCTransaction, ATCBlockHeader
+from atclang.stdlib.primitives import (
+    ATCPrimitives,
+)
 
 
 class TestATCCrypto(unittest.TestCase):
@@ -285,7 +288,6 @@ class TestATCPrimitives(unittest.TestCase):
 
     def test_json_tx_roundtrip(self):
         """Integration: Transaction → JSON → Transaction"""
-        import json
         tx = ATCPrimitives.new_transaction("ATCa", "ATCb", 500, nonce=1)
         tx.compute_hash()
         json_str = ATCEncoding.json_encode(tx.to_dict())

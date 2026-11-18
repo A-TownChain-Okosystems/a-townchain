@@ -34,6 +34,7 @@ These refs were recorded from the organization census on 2026-10-11. Recheck the
 The source comparison found the standalone wallet uses an Ed25519 transaction signer and `u64` balances, while the canonical component uses secp256k1 for transactions, `u128` amounts, and has more developed transaction/balance code. This aligns the canonical component more closely with the project's stated TX-v2 and amount-width requirements.
 
 Required follow-up:
+
 - Verify TX-v2 domain separation, RFC6979/SHA-256, low-S, compressed SEC1 public key, compact signature encoding, and rejection of legacy signing domains.
 - Run wallet unit, property/fuzz, serialization-vector, and integration tests at the exact target SHA.
 - Compare all standalone files and commit history against the canonical subtree before deciding archive status.
@@ -43,6 +44,7 @@ Required follow-up:
 The source comparison found common files including `economics.rs`, `hash.rs`, and `lib.rs`, with implementation differences in `poh.rs` and `selection.rs`. The canonical selection path uses the intended hash path and `u128` stake values; the standalone path retains an older PoH/FNV route and `u64` stake values.
 
 Required follow-up:
+
 - Reconcile behavior against the normative consensus specification; do not infer consensus correctness from file presence or type widths.
 - Add/verify deterministic cross-platform vectors, adversarial validator-selection tests, overflow handling, and replay/reorg edge cases.
 - Do not label consensus production-ready without a frozen spec and exact-SHA evidence.
@@ -52,6 +54,7 @@ Required follow-up:
 The source comparison found `vm.rs`, `lib.rs`, and `main.rs` identical, with differences in `assembler.rs`, `context.rs`, and `ops.rs`. The canonical assembler has additional tests and explicit overflow checks. The standalone context retains the legacy `ATC-TX-DOMAIN` string, which conflicts with the specified `ATC-TX-DOMAIN-V2` transaction domain if that path is used for transaction signing.
 
 Required follow-up:
+
 - Review every changed hunk in `assembler.rs`, `context.rs`, and `ops.rs`.
 - Verify malformed-bytecode rejection, ATCB magic/version/count encoding, operation/stack/storage limits, gas behavior, and deterministic execution.
 - Check whether ATCB vs ATC1 format drift remains; resolve only against the normative spec.
@@ -62,6 +65,7 @@ Required follow-up:
 The architecture ownership rule places the active kernel under `globus-os/modules/atc-shivacore/kernel/`; `atc-shivacore` is specification/governance/support, not a second kernel implementation.
 
 Required follow-up:
+
 - Verify the kernel tree against the no_std capability-microkernel boundary.
 - Require exact-SHA Rust checks/tests, boot evidence, memory/VMM lifecycle tests, IPC/capability isolation tests, and the outstanding secure-boot/ACPI evidence before any production claim.
 - Search for executable kernel code duplicated in the support repository and record exact path/blob evidence before removal.

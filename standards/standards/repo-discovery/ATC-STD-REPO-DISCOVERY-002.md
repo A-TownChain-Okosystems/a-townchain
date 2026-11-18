@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-REPO-DISCOVERY-002
   title: "Change Detection"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-REPO-DISCOVERY-002 — Change Detection (v1.0.0, CANDIDATE)
 
@@ -26,15 +27,17 @@ standard:
 > Kein neuer Repository-Inhalt darf unbewertet bleiben.
 
 ## Zweck
+
 Jede inhaltliche Veraenderung erhaelt einen Change Type — nichts bleibt unklassifiziert.
 
 ## Change Types
+
 NEW · MODIFIED · DELETED · RENAMED · MOVED · GENERATED · DEPENDENCY_CHANGED ·
 INTERFACE_CHANGED · CONFIGURATION_CHANGED · SECURITY_RELEVANT.
 
 ## Pflichtpruefung nach jedem relevanten Merge
 
-```
+```text
 MERGE → DISCOVERY SCAN → NEW CONTENT?
   ├─ NO  → PASS
   └─ YES → CLASSIFY → IMPACT ANALYSIS (RD-006) → STANDARDS CHECK (RD-003)
@@ -52,6 +55,7 @@ MERGE → DISCOVERY SCAN → NEW CONTENT?
 | REQ-RD-023 | GENERATED-Inhalte werden erkannt (keine Pseudo-Discovery von Generaten) |
 
 ## Implementierungsstatus
+
 IMPLEMENTED (erster Zyklus) — Evidence: scan.py-Diff (NEW/MODIFIED/DELETED).
 
 ## Security Considerations
@@ -59,7 +63,9 @@ IMPLEMENTED (erster Zyklus) — Evidence: scan.py-Diff (NEW/MODIFIED/DELETED).
 Change-Reports enthalten Pfade und Typen, niemals Dateiinhalte mit potenziellen Zugangsdaten.
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0046) |
 
 ## References
+
 NORMATIV: RD-001, BUG-004 (Merge-Gate), REPO-MAINT-001 §12 · INFORMATIVE: SCR-0046

@@ -42,7 +42,7 @@ laufenden Netz (NET-006), Security-Anforderungen als solche (NET-007).
 Die Versionierung allein bestimmt nicht den Netzwerkstatus; der Netzwerkname ist eine
 eigene Release-Dimension:
 
-```
+```text
 NETWORK  = DEVNET | TESTNET | MAINNET
 MATURITY = ALPHA  | BETA    | STABLE   (+ RELEASE CANDIDATE als Gate-Zustand vor Mainnet)
 ```
@@ -61,7 +61,7 @@ Alpha und Beta sind NIE produktionsfaehig, ungeachtet der Umgebung (REQ-NET-083)
 
 ## 5. Versionslogik
 
-```
+```text
 DEVNET:  v0.x.0-alpha.1, v0.x.0-alpha.2, …  ->  v0.x.0-beta.1, v0.x.0-beta.2, …
 TESTNET: v0.x.0-alpha.1, …                  ->  v0.x.0-beta.1, v0.x.0-beta.2, …
 MAINNET: v1.0.0, v1.1.0, v1.2.0, … (nur STABLE)
@@ -73,7 +73,7 @@ MAINNET: v1.0.0, v1.1.0, v1.2.0, … (nur STABLE)
 
 ## 6. Release Gates (6, fail-closed)
 
-```
+```text
 DEVNET ALPHA -> [GATE-DEV-ALPHA] -> DEVNET BETA -> [GATE-DEV-BETA] -> TESTNET ALPHA
  -> [GATE-TEST-ALPHA] -> TESTNET BETA -> [GATE-TEST-BETA] -> MAINNET RELEASE CANDIDATE
  -> [GATE-MAINNET-RC] -> MAINNET v1.0.0 STABLE [GATE-MAINNET-STABLE]

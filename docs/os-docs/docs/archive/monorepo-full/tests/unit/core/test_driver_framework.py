@@ -3,16 +3,20 @@
 Tests für ATCLang Treiber Layer (Driver Framework)
 ATC-22+ | Sprint 3.1
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from atclang.runtime.driver_framework import (
-    DriverRegistry, DriverState, DeviceClass, BusType,
-    IoctlCode, PowerState, OpenHandle,
-)
 import pytest
-
+from atclang.runtime.driver_framework import (
+    BusType,
+    DeviceClass,
+    DriverRegistry,
+    DriverState,
+    IoctlCode,
+    PowerState,
+)
 
 # ════════════════════════════════════════════════════════════════
 #  DRIVER REGISTRATION

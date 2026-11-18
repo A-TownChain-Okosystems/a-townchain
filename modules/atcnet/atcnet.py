@@ -109,7 +109,7 @@ class ATCMessage:
                 timestamp=header["ts"],
                 msg_id=header["id"],
             )
-        except Exception:
+        except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             return None
 
 
@@ -290,7 +290,7 @@ class ATCNetNode:
             self._sock.sendto(data, addr)
             self.stats["sent"] += 1
             return True
-        except Exception:
+        except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             return False
 
     def broadcast(self, msg_type: MsgType, payload: bytes, ttl: int = TTL_DEFAULT):
@@ -339,7 +339,7 @@ class ATCNetNode:
                     self.stats["dropped"] += 1
             except TimeoutError:
                 continue
-            except Exception:
+            except Exception:  # noqa: BLE001, S112 — bewusst: Grenzschicht darf fremde Fehler nicht eskalieren
                 continue
 
     def _dispatch(self, msg: ATCMessage, from_addr: tuple):
@@ -368,7 +368,7 @@ class ATCNetNode:
         for handler in handlers:
             try:
                 handler(msg, from_addr)
-            except Exception:
+            except Exception:  # noqa: BLE001, S110 — bewusst: Handler-Fehler werden isoliert
                 pass
 
         # Weiterleiten wenn Broadcast und TTL > 0
@@ -412,7 +412,7 @@ class ATCNetNode:
             self.routing.add_node(node)
             # Mit eigenen Peers antworten
             self._send_peers(addr, msg.from_node)
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
             pass
 
     def _handle_get_peers(self, msg: ATCMessage, addr: tuple):
@@ -444,7 +444,7 @@ class ATCNetNode:
                     last_seen=int(time.time() * 1000),
                 )
                 self.routing.add_node(node)
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
             pass
 
     def _handle_find_node(self, msg: ATCMessage, addr: tuple):

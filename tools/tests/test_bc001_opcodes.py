@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import check_bc001_opcodes as bc  # noqa: E402
+import check_bc001_opcodes as bc
 
 # ---------------------------------------------------------------- Hilfsmittel
 
@@ -54,7 +54,12 @@ def test_19_opcodes_vollstaendig() -> None:
     tabelle = bc.spec_tabelle()
     assert len(tabelle) == 19
     assert bc.spec_metadaten()["declared_opcode_count"] == 19
-    assert [z["name"] for z in tabelle][:4] == ["ConstI64", "LoadLocal", "StoreLocal", "Add"]
+    assert [z["name"] for z in tabelle][:4] == [
+        "ConstI64",
+        "LoadLocal",
+        "StoreLocal",
+        "Add",
+    ]
     assert [z["name"] for z in tabelle][-3:] == ["Jump", "JumpIfFalse", "Pop"]
     assert [z["opcode"] for z in tabelle] == [
         "0x01",

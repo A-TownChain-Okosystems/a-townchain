@@ -11,6 +11,7 @@ Gates (exit 1 on any violation):
                    source bindings, no duplicate registry ids
 Fail-closed: a registry that hides an unaccounted candidate is invalid.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -32,7 +33,7 @@ STATUSES = {
 
 
 def expected_id(repository: str, source_path: str, kind: str, symbol: str) -> str:
-    digest = hashlib.sha256(f"{repository}|{source_path}|{kind}|{symbol}".encode("utf-8")).hexdigest()
+    digest = hashlib.sha256(f"{repository}|{source_path}|{kind}|{symbol}".encode()).hexdigest()
     return f"RTS-{digest[:12]}"
 
 
@@ -57,14 +58,26 @@ def validate(registry: dict, census: dict, build_manifest: dict) -> tuple[list[s
         if count > 1:
             errors.append(f"duplicate registry id {value} ({count} entries)")
     for index, entry in enumerate(entries):
-        for field in ("id", "repository", "source_path", "kind", "symbol", "census_source_sha", "status"):
+        for field in (
+            "id",
+            "repository",
+            "source_path",
+            "kind",
+            "symbol",
+            "census_source_sha",
+            "status",
+        ):
             if not entry.get(field):
                 errors.append(f"entries[{index}] missing {field}")
         if not ID_RE.fullmatch(str(entry.get("id"))):
             errors.append(f"entries[{index}] id format violation: {entry.get('id')}")
             continue
-        derived = expected_id(entry.get("repository", ""), entry.get("source_path", ""),
-                              entry.get("kind", ""), entry.get("symbol", ""))
+        derived = expected_id(
+            entry.get("repository", ""),
+            entry.get("source_path", ""),
+            entry.get("kind", ""),
+            entry.get("symbol", ""),
+        )
         if derived != entry.get("id"):
             errors.append(f"entries[{index}] id is not content-derived (expected {derived})")
         if entry.get("status") not in STATUSES:
@@ -89,7 +102,8 @@ def validate(registry: dict, census: dict, build_manifest: dict) -> tuple[list[s
             errors.append(f"{repository}: entry/accounting drift")
         if declared != total:
             errors.append(
-                f"{repository}: classification total {declared} != census candidates {total}")
+                f"{repository}: classification total {declared} != census candidates {total}"
+            )
     for repository in per_repo_summary:
         if repository not in census_per_repo:
             errors.append(f"{repository}: classified but absent from census")
@@ -115,8 +129,10 @@ def validate(registry: dict, census: dict, build_manifest: dict) -> tuple[list[s
     if findings.get("duplicate_function_ids"):
         errors.append(f"duplicate catalog function ids: {findings['duplicate_function_ids']}")
     if findings.get("duplicate_source_bindings"):
-        errors.append(f"duplicate non-delegated source bindings: "
-                      f"{[(b['repository'], b['source_path'], b['symbol']) for b in findings['duplicate_source_bindings']]}")
+        errors.append(
+            f"duplicate non-delegated source bindings: "
+            f"{[(b['repository'], b['source_path'], b['symbol']) for b in findings['duplicate_source_bindings']]}"
+        )
 
     return errors, {
         "entries": len(entries),
@@ -124,7 +140,9 @@ def validate(registry: dict, census: dict, build_manifest: dict) -> tuple[list[s
         "gates": {
             "R1_schema": "PASS" if not any("schema" in e for e in errors) else "FAIL",
             "R2_id_rules": "PASS" if not any("id" in e for e in errors) else "FAIL",
-            "R3_accounting": "PASS" if not any("accounting" in e or "classification" in e or "absent" in e for e in errors) else "FAIL",
+            "R3_accounting": "PASS"
+            if not any("accounting" in e or "classification" in e or "absent" in e for e in errors)
+            else "FAIL",
             "R4_ssot": "PASS" if not any("SSOT" in e or "ssot" in e for e in errors) else "FAIL",
             "R5_duplicates": "PASS" if not any("duplicate" in e for e in errors) else "FAIL",
         },

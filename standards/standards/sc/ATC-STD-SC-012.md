@@ -41,9 +41,6 @@ NFT-Contracts MUESSEN eindeutige Token-IDs, Ownership-Transfer, Approvals und Me
 
 Collections SOLLEN Royalty-Mechanismen und Creator-Attribute unterstuetzen; Marketplace-Integration (SC-MARKET) MUSS ueber definierte Interfaces laufen (ATC-STD-204).
 
-
-
-
 ## 3. EIP-2981 Royalty Schnittstelle (REQ-SC-095)
 
 NFT-Contracts MUESSEN den EIP-2981 Standard zur On-Chain-Abfrage von Lizenzgebühren (Royalties) unterstützen.

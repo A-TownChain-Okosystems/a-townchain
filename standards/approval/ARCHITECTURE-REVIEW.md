@@ -14,6 +14,7 @@
 | A8 | Meta-Compliance (§35): Verfassung darf nicht durch untergeordnete Standards definiert werden — Kreisbildung verhindert, Meta-Governance unabhaengig | PASS |
 
 **Findings (keine Blocker):**
+
 - **A-F01 (MINOR):** Registry-Naming-Dualitaet (STANDARDS_REGISTRY.md Legacy-Serie vs. standards.yaml STD-Serie) — Empfehlung: Zuständigkeits-Rename per SCR.
 
 **URTEIL: PASS** — 0 Blocker, 1 MINOR.
@@ -26,6 +27,5 @@ Gegenstand: ATC-STD-000 v1.2.0 — neu §37 ID-Allokationsprozess (SCR-0001,
 REQ-STD-002) und §38 Security Considerations (F-004, REQ-STD-003).
 v1.1.0 (APPROVED) unveraendert; beide Absaetze rein additiv, keine
 Aenderung bestehender Abschnitte.
-
 
 **Ergebnis: PASS.** Additive Erweiterung ohne Bruch: Nummerierung fortlaufend (37/38 nach 36), SSOT-Prinzip unangetastet, Lifecycle-Modell unveraendert. MINOR, nicht-breaking.

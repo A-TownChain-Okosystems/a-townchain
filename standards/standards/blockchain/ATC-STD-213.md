@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-213
   title: "Emission Standard"
@@ -25,7 +26,7 @@ standard:
     - ATC-STD-NET-003
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-213 — Emission Standard (v1.0.0, APPROVED)
 
@@ -44,7 +45,6 @@ Verifikationspflichten sowie Security-Betrachtungen.
 Schluesselwoerter: MUSS/MUSS NICHT, SOLLTE, DARF/KANN — RFC 2119 (MUST/SHOULD/MAY)
 gemaess ATC-STD-000 §10.
 
-
 ## §1 Gegenstand & Verortung
 
 Der Freisetzungsplan des Tokens: Block-Rewards, Epoche-/Halving-Zeitplaene,
@@ -59,7 +59,6 @@ sind die wichtigste Anwendung; die Supply-Invarianten liegen in ATC-STD-212.
 4. **KR-4:** Reward-Berechnungen MUESSEN deterministisch runden und Ueberlauf-Verhalten definieren (familienweit KR-1, FAM-12).
 5. **KR-5:** Emissionsparameter MUESSEN maschinenlesbar in der Parameter-Registry gefuehrt werden (Kopplung ATC-STD-215 KR-2).
 6. **KR-6:** Aenderungen an der Kurve SOLLEN auf Testnet vollstaendig simuliert sein (GATE-012) und benoetigen Governance-Approval (SHOULD mit AUD-Record).
-
 
 ## §3 Schnittstellen & Kopplungen
 

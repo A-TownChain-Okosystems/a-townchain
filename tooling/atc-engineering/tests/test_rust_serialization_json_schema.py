@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Validate real Rust serializer output against the committed JSON Schemas."""
+
 import json
 import subprocess
 import sys

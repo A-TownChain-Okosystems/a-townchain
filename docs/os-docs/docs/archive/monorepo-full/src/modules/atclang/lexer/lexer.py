@@ -5,10 +5,9 @@ Eigene Programmiersprache für das A-TownChain Ökosystem
 Erweitert: Alle Keywords, Typen, Operatoren für atcos_main.atc
 """
 
-from enum import Enum, auto
 from dataclasses import dataclass
+from enum import Enum, auto
 from typing import List, Optional
-
 
 # ══════════════════════════════════════════════════════════
 #  TOKEN-TYPEN

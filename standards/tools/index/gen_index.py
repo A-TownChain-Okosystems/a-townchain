@@ -175,7 +175,7 @@ ai/agent.yaml (Agenten-Bindung).
 *ATC-STD-INDEX-001 v1.0.0 · generiert {today} · tools/index/gen_index.py · SCR-0038 · Aurora (Superagent)*
 '''
 
-open(os.path.join(ROOT, "INDEX.md"), "w", encoding="utf-8").write(IDX)
+open(os.path.join(ROOT, "INDEX.md"), "w", encoding="utf-8").write(IDX)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 print(
     f"INDEX.md generiert: {len(IDX.splitlines())} Zeilen, {len(std)} Standards, {len(fams)} Familien"
 )

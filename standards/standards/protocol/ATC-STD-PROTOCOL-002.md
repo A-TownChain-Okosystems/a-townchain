@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-PROTOCOL-002
   title: "ATC Protocol Conformance- & Interoperabilitäts-Test-Standard — verbindliche Testpyramide je Protokollfamilie: CONF-Pläne, Testkategorien, Konferenz-Stufen, Konformance-Registry, active-Gate"
@@ -29,7 +30,7 @@ standard:
     - ATC-STD-BUG-005
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-PROTOCOL-002 — Conformance- & Interoperabilitäts-Tests (v1.0.0, APPROVED)
 

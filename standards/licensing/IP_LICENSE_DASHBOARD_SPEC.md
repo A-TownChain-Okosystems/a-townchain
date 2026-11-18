@@ -1,4 +1,5 @@
 # IP & License Registry Dashboard — GlobusOS
+
 ## Spezifikation fuer das Lizenz-Management-Interface
 
 > **Version:** 1.0.0 | **Datum:** 06.07.2026
@@ -29,7 +30,8 @@ sehen, welche Einnahmen ihr geschuetzter Code generiert.
 ## 3. Dashboard-Module
 
 ### 3.1 License Management
-```
+
+```text
 LICENSE MANAGEMENT
 ├── Code Registration
 │   ├── Upload Code -> SHA-256 Hash
@@ -50,7 +52,8 @@ LICENSE MANAGEMENT
 ```
 
 ### 3.2 Royalty Monitor
-```
+
+```text
 ROYALTY MONITOR (Echtzeit)
 ├── Live Earnings Feed
 │   ├── Incoming royalties (websocket)
@@ -68,7 +71,8 @@ ROYALTY MONITOR (Echtzeit)
 ```
 
 ### 3.3 Hardware & Node Status (ATC-LIC)
-```
+
+```text
 HARDWARE & NODE STATUS
 ├── Node Overview
 │   ├── Node type (Validator / Compute / Storage / Gateway)
@@ -86,7 +90,8 @@ HARDWARE & NODE STATUS
 ```
 
 ### 3.4 Compliance Report (BaFin)
-```
+
+```text
 COMPLIANCE REPORT
 ├── Audit Export
 │   ├── Date range selector
@@ -103,7 +108,8 @@ COMPLIANCE REPORT
 ```
 
 ### 3.5 Patent & IP Registry
-```
+
+```text
 PATENT & IP REGISTRY
 ├── Registered Patents
 │   ├── Patent ID
@@ -122,12 +128,14 @@ PATENT & IP REGISTRY
 ## 4. UI/UX Spezifikation
 
 ### Design-Prinzipien
+
 - **Neon/Dark Theme** — A-TownChain Corporate Identity
-- ** Echtzeit-Updates** — WebSocket fuer Live-Royalties
+- **Echtzeit-Updates** — WebSocket fuer Live-Royalties
 - **Responsive** — Desktop + Tablet + Mobile
 - **Accessible** — Standard HTML/Web, keine proprietären Plugins
 
 ### Key Views
+
 | View | Beschreibung | User |
 |------|-------------|------|
 | Dashboard Home | Einnahmen-Overview, Quick Stats | Developer |
@@ -138,7 +146,9 @@ PATENT & IP REGISTRY
 | IP Registry | Patente, Code-Ownership | Developer, Admin |
 
 ### GlobusOS Integration
+
 Das Dashboard ist ein Module innerhalb von GlobusOS und nutzt:
+
 - GlobusOS Authentication (ATC-03 DID)
 - GlobusOS Theme System
 - GlobusOS Notification Center

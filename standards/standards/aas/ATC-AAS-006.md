@@ -39,7 +39,7 @@ Der Agent bindet jede Aussage an die niedrigste verfügbare, verifizierte Ebene.
 
 ## 2. Wahrheits-Priorität (bei Konkurrenz)
 
-```
+```text
 ATC Standards > Repository Governance > Architecture > Requirements >
 Issue > Task > Existing Code > Agent Assumption
 ```
@@ -71,6 +71,7 @@ Agenten-spezifisch: Agent-Identitaet via AGENT_MANIFEST verifizierbar; Permissio
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-201..203, ATC-AAS-001 · INFORMATIVE: AGENT_MANIFEST.md v3.1.7, Registry-Kategorie aas
+
 ## 4. Ergänzende Verbindliche Betriebs- und Governance-Regeln
 
 1. Bei widersprüchlichen Informationen aus verschiedenen Kontextquellen MUSS die definierte Wahrheits-Priorität strikt angewendet werden.

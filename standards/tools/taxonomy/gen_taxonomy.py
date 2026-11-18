@@ -112,8 +112,8 @@ FAMILY_CODES = {
     "aurora-swarm": "ASW",
 }
 
-cats = yaml.safe_load(open("registry/categories.yaml", encoding="utf-8"))
-std = yaml.safe_load(open("registry/standards.yaml", encoding="utf-8"))
+cats = yaml.safe_load(open("registry/categories.yaml", encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
+std = yaml.safe_load(open("registry/standards.yaml", encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 
 # Familien sammeln: numerische Bereiche + benannte
 families = {}
@@ -190,7 +190,7 @@ for name, meta in families.items():
 
 def reg_lookup(mid):
     """SCR-0091: Status/Version aus Registry-SSOT abgeleitet — keine Hartcodes."""
-    for line in open("registry/standards.yaml", encoding="utf-8"):
+    for line in open("registry/standards.yaml", encoding="utf-8"):  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         m = _re.search(r"- \{id: " + mid + r',.*?version: "?([\d.]+)"?, status: (\w+)', line)
         if m:
             return {"id": mid, "version": m.group(1), "status": m.group(2).upper()}

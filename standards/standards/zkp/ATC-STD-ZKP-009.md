@@ -52,14 +52,6 @@ ZKVM: ATCLang → ATCLang Compiler → ATC Bytecode → ZKVM → Execution Trace
 - **Metrik 2:** Parallelisierungseffizienz der Chunk-Beweise MUSS mindestens 85% erreichen.
 - **Metrik 3:** Decoder-Korrektheitsrate MUSS exakt 100% betragen.
 - **Metrik 4:** Speicher-Konsistenz-Prüfrate MUSS bei 100% liegen.
-
-
-## Metriken & Akzeptanzkriterien
-
-- **Metrik 1:** Maximal unterstützte Ausführungsschritte pro Trace MUSS 1.000.000.000 Schritte betragen.
-- **Metrik 2:** Parallelisierungseffizienz der Chunk-Beweise MUSS mindestens 85% erreichen.
-- **Metrik 3:** Decoder-Korrektheitsrate MUSS exakt 100% betragen.
-- **Metrik 4:** Speicher-Konsistenz-Prüfrate MUSS bei 100% liegen.
 - **Metrik 5:** Befehlsausführungsgeschwindigkeit der ZKVM MUSS kontinuierlich gemessen werden.
 
 ## Compliance & Verifikation
@@ -90,6 +82,7 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 ## References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard (Verfassung, v1.1.0 APPROVED)
 - ATC-STD-100
 - ATC-STD-201
@@ -99,5 +92,6 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 - ATC-STD-ZKP-010
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - AD-045 — ZKP-Layer-Festlegung (Repo atc-zkp, Standards-Serie)

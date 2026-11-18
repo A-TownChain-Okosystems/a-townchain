@@ -97,7 +97,7 @@ def scan(root, deny_unpinned=True):
                                 "manifest": str(p.relative_to(root)),
                             }
                         )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             errors.append(f"{p}: {e}")
     return out, errors
 
@@ -111,20 +111,32 @@ def fingerprint(nodes):
 
 
 def compare_nodes(base, head):
-    b, h = fingerprint(base), fingerprint(head)
-    added = sorted([h[k] for k in set(h) - set(b)], key=key)
-    removed = sorted([b[k] for k in set(b) - set(h)], key=key)
-    changed = []
-    for bv in b.values():
-        for x in h.values():
-            if (
-                x.get("ecosystem") == bv.get("ecosystem")
-                and x.get("name") == bv.get("name")
-                and x.get("version") != bv.get("version")
-                and key(x) not in b
-            ):
-                changed.append({"from": bv, "to": x})
-    return added, removed, changed
+    """Diff zweier Node-Listen: added/removed/changed nach (ecosystem, name)-Identitaet."""
+
+    def index(nodes):
+        out = {}
+        for n in nodes:
+            out.setdefault((n.get("ecosystem"), n.get("name")), []).append(n)
+        return out
+
+    b, h = index(base), index(head)
+    added, removed, changed = [], [], []
+    for ident, items in h.items():
+        if ident not in b:
+            added.extend(items)
+            continue
+        b_versions = {x.get("version") for x in b[ident]}
+        for x in items:
+            if x.get("version") not in b_versions:
+                changed.append({"from": b[ident][0], "to": x})
+    for ident, items in b.items():
+        if ident not in h:
+            removed.extend(items)
+    return (
+        sorted(added, key=key),
+        sorted(removed, key=key),
+        sorted(changed, key=lambda c: key(c["to"])),
+    )
 
 
 def graph(nodes, out):
@@ -173,7 +185,7 @@ def load_base():
         if d.get("schema") != "ATC-DEP-GRAPH-1":
             return [], ref, ["invalid base graph schema"]
         return d.get("nodes", []), ref, []
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         return [], ref, [f"invalid base graph: {e}"]
 
 
@@ -216,6 +228,23 @@ def validate_advisory_payload(payload):
                 errors.append(f"advisory[{i}].affected[{j}] missing package")
             if not isinstance(x.get("ranges"), list) or not isinstance(x.get("versions"), list):
                 errors.append(f"advisory[{i}].affected[{j}] invalid range/version lists")
+            else:
+                for k, r in enumerate(x.get("ranges") or []):
+                    valid = (
+                        isinstance(r, dict)
+                        and r.get("type") in ("SEMVER", "ECOSYSTEM", "GIT")
+                        and isinstance(r.get("events"), list)
+                        and bool(r["events"])
+                        and all(
+                            isinstance(ev, dict)
+                            and any(kk in ev for kk in ("introduced", "fixed", "last_affected"))
+                            for ev in r["events"]
+                        )
+                    )
+                    if not valid:
+                        errors.append(
+                            f"advisory[{i}].affected[{j}].ranges[{k}] invalid type/events"
+                        )
     return errors
 
 
@@ -264,33 +293,50 @@ def version_cmp(a, b, eco):
 
 
 def event_range_match(version, events, ecosystem):
+    """OSV-Semantik: events bilden Intervalle (introduced -> fixed/last_affected).
+
+    Eine Version ist betroffen, wenn sie in mindestens einem Intervall liegt:
+    introduced <= version < fixed  bzw.  introduced <= version <= last_affected.
+    """
     if not events:
         return False, "unknown"
     if (pep440(version) if ecosystem == "python" else semver(version)) is None:
         return False, "unsupported"
+    intervals = []
+    intro = None
     for ev in events:
-        intro = ev.get("introduced")
-        if intro not in (None, "0"):
-            c = version_cmp(version, intro, ecosystem)
+        if "introduced" in ev:
+            intro = ev.get("introduced")
+        elif "fixed" in ev:
+            intervals.append((intro, ev.get("fixed"), None))
+            intro = None
+        elif "last_affected" in ev:
+            intervals.append((intro, None, ev.get("last_affected")))
+            intro = None
+    if intro is not None:
+        intervals.append((intro, None, None))
+    for introduced, fixed, last in intervals:
+        affected = True
+        if introduced not in (None, "0"):
+            c = version_cmp(version, introduced, ecosystem)
             if c is None:
                 return False, "unsupported"
             if c < 0:
-                continue
-        fixed = ev.get("fixed")
-        if fixed:
+                affected = False
+        if affected and fixed:
             c = version_cmp(version, fixed, ecosystem)
             if c is None:
                 return False, "unsupported"
             if c >= 0:
-                continue
-        last = ev.get("last_affected")
-        if last:
+                affected = False
+        if affected and last:
             c = version_cmp(version, last, ecosystem)
             if c is None:
                 return False, "unsupported"
             if c > 0:
-                continue
-        return True, "range"
+                affected = False
+        if affected:
+            return True, "range"
     return False, "range"
 
 
@@ -332,7 +378,8 @@ def advisory_matches(n, ad):
 
 
 _EXPECTED_BASE_UNPINNED_RE = re.compile(
-    r"^.+requirements(?:-[^/]+)?\.txt:\d+: "
+    # Negierte Zeichenklassen statt ".+": verhindert exponentielles Backtracking (CodeQL py/redos)
+    r"^(?:[^\r\n]*[\\/])?requirements(?:-[^/\r\n]+)?\.txt:\d+: "
     r"unpinned/unsupported requirement: "
     r"[A-Za-z0-9_.-]+(?:[<>=!~]=?[^;\s]+(?:,[<>=!~]=?[^;\s]+)*)?$"
 )
@@ -387,12 +434,12 @@ def main():
     apath = ROOT / a.advisories
     try:
         payload = json.loads(apath.read_text())
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         payload = {}
         errors.append(f"invalid advisory snapshot: {e}")
     try:
         policy = json.loads((ROOT / a.policy).read_text())
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         policy = {}
         errors.append(f"invalid dependency policy: {e}")
     errors.extend(validate_policy(policy))

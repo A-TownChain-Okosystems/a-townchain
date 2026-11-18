@@ -110,6 +110,7 @@ Feinheit, sondern die Grundlage der Abrechnung.
 ## P2 — Ein Format, eine Huelle, ein Frontend
 
 **Arbeit.**
+
 1. Huelle nach SCE-ARTIFACT definieren (eigenes Magic, Generation, Laenge,
    Layout-Hash, SHA-256).
 2. VM-Loader auf den Strom nach ATC-BC-001 umstellen, Opcode-Belegung angleichen.
@@ -130,6 +131,7 @@ beginnen, sobald P1a abgeschlossen ist und das Register konsistent ist.
 ## P3 — Aufruf Stufe 1 und Identitaet
 
 **Arbeit.**
+
 1. `CallEnvelope` (SCE-CALL) implementieren: Adresse, Selektor, Calldata, Wert,
    Gasbudget, Aufruferidentitaet.
 2. Selektor aus dem Vertrags-ABI (`abi.rs`), Calldata als kanonische Wortfolge.
@@ -147,6 +149,7 @@ das eine halbe Zustandsaenderung.
 ## P4 — Speicher und Zustand
 
 **Arbeit.**
+
 1. Lokale in einen Frame-Speicher legen, eigene Befehle fuer Lokale.
 2. Persistente Slots nach S1, Adressierung ueber Layout-Hash aus dem Artefakt.
 3. `ContractState` von `Vec<u64>` auf eine Slot-Tabelle mit Layout-Bezug
@@ -163,6 +166,7 @@ Testnet braucht es einen Migrationshinweis.
 ## P5 — Gas und Gebuehren
 
 **Arbeit.**
+
 1. `GAS_TABLE_V2` als einzige Tabelle, zusammengefuehrt aus `GAS_TABLE_V1` und der
    ATC-14-Formel fuer Deployment.
 2. Budget aus `tx.gas_limit`, nicht aus `DEFAULT_GAS`; Mempool prueft das Feld.
@@ -178,6 +182,7 @@ Das ist eigene Arbeit, kein Nebenprodukt.
 ## P6 — Ausfuehrung im Block
 
 **Arbeit.**
+
 1. Blockstruktur erweitern: Belege, Zustandswurzel vorher/nachher,
    Aufnahmeverweis, Gasabrechnung je Transaktion.
 2. `atc-node` bekommt die VM-Kante; `TxType::Contract` wird ausgewertet.

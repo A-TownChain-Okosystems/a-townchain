@@ -23,7 +23,7 @@ Fork Resolution — Löst Chain-Forks auf basis der Longest-Heaviest-Chain-Regel
 
 ### Module
 
-```
+```text
 modules/consensus/fork_resolution.atc — Fork-Erkennung + Reorg
 ```
 
@@ -64,7 +64,7 @@ finality_threshold: 2/3 validators | max_reorg_depth: 50 blocks | confirmation_b
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-84.atc    # Unit-Tests
 └── test_atc-84_integration.atc  # Integration-Tests

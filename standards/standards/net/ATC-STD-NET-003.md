@@ -27,7 +27,6 @@ standard:
 
 ---
 
-
 ## Abstract
 
 Mainnet ist das Produktionsnetzwerk mit reellem wirtschaftlichem Wert.
@@ -62,7 +61,7 @@ Aenderungen am Chain State · ungepruefte Smart Contracts.
 
 ## 3. Mainnet-Gate GATE-013 (REQ-NET-024: MUST — Reihenfolge verbindlich)
 
-```
+```text
 TESTNET PASS → SECURITY AUDIT PASS → CONSENSUS VALIDATION →
 PERFORMANCE BASELINE → RECOVERY VALIDATION → GENESIS VALIDATION →
 REPRODUCIBLE BUILD → RELEASE CANDIDATE → GOVERNANCE APPROVAL →
@@ -92,7 +91,6 @@ Chain State sind ausgeschlossen.
 - id: REQ-NET-025
   title: "Protokollaenderungen nur via NET-006-Upgrade-Prozess"
   severity: MANDATORY
-
 
 ## Compliance
 

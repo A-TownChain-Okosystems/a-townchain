@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-024
   title: "Known Bug Management Standard"
@@ -18,7 +19,7 @@ standard:
     - ATC-STD-000
     - ATC-STD-018
     - ATC-STD-026
-----
+---
 
 # ATC-STD-024 — Known Bug Management (v1.0.0, APPROVED)
 

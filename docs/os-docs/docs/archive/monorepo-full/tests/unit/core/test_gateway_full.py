@@ -2,9 +2,10 @@
 """Unit-Tests für Gateway API (Full)
 Agent: Aurora #2 (6a275618)
 """
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
@@ -31,8 +32,8 @@ class TestGatewayFull:
     def test_gateway_health_endpoint(self):
         """Gateway /health or /gateway/health endpoint."""
         try:
-            from src.gateway.main import app
             from flask.testing import FlaskClient
+            from src.gateway.main import app
             client = app.test_client()
             response = client.get("/gateway/health")
             assert response.status_code in (200, 404, 302)

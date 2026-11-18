@@ -14,7 +14,6 @@ Kaskade: Org-Policy → AGENT_MANIFEST → Org-AGENTS.md → dieses Dokument →
 
 > Repo-spezifische Agenten-Regeln sind noch nicht ausformuliert — bis dahin gilt der Org-Standard vollständig.
 
-
 ## Commit-Format (ATC-STD-AI-DEV-007 §1, normativ)
 
 Agenten-Commits MUESSEN einen Trailer-Block tragen:

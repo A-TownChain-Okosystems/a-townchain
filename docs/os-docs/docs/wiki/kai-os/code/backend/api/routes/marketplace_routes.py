@@ -2,8 +2,8 @@
 # backend/api/routes/marketplace_routes.py
 # Issue #13 — ATC Marketplace Routes
 
-from flask import Blueprint, jsonify, request
 from blockchain.contracts.marketplace.marketplace_contract import MarketplaceContract
+from flask import Blueprint, jsonify, request
 
 marketplace_bp = Blueprint("marketplace", __name__)
 _market = MarketplaceContract()

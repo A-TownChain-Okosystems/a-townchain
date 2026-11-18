@@ -6,9 +6,9 @@ class Plugin:
     def __init__(self, event_bus):
         self.event_bus = event_bus
         self.balance = {}
-    
+
     def register(self):
         self.event_bus.subscribe("transfer", self.on_transfer)
-    
+
     def on_transfer(self, data):
         print(f"[WALLET] Transfer: {data}")

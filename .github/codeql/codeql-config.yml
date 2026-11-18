@@ -1,0 +1,13 @@
+# CodeQL-Scope (SCR-0146, Owner-Entscheidung 18.11.2026)
+#
+# Grundsatz: Befunde werden behoben, nicht unterdrueckt. Die Befunde im
+# ausfuehrbaren Code (modules/, standards/, tools/) sind behoben.
+#
+# Einzige, eng begruendete Ausnahme: docs/os-docs/** ist der importierte
+# Dokumentations-Snapshot des aufgeloesten Docs-Repos (SCR-0127). Der Python-Code
+# darin wird nicht gebaut, nicht getestet und nicht ausgeliefert; die kanonische
+# Implementierung liegt in modules/, apps/ und components/. Eine Bereinigung dort
+# wuerde ausschliesslich historische Kopien veraendern.
+name: ATC CodeQL scope
+paths-ignore:
+  - docs/os-docs

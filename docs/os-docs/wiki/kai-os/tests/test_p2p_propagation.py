@@ -2,10 +2,13 @@
 """
 P2P Propagation Tests — Gossip-Protokoll Validierung
 """
-import sys, os, time, asyncio
+import os
+import sys
+import time
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from blockchain.nodes.p2p_propagation import P2PGossipEngine, GossipMessage
+from blockchain.nodes.p2p_propagation import GossipMessage, P2PGossipEngine
 
 
 class MockNode:

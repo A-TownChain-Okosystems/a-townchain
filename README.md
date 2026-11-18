@@ -1,7 +1,7 @@
 # ATC A-TownChain
 
 > **ATC COMPLIANCE: R4 · Standard ATC-STD-201 v1.0.1 · GATE: AUDITED (09.09.2026, Score 94/100) · README: ATC-STD-README-001 CONFORM**
-
+>
 > A-TownChain is the canonical chain/orchestration integration layer of the A-TownChain ecosystem. Imported component implementations retain their standalone repositories as Source of Truth; **this repository is not production-ready and has no approved Mainnet date.**
 
 **Project:** a-townchain  
@@ -114,7 +114,6 @@ a-townchain ist das kanonische **Blockchain-Integrationsmonorepo** des A-TownCha
 | atc-interop | `components/interop` | Interoperability |
 | atc-oracle | `components/oracle` | Oracle Infrastructure |
 | atc-storage | `components/storage` | Blockchain Storage |
-
 
 ## Requirements
 

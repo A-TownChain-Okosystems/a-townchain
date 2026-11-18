@@ -36,6 +36,7 @@ Nicht-Gilt: menschliche Entwicklungsprozesse ohne Agentenbezug; Enterprise-Entsc
 ## 1. Trennungsgrundsatz
 
 Jede Entscheidung besteht aus drei getrennten Feldern:
+
 - `observation`: Verifizierter Sachverhalt (mit Fundstelle, AI-DEV-005 §2)
 - `decision`: Die daraus abgeleitete Handlung
 - `reason`: Warum — mit REQ-/Standard-/Task-Bezug
@@ -79,6 +80,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-203, ATC-STD-AI-DEV-001 · INFORMATIVE: Roadmap MK8 (Security), Model-Registry
+
 ## 5. Verbindliche Erweiterungsregeln
 
 - 5.1 Beobachtungen (OBSERVATION) und Entscheidungen (DECISION) MÜSSEN strikt getrennt in separaten Datenfeldern protokolliert werden.
@@ -115,9 +117,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 10. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-AI-DEV-001
 - ATC-STD-AI-DEV-006
@@ -159,9 +163,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 16. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-AI-DEV-001
 - ATC-STD-AI-DEV-006

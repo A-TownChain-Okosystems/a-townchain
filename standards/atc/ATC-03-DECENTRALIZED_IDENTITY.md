@@ -1,4 +1,5 @@
 # ATC-03 — Decentralized Identity (DID) & Zero-Trust IAM
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 2.3 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-03
 > **Referenzen:** ATC-01 (Handshake/Identity), ATC-02 (State Migration), ATC-0002 (Wallet/ECDSA), ATC-91 (Governance)
@@ -29,12 +30,14 @@ ATC-03 definiert, wie Identitäten im A-TownChain-Ökosystem erstellt, verifizie
 und autorisiert werden:
 
 ### 1.1 Decentralized Identity (DID)
+
 Jeder Akteur besitzt eine kryptografische Identität, die nicht auf einem Server
 gespeichert ist, sondern auf der Blockchain verankert bleibt. Diese Identität
 kann für den Login, die Signatur von Inferenz-Aufträgen oder die
 Governance-Teilnahme verwendet werden.
 
 **Implementation:** ✅ Teilweise implementiert
+
 - `blockchain/wallet/keygen.py` — Generiert kryptografische Identität
   - 256-bit Entropy → 24-Wort Seed Phrase (BIP39-kompatibel)
   - Private Key (SHA-256, 64 hex chars)
@@ -52,12 +55,14 @@ Governance-Teilnahme verwendet werden.
 > Name, Rolle, Reputation) ist ein Zukunftsfeature.
 
 ### 1.2 Zero-Trust IAM
+
 Das System verfolgt das Prinzip "Never Trust, Always Verify". Jeder Zugriff
 auf Ressourcen (z. B. wenn ein KI-Agent GPU-Leistung anfordert) erfordert
 eine kryptografische Autorisierung gemäß ATC-03. Ein Node prüft bei jedem
 Aufruf die Signatur, den Reputation-Score und die Berechtigung der Identität.
 
 **Implementation:** ✅ Teilweise implementiert
+
 - `modules/gateway/middleware/signature_verify.py` — `require_signature` Decorator
   - Verifiziert ECDSA-Signatur bei jedem API-Aufruf
   - Extrahiert Public Key aus Request-Header
@@ -79,12 +84,14 @@ def protected_endpoint():
 > Score > 0.8 dürfen GPU-Leistung anfordern") ist geplant.
 
 ### 1.3 Verifiable Credentials (VCs)
+
 Identitäten können durch andere Identitäten "beglaubigt" werden (z. B. ein
 "Sicherheits-Audit-Zertifikat" für einen Inferenz-Node). Dies geschieht über
 offline verifizierbare, signierte Aussagen, die den Vertrauenswert innerhalb
 des Mesh-Netzwerks erhöhen.
 
 **Implementation:** 📐 Geplant
+
 - Das Framework für VCs (signierte Aussagen von Identität A über Identität B)
   ist konzipiert aber noch nicht implementiert
 - On-Chain Logging im AI-Kernel (`ai_kernel.py`) legt bereits Hashes aller
@@ -99,34 +106,40 @@ Ohne ATC-03 wäre das gesamte Netzwerk anfällig für Identitätsdiebstahl oder
 unautorisierte Ressourcennutzung:
 
 ### 2.1 Schutz vor Sybil-Attacken
+
 Durch ATC-03 wird jede Identität an einen kryptografischen Aufwand gebunden.
 Ein Angreifer kann nicht einfach Millionen von Identitäten erstellen, ohne
 deren Reputation oder kryptografische Verankerung nachweisen zu müssen.
 
 **Implementation:** ✅ Teilweise
+
 - PoS-Mindeststake: 10.000 ATC (`blockchain/consensus/pos.py`)
 - Node-Registrierung erfordert gültige ATC-Adresse + Signatur
 - Sybil-Resistenz durch Stake (je mehr Identitäten, desto mehr ATC nötig)
 - **Geplant:** PoW für Node-Registrierung (siehe ATCNET Security.md)
 
 ### 2.2 Granulare Berechtigungen (RBAC)
+
 ATC-03 erlaubt es, Rollen und Berechtigungen (RBAC — Role Based Access Control)
 direkt auf der Chain abzubilden. Ein Inferenz-Node kann z. B. so konfiguriert
 werden, dass er nur Aufgaben von Agenten mit einem bestimmten Vertrauenswert
 annimmt.
 
 **Implementation:** ⚠️ Teilweise
+
 - Node-Rollen existieren: `FULL`, `LIGHT`, `VALIDATOR`, `MINER` (`blockchain/nodes/node.py`)
 - Governance-Rollen: Proposer, Voter (`governance_contract.py`)
 - Task-Typen im Orchestrator: Blockchain, Wallet, AI, Game, Governance, etc.
 - **Geplant:** On-Chain RBAC mit granularen Berechtigungen pro Identität
 
 ### 2.3 Interoperabilität
+
 Da es sich um offene Standards (DID-Spezifikationen) handelt, kann die
 Identität eines Nutzers auch über die Grenzen von KAI-OS hinaus für andere
 Web3-Dienste verwendet werden.
 
 **Implementation:** 📐 Geplant
+
 - ATC-Adressen sind proprietär (`ATC` + 32 chars)
 - ECDSA (secp256k1) ist branchenstandard
 - **Geplant:** W3C DID-Spezifikation-konforme DID-Records für Cross-Chain-Kompatibilität
@@ -138,6 +151,7 @@ Web3-Dienste verwendet werden.
 ATC-03 arbeitet eng mit anderen Tiers zusammen:
 
 ### 3.1 Tier 1 (Netzwerk)
+
 Die Identität aus ATC-03 wird während des Handshakes (ATC-01) genutzt, um
 den Node zu authentifizieren.
 
@@ -146,11 +160,13 @@ den Node zu authentifizieren.
 Signatur vor der Verbindung.
 
 ### 3.2 Tier 2 (Smart Contracts)
+
 Die DAO-Governance nutzt ATC-03, um sicherzustellen, dass nur
 stimmberechtigte und verifizierte Entitäten über Änderungen im Protokoll
 abstimmen.
 
 **Implementation:** ✅ Implementiert
+
 - `governance_contract.py` (ATC-91 DAO, Issue #9)
 - Proposal-Status: PENDING → ACTIVE → PASSED/REJECTED → EXECUTED
 - Vote-Choices: YES, NO, ABSTAIN
@@ -158,10 +174,12 @@ abstimmen.
 - Nur verifizierte ATC-Adressen können Proposals erstellen und abstimmen
 
 ### 3.3 Tier 4 (KI-Agenten)
+
 Jeder autonome Agent benötigt eine Identität nach ATC-03, um in seinem Namen
 (z. B. bei der Abrechnung via AMM) zu handeln.
 
 **Implementation:** ✅ Teilweise
+
 - `ai_kernel.py` — AIKernel als autonomer Akteur
 - On-Chain Decision-Logging: Jede KI-Entscheidung wird gehasht auf der Chain
   gespeichert (Auditierbarkeit)
@@ -223,7 +241,6 @@ Jeder autonome Agent benötigt eine Identität nach ATC-03, um in seinem Namen
 *Dieses Dokument wurde aus der ursprünglichen Atc-03.docx Spezifikation
 abgeleitet und mit der tatsächlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 21:21 | Aurora (Superagent)*
-
 
 ---
 

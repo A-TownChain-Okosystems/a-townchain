@@ -67,7 +67,7 @@ def scan_sources(root, lang):
 
 
 def run_tests(cmd, cwd):
-    r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
+    r = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, check=False)
     return (r.returncode, (r.stdout or "") + (r.stderr or ""))
 
 
