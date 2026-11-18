@@ -18,12 +18,12 @@ import pytest
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 
-from atc_reference_decoder import (
+from atc_reference_decoder import (  # noqa: E402
     DOMAIN_ARTIFACT,
     decode,
     decode_hex,
 )
-from build_parser_corpus import (
+from build_parser_corpus import (  # noqa: E402
     CORPUS,
     build,
     header,

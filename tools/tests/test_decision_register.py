@@ -12,7 +12,7 @@ import pytest
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 
-import decision_register as dr
+import decision_register as dr  # noqa: E402
 
 
 @pytest.fixture(scope="module")

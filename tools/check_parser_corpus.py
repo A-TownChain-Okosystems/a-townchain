@@ -27,8 +27,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from atc_reference_decoder import decode_hex
-from build_parser_corpus import (
+from atc_reference_decoder import decode_hex  # noqa: E402
+from build_parser_corpus import (  # noqa: E402
     CORPUS,
     build,
     serialise,
