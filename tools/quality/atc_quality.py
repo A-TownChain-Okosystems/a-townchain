@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -26,6 +27,21 @@ from pathlib import Path
 VERSION = "1.0.0"
 AUDITOR = "standards/tools/atc-repo-audit/atc_repo_audit.py"
 REGISTRY = "standards/registry/repositories.yaml"
+
+
+def generated_at() -> str:
+    """Zeitstempel aus SOURCE_DATE_EPOCH, damit der Bericht reproduzierbar bleibt.
+
+    Ein Gate, das Wanduhr liest, ist selbst nicht deterministisch: zwei Laeufe auf
+    demselben Commit wuerden sich unterscheiden. Die CI setzt SOURCE_DATE_EPOCH.
+    """
+    epoch = os.environ.get("SOURCE_DATE_EPOCH")
+    if not epoch:
+        return "unset"
+    try:
+        return datetime.fromtimestamp(int(epoch), tz=timezone.utc).isoformat(timespec="seconds")
+    except (TypeError, ValueError, OSError):
+        return "invalid"
 
 
 def sha(root: Path) -> str:
@@ -96,7 +112,7 @@ def main(argv=None) -> int:
         "tool": "atc_quality",
         "version": VERSION,
         "commit_sha": sha(root),
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "generated_at": generated_at(),
         "levels": [],
     }
     failed = False
