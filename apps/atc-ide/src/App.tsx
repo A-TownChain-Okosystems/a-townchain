@@ -442,9 +442,23 @@ export default function App() {
     () => localStorage.getItem("atos-theme") || "ATOS Dark",
   );
 
-  const [editorTheme, setEditorTheme] = useState(
-    () => localStorage.getItem("atos-editor-theme") || "prism-tomorrow"
-  );
+  // Der Theme-Name landet in einer CSS-URL. Nur bekannte Prism-Themes zulassen,
+  // sonst kann ein manipulierter localStorage-Wert den Pfad bestimmen
+  // (CodeQL js/xss-through-dom).
+  const PRISM_THEMES = [
+    "prism",
+    "prism-coy",
+    "prism-dark",
+    "prism-funky",
+    "prism-okaidia",
+    "prism-solarizedlight",
+    "prism-tomorrow",
+    "prism-twilight",
+  ] as const;
+  const [editorTheme, setEditorTheme] = useState(() => {
+    const stored = localStorage.getItem("atos-editor-theme") || "prism-tomorrow";
+    return (PRISM_THEMES as readonly string[]).includes(stored) ? stored : "prism-tomorrow";
+  });
 
   useEffect(() => {
     localStorage.setItem("atos-theme", theme);
@@ -469,7 +483,10 @@ export default function App() {
       link.rel = "stylesheet";
       document.head.appendChild(link);
     }
-    link.href = `https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/${editorTheme}.min.css`;
+    const theme = (PRISM_THEMES as readonly string[]).includes(editorTheme)
+      ? editorTheme
+      : "prism-tomorrow";
+    link.href = `https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/${theme}.min.css`;
   }, [editorTheme]);
 
 

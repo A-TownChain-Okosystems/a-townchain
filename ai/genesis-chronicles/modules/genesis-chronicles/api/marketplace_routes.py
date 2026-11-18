@@ -3,8 +3,19 @@
 # Issue #13 — ATC Marketplace Routes
 # Stand: Sprint 2.5 | Angepasst an MarketplaceContract v2
 
+import logging
+
 from blockchain.smart_contracts import atc_token, marketplace
 from flask import Blueprint, jsonify, request
+
+log = logging.getLogger(__name__)
+
+# Exception-Texte bleiben im Log. Nach aussen geht eine feste Meldung, sonst
+# koennen Pfade, Klassennamen oder Stackdetails ausgeliefert werden
+# (CodeQL py/stack-trace-exposure).
+_MSG_INVALID = "invalid request"
+_MSG_DENIED = "permission denied"
+_MSG_UNKNOWN = "unknown reference"
 
 marketplace_bp = Blueprint("marketplace", __name__)
 
@@ -51,8 +62,11 @@ def list_nft():
                 price_atc=float(d.get("price_atc", 0)),
             )
         )
-    except (ValueError, PermissionError) as e:
-        return jsonify({"error": str(e)}), 400
+    except ValueError:
+        return jsonify({"error": _MSG_INVALID}), 400
+    except PermissionError as exc:
+        log.warning("marketplace: permission denied: %s", exc)
+        return jsonify({"error": _MSG_DENIED}), 403
 
 
 @marketplace_bp.route("/buy", methods=["POST"])
@@ -63,8 +77,14 @@ def buy():
         return jsonify(
             marketplace.buy(buyer=d.get("buyer", ""), listing_id=d.get("listing_id", ""))
         )
-    except (ValueError, PermissionError, KeyError) as e:
-        return jsonify({"error": str(e)}), 400
+    except ValueError:
+        return jsonify({"error": _MSG_INVALID}), 400
+    except PermissionError as exc:
+        log.warning("marketplace: permission denied: %s", exc)
+        return jsonify({"error": _MSG_DENIED}), 403
+    except KeyError as exc:
+        log.info("marketplace: unknown reference: %s", exc)
+        return jsonify({"error": _MSG_UNKNOWN}), 404
 
 
 @marketplace_bp.route("/cancel", methods=["POST"])
@@ -76,8 +96,14 @@ def cancel():
                 seller=d.get("seller", ""), listing_id=d.get("listing_id", "")
             )
         )
-    except (ValueError, PermissionError, KeyError) as e:
-        return jsonify({"error": str(e)}), 400
+    except ValueError:
+        return jsonify({"error": _MSG_INVALID}), 400
+    except PermissionError as exc:
+        log.warning("marketplace: permission denied: %s", exc)
+        return jsonify({"error": _MSG_DENIED}), 403
+    except KeyError as exc:
+        log.info("marketplace: unknown reference: %s", exc)
+        return jsonify({"error": _MSG_UNKNOWN}), 404
 
 
 @marketplace_bp.route("/sales", methods=["GET"])
