@@ -70,12 +70,15 @@ Gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung; Ausnahme-Rege
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - ATC-AI-GOV-CHECK-001 — Prüfung der Policies · ATC-STD-BUG-001 — Findings · ATC-AI-GOV-INCIDENT-001 — P0-Behandlung
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `ai/policies.yaml` (Version 1.1.0, verdict_mapping)
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release (Owner-Entwurf 09.09., SCR-0061): 4 REQ, 3 COM-Gates; operational vorbereitet durch SCR-0057/0058

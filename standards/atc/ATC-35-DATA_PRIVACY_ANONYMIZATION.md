@@ -1,4 +1,5 @@
 # ATC-35 — Decentralized Data Privacy & Anonymization Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-35
 > **Tier:** 5 (User & Application Layer)
@@ -28,6 +29,7 @@ Informationen vor der Speicherung oder Aggregation "anonymisiert" werden.
 ## 1. Kernkonzepte
 
 ### 1.1 Zero-Knowledge Aggregation
+
 ATC-35 erzwigt, dass Daten, die von einem Node in den globalen Pool fliessen,
 mathematisch so transformiert werden, dass der urspruengliche Input (z. B. ein
 konkreter Klick-Pfad eines Nutzers) nicht rekonstruierbar ist. Dies geschieht
@@ -35,10 +37,12 @@ oft durch ZK-Proofs (Zero-Knowledge Proofs), die belegen: "Die Daten sind
 valide und konform", ohne die Daten selbst offenzulegen.
 
 **Implementation:** Nicht implementiert. ZK-Proofs konzeptionell.
+
 - SHA-256 Hashing fuer Integritaet vorhanden
 - **Geplant:** ZK-SNARK/STARK fuer datenverborgende Aggregation
 
 ### 1.2 Local-First Privacy
+
 Der Standard setzt strikte Regeln fuer die Datenspeicherung: Sensible Rohdaten
 duerfen den privaten Node niemals verlassen. ATC-35 definiert die API-
 Schnittstellen fuer die KI-Agenten, damit diese nur auf anonymisierte
@@ -46,11 +50,13 @@ Schnittstellen fuer die KI-Agenten, damit diese nur auf anonymisierte
 identifizierbaren User-State.
 
 **Implementation:** PARTIAL — Basis da
+
 - ATC-28 Federated Learning — Rohdaten bleiben lokal, nur Gradienten teilen
 - Wallet (`wallet.py`) — Private Keys bleiben lokal
 - **Geplant:** Strikte API-Schicht die nur anonymisierte Features freigibt
 
 ### 1.3 K-Anonymitaet & Rausch-Injektion
+
 ATC-35 implementiert Protokolle wie k-Anonymitaet (ein Datensatz ist nur
 gueltig, wenn er mit mindestens k-1 anderen Datensaetzen verschmilzt) und
 injiziert statistisches Rauschen, um die statistische Verknuepfbarkeit von
@@ -66,11 +72,13 @@ ATC-35 erweitert dies auf allgemeine Datenströme.
 ## 2. Warum ATC-35 fuer KAI-OS essenziell ist
 
 ### 2.1 Compliance & Vertrauen
+
 Um professionelle Dienste (Finanzen, Gesundheit) auf KAI-OS anzubieten, ist die
 Einhaltung globaler Datenschutz-Standards (wie DSGVO) zwingend. ATC-35 ist der
 technische Garant fuer diese Konformitaet.
 
 ### 2.2 Schutz vor De-Anonymisierung
+
 KI-Modelle sind sehr gut darin, Muster zu erkennen. Ohne ATC-35 koennte eine KI
 versuchen, durch Korrelation von verschiedenen anonymen Datenpunkten auf eine
 echte Identitaet zu schliessen. Dieser Standard schuetzt vor solchen
@@ -80,6 +88,7 @@ echte Identitaet zu schliessen. Dieser Standard schuetzt vor solchen
 > Erklaerungen private Daten leaken.
 
 ### 2.3 Nutzer-Souveraenitaet
+
 ATC-35 gibt dem Nutzer die volle Kontrolle. Er kann ueber seine DID (ATC-03)
 bestimmen, welche Kategorien seiner Daten fuer welches KI-Modell zur
 Anonymisierung freigegeben werden.
@@ -92,25 +101,30 @@ ATC-17 (DAO) — DAO entscheidet ueber Anonymisierungs-Schaerfe.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-28 (Federated Learning)
+
 ATC-35 fungiert als "Datenschutz-Filter" fuer die Gradienten, bevor diese
 aggregiert werden.
 
 > ATC-28 = Gradienten teilen. ATC-35 = Gradienten anonymisieren vor dem Teilen.
 
 ### 3.2 ATC-03 (Decentralized Identity)
+
 Die Identitaet (DID) dient hier als Metadaten-Header fuer die Datenschutz-Level
 — man kann fuer verschiedene KI-Dienste unterschiedliche Privatsphaere-Profile
 festlegen.
 
 ### 3.3 ATC-26 (Explainable AI)
+
 Das XAI-Protokoll muss so gestaltet sein, dass die "Erklaerungen" der KI zwar
 nachvollziehbar, aber dennoch nach ATC-35 anonymisiert bleiben.
 
 ### 3.4 ATC-33 (Feedback)
+
 ATC-33 sammelt Nutzer-Feedback. ATC-35 anonymisiert dieses Feedback bevor es
 in den globalen Pool oder das Training fliest.
 
 ### 3.5 ATC-17 (DAO Governance)
+
 DAO entscheidet ueber die "Schaerfe" der Anonymisierungs-Parameter (Privacy-
 Utility Trade-off).
 
@@ -171,7 +185,7 @@ Utility Trade-off).
 
 ## 7. Privacy-Utility Trade-off
 
-```
+```text
 Privacy <-----------------------------------------> Utility
   |                                                   |
   | Mehr Anonymisierung        Weniger Anonymisierung |
@@ -184,8 +198,9 @@ Privacy <-----------------------------------------> Utility
   | -> Verschiebbar durch Governance-Voting           |
 ```
 
-### Privacy-Level (DID-basiert):
-```
+### Privacy-Level (DID-basiert)
+
+```text
 Level 0: Vollstaendig anonym (ZK + DP + k-Anon)
 Level 1: Stark anonymisiert (DP + k-Anon)
 Level 2: Moderat anonymisiert (DP nur)
@@ -197,7 +212,7 @@ Level 3: Pseudonym (DID ohne ZK)
 
 ## 8. Datenschutz-Pipeline
 
-```
+```text
 NUTZER              ATC-35              ATC-28              ATC-29
   |                   |                   |                   |
   | Raw Data          |                   |                   |
@@ -230,7 +245,6 @@ NUTZER              ATC-35              ATC-28              ATC-29
 *Dieses Dokument wurde aus der urspruenglichen Atc-35.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:49 | Aurora (Superagent)*
-
 
 ---
 

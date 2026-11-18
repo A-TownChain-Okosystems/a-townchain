@@ -227,7 +227,6 @@ Teil dieses Vertrags, nicht Zusatzmaterial.
   `ATC:` plus Hex, identisch zur Adressform aus SEC-P0-005.
   **Praezisierung 12.11.2026 (Befund A):**
 
-
 | Feld | Laenge | Kodierung |
 |---|---|---|
 | `domain` | **15 Byte** | ASCII `ATC-CONTRACT-V1` (`ATC` 3 + `-` 1 + `CONTRACT` 8 + `-V1` 3), keine Laengenvorspannung, kein Nullbyte, kein Auffuellzeichen |
@@ -242,7 +241,6 @@ Eine Implementierung MUSS beide Laengen pruefen (`len(domain) == 15`,
 `len(input) == 75`) und bei Abweichung abbrechen, damit kein Byte stillschweigend
 entsteht. Ein zusaetzliches Byte (etwa eine Version oder ein Trenner) waere eine
 eigene Formatentscheidung und ist hier ausdruecklich nicht enthalten.
-
 
   **Kollision:** Ist die abgeleitete Adresse bereits belegt, wird das Deployment
   abgelehnt. Es gibt kein stilles Weiterzaehlen der Nonce und keine Ausweichadresse,
@@ -288,6 +286,7 @@ eigene Formatentscheidung und ist hier ausdruecklich nicht enthalten.
   Nullauffuellung" ersetzt: die linke Seite ist kein undefinierter Fuellraum mehr,
   sondern besteht aus Typkennzeichen und reservierten Nullbytes. Eine Kollision
   zwischen Kennzeichen und Auffuellung ist strukturell ausgeschlossen.
+
 - **REQ-SCE-058:** Ungueltige Woerter werden zurueckgewiesen, nicht umgedeutet:
   Kennzeichen `0x00000000`, unbekanntes Kennzeichen, nicht-null reservierte Bytes,
   20 Adressbytes alle null, oder das Wort insgesamt null. Ein unbekanntes
@@ -319,7 +318,6 @@ eigene Formatentscheidung und ist hier ausdruecklich nicht enthalten.
   geleistete Rechenzeit. Rechenzeit ohne Belastung ist unzulaessig; das gilt auch
   fuer Fehlschlaege im Loader und im Backend. **Praezisierung 12.11.2026 (Befund 4):
   "fehlgeschlagen" ist nicht gleich "Budget weg".** Es gelten vier Klassen:
-
 
 | Klasse | Verbrauch | Erstattung |
 |---|---|---|
@@ -362,7 +360,6 @@ ist ein Betriebsfehler. Ohne diese Unterscheidung koennte ein einzelner Knoten d
 Status einer Transaktion bestimmen, also genau die zweite Wahrheit erzeugen, die
 SCE-P1 verbietet.
 
-
   Die Erstattungsregel ist normativ festzulegen und zu testen; ohne sie waere jede
   einfache Vertragsablehnung so teuer wie eine Erschoepfung, was den Anreiz
   verzerrt.
@@ -370,7 +367,7 @@ SCE-P1 verbietet.
   **Vorschlag zur Erstattungsregel (Status: VORSCHLAG, nicht beschlossen,
   Owner-Entscheidung offen).** Fuer den regulaeren Revert:
 
-  ```
+```text
   gas_refund    = gas_limit - gas_used
   refund_amount = gas_refund * gas_price
   fee_charged   = gas_used * gas_price
@@ -380,6 +377,7 @@ SCE-P1 verbietet.
   Ablehnung vor der Ausfuehrung wird nichts gebucht, bei einem Infrastrukturfehler
   ebenfalls nichts. Kein prozentualer Abzug, keine Mindestgebuehr. Die Formeln
   gelten erst, wenn T-28, T-29 und T-40 gruen sind.
+
 - **REQ-SCE-054:** Die Fehlerklassen nach REQ-SCE-047 sind im Ergebnis und im Beleg
   unterscheidbar, damit ein Validator die Abrechnung nachrechnen kann, ohne die
   Absicht zu raten. Es gibt genau zwei Code-Raeume, und sie duerfen sich nicht
@@ -393,6 +391,7 @@ SCE-P1 verbietet.
   Ein Beleg mit einem Statuscode ausserhalb von `0x00` bis `0x03` ist ungueltig.
   `ATC-NODE-INFRA-001` ist kein Beleg-Status und darf niemals in einen Beleg oder in
   die Zustandswurzel gelangen.
+
 - **REQ-SCE-055:** `gas_refund` ist eine Anzahl Gaseinheiten, kein Geldbetrag. Der
   zurueckerstattete Betrag ist `gas_refund * gas_price` und traegt einen eigenen
   Namen; die beiden Groessen duerfen nicht in einem Feld vermischt werden.
@@ -594,7 +593,6 @@ keine auf **IMPLEMENTED**.
 | D1-B | Dekoderfehler: EMPTY_STREAM (E-004) und COUNT_MISMATCH (E-005) ergaenzen | VM-Parser | ArtifactError fuehrt alle zwoelf Codes aus §19.1; beide fehlenden Varianten sind vorhanden und tragen dieselbe Bedingung wie der Vertrag | IMPLEMENTED | Code-Test am Commit 6a164080 (Blob 75e881e4), 684 Tests gruen; CI_VERIFIED offen, keine Konformitaet ohne Korpuslauf (Nachweis EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md) |
 | D1-C | Groessenpruefung: dekodierte Laenge statt deklarierter Anzahl | VM-Parser / Admission-Vertrag | Die Groessenpruefung bewertet die dekodierte Stromlaenge (p - 10); die deklarierte Anzahl c ist Obergrenze und kein Ausloeser von E-012. C-8-GV1-MAX ergibt E-005, nicht ProgramTooLarge | IMPLEMENTED | Code-Test am Commit 6a164080: c ist nur Obergrenze, gemessen wird die dekodierte Laenge; E-012 prueft die Protokollkonstante MAX_PROGRAM_OPS, der Betreiberwert bleibt P1b (Nachweis EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md) |
 
-
 Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** (vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die Gates bleiben bis zum jeweiligen Nachweis offen.
 
 Drei Ebenen: **Owner-Entscheidung** ist intern verbindlich, auch wenn der zugehoerige Standard nicht ratifiziert ist. **Ratifikation** sagt, ob der Standard in Kraft ist; "nicht ratifiziert (Kandidat)" bindet niemanden. Ein Wert im Kandidaten bleibt **Vorschlag**, solange der Owner ihn nicht ausdruecklich beschliesst.
@@ -616,7 +614,6 @@ Durch die Stufe-1-Ratifikation entfallen: B-2 Artefaktidentitaet im Identitaetst
 Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard: der Kandidat bleibt Kandidat, P1a bleibt offen und P2 bleibt gesperrt.
 
 Nicht freigegeben sind weiterhin Implementierung und Release.
-
 
 <!-- END DECISION-REGISTER -->
 
@@ -656,6 +653,7 @@ solange Bedingungen nicht als Bytecode existieren. Ein Smart-Contract-Standard
 darf `require` deshalb erst normieren, wenn ATCB-v2 entschieden ist.
 
 Optionen (Entscheidung Owner):
+
 - A) ATCB-v2 fuehrt ASSERT und REVERT ein, versioniert, mit Verifier-Gate.
 - B) `require` wird auf JumpIfNotZero plus Abbruchpfad abgebildet, ohne neues
   Op; Nachteil: kein Revert-Grund, kein sauberer Speicher-Rollback.
@@ -856,7 +854,7 @@ kann: ohne Nullbyte waere `ATC-STREAM-V1` Praefix von `ATC-STREAM-V10`.
 
 **REQ-SCE-062 (Eingaben).** Es gilt genau:
 
-```
+```text
 artifact_hash = SHA-256( "ATC-ARTIFACT-V1\0" || container[0 .. n-32] )
 code_hash     = SHA-256( "ATC-STREAM-V1\0"   || ops )
 state_root    = SHA-256( "ATC-STATE-V2\0"    || code_hash || count(u32 LE) || words(u64 LE)*count )
@@ -930,14 +928,14 @@ Vektoren liegen zusaetzlich maschinenlesbar in
 `standards/atc/conformance/stage1-vectors.json`; diese Datei wird aus diesem
 Abschnitt erzeugt und nie von Hand gepflegt:
 
-```
+```text
 python3 tools/check_stage1_vectors.py          # prueft Dokument gegen SHA-256
 python3 tools/check_stage1_vectors.py --write  # erzeugt die Vektordatei neu
 ```
 
 Eine Zeile genuegt fuer die Gegenprobe:
 
-```
+```text
 python3 -c "import hashlib;print(hashlib.sha256(bytes.fromhex('4154432d53545245414d2d56310001010000000000000010')).hexdigest())"
 # d7adc88fc2ceb21136df3397ec7d6bfff57a4f439088798f34ab3c8c3c546cdb   (= GV-2)
 ```
@@ -1050,7 +1048,7 @@ Umrechnung im Beleg ebenfalls.
 
 **REQ-SCE-076 (Wortlaut der Regel).** Es gilt `0 <= gas_used <= gas_limit` und
 
-```
+```text
 gas_refund = gas_limit - gas_used
 ```
 
@@ -1100,8 +1098,8 @@ Der Nachweisstand aendert sich durch diesen Abschnitt **nicht**: die Matrix blei
 bei 37 offen und 1 blockiert, weil kein Test ausgefuehrt wurde. Spezifiziert ist
 nicht implementiert.
 
-
 ---
+
 ## 19. Parser-Fehlersemantik und Versionsisolation
 
 Dieser Abschnitt ist die Antwort auf die drei vom Owner am 12.11.2026 benannten
@@ -1185,7 +1183,7 @@ dass Bytes fehlen beziehungsweise uebrig bleiben.
 
 **REQ-SCE-085 (Stromgrenze aus der Laenge).** Mit `L` als Laenge der Eingabe gilt
 
-```
+```text
 strom_start  = 10
 tail_start   = L - 32
 Strombereich = Byte 10 bis tail_start - 1
@@ -1200,7 +1198,7 @@ Ergebnis liefern.
 **REQ-SCE-086 (Dekodierprozedur).** Die Stufen 5 bis 8 sind genau dieser Durchlauf,
 mit `p = 10` und `i = 0`:
 
-```
+```text
 solange i < c und p < tail_start:
     opcode = Byte(p)
     ist der Opcode in keiner Generation bekannt:        -> E-010, Offset p

@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-037
   title: "Security Configuration Baseline Standard"
@@ -17,7 +18,7 @@ standard:
   dependencies:
     - ATC-STD-000
     - ATC-STD-018
-----
+---
 
 # ATC-STD-037 — Security Configuration Baseline Standard (v1.0.0, APPROVED)
 
@@ -50,7 +51,7 @@ Logging, Monitoring) deklariert sein.
 
 Die Baseline MUSS maschinenlesbar hinterlegt sein (je Repo/Systeem), mindestens:
 
-```
+```text
 security_baseline:
   tls: required
   debug: false

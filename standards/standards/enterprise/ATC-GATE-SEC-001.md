@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-GATE-SEC-001
   title: "Continuous Security & Technology Assurance Gate"
@@ -25,7 +26,7 @@ standard:
     - ATC-STD-026
     - ATC-STD-028
     - ATC-STD-029
-----
+---
 
 # ATC-GATE-SEC-001 — Continuous Security & Technology Assurance Gate (v1.0.0, APPROVED)
 
@@ -134,13 +135,13 @@ Markdown-Sammlung, sondern ein ausführbares Framework.
 
 ## REQ-Matrix (normative Anforderungen)
 
-- id: REQ-GATE-001 — Gate-Zeilen: 14 Zeilen MÜSSEN geprüft werden; kritikalitätsabhängige Zeilen MÜSSEN als solche markiert sein.
-- id: REQ-GATE-002 — Release-Readiness: ALL REQUIRED = PASS sonst NO RELEASE; keine Kompensation durch Score/Dokumentation.
-- id: REQ-GATE-003 — Security-Status: 5-Stufen-Definition MUSS verwendet werden; pauschale Sicherheitsaussagen sind unzulässig.
-- id: REQ-GATE-004 — Evidence Store: Struktur MUSS bestehen; NOT VERIFIED MUSS NICHT überschrieben werden.
-- id: REQ-GATE-006 — Release-Gate MUSS die 3-Spaltenstruktur Technology/Security/Supply Chain abbilden.
-- id: REQ-GATE-007 — Endzustand: Framework-Architektur SOLLTE vollausgebaut sein (Engine, Evidence Layer, Gate).
-- id: REQ-GATE-005 — Org-Audit: Assurance Engine SOLLTE alle Repos fortlaufend prüfen und einen BLOCKED-fähigen Score speisen.
+* id: REQ-GATE-001 — Gate-Zeilen: 14 Zeilen MÜSSEN geprüft werden; kritikalitätsabhängige Zeilen MÜSSEN als solche markiert sein.
+* id: REQ-GATE-002 — Release-Readiness: ALL REQUIRED = PASS sonst NO RELEASE; keine Kompensation durch Score/Dokumentation.
+* id: REQ-GATE-003 — Security-Status: 5-Stufen-Definition MUSS verwendet werden; pauschale Sicherheitsaussagen sind unzulässig.
+* id: REQ-GATE-004 — Evidence Store: Struktur MUSS bestehen; NOT VERIFIED MUSS NICHT überschrieben werden.
+* id: REQ-GATE-006 — Release-Gate MUSS die 3-Spaltenstruktur Technology/Security/Supply Chain abbilden.
+* id: REQ-GATE-007 — Endzustand: Framework-Architektur SOLLTE vollausgebaut sein (Engine, Evidence Layer, Gate).
+* id: REQ-GATE-005 — Org-Audit: Assurance Engine SOLLTE alle Repos fortlaufend prüfen und einen BLOCKED-fähigen Score speisen.
 
 ## Compliance
 
@@ -149,9 +150,9 @@ Validator-Erweiterung (Gate-Zeilen-Maschine) als SCR-Nachfolge.
 
 ## Security Considerations
 
-- Evidence Store enthält Schwachstellen-Details: Zugriffsbeschränkung je
+* Evidence Store enthält Schwachstellen-Details: Zugriffsbeschränkung je
   Unterverzeichnis; öffentlich nur Metadaten/Aggregat.
-- Gate-Umgehung (Release ohne PASS) IST ein Governance-Finding P1 +
+* Gate-Umgehung (Release ohne PASS) IST ein Governance-Finding P1 +
   Incident-Record (ATC-STD-020 §7).
 
 ## Implementierungsstatus
@@ -162,13 +163,13 @@ registry/standard-implementation.yaml.
 
 ## Changelog
 
-- v1.0.0 (2026-09-11): SCR-0094 Initial (14 Gate-Zeilen, Release-Readiness-
+* v1.0.0 (2026-09-11): SCR-0094 Initial (14 Gate-Zeilen, Release-Readiness-
   Regel, 5-Stufen-Security-Status, Evidence-Store, Org-Audit) + SCR-0095
   Erweiterung: 3-Spalten-Release-Gate (§6), Assurance-Framework-Endzustand
   (§7), REQ-GATE-006/007. CANDIDATE.
 
 ## References
 
-- ATC-STD-000 — Governance Root
-- ATC-STD-018/019/020/021/022/024/026/028/029 — Assurance-Familie
-- ATC-STD-202 — Repository-Klassifizierung (C1/S4-Kritikalität)
+* ATC-STD-000 — Governance Root
+* ATC-STD-018/019/020/021/022/024/026/028/029 — Assurance-Familie
+* ATC-STD-202 — Repository-Klassifizierung (C1/S4-Kritikalität)

@@ -1,4 +1,5 @@
 # Smart-Contract-Richtlinie fuer BaFin-Compliance
+
 ## ATC-LIC Provisionsabwicklung & Urheberschutz auf Kernel-Ebene
 
 > **Version:** 1.0.0 | **Datum:** 06.07.2026
@@ -19,6 +20,7 @@ Urheberschutz auf Kernel-Ebene (ATVM) rechtssicher erzwungen werden.
 A-TownChain Virtual Machine (ATVM) ausgefuehrt werden.
 
 **Adressaten:**
+
 - BaFin (Bundesanstalt fuer Finanzdienstleistungsaufsicht)
 - Entwickler im A-TownChain-Oekosystem
 - Node-Betreiber (Validator, Compute, Storage, Gateway)
@@ -29,12 +31,14 @@ A-TownChain Virtual Machine (ATVM) ausgefuehrt werden.
 ## 2. Rechtliche Grundlage: "Code is Law"
 
 ### 2.1 Paradigmenwechsel
+
 Die A-TownChain ersetzt das klassische Justizsystem zur Durchsetzung von
 Urheberrechten durch Kryptografie und Smart Contracts. Die Durchsetzung
 erfolgt nicht durch Gerichtsurteile, sondern durch die ATVM, die unlizanzierten
 Code **physisch nicht ausfuehrt**.
 
 ### 2.2 Rechtsaequivalenz
+
 | Klassisches Urheberrecht | A-TownChain (ATC-LIC) |
 |--------------------------|----------------------|
 | Gerichtliche Klage | ATVM verweigert Ausfuehrung |
@@ -45,6 +49,7 @@ Code **physisch nicht ausfuehrt**.
 | Regionale Rechtsprechung | Global (Dezentral) |
 
 ### 2.3 Rechtssicherheit durch Kryptografie
+
 - **ECDSA (secp256k1)** — Signatur beweist Urheberschaft (ATC-03 DID)
 - **SHA-256** — Code-Hash identifiziert geschuetztes Werk eindeutig
 - **ATC-04 DAG** — Unveraenderlicher Audit-Trail aller Ausfuehrungen
@@ -59,7 +64,7 @@ Code **physisch nicht ausfuehrt**.
 Die Royalty wird deterministisch berechnet. Es gibt keine manuelle
 Nachberechnung, keinen Ermessensspielraum, keine Ausnahmen.
 
-```
+```text
 ROYALTY = f(license_type, base_price, caller_did, network_state)
 
 Berechnung:
@@ -82,7 +87,7 @@ einzigen DAG-Transaktion. Das bedeutet:
 Es gibt keinen Zwischenzustand. Ein "Ausfuehrung ohne Bezahlung" ist
 kryptografisch ausgeschlossen.
 
-```
+```text
 ATVM ATOMIC EXECUTION TRANSACTION
 ├── BEGIN
 │   ├── 1. License Registry Lookup (code_hash)
@@ -134,7 +139,7 @@ Die A-Town Virtual Machine (ATVM) ist die virtuelle Maschine, die Smart
 Contracts und ATCLang-Code ausfuehrt. Sie ist Teil des ShivaOS-Kernels und
 operiert unterhalb des Betriebssystems.
 
-```
+```text
 SCHICHTEN-MODELL
 ├── Layer 0: Hardware (TPM, CPU, RAM)
 ├── Layer 1: ShivaOS Kernel (ATS-1000+)
@@ -156,7 +161,7 @@ SCHICHTEN-MODELL
 Das License Gate ist **fest in die ATVM einkompiliert** und kann nicht
 umgangen, deaktiviert oder modifiziert werden (ohne Kernel-Kompilierung).
 
-```
+```text
 ATVM LICENSE GATE (Pseudocode)
 ┌─────────────────────────────────────────────────────┐
 │ FUNCTION execute(code_hash, caller_did, input):     │
@@ -426,7 +431,7 @@ namespace ATC::License::Registry {
 
 ### 6.1 End-to-End Flow
 
-```
+```text
 ENTWICKLER                    ATVM                    NUTZER
    |                           |                        |
    | 1. Code schreiben         |                        |
@@ -458,7 +463,7 @@ ENTWICKLER                    ATVM                    NUTZER
 
 ### 6.2 Subscription Lifecycle
 
-```
+```text
 SUBSCRIPTION LIFECYCLE
 ├── User subscribes
 │   ├── pay_subscription(base_price)
@@ -479,7 +484,7 @@ SUBSCRIPTION LIFECYCLE
 
 ### 6.3 DAO-Governed Pricing
 
-```
+```text
 DAO-GOVERNED LICENSE FLOW
 ├── Developer proposes price
 │   ├── dao_propose("set_price", code_hash, new_price)
@@ -542,11 +547,13 @@ DAO-GOVERNED LICENSE FLOW
 ## 8. Incident-Response
 
 ### 8.1 Lizenz-Verletzung
+
 Eine Lizenz-Verletzung ist **per Definition nicht moeglich**, da die ATVM
 unlizanzierten Code nicht ausfuehrt. Es gibt keinen "Incident" im klassischen
 Sinne.
 
 ### 8.2 Fehlerhafte Royalty-Berechnung
+
 Sollte durch einen Smart-Contract-Bug eine falsche Royalty berechnet werden:
 
 1. **DAO-Proposal** (ATC-17) fuer Korrektur
@@ -555,6 +562,7 @@ Sollte durch einen Smart-Contract-Bug eine falsche Royalty berechnet werden:
 4. **BaFin-Benachrichtigung** (falls betreffend)
 
 ### 8.3 Registry-Ausfall
+
 Die License Registry ist ein Smart Contract on-chain. Ein "Ausfall" ist nur
 durch Netzwerk-Partition moeglich:
 

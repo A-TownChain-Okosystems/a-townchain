@@ -6,6 +6,7 @@ TCP-basiertes Messaging-System mit Duplikat-Filter und Flood-Fill-Broadcasting.
 
 import json
 import logging
+import os
 import socket
 import threading
 from collections import deque
@@ -14,6 +15,17 @@ from dataclasses import dataclass
 from typing import Any
 
 logger = logging.getLogger(__name__)
+
+
+def _resolve_bind_host() -> str:
+    """Bind-Adresse fuer Listener (ATC-STD-300 DTC, CodeQL py/bind-socket-all-interfaces).
+
+    Standard ist Loopback: kein unbeabsichtigtes Exponieren des Dienstes.
+    Echter Netzwerkbetrieb (Bootstrap/Validator) muss ausdruecklich opt-in sein:
+    ATC_P2P_BIND=0.0.0.0 (bzw. "::"). Siehe docs/REPOSITORY_STANDARD.md.
+    """
+    host = os.environ.get("ATC_P2P_BIND", "127.0.0.1").strip()
+    return host or "127.0.0.1"
 
 
 @dataclass
@@ -116,7 +128,7 @@ class P2PBroadcaster:
         try:
             self.server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.server_sock.bind(("0.0.0.0", self.port))
+            self.server_sock.bind((_resolve_bind_host(), self.port))
             self.server_sock.listen(50)
             self._running = True
             logger.info(f"P2P-Service gestartet auf Port {self.port}")

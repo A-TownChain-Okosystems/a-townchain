@@ -24,7 +24,7 @@ ATC-97 definiert das **Agent Interaction Protocol (AIP)** — das standardisiert
 
 ### Architektur
 
-```
+```text
 Agent A                          ATCNet (P2P)                    Agent B
   │                                                               │
   ├─ create_session() ───────────────────────────────────────────►│
@@ -67,7 +67,7 @@ Agent A                          ATCNet (P2P)                    Agent B
 
 ## 3. Session Lifecycle
 
-```
+```text
 INITIALIZING ──handshake──► ACTIVE ──request──► WAITING ──response──► ACTIVE
                               │                                    │
                               ├──stream──► STREAMING ──final──► ACTIVE
@@ -80,6 +80,7 @@ INITIALIZING ──handshake──► ACTIVE ──request──► WAITING ─�
 ```
 
 ### 3.1 Session erstellen
+
 ```atclang
 let session_id: Hash = aip.create_session(
     initiator_agent_id: my_agent_id,
@@ -91,6 +92,7 @@ let session_id: Hash = aip.create_session(
 ```
 
 ### 3.2 Handshake
+
 ```atclang
 aip.initiate_handshake(session_id, my_agent_id, "Aurora", "1.0",
     [Capability::TEXT_GENERATION, Capability::CODE_GENERATION],
@@ -99,6 +101,7 @@ aip.acknowledge_handshake(session_id, responder_agent_id)
 ```
 
 ### 3.3 Message senden
+
 ```atclang
 let msg_id: Hash = aip.send_message(session_id,
     MessageType::REQUEST, MessagePriority::NORMAL,
@@ -107,6 +110,7 @@ let msg_id: Hash = aip.send_message(session_id,
 ```
 
 ### 3.4 Stream empfangen
+
 ```atclang
 // Agent B streamt Tokens:
 for i in 0..n_chunks {

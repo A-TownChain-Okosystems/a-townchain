@@ -81,6 +81,7 @@ Task COMPLETED und kein Folge-Auftrag existiert.
 ## 2. Anlagezeitpunkt
 
 Ein Audit-Record wird angelegt:
+
 - spätestens bei `COMPLETED` oder `CANCELLED` eines Tasks (AI-DEV-004 §7),
 - zusätzlich bei jedem `BLOCKED`, der menschliche Entscheidung erfordert,
 - bei Übergaben (Handover, AI-DEV-004 §5).
@@ -139,6 +140,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-203, ATC-STD-AI-DEV-001 · INFORMATIVE: Roadmap MK8 (Security), Model-Registry
+
 ## 8. Verbindliche Erweiterungsregeln
 
 - 8.1 Jedes Audit-Record MUSS unverzüglich nach Abschluss einer Aktion im Append-Only-Verzeichnis abgelegt werden.
@@ -175,9 +177,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 13. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-203
 - ATC-STD-AI-DEV-001
@@ -221,9 +225,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 19. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-203
 - ATC-STD-AI-DEV-001

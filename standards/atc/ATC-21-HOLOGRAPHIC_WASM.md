@@ -1,4 +1,5 @@
 # ATC-21 — Holographic On-Demand Execution Engine (Wasm)
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-21
 > **Tier:** 3 (Operating System Infrastructure) — START VON TIER 3
@@ -30,7 +31,8 @@ nicht als statische Datei auf jedem Node zu speichern, sondern sie bei Bedarf
 in einer isolierten, effizienten Laufzeitumgebung zu instanziieren.
 
 **Konzept:**
-```
+
+```text
 Code als "Hologramm":
   1. Code liegt im dezentralen Dateisystem (IPFS)
   2. Node braucht Code -> laedt Wasm-Bytecode on-demand
@@ -45,6 +47,7 @@ Code als "Hologramm":
 ## 2. Kernkonzepte
 
 ### 2.1 WebAssembly (Wasm) als Runtime
+
 KAI-OS verwendet Wasm als universellen Bytecode. Da Wasm extrem performant,
 sicher (Sandbox-Isolation) und plattformunabhaengig ist, koennen dieselben
 Programme auf unterschiedlichster Hardware (Server, IoT-Devices, mobile
@@ -55,14 +58,16 @@ Python-Runtime (`blockchain/contracts/`). ATCLang VM (`atcvm.py`) als
 proprieataere Zwischenloesung — Wasm als Ziel-Platform geplant.
 
 ```python
-# atcvm.py — Aktuelle ATCLang VM (Stack-basiert, 30+ Opcodes)
-# Zukunft: ATCLang -> Wasm Compiler (atc -> .wasm)
+## atcvm.py — Aktuelle ATCLang VM (Stack-basiert, 30+ Opcodes)
+## Zukunft: ATCLang -> Wasm Compiler (atc -> .wasm)
 ```
 
 > **Geplant:** Wasm-Runtime als Execution Engine fuer alle Smart Contracts,
-# KI-Algorithmen und System-Services.
+>
+## KI-Algorithmen und System-Services
 
 ### 2.2 On-Demand Bereitstellung
+
 Anstatt dass ein Node die gesamte Anwendungslogik lokal vorhalten muss, laedt
 die Execution Engine den benoetigten Bytecode bei Bedarf aus dem dezentralen
 Dateisystem (IPFS) nach, validiert den Hash (um Manipulationen auszuschliessen)
@@ -72,6 +77,7 @@ und fuehrt ihn in der Sandbox aus.
 als zukuenftige Erweiterung. Aktuell: lokale Datei-Ablage.
 
 ### 2.3 Determinismus durch Sandbox
+
 ATC-21 stellt sicher, dass die Wasm-Instanz keinen Zugriff auf die lokale
 Systemzeit oder Hardware-Ressourcen hat, ausser ueber die definierten ATC-
 Schnittstellen (z. B. ATC-22 fuer Hardware-Beschleunigung). Dies garantiert,
@@ -85,14 +91,17 @@ Ausfuehrungsumgebung, in der die Regeln von ATC-14 erzwungen werden.
 ## 3. Warum ATC-21 fuer KAI-OS essenziell ist
 
 ### 3.1 Portabilitaet
+
 Entwickler koennen ihre Anwendungen (z. B. KI-Modelle oder Battle-Games) einmal
 in Wasm kompilieren und sie laufen sofort ueberall im KAI-OS-Netzwerk.
 
 ### 3.2 Sicherheit
+
 Da jeder Code in einer isolierten Wasm-Sandbox laeuft, kann eine schadhafte
 Anwendung das Betriebssystem des Nodes nicht korrumpieren.
 
 ### 3.3 Effizienz (On-Demand)
+
 Nodes muessen nicht mit unnoetigem Code vollgestopft werden. Nur die aktuell
 benoetigten "Hologramme" (instanziierte Anwendungen) werden in den RAM geladen.
 
@@ -101,10 +110,12 @@ benoetigten "Hologramme" (instanziierte Anwendungen) werden in den RAM geladen.
 ## 4. Zusammenhang mit anderen Standards
 
 ### 4.1 ATC-14 (Deterministic Execution)
+
 ATC-21 ist die physikalische Ausfuehrungsumgebung, in der die Regeln von ATC-14
 erzwungen werden.
 
 ### 4.2 ATC-22 (Hardware Abstraction Layer)
+
 Waehrend ATC-21 die Logik ausfuehrt, stellt ATC-22 die Schnittstellen zur
 Verfuegung, damit diese Logik auf die GPU/CPU des Nodes zugreifen kann, ohne
 die Sandbox zu verlassen.
@@ -112,6 +123,7 @@ die Sandbox zu verlassen.
 > ATC-22 ist ein zukuenftiger Standard — HAL fuer GPU/CPU Zugriff aus Sandbox.
 
 ### 4.3 Issue #1 & #18 (Smart Contract & Docker)
+
 Die Engine in ATC-21 ist das Ziel fuer die Deployments, die in der Roadmap
 geplant sind — sie sorgt dafuer, dass die Smart Contracts nicht nur "da" sind,
 sondern auch korrekt "leben" und arbeiten.
@@ -174,7 +186,7 @@ zukuenftige Runtime.
 
 ## 8. Architektur: Aktuell vs. Ziel
 
-```
+```text
 AKTUELL (v3.0.0)                           ZIEL (v5.0+)
 Python-Runtime                             Wasm-Runtime
   -> blockchain/contracts/*.py               -> .wasm Bytecode
@@ -185,7 +197,8 @@ Python-Runtime                             Wasm-Runtime
   -> Statische Contracts                      -> Dynamische Hologramme
 ```
 
-### Migrationspfad:
+### Migrationspfad
+
 1. **Phase 1:** Wasm-Runtime als zusaetzliche Execution Engine (neben Python)
 2. **Phase 2:** ATCLang -> Wasm Compiler (.atc -> .wasm)
 3. **Phase 3:** IPFS-Integration fuer On-Demand Code-Loading
@@ -199,7 +212,7 @@ Python-Runtime                             Wasm-Runtime
 
 Mit ATC-21 beginnt **Tier 3 (Operating System Infrastructure)**:
 
-```
+```text
 TIER 3 — OS INFRASTRUCTURE (ATC-21+)
 ├── ATC-21  Holographic On-Demand Exec (Wasm)  PARTIAL KONZEPTIONELL
 ├── ATC-22  Hardware Abstraction Layer           GEPLANT
@@ -215,7 +228,6 @@ TIER 3 — OS INFRASTRUCTURE (ATC-21+)
 *Dieses Dokument wurde aus der urspruenglichen Atc-21.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:18 | Aurora (Superagent)*
-
 
 ---
 

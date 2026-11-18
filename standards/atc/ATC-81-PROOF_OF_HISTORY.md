@@ -23,7 +23,7 @@ Proof of History — Verifiable Delay Function (VDF) basierend auf SHA-256-Hash-
 
 ### Module
 
-```
+```text
 modules/consensus/poh.atc — VDF-Hash-Sequenz-Generator
 modules/consensus/poh_verifier.atc — PoH-Verifikation für eingehende Blöcke
 ```
@@ -66,7 +66,7 @@ iterations_per_slot: 1000 | slot_duration_ms: 400 | seed: genesis_hash
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-81.atc    # Unit-Tests
 └── test_atc-81_integration.atc  # Integration-Tests

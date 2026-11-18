@@ -211,7 +211,7 @@ Für normative Änderungen approbierter Standards bleibt ATC-STD-000 §30 verbin
 
 ## 5. Change-Control-Kette (Einordnung)
 
-```
+```text
 ATC ENTERPRISE GOVERNANCE (tatsächlicher Bestand, Stand 07.09.2026)
 │
 ├── ATC-STD-000          Standards Governance (SCR, §30-Immutabilität)
@@ -306,6 +306,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## Changelog
 
 ### 1.0.0 — 2026-09-07
+
 - Initial Release (Owner-Entwurf Michael Wroblewski 22:40, harmonisiert mit VERSION-001, AUDIT-001, BUG-005, AI-DECISION-001, AAS-009/017/022, DESC-001)
 - 19 normative Anforderungen (REQ-UPD-001..019), 6 COM-UPD-Gates
 - Update-Kategorien, 13-stufiger Lifecycle, UPD-NNN-Requests, UPD-G01..G09-Gates, Statusmodell (Normal-/Fehler-/Notfallpfad), Rollback (5 Blockchain-Typen), Emergency-Prozess, Update Manifest, CHANGELOG-Pflicht, Update Audit (15 Fragen), Integrity Manifest, Review-Kadenzen, Control Matrix

@@ -46,6 +46,7 @@ Damit gibt es keine statische Kostenschranke fuer ein Deployment.
 ## 3. Befunde Gas
 
 ### GAS-AUD-001 — Tabelle vollstaendig, aber ungetestet je Opcode
+
 **Fundstelle:** `vm::gas_cost` · **Ist:** exhaustive match, 19 Ops
 **Spezifikationsbezug:** BC2 fordert "Gas-Tabelle versioniert und vollstaendig
 getestet" · **Testabdeckung:** keine per-Op-Zusicherung, nur generische
@@ -54,6 +55,7 @@ testgestuetzt · **Empfehlung:** je Opcode ein Kostentest plus Summenprobe
 · **Status:** IMPLEMENTED
 
 ### GAS-AUD-002 — Keine Versionierung der Tabelle
+
 **Fundstelle:** `vm::gas_cost` (keine Konstante, keine Version) · **Ist:** Werte
 stehen im Code, ohne Kennung · **Spezifikationsbezug:** fehlend
 · **Testabdeckung:** nein · **Abweichung:** Eine Kette kann nicht feststellen,
@@ -63,6 +65,7 @@ mit welcher Kostentabelle sie einen Block validiert hat
 · **Status:** RESIDUAL
 
 ### GAS-AUD-003 — Ohne Budget existiert keine Schrittobergrenze
+
 **Fundstelle:** `Vm::run_loop` mit `gas_limit: None` · **Ist:** `pc` springt
 unbegrenzt; `Jump(0)` laeuft endlos, weil kein Zaehler und keine Grenze greift
 · **Spezifikationsbezug:** fehlend · **Testabdeckung:** nein
@@ -71,6 +74,7 @@ vorn blockiert den Aufrufer dauerhaft · **Empfehlung:** Schrittobergrenze oder
 Pflichtbudget auch fuer `run()` · **Status:** RESIDUAL (P1)
 
 ### GAS-AUD-004 — Speicherwachstum wird nicht bepreist
+
 **Fundstelle:** `Op::Store`, Kosten 3 · **Ist:** `Store(1000)` waechst den
 Speicher auf 1001 Plaetze, kostet aber wie `Store(0)` · **Spezifikationsbezug:**
 fehlend · **Testabdeckung:** nein · **Abweichung:** Speicherkosten sind nicht an
@@ -79,6 +83,7 @@ je neuem Slot, als eigene Tabellenzeile
 · **Status:** RESIDUAL
 
 ### GAS-AUD-005 — Verbrauch bei Erfolg wird nicht berichtet
+
 **Fundstelle:** `execute_transactional` · **Ist:** `Ok` liefert nur den Stapel;
 `OutOfGas` nennt `required` und `remaining`, sonst nichts
 · **Spezifikationsbezug:** E03 fordert "Gas vollstaendig verbraucht"
@@ -88,12 +93,14 @@ nachpruefen, weil der Verbrauch nach Erfolg unbekannt ist
 · **Status:** RESIDUAL
 
 ### GAS-AUD-006 — Belastung erfolgt vor der Wirkung (spec-konform)
+
 **Fundstelle:** `run_loop` Zeilen 284–292 · **Ist:** Kosten werden geprueft und
 abgezogen, bevor der Befehl wirkt · **Spezifikationsbezug:** BC2 fordert genau
 das · **Testabdeckung:** indirekt ueber `gas_exhaustion_after_mutation_rolls_back_state`
 · **Abweichung:** keine · **Empfehlung:** keine · **Status:** TESTED
 
 ### GAS-AUD-007 — HALT kostet 0 (spec-konform)
+
 **Fundstelle:** `gas_cost`, `Op::Halt => 0` · **Ist:** Abschluss kostenlos
 · **Spezifikationsbezug:** BC2 fuehrt HALT ohne Kosten · **Testabdeckung:** ja
 (`explicit_gas_budget_executes_deterministically`) · **Abweichung:** keine
@@ -132,6 +139,7 @@ Befehl beziehungsweise Aufruftiefe. Keine dieser Kennungen existiert im Code.
 ## 5. Befunde Fehler
 
 ### ERR-AUD-001 — Keine numerischen Codes im Code
+
 **Fundstelle:** `enum VmError` · **Ist:** 14 Varianten, nur Rust-Namen
 · **Spezifikationsbezug:** E01–E06 vorhanden, Abbildung fehlt
 · **Testabdeckung:** nein · **Abweichung:** Ein Beobachter kann Fehler nicht
@@ -140,6 +148,7 @@ stabil klassifizieren; Debug-Strings sind keine Schnittstelle
 Bedeutungen · **Status:** RESIDUAL
 
 ### ERR-AUD-002 — Spezifikation widerspricht sich bei Gas
+
 **Fundstelle:** `ATC-BC-002` Zeile 47 gegen Zeile 124 · **Ist:** Zeile 47 nennt
 E03 fuer Gas erschoepft, Zeile 124 fordert bei unzureichendem Gas einen
 Ruecklauf mit E04 · **Spezifikationsbezug:** selbstwiderspruechlich
@@ -149,6 +158,7 @@ denselben Sachverhalt, E04 ist zugleich Stapelgrenze
 · **Status:** BLOCKED (Entscheidung des Owners)
 
 ### ERR-AUD-003 — E06 doppelt belegt
+
 **Fundstelle:** `ATC-BC-002` Zeile 50 gegen Zeilen 129 und 193 · **Ist:** Zeile
 50 nennt E06 "unbekannter Befehl", Zeilen 129 und 193 reservieren E06 fuer
 Aufruftiefe 64 und erklaeren sie fuer unveraenderlich
@@ -159,12 +169,14 @@ reservieren, unbekannter Befehl braucht eine andere Kennung
 · **Status:** BLOCKED (Entscheidung des Owners)
 
 ### ERR-AUD-004 — Vertragsraum korrekt getrennt
+
 **Fundstelle:** `gueltiger_ruecklauf_code` · **Ist:** 0 und 0x0100–0x01FF
 zulaessig, 0x00FF und 0x0200 abgelehnt, in Verifier und Interpreter gleich
 · **Spezifikationsbezug:** deckungsgleich · **Testabdeckung:** ja, `tests/atcb_v2.rs` Zeilen 87 und 108 · **Abweichung:** keine
 · **Empfehlung:** keine · **Status:** TESTED
 
 ### ERR-AUD-005 — Namensraeume strukturell getrennt, nicht dokumentiert
+
 **Fundstelle:** `VmError::Reverted(u64)` gegen die uebrigen Varianten
 · **Ist:** Vertragscodes stecken in einer Variante, interne Fehler in anderen;
 das ist die Trennung, aber sie ist nirgends als Schnittstelle festgeschrieben
@@ -174,6 +186,7 @@ geschuetzt · **Empfehlung:** Namensraeume explizit dokumentieren, bevor Codes
 vergeben werden · **Status:** RESIDUAL
 
 ### ERR-AUD-006 — Fehlerdarstellung im Runner nicht unterscheidbar
+
 **Fundstelle:** `src/main.rs`, `RunOutcome::Failed(format!("ERROR: ATVM: {e:?}"))`
 · **Ist:** alle VM-Fehler landen als Debug-String in einem gemeinsamen Pfad;
 Erfolg 0, Nutzungsfehler 2, kein eigener Exit-Code je Fehlerklasse
@@ -183,6 +196,7 @@ unterscheidbar · **Empfehlung:** Klassencode im Exit-Status, sobald Codes
 feststehen · **Status:** RESIDUAL
 
 ### ERR-AUD-007 — Kontextfehler verdecken Verifikationsfehler
+
 **Fundstelle:** `execute_state_transition_with_gas` · **Ist:** Gate laeuft vor
 `verify()`, ein Kontextfehler gewinnt · **Spezifikationsbezug:** offen
 · **Testabdeckung:** `state_transition_requires_identity_gate`
@@ -191,6 +205,7 @@ nicht festgeschrieben · **Empfehlung:** Reihenfolge dokumentieren
 · **Status:** RESIDUAL
 
 ### ERR-AUD-008 — Drei getrennte Fehlerfamilien ohne gemeinsamen Namensraum
+
 **Fundstelle:** `VmError`, `ContextError`, `ArtifactError` · **Ist:** 14 + 6 + 10
 Varianten, keine gemeinsame Kennung · **Spezifikationsbezug:** fehlend
 · **Testabdeckung:** je Familie vorhanden · **Abweichung:** ein Werkzeug muss
@@ -209,6 +224,7 @@ Widersprueche (E03/E04, E06) sind BLOCKED und brauchen deine Entscheidung,
 bevor irgendetwas implementiert wird.
 
 **Vorschlag fuer die spaetere Umsetzung, in dieser Reihenfolge:**
+
 1. Entscheidung E03/E04 und E06 (normativ, Owner).
 2. Gastabelle als versionierte Konstante, danach per-Op-Tests.
 3. Codes auf bestehende Varianten abbilden, ohne Umnummerierung.

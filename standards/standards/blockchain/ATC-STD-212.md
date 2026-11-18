@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-212
   title: "Token Supply Standard"
@@ -26,7 +27,7 @@ standard:
     - ATC-STD-215
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-212 — Token Supply Standard (v1.0.0, APPROVED)
 
@@ -45,7 +46,6 @@ Verifikationspflichten sowie Security-Betrachtungen.
 Schluesselwoerter: MUSS/MUSS NICHT, SOLLTE, DARF/KANN — RFC 2119 (MUST/SHOULD/MAY)
 gemaess ATC-STD-000 §10.
 
-
 ## §1 Gegenstand & Verortung
 
 Gesamtmenge und Fuehrung des Token-Bestands: Initial-Supply, Max-Supply,
@@ -61,7 +61,6 @@ Freisetzung; dieser Standard definiert die Invarianten darueber.
 4. **KR-4:** Supply-Aenderungen (Inflations-/Deflationsparameter) erfordern den Upgrade-Prozess (ATC-STD-NET-006) — Steuerungslose Aenderungen sind VERBOTEN (MUST NOT).
 5. **KR-5:** Jede Supply-Operation MUSS ein protokolliertes Event erzeugen (AuditTrail-Anbindung).
 6. **KR-6:** Rebase-Mechaniken DUERFEN nur mit expliziter Governance-Freigabe und Testnet-Nachweis eingefuehrt werden (SHOULD vor Mainnet simuliert sein).
-
 
 ## §3 Schnittstellen & Kopplungen
 

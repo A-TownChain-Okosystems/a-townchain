@@ -49,7 +49,7 @@ crate-lokalen Test nie gefunden worden.
 
 ## 4 Nachweis (lokal)
 
-```
+```text
 cargo test --workspace        748 grün, 0 rot (P1c: 746)
 node: block_import 11 Tests (inkl. repo-weiter Wächter, Adoption, Quelltextform)
 node: gossip        +1 Regressionstest (manipulierter Peer, gültige Hashes)

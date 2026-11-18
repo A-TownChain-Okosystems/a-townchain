@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-ORG-BASELINE-001
   title: "ATC Organization Engineering Baseline (Sicherheit, Geschwindigkeit, Stabilit\u00e4t als einheitliches Engineering-Governance-System)"
@@ -18,7 +19,7 @@ standard:
     - ATC-STD-000
     - ATC-GOV-001
     - ATC-STD-LIB-001
-----
+---
 
 # ATC-ORG-BASELINE-001 — Organization Engineering Baseline (v1.0.0, APPROVED)
 
@@ -65,6 +66,7 @@ atc-zkp, atc-wallet, atc-algorithm} PLUS Regel (criticality C1 UND security_clas
 T2 = Infrastruktur; T3 = Applikationen; T4 = Experimental (Security-Floor bleibt).
 
 Aktuelle Zuordnung (27 Repos, SSOT-Feld `tier` je repositories.yaml-Eintrag):
+
 - **T0 Governance:** .github, atc-standards — maximale Governance, PR-Pflicht, 2 Reviews.
 - **T1 Core/Security-Critical:** a-townchain, atclang, atc-shivacore, atc-zkp, atc-wallet,
   atc-algorithm, atc-vm, atc-node, atc-contracts, atc-interop, atc-oracle, globus-os —

@@ -94,7 +94,7 @@ Specialized Maintenance Standards MUST inherit the governance baseline defined b
 
 The relationship is:
 
-```
+```text
 ATC-STD-000
       │
       ▼
@@ -182,13 +182,13 @@ Maintenance automation MUST operate with the minimum permissions required for it
 
 For M2 and M3 maintenance:
 
-```
+```text
 Implementer != Validator != Auditor
 ```
 
 For critical release operations:
 
-```
+```text
 Release Authority != Implementer
 ```
 
@@ -220,7 +220,6 @@ conformance:
   MAINT-000-CONFORMANCE: PASS
 ```
 
-
 ### REQ-MAINT-001
 
 ```yaml
@@ -237,7 +236,7 @@ requirement:
       - release_record
 ```
 
-Source: §7, §8.1. 
+Source: §7, §8.1.
 
 ### REQ-MAINT-002
 
@@ -255,7 +254,7 @@ requirement:
       - release_record
 ```
 
-Source: §8, §8.1. 
+Source: §8, §8.1.
 
 ### REQ-MAINT-003
 
@@ -272,7 +271,7 @@ requirement:
       - classification
 ```
 
-Source: §2, §9. 
+Source: §2, §9.
 
 ### REQ-MAINT-004
 
@@ -289,7 +288,7 @@ requirement:
       - validation_results
 ```
 
-Source: §5.2, §5.3, §12. 
+Source: §5.2, §5.3, §12.
 
 ### REQ-MAINT-005
 
@@ -306,7 +305,7 @@ requirement:
       - blocked_on_missing_evidence
 ```
 
-Source: §5.4. 
+Source: §5.4.
 
 ### REQ-MAINT-006
 
@@ -323,7 +322,7 @@ requirement:
       - approval_record
 ```
 
-Source: §5.6, §11. 
+Source: §5.6, §11.
 
 ### REQ-MAINT-007
 
@@ -340,7 +339,7 @@ requirement:
       - recovery_plan
 ```
 
-Source: §16. 
+Source: §16.
 
 ### REQ-MAINT-008
 
@@ -356,7 +355,7 @@ requirement:
       - compatibility_declaration
 ```
 
-Source: §14. 
+Source: §14.
 
 ### REQ-MAINT-009
 
@@ -373,7 +372,7 @@ requirement:
       - authorization_record
 ```
 
-Source: §5.5, §17. 
+Source: §5.5, §17.
 
 ### REQ-MAINT-010
 
@@ -390,7 +389,7 @@ requirement:
       - evidence_bundle
 ```
 
-Source: §18. 
+Source: §18.
 
 ### REQ-MAINT-011
 
@@ -406,7 +405,7 @@ requirement:
       - maintenance_record_schema_valid
 ```
 
-Source: §12, §20.1. 
+Source: §12, §20.1.
 
 ### REQ-MAINT-012
 
@@ -423,7 +422,7 @@ requirement:
       - conformance_result
 ```
 
-Source: §20.1, §20.2. 
+Source: §20.1, §20.2.
 
 ### REQ-MAINT-013
 
@@ -439,7 +438,7 @@ requirement:
       - metrics_report
 ```
 
-Source: §20.3. 
+Source: §20.3.
 
 ### REQ-MAINT-014
 
@@ -455,7 +454,7 @@ requirement:
       - impact_assessment
 ```
 
-Source: §13, §24. 
+Source: §13, §24.
 
 ### REQ-MAINT-015
 
@@ -472,7 +471,7 @@ requirement:
       - emergency_review
 ```
 
-Source: §9.4, MAINT-021. 
+Source: §9.4, MAINT-021.
 
 Compact registry view (IDs, levels, priorities):
 
@@ -522,7 +521,7 @@ The required capability set MAY be extended according to system risk.
 Maintenance Capability is a release property, not a downstream operational process. The
 anti-pattern this standard prohibits:
 
-```
+```text
 Release
   ↓
 Production
@@ -532,7 +531,7 @@ Production
 
 Instead, the normative sequence is:
 
-```
+```text
 Development
    ↓
 Test
@@ -564,7 +563,7 @@ Production repositories governed by this standard SHOULD contain:
 
 Critical repositories SHOULD additionally maintain:
 
-```
+```text
 docs/
 └── maintenance/
     ├── procedures/
@@ -580,7 +579,7 @@ The applicable repository standard MAY define stricter requirements.
 A release MUST pass the Maintenance Readiness Gate when the target lifecycle state requires
 operational support.
 
-```
+```text
 RELEASE CANDIDATE
         │
         ▼
@@ -630,7 +629,7 @@ The following rule is normative:
 
 At minimum, the release decision MUST consider:
 
-```
+```text
 Maintenance Owner
        +
 Maintenance Documentation
@@ -656,10 +655,11 @@ MAINTENANCE READY
 
 If a mandatory capability is absent:
 
-```
+```text
 MAINTENANCE READY = FALSE
 RELEASE = BLOCKED
 ```
+
 ## 9. Classification M0–M3
 
 Every maintenance activity MUST receive a maintenance classification.
@@ -739,7 +739,7 @@ evidence, validation, or post-event accountability.
 
 All controlled maintenance MUST follow the applicable lifecycle:
 
-```
+```text
 DETECT
   ↓
 ASSESS
@@ -945,7 +945,7 @@ affected interfaces.
 
 For example:
 
-```
+```text
 ATCLang
    ↓
 ATC-VM
@@ -1101,7 +1101,7 @@ The Maintenance framework MUST support machine-readable validation.
 
 The canonical implementation SHOULD contain:
 
-```
+```text
 schemas/
 └── maintenance/
     ├── maintenance-record.schema.json
@@ -1131,7 +1131,7 @@ A repository implementing this standard SHOULD provide automated conformance che
 
 Example:
 
-```
+```text
 Repository
     │
     ├── Dependency Scanner
@@ -1183,7 +1183,7 @@ Metrics MUST NOT be used to conceal individual critical failures.
 This standard MUST NOT receive the status APPROVED or STABLE without the defined review chain
 (ATC-STD-000 §14). The minimal review chain:
 
-```
+```text
 Author -> Technical Review -> Security Review -> Architecture Review -> Approval (Owner, §9)
 ```
 
@@ -1193,7 +1193,7 @@ Status flow (§25): DRAFT -> REVIEW -> CANDIDATE -> APPROVED -> STABLE.
 
 This standard follows the lifecycle defined by "ATC-STD-000":
 
-```
+```text
 IDEA
   ↓
 PROPOSED
@@ -1221,7 +1221,7 @@ Version changes MUST NOT change the standard identifier.
 
 Document version and lifecycle status are independent axes. Three levels are distinguished:
 
-```
+```text
 DOCUMENT VERSION                 REGISTRY RECORD
 ATC-STD-MAINT-000                registry_version: 1
 version: 1.0.0                   standard_version: 1.0.0
@@ -1230,7 +1230,7 @@ status: DRAFT                    status: DRAFT
 
 Status flow (version unchanged):
 
-```
+```text
 ATC-STD-MAINT-000
 1.0.0 -> DRAFT
       ↓
@@ -1259,7 +1259,7 @@ GSEPF provides the governed execution framework.
 
 The conceptual relationship is:
 
-```
+```text
 ATC Standards
       │
       ▼
@@ -1359,7 +1359,7 @@ Domain grouping of the family:
 
 Governance model:
 
-```
+```text
 ATC-STD-000
                          │
                          ▼
@@ -1393,7 +1393,6 @@ ATC-STD-000
                                   ▼
                           VERIFIED STATE
 ```
-
 
 | ID | Standard |
 |---|---|
@@ -1430,7 +1429,7 @@ Reserved identifiers MUST NOT be assigned to unrelated standards.
 ATC-STD-REPO-MAINT-001 (Repository Maintenance & Lifecycle Standard, family FAM-46) is a
 pre-existing specialized Repository Domain Standard. It is NOT replaced by this family:
 
-```
+```text
 MAINT
                      │
           ┌──────────┴──────────┐

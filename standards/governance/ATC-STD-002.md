@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-002
   title: "Standards Family ID & Artifact Identifier Architecture"
@@ -16,7 +17,7 @@ standard:
   superseded_by: null
   dependencies:
     - ATC-STD-000
-----
+---
 
 # ATC-STD-002 — Standards Family ID & Artifact Identifier Architecture (v1.0.0, APPROVED)
 
@@ -96,7 +97,7 @@ renummeriert. Bestandskonformität: 000 Governance ✓ (ATC-STD-000, 002),
 und die Standard-Identität sind im Datenmodell explizit getrennt — 400 ist die
 Domänenkennung, ATC-STD-417 die unveränderliche Identität des Standards:
 
-```
+```text
 family_id: 400
 family: SECURITY
 
@@ -172,7 +173,7 @@ ATC-GATE-SEC-001 §4.) Die Registry bleibt Allokations-Autorität
 
 Die Registry gliedert sich in Familien-Definitionen und Standard-Records:
 
-```
+```text
 registry/
 ├── families/            # SSOT der Familien (normativ)
 │   ├── FAMILY-000.yaml

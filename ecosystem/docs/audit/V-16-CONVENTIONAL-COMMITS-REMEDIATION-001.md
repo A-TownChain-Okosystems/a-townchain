@@ -11,7 +11,7 @@ The exact-SHA governance job reported:
 
 `[FAIL] V-16 (CI/CD): Conventional Commits nur 47% (<80%)`
 
-The V-16 implementation evaluates the last 20 commits returned by `git log --oneline -20`, excludes messages beginning with `Merge `, then compares the remaining subjects against the Conventional Commits regular expression. The repository audit runs with full history; this is not a shallow-clone false positive.
+The V-16 implementation evaluates the last 20 commits returned by `git log --oneline -20`, excludes messages beginning with `Merge`, then compares the remaining subjects against the Conventional Commits regular expression. The repository audit runs with full history; this is not a shallow-clone false positive.
 
 ## History analysis
 

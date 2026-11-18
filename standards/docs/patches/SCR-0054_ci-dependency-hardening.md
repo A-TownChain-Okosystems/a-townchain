@@ -1,13 +1,16 @@
 # SCR-0054 — CI-Dependency-Härtung (Owner-Aktion wegen GH013/F-010)
 
 ## Status
+
 **BEREIT — wartet auf Owner-Anwendung.** Workflow-Dateien sind per GH013 für
 Agenten gesperrt (kein workflow-Scope). Zwei Wege:
+
 - **Weg A:** GitHub-UI-Edit mit den kopierfertigen Patches unten (26 Dateien).
 - **Weg B:** Einmalige Scope-Erweiterung (workflow-Scope) — danach pusht Aurora
   alles selbst und verifiziert.
 
 ## P1-Patch 1 — atc-standards/.github/workflows/naming-governance.yml
+
 Nach dem `actions/setup-python`-Step einfuegen:
 
 ```yaml
@@ -16,6 +19,7 @@ Nach dem `actions/setup-python`-Step einfuegen:
 ```
 
 ## P1-Patch 2 — atc-standards/.github/workflows/ci.yml
+
 Zeile `run: pip install pyyaml` ersetzen (ad-hoc-Installation unzulaessig, CI-001):
 
 ```yaml
@@ -24,6 +28,7 @@ Zeile `run: pip install pyyaml` ersetzen (ad-hoc-Installation unzulaessig, CI-00
 ```
 
 ## P1-Patch 3 — kanonisch fuer 25 Repos (Governance-CI-Propagation)
+
 Der Propagation-Scan (ERR-005/CI-008, 08.09.) fand dasselbe Fehlermuster in
 25 weiteren Repos: governance-ci.yml checkt atc-standards aus und fuehrt
 deren Validatoren aus — OHNE die Abhaengigkeiten des ausgecheckten Toolings
@@ -44,6 +49,7 @@ genesis-chronicles, atc-oracle, atc-storage, atc-launchpad, atc-marketplace,
 atc-compute, atc-vm, atc-algorithm, atc-zkp (.github/workflows/governance-ci.yml).
 
 ## Nachweis nach Anwendung
+
 E-5-Regressionstest (test_ci_dependency_governance.py) schaltet von FAIL auf
 PASS; CI gruen auf frischem Runner; Issue #1 verifiziert schliessbar
 ("verified + prevented", alle 5 Acceptance Criteria).

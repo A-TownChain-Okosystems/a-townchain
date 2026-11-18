@@ -45,9 +45,6 @@ Nach Deployment MUSS die Contract-Verification (SC-G11) erfolgen und im Deployme
 
 Jedes Deployment MUSS zeitnah in die Contract Registry eingetragen werden (SC-G12, SC-019).
 
-
-
-
 ## 4. Deterministische Adressgenerierung (REQ-SC-071)
 
 Deployments MUESSEN präzise und deterministisch über CREATE2 mit standardisiertem Salt durchgeführt werden, um identische Adressen über Netzwerke hinweg zu gewährleisten.

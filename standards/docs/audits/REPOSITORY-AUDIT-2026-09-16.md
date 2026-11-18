@@ -20,6 +20,7 @@ The repository correctly identifies `registry/standards.yaml` as the normative S
 ## Open finding
 
 ### F-20260916-STD-001
+
 - Priority: P1
 - Class: Governance / Evidence
 - Category: Implementation traceability / freshness

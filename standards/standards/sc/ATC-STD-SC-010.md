@@ -41,9 +41,6 @@ Jede relevante Finanztransaktion MUSS ein Event erzeugen, z. B. `FundsTransferre
 
 Treasury-Contracts SOLLEN unterstuetzen: Multi-Signature, Spending Limits, Timelocks, Emergency Stop, Governance Approval, vollstaendige Audit Logs.
 
-
-
-
 ## 3. Multi-Signature Auszahlungs-Pflicht (REQ-SC-087)
 
 Jede Auszahlung aus einer Treasury MUSS durch ein Multi-Signature-Schema mit mindestens 3 von 5 Bestätigungen freigegeben werden.

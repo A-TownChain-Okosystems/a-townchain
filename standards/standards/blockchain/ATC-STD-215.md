@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-215
   title: "Tokenomics Standard"
@@ -27,7 +28,7 @@ standard:
     - ATC-STD-NET-003
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-215 — Tokenomics Standard (v1.0.0, APPROVED)
 
@@ -46,7 +47,6 @@ Verifikationspflichten sowie Security-Betrachtungen.
 Schluesselwoerter: MUSS/MUSS NICHT, SOLLTE, DARF/KANN — RFC 2119 (MUST/SHOULD/MAY)
 gemaess ATC-STD-000 §10.
 
-
 ## §1 Gegenstand & Verortung
 
 Das gesamtwirtschaftliche Token-Modell des ATC-Tokens: Value-Flows, Incentive-Struktur,
@@ -62,7 +62,6 @@ Staking Rewards (206), Treasury (207), Allocation/Vesting (209/210).
 4. **KR-4:** Aenderungen am Tokenomics nach Mainnet erfordern den Upgrade-Prozess (ATC-STD-NET-006) inkl. Governance-Approval — direkte Parameteraenderungen sind VERBOTEN (MUST NOT).
 5. **KR-5:** Vor jeder Promotion DUERFEN Tokenomics-Aenderungen nur mit abgeschlossener Simulation auf Testnet (GATE-012) erfolgen.
 6. **KR-6:** Der Realwert-Status je Stufe (DEV-ATC/TEST-ATC wertlos, ATC real) MUSS gemaess ATC-STD-NET-001..003 erzwungen sein.
-
 
 ## §3 Schnittstellen & Kopplungen
 

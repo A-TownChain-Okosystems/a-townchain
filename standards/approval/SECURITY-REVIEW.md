@@ -13,6 +13,7 @@
 | S7 | Recovery-Mechanismen: Deprecation/Retirement mit Ersatzdokumentation (§28); Konflikt-Resolution (§31) | PASS |
 
 **Findings (keine Blocker):**
+
 - **S-F01 (MEDIUM, Auflage):** §34 nennt die Integritaetsmassnahmen, aber die
   physische Umsetzung im atc-standards-Repository steht noch aus (main ohne
   Zweig-Absicherung verifiziert; Signed Releases/Tags nicht eingerichtet).
@@ -38,6 +39,5 @@ Gegenstand: ATC-STD-000 v1.2.0 — neu §37 ID-Allokationsprozess (SCR-0001,
 REQ-STD-002) und §38 Security Considerations (F-004, REQ-STD-003).
 v1.1.0 (APPROVED) unveraendert; beide Absaetze rein additiv, keine
 Aenderung bestehender Abschnitte.
-
 
 **Ergebnis: PASS.** §38 adressiert die offene Security-Luecke (F-004): Secrets-Policy, Branch-Protection, GPG-Signierung, Integritaet, Reviewer-Unabhaengigkeit. Keine neuen Angriffsflaechen durch §37 (rein prozedural).

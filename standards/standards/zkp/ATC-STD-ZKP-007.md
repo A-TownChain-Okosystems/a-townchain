@@ -52,14 +52,6 @@ Private Transaktionen (Alice → ZKP Prover → Proof → Chain) und GameFi-Bewe
 - **Metrik 2:** Fehlerrate bei Range-Proof-Validierungen MUSS 0% sein.
 - **Metrik 3:** Latenz der privaten Transaktionsverarbeitung MUSS unter 250 ms liegen.
 - **Metrik 4:** Präzision der Gebührenberechnung im Circuit MUSS exakt 100% erreichen.
-
-
-## Metriken & Akzeptanzkriterien
-
-- **Metrik 1:** Erfolgsquote bei der Verifikation privater Wert-Transfers MUSS 100% betragen.
-- **Metrik 2:** Fehlerrate bei Range-Proof-Validierungen MUSS 0% sein.
-- **Metrik 3:** Latenz der privaten Transaktionsverarbeitung MUSS unter 250 ms liegen.
-- **Metrik 4:** Präzision der Gebührenberechnung im Circuit MUSS exakt 100% erreichen.
 - **Metrik 5:** Durchsatz von privaten Wertübertragungen MUSS mindestens 100 TPS betragen.
 
 ## Compliance & Verifikation
@@ -90,6 +82,7 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 ## References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard (Verfassung, v1.1.0 APPROVED)
 - ATC-STD-100
 - ATC-STD-201
@@ -100,5 +93,6 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 - ATC-STD-ZKP-010
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - AD-045 — ZKP-Layer-Festlegung (Repo atc-zkp, Standards-Serie)

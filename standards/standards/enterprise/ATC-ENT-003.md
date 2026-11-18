@@ -40,7 +40,7 @@ kritische Architekturentscheidung darf „irgendwo im Chat verschwinden".
 
 ## 2. Decision Record (DEC-NNNN)
 
-```
+```text
 DEC-0001
 ├── Problem
 ├── Optionen
@@ -87,6 +87,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 5. Verbindliche Entscheidungsregeln
 
 1. Alle kritischen Architekturentscheidungen und organisatorischen Beschlüsse MUSS in Form eines DEC-Records (DEC-NNNN) dokumentiert werden.
@@ -120,9 +121,11 @@ Invalide oder unberechtigte Entscheidungen können die Systemsicherheit gefährd
 ## 10. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-013**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-ENT-014**: Referenzierter Standard im ATC-Regelwerk

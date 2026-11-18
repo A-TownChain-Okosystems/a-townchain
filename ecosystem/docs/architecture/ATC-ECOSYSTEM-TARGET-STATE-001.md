@@ -42,6 +42,7 @@ Importierte Subtrees sind Integrations-Snapshots. Sie dürfen die Quell-SSOT nic
 **Der Ist-/Registry-Stand bleibt davon getrennt:** Der derzeitige Layer-Architekturentwurf und das Registry-SSOT auf `main` deklarieren **L0–L10 und X1–X8**. Die Manifest-Dokumentation dokumentiert das Zielmodell für die Planung, ersetzt aber keine normative Architektur-/Standards-Freigabe und migriert Registry, Mapping oder Validatoren nicht automatisch. Es darf weder eine bereits erfolgte Registry-Migration noch eine normative Freigabe behauptet werden.
 
 Nachweisbarer Registerstand bei der Prüfung:
+
 - Architekturdatei: [ATC-ECOSYSTEM-LAYER-ARCHITECTURE-001.md](ATC-ECOSYSTEM-LAYER-ARCHITECTURE-001.md), Blob-SHA `0c9c4e2d811125131011c1bec68aae744f620b0a`.
 - Layer-Registry: [ATC-LAYER-REGISTRY-001.yaml](layers/ATC-LAYER-REGISTRY-001.yaml), Blob-SHA `045a45098f51408b6fb99e75639afc997d733eb0`.
 - Component mapping: [ATC-LAYER-MAPPING-001.yaml](layers/ATC-LAYER-MAPPING-001.yaml), Blob-SHA `3f58d6a9b0e3ed794e75bd84b2f08d6028363693`.
@@ -62,6 +63,7 @@ Nachweisbarer Registerstand bei der Prüfung:
 ### Erforderliche Freigabe und koordinierte Migration
 
 Das Zielmodell für die Planung ist `L0–L9 + X0–X36`; die normative Freigabe und die Migration sind jedoch separate, noch offene Schritte. Vor Änderungen am Registry-SSOT muss der zuständige Architektur-/Standards-Owner mindestens dokumentieren:
+
 1. die Verantwortlichkeiten von L0–L9 und X0–X36 sowie die Behandlung der bisherigen L10-Verantwortlichkeiten;
 2. stabile Definitionen und Eigentümer für X0–X36 einschließlich der bestehenden X1–X8-Definitionen;
 3. die Referenzabbildung für Komponenten, Funktionen, Sub-Layer und bestehende Katalogeinträge;

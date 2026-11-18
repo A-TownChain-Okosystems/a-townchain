@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-PROTOCOL-001
   title: "ATC Protocol Standards — Dachstandard oberhalb der Einzelprotokolle: einheitliche Regeln für Identität, Versionierung, Nachrichten, Sicherheit, Fehler, Kompatibilität, Governance und Auditing aller ATC-Protokolle (ATC-PROTO-*)"
@@ -33,7 +34,7 @@ standard:
     - ATC-STD-AOS-001
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-PROTOCOL-001 — ATC Protocol Standards (v1.0.0, APPROVED)
 

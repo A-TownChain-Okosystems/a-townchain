@@ -1,4 +1,5 @@
 ---
+
 protocol:
   id: ATC-PROTO-P2P-001
   name: "ATC Peer-to-Peer Protocol — Verbindliche Spezifikation des P2P-Netzwerkschichts-Protokolls (Discovery, Peer-Lifecycle, Envelope, Gossip, Handshake, Sicherheit, Versionierung)"
@@ -30,7 +31,7 @@ protocol:
     - ATC-PROTO-TX-001
     - ATC-PROTO-IDENTITY-001
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-PROTO-P2P-001 — ATC Peer-to-Peer Protocol (v1.0.0, APPROVED)
 

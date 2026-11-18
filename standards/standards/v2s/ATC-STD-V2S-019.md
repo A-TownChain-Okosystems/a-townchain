@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-V2S-019
   title: "Operations Standard"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-V2S-019 — Operations Standard (v1.0.0, CANDIDATE)
 
@@ -51,6 +52,7 @@ für Monitoring (V2S-020), Incident Management (V2S-021) und kontinuierliches Fe
 
 Gemäß Master ATC-STD-V2S-000 §13 gliedert sich der Betrieb in 11 funktionale
 Betriebspflichten:
+
 1. Monitoring, 2. Logging, 3. Metrics, 4. Alerting, 5. Backup, 6. Recovery,
 7. Incident Management, 8. Security Monitoring, 9. Performance Monitoring,
 10. Capacity Monitoring, 11. Version Management.

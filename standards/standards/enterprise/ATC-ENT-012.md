@@ -39,7 +39,7 @@ auseinanderlaufen.** (AI-DEV-010 §1 als Unternehmensgrundsatz)
 
 ## 2. Consistency Gate (Release-blockierend)
 
-```
+```text
 CODE CHANGE
   ├── Wiki  ├── Architecture  ├── Standards  ├── API Specification
   ├── Roadmap  └── Changelog
@@ -81,6 +81,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 5. Verbindliche Wissensmanagement-Regeln
 
 1. Bei jeder Code- oder Standard-Änderung MUSS alle betroffenen Wissensarchive (Wiki, Architektur, Roadmap) synchronisiert werden.
@@ -114,9 +115,11 @@ Inkonsistente Dokumentation und veraltete Architekturdaten führen zu Fehlkonfig
 ## 10. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-ENT-014**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-STD-AI-DEV-007**: Referenzierter Standard im ATC-Regelwerk

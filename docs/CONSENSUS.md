@@ -18,7 +18,7 @@ Jede Runde wählt deterministisch einen Proposer, sammelt signierte Stimmen bis 
 2/3-Quorum und finalisiert den Block. Der Node finalisiert damit ohne äußeren Anstoß
 alle zwei Sekunden einen Block; die Höhe wächst und ist über RPC abfragbar.
 
-```
+```text
 RPC (Zeilenprotokoll)         RPC (JSON-RPC)
   HEIGHT                        height
   BEST_HASH                     consensus

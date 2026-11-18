@@ -70,12 +70,15 @@ Gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung.
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - ATC-AI-GOV-CHECK-001 — Checks · ATC-STD-AUDIT-001 — AUD-Records · ATC-STD-IMPROVEMENT-001 — IMP-Records · ATC-STD-999 — Master-Audit
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `ai/audit.yaml`, `docs/AGOV-RUN-2026-09-09.md`, `ai/audit/SNAPSHOT-2026-09-09.json`, `docs/READINESS-2026-09-09.md`
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release (Owner-Entwurf 09.09., SCR-0061): 4 REQ, 3 COM-Gates; operational vorbereitet durch SCR-0058/0060 (Läufe, Snapshot, Readiness)

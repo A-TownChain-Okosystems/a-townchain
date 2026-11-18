@@ -14,25 +14,33 @@ document:
 # DEC-0001 — <Titel>
 
 ## Problem
+
 ...
 
 ## Optionen
+
 1. ...  2. ...
 
 ## Bewertung
+
 | Option | Stärken | Risiken | ...
 
 ## Entscheidung
+
 ...
 
 ## Verantwortlicher
+
 ROLE-XXX (Datum)
 
 ## Auswirkungen
+
 ...
 
 ## Abhängigkeiten
+
 DEC-NNNN · SCR-XXXX · <Standard-ID>
 
 ## Review-Date
+
 YYYY-MM-DD

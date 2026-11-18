@@ -81,7 +81,6 @@ Dieser Standard ist ein essenzieller Baustein des Tier 6 (Distributed Intelligen
 
 *Automatisch generiert aus ATC-44.docx durch Aurora (MasterBrain · Base44) · 05.07.2026*
 
-
 ---
 
 ## Ergänzung — Gas-Costs, Testing & Sprint-Zuweisung
@@ -92,7 +91,8 @@ Dieser Standard ist ein essenzieller Baustein des Tier 6 (Distributed Intelligen
 
 | Operation | Gas-Cost |
 |-----------|----------|
-| core_operation | 5000 | consensus_check: 2000 | sync_state: 1000 |
+| core_operation | 5000 |
+| consensus_check: 2000 | sync_state: 1000 |
 | verify | 5000 |
 | sync | 2000 |
 | configure | 1000 |

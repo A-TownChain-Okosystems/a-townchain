@@ -61,7 +61,7 @@ standard:
 > als ATC-STD-BUG-005 in die Bug-Familie integriert (SCR-0012, Builder-Chat 07.09.2026, 22:35 UTC+2).
 > **Familie:** Bug & Konsistenz-Lebenszyklus (ATC-STD-BUG-001..499) — Kategorie `bug`, SCR-0011/0012.
 > Mit der Sammelfreigabe 22:25 UTC+2: APPROVED/ACTIVE.
-
+>
 > Einheitlicher Prozess für Fehleranalyse und Root-Cause-Analysis im gesamten Ökosystem: Fehler erkennen, reproduzieren, klassifizieren, Auswirkungen bestimmen, Ursache ermitteln, Ursache von Symptomen trennen, beheben, verifizieren, Regression ausschließen, Dokumentation synchronisieren, Lessons Learned erfassen, Wiederholung verhindern. Dieser Standard ist das Analyse- und QMS-Mitglied der Bug-Familie (ATC-STD-BUG-001..004 regeln Finding, Dokumentation, Fix-Lifecycle und Merge-Gate; dieser Standard regelt Analyse-Tiefe und Quality Management) — ein vollständiger Defect & Incident Management Lifecycle in einer Familie.
 
 ## 1. Zweck (Purpose)
@@ -162,7 +162,7 @@ id: REQ-STD-144
 
 Der Fehler-Status MUSS konsistent zum Fix-Lifecycle aus ATC-STD-BUG-003 (REQ-STD-121, 12 Stufen) sein. Die Analyse-Phasen verfeinern die Stufe ANALYZED wie folgt:
 
-```
+```text
 DETECTED → TRIAGED → REPRODUCING → ANALYZING → ROOT_CAUSE_IDENTIFIED
 → FIX_PLANNED → FIXING → FIXED → VERIFYING → REGRESSION_CHECK
 → DOCUMENTATION_SYNC → CLOSED          (BUG-003: ANALYZED … VERIFIED/CLOSED)
@@ -315,7 +315,7 @@ Root Cause: Fehlende verbindliche State-Synchronisationsarchitektur.
 
 ### 5.2 Fault Tree Analysis (bei S0 und ausgewählten S1)
 
-```
+```text
 SYSTEM FAILURE
       |
       +-- Component Failure
@@ -352,7 +352,7 @@ Fix-Kette gemäß BUG-003 (REQ-STD-154). Regression-Entscheidung je Fehler (REQ-
 
 ## 12. Dokumentations-Synchronisation
 
-```
+```text
 Code ↕ Tests ↕ README ↕ Wiki ↕ Architecture ↕ Specification
 ↕ API-Dokumentation ↕ CHANGELOG ↕ ROADMAP
 ```
@@ -373,7 +373,7 @@ Gemäß REQ-STD-161/023. Der Unterschied zwischen einfacher Bug-Behebung und pro
 
 ## 16. Einordnung in die Standard-Hierarchie
 
-```
+```text
 ATC Enterprise Standards
 ├── Governance Standards
 ├── Software Development Standards (Coding, Repository, Versioning, CHANGELOG, Testing)
@@ -467,6 +467,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## Changelog
 
 ### 1.0.0 — 2026-09-07
+
 - Initial Release (Owner-Entwurf Michael Wroblewski, harmonisiert mit ATC-STD-BUG-001..004, ATC-STD-DESC-001, ATC-STD-VERSION-001)
 - 24 normative Anforderungen (REQ-STD-141..164), 6 COM-BUG-Gates (COM-BUG-501..506)
 - SCR-0011/0012: Konfliktlösung F-NNN vs. BUG-/SEC-/SCBUG-/AIBUG-NNNNN dokumentiert

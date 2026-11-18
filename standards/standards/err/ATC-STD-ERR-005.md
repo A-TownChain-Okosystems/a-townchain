@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-005
   title: "Cross-Repository Error Scan"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-005 — Cross-Repository Error Scan (v1.0.0, CANDIDATE)
 
@@ -26,11 +27,14 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 Bei systemisch relevantem Fehler (P0/P1) wird die GESAMTE Organisation geprueft —
 alle Repositories der Organisation.
 
 ## Kernregeln
+
 Je betroffenem Repository werden mindestens geprueft (5 Pruefmatrizen):
+
 1. **Source Code:** gleiche Implementierung/Funktion/Logik/Konstanten/Algorithmen/
    Konfiguration.
 2. **Dokumentation:** README, Markdown, Wiki, Specs, Architecture Docs, API Docs,
@@ -52,6 +56,7 @@ Der Scan dokumentiert `repositories_checked` und je Repository das Ergebnis
 | REQ-ER-051 | Ergebnis je Repository dokumentiert; repositories_checked/occurrences_found im Record |
 
 ## Implementierungsstatus
+
 SPECIFIED — Umsetzung: Cross-Repo-Scan-Bericht im Knowledge Record; Kopplung an
 kai_os_sync-Repo-Liste (26 Repos).
 
@@ -60,8 +65,10 @@ kai_os_sync-Repo-Liste (26 Repos).
 Cross-Repo-Scans verwenden nur Repository-Zugriff mit read-only Rechten; Ergebnisse enthalten keine Secrets.
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-ERR-000/-004, ATC-STD-REPO-AUDIT-002 (Check-Engine) ·
 INFORMATIVE: SCR-0044

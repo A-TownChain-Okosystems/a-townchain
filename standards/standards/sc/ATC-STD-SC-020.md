@@ -49,9 +49,6 @@ Ein Agent DARF einen Smart Contract nicht ohne bestandene Gates deployen; Mainne
 
 Agenten-Beitraege sind AUD-pflichtig (AI-DEV-009, AAS-010 Evidence): Task → Commit → Testergebnis → Gate-Stand gehoeren in den AUD-Record.
 
-
-
-
 ## 4. Automatisierter Gate-Durchlauf für KI-Code (REQ-SC-123)
 
 Von KI-Agenten generierter Smart-Contract-Code MUSS alle automatisierten Gates SC-G0 bis SC-G6 ohne manuellen Override bestehen.

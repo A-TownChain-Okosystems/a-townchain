@@ -26,6 +26,7 @@ Aufruf:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -565,6 +566,8 @@ def apply(path: Path, block: str, write: bool, begin: str = BEGIN, end: str = EN
     start = text.index(begin)
     stop = text.index(end) + len(end)
     new = text[:start] + block + text[stop:]
+    # erzeugter Block darf keine doppelten Leerzeilen hinterlassen (MD012)
+    new = re.sub(r"\n{3,}", "\n\n", new)
     if new == text:
         return True
     if write:

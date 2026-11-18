@@ -45,9 +45,6 @@ Schluesselparameter (IDs, Adressen, Gruende) SOLLEN indexed sein, damit Off-Chai
 
 Events BILDEN die Grundlage fuer: AuditTrail, LogChain, DefenderGPT, MinerWatcherGPT, Governance Monitoring, Explorer, Compliance, Forensics — aenderungen am Event-Set sind daher Interface-aenderungen (ATC-STD-204).
 
-
-
-
 ## 4. Indizierung von Hauptparametern (REQ-SC-079)
 
 Sicherheits- und abwicklungsrelevante Events MUESSEN mindestens zwei und maximal drei indexed-Parameter zur effizienten Off-Chain-Filterung besitzen.

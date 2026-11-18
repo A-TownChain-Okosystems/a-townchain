@@ -1,3 +1,4 @@
+---
 standard:
   id: ATC-STD-000
   title: "Standards Governance & Specification Standard"
@@ -64,7 +65,7 @@ ausdruecklich als ATC Standard registriert wird.
 
 Die normative Hierarchie lautet:
 
-```
+```text
 ATC-STD-000
     |
     v
@@ -265,7 +266,7 @@ Reserviert und nicht allokierbar:
 
 Ein Standard durchlaeuft einen kontrollierten Lifecycle:
 
-```
+```text
 IDEA -> PROPOSED -> DRAFT -> REVIEW -> CANDIDATE -> APPROVED -> STABLE -> DEPRECATED -> RETIRED
 ```
 
@@ -322,7 +323,7 @@ Informative Inhalte duerfen keine widerspruechlichen Regeln enthalten.
 Ein Standard darf nicht ohne Pruefung den Status APPROVED oder STABLE
 erhalten. Die minimale Review Chain:
 
-```
+```text
 Author -> Technical Review -> Security Review -> Architecture Review -> Approval
 ```
 
@@ -463,7 +464,7 @@ Meta-Governance muss unabhaengig bleiben.
 
 ## 36. Final Governance Model
 
-```
+```text
 ATC-STD-000 (Standards Constitution)
     |
     +---------------+---------------+
@@ -493,7 +494,7 @@ Review-Chain nach §14 gegen diese Fassung durchgefuehrt und dokumentiert
 (approval/TECHNICAL-REVIEW.md, approval/SECURITY-REVIEW.md,
 approval/ARCHITECTURE-REVIEW.md):
 
-```
+```text
 ATC-STD-000 v1.0.0
     |
     +-- Technical Review    -> PASS   (07.09.2026)

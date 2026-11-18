@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-LICENSE-002
   title: "License Specification Standard"
@@ -21,7 +22,7 @@ standard:
   related_standards: []
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-LICENSE-002 — License Specification Standard (v1.1.0, APPROVED)
 

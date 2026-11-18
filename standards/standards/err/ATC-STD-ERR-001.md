@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-001
   title: "Error Discovery"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-001 — Error Discovery (v1.0.0, CANDIDATE)
 
@@ -26,11 +27,13 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 Fehler eindeutig erfassen. ERR-001 definiert die Erfassungs-Pflicht; das
 Record-Format und Severity-Modell kommen normativ aus ATC-STD-BUG-001 (keine
 Re-Spezifikation).
 
 ## Kernregeln
+
 - Jeder gefundene Fehler ERHAELT eine error_id `ATC-ERR-NNNN` (fortlaufend, Registry-First).
 - Pflichtfelder: Fundstelle (Repo/Datei/Zeile), Zeitpunkt, Beobachter (Agent/Mensch),
   Schwere (BUG-001 S0–S4), Erstbeschreibung.
@@ -45,6 +48,7 @@ Re-Spezifikation).
 | REQ-ER-011 | Fundstelle/Zeitpunkt/Beobachter/Schwere sind Pflichtfelder |
 
 ## Implementierungsstatus
+
 SPECIFIED — Umsetzung: error_id-Serie im Docs-Hub (docs/error-records/INDEX.md).
 
 ## Security Considerations
@@ -52,7 +56,9 @@ SPECIFIED — Umsetzung: error_id-Serie im Docs-Hub (docs/error-records/INDEX.md
 Discovery-Records enthalten keine Zugangsdaten; Schwere-Angaben folgen BUG-001 (S0-S4). Fundstellen in Logs/Reports nur mit $ENV-Platzhaltern.
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-BUG-001, ATC-STD-BUG-002, ATC-STD-ERR-000/-013 · INFORMATIVE: SCR-0044

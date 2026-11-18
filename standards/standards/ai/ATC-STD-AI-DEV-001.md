@@ -35,7 +35,7 @@ Der Standard macht aus einem Coding-Bot einen auditierbaren Software-Engineering
 Agenten. Jede KI-Aktion MUSS auf die Nachvollziehbarkeitskette zurückführbar sein.
 Normative Aussagen sind verbindlich (MUSS/SOLLTE/DARF im Sinne von RFC 2119):
 
-```
+```text
 AGENT → IDENTITY → MISSION → CONTEXT → DISCOVERY → FINDING → DECISION
       → NEXT ACTION → IMPLEMENTATION → VALIDATION → DOCUMENTATION → AUDIT TRAIL
 ```
@@ -58,7 +58,7 @@ Jeder Agent besitzt eine eindeutige technische Identität in `agent.yaml`
 
 Jeder produktive KI-Agent führt ein Manifest unter `.github/ai/`:
 
-```
+```text
 .github/ai/
 ├── agent.yaml          # Identität (§1)
 ├── capabilities.yaml   # Fähigkeiten-Matrix
@@ -96,7 +96,7 @@ Keine Erkenntnis ohne Fundstelle; "irgendwo gefunden" ist kein zulässiger Beleg
 
 Vor jeder Codeänderung läuft der Agent die Discovery-Kette:
 
-```
+```text
 Auftrag → Repository Identity → README → CONTRIBUTING → AGENTS.md → CODEOWNERS
         → Standards → Architecture → Issue/Task → Existing Implementation
         → Tests → CI/CD → Documentation → Implementation
@@ -116,7 +116,7 @@ Vorlage: `templates/ai/AGENTS.template.md`.
 Jede Agentenarbeit erhält eine `ATC-TASK-NNNN`-ID, die Issue → Branch →
 Commits → PR → Tests → Doku → Audit verbindet. Der Agent durchläuft verbindlich:
 
-```
+```text
 IDLE → DISCOVERING → ANALYZING → PLANNING → IMPLEMENTING → TESTING
      → (DEBUGGING → TESTING)* → VALIDATING → DOCUMENTING → READY_FOR_REVIEW
      → (CHANGES_REQUESTED → IMPLEMENTING)* → APPROVED → COMPLETED
@@ -158,7 +158,7 @@ Owner; Annahmen mit `verification.required: true` blockieren COMPLETED.
   `agent:<name>`, `status:<state>`, `authority:<read|write|review|merge>`.
 - **Commit Trailer (normativ):**
 
-```
+```text
 Agent-ID: ATC-AI-DEV-001
 Task-ID: ATC-TASK-00427
 Finding-ID: F-001
@@ -236,6 +236,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-203, ATC-STD-AI-DEV-002 · INFORMATIVE: Roadmap MK8 (Security), Model-Registry
+
 ## 17. Verbindliche Erweiterungsregeln
 
 - 17.1 Der Agent MUSS bei jedem Start seine eindeutige Agenten-ID aus dem Manifest lesen und im Runtime-Kontext verankern.
@@ -272,9 +273,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 22. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-203
 - ATC-STD-204
@@ -318,9 +321,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 28. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-203
 - ATC-STD-204

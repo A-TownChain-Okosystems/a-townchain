@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-V2S-020
   title: "Monitoring Standard"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-V2S-020 — Monitoring Standard (v1.0.0, CANDIDATE)
 
@@ -49,6 +50,7 @@ das Incident Management (V2S-021) sowie für die systematische Erfassung von Sys
 (V2S-022 / Feedback Standard).
 
 Die drei Säulen des Observability-Frameworks sind:
+
 1. **Logging:** Strukturierte Aufzeichnung von Systemereignissen mit Traceability.
 2. **Metrics:** Zeitreihendaten zu Performance, Fehlerraten und Systemzuständen.
 3. **Alerting:** Zielgerichtete, stufenbasierte Alarmierung bei Grenzwertverletzungen.

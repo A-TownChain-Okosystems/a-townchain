@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-114
   title: "Git Standard"
@@ -27,7 +28,7 @@ standard:
     - ATC-STD-203
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-114 — Git Standard (v1.0.0, APPROVED)
 
@@ -46,7 +47,6 @@ Verifikationspflichten sowie Security-Betrachtungen.
 Schluesselwoerter: MUSS/MUSS NICHT, SOLLTE, DARF/KANN — RFC 2119 (MUST/SHOULD/MAY)
 gemaess ATC-STD-000 §10.
 
-
 ## §1 Gegenstand & Verortung
 
 Git als verbindliches Versionskontrollsystem des Oekosystems: Workflow-Modell,
@@ -62,7 +62,6 @@ Merge Policy (105), Tagging (107). Dieser Standard ist das uebergreifende Rahmen
 4. **KR-4:** Binaries und grosse Assets SOLLTEN nicht im Tree liegen, sondern als Artefakte/LFS — Repos MUESSEN klein und klonbar bleiben.
 5. **KR-5:** Vor jedem Merge MUSS der Tree-Status sauber sein (0 uncommittete Artefakte, 0 Konflikte).
 6. **KR-6:** Submodules sind in der Integrationslandschaft VERBOTEN (MUST NOT) — Modul-Sync erfolgt via scripts/sync_modules.py (AD-017).
-
 
 ## §3 Schnittstellen & Kopplungen
 

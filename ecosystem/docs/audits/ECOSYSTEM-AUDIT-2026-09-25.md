@@ -82,6 +82,7 @@ These gates are registered now but MUST NOT be marked verified by documentation 
 The current umbrella repository already documents that production-readiness requires successful CI and that the canonical runtime path must be backed by evidence. This audit therefore treats claims without current source/test/CI/E2E evidence as unverified.
 
 The repository currently maps:
+
 - `components/atclang` → `atclang`
 - `components/a-townchain` → `a-townchain`
 - `components/aurora-ai` → `aurora-ai`

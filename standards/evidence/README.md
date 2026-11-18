@@ -6,6 +6,7 @@ security/ · technology/ · dependencies/ · vulnerabilities/ · fuzzing/ ·
 audits/ · penetration-testing/ · releases/
 
 Grundsätze (verbindlich, ATC-GATE-SEC-001):
+
 - **Keine künstlichen PASS-Nachweise.** Ein fehlender Test bleibt NOT VERIFIED
   und wird nicht durch Dokumentation ersetzt (ATC-STD-018 §9).
 - Evidence MUSS versioniert und einem Repository/Release zuordenbar sein.

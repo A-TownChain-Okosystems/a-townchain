@@ -42,7 +42,7 @@ Anforderungen? (Discovery-Kette AI-DEV-003 §1) · Was ist als Nächstes zu tun?
 
 ## 2. Manifest-Dateiset (Ablageort .github/ai/ gemäß AI-DEV-001 §6)
 
-```
+```text
 .github/ai/
 ├── agent.yaml          # Identität (ATC-AAS-001)
 ├── instructions.md     # Rollen-Instruktionen
@@ -79,6 +79,7 @@ Agenten-spezifisch: Agent-Identitaet via AGENT_MANIFEST verifizierbar; Permissio
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-201..203, ATC-AAS-001 · INFORMATIVE: AGENT_MANIFEST.md v3.1.7, Registry-Kategorie aas
+
 ## 4. Ergänzende Verbindliche Betriebs- und Governance-Regeln
 
 1. Beim Betreten eines Repositories MUSS der Agent als allererste Aktion die geforderte Entry-Chain gemäß `.github/ai/` durchführen.

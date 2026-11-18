@@ -1,4 +1,5 @@
 # ATC-02 — Liquid State Migration & Failover Mechanics
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 2.2 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-02
 > **Referenzen:** ATC-01 (Core Node Protocol), ATC-98 (Kernel), Issue #4 (Persistenz), Issue #50 (AI Kernel)
@@ -27,10 +28,12 @@ In einem klassischen System sind Daten an den Speicher eines bestimmten
 physischen Geräts gebunden. ATC-02 bricht diese Bindung auf:
 
 ### 1.1 State-Snapshotting
+
 Jeder Node erzeugt in extrem kurzen Intervallen Snapshots seines aktuellen
 Arbeitsspeichers und der laufenden Aufgaben (z. B. einer KI-Inferenz-Berechnung).
 
 **Implementation:**
+
 - `backend/api/orchestrator/orchestrator.py` — Task-Status-Tracking
   (PENDING → RUNNING → DONE/FAILED/TIMEOUT)
 - `backend/db/migrate.py` — In-Memory → SQLite Migration (Issue #4)
@@ -41,10 +44,12 @@ Arbeitsspeichers und der laufenden Aufgaben (z. B. einer KI-Inferenz-Berechnung)
 > Aktuelle Persistenz erfolgt über SQLite als Zwischenspeicher.
 
 ### 1.2 Netzwerk-Verankerung
+
 Diese Snapshots werden im Netzwerk verankert. So wissen andere Nodes im Mesh:
 "Node A befindet sich gerade bei Status X".
 
 **Implementation:**
+
 - `core/event_bus.py` — Event-Bus für Status-Propagation
 - ATCNet Gossip Protocol — für Netzwerkweite State-Verteilung
 - `orchestrator.py` — `get_status()` liefert aktuellen Node-Status
@@ -54,11 +59,13 @@ Diese Snapshots werden im Netzwerk verankert. So wissen andere Nodes im Mesh:
 > nicht voll implementiert.
 
 ### 1.3 Resume-Point
+
 Wenn ein Inferenz-Node ausfällt oder überlastet ist, kann ein Ersatz-Node
 den letzten Snapshot vom Netzwerk laden und die Arbeit exakt an diesem Punkt
 wieder aufnehmen, anstatt bei Null zu beginnen.
 
 **Implementation:**
+
 - `orchestrator.py` — Circuit-Breaker erkennt Node-Ausfall
 - Task-Warteschlange ermöglicht Wiederaufnahme nach Fehler
 - `modules/kernel/ai_kernel/ai_kernel.py` — KI-Inferenz mit Status-Tracking
@@ -75,21 +82,25 @@ Ohne diesen Standard wäre das KAI-OS extrem anfällig für "State-Loss"
 (Zustandsverlust):
 
 ### 2.1 Vermeidung von Datenverlust
+
 Wenn ein Node während einer rechenintensiven KI-Aufgabe ausfällt, geht ohne
 ATC-02 die gesamte bisher geleistete Arbeit verloren. Mit ATC-02 wird die
 Berechnung auf einem anderen Node nahtlos fortgesetzt.
 
 **Implementation:**
+
 - `orchestrator.py` — Task-Status (PENDING, RUNNING, DONE, FAILED, TIMEOUT)
 - Fehlgeschlagene Tasks werden im Status `FAILED` erfasst
 - `ai_kernel.py` — On-Chain Logging aller KI-Entscheidungen (Hashes)
 
 ### 2.2 Lastausgleich (Load-Balancing)
+
 ATC-02 dient als Basis für den Load-Balancer. Wenn ein Node überlastet ist,
 können Aufgaben "flüssig" auf einen unterlasteten Node migriert werden, ohne
 die Transaktionslogik zu unterbrechen.
 
 **Implementation:** ✅ Implementiert
+
 - `orchestrator.py` — Load-Balancing mit Task-Routing
 - Service-Registry: Blockchain, Wallet, AI, Game, Governance, Marketplace, Nodes
 - Circuit-Breaker schützt vor Überlastung
@@ -108,11 +119,13 @@ class TaskType(IntEnum):
 ```
 
 ### 2.3 Wartungsfähigkeit
+
 Nodes können für Software-Updates aus dem Netzwerk genommen werden, indem sie
 ihren Zustand an andere Nodes "übergeben", ohne dass der Endnutzer einen
 Service-Abbruch bemerkt.
 
 **Implementation:**
+
 - `orchestrator.py` — Graceful Shutdown mit Status-Export
 - `backend/db/migrate.py` — State-Migration (In-Memory → SQLite)
 - `config/settings.json` — Node-Rollen-Konfiguration (full, light, validator)
@@ -127,6 +140,7 @@ Service-Abbruch bemerkt.
 ATC-02 agiert als "Schmiermittel" zwischen den Schichten:
 
 ### 3.1 Tier 1 (Netzwerk)
+
 Stellt sicher, dass die Snapshots über das Mesh-Netzwerk übertragen werden
 können.
 
@@ -135,21 +149,25 @@ an alle Peers. State-Snapshots würden als spezieller Nachrichtentyp
 (`STATE_SNAPSHOT`) über das gleiche Protokoll verteilt werden.
 
 ### 3.2 Tier 3 (Kernel/Infrastruktur)
+
 Hier wird der Snapshot-Mechanismus technisch implementiert, indem der
 Arbeitsspeicher-Zustand serialisiert wird.
 
 **Implementation:**
+
 - `core/kernel.py` — ShivaOS Kernel
 - `core/event_bus.py` — Event-Bus für interne State-Propagation
 - `backend/db/repository.py` — Serialisierung in SQLite
 - `backend/db/migrate.py` — State-Migration
 
 ### 3.3 Tier 4 (KI-Inferenz)
+
 Hier entfaltet ATC-02 seinen größten Nutzen, da KI-Berechnungen (wie die von
 KAI) oft minutenlange Vorab-Berechnungen erfordern, die nicht bei jedem
 kleinen Fehler erneut gestartet werden sollten.
 
 **Implementation:** ✅ Teilweise implementiert
+
 - `modules/kernel/ai_kernel/ai_kernel.py` (v3.2.1, 14.316 chars)
   - **LLMRouter** — HuggingFace Inference API (4 Modelle)
   - **ReasoningEngine** — Neurosymbolisches Reasoning (async)
@@ -178,7 +196,8 @@ kleinen Fehler erneut gestartet werden sollten.
 
 > **Fazit:** Das Load-Balancing und der Circuit-Breaker sind voll implementiert.
 > Das echte "Liquid State" Konzept (Memory-Snapshotting + Netzwerk-Verankerung
-> + Resume-Point auf fremdem Node) ist konzeptionell final und teilweise
+>
+> - Resume-Point auf fremdem Node) ist konzeptionell final und teilweise
 > implementiert (DB-Persistenz, Event-Bus), aber die nahtlose Node-übergreifende
 > State-Migration ist ein Zukunftsfeature.
 
@@ -213,7 +232,6 @@ kleinen Fehler erneut gestartet werden sollten.
 *Dieses Dokument wurde aus der ursprünglichen Atc-02.docx Spezifikation
 abgeleitet und mit der tatsächlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 21:17 | Aurora (Superagent)*
-
 
 ---
 

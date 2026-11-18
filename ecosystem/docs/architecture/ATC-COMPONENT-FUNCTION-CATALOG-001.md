@@ -128,7 +128,6 @@ This is deliberately not equivalent to 33 complete function inventories. The cur
 
 Next audit passes must add repository-specific function IDs and interface contracts for the remaining active domains, including SDK, node, contracts, ZKP, storage/compute services, oracle/interop, applications, organization governance and repository orchestration. Migration candidates require source-to-canonical path/history evidence before KEEP/SYNC/ARCHIVE decisions.
 
-
 ## Completeness supplement 2026-10-12
 
 A full organization census (26/26 active repositories scanned, 4,917 source files, 35,550 candidate public symbols) was reconciled against this catalog. Results:
@@ -167,7 +166,6 @@ Catalog-side `source_binding.status` values: 66 `SOURCE_MAPPED_NOT_FUNCTIONALLY_
 
 Of the 27 not-found bindings, 12 target specification, documentation, data or ATCLang (`.atc`) files the lexical scanner does not symbol-scan, and 15 are ATC-VM bindings to non-public symbols (`Parser` methods, private helpers in `assembler.rs`, binary-crate functions in `main.rs`). The 15 are marked `PRIVATE_SYMBOL_NOT_IN_PUBLIC_CENSUS`: the symbols exist at the exact SHA but are not public API candidates, so the public-symbol census cannot verify them. Both groups are documented residuals, not silent omissions.
 
-
 ### ATCLang completeness pass 2026-10-12
 
 The ATCLang component (`COMP-LANG`) was audited against the full atclang repository source at census HEAD `21c595dc`. The previous 2-function entry (parsing, native directive validation) covered only the frontend; the repository implements a complete compiler pipeline. `COMP-LANG` now defines **10 functions**, all source-bound:
@@ -186,10 +184,10 @@ The ATCLang component (`COMP-LANG`) was audited against the full atclang reposit
 Scope guardrails kept: the reference VM (`FN-LANG-007`) and stdlib reference (`FN-LANG-009`) are explicitly **reference-only** (ATC-RUNTIME-CLASSIFICATION-001); the canonical L1 execution engine remains `a-townchain/components/vm`. ABI wire encoding stays deferred to the ATC-ABI-001 conformance gate. Deep conformance of the language surface against `specs/` remains `RESIDUAL`.
 
 Note: interface `IF-002` currently attributes the bytecode wire contract to the toolchain producer; with the canonical encoder/verifier now enumerated in atclang, a follow-up interface review should confirm the producing component for the normative bytecode contract.
+
 ## Updating the catalog
 
 Update this catalog only from reviewed source/interface evidence. Every change should include a reason, exact source refs and test coverage. Unknown or inaccessible facts stay `RESIDUAL`/ `BLOCKED`. Never infer migration completeness from root/subtree tree-SHA equality alone, and never archive or delete a source repository based on this catalog alone.
-
 
 ### Current coverage counts
 
@@ -201,11 +199,9 @@ Update this catalog only from reviewed source/interface evidence. Every change s
 
 The catalog includes support/governance records for the standalone ATC-VM and ATC-Algorithm repositories, but their canonical production implementations remain in `a-townchain/components/vm` and `a-townchain/components/algorithm`. The standalone `atc-shivacore` repository is specification/support only; the canonical kernel remains under GlobusOS. Archived repositories are retained as reference records and are not silently reactivated.
 
-
 ## Cross-chain interoperability proposal (2026-10-15)
 
 The machine-readable catalog adds `COMP-XCHAIN-INTEROP` with `FN-XCHAIN-001` through `FN-XCHAIN-003` for message-contract validation, chain capability/proof-policy resolution, and replay-safe lifecycle/reconciliation. These are **specification-only, `BLOCKED`** entries linked to [atc-standards issue #110](https://github.com/A-TownChain-Okosystems/atc-standards/issues/110) and [ecosystem issue #126](https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/issues/126). No canonical executable symbol or exact source SHA has been identified, so this catalog change does not claim implementation, source completeness, bridge security, or asset-transfer readiness. Unknown consensus/finality remains `BLOCKED`; no mint/unlock/release is authorized.
-
 
 ## Category, family and class taxonomy (2026-10-16)
 

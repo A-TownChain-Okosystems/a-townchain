@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-004
   title: "Error Propagation Scan"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-004 — Error Propagation Scan (v1.0.0, CANDIDATE)
 
@@ -26,14 +27,16 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 **Der zentrale Standard der Familie:** Nach einem Fehler E MUSS eine
 Fehler-Replikationspruefung durchgefuehrt werden — im Fund-Repository entlang des
 Fehlermusters.
 
 ## Kernregeln
+
 Nicht: Fehler gefunden → behoben → fertig. Sondern die verbindliche Kette:
 
-```
+```text
 Fehler gefunden → klassifizieren (ERR-002) → Ursache bestimmen (ERR-003) →
 Fehlermuster extrahieren → gesamtes System durchsuchen → andere Vorkommen
 identifizieren → Abhaengigkeiten pruefen (ERR-007) → Doku pruefen (ERR-006) →
@@ -58,6 +61,7 @@ Code, Schemas, Interfaces. Aus „Finde denselben Fehler" wird
 | REQ-ER-042 | Scan-Doku: Dimensionen, Treffer (occurrences_found), Fundstellen |
 
 ## Implementierungsstatus
+
 SPECIFIED — Umsetzung: Scan-Block im BUG-002-Record; Validator prueft Scan-Nachweis.
 
 ## Security Considerations
@@ -65,8 +69,10 @@ SPECIFIED — Umsetzung: Scan-Block im BUG-002-Record; Validator prueft Scan-Nac
 Propagation-Scans laufen nur mit read-only Zugriff; Scan-Logs maskieren Zugangsdaten ($ENV-Platzhalter, Regel ATC-STD-203).
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-ERR-000/-002/-003/-006/-007/-008/-012, ATC-STD-BUG-002 ·
 INFORMATIVE: SCR-0044

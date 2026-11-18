@@ -16,7 +16,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-REPO-MAINT-001 — Repository Maintenance & Lifecycle (v1.0.0, CANDIDATE)
 
@@ -78,12 +78,13 @@ Bereiche via ATC-STD-REPO-AUDIT-002 CHECK-Katalog, registry/repo-audit-checks.ya
 
 ## §3 Maintenance Lifecycle (16 Stationen, verbindlich)
 
-```
+```text
 REPOSITORY DISCOVERY → BASELINE AUDIT → VERSION INVENTORY → UPDATE ANALYSIS →
 SECURITY ANALYSIS → COMPATIBILITY ANALYSIS → UPDATE PLAN → UPDATE → BUILD →
 TEST → SECURITY SCAN → DOCUMENTATION UPDATE → CHANGELOG → VERSION CHECK →
 FINAL AUDIT → MAINTENANCE COMPLETE
 ```
+
 Jede Station MUSS durchlaufen oder bewusst mit Begründung SKIPPED werden (Skip-Doku
 im Maintenance Report, REQ-RM-001).
 

@@ -162,7 +162,7 @@ The standard MUST NOT assume that every provider requires the same fields.
 
 The canonical legal information SHOULD be maintained in the standards repository using a structure equivalent to:
 
-```
+```text
 atc-standards/
 ├── standards/
 │   └── legal/
@@ -184,7 +184,7 @@ Where multiple A-TownChain-Okosystems resources use the same provider identity, 
 
 ## 12. Publication Architecture
 
-```
+```text
                  ┌──────────────────────┐
                  │ Canonical Provider   │
                  │ Record               │
@@ -211,7 +211,7 @@ Provider-data changes themselves SHOULD NOT require a new version of the standar
 
 Changes to provider-identification information MUST follow controlled change management. Minimum process:
 
-```
+```text
 CHANGE REQUEST → IDENTIFY IMPACT → UPDATE CANONICAL DATA → LEGAL/COMPLIANCE REVIEW
 → CONSISTENCY VALIDATION → PUBLICATION → POST-PUBLICATION VERIFICATION
 ```
@@ -257,7 +257,7 @@ Each publication target SHALL be classified:
 
 A release involving a public publication target classified as "L1" MUST NOT be considered compliant unless **[GATE-LEGAL-002]** has passed. Minimum gate criteria:
 
-```
+```text
 [PASS] Applicability determined          [PASS] Publication location verified
 [PASS] Provider identified               [PASS] Canonical data verified
 [PASS] Required fields reviewed          [PASS] No conflicting provider information
@@ -307,7 +307,7 @@ Repositories that publish a public service SHOULD contain a legal metadata secti
 
 ## 24. Separation from License
 
-```
+```text
 LICENSE    → Defines software copyright and usage rights
 IMPRESSUM  → Identifies provider/operator
 PRIVACY    → Defines personal-data processing
@@ -330,7 +330,7 @@ The existence of a decentralized protocol MUST NOT by itself be interpreted as e
 
 Pure on-chain code does not automatically require an embedded Impressum. However, associated public interfaces MAY require provider identification:
 
-```
+```text
 Smart Contract ├── Explorer → provider notice may apply
                 ├── Web UI   → provider notice may apply
                 ├── API      → provider notice may apply
@@ -372,7 +372,7 @@ Non-compliance MUST be documented and assigned a remediation owner.
 
 Minimum remediation workflow:
 
-```
+```text
 FIND → CLASSIFY → DOCUMENT → ASSIGN OWNER → FIX → VERIFY → UPDATE EVIDENCE → CLOSE
 ```
 
@@ -404,7 +404,7 @@ A provider notice MUST NOT simply be deleted when a service is discontinued. Whe
 
 This standard follows the ATC standards lifecycle (ATC-STD-000):
 
-```
+```text
 IDEA → PROPOSED → DRAFT → REVIEW → CANDIDATE → APPROVED → STABLE → DEPRECATED → RETIRED
 ```
 
@@ -444,7 +444,7 @@ conformance:
 
 Each applicable project SHOULD maintain:
 
-```
+```text
 compliance/
 └── legal/
     └── imprint/

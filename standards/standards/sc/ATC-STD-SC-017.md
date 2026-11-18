@@ -45,9 +45,6 @@ Reward-Emissionen MUESSEN Obergrenzen (Invariant: rewardsIssued <= rewardPool) u
 
 Wichtige Game-Ereignisse sind Event-pflichtig (SC-008) fuer Anti-Cheat-Monitoring (DefenderGPT).
 
-
-
-
 ## 4. Verifizierbare Zufallsgenerierung (VRF) (REQ-SC-115)
 
 Zufallsbasierte Spiel- und Drop-Mechanismen MUESSEN verifizierbaren Zufall (VRF) oder Commit-Reveal-Schemas nutzen; Blockhash-Zufall ist unzulässig.

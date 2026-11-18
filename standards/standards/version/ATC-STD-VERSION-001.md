@@ -55,7 +55,7 @@ standard:
 > Builder-Chat); dokumentiert in approval/APPROVAL-DECISION-2026-09-07-DESC-VERSION-v1.0.0.md.
 > Immutabilität per §30 — Änderungen nur via SCR.
 > **Familie:** Versioning Standards (ATC-STD-VERSION-001..999) — Kategorie `version`, SCR-0009.
-
+>
 > Dieser Standard definiert eine einheitliche Versionierungsstrategie für das gesamte A-TownChain-Ökosystem: Software, Standards, APIs, Smart Contracts, Protokolle, Dokumentation und Releases werden eindeutig versioniert, nachvollziehbar geändert und auditierbar released.
 
 ## 1. Zweck (Purpose)
@@ -242,7 +242,7 @@ Eine Version DARF nur einmal veröffentlicht werden und MUSS eindeutig einem def
 
 ATC verwendet grundsätzlich Semantic Versioning 2.0.0:
 
-```
+```text
 1.4.7
 │ │ │
 │ │ └── PATCH  (rückwärtskompatible Korrekturen)
@@ -277,13 +277,13 @@ ATC verwendet grundsätzlich Semantic Versioning 2.0.0:
 
 ## 6. Pre-Release-Versionen
 
-```
+```text
 alpha → beta → rc → stable
 ```
 
 Beispiel:
 
-```
+```text
 0.8.0-alpha.1 → 0.8.0-beta.1 → 0.8.0-rc.1 → 1.0.0
 ```
 
@@ -362,7 +362,7 @@ Bei bereits deployed Contracts MUSS die Deployment-/Address-Identität erhalten 
 
 Mindestens folgende Ebenen MÜSSEN unterschieden werden:
 
-```
+```text
 ATC Software
     ├── Node Version
     ├── Wallet Version
@@ -541,7 +541,7 @@ Verbotene Release-Bezeichner (latest, stable, final, new, …) und unvollständi
 
 Damit gilt die durchgängige Kette:
 
-```
+```text
 Requirement → Standard → Change Request → Code Change → Commit → Build
 → Test → Audit → Release → Git Tag → Version → Deployment
 ```
@@ -561,7 +561,7 @@ Ausnahmen von diesem Standard MÜSSEN gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC
 - ATC-STD-000 — Standards Governance & Specification Standard (Verfassung; §7 Naming, §10 Lifecycle, §13 Versionierung)
 - ATC-STD-DESC-001 — Standard Description Standard (Pflichtstruktur, Metadaten)
 - ATC-STD-SC-019 — Contract Registry Standard (Deployment-Identität)
-- SemVer 2.0.0 — https://semver.org/
+- SemVer 2.0.0 — <https://semver.org/>
 
 ### INFORMATIVE Referenzen
 
@@ -584,6 +584,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## Changelog
 
 ### 1.0.0 — 2026-09-07
+
 - Initial Release (Owner-Entwurf Michael Wroblewski, harmonisiert mit ATC-STD-000 v1.2.0 und ATC-STD-DESC-001)
 - 22 normative Anforderungen (REQ-VERSION-001..022)
 - Release-ID-Dualformat (versionsbasiert + datumsbasiert) ins Schema übernommen; buildId-Pattern allockiert

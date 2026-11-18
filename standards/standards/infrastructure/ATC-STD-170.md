@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-170
   title: "Container Standard"
@@ -21,7 +22,7 @@ standard:
   related_standards: []
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-170 — Container Standard (v1.2.0, APPROVED)
 

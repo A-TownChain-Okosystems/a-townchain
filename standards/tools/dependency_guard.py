@@ -378,7 +378,8 @@ def advisory_matches(n, ad):
 
 
 _EXPECTED_BASE_UNPINNED_RE = re.compile(
-    r"^(?:.+[\\/])?requirements(?:-[^/]+)?\.txt:\d+: "
+    # Negierte Zeichenklassen statt ".+": verhindert exponentielles Backtracking (CodeQL py/redos)
+    r"^(?:[^\r\n]*[\\/])?requirements(?:-[^/\r\n]+)?\.txt:\d+: "
     r"unpinned/unsupported requirement: "
     r"[A-Za-z0-9_.-]+(?:[<>=!~]=?[^;\s]+(?:,[<>=!~]=?[^;\s]+)*)?$"
 )

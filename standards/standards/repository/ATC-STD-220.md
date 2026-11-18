@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-220
   title: "Repository File Admission & Placement Standard (Master der Subfamilie 220-229)"
@@ -18,7 +19,7 @@ standard:
     - ATC-STD-000
     - ATC-STD-002
     - ATC-GOV-001
-----
+---
 
 # ATC-STD-220 — Repository File Admission & Placement (v1.0.0, APPROVED)
 

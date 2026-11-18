@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-999
   title: "ATC Master-Audit — Enterprise Completeness & Consistency Audit: die 16-Stufen-System-Audit-Kette, 13 Change-Nachweis-Fragen, Register-Abdeckung und Orchestrierung der bestehenden Audit-Automatisierung (S-01..S-22, REPO-AUDIT, RR-Gates)"
@@ -32,7 +33,7 @@ standard:
     - ATC-STD-VERSION-001
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-999 — Enterprise Completeness & Consistency Audit (v1.0.0, APPROVED)
 
@@ -74,7 +75,7 @@ eingeschlossen (REQ-MA-001).
 
 ## §2 Die 16-Stufen-Audit-Kette
 
-```
+```text
 Requirement → Specification → Architecture → Code → Tests → Build → Deployment →
 Runtime → Security → Documentation → Wiki → README → CHANGELOG → Roadmap →
 Standards → Audit Evidence

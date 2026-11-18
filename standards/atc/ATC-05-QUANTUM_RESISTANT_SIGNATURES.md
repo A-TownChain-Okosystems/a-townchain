@@ -30,12 +30,14 @@ Antwort darauf.
 ## 1. Kernkonzepte
 
 ### 1.1 Post-Quanten-Kryptografie (PQC)
+
 ATC-05 schreibt den Einsatz von Algorithmen vor, die auch bei Verfuegbarkeit
 leistungsfaehiger Quantencomputer als sicher gelten. Dies betrifft insbesondere
 den Signatur-Algorithmus, der beweist, dass eine Transaktion vom rechtmässigen
 Besitzer stammt.
 
 **Kandidaten-Algorithmen:**
+
 - **Lattice-based** (CRYSTALS-Dilithium, FALCON) — NIST PQC Standardisierung
 - **Hash-based** (SPHINCS+) —_stateless, lange bewährt
 - **Code-based** (Classic McEliece) — konservativ, grosse Keys
@@ -46,17 +48,20 @@ Besitzer stammt.
 Hybrid-Signaturen (ECDSA + PQC) fuer die naechste Evolutionsstufe geplant.
 
 ### 1.2 Zukunftssicherheit
+
 Da Betriebssysteme (wie KAI-OS) eine lange Lebensdauer haben, muss die
 Sicherheit heute bereits gegen die Bedrohungen von morgen ausgelegt sein.
 ATC-05 sorgt dafuer, dass die digitalen Identitaeten und Assets im Netzwerk
 nicht durch zukuenftige technologische Durchbrueche entwertet werden.
 
 ### 1.3 Algorithmen-Agilitaet
+
 Der Standard ist so definiert, dass das zugrundeliegende kryptografische
 Verfahren bei Bedarf aktualisiert werden kann, ohne das gesamte Protokoll neu
 schreiben zu muessen (sogenannte "Hybrid-Signaturen").
 
 **Konzept:**
+
 - Signatur-Typ-Feld in Transaction-Format (ATC-0003)
 - Versionierbare Signatur-Algorithmen mit Fallback
 - Hybrid-Modus: ECDSA (kompatibel) + PQC (zukunftsicher) parallel
@@ -67,6 +72,7 @@ schreiben zu muessen (sogenannte "Hybrid-Signaturen").
 ## 2. Warum ATC-05 fuer KAI-OS essenziell ist
 
 ### 2.1 Schutz der Assets
+
 Alle Vermoegenswerte, die in KAI-OS (gemaess ATC-11 und ATC-12) abgebildet
 werden, verlassen sich auf die Unveraenderlichkeit und Integritaet der
 digitalen Signaturen. ATC-05 schuetzt diese Assets langfristig.
@@ -75,6 +81,7 @@ digitalen Signaturen. ATC-05 schuetzt diese Assets langfristig.
 (ATC-90), MultiSig Wallet (`multisig.py`) — alle basieren auf ECDSA.
 
 ### 2.2 Vertrauen in das "KI-Gehirn"
+
 Wenn KI-Agenten Inferenz-Auftraege signieren (siehe ATC-31/32), muss
 sichergestellt sein, dass diese Signaturen faelschungssicher sind. Ein
 Quanten-Angriff koennte sonst die Identitaet eines Agenten uebernehmen und das
@@ -84,6 +91,7 @@ gesamte System korrumpieren.
 on-chain. Die Signatur dieser Entscheidungen muss langfristig sicher sein.
 
 ### 2.3 Regulatorische Anforderungen
+
 Die Einhaltung von ATC-05 positioniert das A-TownChain-Oekosystem als
 "Enterprise-Ready" fuer sicherheitskritische Anwendungsbereiche (Finanzen,
 KI-Infrastruktur), wo PQC zunehmend zur Standardanforderung wird.
@@ -93,6 +101,7 @@ KI-Infrastruktur), wo PQC zunehmend zur Standardanforderung wird.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-03 (Decentralized Identity)
+
 Die Identitaet eines Nutzers ist nur so sicher wie die Signatur, die sie
 legitimiert. ATC-05 ersetzt oder ergaenzt hier die schwaecheren, klassischen
 Signatur-Algorithmen.
@@ -102,6 +111,7 @@ ECDSA-Signaturen. Im PQC-Modus wuerde zusaetzlich ein PQC-Verify-Step
 eingefuegt.
 
 ### 3.2 Issue #6 (ECDSA Signatur)
+
 Interessanterweise ist in der Roadmap aktuell der Uebergang zu ECDSA
 (secp256k1) als Basis-Schritt priorisiert. ATC-05 stellt die langfristige
 Evolution dar, um ueber ECDSA hinauszugehen, sobald die Standardisierung
@@ -133,7 +143,7 @@ darauf auf als naechste Sicherheits-Evolutionsstufe.
 
 ## 5. Evolutionspfad: ECDSA zu PQC
 
-```
+```text
 AKTUELL (v3.2.1)              ZUKUNFT (v4.0+)
 ECDSA (secp256k1)        ->   Hybrid (ECDSA + Dilithium)
                             -> Voll-PQC (Dilithium/FALCON)
@@ -144,7 +154,8 @@ Geschwindigkeit: Schnell       Geschwindigkeit: Etwas langsamer
 Key-Size: 64B (priv)           Key-Size: ~1-3KB (PQC)
 ```
 
-### Migrationsstrategie:
+### Migrationsstrategie
+
 1. **Phase 1:** Signatur-Typ-Feld in Transaction-Format (ATC-0003) ergaenzen
 2. **Phase 2:** PQC-Bibliothek evaluieren (python-oqs / pyca PQCrypto)
 3. **Phase 3:** Hybrid-Signatur: TX enthaelt ECDSA + PQC Signatur
@@ -184,7 +195,6 @@ Key-Size: 64B (priv)           Key-Size: ~1-3KB (PQC)
 *Dieses Dokument wurde aus der urspruenglichen Atc-05.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 21:27 | Aurora (Superagent)*
-
 
 ---
 

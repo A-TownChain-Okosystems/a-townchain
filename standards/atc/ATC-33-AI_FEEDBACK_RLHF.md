@@ -1,4 +1,5 @@
 # ATC-33 — Decentralized AI Feedback & Reward-Reinforcement Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-33
 > **Tier:** 5 (User & Application Layer)
@@ -26,6 +27,7 @@ den Endnutzer.
 ## 1. Kernkonzepte
 
 ### 1.1 Explizites & Implizites Feedback
+
 ATC-33 standardisiert, wie Nutzer Feedback geben koennen.
 
 | Typ | Beispiele | Beschreibung |
@@ -37,13 +39,15 @@ ATC-33 standardisiert, wie Nutzer Feedback geben koennen.
 Feedback-Sammlung. Konzept fuer Feedback-Events geplant.
 
 ### 1.2 Reward-Reinforcement (RLHF)
+
 Der Standard definiert einen On-Chain-Mechanismus, der Nutzer fuer konstruktives
 Feedback belohnt. Wer qualitativ hochwertiges Feedback liefert, das nachweislich
 dazu fuehrt, dass ein KI-Modell in zukuenftigen Versionen praeziser oder
 hilfreicher arbeitet, erhaelt Token (ATC-11) als Belohnung.
 
 **Konzept:**
-```
+
+```text
 RLHF Reward Loop:
   1. Nutzer gibt Feedback (explizit/implizit)
   2. Feedback wird im DAG (ATC-04) verankert
@@ -56,6 +60,7 @@ RLHF Reward Loop:
 > **Geplant:** RLHF Reward-Verteilung mit ATC-11 Token
 
 ### 1.3 Governance-gesteuerte Gewichtung
+
 Die DAO (ATC-17) kann via ATC-33-Events bestimmen, wie stark bestimmtes
 Feedback das Training zukuenftiger Modellversionen beeinflussen darf. Dies
 verhindert, dass kleine, koordinierte Gruppen durch Spam-Feedback die KI
@@ -69,6 +74,7 @@ ATC-30 (Reputation) — Sybil-Resistenz durch Reputation-Verknuepfung.
 ## 2. Warum ATC-33 fuer KAI-OS essenziell ist
 
 ### 2.1 Qualitaetssicherung
+
 In einem dezentralen Netzwerk kann jeder Node KI-Leistung anbieten. ATC-33
 sorgt dafuer, dass sich nur die Agenten durchsetzen, die vom Nutzer auch wirklich
 als "gut" empfunden werden.
@@ -77,11 +83,13 @@ als "gut" empfunden werden.
 ATC-30 (Reputation) — Feedback als Reputation-Faktor.
 
 ### 2.2 Nutzerbindung (Engagement)
+
 Durch die Belohnung fuer Feedback wird der Nutzer vom passiven Konsumenten zum
 aktiven Mitgestalter des KAI-Oekosystems. Das schafft eine starke Bindung
 zwischen den KI-Modellen und ihrer Community.
 
 ### 2.3 Alignment
+
 ATC-33 ist das Werkzeug, um die KI-Agenten "auf die Beduerfnisse der Nutzer
 auszurichten". Es macht das "Alignment" (die ethische und funktionale
 Ausrichtung der KI) transparent und demokratisch.
@@ -93,28 +101,34 @@ Ausrichtung der KI) transparent und demokratisch.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-28 (Federated Learning)
+
 ATC-33 liefert die notwendigen Belohnungs-Daten (RLHF), die dann in das Training
 der neuen Modell-Gradienten (via ATC-28) einfliessen.
 
 > ATC-28 = Wie wird gelernt (Gradienten). ATC-33 = Was wird gelernt (Feedback).
 
 ### 3.2 ATC-29 (Marktplatz)
+
 Agenten mit einer hohen "Feedback-Reputation" (gemaess ATC-33) steigen im
 Ranking des Marktplatzes, was zu hoeheren Umsaetzen fuehrt.
 
 ### 3.3 ATC-16 (Referral Logic)
+
 Feedback von Nutzern, die durch ein Referral-System (ATC-16) gewonnen wurden,
 kann im System eine hoehere Gewichtung erhalten, um die Qualitaet in neuen
 Nutzer-Communities zu sichern.
 
 ### 3.4 ATC-17 (DAO Governance)
+
 DAO steuert Feedback-Gewichtung und startet gezielte Feedback-Kampagnen.
 
 ### 3.5 ATC-30 (Reputation)
+
 Reputation-System verhindert Sybil-Angriffe auf das Feedback-System. Nur
 vertrauenswuerdige Nutzer haben hohes Feedback-Gewicht.
 
 ### 3.6 ATC-11 (Fungible Token)
+
 ATC-11 Token als Belohnung fuer qualitativ hochwertiges Feedback.
 
 ---
@@ -174,7 +188,7 @@ ATC-11 Token als Belohnung fuer qualitativ hochwertiges Feedback.
 
 ## 7. RLHF Pipeline — Konzept
 
-```
+```text
 NUTZER           ATC-33            ATC-28           ATC-27          ATC-29
   |                |                 |                |               |
   | Feedback       |                 |                |               |
@@ -202,7 +216,8 @@ NUTZER           ATC-33            ATC-28           ATC-27          ATC-29
   | (Belohnung)    |                 |                |               |
 ```
 
-### Sybil-Resistenz:
+### Sybil-Resistenz
+
 - ATC-30 Reputation-Score als Feedback-Gewicht
 - ATC-03 Identity verhindert Multi-Account-Spam
 - DAO kann Feedback von Low-Reputation-Nutzern ignorieren
@@ -214,7 +229,7 @@ NUTZER           ATC-33            ATC-28           ATC-27          ATC-29
 
 Mit ATC-33 ist der **komplette KI-Feedback-Loop** geschlossen:
 
-```
+```text
 KI-Pipeline (vollstaendig):
   1. ATC-24  -> Aufgabe planen
   2. ATC-25  -> Tensor-Daten verteilen
@@ -237,7 +252,6 @@ KI-Pipeline (vollstaendig):
 *Dieses Dokument wurde aus der urspruenglichen Atc-33.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:45 | Aurora (Superagent)*
-
 
 ---
 

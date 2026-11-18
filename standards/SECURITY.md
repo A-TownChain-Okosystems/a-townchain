@@ -10,7 +10,7 @@ potenziell öffentlich). Stattdessen:
 
 **Vulnerability-Lifecycle:**
 
-```
+```text
 Security Finding -> PRIVATE REPORT -> Owner/Maintainer -> Triage (P0-P3)
   -> Fix -> private Verifikation -> Disclosure-Entscheidung
   -> Security Advisory / CHANGELOG

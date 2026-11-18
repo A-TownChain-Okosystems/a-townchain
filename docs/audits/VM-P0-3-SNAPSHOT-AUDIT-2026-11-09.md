@@ -67,6 +67,7 @@ der bestehende Snapshot traegt ihn nicht.
 ## 5. Befunde
 
 ### P0-3-F1 — Gasverbrauch wird nicht berichtet
+
 **Prioritaet:** P2 · **Status:** RESIDUAL
 `run_with_gas` nimmt das Budget als Wert und gibt es nicht zurueck. Nach einem
 `OutOfGas` ist von aussen nicht erkennbar, wie viel verbraucht wurde. Fuer
@@ -75,6 +76,7 @@ Konsensabrechnung und Fehlercode E06 ist das zu wenig.
 Restbudget. Nicht Teil von P0-3.
 
 ### P0-3-F2 — Keine Panik-Sicherheit
+
 **Prioritaet:** P2 · **Status:** RESIDUAL (dokumentierte Grenze)
 Der Rollback greift nur bei `Err`. Eine Panik oder ein Abbruch (z.B.
 Speichermangel beim Klonen) laesst den Zustand stehen. Im Ausfuehrungsloop gibt
@@ -85,12 +87,14 @@ Ergebnis machen.
 **Korrektur:** keine. Als Grenze im Standard festhalten.
 
 ### P0-3-F3 — Zwei Rollback-Faelle ohne eigenen Test
+
 **Prioritaet:** P2 · **Status:** CLOSED (Paket A, Tests ohne Codeaenderung)
 `ASSERT` nach `Store` und Speicherwachstum mit anschliessendem Fehler waren durch
 den gemeinsamen Pfad gedeckt, aber nicht einzeln belegt. Beide Faelle sind jetzt
 mit gefuelltem Ausgangszustand getestet, siehe Abschnitt 7.
 
 ### P0-3-F4 — Snapshot ist eine Vollkopie
+
 **Prioritaet:** P3 · **Status:** VERIFIED (Kosten, keine Sicherheitsluecke)
 `clone()` kopiert Stack und Storage vollstaendig. Bei Volllast: Storage
 65536 x 8 B = 512 KiB, Stack 4096 x 8 B = 32 KiB, zusammen 544 KiB je Aufruf

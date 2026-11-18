@@ -53,14 +53,6 @@ Registrierung und Versionierung zugelassener Circuits: Circuit Registry, Circuit
 - **Metrik 2:** Maximale Constraint-Anzahl pro Basis-Circuit MUSS unter 1.000.000 liegen.
 - **Metrik 3:** Deterministische Reproduzierbarkeit der Kompilierung MUSS bei 100% liegen.
 - **Metrik 4:** Testabdeckung für ZK-Circuits MUSS mindestens 95% erreichen.
-
-
-## Metriken & Akzeptanzkriterien
-
-- **Metrik 1:** Under-Constrained-Erkennungsrate in Schaltungstests MUSS 100% betragen.
-- **Metrik 2:** Maximale Constraint-Anzahl pro Basis-Circuit MUSS unter 1.000.000 liegen.
-- **Metrik 3:** Deterministische Reproduzierbarkeit der Kompilierung MUSS bei 100% liegen.
-- **Metrik 4:** Testabdeckung für ZK-Circuits MUSS mindestens 95% erreichen.
 - **Metrik 5:** Kompilierungszeit komplexer Circuits MUSS unter 60 Sekunden betragen.
 
 ## Compliance & Verifikation
@@ -91,6 +83,7 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 ## References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard (Verfassung, v1.1.0 APPROVED)
 - ATC-STD-100
 - ATC-STD-201
@@ -100,5 +93,6 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 - ATC-STD-ZKP-010
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - AD-045 — ZKP-Layer-Festlegung (Repo atc-zkp, Standards-Serie)

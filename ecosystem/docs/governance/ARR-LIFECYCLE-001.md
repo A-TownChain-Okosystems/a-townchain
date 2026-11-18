@@ -24,6 +24,7 @@ No ARR record grants authority to duplicate a canonical implementation or overri
 ## 3. ARR record minimum
 
 Each ARR record MUST contain:
+
 - stable unique identifier, title, schema version, record version, status, owner, priority, and scope;
 - requirement statement and measurable acceptance criteria;
 - affected repositories/components and canonical repository/path for each implementation target;
@@ -39,6 +40,7 @@ Unknown or unavailable information MUST be represented as an explicit residual o
 ## 4. Lifecycle
 
 Allowed lifecycle states:
+
 1. `REGISTERED` — identity, owner, scope, and priority recorded.
 2. `SPECIFIED` — requirement, canonical ownership, and acceptance criteria documented.
 3. `REVIEWED` — architecture, SSOT, security, and implementation boundaries reviewed.
@@ -52,6 +54,7 @@ Allowed lifecycle states:
 ## 5. Fail-closed acceptance
 
 An ARR MUST NOT be marked `VERIFIED` solely because a PR is merged, a workflow is green, or a summary says tests passed. Verification requires:
+
 - exact 40-character source commit SHA;
 - evidence linking the workflow run to that SHA;
 - relevant job and step outcomes, exit codes, and inspectable logs;
@@ -71,6 +74,7 @@ If evidence is missing, ambiguous, stale, or SHA-mismatched, status MUST remain 
 ## 7. Change control and rollout
 
 This proposal is not enforced until:
+
 1. governance and engineering review this document and the schema;
 2. the ARR registry is reconciled with existing standards/decision registries to prevent duplicate authority;
 3. a validator and tests are added and demonstrated on the exact PR SHA;

@@ -45,9 +45,6 @@ Kerninvarianten MUESSEN explizit als Invariant-Tests codiert sein, z. B. `totalS
 
 Ohne bestandene SC-G3 (Unit) und SC-G4 (Fuzz/Invariant) ist ein Deployment UNZULAESSIG.
 
-
-
-
 ## 4. Mindest-Testabdeckung (REQ-SC-067)
 
 Alle Smart Contracts MUESSEN eine Testabdeckung von mindestens 95% Statement Coverage und 90% Branch Coverage vorweisen.

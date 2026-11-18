@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-CHANGE-001
   title: "ATC Change Control Dachnorm — Eine Änderung, ein Kanal, eine Gate-Landkarte: konsolidierte Zuordnung von ATC-STD-000 §19–33 (SCR), VERSION-001, UPDATE-001 und COMPAT-001 zur verbindlichen Entscheidungsmatrix „welches Instrument für welche Änderung“ — mit RACI, Notfallpfad und den 13 Change-Nachweis-Fragen als Prüfraster"
@@ -30,7 +31,7 @@ standard:
     - ATC-STD-999
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-CHANGE-001 — ATC Change Control Dachnorm (v1.1.0, APPROVED)
 
@@ -109,7 +110,7 @@ sind keine Empfehlungen (REQ-CH-007).
 ## §6 Rollen und Autorität (RACI)
 
 - **Owner (§9):** Accountable für jede Freigabe (Standard, MAJOR, Meilenstein-
-  ACCEPTED, Registry-Neuordnung). 
+  ACCEPTED, Registry-Neuordnung).
 - **Autor-/Umsetzungs-Agent:** Responsible für Ausarbeitung, Validierung, Sync.
 - **Validator-Suite (S-Gates):** Objective Checker (struktur), ersetzt NIEMALS das
   Human Gate.
@@ -159,7 +160,6 @@ Session-Records (AOS-001), AUD-Records. Unbeantwortbare Fragen sind Findings
 - **REQ-CH-013** (§10): Gate-Bypass Verbot: Kein Gate DARF ohne explizites Owner-Bypass-Dokument übersprungen werden; unbefugte Bypasses MUESSEN als P1-Finding erfasst werden.
 - **REQ-CH-014** (§10): Rollback-Planung MUSS für jede MINOR und MAJOR Änderung vor Freigabe vorliegen.
 - **REQ-CH-015** (§10): Evidenz-Archivierung MUSS nach Abschluss der Änderung unveränderlich im Audit-Trail gesichert werden.
-
 
 ## §10 Metriken & Akzeptanzkriterien
 

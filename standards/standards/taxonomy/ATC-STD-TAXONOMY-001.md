@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-TAXONOMY-001
   title: "ATC Standards Taxonomy & Family Creation Standard — Meta-Governance: vierstufige Taxonomie (Domain→Familie→Kategorie→Standard), kontrollierte Familien-/Kategorie-Erstellung (ATC-FAM-REQ/ATC-CAT-REQ/ATC-TCR), Lifecycle, automatische ID-Vergabe, TAX-CHECK-001..018, maschinenlesbare Taxonomie-Registry"
@@ -30,7 +31,7 @@ standard:
     - ATC-STD-PROTOCOL-001
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-TAXONOMY-001 — Standards Taxonomy & Family Creation (v1.0.0, APPROVED)
 
@@ -72,12 +73,13 @@ definiert werden (REQ-TAX-001).
 
 ## §2 Hierarchie (vier Ebenen)
 
-```
+```text
 DOMAIN    → großer fachlicher Bereich
 FAMILY    → zusammenhängendes Standardsystem
 CATEGORY  → konkretes Themengebiet (feiner als Familien)
 STANDARD  → konkrete normative Regel
 ```
+
 Vollständige ID-Notation für Standards NEUER Familien nach diesem Standard:
 `ATC-STD-<FAMCODE>[-<CATEGORY>]-NNN` (lesbar: ATC·STD·Familie·Kategorie·Nummer).
 Bestehende Standards behalten ihre IDs (Grandfathering, REQ-TAX-002).
@@ -146,9 +148,10 @@ Taxonomie-Metadaten (REQ-TAX-012).
 
 ## §11 Lifecycle für Familien und Kategorien
 
-```
+```text
 PROPOSED → ANALYZED → APPROVED → ACTIVE → DEPRECATED → RETIRED
 ```
+
 Nur ACTIVE Familien dürfen neue Standards aufnehmen; DEPRECATED Familien nehmen
 keine neuen Standards auf, bestehende bleiben gültig; RETIRED Familien sind
 archiviert (REQ-TAX-013). Sprünge im Lifecycle sind verboten (MILESTONE-001-Analogie).

@@ -14,6 +14,7 @@ Root-`Cargo.toml` ist bewusst nur ein Integrations-Workspace mit 10 Mitgliedern.
 ## 2. Aktueller CI-Befund
 
 Für Commit `7431e656`:
+
 - Repository Governance: PASS
 - Knowledge Indexer: PASS
 - CodeQL: PASS
@@ -29,6 +30,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 ## 3. Priorisierte Fehler
 
 ### E-001 — BLOCKER — atc-node RPC kompiliert nicht
+
 - Datei: `components/a-townchain/components/node/src/rpc.rs`
 - Zeilen: 53–54
 - Ursache: `TcpStream::write_all` wird verwendet, aber `std::io::Write` nicht importiert.
@@ -38,6 +40,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko: gering.
 
 ### E-002 — BLOCKER — Wallet-Implementierung referenziert nicht vorhandenen Typ
+
 - Datei: `components/a-townchain/components/wallet/src/tx.rs`
 - Zeile: 7
 - Ursache: `crate::keys::WalletKey` wird importiert, während `src/keys.rs` nur ein geplanter Stub ohne `WalletKey` ist.
@@ -47,6 +50,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko: mittel, da Wallet-Signing betroffen ist.
 
 ### E-003 — BLOCKER — ZKP-Prover inkompatibel mit arkworks 0.6 API-Nutzung
+
 - Datei: `components/atc-zkp/crates/zkp-prover/src/lib.rs`
 - Zeilen: 42, 55, Test um 115/119
 - Ursache: `Groth16::circuit_specific_setup` und `Groth16::prove` sind Trait-Methoden; `SNARK` ist nicht importiert. Zusätzlich liefert `ark_std::test_rng()` hier nicht die von der eigenen Signatur geforderte `CryptoRng)-Garantie.
@@ -56,6 +60,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko: mittel bis hoch, weil kryptographische Primitive betroffen sind.
 
 ### E-004 — BLOCKER/INTEGRATION — Multi-Process-Finality-Test hat keinen Validator-B-Vote für Block 2
+
 - Datei: `components/a-townchain/modules/atc-blockchain/kernel/tests/multi_process_network_e2e.rs`
 - Zeile des Fehlschlags: 129
 - Ursache: Node B stimmt explizit über Block 1 ab, beendet seinen Initialprozess nach Empfang von Block 2 aber ohne den eigenen Validator-B-Vote für Block 2 zu senden. Node A wartet korrekt auf 2/3-gewichtete Finalität.
@@ -64,6 +69,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko: gering bis mittel.
 
 ### E-005 — MEDIUM — Genesis-Physics-Test vergleicht f32 exakt
+
 - Datei: `components/genesis-engine/modules/atc-genesis-physics/src/collision.rs`
 - Test: `point_resolution_uses_nearest_face`
 - Ursache: tatsächliches Ergebnis `0.100000024` wird per `assert_eq!` gegen `0.1` geprüft.
@@ -72,6 +78,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko: gering.
 
 ### E-006 — LOW/MEDIUM — Genesis-Assets Clippy-Gates schlagen wegen veralteter Idiome fehl
+
 - Datei: `components/genesis-engine/modules/atc-genesis-assets/src/lib.rs`
 - Zeilen: 187, 246
 - Befunde: `manual_is_multiple_of`, manuelles OR-Pattern statt Range.
@@ -79,6 +86,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko: gering.
 
 ### E-007 — LOW/MEDIUM — Genesis-ECS Clippy-Gates schlagen fehl
+
 - Datei: `components/genesis-engine/modules/atc-genesis-ecs/src/lib.rs`
 - Zeilen: 453, 886
 - Befunde: öffentliches `len()` ohne `is_empty()`; manuelle `Default`-Implementierung trotz ableitbarem Default.
@@ -86,6 +94,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko: gering.
 
 ### E-008 — MEDIUM — Konsensustest enthält unbenutzte Variable
+
 - Datei: `components/a-townchain/modules/atc-blockchain/kernel/src/consensus.rs`
 - Test `weighted_finality_requires_two_thirds_stake`
 - Ursache: Validator-Key `c` wird erzeugt/registriert, aber nicht verwendet; Release-Readiness erzwingt `-D warnings).
@@ -94,6 +103,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko: gering.
 
 ### E-009 — HIGH — Netzwerk-Deserialisierung erlaubt potenziell übergroße Vec-Allokation
+
 - Datei: `components/a-townchain/modules/atc-blockchain/kernel/src/network.rs`
 - Bereich: `block_decode`
 - Ursache: Der Netzwerkframe ist auf 8 MiB begrenzt, aber die dekodierte Transaktionsanzahl wird als u32 gelesen und direkt an `Vec::with_capacity(n)` übergeben, bevor geprüft wird, ob die Nutzlast diese Anzahl überhaupt enthalten kann.
@@ -103,6 +113,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko des Fixes: gering; Protokollgrenze muss mit der kanonischen Blockgröße abgestimmt werden.
 
 ### E-010 — HIGH — Zwei ATC-VM-Implementierungen mit divergierendem Code
+
 - Pfade:
   - `components/atc-vm`
   - `components/a-townchain/components/vm`
@@ -113,6 +124,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko: mittel bis hoch, weil VM/Domain-Semantik betroffen ist.
 
 ### E-011 — HIGH — ATC-VM verwendet Wrapping-Arithmetik ohne expliziten Overflow-Gate
+
 - Dateien: `components/atc-vm/src/vm.rs` und die nested VM-Kopie.
 - Befund: Add/Sub/Mul verwenden `wrapping_add/sub/mul`.
 - Testabdeckung: kein expliziter Overflow/Underflow-Test im VM-Testblock.
@@ -120,6 +132,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Fix vor Änderung: Semantik in ATC-STD-/VM-Spezifikation klären und anschließend gezielte Overflow/Underflow-Tests hinzufügen. Nicht blind auf checked arithmetic umstellen.
 
 ### E-012 — HIGH — Wallet-Dokumentation widerspricht dem implementierten Signaturverfahren
+
 - Datei: `components/a-townchain/components/wallet/README.md`
 - Befund: Dokumentation beschreibt ECDSA/secp256k1, während der aktuelle Rust-L1-Pfad Ed25519 und `ATC-TX-DOMAIN-V2` verwendet.
 - Zusätzlich existiert `components/atc-wallet` als funktionierender Rust-Wallet-Core mit Ed25519.
@@ -127,6 +140,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Fix: Dokumentation auf den kanonischen Ed25519/V2-Pfad korrigieren oder den Legacy-Wallet-Pfad aus dem produktiven Integrationspfad entfernen, nachdem Referenzen geprüft wurden.
 
 ### E-013 — MEDIUM — CodeQL analysiert nur Python
+
 - Datei: `.github/workflows/codeql.yml`
 - Befund: `languages: python`; Repository enthält umfangreichen Rust- und TypeScript-Code.
 - Wirkung: Der zentrale CodeQL-Gate deckt Rust/TypeScript nicht ab.
@@ -134,6 +148,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Risiko: mittel.
 
 ### E-014 — MEDIUM — PostgreSQL-Client-Konfiguration deaktiviert TLS
+
 - Dateien:
   - `components/aurora-ai/modules/atc-aistudio/src/db/drizzle.config.ts`
   - `components/a-townchain-os-docs/aistudio/src/db/drizzle.config.ts`
@@ -143,6 +158,7 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 - Fix: Umgebung explizit unterscheiden und Produktion mit TLS erzwingen; Doppelung über Source-of-Truth klären.
 
 ### E-015 — MEDIUM — Breite Rust-Testlücke
+
 - Befund aus Repository-Strukturanalyse: 148 nicht archivierte Cargo-Manifeste; 108 Rust-Pakete haben keine externen `tests/`- oder `benches/`-Dateien. Das schließt Unit-Tests im `src/` ausdrücklich nicht aus.
 - Besonders auffällig: mehrere ZKP-, Wallet-, Governance-, Bridge-, Aurora-, Genesis- und GlobusOS-Pakete.
 - Fix: pro sicherheits-/zustandskritischer Komponente mindestens negative, Integrations- oder Restart/Recovery-Tests ergänzen; nicht pauschal jeden kleinen Utility-Crate mit künstlichen Tests aufblasen.
@@ -150,19 +166,24 @@ Die Fehler sind reale Build-/Test-/Integrationsfehler; Gates wurden nicht abgesc
 ## 4. Root-Cause-Gruppierung
 
 ### Root Cause A — divergierende/teilweise synchronisierte Subtree-Komponenten
+
 Betroffen: E-002, E-010, E-012 und Teile der Domain-Identity-Struktur.
 
 ### Root Cause B — vollständige Release-Readiness prüft mehr Code als der Root-Workspace
+
 Betroffen: E-001, E-003, E-006, E-007, E-008.
 Diese Fehler sind nicht dadurch verursacht, dass das Gate zu streng ist; sie werden durch die breitere tatsächliche Repository-Prüfung sichtbar.
 
 ### Root Cause C — Netzwerk-E2E-Testablauf
+
 Betroffen: E-004.
 
 ### Root Cause D — fehlende Parser-Ressourcenbegrenzung
+
 Betroffen: E-009.
 
 ### Root Cause E — Spezifikations-/Dokumentationsdrift
+
 Betroffen: E-011, E-012, E-013, E-014.
 
 ## 5. Bereits vor diesem Audit vorhandene CI-Fixes
@@ -176,6 +197,7 @@ Dieser Bericht wurde bewusst vor den Reparaturen erstellt. Keine CI-Gates wurden
 ## 7. Validierungsplan nach Fixes
 
 Nach jeder Root-Cause-Gruppe:
+
 1. rustfmt/check der betroffenen Packages
 2. relevante Tests
 3. Clippy mit `-D warnings`

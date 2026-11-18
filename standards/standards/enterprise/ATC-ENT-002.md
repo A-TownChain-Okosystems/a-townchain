@@ -68,7 +68,7 @@ AI-DEV-001..012 + AAS-001..025 unverändert).
 ## 4. Regeln
 
 - Neue Rollen nur über ENT-010 (Change) mit Registry-Eintrag; IDs nach
-  Schema `roleId` (^ROLE-[A-Z][A-Z0-9-]*$), fortlaufend (§37).
+  Schema `roleId` (`^ROLE-[A-Z][A-Z0-9-]*$`), fortlaufend (§37).
 - Eine Person/ein Agent kann mehrere Rollen tragen — Ausübung je Rolle
   getrennt dokumentieren; Approver-Rolle nie durch Agenten (§14.1).
 - Rollen-Reviews im review_cycle (ENT-001 §3): annual.
@@ -91,6 +91,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 5. Verbindliche Rollen- und Verantwortlichkeitsregeln
 
 1. Neue Rollen MUSS über den Change-Prozess gemäß ATC-ENT-010 beantragt und in der zentralen Rollen-Registry erfasst werden.
@@ -124,9 +125,11 @@ Fehlkonfigurierte oder verwaiste Rollen stellen ein erhebliches Sicherheitsrisik
 ## 10. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-001**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-ENT-003**: Referenzierter Standard im ATC-Regelwerk

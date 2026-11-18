@@ -62,7 +62,8 @@ Alle aktuellen Python-Dateien sind als **temporäre Stubs** markiert und müssen
 | 4.0 | Mainnet Config | 1 Mainnet-Konfiguration |
 
 **Jeder Python-Stub muss folgenden Header tragen:**
-```
+
+```text
 # STUB: Temporärer Python-Stub — wird in Sprint X.X durch ATCLang ersetzt (ATCLang First Policy, AD-006, ATC-99)
 ```
 
@@ -70,11 +71,12 @@ Alle aktuellen Python-Dateien sind als **temporäre Stubs** markiert und müssen
 
 Die Migration erfolgt streng nach der Roadmap v2.0:
 
-```
+```text
 ATCLang Core (Sprint 2.1) → Consensus (2.3) → Smart Contracts (2.3-2.6) → Kernel (2.4) → Backend (3.0) → Mainnet (4.0)
 ```
 
 Kein Sprint darf übersprungen werden. Jede Migration erfordert:
+
 1. ATCLang-Implementierung der Funktionalität
 2. Test-Suite in ATCLang (ATC-98)
 3. Verifikation der ATC-Standard-Konformität

@@ -17,7 +17,7 @@ Es gibt **keinen durchgehenden Transaktionspfad**. Der Pfad ist an fünf Stellen
 und die einzige Stelle, an der Kontostände überhaupt verändert würden, existiert nicht:
 `TxLedger` führt Nonces und bereits gesehene IDs, **keine Salden**.
 
-```
+```text
 Wallet                Node                                        System/VM
 ------                ----                                        ---------
 Transaction           RPC (nur lesend)                            ATCE-Hülle
@@ -192,7 +192,7 @@ Transaktions- oder Vertragseffekt gebunden werden könnte.
 
 Beleg für das dritte Modell (lokal ausgeführt):
 
-```
+```text
 $ cd modules/atc-blockchain/kernel && cargo check --offline
 error[E0432]: unresolved import `crate::mempool` ... (17 Fehler)
 error: could not compile `atc-blockchain` (lib) due to 17 previous errors

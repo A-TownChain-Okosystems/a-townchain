@@ -47,6 +47,7 @@ A claim may not skip a level. Historical CI results do not verify a different SH
 ## 4. Crypto contract
 
 Transaction/account protocol signing is:
+
 - secp256k1 ECDSA
 - SHA-256 over exact canonical V2 signing bytes
 - RFC6979 deterministic nonce

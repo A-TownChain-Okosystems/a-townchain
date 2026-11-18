@@ -91,6 +91,7 @@ Cross-language implementations MUST compare canonical message bytes, vote validi
 ## §14 Activation status
 
 Status remains `draft`. Promotion requires:
+
 1. exact-SHA implementation evidence for the canonical ShivaCore consensus implementation;
 2. frozen quorum, validator weighting, proposer selection and round-change semantics;
 3. canonical consensus-message wire encoding;

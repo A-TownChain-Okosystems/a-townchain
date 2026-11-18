@@ -15,7 +15,7 @@ ATCLang Standard Library — 6 Module mit kryptografischen Operationen, Datenstr
 
 ### Implementierung
 
-```
+```text
 atclang/stdlib/
 ├── __init__.py       — Package Exports (14 Klassen)
 ├── crypto.py         — 154 Zeilen, 13 Tests ✅
@@ -148,7 +148,7 @@ atclang/stdlib/
 
 ## 4. Implementation-Reihenfolge
 
-```
+```text
 primitives → crypto → math → collections → encoding → io
 ```
 

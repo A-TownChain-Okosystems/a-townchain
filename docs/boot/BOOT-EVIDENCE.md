@@ -21,7 +21,7 @@ Boot-Images erzeugt `modules/atc-shivacore/boot` (Builder auf `bootloader 0.11`)
 Bootloader lädt das ELF nach `0x1e030000`, baut eine neue Level-4-Tabelle
 (`0x101000`) und mappt die drei `PT_LOAD`-Segmente. Danach greift der Kernel:
 
-```
+```text
 INFO : Create Memory Map
 INFO : Create bootinfo
 INFO : Jumping to kernel entry point at VirtAddr(0x8000007030)
@@ -63,7 +63,7 @@ gesetzt, damit auch Umlaute rastern.
 
 Per OCR aus dem Framebuffer gelesen (Ausschnitt 1000×190):
 
-```
+```text
 ShivaCore Kernel v0.0.3 -- K-Sprint 2
 Kernel-Einstiegspunkt erreicht (Handoff vom Bootloader).
 ShivaCore: CPU vendor=AMD family=15 model=107 stepping=1 apic=true ...

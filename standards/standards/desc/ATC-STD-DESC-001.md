@@ -46,7 +46,7 @@ standard:
 > Builder-Chat); dokumentiert in approval/APPROVAL-DECISION-2026-09-07-DESC-VERSION-v1.0.0.md.
 > Immutabilität per §30 — Änderungen nur via SCR.
 > **Familie:** Standard Description Standards (ATC-STD-DESC-001..999) — Kategorie `desc`, SCR-0008.
-
+>
 > Dieser Standard definiert die verbindliche Struktur, Metadaten, Lifecycle-Modelle und Prüfmechanismen für die Beschreibung von ATC-Standards. Er operationalisiert die Verfassung ATC-STD-000 (§7 Naming, §8 Metadaten, §9 Struktur, §10 Lifecycle, §13 Versionierung, §20 Änderungsmanagement) zu einer vollständigen Beschreibungsnorm und erweitert sie um Documentation-Layer, Ausnahmeverfahren und Quality Gates.
 
 ## 1. Zweck (Purpose)
@@ -269,7 +269,7 @@ Ein Standard MUSS einen eindeutigen Lebenszyklusstatus besitzen. Das dokumentari
 
 ## 8. Rollen und Verantwortlichkeiten
 
-```
+```text
 Owner → Maintainer → Reviewer → Approver → Auditor
 ```
 
@@ -380,7 +380,7 @@ ATC-Standards verwenden Semantic Versioning:
 
 Keine direkte Änderung eines aktiven Standards ohne nachvollziehbaren Änderungsprozess (ATC-STD-000 §20, CHANGE_CONTROL.md):
 
-```
+```text
 Change Request (SCR) → Impact Analysis → Review → Approval (Owner-§9)
 → Version Update → Changelog → Compliance Check → Release
 ```
@@ -393,7 +393,7 @@ Standards MIT Security-Relevanz MÜSSEN einen Security-Considerations-Abschnitt 
 
 Zwei Documentation-Ebenen:
 
-```
+```text
 Human Documentation          Machine Documentation
         │                           │
         ├── STANDARD.md             ├── standard.yaml
@@ -415,7 +415,7 @@ Damit KÖNNEN KI-Agenten, CI/CD, Validatoren und Audit-Systeme Standards automat
 - ATC-STD-MD-001 — ATC Markdown & Documentation Standard
 - ATC-STD-README-001 — README als Einstiegsschnittstelle
 - CHANGE_CONTROL.md — SCR-Verfahren (operationalisiert ATC-STD-000 §20)
-- SemVer 2.0.0 — https://semver.org/
+- SemVer 2.0.0 — <https://semver.org/>
 
 ## Implementierungsstatus
 
@@ -431,6 +431,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## Changelog
 
 ### 1.0.0 — 2026-09-07
+
 - Initial Release (Owner-Entwurf Michael Wroblewski, harmonisiert mit ATC-STD-000 v1.2.0 durch Standards Governance)
 - Owner-§9-Freigabe: APPROVED (21:57 UTC+2, Sammelfreigabe) — normativ ab sofort
 - 14 normative Anforderungen (REQ-DESC-001..014), 5 Compliance-Gates (COM-DESC-001..005)

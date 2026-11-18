@@ -1,4 +1,5 @@
 # ATC-08 — Ephemeral Data Streaming Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 2.3 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-08
 > **Referenzen:** ATC-01 (Mesh-Topologie), ATC-06 (Routing/Latenz), Issue #2 (Gemini AI)
@@ -25,6 +26,7 @@ oder zwischen KI-Agenten und Nutzern uebertragen werden sollen.
 ## 1. Kernkonzepte
 
 ### 1.1 Nicht-persistente Datenuebertragung
+
 Waehrend Transaktionen (Tier 2) unveraenderlich im Ledger landen, dienen
 "ephemere" Daten (fluechtige Daten) oft nur einem unmittelbaren Zweck, wie z. B.
 dem Streaming einer KI-Inferenz-Antwort (KAI) an den Nutzer oder dem
@@ -46,6 +48,7 @@ via ATCNet sind geplant.
 ```
 
 ### 1.2 Streaming-Optimierung
+
 ATC-08 baut auf dem P2P-Protokoll (ATC-01) auf, ist aber spezifisch fuer den
 kontinuierlichen Datenfluss optimiert (aehnlich wie HTTP-Streaming oder
 WebSockets, aber dezentralisiert).
@@ -56,6 +59,7 @@ verfuegbare Services. Das dezentrale Streaming (Node-to-Node Token-Fluss)
 baut auf ATCNet Gossip auf — aktuell noch Flood-Fill, nicht streaming-optimiert.
 
 ### 1.3 End-to-End Verifizierung
+
 Auch wenn die Daten ephemer sind, werden sie gemaess ATC-08 kryptografisch
 signiert. Der Empfaenger kann so sicherstellen, dass das Datenpaket tatsaechlich
 vom korrekten Absender stammt und waehrend der Uebertragung nicht manipuliert
@@ -71,6 +75,7 @@ die "ephemere" Eigenschaft). E2E-Signatur fuer Streaming-Pakete ist geplant.
 ## 2. Warum ATC-08 fuer KAI-OS entscheidend ist
 
 ### 2.1 Entlastung der Blockchain
+
 Wuerden alle KI-Inferenz-Ergebnisse (auch die Zwischenschritte oder reine
 Chat-Logs) permanent auf der Blockchain gespeichert, wuerde das System innerhalb
 kuerzester Zeit an seine Speichergrenzen stossen. ATC-08 erlaubt es, den
@@ -82,6 +87,7 @@ Datenbehandlung — die vollen Daten fliessen ueber WebSocket/HTTP, nur der
 Hash wird persistiert.
 
 ### 2.2 Echtzeit-KI-Interaktion
+
 Fuer Anwendungen wie den "Gemini AI Streaming Chat" (siehe Issue #2 der
 Roadmap) ist ATC-08 das Protokoll, das die Antwort-Tokens in Echtzeit vom
 Inferenz-Node zum Frontend des Nutzers transportiert.
@@ -92,6 +98,7 @@ Der LLMRouter im AI-Kernel unterstuetzt 4 HuggingFace-Modelle mit
 BYOK (Bring-Your-Own-Key) System.
 
 ### 2.3 Privacy & Datenschutz
+
 Daten, die ueber ATC-08 fliessen, hinterlassen keine dauerhafte Spur im
 oeffentlichen Ledger. Dies ist besonders wichtig fuer datenschutzsensible
 Interaktionen, bei denen nur das Endergebnis (und nicht der gesamte Verlauf)
@@ -102,6 +109,7 @@ auf der Chain verankert werden muss.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-01 (Mesh-Topologie)
+
 ATC-08 nutzt das existierende Mesh-Netzwerk fuer die Zustellung der ephemeren
 Pakete.
 
@@ -110,11 +118,13 @@ ATC-08 wuerde einen `STREAM_DATA` Nachrichtentyp definieren, der nicht
 ge-flood-fill-t wird, sondern zielgerichtet an den Empfaenger geht.
 
 ### 3.2 ATC-06 (Routing)
+
 ATC-08 profitiert von den Latenz-Optimierungen aus ATC-06, um die Verzoegerung
 beim Streaming (z. B. Sprachausgabe oder Video-Generierung) so gering wie
 moeglich zu halten.
 
 ### 3.3 Issue #2 (Gemini AI)
+
 Die Implementierung des Gemini-Streamings im KAI-OS nutzt direkt die
 Schnittstellen, die durch ATC-08 definiert sind.
 
@@ -172,7 +182,6 @@ mit nativem Rate-Limit-Handling und ATCLang-Code-Generierung.
 *Dieses Dokument wurde aus der urspruenglichen Atc-08.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 21:34 | Aurora (Superagent)*
-
 
 ---
 

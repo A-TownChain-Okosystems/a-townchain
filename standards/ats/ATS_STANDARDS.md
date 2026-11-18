@@ -1,4 +1,5 @@
 # ATS Standards — A-TownChain System Standards
+
 Version: 1.0.0 | Status: DRAFT | Datum: 2026-06-06
 Autor: ShivaCore / Aurora
 
@@ -9,7 +10,7 @@ Autor: ShivaCore / Aurora
 
 ## ATS-1000 — ShivaOS Kernel Interface
 
-```
+```text
 KERNEL_API := {
     // Prozessverwaltung
     fn spawn(process: KI_PROCESS) -> PID
@@ -49,7 +50,7 @@ Kernel-Garantien:
 
 ## ATS-1001 — Module / Plugin Spec
 
-```
+```text
 MODULE := {
     name:       String,
     version:    SemVer,
@@ -78,7 +79,7 @@ Ausführen:      atcpkg run <name> [args]
 
 ## ATS-1002 — ATCFS Filesystem Standard
 
-```
+```text
 ATCFS — Dezentrales Dateisystem für ShivaOS
 
 PATH_FORMAT: atcfs://<node_id>/<cid>/<path>
@@ -115,7 +116,7 @@ Dateitypen:
 
 ## ATS-1003 — IPC (Inter-Process-Communication)
 
-```
+```text
 CHANNEL := {
     id:      ChannelID,
     type:    ChannelType,    // PIPE | QUEUE | STREAM | BROADCAST
@@ -148,7 +149,7 @@ IPC_MSG := {
 
 ## ATS-1004 — Security & Encryption Layer
 
-```
+```text
 KRYPTO-PRIMITIVE (eigen — kein secp256k1-Klon):
 
 ATC-EC := {
@@ -183,7 +184,7 @@ VERSCHLÜSSELUNG := {
 
 ## ATS-1005 — KI Agent Protocol
 
-```
+```text
 AGENT := {
     id:          AgentID,       // = ATC-Adresse des Agenten
     name:        String,
@@ -221,7 +222,7 @@ MsgType := QUERY | RESPONSE | ACTION | REPORT | ERROR | HANDSHAKE
 
 ## ATS-1006 — ATCNet Netzwerk-Stack
 
-```
+```text
 SCHICHTEN:
 
   Layer 4 — Application    ATCLang / Smart Contracts
@@ -251,7 +252,7 @@ PROTOKOLL-PORTS:
 
 ## ATS-1007 — UI Rendering Engine Spec
 
-```
+```text
 ATCRender — Dezentrale UI-Engine
 
 KOMPONENTEN := {

@@ -67,7 +67,7 @@ Pflichtfelder: `id`, `title`, `created`, `agent`, `task_reference`, `status`,
 
 ## 2. Task-Lifecycle
 
-```
+```text
 CREATED → ASSIGNED → IN_PROGRESS → (BLOCKED ⇄ IN_PROGRESS)*
         → READY_FOR_REVIEW → (CHANGES_REQUESTED → IN_PROGRESS)*
         → COMPLETED | CANCELLED
@@ -88,7 +88,7 @@ mit Zeitstempel protokolliert (`history`-Liste).
 
 Ein Task MUSS alle zugehörigen Artefakte referenzieren:
 
-```
+```text
 ATC-TASK-NNNN
     ├── Issue #NNN
     ├── branch: ai/ATC-TASK-NNNN
@@ -106,6 +106,7 @@ Audit-Record). Ein Artefakt ohne Task-Referenz gilt als nicht agentenfähig.
 ## 5. Übergabe (Handover)
 
 Ein Task ist jederzeit übergebefähig, wenn gilt:
+
 - Task-Record ist vollständig (§1),
 - `next_action` ist aktuell und explizit (AI-DEV-001 §8),
 - offene Annahmen sind im Assumption-Register vermerkt,
@@ -145,6 +146,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-203, ATC-STD-AI-DEV-001 · INFORMATIVE: Roadmap MK8 (Security), Model-Registry
+
 ## 8. Verbindliche Erweiterungsregeln
 
 - 8.1 Jedes Task-Record MUSS bei jeder Zustandsänderung atomares Append-Only-Logging auf dem Speicherlaufwerk durchführen.
@@ -181,9 +183,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 13. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-042
 - ATC-STD-AI-DEV-001
@@ -227,9 +231,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 19. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-042
 - ATC-STD-AI-DEV-001

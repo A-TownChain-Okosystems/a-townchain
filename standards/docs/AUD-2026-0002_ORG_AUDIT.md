@@ -75,11 +75,13 @@ Vollständige Einträge in `registry/findings.yaml` (Registry-Gate). Kurzfassung
 ## 5. Cleanup & Standardization Roadmap (priorisiert)
 
 **In diesem Audit-Lauf erledigt (07.09.2026):**
+
 1. ✅ Dependabot-Konfiguration in 16 Repos (alle mit npm/cargo/pip-Manifesten)
 2. ✅ Audit-Report AUD-2026-0002 + Findings-Registry + STATUS/CHANGELOG (dieser Commit)
 3. ✅ Klassifizierung aller 26 Repos (Abschnitt 3)
 
 **Offene Roadmap (Issues in a-townchain-os):**
+
 1. P1 — governance-ci.yml für atc-vm/atc-algorithm/atc-zkp (Owner-Aktion, workflow-Scope; Issue #94)
 2. P2 — CodeQL Code-Scanning für Code-Repos (atc-shivacore, atclang, aurora-ai, a-townchain, atc-contracts, atc-zkp, globus-os, genesis-chronicles) (Issue #95)
 3. P2 — Version-Baseline nach ATC-STD-VERSION-001: einheitliche Startversion + Release/Tag-Disziplin für M-Repos (Issue #96)

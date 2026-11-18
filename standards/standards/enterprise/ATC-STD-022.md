@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-022
   title: "Security Patch Management Standard"
@@ -18,7 +19,7 @@ standard:
     - ATC-STD-000
     - ATC-STD-018
     - ATC-STD-020
-----
+---
 
 # ATC-STD-022 — Security Patch Management (v1.0.0, APPROVED)
 

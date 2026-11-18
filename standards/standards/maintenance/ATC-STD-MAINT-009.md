@@ -31,7 +31,7 @@ Pflege von ATC-VM, ABI/API, Runtime und Compatibility mit harter Pruefkette. P0-
 
 Ein ATC-VM-Update ist NIEMALS ein normales Dependency-Update. Es prueft mindestens:
 
-```
+```text
 ATCLang compatibility → ATC-VM compatibility → Contract execution
    → State transition → Consensus → Node compatibility → Network compatibility
 ```

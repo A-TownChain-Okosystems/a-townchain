@@ -83,6 +83,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 4. Erweiterte Repository-Governance-Regeln
 
 1. Jedes Repository der Organisation MUSS in registry/repositories.yaml mit allen geforderten Pflichtfeldern registriert sein.
@@ -116,9 +117,11 @@ Unregistrierte oder fehlerhaft klassifizierte Repositories stellen ein signifika
 ## 9. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-025**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-ENT-008**: Referenzierter Standard im ATC-Regelwerk

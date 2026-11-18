@@ -69,7 +69,7 @@ Der Standard definiert: dass nach jedem MAJOR-Version-Update eine vollständige 
 **Kernregeln (harte Gates):**
 
 > **ATC-MAJOR-COMPATIBILITY-GATE:** Eine Major-Version darf nicht als vollständig freigegeben gelten, solange die Kompatibilität der betroffenen ATC-Komponenten nicht geprüft, dokumentiert und entweder bestätigt oder durch eine genehmigte Migration bzw. einen genehmigten Compatibility Layer wiederhergestellt wurde.
-
+>
 > **ATC-COMPATIBILITY-RESTORATION:** Jede festgestellte kritische Inkompatibilität muss entweder behoben, migriert, durch einen genehmigten Compatibility Layer überbrückt oder als bewusst akzeptierte Breaking Change formal freigegeben werden. Offenes Dokumentieren und Stehenlassen ist nicht zulässig.
 
 ## 2. Geltungsbereich (Scope)
@@ -86,7 +86,7 @@ id: REQ-COMPAT-001
 
 Nach jedem MAJOR-Version-Update MUSS eine vollständige Kompatibilitätsprüfung aller betroffenen und abhängigen Komponenten DURCHGEFÜHRT werden. Eine neue Major-Version DARF erst als vollständig integriert gelten, wenn der folgende Prozess DURCHLAUFEN und abgeschlossen ist:
 
-```
+```text
 MAJOR UPDATE
      ↓
 COMPATIBILITY AUDIT
@@ -198,7 +198,7 @@ Die Prüfung MUSS mindestens auf fünf Ebenen erfolgen:
 
 **Level 5 — System:** Das gesamte Ökosystem wird als Gesamtsystem getestet:
 
-```
+```text
 User → Wallet → API → Node → Blockchain → Smart Contract → Indexer → Marketplace
 ```
 
@@ -208,7 +208,7 @@ id: REQ-COMPAT-007
 
 Wenn eine Inkompatibilität gefunden wird, MUSS ein definierter Restoration Process starten — NICHT darf die Inkompatibilität lediglich dokumentiert und offen gelassen werden:
 
-```
+```text
 INCOMPATIBLE
      ↓
 ROOT CAUSE
@@ -247,7 +247,7 @@ id: REQ-COMPAT-009
 
 Besonders verbindlich für KI-Agenten (Kopplung: ATC-AAS-009, ATC-STD-AI-DECISION-001):
 
-```
+```text
 Agent erkennt Inkompatibilität
      ↓
 Agent DARF Lösung entwickeln
@@ -263,7 +263,7 @@ Approval
 
 NICHT zulässig:
 
-```
+```text
 Agent → erkennt Problem → ändert heimlich abhängiges Repository → Problem verschwindet
 ```
 
@@ -346,7 +346,7 @@ id: REQ-COMPAT-014
 
 Dieser Standard ist als Pflicht-Gate im übergeordneten ATC-STD-UPDATE-001 verankert: Gate UPD-G04 (Compatibility) MUSS bei MAJOR-Updates durch ein vollständiges Verfahren nach COMPAT-001 erfüllt werden (Compatibility Audit → Matrix → Restoration → Regression → Report). Der geschlossene Gesamtprozess:
 
-```
+```text
 ┌──────────────────────┐
 │    MAJOR UPDATE      │
 └──────────┬───────────┘

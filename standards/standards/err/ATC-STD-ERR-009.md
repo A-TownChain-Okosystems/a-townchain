@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-009
   title: "Preventive Control"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-009 — Preventive Control (v1.0.0, CANDIDATE)
 
@@ -26,6 +27,7 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 Ein Regressionstest allein reicht nicht immer: Je Fehlerklasse MUSS eine zusaetzliche
 Schutzmassnahme entstehen, die die Wiederholung strukturell verhindert.
 
@@ -54,6 +56,7 @@ die Praevention Pflicht (ERR-000 §3); Ausnahmen nur mit Begruendung im Record.
 | REQ-ER-090 | Je Fehlerklasse (P0/P1) eine Praeventionsmassnahme aus der Matrix oder begruendet |
 
 ## Implementierungsstatus
+
 SPECIFIED — Evidence-Anker: Version Check (Issue #96), Standards Validator
 (S-01..S-25), Dependabot-Rollout — jeweils schon im Aufbau.
 
@@ -62,8 +65,10 @@ SPECIFIED — Evidence-Anker: Version Check (Issue #96), Standards Validator
 Praeventionsmassnahmen fuer Security-Fehlerklassen erfordern Security Regression Tests (Massnahmen-Matrix); Validator-Erweiterungen laufen unter CI ohne erweiterte Rechte.
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-ERR-000/-008/-010/-015, ATC-STD-BUG-005 (Corrective/Preventive) ·
 INFORMATIVE: SCR-0044, Issues #95/#96

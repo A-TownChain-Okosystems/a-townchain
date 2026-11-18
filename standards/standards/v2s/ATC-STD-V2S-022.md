@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-V2S-022
   title: "Feedback Standard"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-V2S-022 — Feedback Standard (v1.0.0, CANDIDATE)
 
@@ -48,6 +49,7 @@ dem Betrieb (V2S-019), dem Monitoring (V2S-020) und Vorfällen (V2S-021) und ber
 für die kontinuierliche Verbesserung (V2S-023 / Improvement Standard) auf.
 
 Die 7 verbindlichen Feedback-Quellen gemäß ATC-STD-V2S-000 §13 sind:
+
 1. **User Feedback:** Nutzer-Rückmeldungen, Support-Tickets, Community-Foren.
 2. **System Metrics:** Metrik- und Telemetriedaten zur Nutzung und Fehlerraten.
 3. **Incidents & Postmortems:** Erkenntnisse und Action Items aus Vorfällen (V2S-021).

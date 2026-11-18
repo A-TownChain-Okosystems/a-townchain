@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-064
   title: "Architecture Documentation Standard"
@@ -21,7 +22,7 @@ standard:
   related_standards: []
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-064 — Architecture Documentation (v1.2.0, APPROVED)
 

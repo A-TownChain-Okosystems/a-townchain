@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-014
   title: "Recurrence Monitoring"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-014 — Recurrence Monitoring (v1.0.0, CANDIDATE)
 
@@ -26,10 +27,12 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 Wiederauftreten ueberwachen: Ein geschlossener Fehler, der erneut auftritt, ist ein
 Governance-Finding (Praevention versagt oder wurde nicht gebaut).
 
 ## Kernregeln
+
 - Je Pattern: Recurrence-Zaehler und Rate; erneutes Auftreten eines CLOSED-Fehlers
   wird als neuer Fehler MIT Verweis auf den alten Record und Pattern erfasst.
 - Wiederholung nach Praeventions-Bau = P0-Befund „Praeventionsversagen"
@@ -45,6 +48,7 @@ Governance-Finding (Praevention versagt oder wurde nicht gebaut).
 | REQ-ER-141 | Wiederholung nach Praeventions-Bau = P0-Befund Praeventionsversagen |
 
 ## Implementierungsstatus
+
 SPECIFIED — Umsetzung: Feld im Knowledge Record + Maintenance-Report-Metrik.
 
 ## Security Considerations
@@ -52,7 +56,9 @@ SPECIFIED — Umsetzung: Feld im Knowledge Record + Maintenance-Report-Metrik.
 Recurrence-Monitoring ueberwacht Praeventionsversagen; Security-Recurrence = sofortiges P0 (BUG-001).
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-ERR-009/-010/-013, ATC-STD-REPO-MAINT-001 §16 · INFORMATIVE: SCR-0044

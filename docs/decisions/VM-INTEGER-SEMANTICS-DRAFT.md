@@ -32,15 +32,18 @@ Zustand erzeugen. Damit sind Konsens-Ergebnisse nicht mehr durch die Referenz ge
 ## 2 — Die fuenf Fragen, die beantwortet werden muessen
 
 ### F1 — Bitbreite
+
 **Vorschlag: 64 Bit, keine Ausnahme.** Kein 128-Bit, keine Zwischenbreite. Begruendung:
 der Vertragsraum 0 und 0x0100..0x01FF sowie die Gasrechnung sind auf 64 Bit ausgelegt.
 
 ### F2 — Signedness
+
 **Vorschlag: Zweierkomplement, Arithmetik und alle Vergleiche vorzeichenbehaftet.**
 Es gibt genau eine Interpretation derselben 64 Bit, nicht zwei. Ein "unsigned Modus"
 waere eine zweite Semantik und damit genau das, was diese Entscheidung verhindern soll.
 
 ### F3 — Ueberlaufverhalten
+
 **Vorschlag: Abbruch (Trap), nie Umlauf, nie Saettigung.**
 Betroffen: `Add`, `Sub`, `Mul` (und `Neg`, sobald es einen Befehl gibt). Begruendung:
 Umlauf macht aus einem abgelehnten Programm ein laufendes mit anderem Zustand;
@@ -48,12 +51,14 @@ Saettigung verschleiert den Fehler als Ergebnis. Ein Trap ist fail-closed und
 deterministisch.
 
 ### F4 — Division und Rest
+
 **Vorschlag: ganzzahlige Division mit Abbruch zur Null, Rest nach der Regel
 `r = a - (a / b) * b`, also mit dem Vorzeichen des Dividenden.**
 Grenzfaelle: `b == 0` → Trap. `a == i64::MIN` und `b == -1` → Trap (das Ergebnis ist
 nicht darstellbar). Kein Float, kein Rundungsmodus, keine Sonderregel je Vorzeichen.
 
 ### F5 — Fehlerverhalten an Grenzwerten
+
 **Vorschlag: ein eigener, numerisch gekennzeichneter Fehlercode je Ursache**
 (Ueberlauf, Division durch Null, nicht darstellbares Ergebnis), mit Rollback wie jeder
 andere Fehler. Der Code darf nicht mit dem Stapel- oder Speichergrenzencode kollidieren;

@@ -78,6 +78,7 @@ protocol:
 ```
 
 Zusaetzlich MUSS ab R2 vorliegen:
+
 - `.atc/ownership.yaml` (Verantwortlichkeiten, ATC-STD-202 Abschnitt 2)
 - `.atc/lifecycle.yaml` (Lebenszyklus, ATC-STD-202 Abschnitt 3)
 - `.atc/compliance.yaml` (Gate-Status-Selbstdeklaration, durch Audit ersetzt)
@@ -134,7 +135,7 @@ Im README (Anfang): ATC-Compliance-Block mit Level, Standard-Version,
 Gate-Stati (Structure/CI/Security/Architecture: PASS) — macht den Zustand
 sofort sichtbar. Format:
 
-```
+```text
 ATC COMPLIANCE: R3 · PRODUCTION · Score 9x% · Standard 1.0.0 · GATE: PASS
 ```
 
@@ -162,6 +163,7 @@ ATC COMPLIANCE: R3 · PRODUCTION · Score 9x% · Standard 1.0.0 · GATE: PASS
 ## 9. Validator-Regeln (V-01…V-16, maschinenpruefbar)
 
 Jede V-Regel prueft eine M-Regel. Semantik:
+
 - M-Regel = MUST fuer das Level des Repos → Verletzung = **[FAIL]** → GATE: NO-GO
 - M-Regel = SHOULD → **[WARN]** (Score-Abzug)
 - nicht anwendbar → Pruefung entfaellt

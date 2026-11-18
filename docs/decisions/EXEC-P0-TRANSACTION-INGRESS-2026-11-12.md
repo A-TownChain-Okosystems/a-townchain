@@ -52,7 +52,7 @@ weil sie sonst als Integrationsdetail missverstanden werden:
 setzt `[lib] path = "src/blockchain.rs"`, der Code referenziert `crate::mempool::{MemoryPool,
 StateDb, TxValidator}` und `ConsensusEngine`, die dort nicht existieren:
 
-```
+```text
 $ cd modules/atc-blockchain/kernel && cargo check --offline
 error: could not compile `atc-blockchain` (lib) due to 17 previous errors
 ```
@@ -110,6 +110,7 @@ dekodiert genau einmal, prüft Feldlängen gegen die Domäne und ruft `admit`. D
 Transportform eine Ableitung der Signierform, keine zweite Wahrheit.
 
 Zwei Details, die sonst später brechen:
+
 - `amount` ist `u128`. In JSON als **Dezimal-String** übertragen, nie als JSON-Zahl (sonst
   Präzisionsverlust ab 2^53 in jedem JS-Client).
 - Die Wire-Form braucht einen **eigenen** Größengrenzwert mit Begründung. `MAX_RPC_REQUEST_BYTES

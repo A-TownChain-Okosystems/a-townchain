@@ -48,6 +48,7 @@ The following are interface requirements to be made concrete in normative schema
 ### 4.1 Agent identity and registration
 
 Minimum identity record:
+
 - `agent_id`: stable, unique identifier;
 - `public_key` / credential reference and `issuer_id`;
 - `capabilities`: explicit, bounded capability set;
@@ -59,6 +60,7 @@ Requirements: duplicate IDs MUST be rejected; identity registration MUST be auth
 ### 4.2 Compute job, worker and run lifecycle
 
 Minimum job envelope:
+
 - `task_id`, `run_id`, `job_spec_version`, `input_hash`, `requested_capabilities`;
 - `created_at`, `deadline`, `retry_policy`, `policy_version`;
 - authenticated `worker_id` / `node_id`, lease ID and attempt number;

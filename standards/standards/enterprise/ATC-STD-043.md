@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-043
   title: "Artifact Integrity Standard"
@@ -17,7 +18,7 @@ standard:
   dependencies:
     - ATC-STD-000
     - ATC-STD-018
-----
+---
 
 # ATC-STD-043 — Artifact Integrity Standard (v1.0.0, APPROVED)
 
@@ -44,7 +45,7 @@ Container Images, Release-Pakete).
 
 Jedes kritische Artefakt MUSS einen maschinenlesbaren Record führen:
 
-```
+```text
 artifact:
   id: ATC-NODE
   version: 1.4.0

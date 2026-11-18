@@ -82,12 +82,15 @@ Ausnahmen NUR gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung;
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - ATC-STD-000 — Standards Governance · ATC-AAS-001 — Agent-Session-Manifest · ATC-STD-AOS-001 — Session-Mandat · ATC-AI-GOV-POLICY-001 — Policies · ATC-AI-GOV-CHECK-001 — Check-Katalog
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `AGENTS.md`, `agent-instructions/00-11`, `ai/governance-rules.yaml`, `tools/readiness_check.py`
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release (Owner-Entwurf Zielbild 09.09., SCR-0061): 6 REQ, 3 COM-Gates; operational vorbereitet durch SCR-0057/0059/0060 (Hub, Binding-Checker, Readiness)

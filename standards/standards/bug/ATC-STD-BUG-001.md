@@ -35,7 +35,7 @@ Pflichtprozess vollstaendig durchlaufen und alle Pflichtfelder belegt sind.
 
 ## 1. Pflichtprozess (REQ-STD-101: MUST)
 
-```
+```text
 OBSERVE  →  REPRODUCE  →  ISOLATE  →  CLASSIFY  →  VERIFY  →  CREATE FINDING
 ```
 

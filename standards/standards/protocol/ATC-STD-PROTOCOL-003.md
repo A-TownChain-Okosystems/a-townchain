@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-PROTOCOL-003
   title: "ATC Protocol Threat-Model- & Security-Audit-Standard — verbindliche Bedrohungsmodelle je Protokollfamilie: 12 Pflicht-Angriffe, Threat-Registry, Audit-Kadenz, Security-Checks, Kopplung an REPO-AUDIT"
@@ -30,7 +31,7 @@ standard:
     - ATC-STD-ZKP-010
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-PROTOCOL-003 — Protocol Threat-Model & Security-Audit (v1.0.0, APPROVED)
 

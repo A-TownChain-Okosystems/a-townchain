@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-AOS-001
   title: "ATC Agent Operating Standard — Verbindliches Session-Mandat für alle KI-Agenten: die 14 Session-Fragen, Session-Lifecycle, maschinenlesbarer Session-Record, Audit-Nachweis"
@@ -29,7 +30,7 @@ standard:
     - ATC-STD-UPDATE-001
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-AOS-001 — ATC Agent Operating Standard (v1.0.0, APPROVED)
 
@@ -71,7 +72,7 @@ ersten wirksamen Aktion der Session beantwortbar sein (REQ-AOS-001..014).
 
 ## §2 Session-Lifecycle
 
-```
+```text
 SESSION_START
   ↓ 14 Fragen beantworten (aus autorisierten Quellen, §3)
   ↓ Session-Record erzeugen (§4) — vor der ersten wirksamen Aktion

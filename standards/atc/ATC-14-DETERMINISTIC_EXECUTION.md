@@ -30,6 +30,7 @@ dasselbe Ergebnis liefert.
 ## 1. Kernkonzepte
 
 ### 1.1 Vollkommene Vorhersehbarkeit
+
 ATC-14 erzwingt, dass die Ausfuehrung eines Smart Contracts keine externen,
 nicht-deterministischen Einfluesse zulaesst. Funktionen wie Zufallszahlen
 (ohne On-Chain-Seed), unspezifische Systemzeit-Aufrufe oder Abhaengigkeiten von
@@ -54,6 +55,7 @@ class BaseContract:
 > Determinismus-Garantie erfordert Wasm-Sandbox (ATC-21).
 
 ### 1.2 State-Transition-Garantie
+
 Jeder Schritt der Vertragsausfuehrung fuehrt zu einer praezisen, mathematisch
 nachvollziehbaren Zustaendsaenderung (State Transition). Wenn zwei Nodes mit
 demselben Startzustand und demselben Input beginnen, muessen sie nach der
@@ -64,6 +66,7 @@ Ausfuehrung nach ATC-14 exakt denselben Endzustand im Ledger verankert haben.
 `hybrid_consensus.py` prueft, ob alle Nodes denselben State berechnet haben.
 
 ### 1.3 Wasm-Runtime-Sandboxing
+
 ATC-14 schreibt vor, dass Smart Contracts innerhalb einer strikt abgegrenzten
 WebAssembly-Sandbox (ATC-21) ausgefuehrt werden. Diese Sandbox ist so
 konfiguriert, dass sie keinen Zugriff auf "fluechtige" Systemumgebungen hat,
@@ -74,6 +77,7 @@ Python-Runtime (keine Sandbox). Wasm-Execution-Engine ist als ATC-21
 geplant — wuerde volle Isolation und Determinismus garantieren.
 
 > **Geplant:** Wasm-Sandbox mit:
+>
 > - Kein File-System-Zugriff
 > - Kein Netzwerk-Zugriff
 > - Kein Systemzeit-Zugriff (nur ATC-10 Netzwerkzeit)
@@ -84,6 +88,7 @@ geplant — wuerde volle Isolation und Determinismus garantieren.
 ## 2. Warum ATC-14 fuer KAI-OS entscheidend ist
 
 ### 2.1 Konsens-Stabilitaet
+
 Der DAG-Konsens (ATC-04) wuerde sofort kollabieren, wenn Nodes ueber das
 Ergebnis einer Vertragsausfuehrung streiten wuerden. ATC-14 eliminiert dieses
 Risiko vollstaendig.
@@ -92,6 +97,7 @@ Risiko vollstaendig.
 Contract deterministisch ausfuehren, gibt es keinen Disput ueber das Ergebnis.
 
 ### 2.2 Proof-of-AI Validierung
+
 Da auch KI-Modell-Inferenzen in KAI-OS wie "Smart Contracts" behandelt werden
 (Tier 4), stellt ATC-14 sicher, dass Inferenz-Ergebnisse (z. B. "Welches Bild
 wurde durch KI generiert?") von Auditoren reproduzierbar sind.
@@ -100,6 +106,7 @@ wurde durch KI generiert?") von Auditoren reproduzierbar sind.
 on-chain. Deterministische Inferenz-Logs sind fuer Auditoren reproduzierbar.
 
 ### 2.3 Sicherheit
+
 Da die Ausfuehrung deterministisch ist, koennen Smart Contracts vor der
 Ausfuehrung formal verifiziert werden (das bedeutet, man kann mathematisch
 beweisen, dass der Code keine Fehler enthaelt), was das Risiko von Exploits
@@ -110,11 +117,13 @@ drastisch senkt.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-21 (Holographic On-Demand Execution)
+
 ATC-14 nutzt die Wasm-Engine aus ATC-21 als Ausfuehrungsplattform.
 
 > ATC-21 ist ein zukuenftiger Standard — definiert die Wasm-Sandbox-Engine.
 
 ### 3.2 ATC-10 (Global Time)
+
 Damit ein Smart Contract deterministisch arbeitet, darf er nicht die lokale
 Node-Zeit abfragen, sondern muss die durch ATC-10 konsensual festgelegte
 "Netzwerkzeit" verwenden.
@@ -123,6 +132,7 @@ Node-Zeit abfragen, sondern muss die durch ATC-10 konsensual festgelegte
 nutzen Block-Timestamps (von PoH), nicht `time.time()`.
 
 ### 3.3 Issue #1 (Smart Contract Implementation)
+
 Die Implementierung des BaseContract in der aktuellen Roadmap (v2.1.0) ist die
 praktische Umsetzung dieses ATC-14-Standards. Alle darauf aufbauenden Vertrage
 erben diese deterministischen Eigenschaften.
@@ -184,7 +194,6 @@ darauf aufbauend: Governance, Marketplace, Genesis Chronicles, ATC-89, ATC-90.
 *Dieses Dokument wurde aus der urspruenglichen Atc-14.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 21:50 | Aurora (Superagent)*
-
 
 ---
 

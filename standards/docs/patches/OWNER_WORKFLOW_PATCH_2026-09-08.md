@@ -41,6 +41,7 @@ jobs:
 ```
 
 **Hinweise:**
+
 1. `permissions: contents: read` auf Job- UND Workflow-Ebene (SecurityGPT SG-02): Pull-Requests aus Forks könnten sonst Schreibrechte erben.
 2. `pip install -r requirements.txt` (SCR-0054): löst E-5/T2 und schaltet S-18/S-20 vom geprüften Fallback-Modus auf Vollprüfung (PyYAML).
 3. Die vier neuen Gate-Steps verdrahten die existierenden, bisher entkoppelten Validatoren (AuditGPT D-01/D-02, F-049) — AUTOMATED-Klassifikation wird dadurch real: 9 Standards CI-erzwungen.

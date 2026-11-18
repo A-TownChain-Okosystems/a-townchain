@@ -1,11 +1,13 @@
 # Repository Audit — a-townchain — 2026-09-16
 
 ## Scope
+
 CI-independent, source/static audit of the complete repository surface. CI evidence is treated as evidence only where an existing evidence bundle identifies a concrete run and commit; no runtime result is invented.
 
 Audit dimensions: standards enforcement, code/syntax/logic, security, architecture, integration/connectivity, completeness/stubs, duplicates, documentation, roadmap/TODO/wiki/sprints, classification/tags/families, contradictions, file formats/languages, and evidence integrity.
 
 ## Repository classification
+
 - Class: CORE
 - Domain/component: blockchain
 - Maturity: R4
@@ -20,6 +22,7 @@ The machine-readable `.atc/repository.yaml` declares ATC-STD-201 v1.0.1, CORE/R4
 ## Confirmed findings
 
 ### F-20260916-ATC-001
+
 - Priority: P1
 - Class: Evidence / Traceability / Consistency
 - Category: stale or internally inconsistent evidence
@@ -31,6 +34,7 @@ The machine-readable `.atc/repository.yaml` declares ATC-STD-201 v1.0.1, CORE/R4
 - Closure: re-read evidence and current HEAD, compare commit identity, then obtain a fresh test/evidence result.
 
 ### F-20260916-ATC-002
+
 - Priority: P1
 - Class: Completeness / Security / Integration
 - Category: executable placeholder in ZKP boundary
@@ -42,6 +46,7 @@ The machine-readable `.atc/repository.yaml` declares ATC-STD-201 v1.0.1, CORE/R4
 - Closure: source re-read, negative/positive integration tests, and current evidence bundle.
 
 ### F-20260916-ATC-003
+
 - Priority: P1
 - Class: Governance / Enforcement
 - Category: standards claims versus current evidence
@@ -53,20 +58,25 @@ The machine-readable `.atc/repository.yaml` declares ATC-STD-201 v1.0.1, CORE/R4
 - Closure: README/evidence consistency re-check against current HEAD.
 
 ## Static security checks
+
 Searches on the current default branch found no `unimplemented!`, merge-conflict markers, `pull_request_target`, or mutable `actions/checkout@main/master` reference in indexed code. A `NotImplementedError` search did find the ZKP placeholder described above.
 
 These checks do not prove absence of malware, supply-chain compromise, or runtime vulnerabilities. They are source/static controls only.
 
 ## Architecture and language assessment
+
 The repository's stated boundary is coherent: ATCLang -> ATC-VM -> a-townchain orchestration, with `atc-algorithm` as canonical consensus and Rust for chain-bearing infrastructure. Rust is the appropriate canonical language for consensus-adjacent/node/state/network code. Python is reasonable for testnet tooling and non-consensus orchestration, but must not become a consensus or security primitive without a conformance specification and deterministic test vectors.
 
 Recommended file formats remain: Rust `.rs`, Cargo TOML, Python `.py`, YAML for machine-readable governance/evidence, Markdown for human documentation. No blanket format migration is justified.
 
 ## Roadmap / TODO / wiki / sprint state
+
 The repository explicitly remains development/prototype and lists conformance, security audit, reproducible build and release evidence as remaining gates. The audit therefore does not mark the repository complete. The ZKP placeholder and evidence freshness finding must be represented in the active work tracking system rather than hidden in historical documentation.
 
 ## Security / hack / virus evidence model
+
 No source audit can prove that a repository is immune to every hack or virus. The defensible proof model is layered: immutable/pinned dependencies, secret scanning, dependency/SBOM review, reproducible builds, signed/provenance-backed artifacts, least-privilege CI permissions, deterministic tests, fuzzing/property tests for parsers and consensus boundaries, sandboxing, and independent runtime/security testing. Current static review provides partial evidence only and does not establish malware immunity.
 
 ## Completion state
+
 `IN PROGRESS` — not release-ready. No finding is closed by documentation alone. Closure requires source correction where applicable, source re-read, appropriate tests, and fresh evidence bound to the exact audited commit.

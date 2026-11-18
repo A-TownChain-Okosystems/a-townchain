@@ -45,9 +45,6 @@ Verbindliche Governance-Aktionen MUESSEN einen Timelock vor Execution haben (Aus
 
 Votes und Executions sind Event-pflichtig (SC-008); off-chain spiegelt die DEC-Record-Struktur (ATC-ENT-002) die On-Chain-Entscheidungen.
 
-
-
-
 ## 4. Historische Stimmgewichts-Snapshots (REQ-SC-103)
 
 Stimmrechte MUESSEN auf historischen Block-Snapshots basieren, um Flash-Loan-Voting-Attacken wirksam zu unterbinden.

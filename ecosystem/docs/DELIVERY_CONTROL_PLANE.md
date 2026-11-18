@@ -54,6 +54,7 @@ Der aktuelle Sprint ist bewusst nicht kalendarisch terminiert: zuerst rote Gates
 ## Aktualisierungsvertrag für den Gate-Fix-Loop
 
 Bei jedem Durchlauf:
+
 1. Repositories und offene PRs aus der aktiven Registry neu inventarisieren.
 2. Fehlgeschlagene und neu fehlgeschlagene Actions-Läufe erfassen; Run-ID, Job-ID, Step, Exit-Code und Log sichern.
 3. Root Cause isolieren und minimal korrigieren, ohne Gates abzuschwächen.
@@ -71,6 +72,7 @@ The machine-readable registry tracks all 33 visible repositories in `repository_
 ### Per-repository audit contract
 
 For each repository, record:
+
 1. Default branch and exact current HEAD SHA.
 2. README, docs/wiki availability, specifications and tests; link canonical sources or record a gap.
 3. Component/function/interface inventory and canonical ownership; report SSOT conflicts.

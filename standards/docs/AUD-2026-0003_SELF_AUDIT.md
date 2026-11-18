@@ -101,7 +101,8 @@ WHICH DEPENDENCIES: keine (Validator stdlib+pyyaml) · WHICH TESTS: S-25 + Negat
 SCR-0026, CHANGELOG · WHICH SECURITY IMPACT: gering (F-035 schließtCI-Lücke;
 0 Secrets bestätigt) · WHICH COMPATIBILITY: keine (PATCH redaktionell) ·
 WHICH AUDIT EVIDENCE: dieser Report + registry/findings.yaml + CI-Logs (Run
-#34167277299) + /tmp/health_score.json-Berechnung.
+
+## 34167277299) + /tmp/health_score.json-Berechnung
 
 ## Priorisierte Empfehlungen (nach Owner-Freigabe ausstehend)
 

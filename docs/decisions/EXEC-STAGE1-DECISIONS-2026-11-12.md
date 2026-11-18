@@ -48,7 +48,7 @@ eigene Identitaet mit eigenem Namen?
 **Lokaler Lauf des Demo-Binaries am 12.11.2026** (Arbeitsbaum = `main`, keine
 CI-Evidenz) zeigt die Kopplung unmittelbar:
 
-```
+```text
 Kompilat     : 19 ATCLang-Instruktionen -> 20 ATCB-Operationen
 Artefakt     : 138 Bytes
 Code-Hash    : 5f2c38c847b3c84188bbbbf766f8aa9cc2c4d86ca53e6f60afc04b75eec75f18

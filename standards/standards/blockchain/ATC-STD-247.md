@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-247
   title: "Solana Integration Standard"
@@ -21,7 +22,7 @@ standard:
   related_standards: []
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-247 — Solana Integration (v1.2.0, APPROVED)
 

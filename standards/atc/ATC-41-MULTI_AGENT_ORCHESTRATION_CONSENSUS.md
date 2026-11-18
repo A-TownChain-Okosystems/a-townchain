@@ -27,6 +27,7 @@ In einem Betriebssystem, in dem tausende spezialisierte KI-Agenten (z. B. für G
 Wenn mehrere Agenten an einer komplexen Aufgabe arbeiten (z. B. die Erstellung einer neuen digitalen Spielwelt), müssen sie sich über den Zwischenstand einigen. ATC-41 nutzt ein **„Delegated Proof-of-Action"** Protokoll: Die Agenten „würfeln" oder stimmen über den nächsten Schritt ab, basierend auf ihrer Reputation (ATC-30) und ihrer fachlichen Zuständigkeit.
 
 **Konsens-Mechanismus:**
+
 - **Gewichtete Abstimmung:** Stimmgewicht = Reputation-Score (ATC-30) × Fachkompetenz-Score
 - **Fachkompetenz:** Jeder Agent hat ein Profil (z. B. „Grafik: 0.9, Code: 0.3, Audio: 0.1")
 - **Delegated Voting:** Agenten können ihre Stimme an einen „Lead Agent" delegieren
@@ -38,6 +39,7 @@ Wenn mehrere Agenten an einer komplexen Aufgabe arbeiten (z. B. die Erstellung e
 ATC-41 stellt sicher, dass Agenten, die voneinander abhängig sind, nicht „aus dem Takt" geraten. Wenn Agent B auf ein Ergebnis von Agent A wartet, regelt dieser Standard die Wartezeiten, Timeouts (ATC-10) und die Bereitstellung von Daten-Chunks (ATC-25).
 
 **Synchronisations-Regeln:**
+
 - **Dependency Graph:** Jeder Task hat einen DAG von Abhängigkeiten (Agent A → Agent B → Agent C)
 - **Warte-Timeout:** Standard 60 Sekunden, konfigurierbar pro Task-Typ
 - **Partial Results:** Agent B kann mit partiellen Ergebnissen arbeiten, wenn A > 50% liefert
@@ -49,12 +51,14 @@ ATC-41 stellt sicher, dass Agenten, die voneinander abhängig sind, nicht „aus
 Sollten zwei Agenten widersprüchliche Handlungen vorschlagen (z. B. Agent A will ein Asset zerstören, Agent B will es archivieren), bietet ATC-41 eine deterministische Logik zur Konfliktlösung.
 
 **Konfliktlösungs-Hierarchie:**
+
 1. **System-Priorität:** Höchste Gewichtung — schützt kritische System-Ressourcen
 2. **Reputation:** Agent mit höherem ATC-30 Score gewinnt bei gleichem Prioritäts-Level
 3. **DAO-Abstimmung:** Bei Gleichstand → kurzzeitige Governance-Abstimmung (ATC-17)
 4. **Random Tie-Break:** Letzter Ausweg — deterministischer Hash-basierter Münzwurf
 
 **Deadlock-Vermeidung:**
+
 - Zykluserkennung im Dependency Graph
 - Timeout-basierte Abbruch-Kriterien
 - ATC-40 Alarm bei wiederholten Deadlocks
@@ -94,7 +98,7 @@ Komplexe KI-Pipelines (z. B. ein Bild generieren → es animieren → es in das 
 
 ### 4.1 Agenten-Cluster-Bildung
 
-```
+```text
 Task → ATC-24 Dispatch → Agent Discovery (Reputation-basiert)
                                     ↓
                         Cluster-Formation (Handshake)
@@ -109,6 +113,7 @@ Task → ATC-24 Dispatch → Agent Discovery (Reputation-basiert)
 ### 4.2 Deadlock-Prävention (Agenten-Zirkelschlüsse)
 
 ATC-41 verhindert Zirkelschlüsse durch:
+
 - **Wait-Die-Schema:** Jüngere Agenten warten, ältere Agenten dürfen先行
 - **Timeout-Cascade:** Jede Warte-Phase hat einen Timeout, der ATC-40 bei Überschreitung triggert
 - **Priority-Inversion-Schutz:** Niedrig-Prioritäts-Agenten können Hoch-Prioritäts-Tasks nicht blockieren
@@ -116,6 +121,7 @@ ATC-41 verhindert Zirkelschlüsse durch:
 ### 4.3 DAO-Team-Bildungs-Regeln
 
 Die DAO (ATC-17) legt fest:
+
 - Mindest-Reputation-Score für Cluster-Mitgliedschaft
 - Maximale Cluster-Größe (Vermeidung von Monopolen)
 - Obligatorische Audit-Trail-Führung für alle Cluster-Aktionen

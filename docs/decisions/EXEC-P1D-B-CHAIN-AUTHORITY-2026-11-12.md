@@ -86,7 +86,7 @@ Tests — deshalb eigener Schritt mit eigener Evidenz, nicht als Nebenänderung.
 
 ## 4 Nachweis
 
-```
+```text
 python3 tools/check_build_coverage.py     GATE PASS, 77 Manifeste klassifiziert, 7 offen
 python3 -m pytest tools/tests -q          40 passed (vorher 36, +4 G-01)
 cargo test --workspace                    748 grün, 0 rot

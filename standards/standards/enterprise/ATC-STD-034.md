@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-034
   title: "Exploitability Assessment Standard"
@@ -17,7 +18,7 @@ standard:
   dependencies:
     - ATC-STD-000
     - ATC-STD-018
-----
+---
 
 # ATC-STD-034 — Exploitability Assessment Standard (v1.0.0, APPROVED)
 

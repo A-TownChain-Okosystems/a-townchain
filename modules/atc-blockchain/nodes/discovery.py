@@ -6,6 +6,7 @@ Ermöglicht neuen Nodes, den Bootstrap-Node zu finden und sich im Netzwerk zu re
 
 import json
 import logging
+import os
 import socket
 import threading
 import time
@@ -13,6 +14,17 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+
+def _resolve_bind_host() -> str:
+    """Bind-Adresse fuer Listener (ATC-STD-300 DTC, CodeQL py/bind-socket-all-interfaces).
+
+    Standard ist Loopback: kein unbeabsichtigtes Exponieren des Dienstes.
+    Echter Netzwerkbetrieb (Bootstrap/Validator) muss ausdruecklich opt-in sein:
+    ATC_P2P_BIND=0.0.0.0 (bzw. "::"). Siehe docs/REPOSITORY_STANDARD.md.
+    """
+    host = os.environ.get("ATC_P2P_BIND", "127.0.0.1").strip()
+    return host or "127.0.0.1"
 
 
 @dataclass
@@ -89,7 +101,7 @@ class NodeDiscovery:
             return
 
         try:
-            self.sock.bind(("0.0.0.0", self.discovery_port))
+            self.sock.bind((_resolve_bind_host(), self.discovery_port))
             self._running = True
             logger.info(f"Discovery-Service gestartet auf Port {self.discovery_port}")
 
