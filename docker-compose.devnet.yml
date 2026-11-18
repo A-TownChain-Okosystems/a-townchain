@@ -1,0 +1,62 @@
+# ATC-OS Devnet — drei Nodes, ein Befehl (SCR-0147 / G1)
+#
+#   docker compose -f docker-compose.devnet.yml up --build
+#
+# Ehrlichkeit: Devnet-MVP ohne Konsens, ohne TLS, ohne Authentisierung.
+# Nicht fuer oeffentliche Netze gedacht.
+name: atc-devnet
+
+x-node: &node
+  build:
+    context: .
+    dockerfile: Dockerfile.devnet
+  image: atc-node:devnet
+  restart: unless-stopped
+  networks: [atc-devnet]
+  healthcheck:
+    test: ["CMD", "python3", "-c", "import socket,sys; s=socket.create_connection(('127.0.0.1',int(sys.argv[1])),2); s.sendall(b'{\"jsonrpc\":\"2.0\",\"method\":\"ping\",\"id\":1}\\n'); sys.exit(0 if b'pong' in s.makefile().readline() else 1)", "PORT"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+    start_period: 15s
+
+services:
+  node-1:
+    <<: *node
+    container_name: atc-node-1
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket,sys; s=socket.create_connection(('127.0.0.1',int(sys.argv[1])),2); s.sendall(b'{\"jsonrpc\":\"2.0\",\"method\":\"ping\",\"id\":1}\\n'); sys.exit(0 if b'pong' in s.makefile().readline() else 1)", "39471"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    command: ["127.0.0.1:39471", "0.0.0.0:39472"]
+    ports: ["39471:39471", "39472:39472"]
+
+  node-2:
+    <<: *node
+    container_name: atc-node-2
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket,sys; s=socket.create_connection(('127.0.0.1',int(sys.argv[1])),2); s.sendall(b'{\"jsonrpc\":\"2.0\",\"method\":\"ping\",\"id\":1}\\n'); sys.exit(0 if b'pong' in s.makefile().readline() else 1)", "39481"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    command: ["127.0.0.1:39481", "0.0.0.0:39482"]
+    ports: ["39481:39481", "39482:39482"]
+
+  node-3:
+    <<: *node
+    container_name: atc-node-3
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket,sys; s=socket.create_connection(('127.0.0.1',int(sys.argv[1])),2); s.sendall(b'{\"jsonrpc\":\"2.0\",\"method\":\"ping\",\"id\":1}\\n'); sys.exit(0 if b'pong' in s.makefile().readline() else 1)", "39491"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    command: ["127.0.0.1:39491", "0.0.0.0:39492"]
+    ports: ["39491:39491", "39492:39492"]
+
+networks:
+  atc-devnet:
+    driver: bridge

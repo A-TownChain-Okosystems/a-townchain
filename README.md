@@ -126,16 +126,26 @@ a-townchain ist das kanonische **Blockchain-Integrationsmonorepo** des A-TownCha
 ```bash
 git clone https://github.com/A-TownChain-Okosystems/a-townchain.git
 cd a-townchain
-pip install -r modules/atcnet/requirements.txt
+./build.sh
 ```
+
+`build.sh` prueft die Voraussetzungen und baut das Node-Binary `target/release/atc-node`.
+Fuer den kompletten Workspace und die Apps: `./build.sh --all`. Nur pruefen: `./build.sh --check`.
 
 ## Usage
 
-Starten einer Test-Node-Instanz im Testnet-/Development-Modus:
+Devnet starten und pruefen:
 
 ```bash
-python3 modules/atcnet/node.py --chain-id 658467 --port 8333
+./start.sh              # ein Node, RPC auf 127.0.0.1:39471
+./start.sh --nodes 3    # drei Nodes (RPC 39471, 39481, 39491)
+./tools/devnet/smoke.sh # prueft ping, chain_id, boot_hash, peers
+./start.sh stop
 ```
+
+Docker-Weg: `docker compose -f docker-compose.devnet.yml up --build`.
+
+Schritt fuer Schritt: [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
 ## Development
 
