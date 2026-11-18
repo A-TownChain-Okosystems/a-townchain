@@ -1,0 +1,38 @@
+# Maschinenlesbare Updateklassen nach ATC-OS-SEC-UPDATE-001 Paragraf 4.2
+# SSOT fuer das Verhalten je Komponente. Der Standard ist normativ, diese Datei
+# ist seine ausfuehrbare Form. Aenderung nur zusammen mit dem Standard.
+standard: ATC-OS-SEC-UPDATE-001
+version: "1.0.0"
+classes:
+  automatic_priority:
+    description: "Automatisch, priorisiert. Sicherheit vor Funktionsumfang."
+    components:
+      - consensus
+      - transaction-validation
+      - crypto-libraries
+      - p2p-security
+      - mempool-security
+      - wallet-security
+      - validator-software
+  automatic:
+    description: "Automatisch nach bestandener Pruefordnung."
+    components:
+      - persistence-integrity
+  controlled:
+    description: "Kontrolliertes Update: Freigabe noetig, kein Auto-Apply."
+    components:
+      - new-blockchain-features
+  coordinated:
+    description: "Koordinierte Aktivierung zu vorab veroeffentlichter Hoehe oder Zeit."
+    components:
+      - protocol-changes
+guarantees:
+  never_touched_by_update_path:
+    - private-wallet-keys
+    - seed-phrases
+    - wallet-balances
+    - staking-assignments
+    - transaction-history
+    - validator-identities
+  authority: "ShivaCore Security Authority (BSUA fuehrt aus, entscheidet keine Rechte)"
+  fail_mode: "fail-closed"

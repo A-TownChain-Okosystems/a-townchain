@@ -4,6 +4,24 @@
 
 # Changelog
 
+## [unreleased] - 2026-11-18 — ATC-OS-SEC-UPDATE-001
+
+### Added
+
+- **ATC-OS-SEC-UPDATE-001 v1.0.0 (CANDIDATE):** Blockchain Automatic Security
+  Updates. Automatisierte, kryptografisch abgesicherte Sicherheitsaktualisierung
+  als Pflicht fuer alle sicherheitskritischen Blockchain-Komponenten von KAI-OS
+  und GlobusOS. 20 Anforderungen (REQ-BSU-001..020), 8 Gates (GATE-BSU-01..08),
+  Updateklassen-Matrix, fuenf Schutzmechanismen, TUF-Metadatenschutz,
+  Schluesseltrennung (Updatepfad erreicht nie Wallet-Schluessel oder ATC-Bestaende),
+  BSUA ohne Kernel-Autoritaet, koordinierte Protokollaktivierung, sicherer
+  Wiederherstellungsmodus statt Rollback in bekannte Schwachstellen.
+  Maschinenlesbare Klassen in `components/update-authority/policy/update-classes.yaml`.
+  Implementierungsstatus ehrlich SPECIFICATION_ONLY: die Pruefordnung ist in
+  `components/update-authority` implementiert, TUF-Rollen, Health-Check,
+  Rollback-Orchestrierung und koordinierte Aktivierung sind offen.
+  Registry 533 -> 534 Standards. §9-Freigabe offen.
+
 ## [unreleased] - 2026-09-09 — Audit-Welle 4 (SCR-0073)
 
 ### Added

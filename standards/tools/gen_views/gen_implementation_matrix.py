@@ -16,6 +16,12 @@ from datetime import datetime
 # SCR-0123: Per-Standard-Overrides - evidenzbasierte Einzel-Klassifikation,
 # die Familien-Regeln uebersteuert (nie ohne Evidence setzen; Generator-SSOT).
 OVERRIDES = {
+    "ATC-OS-SEC-UPDATE-001": (
+        "MANDATORY",
+        "specification_only",
+        "Referenz-Durchsetzung der Pruefordnung in components/update-authority (11-stufige Entscheidung, 17 Tests) - das ist REQ-BSU-004/005/013/014/019, nicht der ganze Standard",
+        "Offen: TUF-Metadaten-Rollen (REQ-BSU-012), Health-Check nach Apply (REQ-BSU-007), Rollback-Orchestrierung (REQ-BSU-008), koordinierte Protokollaktivierung (REQ-BSU-011), GATE-BSU-05..08. Kein IMPLEMENTED ohne diese Nachweise.",
+    ),
     "ATC-STD-MAINT-000": (
         "MANDATORY",
         "implemented",

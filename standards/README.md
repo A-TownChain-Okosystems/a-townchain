@@ -1,4 +1,5 @@
 <!-- GENERATED-BY generate_views.py — NICHT MANUELL BEARBEITEN -->
+
 # ATC Standards
 
 [![ATC COMPLIANCE](https://img.shields.io/badge/ATC-COMPLIANCE-green)](README.md) <!-- formal: PASS, R12-enforced (SCR-0096; Scan-Konvention ATC-COMPLIANCE) -->
@@ -7,13 +8,13 @@
 
 ```yaml
 state:
-  id: ATC-STATE-20261118-ca5c3b44
-  generated_at: "2026-11-18 13:14 UTC+2"
+  id: ATC-STATE-20261118-8101e903
+  generated_at: "2026-11-18 20:01 UTC+2"
   registry_version: "1.1.0"
-  registry_sha256: "ca5c3b445fc45382417d7b3013a8229fc736aadcc6f2a3c8420736bdd316610b"
-  standards_total: 533
+  registry_sha256: "8101e903087cfd15b1a2d53ea862c274c4a1655fef5879168b43b72cf942d0e4"
+  standards_total: 534
   standards_approved: 506
-  standards_candidate: 27
+  standards_candidate: 28
   standards_other: 0
   standard_files: registry-derived
   families: 76
@@ -22,7 +23,7 @@ state:
 **Diese Zahlen sind die EINZIG maschinenverbindliche Auskunft** (ATC-STD-003 §2 Ein-Zahl-Regel).
 Historische Zahlenstände: ausschließlich `STATUS.md` / `CHANGELOG.md` / `audits/`.
 
-**Implementierungs-KPI:** 533 Standards normativ definiert — 65 enforced, 131 implemented, 330 specification-only. Die Aussage „533 Standards implementiert“ ist unzulässig (ATC-STD-003 §8: APPROVED ≠ IMPLEMENTED).
+**Implementierungs-KPI:** 534 Standards normativ definiert — 65 enforced, 131 implemented, 330 specification-only. Die Aussage „534 Standards implementiert“ ist unzulässig (ATC-STD-003 §8: APPROVED ≠ IMPLEMENTED).
 
 **FORMALE COMPLIANCE: PASS** · **IMPLEMENTATION: PARTIAL** · **PRODUCTION READINESS: NOT_READY** — ein Zustand behauptet nie den anderen.
 
@@ -36,7 +37,7 @@ Historische Zahlenstände: ausschließlich `STATUS.md` / `CHANGELOG.md` / `audit
 
 ATC Standards is the canonical normative governance layer of the A-TownChain ecosystem. It maintains:
 
-- **Registry:** SSOT für alle 533 Standards mit Versionierung, Dependencies (DAG) und Findings
+- **Registry:** SSOT für alle 534 Standards mit Versionierung, Dependencies (DAG) und Findings
 - **Verfassung:** ATC-STD-000 v1.3.0, APPROVED
 - **Validator-Suite:** atc-std-validator, atc-repo-audit, atc-readme-validator
 - **Governance Framework:** 76 Familien
@@ -109,8 +110,7 @@ See `CONTRIBUTING.md` and `governance/ATC-STD-000.md` for details.
 ## Standards & Compliance
 
 | Standard | Version | Status |
-|---|---|---|
-| ATC-STD-000 | 1.3.0 | ✅ APPROVED (Verfassung; par.9-freigegeben 11.09.2026 — Bootstrap-EXEMPT beendet, R11 waecht weiter) |
+|---|---|---| | ATC-STD-000 | 1.3.0 | ✅ APPROVED (Verfassung; par.9-freigegeben 11.09.2026 — Bootstrap-EXEMPT beendet, R11 waecht weiter) |
 | ATC-STD-003 | 1.0.0 | ✅ APPROVED (Governance Determinism & SSOT Matrix) |
 | ATC-STD-201 | 1.0.1 | ✅ APPROVED |
 | ATC-STD-202 | 1.2.0 | ✅ APPROVED |
