@@ -9,5 +9,7 @@
 # Implementierung liegt in modules/, apps/ und components/. Eine Bereinigung dort
 # wuerde ausschliesslich historische Kopien veraendern.
 name: ATC CodeQL scope
+# Verzeichnis-Globs mit /** : ein blosses 'docs/os-docs' wird von CodeQL nicht
+# als Dateimuster aufgeloest, deshalb blieben die Snapshot-Befunde sichtbar.
 paths-ignore:
-  - docs/os-docs
+  - 'docs/os-docs/**'
