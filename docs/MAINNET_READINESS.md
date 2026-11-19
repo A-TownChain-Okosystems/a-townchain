@@ -29,7 +29,7 @@ A claim may not skip a level. Historical CI results do not verify a different SH
 
 | Gate | Required condition | Current state |
 |---|---|---|
-| Monetary contract | Economic quantities u128; counters/resource limits u64 | IN PROGRESS |
+| Monetary contract | Token amounts/balances u128; `gas_price` unit rate u64; counters/resource limits u64 | IN PROGRESS — fee-rate exception reconciled with current V2 Rust/TypeScript contract |
 | Canonical TX contract | V2 bytes, chain ID 658467, exact field encoding | IN PROGRESS |
 | TX crypto | secp256k1/ECDSA, SHA-256, RFC6979, Low-S | IMPLEMENTED ON P0 BRANCH; CI PENDING |
 | Rust/TypeScript conformance | byte-for-byte preimage equality + signature vectors | PENDING |
@@ -54,7 +54,8 @@ Transaction/account protocol signing is:
 - fixed 64-byte r || s
 - compressed SEC1 public key, 33 bytes
 - numeric chain ID 658467
-- economic fields encoded as u128
+- token amounts and account balances encoded as u128
+- `gas_price` encoded as u64 (fee-per-gas unit rate; explicit V2 exception)
 - counters/resource fields encoded as u64
 
 The reusable crypto primitive does not own transaction semantics. ATC-TX-DOMAIN-V2 and canonical transaction serialization belong to the transaction signing/encoding layer.
@@ -67,7 +68,7 @@ Ed25519 is not globally removed; it remains permitted only for explicitly purpos
 
 The current P0 contract is:
 
-`ATC-TX-DOMAIN-V2 → chain_id u64 BE → tx_type u8 → sender_did u32-length + bytes → recipient_did optional flag + u32-length + bytes → amount u128 BE → gas_price u128 BE → gas_limit u64 BE → nonce u64 BE → timestamp u64 BE → payload u32-length + bytes → poh_hash 32 bytes`
+`ATC-TX-DOMAIN-V2 → chain_id u64 BE → tx_type u8 → sender_did u32-length + bytes → recipient_did optional flag + u32-length + bytes → amount u128 BE → gas_price u64 BE → gas_limit u64 BE → nonce u64 BE → timestamp u64 BE → payload u32-length + bytes → poh_hash 32 bytes`
 
 Network ID, genesis ID, protocol version and VM version are validated runtime context and are not silently inserted into the V2 preimage.
 
@@ -124,7 +125,7 @@ Required: multiple nodes, finality, restart/resync, invalid transaction rejectio
 3. Production P2P and multi-node consensus operation are not evidenced.
 4. State sync/restart/recovery is not evidenced as a complete mainnet path.
 5. VM verifier/execution/state-transition conformance is not complete.
-6. System-wide monetary u128 reconciliation is not complete.
+6. System-wide monetary u128 reconciliation is not complete. V2 fee-rate serialization is explicitly `gas_price u64 BE`; aggregate fee products and account balance/amount fields must use checked arithmetic and reconcile with the u128 monetary contract.
 7. Rust ↔ TypeScript ↔ Node transaction conformance is not complete.
 8. Independent security audit is outstanding.
 9. A single exact-SHA release candidate with all mandatory gates green does not yet exist.
