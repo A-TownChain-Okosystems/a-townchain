@@ -130,6 +130,20 @@ additional:
       - "Der Statusgenerator zaehlt aus der YAML, nicht aus Prosa."
     evidence_required: "Generator-Lauf mit Ausgabe der Zaehlung und Validator-Ergebnis"
 
+  - id: ATC-TASK-P2-102
+    title: "Nachweise der vier geschlossenen Blocker an den Fix-Commit binden"
+    priority: P2
+    ssot: "a-townchain-ecosystem"
+    phase: 0
+    depends_on: [ATC-TASK-P2-101]
+    status: OPEN
+    problem: "BLK-P0-01, BLK-P1-05, BLK-P2-08 und BLK-P2-09 stehen auf CLOSED, ihre Evidence zeigt aber nur auf den Branch-HEAD (5a9add0e bzw. 5ef28537), nicht auf den Commit, der den Blocker geschlossen hat. Damit ist die Schliessung nicht nachvollziehbar."
+    acceptance_criteria:
+      - "Jeder der vier Blocker nennt den Commit, der die Ursache behebt, mit vollstaendigem SHA."
+      - "Zu jedem dieser Commits existiert ein Workflow-Run mit Job und Exit-Code."
+      - "Der Register-Generator uebernimmt den Fix-Commit, nicht den Branch-HEAD."
+    evidence_required: "Vier Blocker-Eintraege mit Fix-Commit, Workflow-Run, Job, Exit-Code"
+
 corrections:
   - claim: "4 von 26 aktiven Repositories geschuetzt, 22 ohne Branch Protection"
     live_result: "25 von 26 geschuetzt; ungeschuetzt ist nur demo-repository"

@@ -25,21 +25,21 @@ policy:
   corrections_rule: Widersprueche zwischen Bericht und Live-Bestand werden hier gefuehrt, nicht stillschweigend
     uebernommen.
 summary:
-  tasks_total: 37
+  tasks_total: 38
   by_priority:
     P0: 6
     P1: 17
-    P2: 14
+    P2: 15
   by_status:
     BLOCKED: 14
     CLOSED: 4
     FIX_IN_SOURCE_PR: 2
     FIX_PENDING_OWNER_PUSH: 1
     IN_PROGRESS: 4
-    OPEN: 11
+    OPEN: 12
     TODO: 1
   by_phase:
-    0: 19
+    0: 20
     1: 8
     3: 2
     4: 4
@@ -47,10 +47,10 @@ summary:
     6: 1
     7: 2
   evidence_binding:
-    tasks_with_evidence_head: 31
-    evidence_sha_full_40: 0
-    evidence_sha_short: 31
-    tasks_without_evidence: 6
+    tasks_with_full_sha: 31
+    tasks_without_evidence: 7
+    unresolved_prefixes: 7
+    evidence_is_branch_head: 24
   org_snapshot:
     repositories_total: 33
     repositories_active: 26
@@ -90,6 +90,7 @@ phases:
   - BLK-P1-08
   - BLK-P1-09
   - ATC-TASK-P2-101
+  - ATC-TASK-P2-102
   - BLK-P2-02
   - BLK-P2-03
   - BLK-P2-08
@@ -155,6 +156,11 @@ tasks:
   evidence_head: null
   last_verified: ''
   source: Bestandsaufnahme 2026-11-19 (verifiziert)
+  evidence_state: OPEN
+  evidence_sha: null
+  evidence_repo: null
+  evidence_committed: null
+  evidence_is_branch_head: false
 - id: ATC-TASK-P0-102
   title: 'Issue-Triage: 149 offene Issues auf Duplikate, Erledigung und Abhaengigkeiten pruefen'
   priority: P0
@@ -172,6 +178,11 @@ tasks:
   evidence_head: null
   last_verified: ''
   source: Bestandsaufnahme 2026-11-19 (verifiziert)
+  evidence_state: OPEN
+  evidence_sha: null
+  evidence_repo: null
+  evidence_committed: null
+  evidence_is_branch_head: false
 - id: BLK-P0-01
   title: CI startup_failure org-wide
   priority: P0
@@ -188,6 +199,12 @@ tasks:
   evidence_head: 5a9add0e24
   last_verified: 2026-11-17T14:55+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T09:17:26Z'
+  evidence_resolved_from: 5a9add0e24
+  evidence_is_branch_head: true
 - id: BLK-P0-02
   title: 'ATC-BC-001: normative Bytecode-Spezifikation'
   priority: P0
@@ -205,6 +222,12 @@ tasks:
   evidence_head: 5a9add0e24
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T09:17:26Z'
+  evidence_resolved_from: 5a9add0e24
+  evidence_is_branch_head: true
 - id: BLK-P0-03
   title: 'Contract-Lowering: ATCLang .atc -> Bytecode'
   priority: P0
@@ -222,6 +245,12 @@ tasks:
   evidence_head: 5a9add0e24
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T09:17:26Z'
+  evidence_resolved_from: 5a9add0e24
+  evidence_is_branch_head: true
 - id: BLK-P0-04
   title: 'E2E-Nachweis: consensus-verifizierte Contract-Ausfuehrung'
   priority: P0
@@ -241,6 +270,12 @@ tasks:
   evidence_head: e18bdb90db
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: e18bdb90dbdd35d7ebf287162511cf4752c7c2bd
+  evidence_repo: a-townchain-ecosystem
+  evidence_committed: '2026-11-14T22:15:48Z'
+  evidence_resolved_from: e18bdb90db
+  evidence_is_branch_head: true
 - id: ATC-TASK-P1-101
   title: Governance-Abdeckung gegen den Live-Bestand reconciliieren
   priority: P1
@@ -260,6 +295,11 @@ tasks:
   evidence_head: null
   last_verified: ''
   source: Bestandsaufnahme 2026-11-19 (verifiziert)
+  evidence_state: OPEN
+  evidence_sha: null
+  evidence_repo: null
+  evidence_committed: null
+  evidence_is_branch_head: false
 - id: ATC-TASK-P1-102
   title: 'SSOT-Freeze: atc-vm und atc-algorithm duerfen nicht parallel weiterentwickelt werden'
   priority: P1
@@ -277,6 +317,11 @@ tasks:
   evidence_head: null
   last_verified: ''
   source: Bestandsaufnahme 2026-11-19 (verifiziert)
+  evidence_state: OPEN
+  evidence_sha: null
+  evidence_repo: null
+  evidence_committed: null
+  evidence_is_branch_head: false
 - id: ATC-TASK-P1-103
   title: Zustaendigkeit der sieben archivierten Repositories uebertragen
   priority: P1
@@ -294,6 +339,11 @@ tasks:
   evidence_head: null
   last_verified: ''
   source: Bestandsaufnahme 2026-11-19 (verifiziert)
+  evidence_state: OPEN
+  evidence_sha: null
+  evidence_repo: null
+  evidence_committed: null
+  evidence_is_branch_head: false
 - id: BLK-P1-05
   title: Required Context matrix ist auf main rot und blockiert alle PRs in atc-standards
   priority: P1
@@ -314,6 +364,12 @@ tasks:
   evidence_head: 5ef28537b8
   last_verified: 2026-11-17T14:55+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+  evidence_repo: atc-standards
+  evidence_committed: '2026-11-17T11:27:46Z'
+  evidence_resolved_from: 5ef28537b8
+  evidence_is_branch_head: true
 - id: BLK-P1-06
   title: Ecosystem-Integritaets-Gate widerspricht Entscheidung E-4 (components/globus-os)
   priority: P1
@@ -333,6 +389,12 @@ tasks:
   evidence_head: e18bdb90db
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: e18bdb90dbdd35d7ebf287162511cf4752c7c2bd
+  evidence_repo: a-townchain-ecosystem
+  evidence_committed: '2026-11-14T22:15:48Z'
+  evidence_resolved_from: e18bdb90db
+  evidence_is_branch_head: true
 - id: BLK-P1-07
   title: Rust-Gates - drei getrennte Ursachen statt eines Snapshot-Defekts
   priority: P1
@@ -355,6 +417,12 @@ tasks:
   evidence_head: 5a9add0e24
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T09:17:26Z'
+  evidence_resolved_from: 5a9add0e24
+  evidence_is_branch_head: true
 - id: BLK-P1-08
   title: atc-explorer - TypeScript-Abhaengigkeit kollidiert mit ts-jest (ERESOLVE)
   priority: P1
@@ -374,6 +442,12 @@ tasks:
   evidence_head: 5a9add0e24
   last_verified: 2026-11-17T14:55+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T09:17:26Z'
+  evidence_resolved_from: 5a9add0e24
+  evidence_is_branch_head: true
 - id: BLK-P1-09
   title: Python-Befunde - 242 ruff-Funde in 10 von 21 Projekten, zwei Klassen
   priority: P1
@@ -392,6 +466,12 @@ tasks:
   evidence_head: 5a9add0e24
   last_verified: 2026-11-17T14:55+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T09:17:26Z'
+  evidence_resolved_from: 5a9add0e24
+  evidence_is_branch_head: true
 - id: BLK-P1-04
   title: 'Architektur-Konsolidierung: ATC-ARCH-001 als einzige normative Quelle'
   priority: P1
@@ -408,6 +488,12 @@ tasks:
   evidence_head: 5ef28537b8
   last_verified: 2026-11-17T14:55+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+  evidence_repo: atc-standards
+  evidence_committed: '2026-11-17T11:27:46Z'
+  evidence_resolved_from: 5ef28537b8
+  evidence_is_branch_head: true
 - id: BLK-P1-10
   title: 'Max Supply widerspruechlich: 360.000.000 ATC gegen 21.000.000'
   priority: P1
@@ -427,6 +513,12 @@ tasks:
   evidence_head: e923e89cd
   last_verified: 2026-11-17T19:05+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: e923e89cdd83cedd2fe03d41ad12758b48341240
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T17:30:11Z'
+  evidence_resolved_from: e923e89cd
+  evidence_is_branch_head: false
 - id: BLK-P1-11
   title: 'Signaturverfahren widerspruechlich: Ed25519 normativ, secp256k1 in Katalog und Code'
   priority: P1
@@ -448,6 +540,12 @@ tasks:
   evidence_head: 3c7b4efa0
   last_verified: 2026-11-17T18:40+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 3c7b4efa07776929bbb0eefe7e90c70ab6131641
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T17:28:27Z'
+  evidence_resolved_from: 3c7b4efa0
+  evidence_is_branch_head: false
 - id: BLK-P1-12
   title: 'Feldbreite widerspruechlich: amount als u64 gegen 18 Dezimalstellen und 360M Supply'
   priority: P1
@@ -467,6 +565,12 @@ tasks:
   evidence_head: 3c7b4efa0
   last_verified: 2026-11-17T18:40+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 3c7b4efa07776929bbb0eefe7e90c70ab6131641
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T17:28:27Z'
+  evidence_resolved_from: 3c7b4efa0
+  evidence_is_branch_head: false
 - id: BLK-P1-13
   title: Governance-Vertrag fuehrt total_supply mit 21 Mio, kanonisch sind 360 Mio
   priority: P1
@@ -488,6 +592,12 @@ tasks:
   evidence_head: 9ebc6dec6
   last_verified: 2026-11-17T19:20+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 9ebc6dec64fdb1f95d46eb5631aa4203017257a0
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T17:34:34Z'
+  evidence_resolved_from: 9ebc6dec6
+  evidence_is_branch_head: false
 - id: BLK-P1-14
   title: 'Vertragsbaum dreifach vorhanden: apps/atc-contracts, components/contracts, modules/atc-contracts'
   priority: P1
@@ -507,6 +617,12 @@ tasks:
   evidence_head: e923e89cd
   last_verified: 2026-11-17T19:05+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: e923e89cdd83cedd2fe03d41ad12758b48341240
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T17:30:11Z'
+  evidence_resolved_from: e923e89cd
+  evidence_is_branch_head: false
 - id: BLK-P1-01
   title: 'E-1 bis E-7: ABI- und Rechteentscheidungen'
   priority: P1
@@ -523,6 +639,12 @@ tasks:
   evidence_head: a38738dfcd
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: a38738dfcd91125fb00317b93aacb342b4515e2a
+  evidence_repo: globus-os
+  evidence_committed: '2026-11-16T19:05:52Z'
+  evidence_resolved_from: a38738dfcd
+  evidence_is_branch_head: true
 - id: BLK-P1-02
   title: Hardware-Kette und VMM-Conformance-Freeze
   priority: P1
@@ -540,6 +662,12 @@ tasks:
   evidence_head: a38738dfcd
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: a38738dfcd91125fb00317b93aacb342b4515e2a
+  evidence_repo: globus-os
+  evidence_committed: '2026-11-16T19:05:52Z'
+  evidence_resolved_from: a38738dfcd
+  evidence_is_branch_head: true
 - id: BLK-P1-03
   title: 'Kernel: Service-Space im Image, Entropie, eine Capability-/Geraeteautoritaet, SMP'
   priority: P1
@@ -558,6 +686,12 @@ tasks:
   evidence_head: a38738dfcd
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: a38738dfcd91125fb00317b93aacb342b4515e2a
+  evidence_repo: globus-os
+  evidence_committed: '2026-11-16T19:05:52Z'
+  evidence_resolved_from: a38738dfcd
+  evidence_is_branch_head: true
 - id: ATC-TASK-P2-101
   title: 'Register-Zaehlung korrigieren: 31 Eintraege, nicht 15 und nicht 32'
   priority: P2
@@ -575,6 +709,34 @@ tasks:
   evidence_head: null
   last_verified: ''
   source: Bestandsaufnahme 2026-11-19 (verifiziert)
+  evidence_state: OPEN
+  evidence_sha: null
+  evidence_repo: null
+  evidence_committed: null
+  evidence_is_branch_head: false
+- id: ATC-TASK-P2-102
+  title: Nachweise der vier geschlossenen Blocker an den Fix-Commit binden
+  priority: P2
+  phase: 0
+  status: OPEN
+  ssot: a-townchain-ecosystem
+  gate: null
+  depends_on:
+  - ATC-TASK-P2-101
+  register_blocked_by: []
+  acceptance_criteria:
+  - Jeder der vier Blocker nennt den Commit, der die Ursache behebt, mit vollstaendigem SHA.
+  - Zu jedem dieser Commits existiert ein Workflow-Run mit Job und Exit-Code.
+  - Der Register-Generator uebernimmt den Fix-Commit, nicht den Branch-HEAD.
+  evidence_required: Vier Blocker-Eintraege mit Fix-Commit, Workflow-Run, Job, Exit-Code
+  evidence_head: null
+  last_verified: ''
+  source: Bestandsaufnahme 2026-11-19 (verifiziert)
+  evidence_state: OPEN
+  evidence_sha: null
+  evidence_repo: null
+  evidence_committed: null
+  evidence_is_branch_head: false
 - id: BLK-P2-02
   title: 'Evidence-Bindung: exact-SHA statt Prosa-Zahlen'
   priority: P2
@@ -591,6 +753,12 @@ tasks:
   evidence_head: 5ef28537b8
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+  evidence_repo: atc-standards
+  evidence_committed: '2026-11-17T11:27:46Z'
+  evidence_resolved_from: 5ef28537b8
+  evidence_is_branch_head: true
 - id: BLK-P2-03
   title: Governance-Abdeckung und PR-Bypass
   priority: P2
@@ -608,6 +776,12 @@ tasks:
   evidence_head: 7f76c5092c
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 7f76c5092ceeadb2bd5be4cc4a1161decd53f1a8
+  evidence_repo: .github
+  evidence_committed: '2026-11-16T18:55:26Z'
+  evidence_resolved_from: 7f76c5092c
+  evidence_is_branch_head: true
 - id: BLK-P2-08
   title: FILE_REGISTER.md in atc-standards ohne Bezug zum Bestand
   priority: P2
@@ -630,6 +804,12 @@ tasks:
   evidence_head: 5ef28537b8
   last_verified: 2026-11-17T14:55+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+  evidence_repo: atc-standards
+  evidence_committed: '2026-11-17T11:27:46Z'
+  evidence_resolved_from: 5ef28537b8
+  evidence_is_branch_head: true
 - id: BLK-P2-09
   title: ATC-ARCH-002 ist auf main, aber nicht freigegeben
   priority: P2
@@ -646,6 +826,12 @@ tasks:
   evidence_head: 5ef28537b8
   last_verified: 2026-11-17T14:55+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+  evidence_repo: atc-standards
+  evidence_committed: '2026-11-17T11:27:46Z'
+  evidence_resolved_from: 5ef28537b8
+  evidence_is_branch_head: true
 - id: BLK-P2-10
   title: 'regenerate auf atc-standards/main ist strukturell rot: Views tragen eine Wall-Clock-Zeitangabe'
   priority: P2
@@ -668,6 +854,12 @@ tasks:
   evidence_head: 5ef28537b8
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+  evidence_repo: atc-standards
+  evidence_committed: '2026-11-17T11:27:46Z'
+  evidence_resolved_from: 5ef28537b8
+  evidence_is_branch_head: true
 - id: BLK-P2-11
   title: Fuenf Test- und Build-Gates ohne isolierte Ursache
   priority: P2
@@ -685,6 +877,12 @@ tasks:
   evidence_head: e18bdb90db
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: e18bdb90dbdd35d7ebf287162511cf4752c7c2bd
+  evidence_repo: a-townchain-ecosystem
+  evidence_committed: '2026-11-14T22:15:48Z'
+  evidence_resolved_from: e18bdb90db
+  evidence_is_branch_head: true
 - id: BLK-P2-12
   title: 'SCR-ID-Kollision: SCR-0129 ist vier Gegenständen zugeordnet'
   priority: P2
@@ -705,6 +903,12 @@ tasks:
   evidence_head: 7603cf641
   last_verified: 2026-11-17T16:10+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 7603cf641ef19a759fb644211a21e6fab6d54934
+  evidence_repo: a-townchain-ecosystem
+  evidence_committed: '2026-11-17T13:52:49Z'
+  evidence_resolved_from: 7603cf641
+  evidence_is_branch_head: false
 - id: BLK-P2-01
   title: 'Standards-Umsetzung: 330 von 533 specification_only'
   priority: P2
@@ -721,6 +925,12 @@ tasks:
   evidence_head: 5ef28537b8
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+  evidence_repo: atc-standards
+  evidence_committed: '2026-11-17T11:27:46Z'
+  evidence_resolved_from: 5ef28537b8
+  evidence_is_branch_head: true
 - id: BLK-P2-13
   title: Keine normative Datenarchitektur fuer GlobusOS; Klassifizierung fehlt im Datenpfad
   priority: P2
@@ -744,6 +954,12 @@ tasks:
   evidence_head: cb60555
   last_verified: 2026-11-17T19:55+01:00
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: cb605552f623efca084e60e8110e4a64e0aec91e
+  evidence_repo: globus-os
+  evidence_committed: '2026-11-15T01:24:04Z'
+  evidence_resolved_from: cb60555
+  evidence_is_branch_head: false
 - id: BLK-P2-04
   title: 'Aurora AI: Integrationstiefe nachweisen'
   priority: P2
@@ -762,6 +978,12 @@ tasks:
   evidence_head: 2855956b32
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 2855956b32fd47c8ba9d688493834601aaf50434
+  evidence_repo: aurora-ai
+  evidence_committed: '2026-11-14T22:14:47Z'
+  evidence_resolved_from: 2855956b32
+  evidence_is_branch_head: true
 - id: BLK-P2-05
   title: 'Genesis Engine: Reifegrad-Assessment'
   priority: P2
@@ -777,6 +999,12 @@ tasks:
   evidence_head: 3c2be8c11c
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 3c2be8c11c00bf5b6a1a4de87760004e9c5d35ef
+  evidence_repo: genesis-engine
+  evidence_committed: '2026-10-23T16:19:36Z'
+  evidence_resolved_from: 3c2be8c11c
+  evidence_is_branch_head: true
 - id: BLK-P2-06
   title: 'Chain-Sicherheitsarchitektur: unabhaengige Tiefenanalyse'
   priority: P2
@@ -794,6 +1022,12 @@ tasks:
   evidence_head: 5a9add0e24
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+  evidence_repo: a-townchain
+  evidence_committed: '2026-11-17T09:17:26Z'
+  evidence_resolved_from: 5a9add0e24
+  evidence_is_branch_head: true
 - id: BLK-P2-07
   title: Release-Gate-Kriterien erweitern
   priority: P2
@@ -813,3 +1047,9 @@ tasks:
   evidence_head: 5ef28537b8
   last_verified: ''
   source: BLOCKER_REGISTER-001 v0.3.7
+  evidence_state: RESOLVED
+  evidence_sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+  evidence_repo: atc-standards
+  evidence_committed: '2026-11-17T11:27:46Z'
+  evidence_resolved_from: 5ef28537b8
+  evidence_is_branch_head: true

@@ -661,3 +661,8 @@ entries:
     pattern: "Wall-Clock"
     justification: "queried_at belegt, wann die Organisationszahlen abgefragt wurden; ein fixierter Wert waere eine Falschangabe. Mit SOURCE_DATE_EPOCH reproduzierbar"
     scr: "SCR-0149"
+  - file: backlog/tools/resolve_evidence.py
+    line: 114
+    pattern: "Wall-Clock"
+    justification: "generated_at belegt, wann die Evidence aufgeloest wurde; mit SOURCE_DATE_EPOCH byte-identisch reproduzierbar"
+    scr: "SCR-0149"

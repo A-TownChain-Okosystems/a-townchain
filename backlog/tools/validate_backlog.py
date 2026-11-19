@@ -12,6 +12,8 @@ Prueft, was ein maschinenlesbares Backlog tragen muss:
   V-8  Status aus dem erlaubten Vokabular
   V-9  Evidence-Feld vorhanden (auch wenn leer, dann offen)
   V-10 CLOSED-Tasks tragen eine Evidence-Angabe
+  V-11 geschlossene Tasks tragen einen vollstaendigen 40-stelligen SHA
+  V-12 Hinweis: Evidence ist nur der Branch-HEAD, kein eigener Fix-Commit
 Exit-Code 0 = PASS, 1 = FAIL.
 """
 
@@ -37,6 +39,7 @@ def main():
     doc = yaml.safe_load(open(os.path.join(ROOT, "MASTER_BACKLOG.yaml"), encoding="utf-8"))
     tasks = doc["tasks"]
     errs = []
+    hints = []
 
     ids = [t["id"] for t in tasks]
     seen = set()
@@ -60,10 +63,13 @@ def main():
             errs.append(f"V-8 {t['id']}: Status {t.get('status')}")
         if "evidence_required" not in t:
             errs.append(f"V-9 {t['id']}: Feld evidence_required fehlt")
-        if t.get("status") in ("CLOSED", "DONE") and not (
-            t.get("evidence_required") or t.get("evidence_head")
-        ):
-            errs.append(f"V-10 {t['id']}: CLOSED ohne Evidence")
+        if t.get("status") in ("CLOSED", "DONE"):
+            if not (t.get("evidence_required") or t.get("evidence_sha")):
+                errs.append(f"V-10 {t['id']}: CLOSED ohne Evidence")
+            if len(str(t.get("evidence_sha") or "")) != 40:
+                errs.append(f"V-11 {t['id']}: CLOSED ohne vollstaendigen SHA")
+            if t.get("evidence_is_branch_head"):
+                hints.append(f"V-12 {t['id']}: Evidence ist nur der Branch-HEAD, kein Fix-Commit")
 
     for t in tasks:
         for d in graph[t["id"]]:
@@ -88,12 +94,14 @@ def main():
         walk(n, [])
 
     print(f"Tasks: {len(tasks)} | Abhaengigkeiten: {sum(len(v) for v in graph.values())}")
+    for h in hints:
+        print("  HINWEIS", h)
     if errs:
         for e in errs:
             print("  FAIL", e)
         print("BACKLOG: FAIL")
         return 1
-    print("BACKLOG: PASS (V-1..V-10)")
+    print("BACKLOG: PASS (V-1..V-11)")
     return 0
 
 

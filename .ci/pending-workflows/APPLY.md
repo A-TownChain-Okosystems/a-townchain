@@ -41,8 +41,9 @@ Regelsatz, Ruff-Version (0.16.7) und Policy-SHA bleiben unveraendert.
 
 ## Neu: quality-gates.yml (SCR-0147)
 
-Fuehrt Ebene 1 bis 3 ueber `tools/quality/atc_quality.py` aus und legt den
-SHA-gebundenen Bericht als Artefakt ab. Braucht wie die uebrigen Patches
+Fuehrt Ebene 1 bis 4 ueber `tools/quality/atc_quality.py` aus und legt den
+SHA-gebundenen Bericht als Artefakt ab. Ebene 4 prueft das Master-Backlog
+(IDs, Abhaengigkeiten, SSOT, Evidence). Braucht wie die uebrigen Patches
 `workflow`-Scope.
 
 ## Neu: CodeQL-Scope wirklich anwenden (SCR-0147)

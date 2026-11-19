@@ -5,6 +5,7 @@
 Ebene 1  Code Lint        Ruff (Syntax, Formatierung, Importe, Programmierregeln)
 Ebene 2  Repository Lint  atc_repo_audit (Struktur, Pflichtdateien, Governance, Health Score)
 Ebene 3  Ecosystem        ecosystem_compliance (kanonische Orte, SSOT, Doppelungen, Referenzen)
+Ebene 4  Backlog          backlog/tools/validate_backlog.py (IDs, Abhaengigkeiten, SSOT, Evidence)
 
 Die normativen Regeln liegen in standards/ (ATC-STD-081/082, 201/202/203, 300).
 Jedes Ergebnis wird an den Commit-SHA gebunden; ohne SHA gibt es keinen Nachweis.
@@ -96,12 +97,29 @@ def level3(root: Path):
     return "PASS", f"{len(rep.rows)} Pruefungen, {len(warn)} Hinweise"
 
 
-LEVELS = {"1": ("Code Lint", level1), "2": ("Repository Lint", level2), "3": ("Ecosystem", level3)}
+def level4(root: Path):
+    """Backlog-Integritaet: eindeutige IDs, geschlossene Abhaengigkeiten, SSOT, Evidence."""
+    validator = root / "backlog/tools/validate_backlog.py"
+    if not (root / "backlog/MASTER_BACKLOG.yaml").is_file():
+        return "SKIP", "kein Backlog vorhanden"
+    if not validator.is_file():
+        return "BLOCKED", "backlog/tools/validate_backlog.py fehlt"
+    code, out = run_cmd([sys.executable, str(validator)], root)
+    tail = [line for line in out.splitlines() if line.strip()][-1:] or ["ohne Ausgabe"]
+    return ("PASS" if code == 0 else "FAIL"), tail[0][:200]
+
+
+LEVELS = {
+    "1": ("Code Lint", level1),
+    "2": ("Repository Lint", level2),
+    "3": ("Ecosystem", level3),
+    "4": ("Backlog", level4),
+}
 
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="ATC Quality Gate (drei Ebenen)")
-    parser.add_argument("--levels", default="1,2,3", help="z.B. 1,2 oder 3")
+    parser.add_argument("--levels", default="1,2,3,4", help="z.B. 1,2 oder 1,2,3,4")
     parser.add_argument("--root", default=".")
     parser.add_argument("--out", help="JSON-Bericht schreiben")
     parser.add_argument("--json", action="store_true", help="JSON auf stdout")

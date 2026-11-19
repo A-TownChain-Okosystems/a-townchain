@@ -53,6 +53,12 @@ def main():
     register = load("sources/register-2026-11-17.yaml")
     curation = load("curation.yaml")
     verify = load("verification.yaml")
+    ev_path = os.path.join(ROOT, "evidence.yaml")
+    evidence = (
+        yaml.safe_load(open(ev_path, encoding="utf-8"))
+        if os.path.exists(ev_path)
+        else {"tasks": {}}
+    )
     mapping = curation["blockers"]
 
     tasks = []
@@ -100,6 +106,17 @@ def main():
             }
         )
 
+    for t in tasks:
+        e = evidence.get("tasks", {}).get(t["id"], {})
+        t["evidence_state"] = "RESOLVED" if e.get("resolved") else "OPEN"
+        t["evidence_sha"] = e.get("sha")
+        t["evidence_repo"] = e.get("repo")
+        t["evidence_committed"] = e.get("committed")
+        if e.get("resolved_from"):
+            t["evidence_resolved_from"] = e["resolved_from"]
+        head = (verify.get("main_heads") or {}).get(t.get("evidence_repo") or "")
+        t["evidence_is_branch_head"] = bool(head and t.get("evidence_sha") == head.get("sha"))
+
     tasks.sort(
         key=lambda x: (
             PRIORITIES.index(x["priority"]) if x["priority"] in PRIORITIES else 9,
@@ -114,8 +131,8 @@ def main():
             out[t[key]] = out.get(t[key], 0) + 1
         return dict(sorted(out.items(), key=lambda kv: str(kv[0])))
 
-    ev = [t for t in tasks if t.get("evidence_head")]
-    ev_full = [t for t in ev if len(str(t["evidence_head"])) == 40]
+    ev = [t for t in tasks if t.get("evidence_sha")]
+    ev_full = [t for t in ev if len(str(t["evidence_sha"])) == 40]
 
     doc = {
         "schema_version": "1.0.0",
@@ -149,10 +166,12 @@ def main():
             "by_status": tally("status"),
             "by_phase": tally("phase"),
             "evidence_binding": {
-                "tasks_with_evidence_head": len(ev),
-                "evidence_sha_full_40": len(ev_full),
-                "evidence_sha_short": len(ev) - len(ev_full),
+                "tasks_with_full_sha": len(ev_full),
                 "tasks_without_evidence": len(tasks) - len(ev),
+                "unresolved_prefixes": len(tasks) - len(ev),
+                "evidence_is_branch_head": len(
+                    [t for t in tasks if t.get("evidence_is_branch_head")]
+                ),
             },
             "org_snapshot": {
                 "repositories_total": verify["repositories"]["total"],
@@ -234,10 +253,10 @@ def main():
     md.append("")
     md.append("| Kennzahl | Wert |")
     md.append("|---|---|")
-    md.append(f"| Aufgaben mit Evidence-Kopf | {eb['tasks_with_evidence_head']} |")
-    md.append(f"| davon vollstaendiger 40-stelliger SHA | {eb['evidence_sha_full_40']} |")
-    md.append(f"| davon Kurz-SHA (nicht releasefaehig) | {eb['evidence_sha_short']} |")
-    md.append(f"| Aufgaben ohne Evidence | {eb['tasks_without_evidence']} |")
+    md.append(f"| Aufgaben mit vollstaendigem 40-stelligem SHA | {eb['tasks_with_full_sha']} |")
+    md.append(
+        f"| Aufgaben ohne Evidence (neu, noch kein Commit) | {eb['tasks_without_evidence']} |"
+    )
     md.append("")
     md.append("Ein Kurz-SHA ist ein Hinweis, kein Nachweis. Fuer Release-Gates muss der")
     md.append("vollstaendige SHA samt Workflow-Run, Job und Exit-Code vorliegen.")
@@ -252,11 +271,18 @@ def main():
         md.append("")
     md.append("## Aufgaben")
     md.append("")
-    md.append("| ID | Prio | Phase | Status | SSOT | Titel |")
-    md.append("|---|---|---|---|---|---|")
+    md.append("| ID | Prio | Phase | Status | SSOT | Evidence | Titel |")
+    md.append("|---|---|---|---|---|---|---|")
     for t in tasks:
+        sha = t.get("evidence_sha")
+        repo = t.get("evidence_repo")
+        if sha and repo:
+            ev = f"`{repo}@{sha[:12]}`" + (" (HEAD)" if t.get("evidence_is_branch_head") else "")
+        else:
+            ev = "—"
         md.append(
-            f"| {t['id']} | {t['priority']} | {t['phase']} | {t['status']} | {t['ssot']} | {t['title']} |"
+            f"| {t['id']} | {t['priority']} | {t['phase']} | {t['status']} | {t['ssot']} "
+            f"| {ev} | {t['title']} |"
         )
     md.append("")
     md.append("## Abhaengigkeiten")
