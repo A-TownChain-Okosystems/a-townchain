@@ -1,0 +1,145 @@
+# ============================================================================
+# Kuratierungs-Ebene des Master-Backlogs.
+# Hier steht NUR, was das Quell-Register nicht enthaelt:
+#   ssot      — kanonischer Eigentuemer der Aufgabe (ein Repo/Pfad, nie zwei)
+#   phase     — Reihenfolge nach dem Entwicklungsfahrplan (0..7)
+#   depends_on— harte Abhaengigkeiten auf andere Task-IDs
+#   status_override / note — nur wenn der Live-Stand vom Register abweicht
+# Die inhaltliche Wahrheit (Titel, Problem, Closure-Kriterien, Evidence) kommt
+# aus dem gepinnten Register-Snapshot, nicht aus dieser Datei.
+# ============================================================================
+version: "1.0.0"
+
+blockers:
+  BLK-P0-01: {ssot: ".github (Org)", phase: 0, depends_on: []}
+  BLK-P0-02: {ssot: "atc-standards (ATC-BC-001) + a-townchain/components/vm", phase: 1, depends_on: [BLK-P0-01]}
+  BLK-P0-03: {ssot: "atclang", phase: 3, depends_on: [BLK-P0-02]}
+  BLK-P0-04: {ssot: "a-townchain/components/node", phase: 3, depends_on: [BLK-P0-03]}
+  BLK-P1-01: {ssot: "globus-os/modules/atc-shivacore/kernel", phase: 4, depends_on: [BLK-P0-01]}
+  BLK-P1-02: {ssot: "globus-os/modules/atc-shivacore/kernel", phase: 4, depends_on: [BLK-P1-01]}
+  BLK-P1-03: {ssot: "globus-os/modules/atc-shivacore/kernel", phase: 4, depends_on: [BLK-P1-01]}
+  BLK-P1-04: {ssot: "a-townchain-ecosystem (ATC-ARCH-001)", phase: 1, depends_on: []}
+  BLK-P1-05: {ssot: "a-townchain-ecosystem", phase: 0, depends_on: []}
+  BLK-P1-06: {ssot: "a-townchain-ecosystem", phase: 0, depends_on: [BLK-P1-04]}
+  BLK-P1-07: {ssot: "a-townchain (Rust-Workspace)", phase: 0, depends_on: [BLK-P0-01]}
+  BLK-P1-08: {ssot: "a-townchain/apps/atc-explorer", phase: 0, depends_on: [BLK-P0-01]}
+  BLK-P1-09: {ssot: "a-townchain (Python-Bestand)", phase: 0, depends_on: [BLK-P0-01]}
+  BLK-P1-10: {ssot: "atc-standards + a-townchain/apps/atc-contracts", phase: 1, depends_on: []}
+  BLK-P1-11: {ssot: "atc-standards (ATC-STD-600)", phase: 1, depends_on: []}
+  BLK-P1-12: {ssot: "atc-standards (ATC-STD-600)", phase: 1, depends_on: []}
+  BLK-P1-13: {ssot: "a-townchain/apps/atc-contracts", phase: 1, depends_on: [BLK-P1-10]}
+  BLK-P1-14: {ssot: "a-townchain/apps/atc-contracts", phase: 1, depends_on: [BLK-P1-10]}
+  BLK-P2-01: {ssot: "atc-standards", phase: 1, depends_on: []}
+  BLK-P2-02: {ssot: "a-townchain-ecosystem", phase: 0, depends_on: []}
+  BLK-P2-03: {ssot: ".github (Org)", phase: 0, depends_on: [BLK-P0-01]}
+  BLK-P2-04: {ssot: "aurora-ai", phase: 5, depends_on: [BLK-P1-01]}
+  BLK-P2-05: {ssot: "genesis-engine", phase: 6, depends_on: []}
+  BLK-P2-06: {ssot: "a-townchain", phase: 7, depends_on: [BLK-P0-04]}
+  BLK-P2-07: {ssot: "a-townchain", phase: 7, depends_on: [BLK-P2-06]}
+  BLK-P2-08: {ssot: "atc-standards", phase: 0, depends_on: []}
+  BLK-P2-09: {ssot: "a-townchain-ecosystem", phase: 0, depends_on: []}
+  BLK-P2-10: {ssot: "atc-standards", phase: 0, depends_on: [BLK-P2-08]}
+  BLK-P2-11: {ssot: "a-townchain (CI)", phase: 0, depends_on: [BLK-P0-01]}
+  BLK-P2-12: {ssot: "atc-standards", phase: 0, depends_on: []}
+  BLK-P2-13: {ssot: "globus-os", phase: 4, depends_on: [BLK-P1-01]}
+
+# Aufgaben, die das Register nicht fuehrt, die die Bestandsaufnahme aber
+# nachweisbar erzeugt hat (Zaehlung, Triage, SSOT-Grenzen).
+additional:
+  - id: ATC-TASK-P0-101
+    title: "PR-Triage: 244 offene PRs klassifizieren und schliessen"
+    priority: P0
+    ssot: "A-TownChain-Okosystems (org-weit)"
+    phase: 0
+    depends_on: []
+    status: OPEN
+    problem: "244 offene PRs blockieren Review-Kapazitaet. Ohne Klassifikation ist keine Aussage moeglich, welche Aenderung noch gilt."
+    acceptance_criteria:
+      - "Jeder der 244 PRs hat genau eine Klasse: relevant, ueberholt, Duplikat, Sicherheitskorrektur, Dokumentation, abnahmebereit, blockiert."
+      - "Jeder PR ohne Klasse ist als offen markiert, nicht stillschweigend geschlossen."
+      - "Ueberholte PRs sind mit Verweis auf den ersetzenden PR oder Commit geschlossen."
+    evidence_required: "Triage-Bericht mit PR-Nummer, Klasse, Begruendung, Zeitstempel"
+
+  - id: ATC-TASK-P0-102
+    title: "Issue-Triage: 149 offene Issues auf Duplikate, Erledigung und Abhaengigkeiten pruefen"
+    priority: P0
+    ssot: "A-TownChain-Okosystems (org-weit)"
+    phase: 0
+    depends_on: []
+    status: OPEN
+    problem: "13 P0- und 10 P1-Issues sind nicht gegen den Code-Stand abgeglichen; Doppelungen mit dem Blocker-Register sind unbekannt."
+    acceptance_criteria:
+      - "Jedes offene Issue ist einem Blocker oder einer Task-ID zugeordnet oder als eigenstaendig begruendet."
+      - "Bereits erledigte Issues sind mit Commit-Nachweis geschlossen."
+      - "Doppelte Issues sind zusammengefuehrt, nicht geloescht."
+    evidence_required: "Triage-Bericht mit Issue-Nummer, Zuordnung, Commit-Nachweis"
+
+  - id: ATC-TASK-P1-101
+    title: "Governance-Abdeckung gegen den Live-Bestand reconciliieren"
+    priority: P1
+    ssot: ".github (Org)"
+    phase: 0
+    depends_on: [BLK-P2-03]
+    status: OPEN
+    problem: "Der Bericht nennt 4 von 26 Repositories geschuetzt. Live geprueft am 2026-11-19 sind 25 von 26 geschuetzt; ungeschuetzt ist nur demo-repository. Die veroeffentlichte Abdeckungsquote ist damit falsch."
+    acceptance_criteria:
+      - "Die Abdeckungsquote im Register stammt aus einer Live-Abfrage, nicht aus einer Momentaufnahme vom 17.11."
+      - "demo-repository ist entweder geschuetzt oder als Ausnahme mit Begruendung gefuehrt."
+      - "Die Zahl ist mit Abfragezeitpunkt und Methode belegt."
+    evidence_required: "API-Abfrage je Repository mit Zeitstempel und Ergebnis"
+
+  - id: ATC-TASK-P1-102
+    title: "SSOT-Freeze: atc-vm und atc-algorithm duerfen nicht parallel weiterentwickelt werden"
+    priority: P1
+    ssot: "a-townchain/components/vm"
+    phase: 0
+    depends_on: []
+    status: OPEN
+    problem: "atc-vm (main 21132a49, 25.09.) und atc-algorithm (main f25b4338, 13.10.) stehen still, waehrend der Monorepo die kanonischen Pfade fuehrt. Ohne sichtbaren Freeze entstehen neue Kopien."
+    acceptance_criteria:
+      - "Beide Repositories tragen eine sichtbare Freeze-Notiz im README mit Verweis auf den kanonischen Pfad."
+      - "Branch Protection oder Archivierung verhindert neue Commits auf main."
+      - "Die kanonischen Pfade im Monorepo sind im Register als SSOT eingetragen."
+    evidence_required: "README-Commit je Repository, Schutz- oder Archiv-Status mit Abfragezeitpunkt"
+
+  - id: ATC-TASK-P1-103
+    title: "Zustaendigkeit der sieben archivierten Repositories uebertragen"
+    priority: P1
+    ssot: "a-townchain (Monorepo)"
+    phase: 0
+    depends_on: []
+    status: OPEN
+    problem: "atc-wallet, atc-explorer, atc-indexer, atc-mining, atc-interop, atc-oracle und atc-storage sind archiviert. Ihre Funktionen muessen einen aktiven Eigentuemer haben, sonst ist die Abdeckung unbelegt."
+    acceptance_criteria:
+      - "Fuer jedes der sieben Repositories ist die aktive Nachfolgekomponente benannt."
+      - "Jede Nachfolgekomponente ist im Monorepo vorhanden und baut."
+      - "Kein Repository bleibt ohne Zuordnung."
+    evidence_required: "Zuordnungstabelle mit Repository, Nachfolger, Build-Nachweis"
+
+  - id: ATC-TASK-P2-101
+    title: "Register-Zaehlung korrigieren: 31 Eintraege, nicht 15 und nicht 32"
+    priority: P2
+    ssot: "a-townchain-ecosystem"
+    phase: 0
+    depends_on: []
+    status: OPEN
+    problem: "PR #247 nennt 15 Blocker, die Bestandsaufnahme 32, der gepinnte Snapshot enthaelt 31 Eintraege. Vier Eintraege (BLK-P1-05, BLK-P2-08, BLK-P2-09, BLK-P2-10) haben kein priority-Feld."
+    acceptance_criteria:
+      - "Die Zahl im PR-Text, im Register und im Statusgenerator ist identisch."
+      - "Jeder Eintrag hat die Felder id, title, priority, status, closure_criteria."
+      - "Der Statusgenerator zaehlt aus der YAML, nicht aus Prosa."
+    evidence_required: "Generator-Lauf mit Ausgabe der Zaehlung und Validator-Ergebnis"
+
+corrections:
+  - claim: "4 von 26 aktiven Repositories geschuetzt, 22 ohne Branch Protection"
+    live_result: "25 von 26 geschuetzt; ungeschuetzt ist nur demo-repository"
+    method: "GitHub API /repos/{org}/{repo}/branches/main/protection, 26 aktive Repositories, 2026-11-19"
+    impact: "Die Aussage zur Governance-Abdeckung ist falsch und darf so nicht veroeffentlicht werden."
+  - claim: "Das Register enthaelt 32 Blocker-Eintraege"
+    live_result: "31 Eintraege im gepinnten Snapshot (PR #247, head d691e51d)"
+    method: "yaml.safe_load auf docs/system-readiness/BLOCKER_REGISTER.yaml, len(blockers)"
+    impact: "Zaehlung in Bericht und Register stimmt nicht ueberein."
+  - claim: "Der PR-Text nennt 15 Blocker"
+    live_result: "31 Eintraege in der YAML, davon 4 CLOSED"
+    method: "Vergleich PR-Beschreibung gegen Dateiinhalt"
+    impact: "Bestaetigt: PR-Zusammenfassung bildet die Datei nicht ab."

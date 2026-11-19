@@ -1,0 +1,51 @@
+# GENERIERT von backlog/tools/verify_org.py — nicht manuell bearbeiten.
+queried_at: "2026-11-19T12:08:09+00:00"
+organisation: A-TownChain-Okosystems
+repositories:
+  total: 33
+  active: 26
+  archived: 7
+  archived_names:
+    - atc-explorer
+    - atc-indexer
+    - atc-interop
+    - atc-mining
+    - atc-oracle
+    - atc-storage
+    - atc-wallet
+pull_requests_open: 244
+issues_open: 149
+issues_open_p0: 13
+issues_open_p1: 10
+branch_protection:
+  protected: 25
+  unprotected_count: 1
+  unprotected:
+    - demo-repository
+main_heads:
+  .github: {sha: "7f76c5092ceeadb2bd5be4cc4a1161decd53f1a8", committed: "2026-11-16T18:55:26Z"}
+  a-townchain: {sha: "5a9add0e2414900a24cb6d183b9a19bb6d20a557", committed: "2026-11-17T09:17:26Z"}
+  a-townchain-ecosystem: {sha: "e18bdb90dbdd35d7ebf287162511cf4752c7c2bd", committed: "2026-11-14T22:15:48Z"}
+  a-townchain-os: {sha: "8dbbb5ddfad1c170b30f3307fd9a646426d05b97", committed: "2026-11-14T09:54:11Z"}
+  a-townchain-os-docs: {sha: "35aa1492f947249ff680b4e0a42f6c1105c7467e", committed: "2026-11-18T10:52:48Z"}
+  atc-algorithm: {sha: "f25b43383433766c43df6c5c494ecb70cdb4a4b7", committed: "2026-10-13T22:01:44Z"}
+  atc-compute: {sha: "89d833edf338085d6141b0c703ebf92a0db83a5e", committed: "2026-10-12T21:12:17Z"}
+  atc-contracts: {sha: "876c03b2c8ec4916158c0a934eb2d34b8a45299c", committed: "2026-11-02T01:48:44Z"}
+  atc-engineering: {sha: "0f94b4f7cc7fb5bfc22cd82fc923e168b16288a1", committed: "2026-11-02T02:11:15Z"}
+  atc-ide: {sha: "84a233b4fbe559b37e3db2e6633f6b30aa443380", committed: "2026-11-05T11:26:08Z"}
+  atc-launchpad: {sha: "83067c0bd13e8d2f0db81bbd2e203e3da9ae94d9", committed: "2026-11-17T08:54:51Z"}
+  atc-marketplace: {sha: "2e2bc090c982f189566b67af9847043c59f7c103", committed: "2026-11-16T19:05:45Z"}
+  atc-node: {sha: "821d049efc5b592e4728b36b64038d4ce5e7d2c6", committed: "2026-11-02T01:48:32Z"}
+  atc-sdk: {sha: "11e18587a4c2ada631af88f99e74c7582bccb92b", committed: "2026-10-24T05:47:24Z"}
+  atc-shivacore: {sha: "d817de2deccb348f7f3bc82eb13ec015992aa7b8", committed: "2026-11-08T19:28:18Z"}
+  atc-standards: {sha: "5ef28537b8d076dd9548b86ca53819d869a34d1a", committed: "2026-11-17T11:27:46Z"}
+  atc-toolchain: {sha: "e42aed3ece0e84c8ff59bc7000720ff3a7cf549a", committed: "2026-11-17T08:54:54Z"}
+  atc-vm: {sha: "21132a49355eb5fd6ea4b8a7b4e4deb5d9be60f0", committed: "2026-09-25T14:00:20Z"}
+  atc-zkp: {sha: "a284eeab3dfea29ad4fd56855541978e229e5dbc", committed: "2026-10-23T15:41:24Z"}
+  atclang: {sha: "516482abbfa93196ed44ed4c718d63ca43654d5f", committed: "2026-11-13T08:59:20Z"}
+  aurora-ai: {sha: "2855956b32fd47c8ba9d688493834601aaf50434", committed: "2026-11-14T22:14:47Z"}
+  demo-repository: {sha: "58c6bf577cee26163f44ccb417f5411cfd79e937", committed: "2026-11-06T17:21:08Z"}
+  genesis-chronicles: {sha: "361dbc0a9e4340713c63894d5f4fb8e5bf031fb9", committed: "2026-11-17T09:17:30Z"}
+  genesis-engine: {sha: "3c2be8c11c00bf5b6a1a4de87760004e9c5d35ef", committed: "2026-10-23T16:19:36Z"}
+  genesis-franchise-factory: {sha: "673fa560322b1449e8f23cc38bf839de1b246361", committed: "2026-10-10T22:55:47Z"}
+  globus-os: {sha: "a38738dfcd91125fb00317b93aacb342b4515e2a", committed: "2026-11-16T19:05:52Z"}
