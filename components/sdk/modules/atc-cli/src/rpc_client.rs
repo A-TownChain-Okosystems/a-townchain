@@ -23,6 +23,11 @@ impl RpcClient {
         self.next_id = self.next_id
             .checked_add(1)
             .ok_or_else(|| "RPC request id overflow".to_string())?;
+        // Nur die Methoden, die dieser Client selbst anbietet. Der Methodenname
+        // wird in den JSON-Rahmen interpoliert, deshalb fail closed statt Escaping.
+        if !matches!(method, "chain_id" | "boot_hash" | "peers" | "ping") {
+            return Err(format!("unsupported RPC method: {}", method));
+        }
         let req = format!(
             "{{\"jsonrpc\":\"2.0\",\"method\":\"{}\",\"id\":{}}}\n",
             method, id
@@ -151,6 +156,13 @@ mod tests {
     fn verbindungsfehler_ehrlich() {
         let mut c = RpcClient::new("127.0.0.1:1");
         assert!(c.chain_id().is_err());
+    }
+
+    #[test]
+    fn unsupported_method_is_rejected_before_network_access() {
+        let mut c = RpcClient::new("127.0.0.1:1");
+        let err = c.call("method\"injected").unwrap_err();
+        assert!(err.contains("unsupported RPC method"));
     }
 
     #[test]

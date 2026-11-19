@@ -42,6 +42,7 @@ pub enum VmError {
     ProgramTooLarge { size: usize, limit: usize },
     InvalidJump(usize),
     DivisionByZero,
+    ArithmeticOverflow,
     OutOfGas { required: u64, remaining: u64 },
     InvalidProgram(&'static str),
     Context(ContextError),
@@ -346,9 +347,9 @@ impl Vm {
             }
             match self.program[pc].clone() {
                 Op::Push(v) => self.push_stack(v)?,
-                Op::Add => self.binop(|a, b| a.wrapping_add(b))?,
-                Op::Sub => self.binop(|a, b| a.wrapping_sub(b))?,
-                Op::Mul => self.binop(|a, b| a.wrapping_mul(b))?,
+                Op::Add => self.binop_checked(|a, b| a.checked_add(b))?,
+                Op::Sub => self.binop_checked(|a, b| a.checked_sub(b))?,
+                Op::Mul => self.binop_checked(|a, b| a.checked_mul(b))?,
                 Op::Div => {
                     let b = self.stack.pop().ok_or(VmError::StackUnderflow)?;
                     let a = self.stack.pop().ok_or(VmError::StackUnderflow)?;
@@ -444,6 +445,15 @@ impl Vm {
         }
         self.stack.push(value);
         Ok(())
+    }
+
+    /// Arithmetik mit geprueftem Ueberlauf. Ein Ueberlauf ist ein Fehler und
+    /// kein stiller Wrap: die Wirkung ist consensus-sichtbar, deshalb fail closed.
+    fn binop_checked(&mut self, f: impl Fn(u64, u64) -> Option<u64>) -> Result<(), VmError> {
+        let b = self.stack.pop().ok_or(VmError::StackUnderflow)?;
+        let a = self.stack.pop().ok_or(VmError::StackUnderflow)?;
+        let v = f(a, b).ok_or(VmError::ArithmeticOverflow)?;
+        self.push_stack(v)
     }
 
     fn binop(&mut self, f: impl Fn(u64, u64) -> u64) -> Result<(), VmError> {
@@ -604,6 +614,16 @@ mod tests {
             .execute_state_transition_with_gas(&context(), &"a".repeat(64), "1.0.0", "1.0.0", 10)
             .is_ok());
         assert_eq!(vm.state(), &[7]);
+    }
+
+    #[test]
+    fn arithmetic_overflow_fails_closed() {
+        let mut add = Vm::new(vec![Op::Push(u64::MAX), Op::Push(1), Op::Add]);
+        assert_eq!(add.run(), Err(VmError::ArithmeticOverflow));
+        let mut sub = Vm::new(vec![Op::Push(0), Op::Push(1), Op::Sub]);
+        assert_eq!(sub.run(), Err(VmError::ArithmeticOverflow));
+        let mut mul = Vm::new(vec![Op::Push(u64::MAX), Op::Push(2), Op::Mul]);
+        assert_eq!(mul.run(), Err(VmError::ArithmeticOverflow));
     }
 
     #[test]
