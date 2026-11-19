@@ -1,3 +1,4 @@
+// Kanonische Obergrenze: 360.000.000 ATC (Owner-Entscheidung 08.11.2026). Der Vektor prueft die Formel, nicht die Konstante.
 // Copyright (c) 2026 Michael Wroblewski - Apache-2.0
 // EXEC-GATE-Test — portiert aus
 // tests/test_governance_contract.py::test_finalize_quorum_rejected
