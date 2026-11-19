@@ -2,10 +2,10 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """ATC Quality Gate — drei Ebenen in einem Lauf.
 
-Ebene 1  Code Lint        Ruff (Syntax, Formatierung, Importe, Programmierregeln)
-Ebene 2  Repository Lint  atc_repo_audit (Struktur, Pflichtdateien, Governance, Health Score)
-Ebene 3  Ecosystem        ecosystem_compliance (kanonische Orte, SSOT, Doppelungen, Referenzen)
-Ebene 4  Backlog          backlog/tools/validate_backlog.py (IDs, Abhaengigkeiten, SSOT, Evidence)
+Ebene 1  Repository/Struktur  atc_repo_audit (Struktur, Pflichtdateien, Governance, Health Score)
+Ebene 2  Architektur/SSOT     ecosystem_compliance (kanonische Orte, SSOT, Doppelungen, Referenzen)
+Ebene 3  Sicherheit/Code      Ruff (Syntax, Formatierung, Importe, Programmierregeln)
+Ebene 4  Backlog/Evidence     backlog/tools/validate_backlog.py (IDs, Abhaengigkeiten, SSOT, Evidence)
 
 Die normativen Regeln liegen in standards/ (ATC-STD-081/082, 201/202/203, 300).
 Jedes Ergebnis wird an den Commit-SHA gebunden; ohne SHA gibt es keinen Nachweis.
@@ -109,11 +109,13 @@ def level4(root: Path):
     return ("PASS" if code == 0 else "FAIL"), tail[0][:200]
 
 
+# Reihenfolge nach Owner-Vorgabe 19.11.2026:
+#   1 Repository/Struktur, 2 Architektur/SSOT, 3 Sicherheit/Code, 4 Backlog/Evidence
 LEVELS = {
-    "1": ("Code Lint", level1),
-    "2": ("Repository Lint", level2),
-    "3": ("Ecosystem", level3),
-    "4": ("Backlog", level4),
+    "1": ("Repository/Struktur", level2),
+    "2": ("Architektur/SSOT", level3),
+    "3": ("Sicherheit/Code", level1),
+    "4": ("Backlog/Evidence", level4),
 }
 
 
