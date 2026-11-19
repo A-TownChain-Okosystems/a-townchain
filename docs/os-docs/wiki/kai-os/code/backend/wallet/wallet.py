@@ -8,8 +8,10 @@
 #   - ATC Adresse (beginnt mit "ATC...")
 
 import time
-from blockchain.wallet.keygen import ATCKeyGenerator
+
 from blockchain.atcoin.atcoin import ATCoin
+from blockchain.wallet.keygen import ATCKeyGenerator
+
 
 class ATCWallet:
     """A-Town Multi-Standard Wallet mit echter Kryptographie."""

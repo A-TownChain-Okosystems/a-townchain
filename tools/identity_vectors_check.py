@@ -70,7 +70,10 @@ def main(argv: list[str]) -> int:
     layout = data.get("layout", {})
     check(layout.get("total_bytes") == TOTAL_BYTES, "Layout nennt nicht 32 Byte")
     check(layout.get("tag", {}).get("bytes") == [0, 3], "Kennzeichenbereich falsch")
-    check(layout.get("reserved", {}).get("bytes") == [4, 11], "reservierter Bereich falsch")
+    check(
+        layout.get("reserved", {}).get("bytes") == [4, 11],
+        "reservierter Bereich falsch",
+    )
     check(layout.get("address", {}).get("bytes") == [12, 31], "Adressbereich falsch")
 
     vectors = data.get("vectors") or []
@@ -108,23 +111,36 @@ def main(argv: list[str]) -> int:
 
     if "T-38a" in seen and "T-38b" in seen:
         check(seen["T-38a"] != seen["T-38b"], "T-38a und T-38b sind byte-gleich")
-        check(seen["T-38a"][12:32] == seen["T-38b"][12:32], "T-38a/T-38b haben verschiedene Adressen")
-        check(tags.get("T-38a") == "wallet" and tags.get("T-38b") == "contract",
-              "T-38a/T-38b tragen nicht Wallet und Vertrag")
+        check(
+            seen["T-38a"][12:32] == seen["T-38b"][12:32],
+            "T-38a/T-38b haben verschiedene Adressen",
+        )
+        check(
+            tags.get("T-38a") == "wallet" and tags.get("T-38b") == "contract",
+            "T-38a/T-38b tragen nicht Wallet und Vertrag",
+        )
     else:
         problems.append("T-38a/T-38b fehlen")
 
     if "T-39a" in seen and "T-39b" in seen:
         check(seen["T-39a"] != seen["T-39b"], "T-39a und T-39b sind byte-gleich")
-        check(tags.get("T-39a") == "wallet", "T-39a (origin) traegt nicht das Wallet-Kennzeichen")
-        check(tags.get("T-39b") == "contract", "T-39b (caller) traegt nicht das Vertragskennzeichen")
+        check(
+            tags.get("T-39a") == "wallet",
+            "T-39a (origin) traegt nicht das Wallet-Kennzeichen",
+        )
+        check(
+            tags.get("T-39b") == "contract",
+            "T-39b (caller) traegt nicht das Vertragskennzeichen",
+        )
     else:
         problems.append("T-39a/T-39b fehlen")
 
     valid = sum(1 for v in vectors if v.get("valid"))
     invalid = len(vectors) - valid
-    print(f"{path}: {len(vectors)} Vektoren ({valid} gueltig, {invalid} ungueltig), "
-          f"Status {data.get('status')}, Standard {data.get('standard_version')}")
+    print(
+        f"{path}: {len(vectors)} Vektoren ({valid} gueltig, {invalid} ungueltig), "
+        f"Status {data.get('status')}, Standard {data.get('standard_version')}"
+    )
 
     if problems:
         for p in problems:

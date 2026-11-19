@@ -92,7 +92,7 @@ class MarketplaceContract(BaseContract):
 
     # ── Listing erstellen ──────────────────────────────
     def list_for_sale(
-        self, seller: str, token_id: str, price_atc: float, nft_meta: dict = None
+        self, seller: str, token_id: str, price_atc: float, nft_meta: dict | None = None
     ) -> dict:
         """Listet ein GenesisChronicles-NFT zum Verkauf auf."""
         self.when_not_paused()
@@ -139,7 +139,7 @@ class MarketplaceContract(BaseContract):
         return {"success": True, "listing": listing.to_dict()}
 
     # ── Kaufen ─────────────────────────────────────────
-    def buy(self, buyer: str, listing_id: str, atc_balances: dict = None) -> dict:
+    def buy(self, buyer: str, listing_id: str, atc_balances: dict | None = None) -> dict:
         """Kauft ein gelistetes NFT. ATC wird transferiert."""
         self.when_not_paused()
         listing = self._get_active_listing(listing_id)
@@ -213,10 +213,10 @@ class MarketplaceContract(BaseContract):
     # ── Queries ────────────────────────────────────────
     def get_listings(
         self,
-        rarity: str = None,
-        element: str = None,
-        min_price: float = None,
-        max_price: float = None,
+        rarity: str | None = None,
+        element: str | None = None,
+        min_price: float | None = None,
+        max_price: float | None = None,
         sort_by: str = "price_asc",  # price_asc|price_desc|newest|rarity
         limit: int = 50,
     ) -> list:
@@ -268,7 +268,9 @@ class MarketplaceContract(BaseContract):
         lid = self.token_listing.get(token_id)
         return self.get_listing(lid) if lid else {"error": "Kein aktives Listing"}
 
-    def get_sales_history(self, seller: str = None, buyer: str = None, limit: int = 20) -> list:
+    def get_sales_history(
+        self, seller: str | None = None, buyer: str | None = None, limit: int = 20
+    ) -> list:
         history = self.sales_history
         if seller:
             history = [s for s in history if s["seller"] == seller]

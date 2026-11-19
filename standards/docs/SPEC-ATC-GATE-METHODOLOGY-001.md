@@ -64,7 +64,7 @@ Bedingung: Der Run gehört zum aktuell geprüften main-SHA.
 
 Ausschlussfall (atclang):
 
-```
+```text
 alter grüner Check-Run + neuer main-SHA = NICHT VERIFIED
 ```
 
@@ -80,7 +80,7 @@ Formal: run.execution_sha = target_sha.
 
 Ausschlussfall:
 
-```
+```text
 grüner Run + kein SHA-Binding = NICHT VERIFIED
 ```
 
@@ -96,7 +96,7 @@ Formal: protection.enforced = true ∧ enforcement_test_passed = true.
 
 Ausschlussfall:
 
-```
+```text
 grüner Run + SHA-Binding + keine nachgewiesene Enforcement-Wirkung = NICHT VERIFIED
 ```
 

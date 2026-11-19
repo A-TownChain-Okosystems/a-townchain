@@ -23,7 +23,7 @@ Cross-Chain Bridge Protocol — Multi-Sig Validator-Netzwerk für sicherte Cross
 
 ### Module
 
-```
+```text
 modules/bridge/bridge.atc — Bridge-Contract
 modules/bridge/validators.atc — Validator-Set-Management
 ```
@@ -66,7 +66,7 @@ validator_threshold: 2/3 | lockup_period: 24h | supported_chains: [BTC, ETH, XDC
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-91.atc    # Unit-Tests
 └── test_atc-91_integration.atc  # Integration-Tests

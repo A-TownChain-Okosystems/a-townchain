@@ -1,4 +1,5 @@
 # ATC-11 — Fungible Asset Standard
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 2.3 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-11
 > **Tier:** 2 (Logik & Oekonomie) — Erster Tier-2 Standard
@@ -25,12 +26,14 @@ fuer das KAI-OS-Betriebssystem.
 ## 1. Kernkonzepte
 
 ### 1.1 Einheitlichkeit und Austauschbarkeit
+
 ATC-11 definiert die Schnittstelle fuer Assets, die beliebig teilbar und
 untereinander austauschbar sind (wie z. B. Waehrungen, Governance-Token oder
 Utility-Credits fuer Inferenz-Leistung). Jeder Token eines Typs hat denselben
 Wert wie jeder andere Token desselben Typs.
 
 **Implementation:** OK Implementiert
+
 - `blockchain/atcoin/atcoin.py` — ATCoin (ATC) als primaerer fungibler Token
   - Symbol: ATC
   - Max Supply: 21.000.000 (wie Bitcoin)
@@ -41,12 +44,13 @@ Wert wie jeder andere Token desselben Typs.
 - `blockchain/contracts/atc001/genesis_token.py` — Genesis Token
 
 ### 1.2 Standardisierte Schnittstellen-Methoden
+
 Damit Smart Contracts und das Betriebssystem reibungslos mit einem Asset
 interagieren koennen, schreibt ATC-11 zwingend definierte Methoden vor:
 
 **Implementation:** OK Implementiert (ATC-89 Standard)
 
-```
+```text
 # ATC-89 Standard Methoden (aehnlich ERC-20)
 class ATC8300Token:
     def balance_of(self, owner) -> int:
@@ -63,12 +67,14 @@ class ATC8300Token:
 > totalSupply) sind im ATC-89 Standard implementiert.
 
 ### 1.3 Betriebssystem-Integration (Tier 3 & 4)
+
 Da ATC-11 ein Standard innerhalb eines Betriebssystems ist, koennen KI-Agenten
 (Tier 4) diese Assets nativ verwenden, um beispielsweise autonom Rechenleistung
 (Inferenz-Gebuehren) zu bezahlen, ohne manuelle Transaktionen durch den Nutzer
 zu benoetigen.
 
 **Implementation:** Teilweise implementiert
+
 - AI-Kernel (`ai_kernel.py`) mit DecisionEngine fuer autonome Entscheidungen
 - Orchestrator (`orchestrator.py`) mit TaskType.WALLET und TaskType.AI
 - Wallet API (`backend/api/routes/wallet.py`) fuer Asset-Transfers
@@ -79,6 +85,7 @@ zu benoetigen.
 ## 2. Warum ATC-11 fuer KAI-OS essenziell ist
 
 ### 2.1 Wirtschaftliche Konsistenz
+
 Wenn ein Asset den ATC-11-Standard erfuellt, garantiert das Betriebssystem,
 dass alle Protokolle (wie Governance via ATC-17 oder Liquiditaetspools via
 ATC-19) korrekt mit diesem Asset arbeiten.
@@ -87,6 +94,7 @@ ATC-19) korrekt mit diesem Asset arbeiten.
 Marketplace (`marketplace_contract.py`), und Bridge (`bridge_contract.py`).
 
 ### 2.2 Interoperabilitaet
+
 ATC-11-Assets koennen ueber die Interoperabilitaets-Bruecke (ATC-09)
 problemlos in andere Netzwerke uebertragen werden, da das zugrundeliegende
 Interface standardisiert ist.
@@ -95,6 +103,7 @@ Interface standardisiert ist.
 Tokens. Wrapped ATC (wATC) auf Ethereum/Solana nutzt ATC-11 Interface.
 
 ### 2.3 Automatisierung
+
 Da ATC-11-Schnittstellen deterministisch sind (ATC-14), koennen KI-Agenten
 komplexe wirtschaftliche Entscheidungen treffen (z. B. "Kaufe X Token, wenn
 der Preis unter Y faellt"), die direkt vom KAI-OS ausgefuehrt werden.
@@ -107,6 +116,7 @@ Logik fuer automatisierte Token-Swaps implementiert.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-13 (Fractional Asset Ownership)
+
 Waehrend ATC-11 die Basis-Fungibilitaet definiert, erlaubt ATC-13 darauf
 aufbauend das Halten von Bruchteilen (Fractional Ownership) an groesseren,
 wertvolleren Assets.
@@ -114,6 +124,7 @@ wertvolleren Assets.
 > ATC-13 ist ein zukuenftiger Standard — baut auf ATC-11 auf.
 
 ### 3.2 ATC-14 (Deterministic Execution)
+
 Da die Uebertragung von ATC-11-Token eine Zustaendsaenderung darstellt, muss
 jeder Node durch ATC-14 sicherstellen, dass die Bilanzaenderung auf allen
 Nodes exakt gleich berechnet wird.
@@ -121,6 +132,7 @@ Nodes exakt gleich berechnet wird.
 > ATC-14 ist ein zukuenftiger Standard — sichert ATC-11 Transaktionen.
 
 ### 3.3 Tier 2 (Logik & Oekonomie)
+
 ATC-11 ist die "Einstiegstuer" fuer alles, was im KAI-OS einen wirtschaftlichen
 Wert repraesentiert.
 
@@ -177,7 +189,6 @@ Wert repraesentiert.
 *Dieses Dokument wurde aus der urspruenglichen Atc-11.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 21:40 | Aurora (Superagent)*
-
 
 ---
 

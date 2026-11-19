@@ -34,7 +34,7 @@ Nicht-Gilt: normative Standardtexte (Änderungen via SCR, ATC-STD-000 §19-33); 
 
 ## 1. Change-Pipeline (Pflichtreihenfolge)
 
-```
+```text
 CHANGE REQUEST → IMPACT ANALYSIS → TECHNICAL REVIEW → SECURITY REVIEW →
 APPROVAL → IMPLEMENTATION → TEST → AUDIT → DOCUMENTATION UPDATE → RELEASE
 ```
@@ -81,6 +81,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 5. Verbindliche Change-Management-Regeln
 
 1. Sämtliche organisatorischen, technischen und strukturellen Änderungen MUSS die definierte Change-Pipeline lückenlos durchlaufen.
@@ -114,9 +115,11 @@ Ungeprüfte Änderungen sind die häufigste Ursache für Sicherheitsvorfälle. J
 ## 10. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-009**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-ENT-003**: Referenzierter Standard im ATC-Regelwerk

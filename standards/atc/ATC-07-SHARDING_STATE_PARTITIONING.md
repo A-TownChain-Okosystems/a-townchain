@@ -27,6 +27,7 @@ Skalierungsproblem.
 ## 1. Kernkonzepte
 
 ### 1.1 Horizontales Sharding
+
 ATC-07 teilt das Netzwerk in logische Gruppen oder "Shards" auf. Jeder Shard
 ist nur fuer eine Teilmenge des globalen Zustands verantwortlich (z. B. eine
 Gruppe von User-Wallets oder eine spezifische KI-Modell-Instanz). Dies
@@ -48,6 +49,7 @@ class NodeType(Enum):
 > **Geplant:** SHARD_NODE Typ mit Partition-ID (`0xAF32` etc.)
 
 ### 1.2 State Partitioning
+
 Anstatt den kompletten Ledger (die Datenbank aller Transaktionen) auf jeden
 Node zu kopieren, definiert ATC-07, wie der "State" (der aktuelle Stand) in
 Partitionen zerlegt wird. Ein Node muss so nur noch den Teil des Zustands
@@ -59,11 +61,13 @@ State-Partitionierung baut auf ATC-02 (Liquid State) auf — die
 Snapshot-Mechanik von ATC-02 wuerde pro Partition angewendet werden.
 
 ### 1.3 Cross-Shard Communication
+
 Wenn ein Agent in Shard A mit einer Ressource in Shard B interagieren will,
 regelt ATC-07 den sicheren Datenaustausch und die atomare
 Zustandsaktualisierung ueber Shard-Grenzen hinweg.
 
 **Konzept:**
+
 - Cross-Shard-Transaction: TX beruehrt State in Shard A und Shard B
 - Two-Phase Commit: Lock in A → Lock in B → Commit beide → oder Rollback
 - Merkle-Proof: Shard A beweist via Merkle-Tree, dass State-X existiert
@@ -77,11 +81,13 @@ Zustandsaktualisierung ueber Shard-Grenzen hinweg.
 ## 2. Warum ATC-07 fuer KAI-OS essenziell ist
 
 ### 2.1 Skalierbarkeit
+
 Ohne Sharding wuerde die Geschwindigkeit des Netzwerks durch den langsamsten
 Node begrenzt. Mit ATC-07 waechst die Performance linear mit der Anzahl der
 Nodes, da Shards parallel arbeiten koennen.
 
 ### 2.2 Ressourceneffizienz
+
 Ein Node, der nur Inferenz fuer eine bestimmte KI-Instanz (Tier 4) bereitstellt,
 muss nicht die Transaktionsdaten von tausenden anderen Anwendungen speichern.
 
@@ -89,6 +95,7 @@ muss nicht die Transaktionsdaten von tausenden anderen Anwendungen speichern.
 KI-spezifischer Shard koennte nur Inferenz-Daten und Decision-Logs halten.
 
 ### 2.3 Sicherheit trotz Fragmentierung
+
 ATC-07 stellt sicher, dass Shards nicht "isoliert" agieren. Durch
 kryptografische Beweise (aehnlich wie Zero-Knowledge Proofs) kann ein Shard
 gegenueber dem Gesamtsystem beweisen, dass sein Zustand konsistent und
@@ -103,6 +110,7 @@ autorisierte Nodes Cross-Shard-TXs initiieren duerfen.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-02 (Liquid State Migration)
+
 ATC-07 legt fest, wie der Zustand partitioniert wird; ATC-02 sorgt dafuer,
 dass dieser Zustand "fluessig" zwischen Nodes migrieren kann, falls sich die
 Last eines Shards verschiebt.
@@ -111,6 +119,7 @@ Last eines Shards verschiebt.
 Zustand zwischen Nodes innerhalb eines Shards → Load-Balancer verteilt Tasks.
 
 ### 3.2 ATC-04 (DAG Consensus)
+
 Innerhalb eines Shards wird der DAG-Konsens angewendet. ATC-07 definiert die
 Grenzen, an denen ein DAG-Event endet und wo ein Cross-Shard-Prozess beginnt.
 
@@ -118,6 +127,7 @@ Grenzen, an denen ein DAG-Event endet und wo ein Cross-Shard-Prozess beginnt.
 Meta-Events, die mehrere Shard-DAGs referenzieren.
 
 ### 3.3 Tier 3 (OS Infrastructure)
+
 Das Betriebssystem verwaltet via ATC-07 die lokale Speicherallokation, sodass
 der Node genau weiss: "Ich bin fuer Partitions-ID 0xAF32 zustaendig".
 
@@ -161,7 +171,7 @@ Die Partition-ID wuerde in der Node-Konfiguration (`settings.json`) hinterlegt.
 
 ## 6. Evolutionspfad: Full-Node zu Sharding
 
-```
+```text
 AKTUELL (v3.2.1)                    ZUKUNFT (v5.0+)
 Full-Node (alle Daten)        ->    Shard-Node (Partition-ID)
 SQLite (unpartitioniert)      ->    Partitionierte DB pro Shard
@@ -170,7 +180,8 @@ Keine Cross-Shard-TX          ->    Atomic Cross-Shard Commit
 Lineare Chain                 ->    DAG pro Shard + Cross-Shard-Meta
 ```
 
-### Migrationsstrategie:
+### Migrationsstrategie
+
 1. **Phase 1:** SHARD_NODE Typ in `node.py` ergaenzen (mit Partition-ID)
 2. **Phase 2:** DB-Partitionierung: Tabelle pro Shard-ID
 3. **Phase 3:** Cross-Shard-TX Format definieren (erweitert ATC-0003)
@@ -198,7 +209,6 @@ Lineare Chain                 ->    DAG pro Shard + Cross-Shard-Meta
 *Dieses Dokument wurde aus der urspruenglichen Atc-07.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 21:31 | Aurora (Superagent)*
-
 
 ---
 

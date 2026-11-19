@@ -3,7 +3,9 @@
 Unit Tests — ECDSA Signatur (Issue #6)
 Coverage: generate_keypair, sign, verify, build_tx, Angriffs-Szenarien
 """
-import unittest, time
+import time
+import unittest
+
 from blockchain.wallet.ecdsa import ECDSASigner
 
 

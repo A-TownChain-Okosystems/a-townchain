@@ -43,7 +43,6 @@ getroffenen Entscheidung.
 | D1-B | Dekoderfehler: EMPTY_STREAM (E-004) und COUNT_MISMATCH (E-005) ergaenzen | VM-Parser | ArtifactError fuehrt alle zwoelf Codes aus §19.1; beide fehlenden Varianten sind vorhanden und tragen dieselbe Bedingung wie der Vertrag | IMPLEMENTED | Code-Test am Commit 6a164080 (Blob 75e881e4), 684 Tests gruen; CI_VERIFIED offen, keine Konformitaet ohne Korpuslauf (Nachweis EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md) |
 | D1-C | Groessenpruefung: dekodierte Laenge statt deklarierter Anzahl | VM-Parser / Admission-Vertrag | Die Groessenpruefung bewertet die dekodierte Stromlaenge (p - 10); die deklarierte Anzahl c ist Obergrenze und kein Ausloeser von E-012. C-8-GV1-MAX ergibt E-005, nicht ProgramTooLarge | IMPLEMENTED | Code-Test am Commit 6a164080: c ist nur Obergrenze, gemessen wird die dekodierte Laenge; E-012 prueft die Protokollkonstante MAX_PROGRAM_OPS, der Betreiberwert bleibt P1b (Nachweis EXEC-D1BC-VM-PARSER-EVIDENCE-2026-11-12.md) |
 
-
 Zustandsleiter: **DECIDED** (Entscheidung getroffen) → **SPECIFIED** (vollstaendig normativ spezifiziert) → **IMPLEMENTED** (im bestehenden System nachgewiesen). Kein Zustand ersetzt den naechsten automatisch; die Gates bleiben bis zum jeweiligen Nachweis offen.
 
 Drei Ebenen: **Owner-Entscheidung** ist intern verbindlich, auch wenn der zugehoerige Standard nicht ratifiziert ist. **Ratifikation** sagt, ob der Standard in Kraft ist; "nicht ratifiziert (Kandidat)" bindet niemanden. Ein Wert im Kandidaten bleibt **Vorschlag**, solange der Owner ihn nicht ausdruecklich beschliesst.
@@ -66,10 +65,9 @@ Eine Stufe-1-Ratifikation entscheidet die Option, nicht den Standard: der Kandid
 
 Nicht freigegeben sind weiterhin Implementierung und Release.
 
-
 <!-- END DECISION-REGISTER -->
 
-### Auflagen, die aus der Freigabe folgen
+## Auflagen, die aus der Freigabe folgen
 
 | Entscheidung | Auflage | Umgesetzt in |
 |---|---|---|
@@ -79,7 +77,7 @@ Nicht freigegeben sind weiterhin Implementierung und Release.
 | D5 | deterministische Reihenfolge, identische VM-Version, reproduzierbare Receipts | REQ-SCE-042, REQ-SCE-049, REQ-SCE-050 |
 | alle | VM-Versionierung, State-Rollback, Replay-Sicherheit | REQ-SCE-042 bis REQ-SCE-044 |
 
-### Was die Freigabe nicht bedeutet
+## Was die Freigabe nicht bedeutet
 
 Eine getroffene Entscheidung ist noch keine Spezifikation und keine Umsetzung.
 Der Kandidat traegt die Auflagen jetzt als Anforderungen; bis zur Ratifizierung
@@ -430,7 +428,7 @@ Negativfall mit absichtlich abweichender Ausfuehrung.
 
 ## Abhaengigkeitsgraph
 
-```
+```text
 D1 (Format) ──┬─→ D7 (Frontend) ─→ D2 (Aufruf, Stufe 1) ─→ D3 (Speicher) ─→ D4 (Gas)
               │                              │
               └─→ BC-002-Ratifizierung ──────┴─→ D2 (Stufe 2: Call)

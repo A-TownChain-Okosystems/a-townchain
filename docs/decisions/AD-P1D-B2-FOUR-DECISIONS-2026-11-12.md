@@ -69,14 +69,14 @@ Die vier Entscheidungen sind **getroffen**, nicht umgesetzt: sie aendern keinen 
 Die Verschiebung ist beabsichtigt und wird hier festgehalten, damit die Phasen nicht
 nachträglich ihre Bedeutung wechseln:
 
-* **B2 ist jetzt eine reine Entscheidungsphase.** In der B1-Inventur war B2 noch als
+- **B2 ist jetzt eine reine Entscheidungsphase.** In der B1-Inventur war B2 noch als
   „State-Root-Vorbedingung" mit zwei Abnahmetests geführt. Eine Vorbedingung ist
   jedoch ohne Commit nicht prüfbar; die beiden Tests stehen deshalb ab jetzt in **C**
   (§9). Die Sache selbst ist nicht verschwunden, sie ist Vorbedingung des Commits.
-* **„Eine Chain-Autorität" wandert von B1 nach D.** B1 hat die Doppelung nur
+- **„Eine Chain-Autorität" wandert von B1 nach D.** B1 hat die Doppelung nur
   nachgewiesen; das Herauslösen der Kette aus `System` ist ein Umbau an der
   Komposition und gehört damit zu D.
-* **B2 und C bleiben getrennt.** Erst Datenmodell, Zustandswurzel, Commit-Protokoll
+- **B2 und C bleiben getrennt.** Erst Datenmodell, Zustandswurzel, Commit-Protokoll
   und Recovery-Semantik, dann Implementierung.
 
 ## 1 Die übergeordnete Regel: ATC Atomic State Transition Rule
@@ -111,11 +111,11 @@ es schreibt sie nicht.
 
 **Was heute dagegen steht** (belegt an `d97b476`):
 
-* `System` hält die Kette als privates Feld (`components/system/src/system.rs:184`) und
+- `System` hält die Kette als privates Feld (`components/system/src/system.rs:184`) und
   produziert Blöcke direkt in der Ausführung (`self.chain.produce`, `:478`).
-* `DevnetNode` hält eine **zweite** Kette (`components/system/src/node_import.rs:69`,
+- `DevnetNode` hält eine **zweite** Kette (`components/system/src/node_import.rs:69`,
   aufgebaut in `start`, `:77`). Beide Bestände leben im selben Prozess.
-* `Chain::produce` verändert den Bestand sofort (`components/node/src/chain.rs:117`).
+- `Chain::produce` verändert den Bestand sofort (`components/node/src/chain.rs:117`).
   Ein Aufrufer, der danach scheitert, hat bereits einen Block erzeugt.
 
 **Abgrenzung, die zum Beschluss gehört.** Eine **gemeinsame Referenz auf dieselbe
@@ -332,7 +332,7 @@ ist. Bis dahin bleibt P1d-C gesperrt, auch wenn alle vier Entscheidungen vorlieg
 
 ## 10 Nachweis
 
-```
+```text
 pytest tools/tests                    47 passed          (vorher 40; +7 für den chain_state-Block)
 decision_register.py --check          PASS (D1..D7 + D-0 + S1-2-F1; chain_state AD-B1-01..04)
 check_build_coverage                  GATE PASS, 77 Manifeste, 7 ohne Build-Nachweis

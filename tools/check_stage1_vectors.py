@@ -29,8 +29,8 @@ VECTORS = ROOT / "standards/atc/conformance/stage1-vectors.json"
 ROW = re.compile(r"^\|\s*(GV-\d+)\s*\|([^|]*)\|([^|]*)\|\s*`([0-9a-f]{64})`")
 TOKEN = re.compile(r"`([0-9a-fA-F]+)`|(GV-\d+)|(P2-Strom)")
 ALIAS = re.compile(r"wie\s+(GV-\d+)")
-P1_STREAM = re.compile(r"\*\*Programm P1\*\*.*?Strom `([0-9a-f]+)`", re.S)
-P2_STREAM = re.compile(r"\*\*Programm P2\*\*.*?Strom `([0-9a-f]+)`", re.S)
+P1_STREAM = re.compile(r"\*\*Programm P1\*\*.*?Strom `([0-9a-f]+)`", re.DOTALL)
+P2_STREAM = re.compile(r"\*\*Programm P2\*\*.*?Strom `([0-9a-f]+)`", re.DOTALL)
 
 
 def parse_input(cell: str, digests: dict[str, str], p2: bytes) -> list[bytes] | str:
@@ -40,7 +40,7 @@ def parse_input(cell: str, digests: dict[str, str], p2: bytes) -> list[bytes] | 
         return alias.group(1)
     segments: list[bytes] = []
     for m in TOKEN.finditer(cell):
-        hexpart, ref, p2mark = m.group(1), m.group(2), m.group(3)
+        hexpart, ref, _p2mark = m.group(1), m.group(2), m.group(3)
         if hexpart:
             if len(hexpart) % 2:
                 raise SystemExit(f"ungerade Hexlaenge: {hexpart}")
@@ -102,7 +102,7 @@ def main() -> int:
                 print(f"OK     {gid}: {actual} ({len(data)} Byte)")
         digests[gid] = expected
 
-    neg = re.findall(r"^\|\s*(NV-\d)\s*\|[^|]*\|\s*`([0-9a-f]{64})`", sec, re.M)
+    neg = re.findall(r"^\|\s*(NV-\d)\s*\|[^|]*\|\s*`([0-9a-f]{64})`", sec, re.MULTILINE)
     p1 = p1m.group(1)
     for nid, digest in neg:
         if nid == "NV-1":
@@ -140,17 +140,20 @@ def main() -> int:
             "fassung": version,
             "hinweis": "Erzeugt aus dem Dokument; nicht von Hand aendern.",
             "stroeme": {"P1": p1, "P2": p2m.group(1)},
-            "goldvektoren": [
-                {"id": gid, "sollwert": dig}
-                for gid, dig in sorted(digests.items())
-            ],
+            "goldvektoren": [{"id": gid, "sollwert": dig} for gid, dig in sorted(digests.items())],
             "negativvektoren": [
-                {"id": nid, "sollwert": dig, "regel": "muss von GV-1 und GV-2 abweichen"}
+                {
+                    "id": nid,
+                    "sollwert": dig,
+                    "regel": "muss von GV-1 und GV-2 abweichen",
+                }
                 for nid, dig in neg
             ],
         }
         VECTORS.parent.mkdir(parents=True, exist_ok=True)
-        VECTORS.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        VECTORS.write_text(
+            json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
         print(f"Vektordatei geschrieben: {VECTORS.relative_to(ROOT)}")
 
     print(f"PASS: {count} Goldvektoren und {len(neg)} Negativvektoren stimmen")

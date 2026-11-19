@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-017
   title: "Obsolete & Orphaned Artifact Management Standard"
@@ -25,7 +26,7 @@ standard:
     - ATC-STD-UPDATE-001
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-017 — Obsolete & Orphaned Artifact Management (v1.0.0, APPROVED)
 
@@ -86,7 +87,7 @@ Jedes relevante Artefakt MUSS einer von neun Klassen zugeordnet sein:
 
 Die Klassifizierung MUSS der verbindlichen Logik folgen:
 
-```
+```text
 Datei gefunden
      │  Ist sie aktiv referenziert?
      ├── JA  → ACTIVE
@@ -150,7 +151,7 @@ configuration, Generated artifacts.
 
 ## §9 Verknüpfung & Governance-Kette (REQ-STD-011)
 
-```
+```text
 ATC-STD-000 (Standards Governance)
      ├── ATC-STD-016 (Repository Artifact & File Inventory)
      ├── ATC-STD-017 (dieser Standard)

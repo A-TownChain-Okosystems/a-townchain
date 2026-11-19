@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-309
   title: "Supply Chain Security Standard"
@@ -21,7 +22,7 @@ standard:
   related_standards: []
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-309 — Supply Chain Security (v1.2.0, APPROVED)
 

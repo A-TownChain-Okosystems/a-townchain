@@ -1,8 +1,44 @@
 # Changelog — a-townchain
 
+## [Unreleased] — 2026-11-18
+
+### Added (Nutzerstart: ein Befehl bis zum laufenden Devnet, SCR-0147)
+
+- `build.sh` — Voraussetzungspruefung, Bau des Node-Binaries, optional Workspace und
+  Apps, Python-Umgebung. Idempotent, mit `--check` und `--all`.
+- `start.sh` — startet ein bis n Devnet-Nodes, pollt die RPC-Bereitschaft, kennt
+  `status` und `stop`, schreibt Logs nach `.devnet/logs`.
+- `tools/devnet/smoke.sh` — prueft `ping`, `chain_id`, `boot_hash` und `peers` und
+  validiert die Antworten; Exit-Code 0 nur bei vollstaendigem PASS.
+- `docker-compose.devnet.yml` und `Dockerfile.devnet` — drei Nodes mit
+  Per-Service-Healthcheck.
+- `docs/QUICKSTART.md` — Weg vom Klon zum laufenden Node, inklusive der Grenzen.
+
+### Changed
+
+- `README.md` — Installation und Usage beschreiben den realen Stand. Der vorherige
+  Verweis auf ein Python-Skript (`modules/atcnet/node.py`) zeigte auf einen Pfad, den
+  es nicht mehr gibt.
+
+### Fixed
+
+- `apps/atc-node` ist per P1d-A stillgelegt und war nicht Workspace-Mitglied; der
+  Build zeigt auf die kanonische Implementierung `components/node`. Die Skripte
+  sprechen jetzt deren RPC-Vertrag (`height`, `consensus`, `did_count`), nicht den
+  einer Parallelkopie.
+
+### Verified
+
+- `cargo build --release -p atc-node`: gruen.
+- `cargo test --release -p atc-node`: 70 + 5 + 11 + 3 + 8 Tests gruen, inklusive
+  Waechter `keine_zweite_adoptionsstelle_im_repo`.
+- `tools/devnet/e2e.sh`: PASS — Hoehe 0, dann 2 nach Finalisierung,
+  `consensus height=2 rounds=2 validators=3 quorum=2`, Neustart sauber.
+
 ## [Unreleased] — 2026-11-11
 
 ### Added (Integrationspfad: Quelle -> Artefakt -> Freigabe -> VM -> Kette)
+
 - Neues Crate `components/system` (Paket `atc-system`, Workspace-Mitglied): verbindet die
   bisher getrennten Stufen zu **einem** Pfad und ist ausdruecklich Integrations- und
   Kontrollschicht, keine zweite VM und kein zweiter Compiler.
@@ -27,6 +63,7 @@
   Evidenzstufen, offene Punkte) und `docs/decisions/VM-INTEGER-SEMANTICS-DRAFT.md`.
 
 ### Verified (lokal, 11.11.2026 — Stufe TESTED, nicht CI_VERIFIED)
+
 - `cargo test --workspace`: 662 bestanden, 0 fehlgeschlagen; davon 46 in `atc-system`
   (13 Striktheit, 11 Differential, 11 E2E, 11 Signatur).
 - `cargo test -p atc-vm`: 132 Tests in fuenf Suiten.
@@ -36,6 +73,7 @@
   Ergebnis 10, Blockhoehe 2, `Chain::verify` gruen.
 
 ### Known limits (nicht behoben, bewusst benannt)
+
 - **Ueberlauf und Vorzeichen**: der Referenzweg rechnet `i64` geprueft, die VM `u64`
   umlaufend. Der Entwurf fuer die verbindliche Semantik liegt als
   `docs/decisions/VM-INTEGER-SEMANTICS-DRAFT.md`; nichts davon ist umgesetzt, beide
@@ -48,6 +86,7 @@
   Uebertragung ueber die API; `CI_VERIFIED` bleibt offen.
 
 ### Changed (Doppelungsaufloesung der Kernel-Ebene)
+
 - `kernel/globus-os` entfernt: 482 Dateien, 54 davon abweichend vom Kanon `globus-os`,
   18 Dateien, die dort nicht existieren (14 davon byte-gleich zu
   `globus-os/modules/atc-shivacore/legacy/kernel-src-uncompiled`), 58 kanonische
@@ -66,6 +105,7 @@
   statt aus einer Kopie zu bauen.
 
 ### Verified
+
 - Keine Datei mit eigenem Inhalt verloren: die 14 Kernel-Legacy-Dateien sind
   byte-gleich im Kanon vorhanden, `system/media/src/sync.rs` war die am 07.11.
   bewusst geloeschte Dublette, `service_space/src/ai.rs` der am 11.11. nach
@@ -74,6 +114,7 @@
 ## [Unreleased] — 2026-11-08
 
 ### Fixed
+
 - Boot-Hash im Node-RPC war auf 64 Bit trunkniert (SEC-P0-007-Rest): `Genesis::boot_hash()`
   und `townhash_u64` entfernt, `devnet_boot` liefert den vollen 32-Byte-Bindungs-Hash,
   `BOOT_HASH`/`boot_hash` liefern 64-stelliges Hex. CLI-Client lehnt kurze oder nicht-hex
@@ -82,13 +123,16 @@
   neu registriert und per `source_sha256` gebunden.
 
 ### Added
+
 - `tools/atc-sc-validator/check_contract_registry.py`: Gate A1-A8 fuer die Contract-Registry
   (SC-019), inklusive ATCLang-Kompilierpruefung, 16 Regressionstests.
 
 ## [0.1.0] - 2026-09-08
 
 ### Added
+
 - Rollout README-001/MD-001 Documentation Compliance.
 
 ### Changed
+
 - Governance-Ueberarbeitung nach ATC-STD-201/202/203: .atc-Metadaten (.atc/), SECURITY.md, CODEOWNERS, docs/REPOSITORY_STANDARD.md.

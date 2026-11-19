@@ -45,7 +45,7 @@ Nicht-Gilt: menschliche Entwicklungsprozesse ohne Agentenbezug; Enterprise-Entsc
 
 ## 1. Commit-Format (normativ)
 
-```
+```text
 ATC-TASK-NNNN: <type>: <kurzbeschreibung>
 
 <optionaler Body: OBSERVATION vs. DECISION mit reason (AI-DEV-001 §9)>
@@ -72,7 +72,7 @@ der Trailer-Block aus §1 normativ. Übergangscommits dürfen BEIDE tragen.
 
 ## 3. Branch-Namen
 
-```
+```text
 ai/ATC-TASK-NNNN[-<slug>]
 ```
 
@@ -125,6 +125,7 @@ Verbindlich auf Task-Issues, Branches/PRs, wo anwendbar:
 ## 6. Merge-Gate
 
 Ein AI-PR ist mergefähig nur wenn:
+
 1. alle §4-Pflichtabschnitte vorhanden,
 2. Validation einen grünen CI-Run referenziert,
 3. der zugehörige Task-Record `READY_FOR_REVIEW` ist,
@@ -157,6 +158,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-203, ATC-STD-AI-DEV-001 · INFORMATIVE: Roadmap MK8 (Security), Model-Registry
+
 ## 8. Verbindliche Erweiterungsregeln
 
 - 8.1 Alle durch den Agenten erzeugten Commits MÜSSEN mittels GPG oder SSH kryptografisch signiert sein.
@@ -193,9 +195,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 13. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-042
 - ATC-STD-AI-DEV-001
@@ -239,9 +243,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 19. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-042
 - ATC-STD-AI-DEV-001

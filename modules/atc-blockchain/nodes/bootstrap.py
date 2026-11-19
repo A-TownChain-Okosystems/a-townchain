@@ -163,9 +163,7 @@ class DNSSeedResolver:
             addr = ipaddress.ip_address(ip)
         except ValueError:
             return False
-        if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
-            return False
-        return True
+        return not (addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved)
 
     def get_hardcoded_seeds(self) -> list[PeerAddress]:
         return [

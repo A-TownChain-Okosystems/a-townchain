@@ -34,7 +34,7 @@ Nicht-Gilt: normative Standardtexte (Änderungen via SCR, ATC-STD-000 §19-33); 
 
 ## 1. Definition of Done (Unternehmens-DoD)
 
-```
+```text
 CODE        ✓ implementiert (Review nach AI-DEV-007)
 TEST        ✓ Unit-Tests · ✓ Integration-Tests (L1-L4 je AAS-011)
 SECURITY    ✓ Security Scan · ✓ Dependency Scan (ATC-STD-203)
@@ -76,6 +76,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 4. Erweiterte DoD-Regeln
 
 1. Eine Aufgabe oder ein Feature gilt erst dann als Done, wenn sämtliche in der DoD-Matrix definierten Kriterien nachweisbar erfüllt sind.
@@ -109,9 +110,11 @@ Die Definition of Done stellt sicher, dass kein ungarantierter oder unsicherer C
 ## 9. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-010**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-ENT-012**: Referenzierter Standard im ATC-Regelwerk

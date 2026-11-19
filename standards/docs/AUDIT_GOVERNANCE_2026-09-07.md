@@ -8,7 +8,7 @@
 
 ## 1. Geprüfte Kette (Befund je Glied)
 
-```
+```text
 ATC-STD-000 → Registry → Spec → REQ-IDs → Schemas → Validator
            → Repo Compliance → CI Gate → Security/Arch Gate
            → Release Gate → Production

@@ -305,17 +305,19 @@ def validate(path, registry_path):
     hst = re.search(r">\s*\*\*Status:?\*\*\s*([A-Za-zÄÖÜäöü\-]+)", head)
     fails = []
     if hv and ver and hv.group(1) != ver:
-        fails.append("Kopf-Version %s != Frontmatter %s (Registry ist SSOT)" % (hv.group(1), ver))
+        fails.append(
+            "Kopf-Version {} != Frontmatter {} (Registry ist SSOT)".format(hv.group(1), ver)
+        )
     if hst and st:
         hst_n = hst.group(1).strip().upper()
         if hst_n != st.upper():
-            fails.append("Kopf-Status '%s' != Frontmatter '%s'" % (hst.group(1).strip(), st))
+            fails.append("Kopf-Status '{}' != Frontmatter '{}'".format(hst.group(1).strip(), st))
         # Eingebettete Versionsangabe in der Kopf-Statuszeile, z.B.
         # '> **Status:** PROPOSED (v1.0.1) — ...' ist ebenfalls eine Version-
         # Behauptung und muss zur Frontmatter-Version passen.
         hsv = re.search(r">\s*\*\*Status:?\*\*[^\n]*\(v([\d.]+)\b", head)
         if hsv and ver and hsv.group(1) != ver:
-            fails.append("Kopf-Statuszeile Version %s != Frontmatter %s" % (hsv.group(1), ver))
+            fails.append("Kopf-Statuszeile Version {} != Frontmatter {}".format(hsv.group(1), ver))
     # H1-Titel: '(vX.Y.Z[, LIFECYCLE])' ist eine Versions-/Status-Behauptung.
     # Lifecycle-Vokabular wird erzwungen; Deskriptoren (z.B. FORMALE) werden
     # ignoriert, damit keine False Positives entstehen.
@@ -333,10 +335,10 @@ def validate(path, registry_path):
     if tm:
         tv = tm.group(1)
         if ver and tv != ver:
-            fails.append("Titel-Version %s != Frontmatter %s" % (tv, ver))
+            fails.append("Titel-Version {} != Frontmatter {}".format(tv, ver))
         ts = tm.group(2)
         if ts and ts.upper() in LIFECYCLE and st and ts.upper() != st.upper():
-            fails.append("Titel-Status '%s' != Frontmatter '%s'" % (ts, st))
+            fails.append("Titel-Status '{}' != Frontmatter '{}'".format(ts, st))
     if fails:
         v.add("S-19", "FAIL", "; ".join(fails))
     elif hv or hst:
@@ -409,7 +411,7 @@ def validate(path, registry_path):
                 + (
                     "Version/Status konsistent"
                     if konsistent
-                    else "Divergenz Datei(%s/%s) vs Registry(%s/%s)" % (ver, st, rv, rs)
+                    else "Divergenz Datei({}/{}) vs Registry({}/{})".format(ver, st, rv, rs)
                 ),
             )
         else:
@@ -435,7 +437,7 @@ def validate(path, registry_path):
         )
         if os.path.exists(_sp):
             try:
-                _s = _json.load(open(_sp, encoding="utf-8"))
+                _s = _json.load(open(_sp, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
                 _ip = _s["properties"]["identifierPatterns"]["properties"]
                 _fp = _s["properties"]["filenamePatterns"]["properties"]
                 std_p = "|".join(
@@ -455,16 +457,16 @@ def validate(path, registry_path):
                     "(?:" + pat["pattern"] + ")" for k, pat in _fp.items() if k.endswith("Doc")
                 )
                 schema_ok = True
-            except Exception:
+            except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
                 pass
     std_re, req_re, fn_re = re.compile(std_p), re.compile(req_p), re.compile(fn_p)
     msgs = []
     if not schema_ok:
         msgs.append("naming-conventions.schema.json nicht geladen (7.10)")
     if sid and not std_re.match(sid):
-        msgs.append("Standard-ID %s nicht konform (7.2)" % sid)
+        msgs.append("Standard-ID {} nicht konform (7.2)".format(sid))
     if not fn_re.match(fname):
-        msgs.append("Dateiname %s nicht konform (7.6)" % fname)
+        msgs.append("Dateiname {} nicht konform (7.6)".format(fname))
     _badreq = sorted(
         set(
             r
@@ -518,11 +520,15 @@ def main():
     v = validate(args.standard, reg)
     print("ATC STANDARD VALIDATION")
     print("=" * 60)
-    print("Standard: %s | Validator v%s (ATC-STD-000)" % (os.path.basename(args.standard), VERSION))
+    print(
+        "Standard: {} | Validator v{} (ATC-STD-000)".format(
+            os.path.basename(args.standard), VERSION
+        )
+    )
     print()
     fails = warns = 0
     for code, status, msg in v.results:
-        print("[%s] %s: %s" % (status, code, msg))
+        print("[{}] {}: {}".format(status, code, msg))
         fails += status == "FAIL"
         warns += status == "WARN"
     print()

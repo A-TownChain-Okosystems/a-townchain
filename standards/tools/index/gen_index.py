@@ -59,7 +59,10 @@ find_open = [x for x in F if isinstance(x, dict) and x.get("status") == "OPEN"]
 find_res = len(F) - len(find_open)
 proto_stat = Counter(p.get("status") for p in proto.get("protocols", []))
 
+# Leerzeile nach dem Fence: sonst liest markdownlint '---' + 'document:' als
+# Setext-Ueberschrift (MD003/MD022). YAML bleibt gueltig.
 IDX = f'''---
+
 document:
   id: ATC-STD-INDEX-001
   type: master-index
@@ -71,7 +74,7 @@ document:
   generator: "tools/index/gen_index.py (SCR-0038)"
   sources: "registry/standards.yaml + registry/framework.yaml + registry/categories.yaml + registry/taxonomy.yaml + registry/versions.yaml + registry/protocol-registry.yaml + registry/findings.yaml"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC Standards Index — Master Index (ATC-STD-INDEX-001, v1.0.0)
 
@@ -175,7 +178,7 @@ ai/agent.yaml (Agenten-Bindung).
 *ATC-STD-INDEX-001 v1.0.0 · generiert {today} · tools/index/gen_index.py · SCR-0038 · Aurora (Superagent)*
 '''
 
-open(os.path.join(ROOT, "INDEX.md"), "w", encoding="utf-8").write(IDX)
+open(os.path.join(ROOT, "INDEX.md"), "w", encoding="utf-8").write(IDX)  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 print(
     f"INDEX.md generiert: {len(IDX.splitlines())} Zeilen, {len(std)} Standards, {len(fams)} Familien"
 )

@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-035
   title: "Zero-Day Response Standard"
@@ -17,7 +18,7 @@ standard:
   dependencies:
     - ATC-STD-000
     - ATC-STD-018
-----
+---
 
 # ATC-STD-035 — Zero-Day Response Standard (v1.0.0, APPROVED)
 

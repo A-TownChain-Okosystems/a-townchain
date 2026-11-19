@@ -100,7 +100,7 @@ Reihenfolge, jeder Schritt als eigener Commit mit Agenten-Trailer:
 
 Pruefbar ohne Vertrauen:
 
-```
+```text
 python3 tools/decision_register.py --check
 # PASS: Register konsistent in 2 Dokumenten, 7 Entscheidungen
 ```

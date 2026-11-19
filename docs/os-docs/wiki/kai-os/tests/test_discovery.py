@@ -1,10 +1,9 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """Unit-Tests für NodeDiscovery-Service."""
 
-import pytest
-import json
 import time
-from pathlib import Path
+
+import pytest
 from blockchain.nodes.discovery import NodeDiscovery, PeerInfo
 
 
@@ -66,7 +65,7 @@ class TestNodeDiscovery:
             my_port=5005,
             is_bootstrap=True,
         )
-        
+
         peer = PeerInfo(
             node_id="peer-001",
             host="127.0.0.1",
@@ -74,7 +73,7 @@ class TestNodeDiscovery:
             last_seen=int(time.time()),
         )
         discovery.peers["peer-001"] = peer
-        
+
         assert discovery.get_peer_count() == 1
         assert "peer-001" in discovery.get_peers()
         assert discovery.get_peers()["peer-001"].host == "127.0.0.1"
@@ -86,7 +85,7 @@ class TestNodeDiscovery:
             my_port=5005,
             is_bootstrap=True,
         )
-        
+
         status = discovery.get_status()
         assert status["node_id"] == "test-node"
         assert status["is_bootstrap"] is True
@@ -100,7 +99,7 @@ class TestNodeDiscovery:
             my_port=5005,
             is_bootstrap=True,
         )
-        
+
         # Peers hinzufügen
         for i in range(3):
             peer = PeerInfo(
@@ -110,12 +109,12 @@ class TestNodeDiscovery:
                 last_seen=int(time.time()),
             )
             discovery1.peers[f"peer-{i:03d}"] = peer
-        
+
         # Speichern
         peer_file = tmp_path / "peers.json"
         discovery1.save_peers(str(peer_file))
         assert peer_file.exists()
-        
+
         # Laden
         discovery2 = NodeDiscovery(
             node_id="bootstrap-002",
@@ -123,7 +122,7 @@ class TestNodeDiscovery:
             is_bootstrap=True,
         )
         discovery2.load_peers(str(peer_file))
-        
+
         assert discovery2.get_peer_count() == 3
         assert "peer-000" in discovery2.get_peers()
         assert discovery2.get_peers()["peer-001"].port == 5106

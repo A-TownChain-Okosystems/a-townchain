@@ -44,7 +44,7 @@ class BootstrapClient:
         self.bootstraps = bootstrap_nodes or BOOTSTRAP_NODES
         self.peers: list[Peer] = []
 
-    def announce(self, timeout: float = None) -> list[Peer]:
+    def announce(self, timeout: float | None = None) -> list[Peer]:
         """Meldet diesen Node beim Bootstrap an und holt Peer-Liste."""
         if timeout is None:
             timeout = self.timeout
@@ -74,7 +74,7 @@ class BootstrapClient:
                         f"[BootstrapClient] {len(self.peers)} Peers von {bs_host}:{bs_port}"
                     )
                     return self.peers
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 logger.warning(f"[BootstrapClient] {bs_host}:{bs_port} nicht erreichbar: {e}")
             finally:
                 sock.close()
@@ -92,7 +92,7 @@ class BootstrapClient:
             data, _ = sock.recvfrom(1024)
             resp = json.loads(data.decode())
             return resp.get("type") == "PONG"
-        except Exception:
+        except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             return False
         finally:
             sock.close()
@@ -111,7 +111,7 @@ class BootstrapClient:
                 resp = json.loads(data.decode())
                 if resp.get("type") == "PEER_LIST":
                     return [Peer(p["node_id"], p["host"], p["port"]) for p in resp.get("peers", [])]
-            except Exception:
+            except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
                 pass
             finally:
                 sock.close()

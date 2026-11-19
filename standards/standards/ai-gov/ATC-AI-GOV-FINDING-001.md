@@ -76,12 +76,15 @@ Gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung; Ausnahme von 
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - ATC-AI-GOV-CHECK-001 — Auslösende Checks · ATC-AI-GOV-001 — Kontrollprinzipien/Status-Modell · ATC-STD-BUG-001 — Registry-Findings (F-NNNN) · ATC-STD-IMPROVEMENT-001 — Systemische IMP-Records
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `ai/audit/finding-schema.yaml`, `ai/audit/audit-policy.yaml`
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release (Owner-Entwurf 09.09., SCR-0062): 5 REQ (ID/Datensatz, Lifecycle, Verifikations-Wahrheit, Status-Aggregation, Persistenz/Kopplung), 3 COM-Gates

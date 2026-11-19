@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Emit a complete, NUL-safe manifest of a pinned Git tree."""
+
 from __future__ import annotations
 
 import argparse
@@ -41,15 +42,31 @@ def build_manifest(root: Path, commit: str) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", default=".", help="Git repository/worktree containing the pinned commit")
+    parser.add_argument(
+        "--root",
+        default=".",
+        help="Git repository/worktree containing the pinned commit",
+    )
     parser.add_argument("--commit", required=True, help="exact full commit SHA")
     parser.add_argument("--output", required=True, help="output JSON path")
     args = parser.parse_args()
     result = build_manifest(Path(args.root), args.commit)
     target = Path(args.output)
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"commit_sha": result["commit_sha"], "entries": result["entry_count"], "output": str(target)}, sort_keys=True))
+    target.write_text(
+        json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(
+        json.dumps(
+            {
+                "commit_sha": result["commit_sha"],
+                "entries": result["entry_count"],
+                "output": str(target),
+            },
+            sort_keys=True,
+        )
+    )
     return 0
 
 

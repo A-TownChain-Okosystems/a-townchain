@@ -2,9 +2,10 @@
 """E2E Tests: Frontend → Backend → Blockchain (K7.7)
 Agent: Aurora #2 (6a275618)
 """
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
@@ -22,8 +23,8 @@ class TestFrontendBackendChain:
     def test_api_gateway_accessible(self):
         """API Gateway is reachable and returns valid JSON."""
         try:
-            from src.gateway.main import app
             from fastapi.testclient import TestClient
+            from src.gateway.main import app
             client = TestClient(app)
             response = client.get("/api/v1/health")
             if response.status_code == 200:
@@ -35,8 +36,8 @@ class TestFrontendBackendChain:
     def test_blockchain_explorer_api(self):
         """Blockchain Explorer API returns block data."""
         try:
-            from src.gateway.main import app
             from fastapi.testclient import TestClient
+            from src.gateway.main import app
             client = TestClient(app)
             # Explorer endpoints
             for endpoint in ["/api/v1/explorer/blocks", "/api/v1/explorer/transactions"]:
@@ -48,8 +49,8 @@ class TestFrontendBackendChain:
     def test_wallet_creation_flow(self):
         """Wallet creation: API → Core → Key generation."""
         try:
-            from src.gateway.main import app
             from fastapi.testclient import TestClient
+            from src.gateway.main import app
             client = TestClient(app)
             response = client.post("/api/v1/wallet/create", json={})
             assert response.status_code in (200, 201, 404, 422, 501)
@@ -59,8 +60,8 @@ class TestFrontendBackendChain:
     def test_transaction_submission_flow(self):
         """Transaction submission: API → Core → Blockchain."""
         try:
-            from src.gateway.main import app
             from fastapi.testclient import TestClient
+            from src.gateway.main import app
             client = TestClient(app)
             response = client.post("/api/v1/transactions", json={
                 "sender": "0xtest",
@@ -85,8 +86,8 @@ class TestFrontendBackendChain:
     def test_franchise_api_flow(self):
         """Franchise API endpoints exist and respond."""
         try:
-            from src.gateway.main import app
             from fastapi.testclient import TestClient
+            from src.gateway.main import app
             client = TestClient(app)
             for endpoint in ["/api/v1/franchise/list", "/api/v1/franchise/info"]:
                 response = client.get(endpoint)

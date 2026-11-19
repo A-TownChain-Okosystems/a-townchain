@@ -23,26 +23,31 @@ Architektur:
     └─────────────────────────────────────────────────────┘
 """
 
-import os
-import sys
-import time
-import json
 import hashlib
+import os
+import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Tuple, Callable
+from typing import Any, Dict, List, Optional
 
-from atclang.parser.parser import parse
+from atclang.compiler.compiler import CompiledModule, compile_source
 from atclang.parser.ast_nodes import (
-    Program, ContractDef, FunctionDef, EventDef, ErrorDef,
-    StructDef, EnumDef, ImportStatement, LetStatement,
-    ClassDef, StorageBlock, TypeAliasDef,
+    ClassDef,
+    ContractDef,
+    EnumDef,
+    ImportStatement,
+    Program,
+    StructDef,
 )
-from atclang.compiler.compiler import compile_source, ATCCompiler, CompiledModule
+from atclang.parser.parser import parse
 from atclang.vm.atcvm import (
-    ATCVM, ATCFunction, Instruction, OP, ATCVMError,
-    RequireError, GasError, ATCObject, STDLIB_DISPATCH,
+    ATCVM,
+    STDLIB_DISPATCH,
+    ATCFunction,
+    ATCObject,
+    ATCVMError,
+    GasError,
+    RequireError,
 )
-
 
 # ════════════════════════════════════════════════════════════════
 #  CONTRACT STATE — Persistenter Contract-Zustand

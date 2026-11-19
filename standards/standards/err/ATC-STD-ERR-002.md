@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-002
   title: "Error Classification"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-002 — Error Classification (v1.0.0, CANDIDATE)
 
@@ -26,10 +27,12 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 Fehler kategorisieren. ERR-002 ordnet jeden Fehler in Kategorien und Fehlerklassen ein;
 die 18 Fehlerklassen und das Schwere-Modell kommen normativ aus BUG-001/BUG-005.
 
 ## Kernregeln
+
 - Kategorie-Flags (mehrfach moeglich): software, documentation, configuration,
   standards, dependency, security, infrastructure.
 - Fehlerklasse gemaess BUG-005 (18 Klassen) + Pattern-Match gegen ERR-010-Library.
@@ -43,6 +46,7 @@ die 18 Fehlerklassen und das Schwere-Modell kommen normativ aus BUG-001/BUG-005.
 | REQ-ER-021 | Klassifikation bestimmt Pflichtset (ERR-000 §3) |
 
 ## Implementierungsstatus
+
 SPECIFIED — Umsetzung: Klassifikationsfelder im BUG-002-Record.
 
 ## Security Considerations
@@ -50,7 +54,9 @@ SPECIFIED — Umsetzung: Klassifikationsfelder im BUG-002-Record.
 Klassifikation darf keine sensiblen Daten offenlegen (Kategorie security nur verweisend, ohne Payload-Daten).
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-BUG-001, ATC-STD-BUG-005, ATC-STD-ERR-000/-010 · INFORMATIVE: SCR-0044

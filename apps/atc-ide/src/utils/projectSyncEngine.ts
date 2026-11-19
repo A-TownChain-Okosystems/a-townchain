@@ -1,4 +1,13 @@
-import { FileState, runProjectAudit, extractProjectTodos, generateTodoMarkdown, generateLiveArchitectureDocs, generateArchitectureMarkdown } from './auditEngine';
+import {
+  FileState,
+  runProjectAudit,
+  extractProjectTodos,
+  generateTodoMarkdown,
+  generateLiveArchitectureDocs,
+  generateArchitectureMarkdown,
+  syncWikiFileInWorkspace,
+  syncTodoFileInWorkspace,
+} from './auditEngine';
 import {
   AutoSyncConfig,
   LiveRoadmapDoc,
@@ -499,7 +508,9 @@ export function generateLiveDocumentation(files: FileState[]): LiveDocumentation
     const lines = f.content.split('\n');
     lines.forEach((lineStr, lineIdx) => {
       // Functions
-      const fnMatch = lineStr.match(/(?:export\s+)?(?:fn|function|pub fn)\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)/);
+      const fnMatch = lineStr.match(
+        /(?:export\s+)?(?:fn|function|pub fn)\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*(?::|->)\s*([A-Za-z0-9_<>\[\]|&:. ]+)?/
+      );
       if (fnMatch) {
         apiEntries.push({
           fileName: f.name,
@@ -508,6 +519,7 @@ export function generateLiveDocumentation(files: FileState[]): LiveDocumentation
           signature: `${fnMatch[1]}(${fnMatch[2].trim()})`,
           description: `Öffentliche Funktion im Modul \`${f.name}\`.`,
           line: lineIdx + 1,
+          returnType: fnMatch[3]?.trim() || undefined,
         });
       }
 

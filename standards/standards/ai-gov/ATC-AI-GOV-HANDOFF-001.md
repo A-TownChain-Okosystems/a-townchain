@@ -64,12 +64,15 @@ Gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung.
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - ATC-AI-GOV-MANIFEST-001 — Identität/Scope · ATC-AI-GOV-POLICY-001 · ATC-STD-BUG-001 — Findings
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `ai/handoff.yaml` (Template, Storage, Continuity-Rules)
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release (Owner-Entwurf 09.09., SCR-0061): 3 REQ, 2 COM-Gates; operational über ai/handoff.yaml (SCR-0061)

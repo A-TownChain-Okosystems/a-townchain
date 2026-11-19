@@ -36,7 +36,7 @@ Nicht-Gilt: menschliche Rollen (ATC-ENT-002); Mainnet-Betrieb (ATC-STD-NET).
 
 Jede Agenten-Aktion (nicht nur Task-Abschluss) wird protokolliert:
 
-```
+```text
 timestamp · agent_id · task_id · repository · action · command ·
 files_changed · result · risk_level · human_approval
 ```
@@ -76,6 +76,7 @@ Agenten-spezifisch: Agent-Identitaet via AGENT_MANIFEST verifizierbar; Permissio
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-201..203, ATC-AAS-001 · INFORMATIVE: AGENT_MANIFEST.md v3.1.7, Registry-Kategorie aas
+
 ## 4. Ergänzende Verbindliche Betriebs- und Governance-Regeln
 
 1. Sämtliche Aktionen des Agenten MÜSSEN fälschungssicher im zweistufigen Audit-Log protokolliert werden.

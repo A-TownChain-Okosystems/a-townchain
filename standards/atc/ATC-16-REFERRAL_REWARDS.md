@@ -1,4 +1,5 @@
 # ATC-16 — Referral & Multi-Tier Rewards Logic
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 2.5 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-16
 > **Tier:** 2 (Logik & Oekonomie)
@@ -24,6 +25,7 @@ zentralisierte Marketing-Datenbanken gesteuert werden muss.
 ## 1. Kernkonzepte
 
 ### 1.1 On-Chain Referral-Tracing
+
 ATC-16 ermoeglicht es, eine "Parent-Child"-Beziehung zwischen Wallets oder
 Identitaeten (basierend auf ATC-03) direkt auf der Blockchain zu registrieren.
 Wenn ein neuer Nutzer dem Netzwerk beitritt, wird er einem "Empfehler" zugewiesen.
@@ -31,12 +33,14 @@ Diese Verknuepfung ist unveraenderlich und wird als Graph-Struktur innerhalb
 des DAG (ATC-04) gespeichert.
 
 **Aktueller Stand:** Nicht implementiert. Die Basis-Komponenten sind da:
+
 - ATC-03 Identity (ECDSA-Wallet-Adressen, ATC-Prefix)
 - ATC-04 DAG (Chain-Struktur fuer Graph-Speicherung)
 - Governance Contract (`governance_contract.py`) mit Stakeholder-Verwaltung
 - **Geplant:** Referral-Graph als Smart Contract
 
 ### 1.2 Multi-Tier-Belohnungslogik
+
 Der Standard definiert, wie Belohnungen ueber mehrere Stufen (Tiers) hinweg
 verteilt werden koennen. Wenn ein Nutzer eine Aktion ausfuehrt (z. B.
 Inferenz-Gebuehren zahlt oder am Mining teilnimmt), wird automatisch ein Teil
@@ -44,7 +48,8 @@ der Gebuehr gemaess ATC-16 an die Kette der Empfehler zurueckgefuehrt — ueber
 beliebig viele Stufen hinweg.
 
 **Konzept:**
-```
+
+```text
 Nutzer A zahlt Inferenz-Gebuehr (100 ATC)
   -> Tier 1 Empfehler (B): 5% = 5 ATC
   -> Tier 2 Empfehler (C): 3% = 3 ATC
@@ -55,6 +60,7 @@ Nutzer A zahlt Inferenz-Gebuehr (100 ATC)
 > **Geplant:** Multi-Tier-Reward Contract in `blockchain/contracts/referral/`
 
 ### 1.3 Deterministische Ausschuettung
+
 Da die Belohnungslogik nach ATC-14 deterministisch ist, erfolgt die Auszahlung
 der Belohnungen (in Token gemaess ATC-11) bei jeder Transaktion sofort und ohne
 menschliches Eingreifen.
@@ -67,11 +73,13 @@ Reward-Verteilung bei jeder Transaktion.
 ## 2. Warum ATC-16 fuer KAI-OS essenziell ist
 
 ### 2.1 Wachstums-Hebel
+
 KAI-OS nutzt ATC-16, um ein "Growth-Hacking"-Protokoll zu implementieren. Da die
 Anreize nativ in den Smart Contracts verankert sind, motiviert das System Nutzer
 und Inferenz-Anbieter automatisch dazu, neue Teilnehmer ins Netzwerk zu bringen.
 
 ### 2.2 Transparenz
+
 Da die gesamte Referral-Struktur On-Chain einsehbar ist, gibt es keine
 "versteckten" Partnerprogramme. Jeder Teilnehmer kann den Status seiner Rewards
 und seiner Struktur im Blockchain-Explorer (siehe Issue #5) transparent
@@ -81,6 +89,7 @@ nachvollziehen.
 Strukturen.
 
 ### 2.3 Synergie mit KI-Netzwerken
+
 Im Bereich des Social-Media-KI-Franchise ist ATC-16 der Mechanismus, mit dem
 Content-Ersteller und KI-Modell-Anbieter fuer die erfolgreiche Verbreitung und
 Nutzung ihrer Inhalte entlohnt werden.
@@ -93,12 +102,15 @@ Mechanismus fuer Franchise-Partner.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-03 (Decentralized Identity)
+
 Die Identitaet des Empfehlers ist der Ankerpunkt fuer die Belohnungszuweisung.
 
 ### 3.2 ATC-11 (Fungible Assets)
+
 ATC-16-Rewards werden in Form von ATC-11-Token (ATCoin) ausgeschuettet.
 
 ### 3.3 ATC-17 (DAO Governance)
+
 Oftmals koennen Nutzer ihre Reputation oder Referral-Erfolge (gemaess ATC-16)
 nutzen, um ihr Stimmgewicht innerhalb der DAO zu erhoehen.
 
@@ -159,7 +171,8 @@ nutzen, um ihr Stimmgewicht innerhalb der DAO zu erhoehen.
 Die grosste Herausforderung fuer Referral-Systeme sind Sybil-Attacken — Angreifer
 erstellen hunderte Fake-Identitaeten, um Referral-Belohnungen abzugreifen.
 
-### Schutzmechanismen (geplant):
+### Schutzmechanismen (geplant)
+
 1. **ATC-03 Reputation-Score:** Neue Identitaeten haben Score 0 — keine Referral-
    Rewards bis Mindest-Score erreicht
 2. **Stake-Requirement:** Empfehler muss ATC-11 Token staken, um Rewards zu erhalten
@@ -173,7 +186,6 @@ erstellen hunderte Fake-Identitaeten, um Referral-Belohnungen abzugreifen.
 *Dieses Dokument wurde aus der urspruenglichen Atc-16.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:00 | Aurora (Superagent)*
-
 
 ---
 

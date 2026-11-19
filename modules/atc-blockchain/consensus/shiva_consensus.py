@@ -235,7 +235,7 @@ class ProofOfHistory:
         self.sequence += 1
         return entry
 
-    def batch_tick(self, count: int, txs: list[ATCTransaction] = None) -> list[PoHEntry]:
+    def batch_tick(self, count: int, txs: list[ATCTransaction] | None = None) -> list[PoHEntry]:
         """Mehrere Ticks auf einmal erzeugen."""
         result = []
         for i in range(count):

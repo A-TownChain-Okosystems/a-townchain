@@ -82,6 +82,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 4. Verbindliche Risikomanagement-Regeln
 
 1. Alle identifizierten geschäftlichen, technischen und operativen Risiken MUSS unverzüglich in die zentrale Risiko-Registry eingetragen werden.
@@ -115,9 +116,11 @@ Unvollständiges Risikomanagement führt zu verdeckten Sicherheitslücken. Risik
 ## 9. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-020**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-ENT-003**: Referenzierter Standard im ATC-Regelwerk

@@ -28,4 +28,3 @@
 - `README.md`
 - `index.html`
 - `package.json`
-

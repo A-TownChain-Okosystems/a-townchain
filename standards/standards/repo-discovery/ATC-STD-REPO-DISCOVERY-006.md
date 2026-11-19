@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-REPO-DISCOVERY-006
   title: "Impact Analysis"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-REPO-DISCOVERY-006 — Impact Analysis (v1.0.0, CANDIDATE)
 
@@ -26,6 +27,7 @@ standard:
 > Kein neuer Repository-Inhalt darf unbewertet bleiben.
 
 ## Zweck
+
 Neue Inhalte werden auf Auswirkungen geprueft: NEW MODULE → Architecture-Update?
 NEW API → API-Doku? NEW FUNCTION → Testabdeckung? NEW AUTH MODULE → Security
 Review? NEW DEVELOPMENT RULE → Standard-Kandidat (RD-003)? USER-VISIBLE CHANGE →
@@ -41,6 +43,7 @@ CHANGELOG? Je Pruefung ein Urteil REQUIRED/NOT_REQUIRED mit Begruendung.
 | REQ-RD-063 | Architektur- und Schnittstellen-Aenderungen lösen Cross-Repo-Pruefung (RD-005) aus |
 
 ## Implementierungsstatus
+
 SPECIFIED — Format im scan.py-Report (impact-report.json) vorgesehen;
 Ausbaustufe: heuristische Ableitung der 6 Bereiche aus Change Type + Pfad.
 
@@ -49,7 +52,9 @@ Ausbaustufe: heuristische Ableitung der 6 Bereiche aus Change Type + Pfad.
 Impact-Analysen markieren Security-Relevanz automatisch (RD-008-Kopplung); keine sensiblen Daten in impact-report.json.
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0046) |
 
 ## References
+
 NORMATIV: RD-002/-003/-009, ERR-006/-007, REPO-MAINT-001 §12 · INFORMATIVE: SCR-0046

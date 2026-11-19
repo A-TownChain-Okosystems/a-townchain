@@ -27,11 +27,11 @@ AUDIT_DIR = os.path.join(ROOT, ".github", "ai", "audit")
 def main():
     fails = []
     # yaml-frei (SCR-0053): Laeuft auf jedem CI-Runner ohne PyYAML-Abhaengigkeit
-    reg_text = open(REGISTRY, encoding="utf-8").read()
+    reg_text = open(REGISTRY, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     ids = set(re.findall(r"id:\s*(ATC-[A-Z0-9-]+)", reg_text))
 
     # A1: Repo-Manifest referenziert ALLE Registry-Standards
-    man_text = open(MANIFEST, encoding="utf-8").read()
+    man_text = open(MANIFEST, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     required = set(re.findall(r"^-\s*(ATC-[A-Z0-9-]+)\s*$", man_text, re.M))
     fehlt = sorted(ids - required)
     zuviel = sorted(required - ids)
@@ -44,7 +44,7 @@ def main():
         fails.append("A1: required_standards enthalten unbekannte IDs: " + ", ".join(zuviel[:5]))
 
     # A2: Voll-Compliance-Mandat in AGENT_MANIFEST.md
-    am = open(AGENT_MD, encoding="utf-8").read()
+    am = open(AGENT_MD, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     if not re.search(r"Standard-Compliance-Mandat", am):
         fails.append("A2: AGENT_MANIFEST.md ohne Standard-Compliance-Mandat")
     for k in ("MUSS sämtliche Standards", "Dynamische Bindung", "Umsetzungspflicht"):
@@ -52,7 +52,7 @@ def main():
             fails.append("A2: Mandat-Klausel fehlt: " + k)
 
     # A3: AGENTS.md verweist auf Vollmandat (nicht 'Auszug')
-    ag = open(AGENTS_MD, encoding="utf-8").read()
+    ag = open(AGENTS_MD, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     if re.search(r"Auszug", ag):
         fails.append("A3: AGENTS.md nennt Standards nur als 'Auszug' — Vollmandat erforderlich")
     if "Standard-Compliance-Mandat" not in ag and "ALLE" not in ag:

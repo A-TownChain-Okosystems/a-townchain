@@ -46,7 +46,7 @@ eingebunden?
 
 ## 2. Standard-Hierarchie (verbindlich)
 
-```
+```text
 ATC-STD-000 (Verfassung, Meta-Ebene)
     └── ATC-ENT (Enterprise-Layer, dieser Block)
             ├── ATC-GOV  — in ATC-STD-000 §14.1 verankert
@@ -107,54 +107,6 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-002 · INFORMATIVE: Registry-Kategorie enterprise
-## 5. Spezifische Enterprise-Governance-Regeln
-
-1. Jedes Unternehmensdokument MUSS vor seiner Inkraftsetzung von der in den Metadaten festgelegten Approver-Rolle (z. B. ROLE-CTO) freigegeben und digital signiert werden.
-2. Bei Strukturänderungen oder Anpassungen von Hierarchieebenen MUSS eine Auswirkungsanalyse gemäß ATC-ENT-010 durchgeführt werden.
-3. Sämtliche Abweichungen von der definierten Standard-Hierarchie MUSS im zentralen Risiko-Register gemäß ATC-ENT-011 als Risiko erfasst und nachverfolgt werden.
-4. Alle Enterprise-Standards MUSS jährlich (annual Review-Cycle) auf Aktualität und Konformität mit ATC-STD-000 geprüft werden.
-5. Änderungen an den Metadaten eines Dokuments MUSS über den Change-Management-Prozess nach ATC-ENT-010 dokumentiert und freigegeben werden.
-
-## 6. Metriken & Akzeptanzkriterien
-
-1. **Dokumenten-Metadaten-Abdeckung:** 100% aller Unternehmensdokumente MUSS ein vollständiges und valides YAML-Metadaten-Header-Schema aufweisen.
-2. **Review-Frequenz:** 100% aller Enterprise-Standards MUSS innerhalb des vorgegebenen Review-Intervalls (jährlich) überprüft und aktualisiert werden.
-3. **Konflikt-Auflösungszeit:** 100% aller gemeldeten Standard-Konflikte MUSS innerhalb von 5 Arbeitstagen gemäß ATC-AAS-013 entschieden und aufgelöst werden.
-4. **Compliance-Quote:** 0 ungelöste P0-Compliance-Findings (F-NNN gemäß ATC-STD-BUG-001 bis ATC-STD-BUG-005) bei automatisierten Validator-Läufen.
-
-## 7. Compliance & Verifikation
-
-Die Einhaltung aller Vorgaben dieses Standards MUSS durch automatisierte Validator-Läufe (S-01 bis S-25) kontinuierlich geprüft werden. Etwaige Abweichungen oder Nicht-Konformitäten MUSS unverzüglich als Findings (F-NNN) gemäß ATC-STD-BUG-001 bis ATC-STD-BUG-005 in  erfasst und kategorisiert werden. Abweichungen von Sicherheits- oder Governance-Invarianten MUSS priorisiert vor einem Release behoben werden.
-
-## 8. Security Considerations
-
-Unternehmensdokumente und Governance-Regeln stellen die operative Grundlage dar. Jegliche unautorisierte Modifikation MUSS durch Zugriffsrechte und CI-Pipelines unterbunden werden. Kritische Governance-Änderungen MUSS zusätzlich eine Sicherheitsbewertung nach ATC-STD-203 durchlaufen.
-
-## 9. Changelog
-
-| Version | Datum | Beschreibung |
-| :--- | :--- | :--- |
-| 1.0.0 | 2026-09-07 | Initialversion (Owner-Sammelfreigabe) |
-| 1.1.0 | 2026-09-08 | Additive Elaboration SCR-0041 — neue Regeln und Sektionen, keine bestehende Regel geändert |
-
-## 10. References
-
-### Normative Referenzen
-- **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
-
-### Informative Referenzen
-- **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
-- **ATC-AAS-013**: Konflikt-Eskalation und Standards-Rangfolge
-- **ATC-STD-203**: Security Considerations & Scanning Standard
-- **ATC-STD-BUG-001**: Bug & Finding Management Standard
-- **ATC-STD-BUG-005**: Compliance & Validation Standard
-- **ATC-ENT-002**: Rollen & Verantwortlichkeiten Standard
-- **ATC-ENT-003**: Entscheidungsmanagement Standard
-- **ATC-ENT-008**: Organisationsstruktur Standard
-- **ATC-ENT-009**: Repository Governance Standard
-- **ATC-ENT-010**: Enterprise Change Management Standard
-- **ATC-ENT-011**: Risiko-Management Standard
-- **ATC-ENT-015**: Qualitätsmanagement & Definition of Done Standard
 
 ## 5. Spezifische Enterprise-Governance-Regeln
 
@@ -189,9 +141,11 @@ Unternehmensdokumente und Governance-Regeln stellen die operative Grundlage dar.
 ## 10. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-013**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-ENT-002**: Referenzierter Standard im ATC-Regelwerk

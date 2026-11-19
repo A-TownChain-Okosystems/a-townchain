@@ -1,4 +1,5 @@
 # ATC-18 — Multi-Signature Transaction Authorization Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 2.3 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-18
 > **Tier:** 2 (Logik & Oekonomie)
@@ -25,11 +26,13 @@ ausreicht, sondern eine Gruppe von autorisierten Akteuren zustimmen muss.
 ## 1. Kernkonzepte
 
 ### 1.1 m-aus-n-Signatur-Logik
+
 ATC-18 legt fest, dass ein Transaktions-Event erst dann in den DAG (ATC-04)
 aufgenommen wird, wenn eine definierte Anzahl (m) von autorisierten privaten
 Schluesseln aus einer definierten Gruppe (n) die Transaktion signiert hat.
 
 **Implementation:** OK Implementiert
+
 - `blockchain/contracts/` — MultiSig Wallet Funktionalitaet
 - ECDSA (secp256k1) Signaturen in `ecdsa_impl.py` / `ecdsa_final.py`
 - Issue #6 (ECDSA) abgeschlossen
@@ -43,11 +46,13 @@ Schluesseln aus einer definierten Gruppe (n) die Transaktion signiert hat.
 ```
 
 ### 1.2 Kryptografische Zusammenfuehrung (Threshold Signatures)
+
 Anstatt mehrere einzelne Transaktionen zu senden, werden diese durch ATC-18 zu
 einer einzigen, kompakten "Threshold-Signatur" zusammengefuehrt. Das spart
 Speicherplatz auf der Chain und beschleunigt die Validierung.
 
 **Implementation:** Teilweise implementiert
+
 - Aktuelle MultiSig sammelt einzelne Signaturen (nicht Threshold-kompakt)
 - ECDSA-Signaturen werden einzeln verifiziert
 - **Geplant:** Threshold Signature Scheme (TSS) mit Shamir's Secret Sharing
@@ -56,6 +61,7 @@ Speicherplatz auf der Chain und beschleunigt die Validierung.
 > Erstellung erfolgt verteilt ohne Offenlegung privater Schluessel.
 
 ### 1.3 Governance-Integration
+
 ATC-18 ist eng mit der DAO (ATC-17) verknuepft. Oftmals fungiert die DAO selbst
 als eine dieser autorisierten "Parteien". Eine ATC-18-Transaktion kann
 beispielsweise erfordern, dass ein Administrator und ein Teil der
@@ -69,16 +75,19 @@ fungieren. DAO-Proposal -> MultiSig-Execution.
 ## 2. Warum ATC-18 fuer KAI-OS essenziell ist
 
 ### 2.1 Sicherheit fuer "Hohe Werte"
+
 Fuer die Verwahrung von Liquiditaet in AMM-Pools (ATC-19) oder fraktionierten
 Assets (ATC-13) bietet ATC-18 den notwendigen Schutz, damit ein kompromittierter
 einzelner Key nicht zum Totalverlust fuehrt.
 
 ### 2.2 Protokoll-Stabilitaet
+
 Upgrades des KAI-OS-Kerns duerfen niemals durch einen einzelnen Entwickler-Key
 initiiert werden koennen. ATC-18 erzwingt hier ein "Four-Eyes-Principle" (oder
 mehr), was das Risiko von boesartigen Protokoll-Aenderungen minimiert.
 
 ### 2.3 Autonome Agenten-Sicherheit
+
 KI-Agenten, die ueber ATC-17 an Abstimmungen teilnehmen oder Assets bewegen,
 koennen ueber ATC-18 so konfiguriert werden, dass sie fuer bestimmte Aktionen
 eine zusaetzliche Freigabe durch den Besitzer benoetigen.
@@ -91,20 +100,24 @@ MultiSig-Anforderung fuer kritische KI-Aktionen als zukuenftige Erweiterung.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-05 (Quantensichere Signaturen)
+
 ATC-18 nutzt die PQC-Verfahren aus ATC-05, um auch die Multi-Signature-Struktur
 quantensicher zu machen.
 
 > ATC-05 ist PARTIAL KONZEPTIONELL — PQC-Algorithmen als Zukunftssicherung.
 
 ### 3.2 ATC-03 (Decentralized Identity)
+
 Die Akteure, die in der n-Gruppe fuer eine ATC-18-Transaktion definiert sind,
 werden ueber ihre Identitaeten nach ATC-03 referenziert.
 
 ### 3.3 ATC-17 (DAO Governance)
+
 ATC-18 ist eng mit der DAO verknuepft — die DAO kann als autorisierte Partei
 fungieren.
 
 ### 3.4 Issue #12 (Solidity Contracts)
+
 Die Implementierung von Multi-Signature-Wallets in der EVM-Kompatibilitaets-
 schicht des KAI-OS basiert auf diesem Standard.
 
@@ -164,15 +177,17 @@ schicht des KAI-OS basiert auf diesem Standard.
 
 ## 7. Threshold Signatures — Technischer Detail
 
-### Aktuelle MultiSig (implementiert):
-```
+### Aktuelle MultiSig (implementiert)
+
+```text
 TX = { data, signatures: [sig_A, sig_B, sig_C] }
 -> Validator prueft jede Signatur einzeln
 -> Benoetigt Speicher fuer alle m Signaturen auf Chain
 ```
 
-### Threshold Signature Scheme (geplant):
-```
+### Threshold Signature Scheme (geplant)
+
+```text
 TX = { data, threshold_sig }
 -> TSS erzeugt eine einzige Signatur aus m Teil-Signaturen
 -> Teil-Schluessel werden nie im Netzwerk exponiert
@@ -180,7 +195,8 @@ TX = { data, threshold_sig }
 -> Kompakter auf Chain, schnellere Validierung
 ```
 
-### Sicherheitsvorteile TSS:
+### Sicherheitsvorteile TSS
+
 1. Keine Offenlegung einzelner Signaturen auf Chain
 2. Geringere Speicherplatz-Pro-Transaktion
 3. Schnellere Validierung (eine Signatur statt m)
@@ -191,7 +207,6 @@ TX = { data, threshold_sig }
 *Dieses Dokument wurde aus der urspruenglichen Atc-18.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:05 | Aurora (Superagent)*
-
 
 ---
 

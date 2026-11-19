@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-STDDEV-001
   title: "ATC Standards Development Standard — Verbindlicher Lebenszyklus für Standards: Erstellung im Hausformat, Review, §9-Freigabe, §30-Einfrierung, Wartung (MINOR/MAJOR), Review-Zyklen, Deprecation und Retirement — die Prozessnorm, mit der Standards selbst entstehen"
@@ -30,7 +31,7 @@ standard:
     - ATC-STD-AI-DECISION-001
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-STDDEV-001 — ATC Standards Development Standard (v1.0.0, APPROVED)
 
@@ -79,10 +80,11 @@ Idee zur normativen Regel (REQ-SD-001).
 
 ## §3 Standard-Lebenszyklus
 
-```
+```text
 IDEA → SCR → DRAFT → VALIDATED → REVIEWED → APPROVED (§9) → EFFECTIVE (normativ)
      → MAINTAINED (MINOR/MAJOR) → DEPRECATED → RETIRED
 ```
+
 Statuswechsel nur vorwärts; Ausnahmen (Rollback) nur via SCR mit Owner-Freigabe
 (REQ-SD-004). Mapping auf DESC-001-Lifecycle und Registry-Status: draft ↔ DRAFT,
 approved ↔ APPROVED/EFFECTIVE. RETIRED-Standards bleiben §30-lesbar, sind aber

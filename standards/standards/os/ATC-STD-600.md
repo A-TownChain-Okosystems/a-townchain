@@ -169,7 +169,9 @@ These domains MUST NOT be collapsed into one implicit identity mechanism.
 
 The canonical A-TownChain L1 transaction signing domain is:
 
-    ATC-TX-DOMAIN-V2
+```text
+ATC-TX-DOMAIN-V2
+```
 
 The legacy `ATC-TX-DOMAIN` format is retired and MUST NOT be used for L1 transaction signing.
 
@@ -177,22 +179,26 @@ The legacy `ATC-TX-DOMAIN` format is retired and MUST NOT be used for L1 transac
 
 The authenticated byte representation is exactly:
 
-    ATC-TX-DOMAIN-V2
-    + chain_id          (u64, big-endian)
-    + tx_type           (u8)
-    + sender_did        (u32 length + UTF-8 bytes)
-    + recipient_did     (presence byte + optional u32 length + UTF-8 bytes)
-    + amount            (u64, big-endian)
-    + gas_price         (u64, big-endian)
-    + gas_limit         (u64, big-endian)
-    + nonce              (u64, big-endian)
-    + timestamp          (u64, big-endian)
-    + payload            (u32 length + bytes)
-    + poh_hash           (32 bytes)
+```text
+ATC-TX-DOMAIN-V2
++ chain_id          (u64, big-endian)
++ tx_type           (u8)
++ sender_did        (u32 length + UTF-8 bytes)
++ recipient_did     (presence byte + optional u32 length + UTF-8 bytes)
++ amount            (u64, big-endian)
++ gas_price         (u64, big-endian)
++ gas_limit         (u64, big-endian)
++ nonce              (u64, big-endian)
++ timestamp          (u64, big-endian)
++ payload            (u32 length + bytes)
++ poh_hash           (32 bytes)
+```
 
 The canonical numeric chain identifier for the current L1 is:
 
-    chain_id = 658467
+```text
+chain_id = 658467
+```
 
 Implementations MUST produce byte-identical signing input. Rust L1 kernel, Rust SDK/wallet, and TypeScript SDK implementations MUST NOT maintain independent signing encodings.
 
@@ -202,7 +208,9 @@ Implementations MUST produce byte-identical signing input. Rust L1 kernel, Rust 
 
 The canonical L1 signature is Ed25519 over the exact V2 signing bytes.
 
-    signature = Ed25519_Sign(private_key, signing_bytes_v2)
+```text
+signature = Ed25519_Sign(private_key, signing_bytes_v2)
+```
 
 Verification MUST operate on those same bytes. Hashing or field re-encoding before Ed25519 verification is not permitted unless explicitly defined by a future governed protocol revision.
 
@@ -210,7 +218,9 @@ Verification MUST operate on those same bytes. Hashing or field re-encoding befo
 
 Transaction identity is separate from the signing domain:
 
-    ATC-TX-ID-V2 + canonical transaction fields
+```text
+ATC-TX-ID-V2 + canonical transaction fields
+```
 
 The signature is not part of transaction identity.
 

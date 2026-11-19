@@ -63,20 +63,21 @@ es bewusst nicht: `atce:` mit falschem Magic liefert `E-007` aus der Huelle
 
 Ausfuehrung: `cargo test --workspace --offline` → **727 passed, 0 failed**
 (vorher 716; +11 aus diesem Paket). `cargo test -p atc-system` 11 (neu) + 7 + 13
+
 + 3 + 11 gruen. `rustfmt --check` fuer die vier Dateien ohne Abweichung; clippy
 meldet fuer dieses Paket nichts, die vorhandenen Warnungen stammen aus
 `atc-node`/`atc_wallet` und sind unveraendert.
 
 ## 5 Grenze dieser Evidenz
 
-* Die Payload-Pruefung ist eine **System**-Funktion. `atc-node` ruft sie noch
++ Die Payload-Pruefung ist eine **System**-Funktion. `atc-node` ruft sie noch
   nicht selbst auf; die Kante `Blockimport -> validate_payload` ist vorhanden,
   aber im Knoten nicht verdrahtet, weil `atc-node` nicht von `atc-system`
   abhaengen darf. Eingang bleibt heute `System::deploy_container`; ein
   Importpfad, der Bloecke von Fremdknoten prueft, ist **nicht** Teil von P1a.
-* Kein `CI_VERIFIED`: kein CI-Lauf am exakten Commit.
-* `ADM-012` bleibt gesperrt; ein Konflikt meldet weiterhin `code: None`.
-* Der Bytecode-Fixwert ist unveraendert; Huellen- und Stromformat sind
++ Kein `CI_VERIFIED`: kein CI-Lauf am exakten Commit.
++ `ADM-012` bleibt gesperrt; ein Konflikt meldet weiterhin `code: None`.
++ Der Bytecode-Fixwert ist unveraendert; Huellen- und Stromformat sind
   unberuehrt (D-0-Konflikt bleibt offen, siehe `EXEC-D1BC-VM-PARSER-EVIDENCE`).
 
 ## 6 Statusgrenzen

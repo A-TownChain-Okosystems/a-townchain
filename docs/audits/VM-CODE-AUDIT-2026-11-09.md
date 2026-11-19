@@ -12,12 +12,14 @@ nach dem Lauf geloescht wurde (Baum unveraendert).
 ## Befunde
 
 ### VM-AUD-003-A — Roher `run()`-Pfad umgeht fuenf Sicherheitsgrenzen
+
 **Prioritaet:** P0 · **Status:** FIXED (b0940d5)
 **Stelle:** `components/vm/src/vm.rs`, `Vm::execute_transactional`
 **Beschreibung:** `run()` ist `pub`, ruft `verify()` nicht auf, kennt kein Gas,
 prueft weder `MAX_STACK_ITEMS` (Push/Dup/Load schreiben direkt in den Stapel)
 noch `MAX_STORAGE_SLOTS`, und sichert keinen Snapshot.
 **Reproduktion (ausgefuehrt):**
+
 - 5000x `Push(1)` + `Halt` -> `run()` liefert 5000 Elemente, Grenze ist 4096.
 - `Push(7), Store(0), Add` -> `Err(StackUnderflow)`, Zustand danach `[7]`.
 - `Push(1), Store(70000), Halt` -> `run()` ok, 70001 Speicherplaetze (Grenze 65536).
@@ -28,6 +30,7 @@ aber nichts erzwingt das.
 `run_with_gas(u64::MAX)` abbilden, damit eine Grenze gilt.
 
 ### VM-AUD-001-A — Generation ist Aufruferangabe, nicht Artefakteigenschaft
+
 **Prioritaet:** P0 · **Status:** FIXED (1aa0e76)
 **Stelle:** `artifact::Artifact`, `Vm::from_artifact`
 **Beschreibung:** Die Generation kommt aus dem Aufrufer, nicht aus dem Artefakt.
@@ -41,6 +44,7 @@ Pfad nicht durchgesetzt.
 setzen; `with_generation` nur fuer Tests, nicht `pub`.
 
 ### VM-AUD-001-B — Generation ohne Wertebereich
+
 **Prioritaet:** P1 · **Status:** FIXED mit P0-2 (1aa0e76)
 **Stelle:** `Artifact::new`/`Artifact::parse`
 **Beschreibung:** Jeder Wert ungleich 1 gilt als v2. `with_generation(9)` ist
@@ -49,6 +53,7 @@ erlaubt und schaltet die v2-Befehle frei.
 **Korrektur:** Nur 1 und 2 zulassen, sonst `InvalidProgram`.
 
 ### VM-AUD-002-A — Verifier akzeptiert nicht ausfuehrbare Speicherplaetze
+
 **Prioritaet:** P1 · **Status:** FIXED mit P0-1 (b0940d5)
 **Stelle:** `Vm::verify` prueft jetzt den hoechsten Slot im Programm
 **Beschreibung:** `Store(70000)` uebersteht `verify()` (`Ok(())`), scheitert erst
@@ -60,6 +65,7 @@ und Ausfuehrung urteilen verschieden.
 **Korrektur:** Maximalen Slot aus dem Programm lesen und im Verifier begrenzen.
 
 ### VM-AUD-002-B — Stapelpruefung im Verifier ist wirkungslos
+
 **Prioritaet:** P2 · **Status:** RESIDUAL
 **Stelle:** `Vm::verify`, `if self.stack.len() > MAX_STACK_ITEMS`
 **Beschreibung:** Der Verifier laeuft vor der Ausfuehrung, der Stapel ist dort
@@ -68,6 +74,7 @@ leer. Die Pruefung kann nie ausloesen; eine Pfadanalyse der Stapeltiefe fehlt.
 Bericht als nicht implementiert fuehren.
 
 ### VM-AUD-002-C — Code nach HALT: v1 toleriert, v2 nicht
+
 **Prioritaet:** P2 · **Status:** VERIFIED (als Kompatibilitaetsverhalten)
 **Stelle:** `Vm::verify`, Block "nur v2"
 **Beschreibung:** Die Unerreichbarkeitspruefung greift nur ab Generation 2.
@@ -75,6 +82,7 @@ v1-Programme mit Code nach `HALT` laufen weiter (`Ok([])`, Test
 `v1_ignoriert_v2_strenge_nach_halt`). Das ist gewollt und getestet.
 
 ### VM-AUD-003-B — Zwei kopierte Interpreter-Schleifen
+
 **Prioritaet:** P2 · **Status:** RESOLVED (b0940d5)
 **Stelle:** eine Schleife `Vm::run_loop` statt zwei
 **Beschreibung:** Beide Schleifen enthalten dieselben 20+ Arme, doppelt gepflegt.
@@ -83,12 +91,14 @@ treffen. Die Divergenz aus VM-AUD-003-A ist genau so entstanden.
 **Korrektur:** Eine Schleife mit Parameter `Option<&mut u64>` fuer Gas.
 
 ### VM-AUD-004-A — Doppelte Verifikation
+
 **Prioritaet:** P3 · **Status:** VERIFIED
 **Stelle:** `execute_state_transition_with_gas` -> `verify` + `run_with_gas` -> `verify`
 **Wirkung:** Nur Kosten, keine Sicherheitsluecke. Reihenfolge ist korrekt
 (Verifikation vor jeder Zustandsaenderung).
 
 ### VM-AUD-004-B — Gastabelle ohne Bindung
+
 **Prioritaet:** P1 · **Status:** RESIDUAL
 **Stelle:** `gas_cost` (Zeile 69)
 **Beschreibung:** Kosten sind im Code hart verdrahtet, es gibt keine Tabelle mit
@@ -99,6 +109,7 @@ Interpreter-Sicht.
 Ops, Abweichung = Fehler.
 
 ### VM-AUD-005-A — Snapshot deckt nur Stapel und Speicher
+
 **Prioritaet:** P0 · **Status:** RESIDUAL
 **Stelle:** `run_with_gas` (Snapshot), `run` (kein Snapshot)
 **Beschreibung:** Gesichert werden `stack` und `storage`. Nicht gesichert:
@@ -113,6 +124,7 @@ Ereignisse nicht, weil es sie nicht gibt. Transaktions-Rollback ist nicht belegt
 dahin im Standard nicht als vollstaendig ausweisen.
 
 ### VM-AUD-006-A — v1-Regressionsbasis zu schmal
+
 **Prioritaet:** P1 · **Status:** RESIDUAL
 **Stelle:** `tests/atcb_v2.rs` (3 v1-Tests), `tests/exec_chain_e2e.rs`
 **Beschreibung:** Belegt sind Arithmetik, Gasuntergrenze und HALT-Toleranz. Es
@@ -121,6 +133,7 @@ Aenderung, Fehlerpfadvergleich.
 **Korrektur:** Golden-Vektor mit Erwartungswerten je Op, im CI gegen main gehalten.
 
 ### VM-AUD-007-A — Fehler tragen keine Codes
+
 **Prioritaet:** P1 · **Status:** RESIDUAL
 **Stelle:** `enum VmError`
 **Beschreibung:** ATC-BC-002 Abschnitt 5 definiert E01-E06 als Teil des
@@ -131,6 +144,7 @@ unterschiedliche Berichte liefern; Differentialtests greifen zu kurz.
 **Korrektur:** `fn code(&self) -> u16` auf `VmError`, Mapping E01-E06, Test.
 
 ### VM-AUD-007-B — REVERTIF zieht vor der Code-Pruefung
+
 **Prioritaet:** P2 · **Status:** RESIDUAL
 **Stelle:** `Op::RevertIf`-Arm, beide Schleifen
 **Beschreibung:** Beide Werte werden gezogen, danach wird der Code geprueft. Bei
@@ -220,6 +234,7 @@ Verifier vor der Ausfuehrung greift. Gleiche Ablehnung, anderer Befund.
 Gueltige v1-Programme laufen unveraendert; v1-Semantik nicht angetastet.
 
 **Restrisiken nach P0-1:**
+
 - Die Generation ist weiter Aufruferangabe (VM-AUD-001-A, offen bis P0-2).
 - Der Snapshot deckt weiterhin nur Stapel und Speicher (VM-AUD-005-A, P0-3).
 - `verify()` prueft keine Stapeltiefe je Pfad (VM-AUD-002-B, offen).
@@ -252,6 +267,7 @@ entfernt, es gibt keinen oeffentlichen Setter mehr.
 | Robuste Ablehnung | magic, Laenge, Opcode, Restbytes | `zu_kurz_und_falsche_magic_abgelehnt`, `unbekannter_opcode_abgelehnt`, `ueberzaehlige_bytes_abgelehnt` |
 
 **Kontrollpunkte des Owners als Dauertests:**
+
 - `jeder_oeffentliche_einstieg_verifiziert` prueft `run`, `run_with_gas` und
   `execute_state_transition_with_gas` gegen dasselbe ungueltige Programm.
 - `gasoption_deaktiviert_keine_sicherheitsgrenze` prueft Verifikation,

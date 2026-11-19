@@ -5,9 +5,9 @@ Führt ATCLang Bytecode aus
 Version: 0.1.0-alpha
 """
 
-from enum import IntEnum, auto
 from dataclasses import dataclass, field
-from typing import List, Any, Dict, Optional
+from enum import IntEnum, auto
+from typing import Any, Dict, List, Optional
 
 
 # ── Opcodes ──────────────────────────────────────────────

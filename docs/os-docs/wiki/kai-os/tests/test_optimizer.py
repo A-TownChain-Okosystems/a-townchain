@@ -2,18 +2,15 @@
 """ATCLang Optimizer Tests — ATC-92
 Tests für Constant Folding, Dead Code Elimination, Algebraic Simplification.
 """
-import unittest
-import sys
 import os
+import sys
+import unittest
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from atclang.compiler.compiler import compile_source
 from atclang.compiler.optimizer import ATCOptimizer
 from atclang.parser.parser import parse
-from atclang.parser.ast_nodes import (
-    IntLiteral, FloatLiteral, StringLiteral, BoolLiteral, NullLiteral,
-    BinaryOp, Identifier, LetStatement, ReturnStatement, IfStatement,
-)
-from atclang.compiler.compiler import compile_source
 from atclang.vm.atcvm import OP
 
 

@@ -17,7 +17,7 @@ def main():
     ap.add_argument("--registry", default="registry/repositories.yaml")
     ap.add_argument("--github", action="store_true")
     args = ap.parse_args()
-    reg = yaml.safe_load(open(args.registry, encoding="utf-8"))
+    reg = yaml.safe_load(open(args.registry, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     errs = []
     repos = reg.get("repositories", [])
     if reg.get("count") != len(repos):
@@ -64,7 +64,7 @@ def main():
                 status = resp.status
             except urllib.error.HTTPError as e:
                 status = e.code
-            except Exception:
+            except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 status = 0
             if status != 200:
                 errs.append(f"GitHub: {r['name']} nicht erreichbar ({status})")

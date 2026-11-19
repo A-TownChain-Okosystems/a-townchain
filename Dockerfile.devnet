@@ -1,0 +1,13 @@
+# Devnet-Image fuer atc-node (SCR-0147). Mehrstufig, gepinnt.
+FROM rust:1.83-bookworm AS build
+WORKDIR /src
+COPY . .
+RUN cargo build --release -p atc-node
+
+FROM debian:bookworm-slim
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 ca-certificates \
+    && apt-get clean
+COPY --from=build /src/target/release/atc-node /usr/local/bin/atc-node
+EXPOSE 39471 39472
+ENTRYPOINT ["atc-node"]

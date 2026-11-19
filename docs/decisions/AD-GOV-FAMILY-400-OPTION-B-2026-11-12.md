@@ -61,7 +61,7 @@ Pfad `<ROOT>/null` scheitern. Die Reservierung lebt jetzt ausschließlich in
 
 ## 4 Nachweis (lokaler Lauf, Branch `std/family-400-option-b`)
 
-```
+```text
 Familie 400 Bestand: 52 Slots = 51 Standards (0 security, 51 grandfatherte
                     Ausnahmen) + 1 Reservierung
 ALLOC-12f Familien-Range: 51/51 4xx-Standards gedeckt

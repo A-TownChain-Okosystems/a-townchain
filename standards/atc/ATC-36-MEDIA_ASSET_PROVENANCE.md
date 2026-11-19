@@ -1,4 +1,5 @@
 # ATC-36 — Decentralized Media Asset & Content Provenance Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-36
 > **Tier:** 5 (User & Application Layer)
@@ -24,11 +25,13 @@ Medieninhalten innerhalb des KAI-OS-Oekosystems sicherstellt.
 ## 1. Kernkonzepte
 
 ### 1.1 Content-Hashing & On-Chain Signaturen
+
 Jedes Medien-Asset erhaelt bei der Erstellung oder dem Upload eine digitale
 Signatur, die mit der Identitaet (DID nach ATC-03) des Erstellers verknuepft
 ist. Dieser Fingerabdruck wird unveraenderlich im Ledger gespeichert.
 
 **Implementation:** PARTIAL — Basis da
+
 - SHA-256 Hashing fuer Datei-Integritaet
 - ECDSA (secp256k1) Signaturen fuer Authentifizierung
 - ATC-04 DAG fuer On-Chain Speicherung
@@ -36,6 +39,7 @@ ist. Dieser Fingerabdruck wird unveraenderlich im Ledger gespeichert.
 - **Geplant:** Medien-Asset-spezifische Content-Hashing Pipeline
 
 ### 1.2 KI-Provenienz-Tagging
+
 ATC-36 schreibt vor, dass Inhalte, die durch KI-Agenten (Tier 4) generiert
 wurden, ein obligatorisches "AI-Generated"-Tag im Metadaten-Header tragen.
 Dieses Tag enthaelt zudem den kryptografischen Hash des verwendeten KI-Modells
@@ -58,6 +62,7 @@ Dieses Tag enthaelt zudem den kryptografischen Hash des verwendeten KI-Modells
 ```
 
 ### 1.3 Content-Weg-Verfolgung (Provenance Tracking)
+
 Sollte ein Inhalt modifiziert werden (z. B. eine KI bearbeitet ein Bild),
 speichert ATC-36 die Historie dieser Transformationen. Das Ergebnis ist eine
 Art "digitaler Stammbaum", der zeigt, welcher Agent welche Aenderungen an
@@ -71,11 +76,13 @@ ATC-26 (XAI) — KI-Entscheidungen bei Content-Generierung nachvollziehbar.
 ## 2. Warum ATC-36 fuer KAI-OS essenziell ist
 
 ### 2.1 Schutz vor Deepfakes
+
 Nutzer koennen sich innerhalb des KAI-OS darauf verlassen, dass Medieninhalte
 mit einem validen ATC-36-Nachweis authentisch sind. Faelschungen ohne diesen
 Nachweis koennen sofort als "unverifiziert" markiert werden.
 
 ### 2.2 Urheberrecht fuer Franchise-KI
+
 Im Bereich der "Social-Media-KI fuer Franchise" sorgt ATC-36 dafuer, dass die
 Rechte an den von der KI generierten Inhalten sauber dem jeweiligen Franchise-
 Inhaber zugewiesen werden koennen.
@@ -84,6 +91,7 @@ Inhaber zugewiesen werden koennen.
 ATC-13 (Fractional) — Co-Ownership von Content.
 
 ### 2.3 Transparenz
+
 Werbe-Netzwerke und Plattform-Adapter nutzen ATC-36, um sicherzustellen, dass
 nur lizenzierte und authentische Inhalte veroeffentlicht werden, was die
 Qualitaet der Netzwerke massiv steigert.
@@ -93,25 +101,30 @@ Qualitaet der Netzwerke massiv steigert.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-03 (Decentralized Identity)
+
 Die DID des Erstellers ist das Fundament fuer die Signatur nach ATC-36.
 
 ### 3.2 ATC-29 (Marktplatz)
+
 Assets, die in den Marktplatz eingestellt werden, muessen ATC-36-konform sein,
 um als "verifiziertes Asset" gehandelt werden zu duerfen.
 
 > ATC-29 = Wo Modelle gehandelt werden. ATC-36 = Wo deren Outputs verifiziert werden.
 
 ### 3.3 ATC-26 (Explainable AI)
+
 Der XAI-Trace einer KI kann als Teil der ATC-36-Metadaten hinterlegt werden, um
 genau zu erklaeren, wie ein spezifischer Content-Asset entstanden ist.
 
 > ATC-26 = Warum die KI entschied. ATC-36 = Was die KI produzierte + Stammbaum.
 
 ### 3.4 ATC-90 (NFT Standard)
+
 ATC-90 definiert NFTs. ATC-36 erweitert dies um Content-Provenance und
 AI-Generated-Tags.
 
 ### 3.5 ATC-35 (Data Privacy)
+
 ATC-35 anonymisiert Daten. ATC-36 verifiziert Content-Echtheit. Beides
 ergaenzt sich: Privacy fuer Inputs, Provenance fuer Outputs.
 
@@ -172,7 +185,7 @@ ergaenzt sich: Privacy fuer Inputs, Provenance fuer Outputs.
 
 ## 7. Content Provenance Pipeline
 
-```
+```text
 ERSTELLER             ATC-36                    ATC-04 (DAG)
   |                     |                          |
   | Upload Medien-Asset |                          |
@@ -193,8 +206,9 @@ ERSTELLER             ATC-36                    ATC-04 (DAG)
   |<--------------------|                          |
 ```
 
-### Digitaler Stammbaum:
-```
+### Digitaler Stammbaum
+
+```text
 Original-Asset (User A, SHA-256, DID-A)
   |
   +-- Modifikation 1 (AI-Agent, Model-Hash-X)
@@ -212,7 +226,7 @@ Original-Asset (User A, SHA-256, DID-A)
 
 ## 8. Tier 5 Fortschritt
 
-```
+```text
 TIER 5 — USER & APPLICATION (ATC-32+)
 ├── ATC-32  UX & Interface Abstraction    PARTIAL
 ├── ATC-33  AI Feedback & RLHF            PARTIAL KONZEPTIONELL
@@ -229,7 +243,6 @@ TIER 5 — USER & APPLICATION (ATC-32+)
 *Dieses Dokument wurde aus der urspruenglichen Atc-36.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:51 | Aurora (Superagent)*
-
 
 ---
 

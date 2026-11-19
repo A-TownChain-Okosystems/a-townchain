@@ -64,12 +64,15 @@ Gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung; Emergency nur
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - ATC-STD-000 — SCR · ATC-STD-VERSION-001 — SemVer · ATC-STD-UPDATE-001 — Change Control · ATC-AI-GOV-CHECK-001/AUDIT-001
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `ai/change.yaml` (change_scope, requirements, rollback)
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release (Owner-Entwurf 09.09., SCR-0061): 3 REQ, 2 COM-Gates; operational über ai/change.yaml (SCR-0061)

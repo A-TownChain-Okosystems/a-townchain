@@ -23,7 +23,7 @@ Non-Fungible Token Standard für Genesis Chronicles — ATCLang-natives NFT-Inte
 
 ### Module
 
-```
+```text
 modules/contracts/genesis-chronicles.atc — NFT-Contract
 modules/contracts/nft_metadata.atc — Metadata-Management
 ```
@@ -67,7 +67,7 @@ max_supply: 10000 | evolution_levels: 3 | rarity_tiers: [Common, Rare, Epic, Leg
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-90.atc    # Unit-Tests
 └── test_atc-90_integration.atc  # Integration-Tests

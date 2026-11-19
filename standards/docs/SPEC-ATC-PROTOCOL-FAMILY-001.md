@@ -70,7 +70,7 @@ Diese Invarianten sind normativ und gelten für alle Familien. Verstöße sind S
 
 Der globale Systemzustand ist das Tupel
 
-```
+```text
 Σ = (LedgerState, ValidatorSet, ATSParams, EpochMeta)
 ```
 

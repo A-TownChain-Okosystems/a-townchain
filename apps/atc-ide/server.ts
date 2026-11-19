@@ -20,6 +20,37 @@ async function startServer() {
   });
 
   // Chat API
+
+// ── Eingabevalidierung vor Request-Pfaden ─────────────────────────────────────
+// owner, repo und branch landen in GitHub-API-Pfaden. Ohne Pruefung kann ein
+// Aufrufer Pfadsegmente einschleusen (CodeQL js/request-forgery). GitHub erlaubt
+// in Namen nur Buchstaben, Ziffern, Punkt, Bindestrich und Unterstrich.
+const GITHUB_NAME_RE = /^[A-Za-z0-9._-]{1,100}$/;
+const GITHUB_BRANCH_RE = /^[A-Za-z0-9._/-]{1,255}$/;
+
+function safeGithubRef(owner: string, repo: string): string | null {
+  if (!GITHUB_NAME_RE.test(owner ?? "") || !GITHUB_NAME_RE.test(repo ?? "")) return null;
+  if (owner === "." || owner === ".." || repo === "." || repo === "..") return null;
+  return `${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
+}
+
+function safeGithubBranch(branch: unknown): string | null {
+  const value = typeof branch === "string" ? branch : "";
+  if (!GITHUB_BRANCH_RE.test(value) || value.includes("..")) return null;
+  return value.split("/").map(encodeURIComponent).join("/");
+}
+
+// Werte landen in einem <script>-Block der Callback-Seite. JSON.stringify allein
+// genuegt nicht: "</script>" beendet den Block vorzeitig (CodeQL js/reflected-xss).
+function jsonForScript(value: unknown): string {
+  return JSON.stringify(value ?? "")
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
   app.post("/api/chat", async (req, res) => {
     try {
       const { prompt, history, files } = req.body;
@@ -169,14 +200,14 @@ async function startServer() {
             <p>Das Fenster schließt sich automatisch und überträgt das Token.</p>
           </div>
           <script>
-            const code = ${JSON.stringify(code || "")};
-            const error = ${JSON.stringify(error || "")};
+            const code = ${jsonForScript(code)};
+            const error = ${jsonForScript(error)};
             if (window.opener) {
               window.opener.postMessage({
                 type: 'GITHUB_AUTH_CALLBACK',
                 code: code,
                 error: error
-              }, '*');
+              }, window.location.origin);
               setTimeout(() => window.close(), 600);
             } else {
               window.location.href = '/';
@@ -281,9 +312,11 @@ async function startServer() {
     if (!authHeader) return res.status(401).json({ error: "No Authorization header" });
 
     const { owner, repo } = req.params;
+    const ref = safeGithubRef(owner, repo);
+    if (!ref) return res.status(400).json({ error: "Invalid repository reference" });
 
     try {
-      const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?per_page=30`, {
+      const response = await fetch(`https://api.github.com/repos/${ref}/commits?per_page=30`, {
         headers: {
           Authorization: authHeader,
           Accept: "application/vnd.github+json",
@@ -309,7 +342,12 @@ async function startServer() {
     if (!authHeader) return res.status(401).json({ error: "No Authorization header" });
 
     const { owner, repo } = req.params;
+    const ref = safeGithubRef(owner, repo);
+    if (!ref) return res.status(400).json({ error: "Invalid repository reference" });
+
     const { branch = "main", message, files } = req.body;
+    const safeBranch = safeGithubBranch(branch);
+    if (!safeBranch) return res.status(400).json({ error: "Invalid branch name" });
 
     if (!message || !files || !Array.isArray(files) || files.length === 0) {
       return res.status(400).json({ error: "Commit message and at least one file are required" });
@@ -325,7 +363,7 @@ async function startServer() {
 
       // A. Get repository details to find default branch if needed
       let targetBranch = branch;
-      const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+      const repoRes = await fetch(`https://api.github.com/repos/${ref}`, { headers });
       if (repoRes.ok) {
         const repoInfo = await repoRes.json();
         if (!branch && repoInfo.default_branch) {
@@ -337,14 +375,14 @@ async function startServer() {
       let latestCommitSha: string | null = null;
       let baseTreeSha: string | null = null;
 
-      const refRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${targetBranch}`, { headers });
+      const refRes = await fetch(`https://api.github.com/repos/${ref}/git/ref/heads/${safeBranch}`, { headers });
       
       if (refRes.ok) {
         const refData = await refRes.json();
         latestCommitSha = refData.object.sha;
 
         // Get the commit to find its tree SHA
-        const commitRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/commits/${latestCommitSha}`, { headers });
+        const commitRes = await fetch(`https://api.github.com/repos/${ref}/git/commits/${latestCommitSha}`, { headers });
         if (commitRes.ok) {
           const commitData = await commitRes.json();
           baseTreeSha = commitData.tree.sha;
@@ -355,7 +393,7 @@ async function startServer() {
       const treeItems: any[] = [];
       for (const f of files) {
         // Create blob
-        const blobRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/blobs`, {
+        const blobRes = await fetch(`https://api.github.com/repos/${ref}/git/blobs`, {
           method: "POST",
           headers,
           body: JSON.stringify({
@@ -384,7 +422,7 @@ async function startServer() {
         treeBody.base_tree = baseTreeSha;
       }
 
-      const createTreeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees`, {
+      const createTreeRes = await fetch(`https://api.github.com/repos/${ref}/git/trees`, {
         method: "POST",
         headers,
         body: JSON.stringify(treeBody),
@@ -404,7 +442,7 @@ async function startServer() {
         parents: latestCommitSha ? [latestCommitSha] : [],
       };
 
-      const createCommitRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/commits`, {
+      const createCommitRes = await fetch(`https://api.github.com/repos/${ref}/git/commits`, {
         method: "POST",
         headers,
         body: JSON.stringify(commitBody),
@@ -420,7 +458,7 @@ async function startServer() {
       // F. Update or create the Branch Reference
       if (latestCommitSha) {
         // Update existing branch ref
-        const updateRefRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${targetBranch}`, {
+        const updateRefRes = await fetch(`https://api.github.com/repos/${ref}/git/refs/heads/${safeBranch}`, {
           method: "PATCH",
           headers,
           body: JSON.stringify({
@@ -435,11 +473,11 @@ async function startServer() {
         }
       } else {
         // Create new branch ref
-        const createRefRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs`, {
+        const createRefRes = await fetch(`https://api.github.com/repos/${ref}/git/refs`, {
           method: "POST",
           headers,
           body: JSON.stringify({
-            ref: `refs/heads/${targetBranch}`,
+            ref: `refs/heads/${safeBranch}`,
             sha: newCommitData.sha,
           }),
         });
@@ -454,8 +492,8 @@ async function startServer() {
         success: true,
         commitSha: newCommitData.sha,
         branch: targetBranch,
-        url: newCommitData.html_url || `https://github.com/${owner}/${repo}/commit/${newCommitData.sha}`,
-        message: `Successfully pushed commit "${message}" with ${files.length} file(s) to ${owner}/${repo}@${targetBranch}`,
+        url: newCommitData.html_url || `https://github.com/${ref}/commit/${newCommitData.sha}`,
+        message: `Successfully pushed commit "${message}" with ${files.length} file(s) to ${ref}@${safeBranch}`,
       });
 
     } catch (err: any) {
@@ -470,7 +508,12 @@ async function startServer() {
     if (!authHeader) return res.status(401).json({ error: "No Authorization header" });
 
     const { owner, repo } = req.params;
+    const ref = safeGithubRef(owner, repo);
+    if (!ref) return res.status(400).json({ error: "Invalid repository reference" });
+
     const branch = (req.query.ref as string) || "main";
+    const safeBranch = safeGithubBranch(branch);
+    if (!safeBranch) return res.status(400).json({ error: "Invalid branch name" });
 
     try {
       const headers = {
@@ -480,7 +523,7 @@ async function startServer() {
       };
 
       // Get repository tree recursively
-      const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+      const repoRes = await fetch(`https://api.github.com/repos/${ref}`, { headers });
       let targetBranch = branch;
       if (repoRes.ok) {
         const repoData = await repoRes.json();
@@ -490,7 +533,7 @@ async function startServer() {
       }
 
       // Fetch git tree recursively
-      const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${targetBranch}?recursive=1`, { headers });
+      const treeRes = await fetch(`https://api.github.com/repos/${ref}/git/trees/${safeBranch}?recursive=1`, { headers });
       if (!treeRes.ok) {
         const treeErr = await treeRes.json();
         return res.status(treeRes.status).json(treeErr);

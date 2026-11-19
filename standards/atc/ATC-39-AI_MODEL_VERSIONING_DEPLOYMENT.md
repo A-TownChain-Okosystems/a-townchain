@@ -27,6 +27,7 @@ Während ATC-27 die Integrität auditiert und ATC-29 den Handelsplatz definiert,
 Jedes Modell-Update (z. B. von „AuroraAI v1.2" auf „v1.3") erhält eine unveränderliche Versionsnummer im Ledger. Dies verhindert ein „Silent Upgrading", bei dem sich das Verhalten einer KI schleichend ändert, ohne dass der Nutzer dies nachvollziehen kann.
 
 **Versionierungs-Regeln:**
+
 - Semantische Versionierung: `MAJOR.MINOR.PATCH` (z. B. `2.1.0`)
 - Jede Version wird als unveränderlicher Eintrag im Ledger gespeichert
 - Model-Hash (SHA-256) wird mit der Version verknüpft
@@ -37,6 +38,7 @@ Jedes Modell-Update (z. B. von „AuroraAI v1.2" auf „v1.3") erhält eine unve
 ATC-39 implementiert eine Strategie, bei der eine neue Modellversion (Green) parallel zur alten (Blue) im Test-Modus läuft. Der Traffic (Inferenz-Anfragen) wird sukzessive umgestellt, während die Performance und Konsistenz (nach ATC-26) von einer Test-Gruppe von Auditoren überwacht wird.
 
 **Deployment-Phasen:**
+
 1. **Build:** Neue Modellversion wird erstellt und im Ledger registriert
 2. **Audit:** ATC-27 Audit-Prozess wird für die neue Version durchgeführt
 3. **Canary:** Green-Version erhält 5% des Traffic, Blue behält 95%
@@ -44,6 +46,7 @@ ATC-39 implementiert eine Strategie, bei der eine neue Modellversion (Green) par
 5. **Cutover:** Green wird zur neuen Blue-Version, alte Blue wird archiviert
 
 **Überwachung während Canary:**
+
 - Inferenz-Latenz vergleichen (Green vs. Blue)
 - Ausgabe-Konsistenz prüfen (ATC-26 XAI)
 - Fehlerrate überwachen
@@ -54,6 +57,7 @@ ATC-39 implementiert eine Strategie, bei der eine neue Modellversion (Green) par
 Wenn bei einem Deployment Unregelmäßigkeiten in den Inferenz-Ergebnissen oder im System-Verhalten auftreten, erlaubt ATC-39 ein sofortiges und atomares Rollback auf die vorherige, als stabil verifizierte Version.
 
 **Rollback-Mechanismus:**
+
 - Atomarer Switch: Traffic kehrt sofort zu Blue zurück
 - Kein Datenverlust: Alle laufenden Inferenz-Anfragen werden von Blue abgeschlossen
 - Automatischer Trigger bei: Fehlerrate > 2%, Latenz-Spike > 3x, Konsistenz-Verletzung

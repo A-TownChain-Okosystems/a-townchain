@@ -1,8 +1,8 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 # conftest.py — pytest Root-Konfiguration
 # Stellt sicher dass 'tests/' im sys.path liegt (lokal + CI)
-import sys
 import os
+import sys
 
 # Repo-Root zum Path hinzufügen
 sys.path.insert(0, os.path.dirname(__file__))

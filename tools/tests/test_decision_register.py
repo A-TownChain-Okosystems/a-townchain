@@ -132,7 +132,12 @@ def test_chain_state_hat_genau_vier_entschiedene_entscheidungen(data: dict) -> N
     ausdruecklich nicht vorgesehen.
     """
     cs = data["chain_state"]
-    assert [d["id"] for d in cs["decisions"]] == ["AD-B1-01", "AD-B1-02", "AD-B1-03", "AD-B1-04"]
+    assert [d["id"] for d in cs["decisions"]] == [
+        "AD-B1-01",
+        "AD-B1-02",
+        "AD-B1-03",
+        "AD-B1-04",
+    ]
     assert all(d["status"] == "DECIDED" for d in cs["decisions"])
     assert all(d["decision"] == "FREIGEGEBEN" for d in cs["decisions"])
     assert all(d["consequences"] and d["rejected"] for d in cs["decisions"]), (

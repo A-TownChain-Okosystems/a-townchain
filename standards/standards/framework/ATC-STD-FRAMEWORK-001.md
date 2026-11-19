@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-FRAMEWORK-001
   title: "ATC Enterprise Standards Framework — Master-Dokument (ATC-STANDARDS-MASTER): Zusammenführung aller Standards, Katalog, Kollisionsauflösung, einheitliche Status-/Change-/Traceability-Modelle, Register-Architektur"
@@ -33,7 +34,7 @@ standard:
     - ATC-STD-204
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-FRAMEWORK-001 — ATC Enterprise Standards Framework (v1.0.7, APPROVED)
 
@@ -99,7 +100,7 @@ Zielarchitektur: **ATC Enterprise Governance** mit 11 Registern:
 
 Durchgängige Traceability-Kette (REQ-FW-006):
 
-```
+```text
 REQ → STD → ARCH → REPO → CODE → TEST → RELEASE → AUDIT
 ```
 
@@ -124,7 +125,7 @@ Reifeklassen M0–M8 (Kategorien), (3) Release-Readiness-Stufen (§7, RR-G01..G0
 Jede Änderung läuft GRUNDSÄTZLICH über den normativen Bestand — das Framework
 erzeugt KEINEN Parallelprozess (REQ-FW-005):
 
-```
+```text
 Change Request (SCR) → Impact Analysis → Dependency Analysis → Security Analysis →
 Compatibility Analysis → Implementation (UPD-Lifecycle) → Testing →
 Documentation Update → Audit → Approval (§9) → Release → Post-Release Verification
@@ -235,7 +236,7 @@ Completeness & Consistency Audit** erstellt (FAM-40, SCR-0022, DRAFT, §9-Freiga
 ausstehend): Er prüft nicht
 nur Code, sondern das gesamte System über die Audit-Kette (REQ-FW-010):
 
-```
+```text
 Requirement → Specification → Architecture → Code → Tests → Build → Deployment →
 Runtime → Security → Documentation → Wiki → README → CHANGELOG → Roadmap →
 Standards → Audit Evidence
@@ -250,6 +251,7 @@ F-021) und wird die bestehenden Validator-Gates (S-01..S-21) einbinden.
 ## §10 Gap-Roadmap (Priorisierung der NEU-Slots)
 
 Priorisierungsempfehlung (jede Erstellung via SCR + §9-Freigabe):
+
 - **P1 (Governance-Kern):** ATC-STD-AOS-001 (§8) · ATC-STD-999 (§9) — beide ERSTELLT
   via SCR-0022 (§9 ausstehend) · Requirements Registry · FAM-31/FAM-32-Lücken (Project/Requirements)
 - **P2 (Engineering-Qualität):** FAM-08 Testing · FAM-09 CI/CD · FAM-05/06

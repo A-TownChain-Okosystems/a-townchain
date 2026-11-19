@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-V2S-026
   title: "End-of-Life Standard"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-10-03"
   review_date: "2027-10-03"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-V2S-026 — End-of-Life (v1.0.0, CANDIDATE)
 

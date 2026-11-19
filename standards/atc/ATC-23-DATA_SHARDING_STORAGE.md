@@ -1,4 +1,5 @@
 # ATC-23 — Data-Sharding & Storage Orchestration Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 2.3 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-23
 > **Tier:** 3 (Operating System Infrastructure)
@@ -26,11 +27,13 @@ Da KAI-OS auf das dezentrale Dateisystem IPFS/Filecoin setzt, regelt ATC-23 die
 ## 1. Kernkonzepte
 
 ### 1.1 Content-Addressing & CID-Mapping
+
 ATC-23 legt fest, dass keine Daten ueber Pfade (z. B. /user/data), sondern
 ausschliesslich ueber ihren inhaltlichen Hash (Content Identifier – CID)
 adressiert werden. Dies verhindert jede Form der pfadbasierten Manipulation.
 
 **Aktueller Stand:** Teilweise implementiert
+
 - ATCFS (`atcfs.py`) als proprieataeres Dateisystem implementiert
 - SHA-256 Hashing fuer Datei-Integritaet vorhanden
 - **Geplant:** IPFS-kompatibles CID-Mapping
@@ -46,6 +49,7 @@ class ATCFS:
 ```
 
 ### 1.2 Dynamisches Sharding
+
 Da ein kompletter Datensatz (z. B. ein Multi-Gigabyte KI-Modell) nicht auf einen
 einzelnen Node passt, teilt ATC-23 diesen in logische "Chunks" (Fragmente) auf.
 Das Betriebssystem orchestriert, welche Nodes welche Chunks vorhalten, um eine
@@ -57,6 +61,7 @@ Sharding. Konzept fuer verteiltes Chunking geplant.
 > **Geplant:** Chunk-basiertes Sharding mit Redundanz-Verteilung
 
 ### 1.3 Redundanz-Orchestrierung
+
 ATC-23 berechnet basierend auf dem "Replikationsfaktor" des Netzwerks, wie oft
 ein Datensatz (oder ein Chunk) im Netzwerk redundant vorhanden sein muss, um
 auch bei Ausfall von Nodes (Failover nach ATC-02) den Zugriff auf die Daten zu
@@ -71,6 +76,7 @@ bleiben.
 ## 2. Warum ATC-23 fuer KAI-OS essenziell ist
 
 ### 2.1 Skalierbarkeit des Dateisystems
+
 Durch das Sharding koennen riesige Datenmengen (wie KI-Modellgewichte) ueber
 das gesamte Mesh-Netzwerk verteilt werden, anstatt ein einzelnes Geraet zu
 ueberlasten.
@@ -79,6 +85,7 @@ ueberlasten.
 Netzwerk. ATC-15 Proof-of-AI Mining benoetigt schnellen Modell-Zugriff.
 
 ### 2.2 Performance bei Inferenz
+
 Wenn eine Inferenz-Aufgabe (Tier 4) gestartet wird, sorgt ATC-23 dafuer, dass
 die benoetigten Daten-Chunks moeglichst nahe am Inferenz-Node (basierend auf
 der Netzwerklatenz gemaess ATC-06) verfügbar sind.
@@ -87,6 +94,7 @@ der Netzwerklatenz gemaess ATC-06) verfügbar sind.
 Chunk-Platzierung fuer schnelle Inferenz.
 
 ### 2.3 Integritaet
+
 Da jeder Chunk durch einen kryptografischen Hash gesichert ist, kann der Node
 beim Laden der Daten sofort pruefen, ob das Fragment korrekt und unmanipuliert
 ist.
@@ -96,20 +104,24 @@ ist.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-07 (State Partitioning)
+
 Waehrend ATC-07 den logischen Zustand (State) der Blockchain partitioniert,
 regelt ATC-23 die physische Ablage und Verteilung der zugehoerigen Daten auf
 der Speicherebene.
 
 ### 3.2 ATC-08 (Ephemeral Data Streaming)
+
 Kurzlebige Daten (Streams) werden oft direkt zwischen Nodes ausgetauscht,
 waehrend permanente Daten (Checkpoints, Modelle) gemaess ATC-23 im Netzwerk-
 Storage verankert werden.
 
 ### 3.3 ATC-21 (Wasm Engine)
+
 ATC-21 laedt Wasm-Bytecode on-demand aus dem Dateisystem. ATC-23 stellt sicher,
 dass dieser Bytecode verfuegbar, integ und effizient abrufbar ist.
 
 ### 3.4 ATC-02 (Failover)
+
 Bei Node-Ausfaellen sorgt ATC-23 dafuer, dass redundante Chunks auf anderen
 Nodes verfuegbar bleiben — Failover auf Storage-Ebene.
 
@@ -166,7 +178,7 @@ Nodes verfuegbar bleiben — Failover auf Storage-Ebene.
 
 ## 7. Storage-Architektur: Aktuell vs. Ziel
 
-```
+```text
 AKTUELL (v3.0.0)                           ZIEL (v5.0+)
 ATCFS (lokal)                              IPFS-Integration
   -> SHA-256 Content-Addressing              -> IPFS CID-Mapping
@@ -176,7 +188,8 @@ ATCFS (lokal)                              IPFS-Integration
   -> Kein Failover auf Storage-Ebene         -> Redundante Chunks bei Ausfall
 ```
 
-### Migrationspfad:
+### Migrationspfad
+
 1. **Phase 1:** IPFS-Integration — ATCFS CIDs zu IPFS-CIDs kompatibel
 2. **Phase 2:** Sharding — Grosse Dateien in Chunks aufteilen
 3. **Phase 3:** Redundanz — Replikationsfaktor und Chunk-Verteilung
@@ -189,7 +202,6 @@ ATCFS (lokal)                              IPFS-Integration
 *Dieses Dokument wurde aus der urspruenglichen Atc-23.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:22 | Aurora (Superagent)*
-
 
 ---
 

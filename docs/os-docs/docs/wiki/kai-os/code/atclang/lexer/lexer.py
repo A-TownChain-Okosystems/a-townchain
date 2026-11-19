@@ -5,8 +5,8 @@ Eigene Programmiersprache für das A-TownChain Ökosystem
 Version: 0.1.0-alpha | Komplett selbst geschrieben
 """
 
-from enum import Enum, auto
 from dataclasses import dataclass
+from enum import Enum, auto
 from typing import List, Optional
 
 
@@ -268,7 +268,7 @@ class ATCLexer:
                 if self.match('='):
                     self.tokens.append(Token(TT.NEQ, '!=', line, col))
                 else:
-                    self.error(f"Unbekanntes Zeichen: '!'")
+                    self.error("Unbekanntes Zeichen: '!'")
             elif ch == '<':
                 if self.match('='):
                     self.tokens.append(Token(TT.LTE, '<=', line, col))

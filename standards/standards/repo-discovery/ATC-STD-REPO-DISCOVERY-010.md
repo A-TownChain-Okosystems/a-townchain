@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-REPO-DISCOVERY-010
   title: "Discovery Audit & Reporting"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-REPO-DISCOVERY-010 — Discovery Audit & Reporting (v1.0.0, CANDIDATE)
 
@@ -26,6 +27,7 @@ standard:
 > Kein neuer Repository-Inhalt darf unbewertet bleiben.
 
 ## Zweck
+
 Maschinenlesbare, revisionssichere Discovery-Reports je Repository in
 `.atc/discovery/`: baseline.json, latest-scan.json, changes.json, candidates.json,
 impact-report.json. Report-Schema: scan_id (DISC-YYYY-MM-DD-NNN), baseline_commit,
@@ -33,6 +35,7 @@ current_commit, new/modified/deleted_content, standard_candidates,
 security_review_required, documentation_required, cross_repository_review.
 
 ## Discovery-Invarianten (verbindlich)
+
 DISC-INV-001 Jeder neue Repository-Inhalt muss erkannt werden.
 DISC-INV-002 Jeder erkannte Inhalt muss klassifiziert werden.
 DISC-INV-003 Jeder standardsrelevante Inhalt muss als Standard-Kandidat geprueft werden.
@@ -45,6 +48,7 @@ DISC-INV-009 Discovery-Ergebnisse muessen revisionssicher dokumentiert werden.
 DISC-INV-010 Ein Discovery-Scan darf nicht als erfolgreich gelten, wenn seine Pruefung unvollstaendig ist.
 
 ## P0-P3-Einstufung (Kopplung BUG-001)
+
 P0: unmittelbare kritische Risiken (Secret, Bypass, Konsens-Bruch) ·
 P1: neue Funktionalitaet ohne erforderliche Standards/Doku/Tests ·
 P2: Inkonsistenzen, fehlende Doku, kleinere Luecken · P3: Optimierungen.
@@ -61,6 +65,7 @@ P2: Inkonsistenzen, fehlende Doku, kleinere Luecken · P3: Optimierungen.
 | REQ-RD-105 | Discovery-Funde fliessen in REPO-AUDIT-002/Maintenance-Report ein |
 
 ## Implementierungsstatus
+
 IMPLEMENTED (erster Zyklus) — Evidence: scan.py erzeugt baseline.json +
 latest-scan.json + changes.json; candidates/impact folgen mit Ausbaustufe.
 
@@ -69,8 +74,10 @@ latest-scan.json + changes.json; candidates/impact folgen mit Ausbaustufe.
 Discovery-Reports in .atc/discovery/ sind git-getrackt und muessen frei von Zugangsdaten sein; INV-010 verhindert Schein-Sicherheit bei unvollstaendigen Scans.
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0046) |
 
 ## References
+
 NORMATIV: BUG-001/002, REPO-AUDIT-002, REPO-MAINT-001 §16, IMPLEMENTATION-001 ·
 INFORMATIVE: SCR-0046, .atc/discovery/

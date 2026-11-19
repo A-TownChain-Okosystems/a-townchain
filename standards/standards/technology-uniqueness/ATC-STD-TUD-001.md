@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-TUD-001
   title: "Technology Uniqueness & Differentiation Standard"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-11"
   review_date: "2027-09-11"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-TUD-001 — Technology Uniqueness & Differentiation (v1.0.0, APPROVED)
 
@@ -34,7 +35,7 @@ Fallback-Klasse ist PENDING-EVIDENCE.
 Jede Klassifikation MUSS die vollständige 10-stufige Kette führen
 (SSOT: `registry/technology-registry.yaml`, Feld `evidence`):
 
-```
+```text
 Technology ID → Definition → Prior Art Analysis → Existing Alternatives
 → ATC Differentiator → Implementation Evidence → Benchmark/Test Evidence
 → Security Review → Patent/IP Assessment → Uniqueness Classification

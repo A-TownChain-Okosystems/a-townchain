@@ -33,6 +33,7 @@ GENESIS_BLOCK = {
 ```
 
 **Regeln:**
+
 - `prev_hash` ist immer 64 Nullen
 - `index` ist immer 0
 - Unveränderlich — kann nie modifiziert werden
@@ -57,6 +58,7 @@ class ATC8300Token:
 ```
 
 **Pflicht-Methoden:**
+
 - `transfer(to, amount)` → bool
 - `approve(spender, amount)` → bool
 - `transfer_from(from, to, amount)` → bool
@@ -65,12 +67,14 @@ class ATC8300Token:
 - `total_supply()` → int
 
 **Events:**
+
 - `Transfer(from, to, amount)`
 - `Approval(owner, spender, amount)`
 - `Mint(to, amount)`
 - `Burn(from, amount)`
 
 **Sicherheitsregeln:**
+
 - Kein Overflow: max. `2^256 - 1` Einheiten
 - Keine negativen Transfers
 - `transfer_from` prüft Allowance vor Ausführung
@@ -96,6 +100,7 @@ class ATC9000NFT:
 ```
 
 **Pflicht-Methoden:**
+
 - `transfer(to, token_id)` → bool
 - `approve(spender, token_id)` → bool
 - `owner_of(token_id)` → str
@@ -104,6 +109,7 @@ class ATC9000NFT:
 - `tokens_of_owner(address)` → list[int]
 
 **Genesis-Chronicles-spezifische Attribute:**
+
 ```python
 GENESIS_CHRONICLES_ATTRIBUTES = {
     "name": str,  # "Flamara", "Aquarix", etc.
@@ -147,6 +153,7 @@ class ATC9900Proposal:
 ```
 
 **Regeln:**
+
 - Mindest-ATC-Balance zum Erstellen: 1.000 ATC
 - Mindest-Abstimmungsdauer: 17.280 Blöcke (~72h)
 - Quorum: min. 10% der zirkulierenden Supply
@@ -182,6 +189,7 @@ class Block:
 ```
 
 **Hash-Berechnung:**
+
 ```python
 import hashlib
 
@@ -215,6 +223,7 @@ class Transaction:
 ```
 
 **Gültigkeits-Regeln:**
+
 - Signatur muss gültig sein (secp256k1 ECDSA)
 - `sender` muss ausreichend Balance haben (amount + fee)
 - `nonce` muss exakt `account_nonce + 1` sein
@@ -241,6 +250,7 @@ class Transaction:
 | 8080 | Frontend Dashboard | HTTP |
 
 **Nachrichten-Format:**
+
 ```python
 P2P_MESSAGE = {
     "version": "1.0",
@@ -253,6 +263,7 @@ P2P_MESSAGE = {
 ```
 
 **Nachrichtentypen:**
+
 - `ping` / `pong` — Heartbeat (alle 30s)
 - `block` — Neuer Block broadcast
 - `tx` — Neue Transaktion broadcast
@@ -265,6 +276,7 @@ P2P_MESSAGE = {
 ### ATS-004 — Konsens-Standard (Hybrid PoI + PoS)
 
 **Proof-of-Importance (PoI):**
+
 ```python
 IMPORTANCE_SCORE = (
     0.35 * normalized_balance
@@ -275,12 +287,14 @@ IMPORTANCE_SCORE = (
 ```
 
 **Proof-of-Stake (PoS):**
+
 - Minimum-Stake: 1.000 ATC
 - Unbonding-Period: 7 Tage
 - Slashing: 10% Stake bei Doppel-Signierung
 - Validator-Rotation: alle 100 Blöcke
 
 **Proof-of-History (PoH):**
+
 ```python
 def tick(prev_hash: str) -> str:
     return hashlib.blake2b(prev_hash.encode(), digest_size=32).hexdigest()
@@ -301,6 +315,7 @@ def tick_n(prev_hash: str, n: int) -> str:
 ### ATS-005 — Wallet & Kryptographie-Standard
 
 **Key-Generation:**
+
 ```python
 # secp256k1 ECDSA
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -319,11 +334,13 @@ address = base58.b58encode_check(b"\x41" + ripemd160_hash).decode()
 ```
 
 **BIP-39 Mnemonic:**
+
 - 12 oder 24 Wörter (englische Wordlist)
 - PBKDF2-HMAC-SHA512 (2048 Iterationen)
 - Derivation Path: `m/44'/658467'/0'/0/0` (AD-042; ehem. 9000 — SLIP-44-Kollision mit AVAX)
 
 **Signatur-Format:**
+
 - Algorithmus: secp256k1 ECDSA
 - Hash: BLAKE2b-256 der Transaktion
 - Format: DER-kodiert, Base64-URL-safe
@@ -333,6 +350,7 @@ address = base58.b58encode_check(b"\x41" + ripemd160_hash).decode()
 ### ATS-006 — Smart-Contract-Standard
 
 **Contract-Registrierung:**
+
 ```python
 class SmartContract:
     contract_id: str  # Format: "ATC-{type}-{hash[:8]}"
@@ -363,7 +381,8 @@ class SmartContract:
 ### ATS-007 — API-Gateway-Standard
 
 **Authentifizierung:**
-```
+
+```text
 Authorization: Bearer <api_key>
 X-ATC-Signature: <ECDSA-Signatur der Request-Body>
 X-ATC-Timestamp: <Unix-Timestamp> (max. 300s alt)
@@ -371,6 +390,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 ```
 
 **Standard-Response-Format:**
+
 ```json
 {
     "success": true,
@@ -383,6 +403,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 ```
 
 **Rate-Limiting:**
+
 - Anonym: 10 req/min
 - API-Key (Basic): 100 req/min
 - API-Key (Pro): 1.000 req/min
@@ -451,6 +472,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 *Apache 2.0 Lizenz — 2026 A-TownChain Ökosystems*
 
 ### ATC-01 — Core Node Protocol & P2P Mesh Topology ✅ FINAL
+>
 > **Standard-ID:** ATC-01 v1.0 | **Status:** Final | **Datum:** 04.07.2026
 > **Quelldatei:** Atc-01.docx → [Vollständige Spezifikation](ATC-01-CORE_NODE_PROTOCOL.md)
 
@@ -460,16 +482,19 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Identity:** ATC-Präfix Adressen (secp256k1, Ed25519 als Option geplant)
 
 **Kernfunktionen:**
+
 1. **P2P Mesh-Topologie** — Jeder Node ist Sender+Empfänger, kein Single Point of Failure
 2. **Node Discovery** — DNS Seeds + Kademlia DHT (mDNS für LAN geplant)
 3. **Handshake-Protokoll** — HELLO/HELLO_ACK mit Versions-, Rollen- und Genesis-Check
 
 **Technische Anforderungen:**
+
 - Transport-Layer: ATCNet (libp2p/QUIC durch proprietäre Implementation ersetzt — by design)
 - Verschlüsselung: ECDSA-Signaturen (Noise Protocol funktional äquivalent — by design)
 - Identity: ECDSA secp256k1 (Ed25519 als Alternative geplant)
 
 **Fundament-Bedeutung:**
+
 - Block-Propagation (Tier 1) via Gossip Protocol
 - Auto-Remediation via PEERS/GET_PEERS Nachrichten
 - Bootstrap-Prozess via DNS Seeds (Issue #14, #68)
@@ -477,6 +502,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Roadmap-Referenzen:** Issue #14 ✅, #15 ✅, #68 ✅, #69 🟡, #70 🟡
 
 ### ATC-02 — Liquid State Migration & Failover Mechanics 📐 PARTIAL
+>
 > **Standard-ID:** ATC-02 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Quelldatei:** Atc-02.docx → [Vollständige Spezifikation](ATC-02-LIQUID_STATE_MIGRATION.md)
 
@@ -484,6 +510,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Kernkonzept:** "Liquid State" — Daten sind nicht an ein Gerät gebunden, sondern im Netzwerk verankert
 
 **Kernfunktionen:**
+
 1. **State-Snapshotting** — Memory-Snapshots in kurzen Intervallen (teilweise impl.)
 2. **Netzwerk-Verankerung** — Snapshots im Mesh verankern (konzipiert)
 3. **Resume-Point** — State auf anderem Node fortsetzen (geplant)
@@ -494,6 +521,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-01 = Verbindung. ATC-02 = Gedächtnis der Aufgabe bei Abbruch.
 
 ### ATC-03 — Decentralized Identity (DID) & Zero-Trust IAM 📐 PARTIAL
+>
 > **Standard-ID:** ATC-03 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Quelldatei:** Atc-03.docx → [Vollständige Spezifikation](ATC-03-DECENTRALIZED_IDENTITY.md)
 
@@ -501,11 +529,13 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Prinzip:** "Never Trust, Always Verify" — jeder Zugriff erfordert kryptografische Autorisierung
 
 **Kernfunktionen:**
+
 1. **Decentralized Identity (DID)** — Kryptografische Identität auf der Blockchain verankert
 2. **Zero-Trust IAM** — Signatur-Verifizierung bei jedem API-Aufruf
 3. **Verifiable Credentials (VCs)** — Signierte Beglaubigungen zwischen Identitäten (geplant)
 
 **Implementiert:**
+
 - ✅ ECDSA secp256k1 Signatur-System (Issue #6)
 - ✅ MultiSig Wallet M-of-N (Issue #24)
 - ✅ Biometrische Auth FaceID/TouchID (Issue #46)
@@ -514,6 +544,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 - ✅ PoS Stake als Sybil-Schutz (10.000 ATC Minimum)
 
 **Geplant:**
+
 - 📐 On-Chain DID-Records mit Metadaten
 - 📐 Verifiable Credentials Framework
 - 📐 Reputation-Score System
@@ -521,6 +552,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 - 📐 W3C DID-konforme Methode (`did:atc:...`)
 
 **Architektur-Tiers:**
+
 - Tier 1 (Netzwerk): Identity im ATC-01 Handshake
 - Tier 2 (Smart Contracts): Governance nutzt verifizierte Identitäten
 - Tier 4 (KI-Agenten): Jeder Agent braucht DID für autonome Aktionen
@@ -530,6 +562,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-01 = Verbindung. ATC-02 = Gedächtnis. ATC-03 = Verifizierte Identität.
 
 ### ATC-04 — DAG Consensus & Propagation PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-04 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Quelldatei:** Atc-04.docx -> [Vollstaendige Spezifikation](ATC-04-DAG_CONSENSUS.md)
 
@@ -537,6 +570,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Transaktionen als Graph (DAG) statt als lineare Kette - jedes Event referenziert mehrere Vorgaenger
 
 **Kernkonzepte:**
+
 1. **Parallele Verarbeitung** - Mehrere TXs gleichzeitig, kein Flaschenhals
 2. **Asynchrone Propagation** - Events via Mesh (ATC-01), Finality durch Bestaetigungs-Referenzen
 3. **Latenz-Widerstand** - Schnelle Pfade im Graph reduzieren Time-to-Finality
@@ -548,6 +582,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-01 = Verbindung. ATC-02 = Gedaechtnis. ATC-03 = Identitaet. ATC-04 = Parallele Wahrheit.
 
 ### ATC-05 — Quantum-Resistant Cryptographic Signatures PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-05 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Quelldatei:** Atc-05.docx -> [Vollstaendige Spezifikation](ATC-05-QUANTUM_RESISTANT_SIGNATURES.md)
 
@@ -555,6 +590,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Quantenresistente Signaturen als Ergaenzung zu ECDSA (secp256k1)
 
 **Kernkonzepte:**
+
 1. **PQC** — Lattice-based (Dilithium/FALCON) oder Hash-based (SPHINCS+)
 2. **Zukunftssicherheit** — Schutz gegen Shor-Algorithm auf Quantencomputern
 3. **Algorithmen-Agilitaet** — Hybrid-Signaturen (ECDSA + PQC), austauschbar
@@ -565,6 +601,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-05 = Quantensichere Integritaet. Schutz der Assets und KI-Signaturen fuer die Zukunft.
 
 ### ATC-06 — Inter-Node Latency Optimization & Routing PARTIAL
+>
 > **Standard-ID:** ATC-06 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Quelldatei:** Atc-06.docx -> [Vollstaendige Spezifikation](ATC-06-LATENCY_OPTIMIZATION_ROUTING.md)
 
@@ -572,6 +609,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Hocheffiziente Kommunikation mit minimaler Verzoegerung zwischen Nodes
 
 **Kernkonzepte:**
+
 1. **Dijkstra-Routing** — Lokale Routing-Tabelle, staendig aktualisiert via Ping-Beacons
 2. **Latenz-bewusste Pfadwahl** — Speed-of-Flow statt kuerzester physischer Weg
 3. **Adaptive Routen-Optimierung** — Stau-Erkennung und proaktive Umleitung
@@ -582,6 +620,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-06 = Performance. Von "funktionsfaehig" zu "performant".
 
 ### ATC-07 — Network-Level Sharding & State Partitioning PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-07 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Quelldatei:** Atc-07.docx -> [Vollstaendige Spezifikation](ATC-07-SHARDING_STATE_PARTITIONING.md)
 
@@ -589,6 +628,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Netzwerk in logische Shards aufteilen — jeder Node nur fuer Teilmenge des States zustaendig
 
 **Kernkonzepte:**
+
 1. **Horizontales Sharding** — Logische Shard-Gruppen, Partition-ID pro Node
 2. **State Partitioning** — Ledger in Partitionen, nicht jeder Node hat alles
 3. **Cross-Shard Communication** — Atomic TX ueber Shard-Grenzen, Merkle-Proofs
@@ -600,6 +640,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-07 = Skalierbarkeit. Vom lokalen System zum Global System.
 
 ### ATC-08 — Ephemeral Data Streaming Protocol PARTIAL
+>
 > **Standard-ID:** ATC-08 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Quelldatei:** Atc-08.docx -> [Vollstaendige Spezifikation](ATC-08-EPHEMERAL_DATA_STREAMING.md)
 
@@ -607,6 +648,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Daten die nicht auf Chain gehoeren, aber sicher und verifiziert uebertragen werden muessen
 
 **Kernkonzepte:**
+
 1. **Nicht-persistente Daten** — Ephemer, nicht auf Chain (KI-Antworten, Zwischenzustaende)
 2. **Streaming-Optimierung** — Kontinuierlicher Fluss via Mesh (wie WebSockets, aber dezentral)
 3. **E2E Verifizierung** — Kryptografisch signiert auch ohne Chain-Speicherung
@@ -617,6 +659,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-08 = Ephemerales Streaming. Bruecke zwischen starrer Chain und dynamischer KI.
 
 ### ATC-09 — Cross-Chain Interoperability Bridge Protocol OK IMPLEMENTIERT
+>
 > **Standard-ID:** ATC-09 v1.0 | **Status:** Implementiert (ETH+SOL) | **Datum:** 04.07.2026
 > **Quelldatei:** Atc-09.docx -> [Vollstaendige Spezifikation](ATC-09-CROSS_CHAIN_BRIDGE.md)
 
@@ -624,6 +667,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Bruecke zu Ethereum, Solana und anderen EVM-kompatiblen Chains
 
 **Kernkonzepte:**
+
 1. **Atomare Asset-Uebertragung** — Lock-and-Mint (Sperren auf Kette A, Praegen auf Kette B)
 2. **Cross-Chain Messaging (CCM)** — Smart-Contract-Aufrufe ueber Bruecke (geplant)
 3. **Dezentrale Validierung** — Relayer-Set mit MultiSig M-of-N
@@ -634,6 +678,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-09 = Das Tor zur Welt. Cross-Chain Interoperabilitaet fuer KAI-OS.
 
 ### ATC-10 — Global Time Synchronization & Oracles PARTIAL
+>
 > **Standard-ID:** ATC-10 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Quelldatei:** Atc-10.docx -> [Vollstaendige Spezifikation](ATC-10-GLOBAL_TIME_SYNC_ORACLES.md)
 
@@ -641,6 +686,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Gemeinsame Netzwerkzeit ohne zentrale Uhr — PoH als deterministische Zeitbasis
 
 **Kernkonzepte:**
+
 1. **Dezentrale Konsens-Zeit** — Median Time Past aus Node-Zeitstempeln
 2. **Oracle-Integration** — Externe Zeit-Quellen kryptografisch verankert
 3. **Zeitstempel-Validierung** — Clock-Drift-Erkennung verhindert Manipulation
@@ -650,12 +696,14 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Roadmap:** Issue #8 Done, #10 Done, #68 Done | TBD (Median Time, Oracle, Clock-Drift)
 
 **TIER 1 ABSCHLUSS:** Mit ATC-10 ist das Fundament-Tier vollstaendig definiert.
+
 - Verbindung (01), Zustand (02), Identitaet (03), Konsens (04), Sicherheit (05)
 - Performance (06), Skalierbarkeit (07), Streaming (08), Bruecken (09), Zeit (10)
 
 **Merksatz:** ATC-10 = Gemeinsame Zeitbasis. Das Fundament ist komplett.
 
 ### ATC-11 — Fungible Asset Standard OK IMPLEMENTIERT
+>
 > **Standard-ID:** ATC-11 v1.0 | **Status:** Implementiert (ATC-8300) | **Datum:** 04.07.2026
 > **Tier:** 2 (Logik & Oekonomie) — Erster Tier-2 Standard
 > **Quelldatei:** Atc-11.docx -> [Vollstaendige Spezifikation](ATC-11-FUNGIBLE_ASSET_STANDARD.md)
@@ -664,6 +712,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** A-TownChain-Aequivalent zum ERC-20 mit KAI-OS-Erweiterungen
 
 **Kernkonzepte:**
+
 1. **Einheitlichkeit** — Beliebig teilbar, untereinander austauschbar (ATCoin: 21M, 18 Dec)
 2. **Standard-Methoden** — balanceOf, transfer, approve, totalSupply (ATC-8300)
 3. **OS-Integration** — KI-Agenten (Tier 4) nutzen ATC-11 nativ fuer Auto-Payment
@@ -676,6 +725,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-11 = Fungible Werte. Die Waehrung des KAI-OS.
 
 ### ATC-12 — Non-Fungible & Holographic Asset Standard OK IMPLEMENTIERT
+>
 > **Standard-ID:** ATC-12 v1.0 | **Status:** Implementiert (ATC-9000) | **Datum:** 04.07.2026
 > **Tier:** 2 (Logik & Oekonomie)
 > **Quelldatei:** Atc-12.docx -> [Vollstaendige Spezifikation](ATC-12-NON_FUNGIBLE_HOLOGRAPHIC.md)
@@ -684,6 +734,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** ERC-721-Aequivalent mit "Holographic" Erweiterung — dynamische Objekte, nicht statische Bilder
 
 **Kernkonzepte:**
+
 1. **Non-Fungible** — Eindeutige TokenID, nicht ersetzbar (Genesis Chronicles NFTs)
 2. **Holographisch** — Metadaten-Referenzen, Verhaltens-Skripte, Status-Container
 3. **Interoperabilitaet** — Standardisierte ABI (ownerOf, transferFrom, tokenURI, mint)
@@ -695,6 +746,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-12 = Einzigartige, holographische Objekte. Nicht nur Werte, sondern digitale Wesen.
 
 ### ATC-14 — Deterministic Smart Contract Execution Standard PARTIAL
+>
 > **Standard-ID:** ATC-14 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Tier:** 2 (Logik & Oekonomie)
 > **Quelldatei:** Atc-14.docx -> [Vollstaendige Spezifikation](ATC-14-DETERMINISTIC_EXECUTION.md)
@@ -703,6 +755,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Jeder Node muss bei derselben Eingabe dasselbe Ergebnis liefern — "globaler Computer"
 
 **Kernkonzepte:**
+
 1. **Vorhersehbarkeit** — Keine Zufallszahlen, keine Systemzeit, keine Hardware-Abhaengigkeit
 2. **State-Transition** — Mathematisch nachvollziehbare Zustaendsaenderungen
 3. **Wasm-Sandbox** — Isolierte Runtime ohne externe Einfluesse (ATC-21)
@@ -714,6 +767,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-14 = Determinismus. KAI-OS als globaler Computer — jeder Node ein Teil derselben Zustandsmaschine.
 
 ### ATC-15 — Decentralized Mining Protocol (Proof-of-AI) PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-15 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Tier:** 2 (Bruecke zu Tier 4 KI)
 > **Quelldatei:** Atc-15.docx -> [Vollstaendige Spezifikation](ATC-15-PROOF_OF_AI_MINING.md)
@@ -722,6 +776,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Statt Energie fuer Hash-Rechnen zu verschwenden -> produktive KI-Inferenz als Mining
 
 **Kernkonzepte:**
+
 1. **Mining = Inferenz** — Tensor-Compute-Leistung fuer das Netzwerk
 2. **Proof-of-AI** — Kryptografischer Beweis fuer erbrachte Rechenleistung
 3. **Dynamic Reward** — ATC-11 Token basierend auf verifizierter Inferenz
@@ -734,6 +789,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-15 = Produktives Mining. Aus Energieverschwendung wird KI-Nutzen.
 
 ### ATC-16 — Referral & Multi-Tier Rewards Logic PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-16 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Tier:** 2 (Logik & Oekonomie)
 > **Quelldatei:** Atc-16.docx -> [Vollstaendige Spezifikation](ATC-16-REFERRAL_REWARDS.md)
@@ -742,6 +798,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Virales Wachstum auf der Blockchain — Parent-Child Referral-Graph mit automatischer Reward-Verteilung
 
 **Kernkonzepte:**
+
 1. **On-Chain Referral-Tracing** — Parent-Child Graph im DAG (ATC-04)
 2. **Multi-Tier Rewards** — Belohnung ueber mehrere Stufen bei jeder Transaktion
 3. **Deterministische Ausschuettung** — ATC-14 + ATC-11 = Auto-Distribution
@@ -753,6 +810,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-16 = Virales Wachstum. Das Netzwerk vergroesst sich selbst durch On-Chain Anreize.
 
 ### ATC-17 — DAO Governance Protocol OK IMPLEMENTIERT
+>
 > **Standard-ID:** ATC-17 v1.0 | **Status:** Implementiert (ATC-9900) | **Datum:** 04.07.2026
 > **Tier:** 2 (Logik & Oekonomie)
 > **Quelldatei:** Atc-17.docx -> [Vollstaendige Spezifikation](ATC-17-DAO_GOVERNANCE.md)
@@ -761,6 +819,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** KAI-OS als selbstverwaltendes System — Community und KI-Agenten entscheiden gemeinsam
 
 **Kernkonzepte:**
+
 1. **On-Chain Governance** — Proposals als deterministische Events im DAG
 2. **Gewichtete Stimmrechte** — Token-Weighted + Reputation (ATC-16)
 3. **Automatisierte Exekution** — Angenommene Proposals werden auto-ausgefuehrt
@@ -772,6 +831,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-17 = Selbstverwaltung. KAI-OS entscheidet ueber seine eigene Zukunft.
 
 ### ATC-18 — Multi-Signature Transaction Authorization OK IMPLEMENTIERT
+>
 > **Standard-ID:** ATC-18 v1.0 | **Status:** Implementiert | **Datum:** 04.07.2026
 > **Tier:** 2 (Logik & Oekonomie)
 > **Quelldatei:** Atc-18.docx -> [Vollstaendige Spezifikation](ATC-18-MULTISIG_AUTH.md)
@@ -780,6 +840,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Vier-Augen-Prinzip auf der Blockchain — kritische Aktionen brauchen mehrere Signaturen
 
 **Kernkonzepte:**
+
 1. **m-of-n MultiSig** — m Signaturen von n autorisierten Keys erforderlich
 2. **Threshold Signatures** — Kompakte TSS-Signatur statt einzelner Sammlung
 3. **Governance-Integration** — DAO (ATC-17) als autorisierter Signer
@@ -791,6 +852,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-18 = Vier-Augen-Prinzip. Ein kompromittierter Key reicht nicht fuer Totalverlust.
 
 ### ATC-19 — Automated Market Maker (AMM) Logic OK IMPLEMENTIERT
+>
 > **Standard-ID:** ATC-19 v1.0 | **Status:** Implementiert | **Datum:** 04.07.2026
 > **Tier:** 2 (Logik & Oekonomie)
 > **Quelldatei:** Atc-19.docx -> [Vollstaendige Spezifikation](ATC-19-AMM_LOGIC.md)
@@ -799,6 +861,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** On-Chain dezentraler Handel ohne Boersen — algorithmische Preisbildung
 
 **Kernkonzepte:**
+
 1. **Liquiditaetspools** — Handel gegen Pool statt Orderbuch
 2. **Constant-Product** — x * y = k fuer automatische Preisfindung
 3. **LP-Anreize** — Trading Fees als Belohnung fuer Liquidity Provider
@@ -810,6 +873,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-19 = Finanzielles Schmiermittel. Alle Assets handelbar — ohne Zwischenhaendler.
 
 ### ATC-20 — Wrapped & Synthetic Asset Deployment PARTIAL
+>
 > **Standard-ID:** ATC-20 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Tier:** 2 (Logik & Oekonomie) — **TIER 2 ABSCHLUSS**
 > **Quelldatei:** Atc-20.docx -> [Vollstaendige Spezifikation](ATC-20-WRAPPED_SYNTHETIC.md)
@@ -818,6 +882,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Bruecke zu externen Maerkten — synthetische Werten + Wrapped Chain-Assets
 
 **Kernkonzepte:**
+
 1. **Synthetische Token** — Externe Werte (Gold, Aktien) on-chain abbilden
 2. **Collateralization** — ATC-11/12 als Besicherung mit Liquidation-Logik
 3. **Wrapped Assets** — Fremde Chain Token via ATC-09 Bridge verpacken
@@ -848,6 +913,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 > **Naechster Schritt:** Tier 3 (Operating System Infrastructure) — ATC-21+
 
 ### ATC-22 — Hardware Abstraction Layer (HAL) & Driver Sandboxing PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-22 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Tier:** 3 (Operating System Infrastructure)
 > **Quelldatei:** Atc-22.docx -> [Vollstaendige Spezifikation](ATC-22-HAL_DRIVER_SANDBOX.md)
@@ -856,6 +922,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Hardware-agnostisch — KAI-OS sieht die Welt als abstrakte Rechenressourcen
 
 **Kernkonzepte:**
+
 1. **Hardware-Abstraktion** — compute_tensor_op als universelles Interface
 2. **Driver Sandboxing** — Treiber isoliert, kein Kernel-Zugriff
 3. **Hardware-Flags** — Node meldet Capabilities (GPU/NPU/TPU, FP16/FP32)
@@ -867,6 +934,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-22 = Hardware-agnostisch. KAI-OS laeuft ueberall — NVIDIA, Apple, AMD, CPU.
 
 ### ATC-23 — Data-Sharding & Storage Orchestration PARTIAL
+>
 > **Standard-ID:** ATC-23 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Tier:** 3 (Operating System Infrastructure)
 > **Quelldatei:** Atc-23.docx -> [Vollstaendige Spezifikation](ATC-23-DATA_SHARDING_STORAGE.md)
@@ -875,6 +943,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Dateisystem-Treiber — intelligente Verteilung von Daten ueber das Netzwerk
 
 **Kernkonzepte:**
+
 1. **Content-Addressing** — CID statt Pfad, Manipulationsschutz
 2. **Dynamisches Sharding** — Grosse Dateien in Chunks verteilen
 3. **Redundanz-Orchestrierung** — Replikationsfaktor fuer Verfuegbarkeit
@@ -886,6 +955,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-23 = Dezentraler Storage. Riesige KI-Modelle verteilt, verfuegbar, integ.
 
 ### ATC-24 — Autonomous Agent Scheduling & Task Orchestration OK IMPLEMENTIERT
+>
 > **Standard-ID:** ATC-24 v1.0 | **Status:** Implementiert | **Datum:** 04.07.2026
 > **Tier:** 4 (Decentralized AI / Inferenz-Layer) — **TIER 4 START**
 > **Quelldatei:** Atc-24.docx -> [Vollstaendige Spezifikation](ATC-24-AGENT_SCHEDULING.md)
@@ -894,6 +964,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Das "Gehirn" des KAI-OS — KI-Agenten wissen wann, wie und durch wen Aufgaben erledigt werden
 
 **Kernkonzepte:**
+
 1. **Agenten-Registry** — Profile mit Capabilities, Ressourcen, Reputation (ATC-03)
 2. **Task-Queuing** — QoS-Priorisierung, Mesh-Propagation (ATC-01)
 3. **Arbitrierung** — Latenz (ATC-06) + Hardware (ATC-22) + Reputation ->最佳er Node
@@ -905,6 +976,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-24 = Das denkende Betriebssystem. KI-Ressourcen zielgerichtet auf Aufgaben anwenden.
 
 ### ATC-25 — Tensor Compute Orchestration & Distribution PARTIAL
+>
 > **Standard-ID:** ATC-25 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Tier:** 4 (Decentralized AI / Inferenz-Layer)
 > **Quelldatei:** Atc-25.docx -> [Vollstaendige Spezifikation](ATC-25-TENSOR_COMPUTE.md)
@@ -913,6 +985,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Verteilter Supercomputer — KI-Berechnungen in Stuecke zerlegen und verteilen
 
 **Kernkonzepte:**
+
 1. **Tensor-Chunking** — Tensoren in uebertragbare Pakete fuer P2P-Mesh
 2. **Compute-Aware Routing** — Monolithisch vs. Parallel nach Hardware (ATC-22)
 3. **Intermediate State Sync** — Aktivierungskarten zwischen Nodes synchronisieren
@@ -924,6 +997,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-25 = Verteilter Supercomputer. Riesige KI-Modelle ueber das gesamte Netzwerk.
 
 ### ATC-26 — Explainable AI (XAI) & Transparency Protocol PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-26 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Tier:** 4 (Decentralized AI / Inferenz-Layer)
 > **Quelldatei:** Atc-26.docx -> [Vollstaendige Spezifikation](ATC-26-XAI_TRANSPARENCY.md)
@@ -932,6 +1006,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Verantwortungsbewusstes OS — KI muss Entscheidungen rechtfertigen koennen
 
 **Kernkonzepte:**
+
 1. **Attributions-Tracing** — SHAP-Werte + Attention-Maps bei jeder Inferenz
 2. **XAI-Metadaten** — Begruendungspfad als Standard-Feld im DAG
 3. **Human-in-the-loop** — Proof-of-Explainability fuer kritische Entscheidungen
@@ -943,6 +1018,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-26 = Warum die KI so entschieden hat. Transparenz als Grundlage fuer Vertrauen.
 
 ### ATC-27 — Decentralized AI Model Auditing & Verification PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-27 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Tier:** 4 (Decentralized AI / Inferenz-Layer)
 > **Quelldatei:** Atc-27.docx -> [Vollstaendige Spezifikation](ATC-27-AI_MODEL_AUDITING.md)
@@ -951,6 +1027,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Selbst-ueberwachendes OS — KI-Modelle muessen beweisen dass sie unmanipuliert sind
 
 **Kernkonzepte:**
+
 1. **Modell-Fingerprinting** — Hash aus Architektur + Gewichten on-chain (ATC-04)
 2. **Proof-of-Model-Integrity** — Statistische Stichprobe als Beweis
 3. **Governance-Slashing** — Bei Audit-Fehler -> ATC-17 Slashing + ATC-03 Reputation-Reduktion
@@ -962,6 +1039,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-27 = Ist die KI die richtige? Integritaet als Grundlage fuer Zero-Trust.
 
 ### ATC-28 — Federated Learning & On-Device Training OK IMPLEMENTIERT + PARTIAL
+>
 > **Standard-ID:** ATC-28 v1.0 | **Status:** Implementiert + Partial | **Datum:** 04.07.2026
 > **Tier:** 4 (Decentralized AI / Inferenz-Layer) — **TIER 4 ABSCHLUSS**
 > **Quelldatei:** Atc-28.docx -> [Vollstaendige Spezifikation](ATC-28-FEDERATED_LEARNING.md)
@@ -970,6 +1048,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Intelligentes, lernendes OS — Modelle werden dezentral besser ohne Daten zu teilen
 
 **Kernkonzepte:**
+
 1. **Lokales Training** — On-Device in Sandbox (ATC-21), Daten bleiben lokal
 2. **Gradienten-Aggregation** — Nur Gradienten teilen, nicht Rohdaten
 3. **Differential Privacy** — Rauschen auf Gradienten gegen Inversion-Attacken
@@ -995,6 +1074,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 > Tier 4 Kreis: Orchestrierung -> Berechnung -> Transparenz -> Integritaet -> Lernen
 
 ### ATC-29 — Decentralized AI Marketplace & Model Registry PARTIAL
+>
 > **Standard-ID:** ATC-29 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Tier:** 4 (Decentralized AI / Inferenz-Layer)
 > **Quelldatei:** Atc-29.docx -> [Vollstaendige Spezifikation](ATC-29-AI_MARKETPLACE.md)
@@ -1003,6 +1083,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** AI App Store — KI-Modelle als handelbare Produkte im dezentralen Marktplatz
 
 **Kernkonzepte:**
+
 1. **Modell-Registry** — On-Chain mit Fingerprint (ATC-27), Lizenz, Parameter
 2. **Inferenz-Gebuehren** — Auto-Pay mit ATC-11 Token bei erfolgreicher Inferenz
 3. **Governance der Modelle** — DAO (ATC-17) beeinflusst Preis, Zugriff, Core-Set
@@ -1014,6 +1095,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-29 = AI App Store. KI-Modelle verwaltet, gehandelt und monetarisiert.
 
 ### ATC-30 — Decentralized Reputation & Trust Scoring PARTIAL
+>
 > **Standard-ID:** ATC-30 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Tier:** 4/5 Uebergang (Decentralized AI -> User Experience)
 > **Quelldatei:** Atc-30.docx -> [Vollstaendige Spezifikation](ATC-30-REPUTATION_TRUST.md)
@@ -1022,6 +1104,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Mathematisches Vertrauen — Reputation als quantifizierbare, on-chain Kennzahl
 
 **Kernkonzepte:**
+
 1. **Multi-Dimensional Score** — Uptime + Inferenz + Governance + Stake
 2. **On-Chain Reputation Graph** — Trust-Relationen im DAG (ATC-04)
 3. **Algorithmus-Agilitaet** — DAO-adjustable Weight-Parameter
@@ -1033,6 +1116,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-30 = Mathematisches Vertrauen. Blindes Vertrauen -> quantifizierbare, on-chain Reputation.
 
 ### ATC-32 — User Experience (UX) & Interface Abstraction PARTIAL
+>
 > **Standard-ID:** ATC-32 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Tier:** 5 (User & Application Layer) — **TIER 5 START**
 > **Quelldatei:** Atc-32.docx -> [Vollstaendige Spezifikation](ATC-32-UX_INTERFACE_ABSTRACTION.md)
@@ -1041,6 +1125,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Human-Centric — Blockchain-Komplexitaet verbergen, Dezentralisierung behalten
 
 **Kernkonzepte:**
+
 1. **Interface-Abstraktion** — Universal UI, einmal definieren, ueberall rendern
 2. **Intent-Based UX** — "Kaufe Genesis-Chronicles-Eier" statt raw Transaction
 3. **Unified Authentication** — OS als Session-Manager, einmal autorisieren
@@ -1052,6 +1137,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-32 = Human-Centric. Technisch fertig -> fuer echte Menschen nutzbar.
 
 ### ATC-33 — Decentralized AI Feedback & Reward-Reinforcement PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-33 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Tier:** 5 (User & Application Layer)
 > **Quelldatei:** Atc-33.docx -> [Vollstaendige Spezifikation](ATC-33-AI_FEEDBACK_RLHF.md)
@@ -1060,6 +1146,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Menschliches Feedback als KI-Treiber — RLHF on-chain mit Token-Belohnung
 
 **Kernkonzepte:**
+
 1. **Explizites/Implizites Feedback** — Daumen, Sterne, Verweildauer, Abbruch
 2. **RLHF Reward** — Qualitatives Feedback -> ATC-11 Token Belohnung
 3. **Governance-Gewichtung** — DAO steuert Feedback-Einfluss, verhindert Trolling
@@ -1071,6 +1158,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-33 = Menschlich lernen. Vom passiven Konsumenten zum aktiven Mitgestalter.
 
 ### ATC-34 — Cross-Layer Interoperability Protocol (CLIP) PARTIAL
+>
 > **Standard-ID:** ATC-34 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Tier:** 3/5 Bruecke (Layer-Bridge)
 > **Quelldatei:** Atc-34.docx -> [Vollstaendige Spezifikation](ATC-34-CROSS_LAYER_INTEROP.md)
@@ -1079,6 +1167,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Der "Uebersetzer" — sichere, effiziente Kommunikation zwischen allen Tiers
 
 **Kernkonzepte:**
+
 1. **Layer-Messaging** — Asynchrones Nachrichtenprotokoll zwischen Tiers
 2. **State-Proof-Verification** — Kryptografischer Nachweis ohne full chain sync
 3. **Cross-Layer-Event-Bus** — Globaler Event-Bus fuer Tier-uebergreifende Events
@@ -1090,6 +1179,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-34 = CLIP. Layer getrennt fuer Sicherheit, verbunden fuer Funktionalitaet.
 
 ### ATC-35 — Decentralized Data Privacy & Anonymization PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-35 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Tier:** 5 (User & Application Layer)
 > **Quelldatei:** Atc-35.docx -> [Vollstaendige Spezifikation](ATC-35-DATA_PRIVACY_ANONYMIZATION.md)
@@ -1098,6 +1188,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Datenschutz-Filter — Anonymisierung vor jeder Aggregation oder Speicherung
 
 **Kernkonzepte:**
+
 1. **ZK-Aggregation** — ZK-Proofs: Daten valide ohne Offenlegung
 2. **Local-First Privacy** — Rohdaten verlassen niemals den Node
 3. **k-Anonymitaet** — Mindestens k Datensaetze verschmelzen + Rausch-Injektion
@@ -1109,6 +1200,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-35 = Datenschutz-Filter. Nutzenorientierte KI + absolute Nutzer-Privatsphaere.
 
 ### ATC-36 — Decentralized Media Asset & Content Provenance PARTIAL
+>
 > **Standard-ID:** ATC-36 v1.0 | **Status:** Partial | **Datum:** 04.07.2026
 > **Tier:** 5 (User & Application Layer)
 > **Quelldatei:** Atc-36.docx -> [Vollstaendige Spezifikation](ATC-36-MEDIA_ASSET_PROVENANCE.md)
@@ -1117,6 +1209,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Echtheitsnachweis fuer Medien — Herkunft, Authentizitaet, Urheberschaft on-chain
 
 **Kernkonzepte:**
+
 1. **Content-Hashing** — SHA-256 + DID-Signatur (ATC-03), On-Chain im DAG
 2. **KI-Provenienz-Tagging** — "AI-Generated"-Tag + Model-Hash (ATC-29)
 3. **Provenance Tracking** — Digitaler Stammbaum aller Modifikationen
@@ -1128,6 +1221,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Merksatz:** ATC-36 = Echtheit beweisen. Schutz vor Deepfakes und Desinformation.
 
 ### ATC-37 — Decentralized Reputation-Based Resource Allocation PARTIAL KONZEPTIONELL
+>
 > **Standard-ID:** ATC-37 v1.0 | **Status:** Konzeptionell | **Datum:** 04.07.2026
 > **Tier:** 5 (User & Application Layer)
 > **Quelldatei:** Atc-37.docx -> [Vollstaendige Spezifikation](ATC-37-REPUTATION_RESOURCE_ALLOCATION.md)
@@ -1136,6 +1230,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Konzept:** Reputation -> Ressourcen. Wer vertrauenswuerdig ist, bekommt mehr.
 
 **Kernkonzepte:**
+
 1. **Reputations-Quoten** — ATC-30 Score -> dynamisches Ressourcen-Kontingent
 2. **Adaptive Thresholds** — Load-basierte Zugangsschwellen
 3. **Governance-Allokation** — DAO bestimmt Prioritaets-Klassen
@@ -1151,6 +1246,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 ## Lizenz-Standards
 
 ### ATC-LIC — Smart Contract License Protocol DRAFT
+>
 > **Standard-ID:** ATC-LIC v1.0 | **Status:** Draft | **Datum:** 05.07.2026
 > **Dokument:** [Vollstaendige Spezifikation](ATC-LIC-SMART_CONTRACT_LICENSE.md)
 
@@ -1160,6 +1256,7 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Durchsetzung:** Kryptografisch (ATVM Gate), nicht gerichtlich
 
 ### ATC-LIC — System & Hardware License Protocol DRAFT
+>
 > **Standard-ID:** ATC-LIC v1.0 | **Status:** Draft | **Datum:** 05.07.2026
 > **Dokument:** [Vollstaendige Spezifikation](../ats/ATS-LIC-SYSTEM_HARDWARE_LICENSE.md)
 
@@ -1169,5 +1266,6 @@ X-ATC-Nonce: <uuid4> (verhindert Replay)
 **Durchsetzung:** ShivaOS Kernel (ATS-1000+)
 
 ### IP & License Registry Dashboard
+
 GlobusOS Dashboard fuer Lizenzen, Patente und Hardware-Zertifikate.
 Echtzeit-Royalty-Stream, Auditierbar durch BaFin.

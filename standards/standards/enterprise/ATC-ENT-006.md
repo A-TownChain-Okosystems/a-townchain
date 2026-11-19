@@ -70,6 +70,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 4. Verbindliche Regeln zur Vermeidung von Interessenkonflikten
 
 1. Keine Rolle und kein KI-Agent darf die eigenen Arbeitsergebnisse selbst genehmigen oder freigeben (Vier-Augen-Prinzip).
@@ -103,9 +104,11 @@ Unentdeckte Interessenkonflikte gefährden die Integrität des Gesamtsystems. Ro
 ## 9. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-ENT-003**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-ENT-013**: Referenzierter Standard im ATC-Regelwerk

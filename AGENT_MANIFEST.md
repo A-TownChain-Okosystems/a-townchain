@@ -1,4 +1,5 @@
 # AGENT_MANIFEST.md
+>
 > **Registry-Stand (GENERIERT aus `registry/standards.yaml`):** 449 Standards — 400 APPROVED · 37 CANDIDATE · 50 Familien · Stand 2026-09-10 22:43 UTC+2 · SHA-256 `9b25d16136fe…`
 > Letzte Aktualisierung: 2026-09-11 00:58 UTC | Aurora Master Sync v3.1.7 | 27 governed Repos (28 total, ai/org-scope.yaml-SSOT) | Rollout auf alle governed Repos
 
@@ -34,7 +35,9 @@
    vorhanden ist. Gate-Verstoß = Build-FAIL.
 
 ## Repositories (26 aktive — AD-016 + AD-024 + atc-standards + AD-043/044/045 + SCR-0005/AD-046)
+
 ### Kern-Plattform (9)
+
 | Repo | Rolle | Zustand (07.09.2026) |
 |------|-------|---------------------|
 | [a-townchain-os-docs](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs) | **DOCS-HUB** — Wiki (kanonisch: `wiki/kai-os/` — SCR-0090), DECISIONS_REGISTER (AD-001…039), Roadmaps, Audits | ✅ aktiv |
@@ -50,7 +53,22 @@
 | [aurora-ai](https://github.com/A-TownChain-Okosystems/aurora-ai) | AI-Produkt: Rust Core + Python AI-Layer (AD-021) | ✅ vault-restauriert (6 Module) |
 | [genesis-engine](https://github.com/A-TownChain-Okosystems/genesis-engine) | Game-Engine-Produkt (L6) | ✅ vault-restauriert |
 
+### Kanonische Orte seit der Konsolidierung (08.11.2026, SCR-0127)
+
+Die Repos in den folgenden Tabellen sind aufgeloest oder archiviert; ihre Inhalte liegen im Monorepo `a-townchain`. Die Tabelle bleibt als Historie stehen, massgeblich sind diese Pfade:
+
+| Faehigkeit | Kanonischer Ort |
+|---|---|
+| Node, Algorithm, VM, Contracts, SDK, ZKP, System, Exec-Admission, Update-Authority | `components/<name>` |
+| Explorer, Indexer, Interop, Mining, Oracle, Storage, Wallet | `components/<name>` |
+| Toolchain, Engineering | `tooling/atc-toolchain`, `tooling/atc-engineering` |
+| Control Plane, Integration | `ecosystem/control-plane`, `ecosystem/integration` |
+| ATCLang, Genesis-Bestaende | `ai/atclang`, `ai/genesis-*` |
+| Standards | `standards/` |
+| Dokumentation | `docs/` |
+
 ### Vertikale Repos (14, AD-024)
+
 | Repo | Priorität | Inhalt | Status |
 |------|-----------|--------|--------|
 | [genesis-chronicles](https://github.com/A-TownChain-Okosystems/genesis-chronicles) | P1 | NFT-Game „Genesis Chronicles" (ex-shivamon, AD-025) | ✅ restauriert |
@@ -86,6 +104,7 @@
 > docs/AUD-2026-0003_ORG_MASTER_AUDIT.md §6 dokumentiert.
 
 --- (Archiv 07.09.2026 —)
+
 - **ATC-STD-000 Verfassung** (36 Abschnitte, §7 Naming Convention 7.1-7.11):
   v1.0.0 **CANDIDATE** — Review-Chain 3/3 PASS (Technical/Security/
   Architecture), Approval **BLOCKED beim Owner** (APPROVE/REQUEST CHANGES/
@@ -102,12 +121,14 @@
   Agent-Aufgaben auf Action/Process-Ebene mit Verifikation.
 
 ## BAUHIERARCHIE (AD-026, verbindlich) & ROADMAP (AD-027, verbindlich)
+
 ```text
 [L0] atclang → [L1] atc-shivacore → [L2] aurora-ai → [L3] a-townchain
  → [L4] globus-os → [L5] 13 Blockchain-Services → [L6] genesis-engine →
  genesis-chronicles → [L7] a-townchain-os (Integration, AD-017)
 [parallel] a-townchain-os-docs (Docs-Hub) · atc-standards (Norm)
 ```
+
 Lauffähigkeits-Roadmap M1-M8 (jede Stufe = lauffähiges Inkrement):
 M1 Sprache (G1 ✅ → G2 offen) → M2 Kernel (✅ 674/674 + Boot) → M3 KI →
 M4 Blockchain (2 Nodes, 658467, Contract auf ATVM) → M5 OS → M6 Dienste →
@@ -116,6 +137,7 @@ Volltext: docs/roadmap/LAUFFAEHIGKEITS_ROADMAP.md ·
 Regel: Layer startet erst nach Gate des vorherigen.
 
 ## Integrationen (17 aktiv)
+
 | Integration | Status | Zweck |
 |-------------|--------|-------|
 | GitHub | ✅ | Code + Docs Hosting (verbindliche Primär-Quelle) |
@@ -127,20 +149,24 @@ Regel: Layer startet erst nach Gate des vorherigen.
 | Hugging Face | ✅ | KI-Modelle |
 
 ## Google Sheets Dashboard
+
 ID: 1xR5c24NrtYC58OsGrLaUHkQUiL_O6eYVyx8KmFcvBD4
-URL: https://docs.google.com/spreadsheets/d/1xR5c24NrtYC58OsGrLaUHkQUiL_O6eYVyx8KmFcvBD4
+URL: <https://docs.google.com/spreadsheets/d/1xR5c24NrtYC58OsGrLaUHkQUiL_O6eYVyx8KmFcvBD4>
 
 ## Notion
+
 - Roadmap: 373b826d-b85c-8125-ba83-f04995191bf0
 - Tagesprotokoll: 37bb826d-b85c-81c4-bdd4-cfc0dc74de7e
 - Live-Status: 379b826d-b85c-81f1-9b2b-f2a05496a4e1
 
 ## Kritischer Entwicklungspfad (AD-027)
+
 M1 G2 (Semantics) → M3 KI (Kernel-Event-Bridge) → M4 Blockchain (2 Nodes
 Sync) → M5 OS (globus-init-Bootchain) → M6 Dienste → M7 Spiel → M8 Stack.
 Parallel: Issue #69 (Dependabot), #70 Validators, #71 Genesis Block.
 
 ## 🤖 Bekannte Base44-Superagent-Instanzen (5)
+
 | # | App-ID | Git-Identitaet | Rolle | Signiert? |
 |---|--------|----------------|-------|-----------|
 | 1 | `69c1e0c577ccf6c45a27a480` | Michael Wroblewski (+ Tag) | Compliance (unverifiziert, kein Commit-Nachweis) | ✅ |
@@ -152,6 +178,7 @@ Parallel: Issue #69 (Dependabot), #70 Validators, #71 Genesis Block.
 > Vollstaendiges Register mit Details: `docs/AGENT_COORDINATION.md`
 
 ## Sync-Konfiguration
+
 - **Schedule:** täglich 08:05 Europe/Berlin
 - **Agent:** Aurora (Base44 Superagent)
 - **Script:** .agents/skills/kai_os_sync/scripts/master_sync.py

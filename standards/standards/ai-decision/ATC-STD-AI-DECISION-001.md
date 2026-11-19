@@ -71,7 +71,7 @@ standard:
 > Owner-Entwurf Michael Wroblewski (Builder-Chat 07.09.2026, 22:15 UTC+2); Agenten-Review + Konfliktanalyse SCR-0014.
 > **Familie:** AI-Decision Standards (ATC-STD-AI-DECISION-001..999) — Kategorie `ai-decision`, SCR-0014.
 > **Rolle:** Entscheidungsmodell-Standard ÜBER den AAS-Betriebsstandards (Agentenbetrieb) und AI-DEV-Entwicklungsstandards — er definiert WIE Agenten entscheiden; AAS-001..025 und AI-DEV-001..012 definieren Identität, Berechtigungen, Workflows und Audit-Infrastruktur.
-
+>
 > Einheitliches Entscheidungsmodell für alle autonomen und semi-autonomen KI-Agenten im A-TownChain-Ökosystem: wann ein Agent selbst entscheiden darf, wann er prüfen muss, wann er eskalieren muss — und wie jede Entscheidung auditierbar bleibt.
 
 ## 1. Zweck (Purpose)
@@ -365,6 +365,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## Changelog
 
 ### 1.0.0 — 2026-09-07
+
 - Initial Release (Owner-Entwurf Michael Wroblewski 22:15, harmonisiert mit AAS-001..025, AI-DEV-001..012, AUDIT-001, BUG-001/005, VERSION-001, DESC-001)
 - 23 normative Anforderungen (REQ-AIDEC-001..023), 6 COM-AIDEC-Gates
 - Entscheidungstypen D0–D5, Autonomie-Level L0–L5, Risiko RK0–RK5 (RK statt R: Abgrenzung zu Reproduzierbarkeit R0–R3 in BUG-005), Evidence-Zustände, Confidence/Eligibility-Modell, Decision Records DEC-NNNNNN

@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-020
   title: "Security Incident & Vulnerability Response Standard"
@@ -25,7 +26,7 @@ standard:
     - ATC-STD-020
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-020 — Security Incident & Vulnerability Response (v1.1.0, APPROVED)
 
@@ -49,6 +50,7 @@ Schwachstellen für alle 27 Repositories und die Organisation.
 generelle Änderungsprozesse (ATC-STD-UPDATE-001) bleiben für normale Updates zuständig.
 
 ## §1 Response-Lifecycle (REQ-STD-001, MUSS)
+
 Verbindliche Kette: Erkennung → Eskalation → Containment → Patch → Verifikation → Disclosure →
 Post-Incident Review. Kein Schritt darf übersprungen werden. Nach SEVERITY ASSESSMENT MUSS die
 Entscheidung ACCEPT (dokumentiertes, begründetes Risiko-Akzeptieren mit
@@ -56,34 +58,41 @@ Owner-Genehmigung und Review-Termin) oder MITIGATE→PATCH→VERIFY getroffen
 werden; ACCEPT ohne Owner-Genehmigung IST unzulässig.
 
 ## §2 Schweregrad-Modell (REQ-STD-002, MUSS)
+
 SEV-Klassifikation (SEV-1 kritisch/aktiv ausgenutzt, SEV-2 kritisch/nicht ausgenutzt, SEV-3 hoch,
 SEV-4 mittel/niedrig) mit Eskalations-SLA je Stufe; SEV-1/SEV-2 = Owner-Benachrichtigung sofort.
 
 ## §3 Containment-Optionen (REQ-STD-003, MUSS)
+
 Dokumentierte Maßnahmenkette: Rollback (git revert), Feature-Disable, Traffic-Off, Patch-Forward;
 Containment darf Data-Integrity nicht verschlechtern.
 
 ## §4 Verifikation (REQ-STD-004, MUSS)
+
 Patch-Verifikation über Test + Security-Scan + Evidence-Record; Exploit-Reproduktion wo möglich;
 kein Close ohne verifizierten Nachweis (Evidence-only-Grundsatz aus ATC-STD-018 §9).
 
 ## §5 Disclosure (REQ-STD-005, MUSS)
+
 Dokumentierte Disclosure-Entscheidung (intern/öffentlich) mit Owner-Gate für öffentliche
 Advisories; kein Silent-Patch kritischer Schwachstellen.
 
 ## §6 Post-Incident Review (REQ-STD-006, MUSS)
+
 RCA nach ATC-STD-BUG-005 (Vorfall-Aufzeichnung in REALITY_STATUS); Lessons-Learned als Findings;
 Wiedereintritts-Prävention (Regressionstest, Gate-Erweiterung).
 
 ## §7 Agenten-Rolle (REQ-STD-007, MUSS)
+
 KI-Agenten erkennen, triagieren und patchen — aber: SEV-1/SEV-2-Declaration und Disclosure
 erfordern Human-Gate (ai/policies.yaml AP-016; ATC Agent Governance).
 
 ## §8 Vulnerability Record (REQ-STD-008, MUST) — v1.1.0
+
 Jede Vulnerability MUSS einen maschinenlesbaren Record mit folgenden Pflichtfeldern
 führen:
 
-```
+```text
 id: ATC-VULN-NNN
 source:            (CVE/GHSA/OSV/Advisory/interne Detektion)
 type:              (Schwachstellen-/Angriffsklasse, ATC-STD-018 §4)
@@ -106,11 +115,14 @@ SLA-Felder (detected_at/patched_at) MUSS die SLA-Prüfung nach ATC-STD-022 §1
 tragen.
 
 ## §9 Freigabe
+
 FREIGEGEBEN 10.09.2026 via Owner-Direktive. Priorität P1.
 
 ## §30 Freeze & Change-Control
+
 §30-eingefroren; Änderungen ausschließlich via ATC-STD-UPDATE-001.
 
 ## Security Considerations
+
 Der Standard verhindert ad-hoc-Panik-Reaktionen: jede Phase erzeugt Records (Auditierbarkeit);
 kommunikationskritische Schritte liegen beim Owner.

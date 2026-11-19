@@ -91,9 +91,9 @@ Bereich.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from enum import Enum
-import math
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 
 from .errors import (
@@ -101,7 +101,6 @@ from .errors import (
     ConstantPoolError,
     ConstantPoolOverflowError,
 )
-
 
 # ═══════════════════════════════════════════════════════════════════════
 # VERSION

@@ -11,11 +11,12 @@ funktioniert genauso wie eine spaetere Hardware-Enklave-Implementierung
 nutzen wuerde -- nur der Schluessel-Speicherort ist (noch) nicht
 hardware-gesichert. Das ist der ehrliche Zwischenschritt.
 """
-from dataclasses import dataclass
-from cryptography.hazmat.primitives.asymmetric import ed25519
-from cryptography.hazmat.primitives import serialization
-from cryptography.exceptions import InvalidSignature
 import base64
+from dataclasses import dataclass
+
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ed25519
 
 
 class DIDError(Exception):

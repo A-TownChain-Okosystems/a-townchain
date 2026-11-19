@@ -12,6 +12,7 @@ NICHT in der Implementierung: das haelt die Sperre fuer ADM-012 sichtbar.
 
 Aufruf: python3 tools/check_admission_codes.py
 """
+
 from __future__ import annotations
 
 import json
@@ -50,9 +51,7 @@ def rust_code_map(pfad: Path | None = None) -> dict[str, str]:
     text = (pfad or RUST).read_text(encoding="utf-8")
     return {
         variante: code
-        for variante, code in re.findall(
-            r"AdmCode::(\w+)\s*=>\s*\"(ADM-\d{3})\"", text
-        )
+        for variante, code in re.findall(r"AdmCode::(\w+)\s*=>\s*\"(ADM-\d{3})\"", text)
     }
 
 
@@ -107,9 +106,7 @@ def pruefe() -> list[str]:
             fehler.append(f"Implementierung: nicht registrierte Codes {sorted(extra)}")
     for eintrag in aktiv:
         if implementiert.get(eintrag["rust_variant"]) != eintrag["code"]:
-            fehler.append(
-                f"Implementierung: {eintrag['rust_variant']} != {eintrag['code']}"
-            )
+            fehler.append(f"Implementierung: {eintrag['rust_variant']} != {eintrag['code']}")
 
     # 4 — Sperre: vorgeschlagene Codes sind NICHT implementiert
     for eintrag in vorgeschlagen:
@@ -119,9 +116,7 @@ def pruefe() -> list[str]:
                 f"status={eintrag['status']}"
             )
         if eintrag["rust_variant"]:
-            fehler.append(
-                f"SSOT: vorgeschlagener Code {eintrag['code']} nennt eine Rust-Variante"
-            )
+            fehler.append(f"SSOT: vorgeschlagener Code {eintrag['code']} nennt eine Rust-Variante")
 
     # 4b — Die alte Entwurfskennung ist nur ein Zeiger, keine zweite Fassung
     zeiger = POINTER.read_text(encoding="utf-8")

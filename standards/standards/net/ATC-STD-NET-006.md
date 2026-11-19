@@ -27,7 +27,6 @@ standard:
 
 ---
 
-
 ## Abstract
 
 Auf Mainnet ist der Consensus frozen — jede Protokollaenderung laeuft
@@ -36,7 +35,7 @@ ueber einen formalisierten Upgrade-Prozess mit Governance-Approval
 
 ## 1. Upgrade-Prozess (REQ-NET-052: MUST — Reihenfolge verbindlich)
 
-```
+```text
 PROPOSAL (SCR-NNN) → TECHNICAL REVIEW → TESTNET-NACHWEIS (GATE-012-Re-Run)
 → GOVERNANCE APPROVAL → AKTIVIERUNGSHOEHE/-EPOCH FESTLEGEN →
 KOORDINIERTES DEPLOYMENT → BEOBACHTUNG → ABGESCHLOSSEN
@@ -54,7 +53,6 @@ oder Folge-Upgrades.
 Devnet: Upgrades frei, Feature-Flags experimentell. Testnet:
 Upgrade-Mechanismus selbst ist Testpflicht-Gegenstand (NET-002 §2).
 Mainnet: nur NET-006-Prozess.
-
 
 - **Aktivierungs-Signal-Schwellenwert:** Die Upgrade-Signalisierung MUSS mindestens 80% der aktiven Staking-Power aufweisen (REQ-NET-055).
 - **State-Migration-Determinismus:** State-Migrations-Skripte MUESSEN im Testnet auf identische Hashes geprüft werden (REQ-NET-056).
@@ -111,5 +109,4 @@ Vertraege, ATVM-Verifier + License Gate als Trust Boundary).
 | Zustand | Wert |
 |---|---|
 | Standard-Status | SPECIFIED — retro-aktiv erfasst (Meta-Sweep 08.09.2026, SCR-0047) |
-| Autoritativ | Implementierungs-Status gemaess ATC-STD-IMPLEMENTATION-001 §3/§4 in `registry/standard-implementation.yaml` (SSOT); Detail-Erfassung laeuft via Coverage-Programm gemaess ATC-STD-IMPLEMENTATION-001 §6 |
-Zusätzliche Sicherheitsregel: Sämtliche Sicherheitsvorgaben der jeweiligen Stufe MUESSEN zwingend eingehalten werden; ein fehlerhafter Zustand auf Mainnet MUSS das Release-Gate unverzüglich stoppen.
+| Autoritativ | Implementierungs-Status gemaess ATC-STD-IMPLEMENTATION-001 §3/§4 in `registry/standard-implementation.yaml` (SSOT); Detail-Erfassung laeuft via Coverage-Programm gemaess ATC-STD-IMPLEMENTATION-001 §6 Zusätzliche Sicherheitsregel: Sämtliche Sicherheitsvorgaben der jeweiligen Stufe MUESSEN zwingend eingehalten werden; ein fehlerhafter Zustand auf Mainnet MUSS das Release-Gate unverzüglich stoppen. |

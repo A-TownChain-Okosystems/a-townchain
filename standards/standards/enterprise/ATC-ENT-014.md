@@ -34,7 +34,7 @@ Nicht-Gilt: normative Standardtexte (Änderungen via SCR, ATC-STD-000 §19-33); 
 
 ## 1. Nachvollziehbarkeits-Pflicht (je kritischer Aktion)
 
-```
+```text
 WHO (Rolle/Agent) · WHAT (Aktion) · WHEN (Timestamp) · WHERE (Repo/Branch/
 Commit) · WHY (Begründung/DEC-/Task-Referenz) · WITH WHICH VERSION · RESULT
 ```
@@ -88,6 +88,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 5. Verbindliche Audit- und Traceability-Regeln
 
 1. Jede kritische System-, Code- oder Konfigurationsänderung MUSS ein vollständiges Audit-Event (AUD-NNNN) gemäß der geforderten Datenstruktur erzeugen.
@@ -121,9 +122,11 @@ Audit-Logs sind ein zentraler Baustein der Incident Response und Forensik. Sie M
 ## 10. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-001**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-AAS-010**: Referenzierter Standard im ATC-Regelwerk

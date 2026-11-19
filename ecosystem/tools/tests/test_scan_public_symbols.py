@@ -1,11 +1,11 @@
+import subprocess
+import sys
 import tempfile
 import unittest
 from contextlib import redirect_stderr
 from io import StringIO
-import subprocess
-import sys
-from unittest.mock import patch
 from pathlib import Path
+from unittest.mock import patch
 
 from tools.scan_public_symbols import main, scan
 
@@ -53,16 +53,45 @@ class PublicSymbolScanTests(unittest.TestCase):
             root = Path(temp)
             (root / "lib.rs").write_text("pub fn execute() {}\\n", encoding="utf-8")
             subprocess.run(["git", "-C", str(root), "init"], check=True, capture_output=True)
-            subprocess.run(["git", "-C", str(root), "config", "user.email", "test@example.invalid"], check=True)
-            subprocess.run(["git", "-C", str(root), "config", "user.name", "Scanner Test"], check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(root),
+                    "config",
+                    "user.email",
+                    "test@example.invalid",
+                ],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(root), "config", "user.name", "Scanner Test"],
+                check=True,
+            )
             subprocess.run(["git", "-C", str(root), "add", "lib.rs"], check=True)
-            subprocess.run(["git", "-C", str(root), "commit", "-m", "test: source fixture"], check=True, capture_output=True)
-            args = ["scan_public_symbols.py", "--root", str(root), "--repository", "example/repo",
-                    "--source-sha", "0" * 40, "--output", str(root / "report.json")]
+            subprocess.run(
+                ["git", "-C", str(root), "commit", "-m", "test: source fixture"],
+                check=True,
+                capture_output=True,
+            )
+            args = [
+                "scan_public_symbols.py",
+                "--root",
+                str(root),
+                "--repository",
+                "example/repo",
+                "--source-sha",
+                "0" * 40,
+                "--output",
+                str(root / "report.json"),
+            ]
             error = StringIO()
-            with patch.object(sys, "argv", args), redirect_stderr(error):
-                with self.assertRaises(SystemExit) as raised:
-                    main()
+            with (
+                patch.object(sys, "argv", args),
+                redirect_stderr(error),
+                self.assertRaises(SystemExit) as raised,
+            ):
+                main()
             self.assertEqual(raised.exception.code, 2)
             self.assertIn("source-sha mismatch", error.getvalue())
             self.assertFalse((root / "report.json").exists())

@@ -12,15 +12,16 @@
   "dependencies": {
     "body-parser": "^2.4.0",
     "express": "^5",
-    "graphql": "^17",
-    "typescript": "^7"
+    "graphql": "^17"
   },
   "devDependencies": {
     "@types/jest": "^30",
     "@types/node": "^26",
-    "jest": "^30"
+    "jest": "^30",
+    "typescript": "^7"
   },
   "overrides": {
+    "glob": "^14.0.2",
     "proxy-addr": "2.0.8"
   }
 }

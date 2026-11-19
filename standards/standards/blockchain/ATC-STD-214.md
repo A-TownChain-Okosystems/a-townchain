@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-214
   title: "Burning Standard"
@@ -25,7 +26,7 @@ standard:
     - ATC-STD-200
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-214 — Burning Standard (v1.0.0, APPROVED)
 
@@ -44,7 +45,6 @@ Verifikationspflichten sowie Security-Betrachtungen.
 Schluesselwoerter: MUSS/MUSS NICHT, SOLLTE, DARF/KANN — RFC 2119 (MUST/SHOULD/MAY)
 gemaess ATC-STD-000 §10.
 
-
 ## §1 Gegenstand & Verortung
 
 Die irreversible Vernichtung von Tokens als Supply-Mechanik (Gegenstueck zum Minting,
@@ -59,7 +59,6 @@ Standard (ATC-STD-368); hier gilt die Token-Ebene.
 4. **KR-4:** Burn-Destinationen MUESSEN durch die Protokoll-Definition (nicht durch Konvention) festgelegt sein.
 5. **KR-5:** Fee-Burning MUSS deterministisch der Emissions-/Supply-Berechnung zugeordnet sein (Kopplung ATC-STD-212/213).
 6. **KR-6:** Burn-Quellen MUessen explizit deklariert sein; fremde Bestaende DUERFEN NICHT verbrannt werden (MUST NOT).
-
 
 ## §3 Schnittstellen & Kopplungen
 

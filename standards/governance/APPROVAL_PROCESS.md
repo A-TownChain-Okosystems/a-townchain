@@ -5,7 +5,7 @@ beschreibt den Ablauf vom CANDIDATE zum STABLE-Standard.
 
 ## Ablauf
 
-```
+```text
 Standard (status: candidate)
     |
     v

@@ -4,9 +4,29 @@
 
 # Changelog
 
-## [unreleased] - 2026-09-09
+## [unreleased] - 2026-11-18 — ATC-OS-SEC-UPDATE-001
 
 ### Added
+
+- **ATC-OS-SEC-UPDATE-001 v1.0.0 (CANDIDATE):** Blockchain Automatic Security
+  Updates. Automatisierte, kryptografisch abgesicherte Sicherheitsaktualisierung
+  als Pflicht fuer alle sicherheitskritischen Blockchain-Komponenten von KAI-OS
+  und GlobusOS. 20 Anforderungen (REQ-BSU-001..020), 8 Gates (GATE-BSU-01..08),
+  Updateklassen-Matrix, fuenf Schutzmechanismen, TUF-Metadatenschutz,
+  Schluesseltrennung (Updatepfad erreicht nie Wallet-Schluessel oder ATC-Bestaende),
+  BSUA ohne Kernel-Autoritaet, koordinierte Protokollaktivierung, sicherer
+  Wiederherstellungsmodus statt Rollback in bekannte Schwachstellen.
+  Maschinenlesbare Klassen in `components/update-authority/policy/update-classes.yaml`.
+  Implementierungsstatus ehrlich SPECIFICATION_ONLY: die Pruefordnung ist in
+  `components/update-authority` implementiert, TUF-Rollen, Health-Check,
+  Rollback-Orchestrierung und koordinierte Aktivierung sind offen.
+  Registry 533 -> 534 Standards. §9-Freigabe durch den Owner am 18.11.2026
+  erteilt: APPROVED, normativ wirksam.
+
+## [unreleased] - 2026-09-09 — Audit-Welle 4 (SCR-0073)
+
+### Added
+
 - **Audit-Welle 4 umgesetzt (SCR-0073):** Lizenz-Stufe 2 — 12 package.json
   UNLICENSED→Apache-2.0, ~375 All-Rights-Reserved-MD-Header ersetzt (F-080
   RESOLVED); unbelegte M-Claims ehrlich gekennzeichnet: globus-os M5,
@@ -45,7 +65,6 @@
   Drift, F-059 OPEN); aurora-ai Evidence-Lücke als F-060 (P1, OPEN)
   registriert — Compliance-Claims benötigen maschinenprüfbare Evidence.
 
-
 - **Enforcement-Schicht komplett (SCR-0064, Owner-Gap-Liste 28 GOV-Items):**
   Agent Authorization Engine `tools/authorize.py` (GOV-008/009 — entscheidet
   VOR der Aktion: Identity→Status→Role→Capability→Permission→Scope→Policy →
@@ -60,7 +79,7 @@
   (GOV-019, Drift-Detection-Basis). Verbleibend P2: Finding→Issue→Recheck-
   Automation, Dashboard, Lifecycle-/Bootstrap-Automation (Phase 5-7).
 
-## [unreleased] - 2026-09-09
+## [unreleased] - 2026-09-09 — Governance Control Plane (SCR-0063)
 
 ### Added
 
@@ -79,7 +98,7 @@
   atc-mining, atc-oracle, atc-standards, atc-vm, atc-zkp, atclang,
   genesis-engine versorgt.
 
-## [unreleased] - 2026-09-09
+## [unreleased] - 2026-09-09 — ATC-AI-GOV Architektur-Freeze (SCR-0062)
 
 ### Added
 
@@ -101,7 +120,7 @@
   Objekte CHECK-001/010.yaml (fail_closed, evidence.required) ·
   ai/phases.yaml. Registry 441→444.
 
-## [unreleased] - 2026-09-09
+## [unreleased] - 2026-09-09 — ATC-AI-GOV-Familie (SCR-0061)
 
 ### Added
 
@@ -184,7 +203,7 @@
   Familien-Roadmap IMPROVEMENT-002..012 dokumentiert. Schema: 5 ID-Patterns
   allockiert. 17 REQ-IMP, 5 COM-IMP. §9-Freigabe ausstehend.
 
-## [unreleased] - 2026-09-08
+## [unreleased] - 2026-09-08 — AUD-2026-0004 — Unabhängige Review-Stufe abgeschlossen (
 
 ### Added
 
@@ -222,6 +241,7 @@
 - SCR-0074: Org-Standards-Umsetzungscheck — 26/26 MUST-konform nach Fix-Runde; F-088..F-091 (docs/compliance/) — 2026-09-08 (SCR-0045/0047/0048)
 
 ### Reproducible CI Dependencies: Issue #1 als P1-Change (SCR-0054)
+
 - Neuer Standard ATC-STD-CI-001 v1.0.0 CANDIDATE (FAM-50, REQ-CI-001..010):
   CI-Dependency-Governance — Deklaration, Installation, Reproduzierbarkeit,
   Fresh-Runner, Klassifikation, Regression, Propagation.
@@ -234,12 +254,15 @@
 - SCR-0051 obsolet: E-1 erzwingt Meta-Daten-Audit bereits je Push/PR.
 
 ### Enforcement-Pipeline: Alle definierten Standards je Push/PR erzwungen (SCR-0053)
+
 - E-Stage (E-1..E-4) in validate_all.py: Meta-Daten-Audit, Meta-Sweep,
   Agent-Manifest-Vollmandat, README-Gates — echtes Fail-Verhalten je Push/PR,
   ohne Workflow-Aenderung (GH013 umgangen). SCR-0051 damit superseded.
 - E-3/A1-Fund behoben: agent.yaml required_standards 35 Standards hinter
   der Registry — jetzt 431/431, yaml-freier Checker, SSOT-Sync im Generator.
+
 ### Governance-Hardening: P1-Funde des externen Audits behoben (SCR-0052)
+
 - P1-001: README-Lizenz auf Apache-2.0 synchronisiert (war „Proprietary" im
   Widerspruch zu LICENSE und Org-Lizenzentscheid).
 - P1-003: SECURITY.md auf Private Disclosure umgestellt (GitHub Private
@@ -249,17 +272,20 @@
 - P1-002: ci.yml-Registry-driven-Fix als Owner-Patch bereit (GH013).
 
 ### Metadaten-Vollstaendigkeit aller Standards (SCR-0050)
+
 - Neuer Meta-Daten-Audit (meta_data_audit.py) gegen standard.schema.yaml
   (§8): alle 430 Standards besitzen alle 10 Pflichtfelder + 6 erweiterte
   Felder (430/430); Schema auf Praefix-Familien + categories.yaml-SSOT
   angehoben; Frontmatter-Fence-Konvention (-{3,}) im Acceptor normalisiert.
 
 ### Meta-Konformitaet aller Standards (SCR-0049)
+
 - 63 Standard-Dateien erhielten fehlende Meta-Sektionen (Security/
   Changelog/References) mit familienbezogenem Inhalt; Meta-Sweep-Funde
   169 -> 0, Security-KPI 430/430.
 
 ### Voll-Klassifikation der Implementierungs-Matrix (SCR-0048)
+
 - `registry/standard-implementation.yaml` jetzt 431/431 Eintraege (Coverage-KPI
   100 %): 62 enforced, 129 implemented, 240 specification_only (Zielsystem im
   Rebuild — ehrlich statt Fake-IMPLEMENTED).
@@ -268,6 +294,7 @@
   in das aktuelle System passen").
 
 ### Owner-Re-Audit AMBER 84/100 — Umsetzung der drei Prioritätsschritte
+
 - **NEU: ATC-STD-IMPLEMENTATION-001 v1.0.0 CANDIDATE** (FAM-48, Kategorie
   implementation, REQ-IMP-001..009): Applicability-Modell
   (MANDATORY/CONDITIONAL/REFERENCE/NOT_APPLICABLE), Implementierungs-Taxonomie
@@ -300,7 +327,6 @@
   DRAFT-Statusse, docs/standards-Pfade, „fehlende" Standards) wurden
   bewusst NICHT übernommen — die Registry bleibt SSOT.
 
-
 ## [1.4.48] - 2026-09-08
 
 ### Added
@@ -319,7 +345,6 @@
   Trademark Separation: Code ≠ Marke ≠ Asset. Registry: 396 Standards,
   396 APPROVED. Katalog: 44 Familien, 442 Slots.
 
-
 ## [1.4.47] - 2026-09-08
 
 ### Changed
@@ -330,7 +355,6 @@
   (Blockchain/ZKP-relevant), Attributions-Pflicht erhält „Copyright (c) 2026
   Michael Wroblewski" verbindlich, kommerzielle Später-Optionen offen
   (Proprietär-Umstieg = MAJOR via COMPAT-001). F-046 RESOLVED.
-
 
 ## [1.4.46] - 2026-09-08
 
@@ -347,7 +371,6 @@
   Registry synchron (263× v1.2.0); Generator-Tool dokumentiert:
   tools/standards/finalize_standards.py.
 
-
 ## [1.4.45] - 2026-09-08
 
 ### Added
@@ -362,7 +385,6 @@
   F-043 (10 ohne Dependabot), F-044 (atc-contracts ohne Tests, P1),
   F-045 (PR-Regel-Bypass, Schein-Governance). P1–P3-Verbesserungs-Roadmap
   mit Owner-Aktionen (GH013) dokumentiert.
-
 
 ## [1.4.44] - 2026-09-08
 
@@ -383,7 +405,6 @@
   by design. Offene Umsetzungspunkte ehrlich benannt (Ed25519-HAL, CodeQL,
   ATC-M-003, Protokoll-Spezifikationen, SBOM/Runbooks).
 
-
 ## [1.4.43] - 2026-09-08
 
 ### Changed
@@ -399,7 +420,6 @@
   tools/standards/elaborate_standards.py. P3-Engineering-Vertiefung je Slot
   bleibt inkrementell via Einzel-SCR/MINOR.
 
-
 ## [1.4.42] - 2026-09-08
 
 ### Changed
@@ -412,7 +432,6 @@
   **Registry FINAL: 387 Standards, 387 APPROVED, 0 offen** — der gesamte
   Framework-Katalog ist normativ besetzt (43 Familien, 433 Slots; nur RR-G06
   als Gate-Slot bleibt ehrlich NEU).
-
 
 ## [1.4.41] - 2026-09-08
 
@@ -430,7 +449,6 @@
   Der Katalog ist vollständig zugeordnet: 276 BELEGT / 150 VERWEIST / 6 KONFLIKT /
   1 NEU (RR-G06).
 
-
 ## [1.4.40] - 2026-09-08
 
 ### Changed
@@ -443,7 +461,6 @@
 - **Conformance-Registry ehrlich nachgezogen:** CONF-P2P-001 erreicht CONF-BRONZE
   noch nicht — Kategorie 10 (security_basis) PARTIAL, da der echte Ed25519-Backend
   aussteht (REQ-PTS-006); Standard-Freigabe hebt die Exception-Formulierung auf.
-
 
 ## [1.4.39] - 2026-09-08
 
@@ -481,7 +498,6 @@
   (5 GEPLANT→EXISTIERT + 2 neue Register-Zeilen); Genehmigung gebündelt mit den
   §9-Freigaben.
 
-
 ## [1.4.38] - 2026-09-08
 
 ### Added
@@ -511,7 +527,6 @@
   (REQ-PROTO-021): Activation erst nach Testnet-Verifikation + Owner-Governance-
   Approval gemäß PROTOCOL-001 §19-Kette.
 
-
 ## [1.4.37] - 2026-09-08
 
 ### Changed
@@ -524,7 +539,6 @@
   ShivaCore verifiziert ist — danach `active`. Nächste Schritte aus der Spezifikation:
   Implementierungs-MINOR in ShivaCore (UPD-Request nach UPDATE-001-Kette) und
   Conformance-Tests (ATC-PROTO-P2P-TEST, PROTOCOL-002).
-
 
 ## [1.4.36] - 2026-09-08
 
@@ -551,7 +565,6 @@
   standards/ — Schichtentrennung Governance vs. Spezifikation)
 - **Generator:** SPEC_OVERRIDES-Hook in gen_protocol_registry.py — Registry-Eintrag
   referenziert jetzt die formale Spezifikation (SSOT, keine Hand-Edits)
-
 
 ## [1.4.35] - 2026-09-08
 
@@ -587,7 +600,6 @@
   seit STDDEV-001 in Kraft — P2, Owner-Entscheidung; F-036 verwaister GitHub-Release
   v1.1.0 vs. CHANGELOG v1.4.x — Owner-Entscheidung; F-039/F-040 Backfill-Begleitpunkte).
 
-
 ## [1.4.34] - 2026-09-08
 
 ### Changed
@@ -612,7 +624,6 @@
   PROTOCOL-003 (Threat-Model). Nächste Züge: ATC-PROTO-P2P-001 (erste formale
   Protokoll-Spezifikation), ATC-M-003 / K-Sprint 41 (aurora-ai via
   Kernel-Event-Bridge), Issues #94–98 aus dem Org-Audit.
-
 
 ## [1.4.33] - 2026-09-08
 
@@ -644,7 +655,6 @@
   3 GEPLANT — offen: REPO-AUDIT-003, PROTOCOL-002, PROTOCOL-003); Genehmigung
   gebündelt mit §9-Freigabe der drei Core-Standards.
 
-
 ## [1.4.32] - 2026-09-08
 
 ### Changed
@@ -662,7 +672,6 @@
   Governance Core FAM-43: offene Flanken STDDEV-001, REGISTRY-001, CHANGE-001
   (GEPLANT, P1) — daneben REPO-AUDIT-003, PROTOCOL-002/003, Requirements Registry,
   ATC-M-003/K-Sprint 41.
-
 
 ## [1.4.31] - 2026-09-08
 
@@ -695,7 +704,6 @@
   7 Naming-Patterns (ATC-FAM-REQ/ATC-CAT-REQ/ATC-TCR/TAX-CHECK-IDs); DAG-Knoten;
   Agent-Manifest 118 gebunden.
 
-
 ## [1.4.30] - 2026-09-08
 
 ### Changed
@@ -722,7 +730,6 @@
   FRAMEWORK-Gap-Roadmap (AOS-001, ATC-STD-999) und P0-Fundament der
   Protokoll-Agenda komplett. Offen: REPO-AUDIT-003 (P2), PROTOCOL-002/003
   (GEPLANT), Requirements Registry (P1-Rest), ATC-M-003/K-Sprint 41.
-
 
 ## [1.4.29] - 2026-09-08
 
@@ -756,7 +763,6 @@
   5 Naming-Patterns (protocolStandardId, protocolId, protocolErrorCode,
   protocolRequirementId, Datei-Muster); DAG-Knoten; Agent-Manifest 117 gebunden.
 
-
 ## [1.4.28] - 2026-09-08
 
 ### Added
@@ -788,7 +794,6 @@
   2 DAG-Knoten; Agent-Manifest 116 Standards gebunden. P1 der Gap-Roadmap damit
   abgearbeitet (Requirements Registry folgt).
 
-
 ## [1.4.27] - 2026-09-08
 
 ### Changed
@@ -803,7 +808,6 @@
   Checks, AUTO(30)/HYBRID(19)/MANUAL(15)) und standardisiertem Health Score (0–100 →
   A–E, P0→E-Blockade); Validator S-22 erzwingt Katalog-Integrität je CI-Lauf.
   Offen in der Familie: REPO-AUDIT-003 (Auditor-Agent) GEPLANT (P2).
-
 
 ## [1.4.26] - 2026-09-08
 
@@ -827,7 +831,6 @@
 - **Registry:** 114 Standards (113 APPROVED + 1 DRAFT REPO-AUDIT-002);
   Naming +repoAuditCheckId; DAG-Knoten; Agent-Manifest 114 Standards gebunden.
 
-
 ## [1.4.25] - 2026-09-07
 
 ### Changed
@@ -842,7 +845,6 @@
   AUD-Records (AUDIT-001), globalen F-NNN-Findings (F-032+), P0-Release-Block,
   Health-Status A-E. Nächste Ebene REPO-AUDIT-002 (CHECK-NNN + Repository Health
   Score) GEPLANT (P1).
-
 
 ## [1.4.24] - 2026-09-07
 
@@ -869,7 +871,6 @@
 - **Registry:** 113 Standards (112 APPROVED + 1 DRAFT REPO-AUDIT-001); Kategorie
   repo-audit; 5 Naming-Patterns; DAG-Knoten; Agent-Manifest 113 Standards gebunden.
 
-
 ## [1.4.23] - 2026-09-07
 
 ### Changed
@@ -886,7 +887,6 @@
   Zielarchitektur; KONFLIKT-Slots (100/201-204/300) werden je Familie via SCR
   aufgelöst. Gap-Roadmap P1: ATC-STD-AOS-001 (Agent Operating Standard),
   ATC-STD-999 (Master-Audit), Requirements Registry.
-
 
 ## [1.4.22] - 2026-09-07
 
@@ -911,7 +911,6 @@
   DAG-Knoten; Agent-Manifest 112 Standards gebunden.
 - **Registry:** 112 Standards (111 APPROVED + 1 DRAFT FRAMEWORK-001).
 
-
 ## [1.4.21] - 2026-09-07
 
 ### Changed
@@ -927,7 +926,6 @@
   kein Abschluss ohne überprüfbaren Nachweis (ATC-MILESTONE-GOVERNANCE-RULE),
   maschinell durchgesetzt via milestone.schema.json, registry/milestones.yaml
   und Validator S-20 bei jedem CI-Lauf.
-
 
 ## [1.4.20] - 2026-09-07
 
@@ -952,7 +950,6 @@
   milestoneRequirementId/milestoneStandardDoc; DAG-Knoten; Agent-Manifest 111/111.
 - **§9-Freigabe ausstehend** (Registry FINAL wäre 111/111 APPROVED).
 
-
 ## [1.4.19] - 2026-09-07
 
 ### Changed
@@ -967,7 +964,6 @@
   SCR → VERSION → UPDATE → COMPAT → AUDIT normativ in Kraft.
 - **Registry FINAL: 110 Standards, 110 APPROVED, 0 DRAFT, 0 offen — alle normativ.**
   Standards-System damit vollständig ohne offene Lifecycle-Posten.
-
 
 ## [1.4.18] - 2026-09-07
 
@@ -989,7 +985,6 @@
   0 tote Markdown-Links in 147 Dateien, Dreieck Frontmatter↔Registry↔versions
   konsistent, keine zukünftigen effective_dates.
 
-
 ## [1.4.17] - 2026-09-07
 
 ### Fixed
@@ -1003,7 +998,6 @@
   (10 Dateien) strukturell statt nur standards.yaml — Negativtest mit absichtlich
   gebrochener findings.yaml laeuft korrekt auf FAIL, regulärer Lauf PASS
   (110 Eintraege, 10 Registry-Dateien).
-
 
 ## [1.4.16] - 2026-09-07
 
@@ -1019,7 +1013,6 @@
   kongruent F-010), F-030 atc-whitepaper-Referenz existiert nicht, F-031
   POSITIV-Befund Governance-Hygiene 26/26 + 0 Secrets. Cleanup-Roadmap als Issues
   #AUD-1..5 in a-townchain-os. Report: docs/AUD-2026-0002_ORG_AUDIT.md.
-
 
 ## [1.4.15] - 2026-09-07
 
@@ -1039,7 +1032,6 @@
   naming-conventions.schema.json um compatStandardId, compatRequirementId,
   compatRestorationId (COMP-NNN, REQ-COMPAT-009) und compatStandardDoc ergänzt.
   Ergebnis: ALL COMPLIANT (inkl. COMPAT-001, Mutationssuite M1-M12 12/12).
-
 
 ## [1.4.14] - 2026-09-07
 
@@ -1066,7 +1058,6 @@
   registry/categories.yaml; Registry-Eintrag in registry/standards.yaml.
   Owner-Entwurf Michael Wroblewski (Builder-Chat 07.09. 22:55); §9-Freigabe
   ausstehend.
-
 
 ## [1.4.13] - 2026-09-07
 
@@ -1305,7 +1296,7 @@
   SSOT-Kette, Compliance-Gates SC-G0..G13 (kein Gate — kein Mainnet),
   REQ-SC-001..058
 - Contract Registry (contracts/registry/{contracts,deployments,versions}.yaml
-  + 9 Kategorie-Verzeichnisse), Seed: ATC-SC-TOKEN-001..003 (ATC-001/8300/9900)
+  - 9 Kategorie-Verzeichnisse), Seed: ATC-SC-TOKEN-001..003 (ATC-001/8300/9900)
 - tools/atc-sc-validator/check_contracts.py (Registry-Gate, CONFORM)
 - Geplant (ROADMAP): Deep-Standards ATC-STD-SC-BRIDGE-001, ATC-STD-FEE-001
 
@@ -1320,6 +1311,7 @@
 - GOVERNANCE.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md nach MD-001
 
 ## 2026-09-07 — ATC-STD-README-001 APPROVED (Owner-Freigabe „Freigeben", 20:36 UTC+2)
+
 - CANDIDATE → APPROVED per ATC-STD-000 §9; normativ in Kraft, Immutabilität
   per §30.
 - Registry: **82 Standards, 82 APPROVED, 0 offen.**
@@ -1328,6 +1320,7 @@
   Repos (Todo #116, Rollout-Komponente offen).
 
 ## 2026-09-07 — ATC-STD-README-001 v1.0.0 CANDIDATE (Owner-Entwurf): README als Einstiegsschnittstelle
+
 - **Neue Standard-Familie:** ATC-STD-README-001 (CANDIDATE, §9-Freigabe
   ausstehend, Todo #116) — README = standardisierte Einstiegsschnittstelle
   jedes Repos: Pflichtstruktur (21 Sektionen), Status-Enum (9 Werte),
@@ -1347,6 +1340,7 @@
   Registry-Standards" (aktuell 82) umgestellt.
 
 ## 2026-09-07 — Agent-Manifest: Voll-Compliance-Mandat (alle 81 Standards)
+
 - **AGENT_MANIFEST.md:** Neues verbindliches Mandat — der Agent MUSS saemtliche
   Standards einhalten UND umsetzen; dynamische Bindung an die Registry (SSOT);
   Konfliktregel nach Verfassung §9; Nachweispflicht via AUD-Records/Evidenz.
@@ -1359,6 +1353,7 @@
 - **Finding F-018** registriert und RESOLVED.
 
 ## 2026-09-07 — Self-Compliance-Audit: atc-standards implementiert jetzt seine eigenen Standards
+
 - **Befund:** Die eigene CI pruefte nur 19/81 Standards (Coverage-Regex),
   die Mutationssuite war von Live-Freigaben abhaengig (9/12), S-09 kannte
   keine deutschen RFC-2119-Keywords, 62 Standards verstiessen gegen die
@@ -1376,6 +1371,7 @@
 - Bericht: docs/SELF_COMPLIANCE_2026-09-07.md.
 
 ## 2026-09-07 — Voll-Audit + Sammelfreigabe: ALLE 81 Standards APPROVED
+
 - **Voll-Audit (Owner-Auftrag) über 81 Standards:** Schema-Lücke ZKP
   (zkpStandardId ergänzt), 28 fehlende Frontmatter-Fences ergänzt,
   3 Tippfehler korrigiert, AAS-008 §3 ersetzt, 49 fehlende
@@ -1392,6 +1388,7 @@
   approval/APPROVAL-DECISION-2026-09-07-AAS-ENT-AUDIT.md.
 
 ## 2026-09-07 — NEU: ATC Enterprise Standards Layer (ATC-ENT) — 15 Standards als CANDIDATE
+
 - **Neuer Layer über den technischen Familien** (Owner-Entwurf Michael
   Wroblewski, 07.09.2026, 20:11 UTC+2): ATC-ENT-001…015 in
   standards/enterprise/, alle v1.0.0 CANDIDATE. Position: zwischen
@@ -1420,6 +1417,7 @@
   (58 Knoten deklariert), Versionshistorie 81/81.
 
 ## 2026-09-07 — NEU: Standardblock ATC-AAS (AI Agent Standards) — 25 Standards als CANDIDATE
+
 - **Neuer Standardbereich ATC-AAS** (Owner-Entwurf Michael Wroblewski,
   07.09.2026, Builder-Chat): 25 Agenten-Standards ATC-AAS-001…025 in
   standards/aas/, alle v1.0.0 CANDIDATE (Owner-§9-Freigabe ausstehend).
@@ -1443,6 +1441,7 @@
   (43 Knoten deklariert), Versionshistorie 66/66.
 
 ## 2026-09-07 — Owner-Sammelfreigabe: ALLE restlichen offenen Punkte APPROVED — 41/41 Standards normativ
+
 - **27 bestehende Standards freigegeben** (draft/proposed/candidate →
   APPROVED): ATC-STD-201/202/203, BUG-001..004, NET-001..008, ATC-STD-100,
   ATC-STD-300, ZKP-001..010.
@@ -1458,9 +1457,10 @@
   Standards-Graph azyklisch. Entscheidungsdokument:
   approval/APPROVAL-DECISION-2026-09-07-ALL-REMAINING.md.
 - Übergangsfristen bis 07.10.2026 unverändert (Commit-Trailer, Agent-Manifeste
-  + AGENTS.md, Interface-Test-Suiten IFC-0001..0010).
+  - AGENTS.md, Interface-Test-Suiten IFC-0001..0010).
 
 ## 2026-09-07 — Owner-Freigabe „Alles freigeben": ATC-STD-000 v1.2.0 APPROVED — Governance-Freeze abgeschlossen
+
 - ATC-STD-000 v1.2.0 (§37 ID-Allokation, §38 Security) CANDIDATE →
   APPROVED; v1.2.0 ist die gültige Verfassungsfassung.
 - SCR-0003 Option B endgültig dokumentiert (physisch verifiziert: Protected
@@ -1472,6 +1472,7 @@
   Commit-Trailer-Rollout, Agent-Manifeste + AGENTS.md in R2+-Repos.
 
 ## 2026-09-07 — Owner-Freigabe: ATC-STD-204 + AI-DEV-001/004/007/009 APPROVED
+
 - Owner-Direktfreigabe (Builder-Chat 19:53 UTC+2; dokumentiert in
   approval/APPROVAL-DECISION-2026-09-07-204-AI-DEV.md): 5 Standards
   PROPOSED/CANDIDATE → APPROVED (ATC-STD-000 §9), normativ in Kraft.
@@ -1482,6 +1483,7 @@
 - Immutabilität ab sofort (§30); Änderungen nur noch via SCR.
 
 ## 2026-09-07 — ATC-STD-AI-DEV-004/007/009 (erste Folge-Standards der AI-DEV-Familie)
+
 - **AI-DEV-004 AI Task Management** (candidate): Task-Record
   `.github/ai/tasks/ATC-TASK-NNNN.yaml`, Lifecycle CREATED→COMPLETED mit
   lückenloser history, ID-Allokation (nie wiederverwendet), Traceability
@@ -1499,6 +1501,7 @@
 - AI-DEV-001 Familientabelle: 004/007/009 planned → candidate.
 
 ## 2026-09-07 — ATC-STD-AI-DEV-001 (AI Agent Identity & Workflow, Owner-Entwurf)
+
 - Neuer Standard (candidate): KI-Agenten sind keine unsichtbaren Bots —
   jede Aktion folgt Identität → Kontext → Fundstelle → Entscheidung →
   nächste Aktion → Ergebnis. Agent-Identität (ATC-AI-{ROLE}-NNN, getrennt
@@ -1521,6 +1524,7 @@
   nach APPROVED gültig, danach Commit-Trailer.
 
 ## 2026-09-07 — ATC-STD-204 (Dependency & Interface Standard, F-001/F-002/F-005)
+
 - Neuer Standard (proposed, normativ mit APPROVED): Dependency-Deklaration
   (registry/dependencies.yaml als SSOT, Zyklusfreiheit, SCR-Pflicht),
   Interface-Registry registry/interfaces.yaml (10 Seed-Interfaces IFC-0001..0010,
@@ -1532,6 +1536,7 @@
   F-002 (P0), F-005 (P1).
 
 ## 2026-09-07 — ATC-STD-NET-001…008 (Netzwerk-Umgebungen & Promotion, Owner-Mandat AD-041)
+
 - 8 neue Standards (candidate, normativ per Owner-Mandat): NET-001 Devnet,
   NET-002 Testnet (24-Gebiete-Testpflicht), NET-003 Mainnet (658467
   permanent, 7 Verbote), NET-004 Promotion-Pipeline (GATE-011/012/013,
@@ -1543,6 +1548,7 @@
   Mainnet 658467).
 
 ## 2026-09-07 — ATC-STD-BUG-001…004 (Bug- & Konsistenz-Lebenszyklus, Owner-Mandat AD-040)
+
 - 4 neue Standards (candidate, normativ per Owner-Mandat): BUG-001 Finding
   (Pflichtprozess + Pflichtfelder + Severity S0-S4), BUG-002 Documentation
   (F-NNN-Pflichtstruktur, Nachvollziehbarkeit), BUG-003 Fix-Lifecycle
@@ -1555,11 +1561,12 @@
 ## Changelog — atc-standards (historische Eintraege)
 
 ## [1.5.0] — 2026-09-07 (Naming Convention, ATC-STD-000 §36)
+
 - ATC-STD-000 §36 Naming Convention per Owner-Mandat verankert
   (Candidate-Revision): ID-Tabelle (ATC-STD-NNN, REQ-<DOM>-NNN, F-NNN, SCR-NNN,
   ADR-/AD-NNN, ATC-SA-NNN, TC-/TS-/GATE-NNN, ATC-SCHEMA/-PROTO/-SPEC/-DOC-NNN,
   ATC-REL-X.Y.Z), Repository-Namen (atc-<domain>-<component>; Bestand-Brand-Repos
-  immutable), Dateinamen (ATC-STD-NNN.md, *.schema.json, *.integrity/review/
+  immutable), Dateinamen (ATC-STD-NNN.md, *.schema.json,*.integrity/review/
   compliance.yaml), ID-Immutabilitaet + Version-Pinning.
 - schemas/naming-conventions.schema.json: maschinenpruefbare Norm (valides JSON).
 - atc-std-validator v0.1.1: Regel S-16 Naming Compliance (Dateiname==ID,
@@ -1571,8 +1578,8 @@
 - Approval-Paket: Snapshot + Requirement-Matrix um REQ-STD-017 erweitert
   (17/17 PASS); Validator-Re-Lauf 4/4 COMPLIANT.
 
-
 ## [1.4.0] — 2026-09-07 (fehlende Governance-Komponenten)
+
 - governance/CHANGE_CONTROL.md: SCR-Verfahren operationalisiert (Lebenszyklus
   PROPOSED→REVIEW→DECIDED→IMPLEMENTED→CLOSED, SCR-Registry, Emergency-Rückkopplung).
 - governance/APPROVAL_PROCESS.md: Freigabe-Ablauf CANDIDATE→STABLE mit
@@ -1585,8 +1592,8 @@
   (Repo-Architektur + Governance-Fluss), STATUS.md (Standard-/SCR-Status),
   ROADMAP.md (Q3/2026 + Ausbau je Bereich).
 
-
 ## [1.3.0] — 2026-09-07 (AD-034)
+
 - ATC-STD-000 v1.0.0: Standards Governance & Specification Standard — die
   Verfassung des Standardsystems (Owner-Mandat). ID-System mit Domain-Raedern
   (000 Governance, 100 Architecture, 200 Repository & Git, 300 Development,
@@ -1607,8 +1614,8 @@
   Selbsttest: ATC-STD-000, 201, 202, 203 alle COMPLIANT.
 - CI erweitert: Governance-Workflow validiert jetzt auch alle vier Standards.
 
-
 ## [1.2.0] — 2026-09-07 (AD-032)
+
 - Wiki-Konsolidierung II: 6 weitere Standards aus dem Docs-Hub uebernommen —
   ats/ATS_STANDARDS.md (ATS-1000…1007 ShivaOS Kernel/Stack, vollstaendige
   283-Zeilen-Fassung), atc/ATC_STANDARDS.md (ATC-0001…0008 Core-Protokolle,
@@ -1618,8 +1625,8 @@
   licensing/SMART_CONTRACT_RICHTLINIE.md (BaFin-Richtlinie)
 - README-Struktur und Std.-Zaehler aktualisiert (115 Dokumente)
 
-
 ## [1.1.0] — 2026-09-07 (AD-031)
+
 - ATC-STD-201 v1.0.0 FORMALE SPEZIFIKATION: MUST/SHOULD/MAY (RFC 2119),
   Compliance-Matrix R0-R4 (M-01…M-16), Validator-Regeln V-01…V-16
 - ATC-STD-202 v1.0.1: Ownership-Standard, Lifecycle-Uebergangsregeln,
@@ -1633,8 +1640,8 @@
 - tools/atc-repo-audit v0.1.0: lauffaehiger Validator (stdlib-only), GATE: PASS/NO-GO
 - Self-Compliance: .atc/-Metadaten, CODEOWNERS, Governance-CI (Auditor prueft sich selbst)
 
-
 ## [1.0.0] — 2026-09-07 (AD-030)
+
 - Initial-Bestand: 109 Standard-Dokumente aus dem Docs-Hub ueberfuehrt
   (ATC-01…99 inkl. ATC-LIC + ATC_ECOSYSTEM_STANDARDS, ATS-LIC, OVERVIEW,
   STANDARDS_REGISTRY)
@@ -1644,4 +1651,5 @@
 - Repo ist SPEC-Typ R3 gemaess eigener Klassifizierung (self-compliant)
 
 ## [Unreleased] — SCR-0075 (2026-09-10)
+
 - Org-Compliance-Scan als dauerhaftes Tool `org_compliance_scan.py` im .github-Hub verankert (F-091 RESOLVED); Erstlauf 25/25 COMPLIANT nach 12 sofort gefixten Findings; wöchentlicher GitHub-Action-Lauf; Hub-Merge via PR #3.

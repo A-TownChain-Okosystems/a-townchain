@@ -23,7 +23,7 @@ Automated Market Maker — Constant-Product-Formel (x*y=k) für dezentralen Toke
 
 ### Module
 
-```
+```text
 modules/contracts/dex.atc — AMM-Swap-Engine
 modules/contracts/liquidity.atc — Liquidity-Pool-Management
 ```
@@ -66,7 +66,7 @@ fee_rate: 0.3% | min_liquidity: 1000 | slippage_protection: 1% max | lp_fee: 0.2
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-88.atc    # Unit-Tests
 └── test_atc-88_integration.atc  # Integration-Tests

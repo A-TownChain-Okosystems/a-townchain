@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-GOV-001
   title: "A-TownChain Governance Constitution"
@@ -17,7 +18,7 @@ standard:
   dependencies:
     - ATC-STD-000
     - ATC-STD-002
-----
+---
 
 # ATC-GOV-001 — A-TownChain Governance Constitution (v1.0.0, APPROVED)
 

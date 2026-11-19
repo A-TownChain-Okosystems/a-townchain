@@ -45,9 +45,6 @@ Claim- und Verteilungsmechanismen MUessen gegen Replay und Double-Claim gesicher
 
 Block-Reward- und Claim-Events sind Event-pflichtig (SC-008) fuer MinerWatcherGPT-Monitoring.
 
-
-
-
 ## 4. Halving- & Emissionsplan-Treue (REQ-SC-119)
 
 Mining-Rewards MUESSEN exakt gemäß dem vordefinierten mathematischen Halving-Plan nach Blockhöhen angepasst werden.

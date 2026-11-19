@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-010
   title: "Error Pattern Detection"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-010 — Error Pattern Detection (v1.0.0, CANDIDATE)
 
@@ -26,6 +27,7 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 Gleiche FehlerKLASSE automatisch erkennen: ATC fuehrt eine Error Pattern Library
 (ATC-ERR-PATTERN-NNN). Jeder neue Fehler wird gegen bekannte Patterns gematcht
 (ERR-003 Muster-Extraktion → Match → ERR-004 Scan nach Pattern).
@@ -51,6 +53,7 @@ Gleiche FehlerKLASSE automatisch erkennen: ATC fuehrt eine Error Pattern Library
 | REQ-ER-101 | Neuer Fehler wird gegen Patterns gematcht; Match dokumentiert im Record |
 
 ## Implementierungsstatus
+
 SPECIFIED — Umsetzung: Library als YAML im Docs-Hub (docs/error-records/PATTERNS.yaml).
 
 ## Security Considerations
@@ -58,8 +61,10 @@ SPECIFIED — Umsetzung: Library als YAML im Docs-Hub (docs/error-records/PATTER
 Pattern-Library enthaelt Fehlermuster, niemals Exploit-Daten, Klartext-Zugangsdaten oder Angriffsbeschreibungen.
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-ERR-000/-003/-013/-014, ATC-STD-BUG-005 (18 Fehlerklassen) ·
 INFORMATIVE: SCR-0044

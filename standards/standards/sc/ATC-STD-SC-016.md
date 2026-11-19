@@ -41,9 +41,6 @@ Oracle-konsumierende Contracts MUESSEN definieren: oracle.provider, update_frequ
 
 Ein Contract DARF KEINE veralteten (staleness > max_staleness) oder offensichtlich manipulierten (deviation > threshold) Daten akzeptieren; im Zweifel Fallback/Emergency-Verhalten.
 
-
-
-
 ## 3. Staleness-Zeitfenster-Prüfung (REQ-SC-111)
 
 Datenpunkte von Orakeln MUESSEN verworfen werden, wenn ihr Zeitstempel älter als max_staleness (z. B. 3600 Sekunden) ist.

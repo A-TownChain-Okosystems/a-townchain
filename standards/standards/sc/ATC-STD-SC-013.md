@@ -45,9 +45,6 @@ Staking/Liquidity/Swaps MUESSEN gegen Flash-Loan-, Oracle- und Price-Manipulatio
 
 Withdrawal-Regeln MUESSEN dokumentiert sein; Emergency-Verhalten nach dem Emergency-Zustaende-Modell (SC-001/Serie: NORMAL→SUSPICIOUS→PAUSED→INVESTIGATION→RECOVERY→RESUME).
 
-
-
-
 ## 4. Pool-Invarianten-Garantie (REQ-SC-099)
 
 DeFi-Liquidity-Pools MUESSEN die mathematischen Invarianten nach jeder Interaktion strikt validieren.

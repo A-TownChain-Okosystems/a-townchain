@@ -66,6 +66,7 @@ WF=Workflows, Tags=Release-Tags, STD-Dekl=ATC-STD-Versionserklaerungen in `.atc/
 ## 3. Findings (P0–P3)
 
 ### F-ORG-001 — P2: Orphan-Repository ohne Registry-Eintrag
+
 **Betroffen:** demo-repository
 
 **Befund:** Nicht in registry/repositories.yaml, kein .atc/, nur Template-Workflows (auto-assign.yml, proof-html.yml), keine SECURITY.md/CODEOWNERS/CHANGELOG. Zuletzt gepusht 2026-09-12.
@@ -73,6 +74,7 @@ WF=Workflows, Tags=Release-Tags, STD-Dekl=ATC-STD-Versionserklaerungen in `.atc/
 **Massnahme:** Owner-Entscheidung: loeschen/umbenennen (z.B. als Vorlagen-Repo mit .atc-Set registrieren) oder archivieren.
 
 ### F-ORG-002 — P2: Dependency Review schlaegt fehl — Dependency Graph deaktiviert
+
 **Betroffen:** aurora-ai, atc-wallet, atc-indexer, atc-interop, genesis-chronicles, atc-oracle, atc-launchpad
 
 **Befund:** 7 Repos: Workflow laeuft, aber 'Dependency review is not supported on this repository' (Log-Evidence). Security-Feature ist konfigurativ wirkungslos.
@@ -80,6 +82,7 @@ WF=Workflows, Tags=Release-Tags, STD-Dekl=ATC-STD-Versionserklaerungen in `.atc/
 **Massnahme:** Dependency Graph in Repo-/Org-Settings aktivieren (Owner-Aktion); danach Workflows gruen validieren.
 
 ### F-ORG-003 — P1: Evidence-Bindung-Gate rot (SCR-0086)
+
 **Betroffen:** atc-vm
 
 **Befund:** cargo-tests-Job: Schritt 'Evidence-Bindung (idempotentes test_run-Update + hartes Push-Gate)' schlaegt fehl. Evidence-Pipeline unterbrochen.
@@ -87,6 +90,7 @@ WF=Workflows, Tags=Release-Tags, STD-Dekl=ATC-STD-Versionserklaerungen in `.atc/
 **Massnahme:** Root-Cause-Analyse + Fix der Evidence-Bindung (P0-Track Build->Test->Evidence->Audit).
 
 ### F-ORG-004 — P2: Views-Drift (gen_views, REQ-IMP-006, SCR-0081)
+
 **Betroffen:** atc-standards
 
 **Befund:** Views-Drift-Check und Cross-Registry-Konsistenztest schlagen fehl: generierte Views nicht regeneriert.
@@ -94,6 +98,7 @@ WF=Workflows, Tags=Release-Tags, STD-Dekl=ATC-STD-Versionserklaerungen in `.atc/
 **Massnahme:** gen_views laufen lassen + committen; Drift-Gate danach validieren.
 
 ### F-ORG-005 — P1: KAI-OS Rustfmt-Gate rot auf main
+
 **Betroffen:** a-townchain-os
 
 **Befund:** Neue Release-Pipeline: Workspace war nie rustfmt-formatiert. Fix-forward: PR #116 (cargo fmt, 56 Dateien, keine Semantik-Aenderung).
@@ -101,6 +106,7 @@ WF=Workflows, Tags=Release-Tags, STD-Dekl=ATC-STD-Versionserklaerungen in `.atc/
 **Massnahme:** PR #116 mergen; danach laufen clippy/tests/audit erstmals vollstaendig — weitere Funde moeglich und gewollt.
 
 ### F-ORG-006 — P3: Release-Disziplin praktisch ungenutzt
+
 **Betroffen:** alle
 
 **Befund:** Nur 3/28 Repos haben Tags (a-townchain-os v1/v2, atc-standards v1.1.0); 25 ohne Release — konsistent mit Rebuild-Phase, aber ATC-REL-Gates ungetestet in der Breite.
@@ -108,6 +114,7 @@ WF=Workflows, Tags=Release-Tags, STD-Dekl=ATC-STD-Versionserklaerungen in `.atc/
 **Massnahme:** Mit Erreichen der M-Meilensteine je Layer Releases taggen (ATC-REL-X.Y.Z + CHANGELOG).
 
 ### F-ORG-007 — P3: .github-Profil-Repo ohne .atc-Governance-Set
+
 **Betroffen:** .github
 
 **Befund:** Registry-Eintrag vorhanden, aber nur evidence/ im .atc-Ordner (kein repository.yaml/standards.yaml).

@@ -8,9 +8,9 @@ Usage:
     python3 tools/validate_layer_registry.py [--registry PATH] [--mapping PATH] [--catalog PATH]
 """
 
+import argparse
 import json
 import sys
-import argparse
 from pathlib import Path
 
 try:
@@ -28,9 +28,23 @@ DEFAULT_L0_CATALOG = REPO_ROOT / "docs/architecture/layers/ATC-L0-FUNCTION-CATAL
 DEFAULT_L1_CATALOG = REPO_ROOT / "docs/architecture/layers/ATC-L1-FUNCTION-CATALOG-001.yaml"
 DEFAULT_L2_CATALOG = REPO_ROOT / "docs/architecture/layers/ATC-L2-FUNCTION-CATALOG-001.yaml"
 
-VALID_STATUS = {"MAPPED", "IMPLEMENTED", "VERIFIED", "RESIDUAL", "UNRESOLVED", "BLOCKED", "EXCLUDED"}
+VALID_STATUS = {
+    "MAPPED",
+    "IMPLEMENTED",
+    "VERIFIED",
+    "RESIDUAL",
+    "UNRESOLVED",
+    "BLOCKED",
+    "EXCLUDED",
+}
 VALID_INSTALL_MODELS = {"A", "B", "C", "D"}
-KERNEL_LAYERS = {"L0", "L1", "L2", "L3", "L4"}  # Cannot claim Windows/Linux install models
+KERNEL_LAYERS = {
+    "L0",
+    "L1",
+    "L2",
+    "L3",
+    "L4",
+}  # Cannot claim Windows/Linux install models
 HOST_APP_MODELS = {"B", "C"}
 
 
@@ -59,20 +73,24 @@ def validate_registry(registry_path):
         registry = yaml.safe_load(f)
 
     # Check schema identity
-    assert registry.get("schema_id") == "ATC-LAYER-REGISTRY-001", \
+    assert registry.get("schema_id") == "ATC-LAYER-REGISTRY-001", (
         f"Unexpected schema_id: {registry.get('schema_id')}"
+    )
     result.ok("Schema ID matches ATC-LAYER-REGISTRY-001")
 
     # Collect all layer IDs
     layers = registry.get("layers", [])
     cross = registry.get("cross_cutting_layers", [])
-    all_layer_ids = [l["id"] for l in layers] + [c["id"] for c in cross]
+    all_layer_ids = [layer["id"] for layer in layers] + [c["id"] for c in cross]
 
     # VAL-LR-001: Main layers must be L0-L10
     expected_main = {f"L{i}" for i in range(11)}
-    actual_main = {l["id"] for l in layers}
+    actual_main = {layer["id"] for layer in layers}
     if expected_main != actual_main:
-        result.error("VAL-LR-001", f"Main layers mismatch: expected {sorted(expected_main)}, got {sorted(actual_main)}")
+        result.error(
+            "VAL-LR-001",
+            f"Main layers mismatch: expected {sorted(expected_main)}, got {sorted(actual_main)}",
+        )
     else:
         result.ok("All 11 main layers (L0-L10) present")
 
@@ -80,7 +98,10 @@ def validate_registry(registry_path):
     expected_cross = {f"X{i}" for i in range(1, 9)}
     actual_cross = {c["id"] for c in cross}
     if expected_cross != actual_cross:
-        result.error("VAL-LR-002", f"Cross-cutting layers mismatch: expected {sorted(expected_cross)}, got {sorted(actual_cross)}")
+        result.error(
+            "VAL-LR-002",
+            f"Cross-cutting layers mismatch: expected {sorted(expected_cross)}, got {sorted(actual_cross)}",
+        )
     else:
         result.ok("All 8 cross-cutting layers (X1-X8) present")
 
@@ -100,9 +121,12 @@ def validate_registry(registry_path):
                 # Some cross-cutting sub-layers use a different format
                 for k in sub:
                     if k[0].isdigit() or "X" in k[:2]:
-                        all_sub_ids.append(f"{layer['id']}-{k}" if not str(k).startswith(layer["id"]) else str(k))
+                        all_sub_ids.append(
+                            f"{layer['id']}-{k}" if not str(k).startswith(layer["id"]) else str(k)
+                        )
     if len(all_sub_ids) != len(set(all_sub_ids)):
         from collections import Counter
+
         dupes = [k for k, v in Counter(all_sub_ids).items() if v > 1]
         result.error("VAL-LR-003", f"Duplicate sub-layer IDs: {dupes}")
     else:
@@ -120,7 +144,10 @@ def validate_registry(registry_path):
     install_models = registry.get("installation_models", [])
     model_ids = {im["id"] for im in install_models}
     if model_ids != VALID_INSTALL_MODELS:
-        result.error("VAL-LR-005", f"Installation models mismatch: expected {VALID_INSTALL_MODELS}, got {model_ids}")
+        result.error(
+            "VAL-LR-005",
+            f"Installation models mismatch: expected {VALID_INSTALL_MODELS}, got {model_ids}",
+        )
     else:
         result.ok("All 4 installation models (A/B/C/D) defined")
 
@@ -142,8 +169,9 @@ def validate_mapping(mapping_path, all_layer_ids, catalog_ids):
     with open(mapping_path) as f:
         mapping = yaml.safe_load(f)
 
-    assert mapping.get("schema_id") == "ATC-LAYER-MAPPING-001", \
+    assert mapping.get("schema_id") == "ATC-LAYER-MAPPING-001", (
         f"Unexpected schema_id: {mapping.get('schema_id')}"
+    )
     result.ok("Schema ID matches ATC-LAYER-MAPPING-001")
 
     entries = mapping.get("component_mappings", [])
@@ -178,8 +206,10 @@ def validate_mapping(mapping_path, all_layer_ids, catalog_ids):
             if pl in KERNEL_LAYERS:
                 host_models = set(models) & HOST_APP_MODELS
                 if host_models:
-                    result.error("VAL-LR-005",
-                        f"Component {cid}: layer {pl} (kernel) claims host-app models {host_models}")
+                    result.error(
+                        "VAL-LR-005",
+                        f"Component {cid}: layer {pl} (kernel) claims host-app models {host_models}",
+                    )
 
         # Cross-cutting layers must be valid X-layer IDs
         for cl in entry.get("cross_cutting_layers", []):
@@ -234,7 +264,10 @@ def validate_catalog_reference(catalog_path, registry):
                 # Must have source_inventory with SHA evidence
                 si = comp.get("source_inventory", {})
                 if not si:
-                    result.warn("VAL-VERIFIED", f"Component {cid} claims VERIFIED but has no source_inventory")
+                    result.warn(
+                        "VAL-VERIFIED",
+                        f"Component {cid} claims VERIFIED but has no source_inventory",
+                    )
 
     return comp_ids, result
 
@@ -248,12 +281,17 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
         cat = yaml.safe_load(f)
 
     if cat.get("schema_id") != schema_id:
-        result.error("VAL-FC-000", f"Unexpected schema_id: {cat.get('schema_id')}, expected {schema_id}")
+        result.error(
+            "VAL-FC-000",
+            f"Unexpected schema_id: {cat.get('schema_id')}, expected {schema_id}",
+        )
         return cat, result
     result.ok(f"Schema ID matches {schema_id}")
 
     # Registry L0 sub-layer IDs (cross-check)
-    layer_entry = next((l for l in registry.get("layers", []) if l.get("id") == layer_id), None)
+    layer_entry = next(
+        (layer for layer in registry.get("layers", []) if layer.get("id") == layer_id), None
+    )
     if not layer_entry:
         result.error("VAL-FC-000", f"{layer_id} not found in registry")
         return cat, result
@@ -270,7 +308,14 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
 
     seen = set()
     sub_coverage = {}
-    required_fields = ["function_id", "name", "layer_id", "sub_layer_id", "contract", "status"]
+    required_fields = [
+        "function_id",
+        "name",
+        "layer_id",
+        "sub_layer_id",
+        "contract",
+        "status",
+    ]
 
     for fn in functions:
         fid = fn.get("function_id", "?")
@@ -287,12 +332,18 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
 
         # VAL-L0-003: layer assignment
         if fn.get("layer_id") != layer_id:
-            result.error("VAL-FC-003", f"Function {fid}: layer_id must be '{layer_id}', got '{fn.get('layer_id')}'")
+            result.error(
+                "VAL-FC-003",
+                f"Function {fid}: layer_id must be '{layer_id}', got '{fn.get('layer_id')}'",
+            )
 
         # VAL-L0-004: sub-layer valid against registry
         sl = fn.get("sub_layer_id")
         if sl not in reg_sub_ids:
-            result.error("VAL-FC-004", f"Function {fid}: sub_layer_id '{sl}' not in registry {layer_id} sub-layers")
+            result.error(
+                "VAL-FC-004",
+                f"Function {fid}: sub_layer_id '{sl}' not in registry {layer_id} sub-layers",
+            )
         else:
             sub_coverage[sl] = sub_coverage.get(sl, 0) + 1
 
@@ -303,11 +354,12 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
         elif st == "VERIFIED":
             v = fn.get("verification", {})
             if not v.get("test_references") or not v.get("workflow_runs"):
-                result.error("VAL-L0-006",
-                    f"Function {fid}: VERIFIED without test/CI evidence (fail-closed rule)")
-        elif st in ("UNRESOLVED", "BLOCKED"):
-            if not fn.get("status_reason"):
-                result.error("VAL-LR-009", f"Function {fid}: status {st} requires status_reason")
+                result.error(
+                    "VAL-L0-006",
+                    f"Function {fid}: VERIFIED without test/CI evidence (fail-closed rule)",
+                )
+        elif st in ("UNRESOLVED", "BLOCKED") and not fn.get("status_reason"):
+            result.error("VAL-LR-009", f"Function {fid}: status {st} requires status_reason")
 
         # VAL-L0-007: contract completeness
         c = fn.get("contract", {})
@@ -321,12 +373,15 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
     # VAL-L0-008: sub-layer coverage
     uncovered = reg_sub_ids - set(sub_coverage)
     if uncovered:
-        result.warn("VAL-FC-008", f"{layer_id} sub-layers without functions: {sorted(uncovered)}")
+        result.warn(
+            "VAL-FC-008",
+            f"{layer_id} sub-layers without functions: {sorted(uncovered)}",
+        )
     else:
         result.ok(f"All {len(reg_sub_ids)} {layer_id} sub-layers covered by functions")
 
     # VAL-L0-009: layer dependency targets valid
-    valid_layers = {l["id"] for l in registry.get("layers", [])}
+    valid_layers = {layer["id"] for layer in registry.get("layers", [])}
     valid_layers |= {c["id"] for c in registry.get("cross_cutting_layers", [])}
     for dep in cat.get("layer_dependencies", []):
         tl = dep.get("target_layer")
@@ -339,12 +394,30 @@ def validate_function_catalog(cat_path, registry, layer_id, schema_id):
 
 def main():
     parser = argparse.ArgumentParser(description="ATC Layer Registry Validator")
-    parser.add_argument("--registry", default=str(DEFAULT_REGISTRY), help="Path to layer registry YAML")
-    parser.add_argument("--mapping", default=str(DEFAULT_MAPPING), help="Path to layer mapping YAML")
-    parser.add_argument("--l1_catalog", default=str(DEFAULT_L1_CATALOG), help="Path to L1 function catalog YAML")
-    parser.add_argument("--l2_catalog", default=str(DEFAULT_L2_CATALOG), help="Path to L2 function catalog YAML")
-    parser.add_argument("--l0_catalog", default=str(DEFAULT_L0_CATALOG), help="Path to L0 function catalog YAML")
-    parser.add_argument("--catalog", default=str(DEFAULT_CATALOG), help="Path to component catalog JSON")
+    parser.add_argument(
+        "--registry", default=str(DEFAULT_REGISTRY), help="Path to layer registry YAML"
+    )
+    parser.add_argument(
+        "--mapping", default=str(DEFAULT_MAPPING), help="Path to layer mapping YAML"
+    )
+    parser.add_argument(
+        "--l1_catalog",
+        default=str(DEFAULT_L1_CATALOG),
+        help="Path to L1 function catalog YAML",
+    )
+    parser.add_argument(
+        "--l2_catalog",
+        default=str(DEFAULT_L2_CATALOG),
+        help="Path to L2 function catalog YAML",
+    )
+    parser.add_argument(
+        "--l0_catalog",
+        default=str(DEFAULT_L0_CATALOG),
+        help="Path to L0 function catalog YAML",
+    )
+    parser.add_argument(
+        "--catalog", default=str(DEFAULT_CATALOG), help="Path to component catalog JSON"
+    )
     parser.add_argument("--quiet", action="store_true", help="Only show summary")
     args = parser.parse_args()
 
@@ -368,8 +441,10 @@ def main():
                 print(f"  ERROR {e}")
             for w in r1.warnings:
                 print(f"  WARN  {w}")
-        print(f"  Checks passed: {r1.checks_passed}, Errors: {len(r1.errors)}, Warnings: {len(r1.warnings)}")
-    except Exception as e:
+        print(
+            f"  Checks passed: {r1.checks_passed}, Errors: {len(r1.errors)}, Warnings: {len(r1.warnings)}"
+        )
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         print(f"  FATAL: {e}")
         sys.exit(2)
 
@@ -385,8 +460,10 @@ def main():
                 print(f"  ERROR {e}")
             for w in r2.warnings:
                 print(f"  WARN  {w}")
-        print(f"  Checks passed: {r2.checks_passed}, Errors: {len(r2.errors)}, Warnings: {len(r2.warnings)}")
-    except Exception as e:
+        print(
+            f"  Checks passed: {r2.checks_passed}, Errors: {len(r2.errors)}, Warnings: {len(r2.warnings)}"
+        )
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         print(f"  FATAL: {e}")
         sys.exit(2)
 
@@ -402,11 +479,12 @@ def main():
                 print(f"  ERROR {e}")
             for w in r3.warnings:
                 print(f"  WARN  {w}")
-        print(f"  Checks passed: {r3.checks_passed}, Errors: {len(r3.errors)}, Warnings: {len(r3.warnings)}")
-    except Exception as e:
+        print(
+            f"  Checks passed: {r3.checks_passed}, Errors: {len(r3.errors)}, Warnings: {len(r3.warnings)}"
+        )
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         print(f"  FATAL: {e}")
         sys.exit(2)
-
 
     # 4. Validate layer function catalogs (L0, L1)
     for layer_id, schema_id, cat_path in [
@@ -425,8 +503,10 @@ def main():
                     print(f"  ERROR {e}")
                 for w in r4.warnings:
                     print(f"  WARN  {w}")
-            print(f"  Checks passed: {r4.checks_passed}, Errors: {len(r4.errors)}, Warnings: {len(r4.warnings)}")
-        except Exception as e:
+            print(
+                f"  Checks passed: {r4.checks_passed}, Errors: {len(r4.errors)}, Warnings: {len(r4.warnings)}"
+            )
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             print(f"  FATAL: {e}")
             sys.exit(2)
 

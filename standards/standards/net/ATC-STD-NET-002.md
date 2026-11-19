@@ -27,7 +27,6 @@ standard:
 
 ---
 
-
 ## Abstract
 
 Testnet ist die realistische Simulation des spaeteren Mainnets. Hier darf
@@ -65,7 +64,7 @@ Chaos/Fault Tests
 
 ## 3. Testnet-Gate GATE-012 (REQ-NET-015: MUST)
 
-```
+```text
 BUILD → UNIT TESTS → INTEGRATION → DEVNET → TESTNET → E2E TEST → LOAD TEST
 → SECURITY TEST → CHAOS TEST → RECOVERY TEST → AUDIT
 ```
@@ -96,7 +95,6 @@ BUILD → UNIT TESTS → INTEGRATION → DEVNET → TESTNET → E2E TEST → LOA
 - id: REQ-NET-016
   title: "Devnet-Funktionieren begruendet keine Mainnet-Readiness"
   severity: MANDATORY
-
 
 ## Compliance
 

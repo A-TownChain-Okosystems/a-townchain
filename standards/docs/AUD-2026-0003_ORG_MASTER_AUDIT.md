@@ -477,6 +477,7 @@ org_audit_2026_0003:
 **P0: keine.**
 
 **P1 (nächste 7 Tage):**
+
 1. CI für atc-vm/atc-algorithm/atc-zkp (Issue 94 — Owner-Aktion wegen GH013)
 2. Test-Suite für atc-contracts (Smart-Contract-Layer ohne Tests ist release-blockierend für DeFi)
 

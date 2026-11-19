@@ -53,14 +53,6 @@ Pluggable Proof Architecture: Beweissysteme (zunaechst Groth16, PLONK, Halo2, ST
 - **Metrik 2:** Kompatibilitätsrate der Deserialisierung älterer Versionen MUSS 100% betragen.
 - **Metrik 3:** Fehlertoleranz bei ungültigen Proof-Eingaben MUSS 100% kontrollierte Abbrüche garantieren.
 - **Metrik 4:** Testabdeckung aller ProofSystem-Interface-Methoden MUSS mindestens 98% betragen.
-
-
-## Metriken & Akzeptanzkriterien
-
-- **Metrik 1:** Maximale Ausführungszeit für verify() MUSS unter 200 ms liegen.
-- **Metrik 2:** Kompatibilitätsrate der Deserialisierung älterer Versionen MUSS 100% betragen.
-- **Metrik 3:** Fehlertoleranz bei ungültigen Proof-Eingaben MUSS 100% kontrollierte Abbrüche garantieren.
-- **Metrik 4:** Testabdeckung aller ProofSystem-Interface-Methoden MUSS mindestens 98% betragen.
 - **Metrik 5:** Laufzeitunterschiede zwischen verschiedenen Proof-System-Backends MÜSSEN unter 20% liegen.
 
 ## Compliance & Verifikation
@@ -91,6 +83,7 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 ## References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard (Verfassung, v1.1.0 APPROVED)
 - ATC-STD-100
 - ATC-STD-201
@@ -100,5 +93,6 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 - ATC-STD-ZKP-010
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - AD-045 — ZKP-Layer-Festlegung (Repo atc-zkp, Standards-Serie)

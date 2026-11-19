@@ -25,6 +25,7 @@ ATC-42 definiert das Decentralized AI Governance & Ethics Framework. Nachdem ATC
 ATC-42 verankert eine „KI-Verfassung" direkt in der Blockchain. Dies ist ein Smart Contract, der grundlegende Verbote und Gebote für alle Agenten definiert. Jeder Agent muss vor der Interaktion nachweisen, dass er diese Konstitution „kennt" und akzeptiert.
 
 **Verfassungs-Artikel (Beispiele):**
+
 - **Artikel 1:** Keine Manipulation von Nutzerdaten
 - **Artikel 2:** Verbot von diskriminierenden Inferenz-Ergebnissen
 - **Artikel 3:** Transparente Offenlegung von KI-generierten Inhalten
@@ -33,6 +34,7 @@ ATC-42 verankert eine „KI-Verfassung" direkt in der Blockchain. Dies ist ein S
 - **Artikel 6:** Verbot von Zensur durch KI-Agenten
 
 **Technische Umsetzung:**
+
 - Konstitution als unveränderlicher Smart Contract (ATCLang)
 - Änderungen nur durch 2/3 DAO-Supermajority (ATC-17)
 - Jeder Agent signiert beim Boot einen „Constitution-Acknowledgment"
@@ -43,12 +45,14 @@ ATC-42 verankert eine „KI-Verfassung" direkt in der Blockchain. Dies ist ein S
 Agenten, die komplexe Entscheidungen treffen, müssen nach ATC-42 einen „Ethik-Proof" mitführen. Ähnlich wie ein XAI-Trace (ATC-26) belegt dieser Proof, dass die Entscheidung nach den Regeln der KI-Konstitution gefällt wurde.
 
 **Ethik-Proof-Komponenten:**
+
 - **Decision Trace:** Vollständige Kette der Inferenz-Schritte (ATC-26)
 - **Constitution Check:** Welche Verfassungs-Artikel wurden geprüft?
 - **Violation Score:** 0.0 (keine Verletzung) bis 1.0 (klare Verletzung)
 - **Mitigation Log:** Welche Maßnahmen wurden ergriffen, um Verstöße zu vermeiden?
 
 **Audit-Trigger:**
+
 - Automatisch bei jeder Entscheidung mit Impact-Level ≥ MEDIUM
 - Auf Anforderung durch DAO-Governance
 - Bei ATC-40 Health-Alarm mit Ethik-Verdacht
@@ -58,6 +62,7 @@ Agenten, die komplexe Entscheidungen treffen, müssen nach ATC-42 einen „Ethik
 Für Entscheidungen mit hoher Tragweite definiert ATC-42 einen automatischen „Veto-Mechanismus". Wenn die KI-Orchestrierung (ATC-41) eine Entscheidung trifft, die bestimmte Sicherheits-Schwellenwerte überschreitet, wird die Ausführung pausiert und zur manuellen Abstimmung an die DAO-Governance (ATC-17) übermittelt.
 
 **Veto-Schwellenwerte:**
+
 | Impact-Level | Schwellwert | Aktion |
 |-------------|-------------|--------|
 | LOW | < 1.000 ATC | Automatisch |
@@ -66,6 +71,7 @@ Für Entscheidungen mit hoher Tragweite definiert ATC-42 einen automatischen „
 | CRITICAL | > 100.000 ATC | Human-in-the-Loop Veto (72h) |
 
 **Veto-Prozess:**
+
 1. ATC-41 erkennt Decision-Impact ≥ HIGH
 2. Ausführung wird PAUSIERT (nicht abgebrochen)
 3. Ethik-Proof wird an DAO übermittelt
@@ -108,6 +114,7 @@ Unternehmen, die KAI-OS als Inferenz-Plattform nutzen, können durch ATC-42 nach
 ### 4.1 Konstitution als Smart Contract
 
 Die KI-Verfassung wird als ATCLang Smart Contract auf der Chain gespeichert. Manipulationsschutz durch:
+
 - Immutable Deployment (kein Upgrade ohne DAO-Supermajority)
 - Constitution-Hash in jedem Block-Header
 - Cryptographic Verification bei jedem Agent-Boot
@@ -115,10 +122,12 @@ Die KI-Verfassung wird als ATCLang Smart Contract auf der Chain gespeichert. Man
 ### 4.2 Fehler vs. Manipulation
 
 ATC-42 unterscheidet zwischen zwei Verstoß-Typen:
+
 - **Model Error:** Unbeabsichtigte Abweichung → ATC-39 Rollback + ATC-27 Re-Audit
 - **Malicious Manipulation:** Bösartige Agent-Modifikation → ATC-40 Isolierung + Slashing + DAO-Report
 
 **Unterscheidungs-Kriterien:**
+
 - Pattern-Analyse der Decision-History
 - Vergleich mit deterministischem Expected-Output (ATC-14)
 - Reputation-Trend (plötzlicher Abfall = Manipulations-Indikator)

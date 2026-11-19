@@ -16,7 +16,7 @@ Erfolgsmeldung existiert.
 (`find_contract`), damit ein Vertrag nicht dadurch durchrutscht, dass er einmal verschachtelt
 auftritt.
 
-```
+```text
 Vertrag 'FranchiseToken' ist nicht ausfuehrbar: ATCLang senkt Vertragsruempfe nicht zu
 Bytecode (11 Funktionen, 8 Zustandsfelder, 5 Events, 0 weitere Deklarationen). Der Vertrag
 wird abgelehnt, statt ihn mit einem Ersatzprogramm anzunehmen

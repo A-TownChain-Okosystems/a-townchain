@@ -5,9 +5,10 @@ Erweiterte IO-Operationen.
 Standard: ATC-97
 """
 
-import os
 import json
+import os
 import time
+
 
 class ATCIOExt:
     """Erweiterte IO-Funktionen."""

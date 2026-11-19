@@ -76,7 +76,12 @@ def run_tests(cmd, cwd):
             "bitte ein Skript aufrufen."
         )
     r = subprocess.run(
-        shlex.split(cmd), shell=False, cwd=cwd, capture_output=True, text=True
+        shlex.split(cmd),
+        shell=False,
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     return (r.returncode, (r.stdout or "") + (r.stderr or ""))
 

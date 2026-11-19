@@ -29,6 +29,7 @@ In einem hochkomplexen, global verteilten Betriebssystem ist ein Ausfall einzeln
 ATC-40 definiert ein kontinuierliches Monitoring-Protokoll, bei dem Nodes ihren eigenen Zustand (CPU-Load, Latenz, deterministischer Output) sowie den Zustand ihrer Nachbarn im Mesh (ATC-01) überwachen.
 
 **Überwachte Metriken:**
+
 - CPU-Last und Memory-Usage pro Node
 - Netzwerk-Latenz zu Nachbarn (ATC-06)
 - Deterministische Output-Konsistenz (ATC-14)
@@ -43,12 +44,14 @@ ATC-40 definiert ein kontinuierliches Monitoring-Protokoll, bei dem Nodes ihren 
 Wenn ein Node oder eine Anwendung (z. B. ein fehlerhafter KI-Agent) konsistent außerhalb der Spezifikationen operiert (z. B. nicht-deterministische Berechnungen nach ATC-14 liefert), wird dieser Teil des Netzwerks durch den „Circuit Breaker" von ATC-40 sofort isoliert. Die fehlerhafte Komponente wird vom Konsens (ATC-04) abgekoppelt.
 
 **Circuit-Breaker-Trigger:**
+
 - 3 konsekutive Heartbeat-Ausfälle → Node als „Suspect" markiert
 - 5 konsekutive Determinismus-Verletzungen → Node isoliert
 - Inferenz-Fehlerrate > 5% über 100 Requests → Agent pausiert
 - Konsens-Verfehlrate > 10% → Slashing-Kandidat
 
 **Isolierungs-Stufen:**
+
 1. **WARN** — Node wird markiert, bleibt aktiv, Nachbarn werden benachrichtigt
 2. **THROTTLE** — Traffic wird reduziert, Node behält Konsens-Stimme
 3. **ISOLATE** — Node wird vom Konsens abgekoppelt, keine neuen Tasks
@@ -59,6 +62,7 @@ Wenn ein Node oder eine Anwendung (z. B. ein fehlerhafter KI-Agent) konsistent a
 ATC-40 triggert automatisch Wiederherstellungsprozesse. Dies kann das Neustarten einer Wasm-Sandbox (ATC-21), das Neuladen von Daten-Chunks aus dem dezentralen Speicher (ATC-23) oder bei kritischen Fehlern die komplette Neu-Bereitstellung eines Agenten aus einer stabilen Version (nach ATC-39) umfassen.
 
 **Remediation-Aktionen:**
+
 - **Sandbox-Restart:** Wasm-Sandbox (ATC-21) wird neu gestartet mit letztem bekanntem State
 - **Data-Reload:** Verlorene Daten-Chunks werden aus dem Mesh (ATC-23) neu geladen
 - **Agent-Redeploy:** Komplette Neu-Bereitstellung aus stabiler ATC-39 Version
@@ -102,7 +106,7 @@ ATC-40 ist die letzte Ebene der autonomen KI-Infrastruktur. Nach der Orchestrier
 
 ### 4.1 Monitoring-Pipeline
 
-```
+```text
 Node → Heartbeat (10s) → Mesh-Aggregation (60s) → Health-Score → Circuit Breaker
                                                               ↓
                                                     WARN → THROTTLE → ISOLATE → SLASH

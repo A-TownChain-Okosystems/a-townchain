@@ -53,14 +53,6 @@ Sicherheit der ZKP-Layer: S4-Klassifikation, Trusted-Setup-Kriterien, Audit-Pfli
 - **Metrik 2:** Fuzzing-Code-Abdeckung MUSS über 90% für alle Krypto-Module liegen.
 - **Metrik 3:** Bearbeitungszeit kritischer Audit-Findings MUSS unter 48 Stunden betragen.
 - **Metrik 4:** Ausfallrate automatisierter Sicherheits-Checks MUSS exakt 0% sein.
-
-
-## Metriken & Akzeptanzkriterien
-
-- **Metrik 1:** Teilnehmerzahl bei Trusted-Setup-Ceremonies MUSS mindestens 10 betragen.
-- **Metrik 2:** Fuzzing-Code-Abdeckung MUSS über 90% für alle Krypto-Module liegen.
-- **Metrik 3:** Bearbeitungszeit kritischer Audit-Findings MUSS unter 48 Stunden betragen.
-- **Metrik 4:** Ausfallrate automatisierter Sicherheits-Checks MUSS exakt 0% sein.
 - **Metrik 5:** Erfolgsquote formaler Verifikationsläufe MUSS 100% erreichen.
 
 ## Compliance & Verifikation
@@ -91,6 +83,7 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 ## References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard (Verfassung, v1.1.0 APPROVED)
 - ATC-STD-100
 - ATC-STD-201
@@ -99,5 +92,6 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 - ATC-STD-ZKP-010
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - AD-045 — ZKP-Layer-Festlegung (Repo atc-zkp, Standards-Serie)

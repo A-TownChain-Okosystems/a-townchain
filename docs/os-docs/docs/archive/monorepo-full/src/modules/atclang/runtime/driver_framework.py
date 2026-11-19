@@ -9,8 +9,8 @@ Entspricht modules/kernel/drivers/driver_framework.atc
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Tuple
 from enum import IntEnum
+from typing import Dict
 
 
 class DriverState(IntEnum):

@@ -16,6 +16,12 @@ from datetime import datetime
 # SCR-0123: Per-Standard-Overrides - evidenzbasierte Einzel-Klassifikation,
 # die Familien-Regeln uebersteuert (nie ohne Evidence setzen; Generator-SSOT).
 OVERRIDES = {
+    "ATC-OS-SEC-UPDATE-001": (
+        "MANDATORY",
+        "specification_only",
+        "Referenz-Durchsetzung der Pruefordnung in components/update-authority (11-stufige Entscheidung, 17 Tests) - das ist REQ-BSU-004/005/013/014/019, nicht der ganze Standard",
+        "Offen: TUF-Metadaten-Rollen (REQ-BSU-012), Health-Check nach Apply (REQ-BSU-007), Rollback-Orchestrierung (REQ-BSU-008), koordinierte Protokollaktivierung (REQ-BSU-011), GATE-BSU-05..08. Kein IMPLEMENTED ohne diese Nachweise.",
+    ),
     "ATC-STD-MAINT-000": (
         "MANDATORY",
         "implemented",
@@ -268,7 +274,7 @@ RULES = {
 
 
 def main():
-    reg = open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8").read()
+    reg = open(os.path.join(ROOT, "registry", "standards.yaml"), encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     entries = []
     for line in reg.splitlines():
         if not line.strip().startswith("- {id: ATC"):
@@ -293,7 +299,7 @@ def main():
     out.append("# ============================================================================")
     out.append('version: "1.2.0"')
     out.append("generated_from: registry/standards.yaml")
-    out.append('updated: "%s"' % datetime.now().strftime("%Y-%m-%d"))
+    out.append('updated: "{}"'.format(datetime.now().strftime("%Y-%m-%d")))
     out.append("coverage_kpi:")
     out.append("  registry_total: %d" % len(entries))
     out.append("  matrix_entries: %d" % len(entries))
@@ -317,17 +323,17 @@ def main():
         else:
             applic, impl, ev, note = r
         stats[impl] = stats.get(impl, 0) + 1
-        out.append("  - standard: %s" % sid)
+        out.append("  - standard: {}".format(sid))
         out.append('    version: "%s"' % (ver or "n/a"))
-        out.append("    applicability: %s" % applic)
+        out.append("    applicability: {}".format(applic))
         out.append("    implementation:")
-        out.append("      status: %s" % impl)
-        out.append('      evidence: "%s"' % ev)
+        out.append("      status: {}".format(impl))
+        out.append('      evidence: "{}"'.format(ev))
         if note:
-            out.append('      note: "%s"' % note)
+            out.append('      note: "{}"'.format(note))
         out.append("    independence: L1")
         out.append("")
-    open(
+    open(  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         os.path.join(ROOT, "registry", "standard-implementation.yaml"), "w", encoding="utf-8"
     ).write("\n".join(out))
     print("Klassifikation:", stats, "| Eintraege:", len(entries))

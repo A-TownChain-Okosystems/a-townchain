@@ -98,9 +98,8 @@ ATC Enterprise Standards → ATC Blockchain Standards → ATC Smart Contract Sta
 → Contract Specification → Source Code → Tests & Security → Audit → Deployment
 → Registry → Monitoring / AuditTrail
 ```
+
 Verzahnung: Repository-Standards (201/202), Governance (000, ENT), Security (203), KI-Agenten (AAS-001..025, AI-DEV, SC-020), Dependency/Interface-Tracking (204).
-
-
 
 ## Anforderungs-Verzeichnis
 

@@ -538,6 +538,7 @@ required_standards:
 - ATC-STD-MAINT-023
 - ATC-STD-MAINT-024
 - ATC-STD-ENG-001
+- ATC-OS-SEC-UPDATE-001
 workflow:
   require_tests: true
   require_audit: true

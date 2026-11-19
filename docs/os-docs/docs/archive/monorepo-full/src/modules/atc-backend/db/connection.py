@@ -3,7 +3,9 @@
 Database Connection Manager — Issue #4
 Singleton SQLite-Verbindung mit automatischer Schema-Initialisierung.
 """
-import sqlite3, os, threading
+import os
+import sqlite3
+import threading
 from pathlib import Path
 
 DB_PATH  = Path(os.getenv("ATC_DB_PATH", "data/atcoin.db"))

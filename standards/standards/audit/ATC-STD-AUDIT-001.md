@@ -68,7 +68,7 @@ standard:
 > **Status:** APPROVED (v1.0.0, Owner-Sammelfreigabe 07.09.2026 22:25 UTC+2, ATC-STD-000 §9) — normativ in Kraft, §30-eingefroren (Änderungen nur via SCR). Owner-Entwurf 07.09.2026, 22:15 UTC+2; Agenten-Review SCR-0013.
 > **Familie:** Audit Standards (ATC-STD-AUDIT-001..999) — Kategorie `audit`, SCR-0013.
 > **Rolle:** Kontrollschicht über allen anderen ATC-Standards — nicht nur ein Dokument.
-
+>
 > Dieser Standard definiert, wie festgestellt wird, ob ein ATC-Projekt, Repository, Standard, Feature, Smart Contract, KI-Agent, Release oder System vollständig spezifiziert, implementiert, getestet, dokumentiert, revisionssicher nachvollziehbar, konsistent verknüpft und governance-konform ist.
 
 ## 1. Zweck (Purpose)
@@ -177,7 +177,7 @@ id: REQ-AUDIT-011
 
 Jede wesentliche Anforderung MUSS durch die gesamte Entwicklungskette verfolgt werden können:
 
-```
+```text
 REQ → STD → ARCH → DESIGN → CODE → TEST → AUDIT → RELEASE → CHANGELOG
 ```
 
@@ -249,7 +249,7 @@ id: REQ-AUDIT-022
 
 Ein Release DARF nur passieren, wenn die Gates erfüllt sind:
 
-```
+```text
 AUD-G01 Requirements → AUD-G02 Architecture → AUD-G03 Implementation
 → AUD-G04 Testing → AUD-G05 Security → AUD-G06 Documentation
 → AUD-G07 Traceability → AUD-G08 Release
@@ -341,21 +341,21 @@ Ein Audit ist erst abgeschlossen, wenn: Scope definiert, Anforderungen geprüft,
 
 ## 6. Traceability (Beispiel)
 
-```
+```text
 REQ-STD-101 → ATC-STD-BUG-001 → ARCH-ATC-004 → src/tools/...
 → TEST-WALLET-017 → AUD-2026-0042 → v1.4.0 → CHANGELOG.md
 ```
 
 ## 7. Versionierungsprüfung (Beispiel VERSION DRIFT)
 
-```
+```text
 Code: v1.3.0 | README: v1.2.0 | API: v1.3.0 | CHANGELOG: v1.2.0
 → RESULT: VERSION DRIFT → Finding (S2)
 ```
 
 ## 8. Audit-Pyramide (übergeordnete Hierarchie)
 
-```
+```text
 ATC-STD-000 — Enterprise Standards Governance
         │
         ▼
@@ -464,6 +464,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## Changelog
 
 ### 1.0.0 — 2026-09-07
+
 - Initial Release (Owner-Entwurf Michael Wroblewski, harmonisiert mit BUG-001..005, VERSION-001, DESC-001, SC-003..005)
 - 30 normative Anforderungen (REQ-AUDIT-001..030), 6 COM-AUDIT-Gates
 - 20 Audit-Domänen (AUD-C01..C20), 8 Release-Gates (AUD-G01..G08), Completeness Score A–F

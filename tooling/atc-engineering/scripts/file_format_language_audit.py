@@ -7,6 +7,7 @@ or with an explicitly declared canonical implementation boundary.  It does
 not rewrite files automatically: language migration is an architectural
 change and must be evidenced by tests and integration checks.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -14,8 +15,16 @@ from collections import Counter
 from pathlib import Path
 
 IGNORED_DIRS = {
-    ".git", ".venv", "node_modules", "target", "dist", "build",
-    "__pycache__", ".pytest_cache", ".mypy_cache", "vendor",
+    ".git",
+    ".venv",
+    "node_modules",
+    "target",
+    "dist",
+    "build",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    "vendor",
 }
 
 # Canonical implementation boundaries established by the ATC architecture.
@@ -40,12 +49,27 @@ CANONICAL_LANGUAGES = {
 }
 
 EXT_LANGUAGE = {
-    ".rs": "rust", ".py": "python", ".sh": "bash", ".bash": "bash",
-    ".ts": "typescript", ".tsx": "typescript", ".js": "javascript",
-    ".jsx": "javascript", ".yaml": "yaml", ".yml": "yaml",
-    ".md": "markdown", ".json": "json", ".toml": "toml",
-    ".atc": "atclang", ".atvm": "atclang", ".sol": "solidity",
-    ".go": "go", ".c": "c", ".h": "c", ".cpp": "cpp", ".hpp": "cpp",
+    ".rs": "rust",
+    ".py": "python",
+    ".sh": "bash",
+    ".bash": "bash",
+    ".ts": "typescript",
+    ".tsx": "typescript",
+    ".js": "javascript",
+    ".jsx": "javascript",
+    ".yaml": "yaml",
+    ".yml": "yaml",
+    ".md": "markdown",
+    ".json": "json",
+    ".toml": "toml",
+    ".atc": "atclang",
+    ".atvm": "atclang",
+    ".sol": "solidity",
+    ".go": "go",
+    ".c": "c",
+    ".h": "c",
+    ".cpp": "cpp",
+    ".hpp": "cpp",
 }
 
 FORMAT_POLICY = {
@@ -64,11 +88,21 @@ def policy_for(path: Path) -> str | None:
     p = str(path).lower()
     if "/.github/workflows/" in p:
         return "workflow"
-    if "/.atc/" in p or path.name.lower() in {"repository.yaml", "ownership.yaml", "lifecycle.yaml", "compliance.yaml"}:
+    if "/.atc/" in p or path.name.lower() in {
+        "repository.yaml",
+        "ownership.yaml",
+        "lifecycle.yaml",
+        "compliance.yaml",
+    }:
         return "governance"
     if "requirements" in path.name.lower() or "dependencies" in path.name.lower():
         return "requirements"
-    if path.name.lower() in {"cargo.lock", "package-lock.json", "pnpm-lock.yaml", "yarn.lock"}:
+    if path.name.lower() in {
+        "cargo.lock",
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+    }:
         return "lock"
     return None
 
@@ -98,7 +132,11 @@ def audit(repo: Path) -> tuple[list[str], Counter[str], Counter[str]]:
 
         # Canonical-language drift is a finding only for implementation files;
         # docs/config are intentionally exempt.
-        if allowed and lang in {"python", "javascript", "typescript", "go", "c", "cpp", "solidity"} and lang not in allowed:
+        if (
+            allowed
+            and lang in {"python", "javascript", "typescript", "go", "c", "cpp", "solidity"}
+            and lang not in allowed
+        ):
             findings.append(
                 f"F-LANGUAGE {path.relative_to(repo)}: {lang} is outside the "
                 f"declared canonical language set ({', '.join(sorted(allowed))}); "
@@ -120,8 +158,14 @@ def main() -> int:
     for repo in sorted(p for p in root.iterdir() if p.is_dir() and p.name not in IGNORED_DIRS):
         findings, languages, formats = audit(repo)
         print(f"== {repo.name} ==")
-        print("languages:", ", ".join(f"{k}={v}" for k, v in sorted(languages.items())) or "none")
-        print("formats:", ", ".join(f"{k}={v}" for k, v in sorted(formats.items())) or "none")
+        print(
+            "languages:",
+            ", ".join(f"{k}={v}" for k, v in sorted(languages.items())) or "none",
+        )
+        print(
+            "formats:",
+            ", ".join(f"{k}={v}" for k, v in sorted(formats.items())) or "none",
+        )
         for finding in findings:
             print("FINDING", finding)
         total += len(findings)

@@ -41,7 +41,11 @@ def test_missing_target_is_reported(tmp_path):
 
 def test_external_links_and_anchors_are_ignored(tmp_path):
     tool = load_tool()
-    write(tmp_path, "a.md", "[gh](https://example.org/x) [hier](#abschnitt) [mail](mailto:a@b.de)")
+    write(
+        tmp_path,
+        "a.md",
+        "[gh](https://example.org/x) [hier](#abschnitt) [mail](mailto:a@b.de)",
+    )
     assert tool.broken_links(tmp_path) == []
 
 

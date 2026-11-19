@@ -142,6 +142,7 @@ REVERTIF springt nie. Es gibt keinen bedingten Kontrollfluss und kein Ziel.
 ### E. Verifier (erweitert)
 
 Zusaetzlich zu den sechs Regeln aus Abschnitt 7:
+
 - Statische Typen je Stapelstelle (I64, ADDR, BYTES, BOOL); Typfehler = ungueltig.
 - Maximale Aufruftiefe 64 und maximale Stapeltiefe 4096.
 - Speichergrenzen: 65536 Speicherplaetze, 65536 Operationen je Artefakt.
@@ -151,6 +152,7 @@ Zusaetzlich zu den sechs Regeln aus Abschnitt 7:
 ## 12. Legacy-Vertraege (v1)
 
 Kompatibilitaet ist keine Sicherheitsfreigabe. Bis zur Bewertung gilt:
+
 - v1-Vertraege werden inventarisiert (ID, Deployer, Artefakt-Hash, Hoehe).
 - Vertraege mit sicherheitsrelevanten Bedingungen werden gekennzeichnet.
 - Gekennzeichnete Vertraege werden geprueft; unsichere werden stillgelegt
@@ -178,6 +180,7 @@ Kompatibilitaet ist keine Sicherheitsfreigabe. Bis zur Bewertung gilt:
 `atcb_v2_activation_height` ist Kettenparameter und fuer alle Validatoren
 identisch; abweichender Wert = Konsensbruch, nicht Konfigurationsfrage.
 Prueffaelle (Nachweis BC2-008):
+
 - Block hoehe-1: v2-Artefakt wird abgelehnt.
 - Aktivierungsblock: v2-Deployment zulaessig, v1-Deployment abgelehnt.
 - Block hoehe+1: v1-Vertraege laufen unveraendert weiter.
@@ -259,6 +262,7 @@ Befehlscodes: 0x01 Push(u64), 0x02 Add, 0x03 Sub, 0x04 Mul, 0x05 Div, 0x06 Dup,
 0x11 Assert, 0x12 Revert(u32), 0x13 RevertIf (v2 ab 0x11).
 
 Regeln beim Lesen:
+
 1. Nur Generation 1 und 2. Jeder andere Wert wird abgelehnt.
 2. v2-Befehle in einem v1-Artefakt werden beim Lesen abgelehnt, nicht erst bei
    der Ausfuehrung.
@@ -381,6 +385,7 @@ Abrechnung ergibt sich aus dem verbindlichen Protokollzustand, nicht aus dem
 Bytecode.
 
 Verbindliche Regeln:
+
 - Validatoren verwenden fuer denselben Block dieselbe Tabellenkennung. Zwei
   Validatoren mit verschiedenen Tabellen sind keine gueltige Konfiguration.
 - Eine Aenderung der Gastabelle ist eine Protokollaktivierung, keine lokale
@@ -573,6 +578,7 @@ kann die Grenze je Transaktion beliebig oft ausschoepfen; die Summe ist durch
 diese Norm nicht gedeckt.
 
 **Nicht durch SB-01 gedeckt und ausdruecklich offen (SB-02):**
+
 - Blockgaslimit beziehungsweise Blockschrittlimit als Obergrenze je Block.
 - Wechselwirkung mit Transaktionsrate und Mempool-Annahme.
 - Admission-Control: welche Transaktionen werden ueberhaupt angenommen.

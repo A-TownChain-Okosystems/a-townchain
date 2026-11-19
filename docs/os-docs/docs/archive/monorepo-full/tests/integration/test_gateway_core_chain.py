@@ -2,9 +2,10 @@
 """Integration Tests: Gateway ↔ Core ↔ Blockchain (K7.6)
 Agent: Aurora #2 (6a275618)
 """
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
@@ -40,8 +41,8 @@ class TestGatewayCoreChain:
     def test_gateway_health_endpoint(self):
         """Gateway /health endpoint returns 200."""
         try:
-            from src.gateway.main import app
             from fastapi.testclient import TestClient
+            from src.gateway.main import app
             client = TestClient(app)
             response = client.get("/gateway/health")
             assert response.status_code in (200, 404)  # 404 if endpoint not yet defined
@@ -71,8 +72,9 @@ class TestGatewayCoreChain:
     def test_persistence_roundtrip(self):
         """Data persists across Blockchain instances."""
         try:
-            from src.blockchain import Blockchain
             import tempfile
+
+            from src.blockchain import Blockchain
             db_path = tempfile.mktemp(suffix=".db")
             chain1 = Blockchain(db_path=db_path)
             chain1.add_block([])
@@ -86,8 +88,8 @@ class TestGatewayCoreChain:
     def test_multi_service_communication(self):
         """Gateway can route to Core and Blockchain services."""
         try:
-            from src.gateway.main import app
             from fastapi.testclient import TestClient
+            from src.gateway.main import app
             client = TestClient(app)
             # Test API routes exist
             for endpoint in ["/api/v1/chain/info", "/api/v1/chain/blocks"]:

@@ -8,7 +8,7 @@ dependency version. The gate fails closed on malformed manifests or OSV
 transport errors.
 """
 
-from __future__ import annotations
+from __future__ import annotations  # noqa: I001 — Org-Policy gruppiert gff als Third-Party
 
 import argparse
 import json
@@ -33,7 +33,7 @@ MANIFEST_NAMES = {
 
 
 def run(*args: str, input: str | None = None) -> str:
-    p = subprocess.run(args, cwd=ROOT, text=True, input=input, capture_output=True)
+    p = subprocess.run(args, cwd=ROOT, text=True, input=input, capture_output=True, check=False)
     if p.returncode:
         raise RuntimeError(f"{' '.join(args)}: {p.stderr.strip()}")
     return p.stdout
@@ -151,7 +151,7 @@ def python_graph(ref: str, paths: list[str], graph: dict):
             raw = read_at(ref, path) or ""
             for line in raw.splitlines():
                 line = line.strip()
-                if not line or line.startswith("#") or line.startswith("-"):
+                if not line or line.startswith(("#", "-")):
                     continue
                 m = re.match(r"([A-Za-z0-9_.-]+)\s*(==|~=|>=|<=|>|<)?\s*([^;\s]+)?", line)
                 if m:
@@ -282,6 +282,6 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         print(f"DEPENDENCY REVIEW: BLOCKED: {e}", file=sys.stderr)
         raise SystemExit(2)

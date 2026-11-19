@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-LICENSE-006
   title: "License Compliance Standard"
@@ -21,7 +22,7 @@ standard:
   related_standards: []
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-LICENSE-006 — License Compliance Standard (v1.0.0, APPROVED)
 

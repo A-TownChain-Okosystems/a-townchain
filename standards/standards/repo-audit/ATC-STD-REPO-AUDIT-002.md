@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-REPO-AUDIT-002
   title: "ATC Repository Audit Checklisten- & Health-Score-Standard — Konkrete automatisierbare Checks (CHECK-001, CHECK-002, …) und standardisierter Repository Health Score für jeden KI-/Automatisierungsagenten"
@@ -29,7 +30,7 @@ standard:
     - ATC-STD-VERSION-001
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-REPO-AUDIT-002 — Audit-Checklisten- & Health-Score-Standard (v1.0.0, APPROVED)
 
@@ -96,7 +97,7 @@ Gate bestätigt werden (AI-DECISION-001, MILESTONE-001 §13).
 
 ## §4 Scoring-Formel
 
-```
+```text
 Bereichsscore  = 100 × Σ(Checkergebnis × Checkgewicht) / Σ(Checkgewichte)   [je Bereich, SKIPs ausgenommen]
 Gesamtscore    = Σ(Bereichsscore × Bereichsgewicht) / 100                   [0 … 100, eine Nachkommastelle]
 ```

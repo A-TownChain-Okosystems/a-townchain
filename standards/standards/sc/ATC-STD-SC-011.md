@@ -45,9 +45,6 @@ Minting und Burning MUESSEN ueber klar definierte Rollen (SC-009: MINTER, GOVERN
 
 ATC-Tokens (ATC-001, ATC-8300, ATC-9900) MUESSEN in der Contract Registry (SC-019) mit Kategorie SC-TOKEN registriert sein.
 
-
-
-
 ## 4. Obergrenzen-Garantie (Max Supply) (REQ-SC-091)
 
 Der maxSupply Wert MUSS als immutable Variable fixiert sein; Minting-Operationen über maxSupply MUESSEN zwingend fehlschlagen.

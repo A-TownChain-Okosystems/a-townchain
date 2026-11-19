@@ -38,7 +38,7 @@ Dieser Standard macht die Synchronitaetspruefung zum **Merge Gate**.
 
 ## 1. Change Impact Analysis (REQ-STD-131: MUST vor jedem nicht-trivialen Merge)
 
-```
+```text
 CODE CHANGE → CHANGE IMPACT ANALYSIS
    ├─ API geaendert?            ├─ Protokoll geaendert?
    ├─ Datenstruktur geaendert? ├─ Verhalten geaendert?
@@ -85,7 +85,7 @@ DECISIONS_REGISTER steht (ATC-STD-000 §31).
 > Architecture- und Test-Artefakte den tatsaechlich implementierten
 > Codezustand widerspiegeln.
 
-```
+```text
 Code Change → Bug/Fix-ID → Tests → Documentation Impact Analysis
   → Wiki↔Code-Check → SYNC-OK? ──JA──→ APPROVED → MERGE
                               └─NEIN─→ BLOCKED  → CHANGE REQUIRED
@@ -97,7 +97,7 @@ der Konsistenzmatrix und schliesst mit AUD-NNN ab.
 
 Beispiel einer vollstaendigen Kette:
 
-```
+```text
 F-017 ── SCR-021 (Fix) ── TEST-044 (Regression)
      └─ SYNC-012 (Code↔Wiki, Code↔Spec, Code↔Tests) ── AUD-031 (Final)
 ```

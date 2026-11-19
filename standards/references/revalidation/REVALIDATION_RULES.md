@@ -36,11 +36,13 @@ alle Funds klassifiziert sind.
 ## Rollen (Owner-Benennung 06.10.2026 — ROLE_DEFINED / HUMAN_OWNER_UNASSIGNED)
 
 ### Gate-0-Executor
+
 ROLE: ARCHITECTURE/GOVERNANCE EXECUTOR — Authority: Existing-First, SSOT,
 Duplicate-Detection, Owner-/Layer-/Capability-Resolution. Kein persönlicher
 Name; Rollen-Inhaberschaft beim Owner, Zuweisung offen.
 
 ### Mirror-Klassifikator
+
 ROLE: SSOT/MIRROR CLASSIFIER — Authority: Klassifikationsraum canonical |
 mirror | generated view | integration-only | duplicate | obsolete. Kein
 persönlicher Name; Rollen-Inhaberschaft beim Owner, Zuweisung offen.

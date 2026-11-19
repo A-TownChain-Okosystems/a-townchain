@@ -174,7 +174,7 @@ class GenesisChroniclesContract:
 
     # ── Minting ────────────────────────────────────────
     def mint(
-        self, owner: str, element: str = None, rarity: str = None, generation: int = 1
+        self, owner: str, element: str | None = None, rarity: str | None = None, generation: int = 1
     ) -> dict:
         if self.total_minted >= self.MAX_SUPPLY:
             return {"success": False, "error": "Max supply reached (9900)"}

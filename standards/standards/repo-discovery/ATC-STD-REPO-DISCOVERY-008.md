@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-REPO-DISCOVERY-008
   title: "Security-Relevant Content Detection"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-REPO-DISCOVERY-008 — Security-Relevant Content Detection (v1.0.0, CANDIDATE)
 
@@ -26,6 +27,7 @@ standard:
 > Kein neuer Repository-Inhalt darf unbewertet bleiben.
 
 ## Zweck
+
 Security-relevante Inhalte (Permissions, Secrets, Auth, Policies) und
 P0-ausloesende Inhalte werden erkannt: Secret committed, critical security
 bypass, consensus-breaking change → unmittelbarer Audit-Fund P0 (BUG-001),
@@ -40,6 +42,7 @@ kein wartender Scan-Zyklus.
 | REQ-RD-082 | Security-relevante Aenderungen erfordern Security Review (203) vor Abschluss |
 
 ## Implementierungsstatus
+
 SPECIFIED — Secret-Scanning aktiv (203); P0-Sofortmeldungs-Hook an
 Governance-CI/Signatur-Check folgt mit Scan-Integration.
 
@@ -48,7 +51,9 @@ Governance-CI/Signatur-Check folgt mit Scan-Integration.
 P0-Sofortfund (Secret, Bypass, Konsens-Bruch) meldeklar an BUG-001; .gitignore/Secret-Scanning pruefen bei jedem Scan.
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0046) |
 
 ## References
+
 NORMATIV: ATC-STD-203, BUG-001, DISC-INV-008 · INFORMATIVE: SCR-0046

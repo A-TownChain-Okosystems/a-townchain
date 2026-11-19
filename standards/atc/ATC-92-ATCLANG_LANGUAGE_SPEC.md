@@ -23,7 +23,7 @@ ATCLang ist eine statisch typisierte, blockchain-native Programmiersprache. Sie 
 
 ### Implementierung
 
-```
+```text
 atclang/
 ├── lexer/lexer.py        — 563 Zeilen, 18 Funktionen, ✅ funktionsfähig
 ├── parser/parser.py      — 399 Zeilen, 26 Methoden, ✅ funktionsfähig
@@ -54,7 +54,7 @@ atclang/
 
 ### Keywords (35+)
 
-```
+```text
 wallet contract struct enum impl trait fn state let const pub priv static type interface
 if else elif for while loop in break continue return match case
 async await deploy call new delete import from as use
@@ -64,7 +64,7 @@ node consensus kernel process spawn
 
 ### Types (25+)
 
-```
+```text
 UInt8 UInt16 UInt32 UInt64 UInt128 UInt256 Int UInt Int8 Int16 Int32 Int64 Int128 Int256
 Float Float32 Float64 Float128 Bool Char Byte String Bytes Str
 Address Hash256 Hash512 PubKey PrivKey Signature TxHash BlockHash CID
@@ -134,7 +134,7 @@ fib(10)  // → 55
 
 ## 5. Compiler-Pipeline
 
-```
+```text
 Source Code → Lexer (563 Zeilen) → Token Stream → Parser (399 Zeilen) → AST → Compiler (540+ Zeilen) → Bytecode → VM (887 Zeilen) → Result
 ```
 

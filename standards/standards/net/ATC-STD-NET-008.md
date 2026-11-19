@@ -27,7 +27,6 @@ standard:
 
 ---
 
-
 ## Abstract
 
 Recovery wird VOR der Promotion bewiesen, nicht im Ernstfall erfunden — Nachweise MUST vollstaendig vorliegen:
@@ -53,7 +52,6 @@ Mempool-/VM-Zustandskonsistenz. Alle Szenarien MUessen nachgewiesen werden.
 Recovery auf Mainnet bedeutet Rekonstruktion aus verifizierten
 Chain-Daten (never trust unverifizierten State): Reset bleibt VERBOTEN;
 einzige Heilung ist deterministischer Re-Play der verifizierten Kette.
-
 
 - **State-Snapshot-Frequenz:** Validator-Knoten MUESSEN regelmäßig kryptographisch signierte Snapshots erstellen (REQ-NET-075).
 - **Automated Peer Resync:** Nach Netzwerktrennung MUSS der Resynchronisationspfad ohne manuelle Eingriffe starten (REQ-NET-076).
@@ -110,5 +108,4 @@ Vertraege, ATVM-Verifier + License Gate als Trust Boundary).
 | Zustand | Wert |
 |---|---|
 | Standard-Status | SPECIFIED — retro-aktiv erfasst (Meta-Sweep 08.09.2026, SCR-0047) |
-| Autoritativ | Implementierungs-Status gemaess ATC-STD-IMPLEMENTATION-001 §3/§4 in `registry/standard-implementation.yaml` (SSOT); Detail-Erfassung laeuft via Coverage-Programm gemaess ATC-STD-IMPLEMENTATION-001 §6 |
-Zusätzliche Sicherheitsregel: Sämtliche Sicherheitsvorgaben der jeweiligen Stufe MUESSEN zwingend eingehalten werden; ein fehlerhafter Zustand auf Mainnet MUSS das Release-Gate unverzüglich stoppen.
+| Autoritativ | Implementierungs-Status gemaess ATC-STD-IMPLEMENTATION-001 §3/§4 in `registry/standard-implementation.yaml` (SSOT); Detail-Erfassung laeuft via Coverage-Programm gemaess ATC-STD-IMPLEMENTATION-001 §6 Zusätzliche Sicherheitsregel: Sämtliche Sicherheitsvorgaben der jeweiligen Stufe MUESSEN zwingend eingehalten werden; ein fehlerhafter Zustand auf Mainnet MUSS das Release-Gate unverzüglich stoppen. |

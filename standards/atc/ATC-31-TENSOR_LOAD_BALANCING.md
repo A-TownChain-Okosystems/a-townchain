@@ -1,4 +1,5 @@
 # ATC-31 — Tensor Compute Distribution & Load Balancing
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-31
 > **Tier:** 4 (Decentralized AI / Inferenz-Layer) — TIER 4 ABSCHLUSS
@@ -28,27 +29,32 @@ effizient und latenzoptimiert berechnet werden.
 ## 1. Kernkonzepte
 
 ### 1.1 Compute-Capability-Matching
+
 Vor jeder Zuweisung einer KI-Aufgabe (Inferenz oder Training) gleicht ATC-31
 die Anforderungen des Modells (z. B. Speicherbedarf im VRAM, FP16/INT8-
 Unterstuetzung) mit den publizierten Hardware-Flags der Nodes (aus ATC-22) ab.
 
 **Implementation:** PARTIAL — Basis da
+
 - Orchestrator (`orchestrator.py`) mit Node-Capability-Matching
 - Health-Check fuer Node-Status und Verfuegbarkeit
 - **Geplant:** Modell-Anforderungs-Profiling (VRAM, Precision, Ops)
 
 ### 1.2 Dynamisches Lastmanagement
+
 ATC-31 misst in Echtzeit die Auslastung der Nodes. Wenn ein Node ueberlastet
 ist, leitet der Load-Balancer die neue Inferenz-Anfrage automatisch an den
 naechstgelegenen Node weiter, der ueber freie Kapazitaeten verfuegt, um die
 Ziel-Latenz einzuhalten.
 
 **Implementation:** PARTIAL — Basis da
+
 - Circuit-Breaker im Orchestrator fuer ueberlastete Nodes
 - ATC-06 Latenz-Routing als Grundlage
 - **Geplant:** Echtzeit-Load-Metriken und dynamische Umleitung
 
 ### 1.3 Fragmentierte Parallelisierung
+
 Bei sehr grossen Modellen entscheidet ATC-31 darueber, wie die Berechnung auf
 viele Nodes verteilt wird. Es nutzt "Model-Parallelism", bei dem verschiedene
 Schichten (Layers) des neuronalen Netzes auf unterschiedlichen, spezialisierten
@@ -64,6 +70,7 @@ Parallelism. Federated Learning (Issue #29) als Basis fuer verteiltes Training.
 ## 2. Warum ATC-31 fuer KAI-OS essenziell ist
 
 ### 2.1 Optimierung der "Inferenz-Kosten"
+
 Durch ATC-31 wird verhindert, dass eine einfache KI-Aufgabe unnoetig auf einem
 teuren Hochleistungs-Server landet, waehrend ein guenstigerer, ausreichender
 Node verfuegbar waere.
@@ -72,6 +79,7 @@ Node verfuegbar waere.
 ATC-15 (Proof-of-AI Mining) — Mining-Kosten-Effizienz.
 
 ### 2.2 Vermeidung von Netzwerkknoten-Engpaessen
+
 Da ATC-31 die Netzwerktopologie kennt, verhindert es, dass ein einzelner Node
 zum Flaschenhals wird, was die Gesamtskalierbarkeit des Systems massiv
 erhoeht.
@@ -80,6 +88,7 @@ erhoeht.
 Tabellen.
 
 ### 2.3 Auto-Remediation
+
 Faellt ein Node waehrend einer laufenden Tensor-Berechnung aus, erkennt ATC-31
 dies durch das Ausbleiben der Daten-Chunks und triggert sofort eine Neu-
 Zuweisung der Aufgabe, um die Konsistenz des Ergebnisses zu wahren.
@@ -92,24 +101,29 @@ Circuit-Breaker im Orchestrator fuer Auto-Remediation.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-25 (Tensor Compute Distribution)
+
 ATC-25 ist das Protokoll zur physischen Datenbewegung; ATC-31 ist die
 Intelligenz, die entscheidet, wohin diese Daten bewegt werden.
 
 > ATC-25 = Wie bewegen. ATC-31 = Wohin bewegen.
 
 ### 3.2 ATC-06 (Routing-Optimierung)
+
 ATC-31 nutzt die Latenz-Tabellen aus ATC-06, um Inferenz-Auftraege an Nodes zu
 routen, die physisch oder netzwerktechnisch am schnellsten erreichbar sind.
 
 ### 3.3 ATC-22 (HAL)
+
 ATC-31 fragt ueber den HAL ab, welche spezifischen Tensor-Beschleuniger ein
 Node besitzt.
 
 ### 3.4 ATC-30 (Reputation)
+
 ATC-31 kann den Reputation-Score als zusaetzlichen Faktor bei der Last-
 Verteilung nutzen — hoch-vertrauenswuerdige Nodes bevorzugen.
 
 ### 3.5 ATC-24 (Task Orchestration)
+
 ATC-24 plant die Aufgaben. ATC-31 optimiert die physische Ausfuehrung dieser
 Aufgaben auf Hardware-Ebene.
 
@@ -170,7 +184,7 @@ Aufgaben auf Hardware-Ebene.
 
 ## 7. Load-Balancing Architektur
 
-```
+```text
 ATC-31 LOAD BALANCER
 ├── Capability Layer (ATC-22)
 │   ├── Node A: GPU 24GB VRAM, FP16, CUDA
@@ -202,7 +216,7 @@ ATC-31 LOAD BALANCER
 Mit ATC-31 ist **Tier 4 (Decentralized AI / Inferenz-Layer) vollstaendig
 abgeschlossen**:
 
-```
+```text
 TIER 4 — DECENTRALIZED AI (ATC-24 bis ATC-31)
 ├── ATC-24  Agent Scheduling & Orchestration   OK IMPLEMENTIERT
 ├── ATC-25  Tensor Compute & Distribution      PARTIAL
@@ -214,7 +228,8 @@ TIER 4 — DECENTRALIZED AI (ATC-24 bis ATC-31)
 └── ATC-31  Tensor Compute Load Balancing      PARTIAL
 ```
 
-### Tier 4 vollstaendiger Kreis:
+### Tier 4 vollstaendiger Kreis
+
 - **Orchestrierung** (24) — Wer macht was?
 - **Berechnung** (25) — Wie fliessen die Daten?
 - **Transparenz** (26) — Warum entschieden?
@@ -233,7 +248,6 @@ TIER 4 — DECENTRALIZED AI (ATC-24 bis ATC-31)
 *Dieses Dokument wurde aus der urspruenglichen Atc-31.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:41 | Aurora (Superagent)*
-
 
 ---
 

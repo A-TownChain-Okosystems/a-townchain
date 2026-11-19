@@ -19,6 +19,7 @@ ATC-96 definiert die Syscall-Schnittstelle zwischen ATCLang-Programmen und dem K
 ## 2. Syscall-Katalog
 
 ### 2.1 Prozessverwaltung
+
 | Syscall | Beschreibung | Gas |
 |---------|-------------|-----|
 | `spawn(name)` | Neuer Prozess | 500 |
@@ -26,6 +27,7 @@ ATC-96 definiert die Syscall-Schnittstelle zwischen ATCLang-Programmen und dem K
 | `sleep(ms)` | Pause | 10/ms |
 
 ### 2.2 Speicher
+
 | Syscall | Beschreibung | Gas |
 |---------|-------------|-----|
 | `alloc(size)` | Heap-Allokation | 10/byte |
@@ -33,6 +35,7 @@ ATC-96 definiert die Syscall-Schnittstelle zwischen ATCLang-Programmen und dem K
 | `memcpy(dst, src, n)` | Kopieren | 1/byte |
 
 ### 2.3 I/O
+
 | Syscall | Beschreibung | Gas |
 |---------|-------------|-----|
 | `read(fd, buf, n)` | Lesen | 20 |

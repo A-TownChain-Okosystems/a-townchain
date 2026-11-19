@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 # gateway/main.py
 # A-TownChain OS — API Gateway (Vermittler)
-# 
+#
 # Architektur:
 #   FRONTEND  →  API GATEWAY  →  BACKEND SERVICES
 #
@@ -9,13 +9,12 @@
 # Das Gateway routet zu den Backend-Services.
 # Kein direkter Kontakt zwischen Frontend und Backend.
 
+import os
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from gateway.router import GatewayRouter
-from gateway.middleware.auth import require_api_key
-from gateway.middleware.rate_limit import rate_limiter
 from gateway.middleware.logger import log_request
-import os
+from gateway.router import GatewayRouter
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000", "http://localhost:8080"])

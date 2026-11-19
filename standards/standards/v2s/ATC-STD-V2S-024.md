@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-V2S-024
   title: "Version Upgrade Standard"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-V2S-024 — Version Upgrade Standard (v1.0.0, CANDIDATE)
 
@@ -48,6 +49,7 @@ V2S-023 (Improvement Standard) definierten Anforderungen und führt das Gesamtsy
 in die nächste Entwicklungsiteration über.
 
 Der Standard koppelt drei fundamentale Governance-Standards:
+
 1. **ATC-STD-VERSION-001:** Regelwerk für Semantic Versioning (`MAJOR.MINOR.PATCH`).
 2. **ATC-STD-UPDATE-001:** Prozess für Update-Klassifizierung und Notfall-Fixes.
 3. **ATC-STD-NET-006:** Koordinationsmodell für dezentrale Netzwerk- und Konsens-Upgrades.

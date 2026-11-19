@@ -107,9 +107,9 @@ def main():
     args = ap.parse_args()
     b = str(args.family)[0]
 
-    reg = yaml.safe_load(open(args.registry, encoding="utf-8"))
-    fw_raw = open(args.framework, encoding="utf-8").read()
-    status = yaml.safe_load(open(args.status, encoding="utf-8"))
+    reg = yaml.safe_load(open(args.registry, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
+    fw_raw = open(args.framework, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
+    status = yaml.safe_load(open(args.status, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
 
     lo, hi = args.family, args.family + 99
     allocated = {
@@ -166,7 +166,7 @@ def main():
         errs += fail("ALLOC-07 rule_free_is_not_allocatable != true")
 
     try:
-        resv = yaml.safe_load(open(args.reservations, encoding="utf-8"))
+        resv = yaml.safe_load(open(args.reservations, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         for r in resv.get("reservations", []):
             rid = r.get("id", "")
             if rid.startswith("ATC-STD-") and rid not in st_res:
@@ -179,8 +179,8 @@ def main():
     # ALLOC-11/12: Familien-Allokation fuer fam:-verkabelte Kategorien (SCR-0120 v8)
     cat_path = os.path.join(os.path.dirname(os.path.abspath(args.framework)), "categories.yaml")
     if os.path.exists(cat_path):
-        cats = yaml.safe_load(open(cat_path, encoding="utf-8"))
-        fw_raw2 = open(args.framework, encoding="utf-8").read()
+        cats = yaml.safe_load(open(cat_path, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
+        fw_raw2 = open(args.framework, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         fam_entries = {}  # FAM-ID -> (name, range)
         for m in re.finditer(r"- id: (FAM-\d+)\n\s+name: (.+?)\n\s+range: (.+?)(?:\n|$)", fw_raw2):
             fam_entries[m.group(1)] = (m.group(2).strip('"'), m.group(3).strip('"'))

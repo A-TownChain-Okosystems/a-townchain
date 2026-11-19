@@ -70,12 +70,15 @@ Gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung; P0-Capability
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - ATC-AI-GOV-MANIFEST-001 — Identität/Status · ATC-AI-GOV-001 — Autorisierungskette · ATC-AI-GOV-INCIDENT-001 — Verstöße · ATC-AI-GOV-CHANGE-001
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `ai/capabilities.yaml`, `ai/schemas/agent.schema.yaml`
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release (Owner-Entwurf 09.09., SCR-0062): 4 REQ (explizite Vergabe, Autorisierungskette, Owner-Gates, Entzug), 3 COM-Gates

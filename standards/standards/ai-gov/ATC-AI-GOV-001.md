@@ -89,12 +89,15 @@ Gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung; Ausnahme von 
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - 10 Sub-Standards der Familie (related_standards) · ATC-STD-000 · ATC-STD-BUG-001 · ATC-POL-001..010 (POLICY-001)
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `ai/schemas/*.schema.yaml`, `ai/audit/audit-policy.yaml`, `ai/audit/finding-schema.yaml`, `ai/checks/CHECK-001.yaml`, `ai/checks/CHECK-010.yaml`, `ai/phases.yaml` (7-Phasen-Roadmap: Schemas ✓ → CHECK-Objekte → Auditor → GH-Actions-Enforcement → Issue/PR-Automation → Cross-Repo-Audit → Compliance-Dashboard)
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release: Owner-Architektur-Freeze v1.0 (SCR-0062): 18-stufige Governance-Kette, 4 Kontrollprinzipien (Fail Closed, Evidence First, Persistent Findings, No Self-Certification), Severity/Status-Modell (P0-P3 → BLOCKED/NON-COMPLIANT/COMPLIANT-WITH-FINDINGS/COMPLIANT/VERIFIED), Verantwortlichkeits-Trennung, maschinenlesbare Check-Objekte, 7-Phasen-Roadmap

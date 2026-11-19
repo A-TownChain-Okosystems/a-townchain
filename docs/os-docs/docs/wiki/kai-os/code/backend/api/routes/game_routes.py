@@ -2,8 +2,8 @@
 # backend/api/routes/game_routes.py
 # Shivamon Game API Routes (via Gateway :5004)
 
-from flask import Blueprint, jsonify, request
 from blockchain.contracts.shivamon.shivamon_contract import ShivamonContract
+from flask import Blueprint, jsonify, request
 
 game_bp   = Blueprint("game", __name__)
 _contract = ShivamonContract()

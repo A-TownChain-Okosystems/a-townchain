@@ -52,14 +52,6 @@ Skalierungsschicht: zkRollup (DeFi/GameFi), zkVM (General Compute), zkApp (Priva
 - **Metrik 2:** Latenz bis zum finalen State-Commitment auf L1 MUSS unter 15 Minuten liegen.
 - **Metrik 3:** Verfügbarkeit der Data-Availability-Schicht MUSS mindestens 99.9% erreichen.
 - **Metrik 4:** Erfolgsquote bei Notfall-Abhebungen MUSS exakt 100% sein.
-
-
-## Metriken & Akzeptanzkriterien
-
-- **Metrik 1:** Durchsatz des Rollup-Proof-Generators MUSS mindestens 500 TPS betragen.
-- **Metrik 2:** Latenz bis zum finalen State-Commitment auf L1 MUSS unter 15 Minuten liegen.
-- **Metrik 3:** Verfügbarkeit der Data-Availability-Schicht MUSS mindestens 99.9% erreichen.
-- **Metrik 4:** Erfolgsquote bei Notfall-Abhebungen MUSS exakt 100% sein.
 - **Metrik 5:** Verifikationszeit von Rollup-Batch-Proofs MUSS unter 1 Sekunde liegen.
 
 ## Compliance & Verifikation
@@ -90,6 +82,7 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 ## References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard (Verfassung, v1.1.0 APPROVED)
 - ATC-STD-100
 - ATC-STD-201
@@ -99,5 +92,6 @@ Geprüft durch: (1) `atc-std-validator` (Registry-Sync S-14, Kopf-Sync S-19, Tes
 - ATC-STD-ZKP-010
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - AD-045 — ZKP-Layer-Festlegung (Repo atc-zkp, Standards-Serie)

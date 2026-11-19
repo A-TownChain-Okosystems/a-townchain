@@ -28,7 +28,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from atc_reference_decoder import decode_hex  # noqa: E402
-from build_parser_corpus import CORPUS, build, serialise  # noqa: E402
+from build_parser_corpus import (  # noqa: E402
+    CORPUS,
+    build,
+    serialise,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -69,11 +73,10 @@ def main(argv: list[str] | None = None) -> int:
         if expected != actual:
             deviations += 1
             problems.append(
-                f"{entry['id']}: erwartet {expected}, erhalten {actual} "
-                f"({entry['hinweis']})"
+                f"{entry['id']}: erwartet {expected}, erhalten {actual} ({entry['hinweis']})"
             )
         elif args.verbose:
-            print(f"  {entry['id']:<28} {actual[0]:<6} {str(actual[1]):<7} {actual[2]}")
+            print(f"  {entry['id']:<28} {actual[0]:<6} {actual[1]!s:<7} {actual[2]}")
 
     for klasse in sorted(per_class):
         print(f"  {klasse}: {per_class[klasse]} Eingaben")

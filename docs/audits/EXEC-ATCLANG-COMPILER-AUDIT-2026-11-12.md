@@ -68,7 +68,7 @@ deutlich reicher als das, was ausgeführt werden kann. Genau daraus entsteht F1.
 
 Werkzeug: `cargo test -p atc-core --offline` und `./target/debug/atc`.
 
-```
+```text
 cargo test -p atc-core            -> 170 lib + 4 cli + 3 contract_sources + 1 differential
                                      + 8 run + 11 stdlib = 197 Tests, 0 failed
 atc check apps/atc-contracts      -> "50 Dateien, 33 Vertraege, 0 Fehler, 18 Warnungen", Exit 0
@@ -89,7 +89,7 @@ atc run     "fn main() -> i64 { return bogus_fn(1); }"         -> Fehler im Lowe
 
 Kettenpfad, als temporärer Test in `components/system` ausgeführt und danach wieder entfernt:
 
-```
+```text
 compile(token.atc)  -> FUNKTIONEN: 1   fn __main__ params=0 instrs=2
 translate(...)      -> ATCB-OPS: 3     Push(0) Halt Halt   (source_len=2)
 System::devnet().deploy(token.atc)     -> Ok

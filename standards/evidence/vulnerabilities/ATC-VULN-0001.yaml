@@ -1,0 +1,28 @@
+# ATC-VULN-Record nach ATC-STD-020 Paragraf 8 (ATC-GATE-SEC-001 Paragraf 4, Evidence Store)
+id: ATC-VULN-0001
+source: GHSA-fc5q-39xc-vjpf
+type: "ReDoS (regulaerer Ausdruck, katastrophales Backtracking), ATC-STD-018 Paragraf 4"
+affected_component: "picomatch, transitiv ueber vite -> tinyglobby/fdir -> picomatch"
+affected_versions: "<= 4.0.7 (alle veroeffentlichten Versionen)"
+severity: HIGH
+exploitability: "theoretisch: kein PoC im Repo, Ausnutzung erfordert vom Angreifer kontrollierte Glob-Muster zur Build-Zeit"
+impact: "CPU-Last und Denial of Service im Build-Prozess; keine Auswirkung auf ausgelieferten Code, keine Datenexposition"
+exposure: build-only
+mitigation: >-
+  picomatch ist ausschliesslich Build-Werkzeug (vite/rollup). Die beiden
+  Vite-Plugins @tailwindcss/vite und @vitejs/plugin-react lagen in
+  dependencies und zogen den Baum in die Produktionsabhaengigkeiten; sie sind
+  nach devDependencies verschoben. npm audit --omit=dev meldet in apps/atc-ide
+  damit 0 Schwachstellen. Im Build werden keine Glob-Muster aus nicht
+  vertrauenswuerdigen Quellen verwendet.
+patch: "keiner verfuegbar: Upstream-Advisory ohne first_patched_version, Stand 2026-11-18"
+verification: "npm audit --omit=dev (apps/atc-ide) = 0; tsc --noEmit = 0 Fehler; vite build gruen"
+regression_test: "offen: Aufnahme in ATC-STD-026-Suite erst nach Upstream-Patch"
+status: TRIAGED
+disclosure: "oeffentliches Advisory, keine internen Details enthalten"
+detected_at: "2026-11-18"
+patched_at: null
+owner_decision_required: >-
+  ACCEPT ist nach ATC-STD-020 Paragraf 1 ohne Owner-Genehmigung unzulaessig.
+  Bis zur Entscheidung bleibt der Record TRIAGED und der Dependabot-Alert offen
+  sichtbar.

@@ -70,12 +70,15 @@ Gemäß ATC-STD-DESC-001 Abschnitt 11 (EXC) mit Owner-Genehmigung.
 ## 7. Referenzen (References)
 
 ### NORMATIVE Referenzen
+
 - ATC-STD-BUG-001/005 — Findings/RCA · ATC-AI-GOV-AUDIT-001 — AUD-Records · ATC-STD-IMPROVEMENT-001 — Regression Prevention · ATC-STD-UPDATE-001 — Emergency-Pfad
 
 ### INFORMATIVE Referenzen
+
 - `.github`-Hub: `ai/incident.yaml` (Klassen, Lifecycle, Rules)
 
 ## Changelog
 
 ### 1.0.0 — 2026-09-09
+
 - Initial Release (Owner-Entwurf 09.09., SCR-0061): 4 REQ, 3 COM-Gates; operational über ai/incident.yaml (SCR-0061)

@@ -19,6 +19,7 @@ standard:
 ---
 
 # ATC-STD-202 — Repository Naming & Classification Standard (v1.2.0, APPROVED)
+>
 > **Status:** APPROVED (v1.2.0) — §9-Sammelfreigabe 11.09.2026 (Owner-Chat), approval/APPROVAL-DECISION-2026-09-11.md | **Datum:** 07.09.2026 | **Autor:** Michael Wroblewski (Owner), Aurora (Superagent)
 > **Standard-ID:** ATC-STD-202 | **Scope:** GitHub-Organisation A-TownChain-Okosystems
 > **Referenzen:** AD-025 (Genesis Chronicles Umbenennung), AD-026 (Bauhierarchie L0-L7), AD-029 (Governance-Mandat), ATC-STD-201/-003
@@ -87,7 +88,6 @@ genesis-chronicles, a-townchain, atc-shivacore (Kernel-Marke), a-townchain-os
 atc-standards-Repo — Standards leben kanonisch im Hub (docs/standards/), die
 .atc-Referenzimplementierungen in atc-contracts. shivamon heisst seit AD-025
 genesis-chronicles. Die Chain-Core-Rolle von atc-core uebernimmt a-townchain.
-
 
 ## 3a. Rollenfestlegung Chain-Komponenten (SCR-0005 Option A, AD-046 — MUST)
 
@@ -168,7 +168,7 @@ GitHub CODEOWNERS MUSS daraus abgeleitet bzw. synchron gehalten werden.
 
 Zulaessige Stadien und Uebergaenge (kein Springen):
 
-```
+```text
 experimental → development → beta → production → deprecated → archived
 ```
 

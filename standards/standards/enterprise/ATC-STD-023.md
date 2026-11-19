@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-023
   title: "Technology Lifecycle Management Standard"
@@ -18,7 +19,7 @@ standard:
     - ATC-STD-000
     - ATC-STD-018
     - ATC-STD-TUD-001
-----
+---
 
 # ATC-STD-023 — Technology Lifecycle Management (v1.0.0, APPROVED)
 

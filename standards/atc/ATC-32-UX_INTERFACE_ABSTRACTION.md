@@ -1,4 +1,5 @@
 # ATC-32 — User Experience (UX) & Interface Abstraction Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-32
 > **Tier:** 5 (User & Application Layer) — START VON TIER 5
@@ -28,6 +29,7 @@ aufgegeben wird.
 ## 1. Kernkonzepte
 
 ### 1.1 Interface-Abstraktion (Universal UI)
+
 ATC-32 definiert eine standardisierte Schnittstelle fuer DApps (Decentralized
 Apps). Entwickler muessen nicht fuer jede Plattform (Desktop, Mobil, VR) eine
 eigene App schreiben. Sie definieren die UI-Logik in einer abstrakten Form
@@ -35,12 +37,14 @@ eigene App schreiben. Sie definieren die UI-Logik in einer abstrakten Form
 diese lokal auf dem Endgeraet des Nutzers.
 
 **Implementation:** PARTIAL — Basis da
+
 - ATC-UI (`atc-ui/index.html`) — Web-basiertes Frontend implementiert
 - API Gateway (`gateway/`) auf Port 4000 — Frontend-to-Backend Routing
 - Battle UI (Issue #3) — Genesis Chronicles Battle Interface als erste DApp
 - **Geplant:** Universal UI Framework mit adaptivem Rendering
 
 ### 1.2 Intent-Based UX (Absichtsbasiert)
+
 Der Nutzer interagiert nicht mehr direkt mit "Transaktionen" oder "Gas-
 Gebuehren". Stattdessen gibt er eine Absicht (Intent) ein (z. B. "Kaufe
 Genesis-Chronicles-Eier"). Das System (ATC-32) uebersetzt diese Absicht im Hintergrund
@@ -63,12 +67,14 @@ beste Gebuehr vor und fuehrt die Transaktion aus.
 > **Geplant:** Intent-Solver Engine mit Natural Language -> Smart Contract Mapping
 
 ### 1.3 Unified Authentication
+
 ATC-32 abstrahiert den Anmeldevorgang. Anstatt bei jeder DApp eine neue Wallet
 zu verknuepfen, fungiert das Betriebssystem selbst als "Session-Manager". Der
 Nutzer autorisiert einmalig eine Aktion via Identitaet (ATC-03), und das
 Betriebssystem verwaltet die noetigen Session-Keys sicher im Hintergrund.
 
 **Implementation:** PARTIAL — Basis da
+
 - Wallet (`wallet/wallet.py`) mit ATC-Prefix-Adressen
 - Gateway Auth (`middleware/auth.py`) fuer API-Authentifizierung
 - **Geplant:** Unified Session-Manager mit einmaliger Identitaets-Autorisierung
@@ -78,10 +84,12 @@ Betriebssystem verwaltet die noetigen Session-Keys sicher im Hintergrund.
 ## 2. Warum ATC-32 fuer KAI-OS essenziell ist
 
 ### 2.1 Barrierefreiheit
+
 Durch die Abstraktion der Blockchain-Komplexitaet (Gas, Private Keys, Nonces)
 wird KAI-OS fuer Nutzer ohne tiefgehendes technisches Verstaendnis bedienbar.
 
 ### 2.2 Plattformunabhaengigkeit
+
 Eine App, die ATC-32-konform entwickelt wurde, sieht auf einem Smartphone,
 einer Smartwatch oder einem VR-Headset immer konsistent aus, weil das OS die
 UI-Elemente adaptiv rendert.
@@ -90,6 +98,7 @@ UI-Elemente adaptiv rendert.
 ATC-22 (HAL) — Adaptive UI fuer verschiedene Hardware.
 
 ### 2.3 Sicherheits-Layer fuer UX
+
 Da der Nutzer nicht mehr staendig Keys bestaetigen muss, schuetzt ATC-32 vor
 typischen Phishing-Angriffen, bei denen Nutzer dazu gebracht werden, schaedliche
 Smart Contracts blind zu signieren.
@@ -101,19 +110,24 @@ Smart Contracts blind zu signieren.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-03 (Decentralized Identity)
+
 Die Identitaet des Nutzers ist der Anker fuer die ATC-32-Sitzungen.
 
 ### 3.2 ATC-21 (Holographic Execution)
+
 Die UI-Elemente werden als "kleine Hologramme" (instanziierte Wasm-Module) vom
 Betriebssystem bereitgestellt.
 
 ### 3.3 ATC-01 (Smart Contracts)
+
 Intent-Based UX uebersetzt Nutzer-Absichten in Smart-Contract-Aufrufe (ATC-01).
 
 ### 3.4 ATC-22 (HAL)
+
 Adaptive UI-Renderung basierend auf Hardware-Faehigkeiten (ATC-22 Flags).
 
 ### 3.5 Issue #3 (Battle UI)
+
 Die im Issue #3 beschriebene Battle-UI fuer Genesis Chronicles ist eine erste Umsetzung
 der ATC-32-Prinzipien — die Komplexitaet der Battle-Logik wird hinter einer
 benutzerfreundlichen, animierten Oberflaeche versteckt.
@@ -121,6 +135,7 @@ benutzerfreundlichen, animierten Oberflaeche versteckt.
 **Status:** Issue #3 abgeschlossen. Battle UI implementiert.
 
 ### 3.6 Issue #5 (Explorer) & #7 (Build/Deploy)
+
 Explorer und Build-Pipeline als weitere DApp-Beispiele, die ATC-32-Prinzipien
 folgen.
 
@@ -182,7 +197,7 @@ folgen.
 
 ## 7. Intent-Based UX — Architektur
 
-```
+```text
 NUTZER                      ATC-32                    BACKEND
   |                           |                         |
   | "Kaufe Genesis-Chronicles-Eier"     |                         |
@@ -219,7 +234,7 @@ NUTZER                      ATC-32                    BACKEND
 
 Mit ATC-32 beginnt **Tier 5 (User & Application Layer)**:
 
-```
+```text
 TIER 5 — USER & APPLICATION (ATC-32+)
 ├── ATC-32  UX & Interface Abstraction    PARTIAL
 ├── ATC-33  ...                             GEPLANT
@@ -234,7 +249,6 @@ TIER 5 — USER & APPLICATION (ATC-32+)
 *Dieses Dokument wurde aus der urspruenglichen Atc-32.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:43 | Aurora (Superagent)*
-
 
 ---
 

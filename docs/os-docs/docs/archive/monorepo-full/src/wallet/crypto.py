@@ -2,7 +2,6 @@
 """ATC Crypto — ECDSA signing and verification utilities."""
 import hashlib
 import hmac
-from typing import Optional
 
 
 class CryptoUtils:

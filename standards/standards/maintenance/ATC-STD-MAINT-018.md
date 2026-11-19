@@ -38,7 +38,8 @@ Rollback (Pfad vorhanden, getestet, dokumentiert) · Restore (Daten/State) · Fa
 2. OS-/Plattform-Updates folgen dem A/B-Prinzip mit Health-Check-Entscheidung.
 3. KPI: Rollback Success Rate (generiert aus Recovery-Tests).
 4. Failover-Mechanismen werden wie Rollbacks regelmaeßig getestet (M1).
-```
+
+```text
 Version N → Update → N+1 → Health Check → PASS: commit
                                       → FAIL: rollback → N (verifiziert)
 ```

@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-MILESTONE-001
   title: "ATC Milestone Standard — Verbindliche Meilenstein-Governance: Zustandsnachweis, Lebenszyklus, Acceptance Gates, Evidence Packs, maschinenlesbare Registry"
@@ -31,7 +32,7 @@ standard:
     - ATC-STD-MD-001
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-MILESTONE-001 — ATC Milestone Standard (v1.0.0, APPROVED)
 
@@ -78,7 +79,7 @@ wurden (REQ-MS-001).
 
 Jeder verbindliche Meilenstein DURCHLÄUFT verpflichtend:
 
-```
+```text
 PLANNED → DEFINED → IN_PROGRESS → FEATURE_COMPLETE → VALIDATION → AUDIT →
 ACCEPTED → RELEASED → VERIFIED → CLOSED
 ```
@@ -151,7 +152,7 @@ Org-Roadmap-Nummerierung (AD-027 M1–M8 sind konkrete Instanzen, s. §18).
 Ein Meilenstein DARF nur bei vollständigem Nachweis geschlossen werden (REQ-MS-006).
 Evidence Pack (Ablage je Meilenstein, bevorzugt `evidence/ATC-M-NNN/`):
 
-```
+```text
 ATC-M-NNN/
 ├── requirements/      ├── implementation/   ├── tests/
 ├── security/          ├── compatibility/   ├── documentation/
@@ -166,7 +167,7 @@ Dokumentationsnachweise. Mindestens MUSS je Gate ein Artefakt vorliegen.
 
 Ein Meilenstein DARF nur ACCEPTED werden, wenn alle Gates bestanden sind (REQ-MS-007):
 
-```
+```text
 Requirement Gate → Implementation Gate → Test Gate → Security Gate →
 Compatibility Gate → Documentation Gate → Audit Gate → Acceptance Gate
 ```
@@ -186,7 +187,7 @@ registry/dependencies.yaml).
 
 Governance-Kette (REQ-MS-009):
 
-```
+```text
 Roadmap → Milestone → Requirements → Issues → Tasks → Sprints →
 Implementation → Tests → Audit → Milestone Acceptance
 ```
@@ -201,7 +202,7 @@ Ein Release KANN einen oder mehrere Meilensteine enthalten (REQ-MS-010). Ein Rel
 DARF nur veröffentlicht werden, wenn seine kritischen Meilensteine ACCEPTED sind
 (Kopplung an ATC-STD-VERSION-001 Release-Pflichten).
 
-```
+```text
 v0.8.0
  ├── ATC-M-WALLET-004
  ├── ATC-M-NODE-003
@@ -213,7 +214,7 @@ v0.8.0
 Bei einem MAJOR Release gilt die Kette (REQ-MS-011; Kopplung an UPDATE-001 UPD-G04
 und COMPAT-001):
 
-```
+```text
 Major Release → Dependency Audit → Compatibility Audit → Standards Audit →
 Documentation Audit → Migration → Regression Tests → Milestone Revalidation
 ```
@@ -226,7 +227,7 @@ Changes erneut validiert werden (Revalidation). Ergebnis MUSS in `registry/miles
 
 Jeder Meilenstein MUSS ein Risikomodell führen (REQ-MS-012):
 
-```
+```text
 risk:
   overall: LOW | MEDIUM | HIGH | CRITICAL
   technical: / security: / dependency: / compatibility: / operational: / business:

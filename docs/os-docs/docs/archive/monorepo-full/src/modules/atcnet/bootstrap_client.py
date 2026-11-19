@@ -3,9 +3,11 @@
 ATCNet Bootstrap Client — ATN-1000 Standard
 Verbindet sich mit Bootstrap Node und holt Peer-Liste.
 """
-import socket, json, time, logging
-from typing import List, Optional
+import json
+import logging
+import socket
 from dataclasses import dataclass
+from typing import List
 
 logger = logging.getLogger("atcnet.bootstrap_client")
 

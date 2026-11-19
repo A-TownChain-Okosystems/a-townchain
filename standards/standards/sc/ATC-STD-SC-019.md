@@ -40,6 +40,7 @@ contracts/
 ├── registry/{contracts.yaml, deployments.yaml, versions.yaml}
 ├── token/ nft/ defi/ governance/ bridge/ oracle/ gamefi/ mining/ system/
 ```
+
 contracts.yaml erfasst je Contract: contract_id, name, repository, version, network, status, verified, audited (plus SC-002-Identitaet).
 
 ## 2. Registry-First (REQ-SC-054)
@@ -49,8 +50,6 @@ Jeder Contract MUSS vor Implementierung (SC-G0) in der Registry angelegt und vor
 ## 3. Deployment-Referenzen (REQ-SC-055)
 
 deployments.yaml MUSS jede Deployment-Record-Kette (SC-006) referenzieren; versions.yaml dokumentiert die Contract-Historie.
-
-
 
 ## Anforderungs-Verzeichnis
 

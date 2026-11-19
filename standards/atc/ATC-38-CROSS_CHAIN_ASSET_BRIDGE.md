@@ -27,6 +27,7 @@ Während KAI-OS als dezentrales Betriebssystem autark funktionieren kann, ist es
 ATC-38 standardisiert, wie Assets von einer Quell-Chain „eingeschlossen" (gelockt) werden, um auf der KAI-OS-Chain ein äquivalentes „Wrapped Asset" (gemäß ATC-20) zu erzeugen. Bei der Rückübertragung wird dieser Prozess umgekehrt (Burn auf KAI-OS, Unlock auf der Ursprungs-Chain).
 
 **Ablauf Lock-and-Mint:**
+
 1. Nutzer initiiert Transfer auf Quell-Chain (z. B. Ethereum)
 2. Smart Contract sperrt (lock) das Asset auf der Quell-Chain
 3. Relayer-Nodes validieren die Lock-Transaktion
@@ -34,6 +35,7 @@ ATC-38 standardisiert, wie Assets von einer Quell-Chain „eingeschlossen" (gelo
 5. Nutzer erhält Wrapped Asset auf KAI-OS-Chain
 
 **Ablauf Burn-and-Mint (Rückübertragung):**
+
 1. Nutzer verbrennt (burn) Wrapped Asset auf KAI-OS-Chain
 2. Relayer-Nodes validieren den Burn
 3. Smart Contract gibt Asset auf Quell-Chain frei (unlock)
@@ -44,11 +46,13 @@ ATC-38 standardisiert, wie Assets von einer Quell-Chain „eingeschlossen" (gelo
 Um eine Bridge dezentral zu betreiben, nutzt ATC-38 ein Gremium aus Relayer-Nodes. Diese validieren die Transaktion auf der Quell-Chain, bevor sie die Mint-Operation auf der KAI-OS-Chain freigeben.
 
 **Relayer-Auswahl basiert auf:**
+
 - **Reputation (ATC-30):** Relayer mit hoher Trust-Score werden bevorzugt
 - **Stake (ATC-11):** Relayer müssen ATC Token als Sicherheits-Kaution staken
 - **Slashing:** Bei fehlerhaftem Verhalten wird der Stake teilweise oder vollständig entzogen
 
 **Mindestanforderungen:**
+
 - Mindestens 5 Relayer-Nodes aktiv
 - 3-of-5 Multi-Sig (ATC-18) für jede Bridge-Transaktion
 - 100 Block-Confirmations auf Quell-Chain vor Mint
@@ -58,6 +62,7 @@ Um eine Bridge dezentral zu betreiben, nutzt ATC-38 ein Gremium aus Relayer-Node
 Der Standard stellt sicher, dass eine Brücken-Transaktion „atomar" ist. Das bedeutet, dass sie entweder auf beiden Seiten erfolgreich abgeschlossen wird oder gar nicht. Sollte ein Schritt fehlschlagen, wird das Asset auf der Quell-Chain automatisch wieder freigegeben (Rollback).
 
 **Garantie-Mechanismen:**
+
 - Time-locked Contracts (HTLC-Pattern)
 - Automatic Rollback nach Timeout (Standard: 24h)
 - Event-basierte Finalisierung via IPC Bus

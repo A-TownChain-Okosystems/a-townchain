@@ -23,7 +23,7 @@ ATCLang Virtual Machine — Stack-basierte VM für ATCLang-Bytecode. Vollständi
 
 ### Implementierung
 
-```
+```text
 atclang/vm/atcvm.py — 887 Zeilen
 ├── class OP(IntEnum)      — 105 Op-Codes
 ├── class Instruction      — Op + Args
@@ -237,7 +237,7 @@ atclang/vm/atcvm.py — 887 Zeilen
 
 ## 3. VM-Architektur
 
-```
+```text
 ┌──────────────────────────────────────┐
 │              ATCVM                   │
 │  ┌─────────┐  ┌──────────────────┐   │

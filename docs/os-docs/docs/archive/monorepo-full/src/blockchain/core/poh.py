@@ -7,7 +7,9 @@
 # durch rekursives SHA-256 Hashing.
 # Jeder Hash beweist, dass Zeit vergangen ist.
 
-import hashlib, time
+import hashlib
+import time
+
 
 class ProofOfHistory:
     """

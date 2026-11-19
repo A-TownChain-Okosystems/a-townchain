@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-016
   title: "Repository Artifact & File Inventory Standard"
@@ -23,7 +24,7 @@ standard:
     - ATC-STD-201
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "atc-standards (Phase 1) und alle ATC-Repositories (Phase 2)"
-----
+---
 
 # ATC-STD-016 — Repository Artifact & File Inventory (v1.0.0, APPROVED)
 

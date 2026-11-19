@@ -4,10 +4,10 @@ ATCLang Stdlib — ATC::Crypto
 Kryptografische Operationen für ATCLang Smart Contracts.
 ATC-94 | Sprint 2.5 | Non-EVM: SHA-256 only
 """
+import base64
 import hashlib
 import hmac
 import secrets
-import base64
 from typing import Tuple
 
 

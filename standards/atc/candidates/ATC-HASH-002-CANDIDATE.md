@@ -32,7 +32,7 @@ Registrierung ist vorbereitet, aber nicht wirksam. Der Versuch eines direkten Co
 
 ### 0.1 Warum die Registrierung nicht wirksam ist (verifiziert 11.11.2026)
 
-```
+```text
 PUT /repos/.../atc-standards/contents/standards/atc/candidates/ATC-HASH-002-CANDIDATE.md
 HTTP 409: "Could not create file: Changes must be made through a pull request.
           14 of 14 required status checks are expected."
@@ -109,7 +109,7 @@ Domain-Konvention.
 
 **H-3.1 (MUSS)**
 
-```
+```text
 input = DOMAIN_BYTES ‖ 0x00 ‖ PAYLOAD_BYTES
 ```
 
@@ -551,7 +551,7 @@ Rückfallpfad.
 
 ## 12. Governancestatus
 
-```
+```text
 ATC-HASH-002
   CANDIDATE
   Normative Registrierung: BLOCKED (Branchschutz + 14 Checks, CI tot)

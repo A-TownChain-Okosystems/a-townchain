@@ -1,4 +1,5 @@
 # ATC-20 — Wrapped & Synthetic Asset Deployment
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-20
 > **Tier:** 2 (Logik & Oekonomie) — ABSCHLUSS VON TIER 2
@@ -24,18 +25,21 @@ zwischen der nativen A-TownChain-Wirtschaft und der Integration externer Werte.
 ## 1. Kernkonzepte
 
 ### 1.1 Synthetische Repraesentation
+
 ATC-20 ermoeglicht es, Assets, die nativ nicht auf der A-TownChain existieren
 (z. B. Gold, Aktien, Indizes oder Daten-Feeds), innerhalb des Oekosystems als
 "synthetische Token" abzubilden. Diese Token spiegeln den Preis oder Wert eines
 externen Basiswerts wider, ohne dass dieser physisch bewegt werden muss.
 
 **Aktueller Stand:** Nicht implementiert. Die Basis-Komponenten sind da:
+
 - ATC-10 Oracles (PoH als Zeitbasis, Oracle-Integration geplant)
 - ATC-19 AMM Pools fuer Handel der synthetischen Token
 - ATC-14 Determinismus fuer Liquidations-Logik
 - **Geplant:** Synthetics Contract mit Oracle-Preisfeed
 
 ### 1.2 Collateralization (Besicherung)
+
 Ein ATC-20-Asset ist zwingend durch ein anderes, bereits existierendes Asset
 (nach ATC-11 oder ATC-12) besichert. Der Standard legt das Verhaeltnis und die
 Liquidation-Logik fest: Wenn der Wert des Basiswerts stark schwankt, muss der
@@ -43,7 +47,8 @@ Ersteller des synthetischen Assets nachlegen, um den Wert des ATC-20-Tokens zu
 stuetzen.
 
 **Konzept:**
-```
+
+```text
 ATC-11 Collateral (z.B. 150% ATCoin)
   -> mint synGold (synthetisches Gold-Token)
   -> Oracle (ATC-10) liefert Goldpreis
@@ -54,12 +59,14 @@ ATC-11 Collateral (z.B. 150% ATCoin)
 > **Geplant:** Collateralized Synthetics Contract in `blockchain/contracts/synthetics/`
 
 ### 1.3 Wrapped Assets
+
 Neben Synthetik deckt ATC-20 auch "Wrapped"-Versionen von Token anderer Chains
 ab. Wenn ein Token von einer fremden Chain (via ATC-09) auf die A-TownChain
 kommt, wird er nach dem ATC-20-Standard "verpackt", damit er innerhalb der
 KAI-OS-Infrastruktur wie ein nativer Token (ATC-11) behandelt werden kann.
 
 **Implementation:** Teilweise implementiert
+
 - ATC-09 Cross-Chain Bridge (`bridge_contract.py`) — Ethereum + Solana
 - Bridge lockt fremde Token -> mintet wrapped Token auf A-TownChain
 - Wrapped Token verhaelt sich wie ATC-11 (ATC-89)
@@ -70,6 +77,7 @@ KAI-OS-Infrastruktur wie ein nativer Token (ATC-11) behandelt werden kann.
 ## 2. Warum ATC-20 fuer KAI-OS essenziell ist
 
 ### 2.1 Finanzielle Tiefe
+
 ATC-20 erlaubt es KI-Agenten, Handelsstrategien auf Assets anzuwenden, die weit
 ueber das Krypto-Oekosystem hinausgehen. Eine KI kann so beispielsweise einen
 "A-Town-Gold-Token" handeln, der den Goldpreis in Echtzeit abbildet.
@@ -78,11 +86,13 @@ ueber das Krypto-Oekosystem hinausgehen. Eine KI kann so beispielsweise einen
 ueber ATC-19 AMM Pools. Autonome Portfolio-Verwaltung.
 
 ### 2.2 Risiko-Hedging
+
 Nutzer koennen sich innerhalb des KAI-OS gegen Volatilitaet absichern, indem sie
 in synthetische Assets investieren, die negativ korreliert sind, ohne das System
 verlassen zu muessen.
 
 ### 2.3 Komplettes Oekosystem
+
 Mit ATC-20 vervollstaendigt das Betriebssystem sein wirtschaftliches Angebot:
 
 | Komponente | Standard | Status |
@@ -98,10 +108,12 @@ Mit ATC-20 vervollstaendigt das Betriebssystem sein wirtschaftliches Angebot:
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-19 (AMM)
+
 ATC-20-Assets werden standardmaessig in AMM-Pools integriert, um die notwendige
 Liquiditaet fuer den Handel dieser synthetischen Werte zu garantieren.
 
 ### 3.2 ATC-10 (Global Time & Oracles)
+
 Damit ein synthetisches Asset den Preis eines externen Gutes korrekt abbildet,
 benoetigt ATC-20 zwingend die Oracle-Daten, die ueber ATC-10 bereitgestellt
 werden.
@@ -109,11 +121,13 @@ werden.
 > ATC-10 ist PARTIAL — PoH als Zeitbasis implementiert, Oracle-Integration geplant.
 
 ### 3.3 ATC-14 (Deterministic Execution)
+
 Die Liquidations-Logik von ATC-20-Assets muss zwingend deterministisch sein.
 Wenn die Besicherung unter einen Schwellenwert faellt, muss der Smart Contract
 auf allen Nodes gleichzeitig die Liquidation ausloesen.
 
 ### 3.4 ATC-09 (Cross-Chain Bridge)
+
 Wrapped Assets kommen ueber die ATC-09 Bridge auf die A-TownChain. Die Bridge
 ist voll implementiert (Ethereum + Solana).
 
@@ -171,7 +185,7 @@ ist voll implementiert (Ethereum + Solana).
 
 Mit ATC-20 ist **Tier 2 (Logik & Oekonomie) vollstaendig definiert**:
 
-```
+```text
 TIER 2 — LOGIK & OEKONOMIE (ATC-11 bis ATC-20)
 ├── ATC-11  Fungible Assets              OK IMPLEMENTIERT
 ├── ATC-12  Non-Fungible Holographic     OK IMPLEMENTIERT
@@ -186,6 +200,7 @@ TIER 2 — LOGIK & OEKONOMIE (ATC-11 bis ATC-20)
 ```
 
 ### Naechster Schritt: Tier 3 (Operating System Infrastructure)
+
 ATC-21 — Holographic On-Demand Execution Engine (Wasm)
 
 ---
@@ -193,7 +208,6 @@ ATC-21 — Holographic On-Demand Execution Engine (Wasm)
 *Dieses Dokument wurde aus der urspruenglichen Atc-20.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:11 | Aurora (Superagent)*
-
 
 ---
 

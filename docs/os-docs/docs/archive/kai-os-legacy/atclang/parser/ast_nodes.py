@@ -6,7 +6,7 @@ Version: 0.1.0-alpha
 """
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Any
+from typing import Any, List
 
 
 # ── Basis-Knoten ─────────────────────────────────────────

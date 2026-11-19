@@ -8,10 +8,10 @@
 # ============================================================================
 version: "1.2.0"
 generated_from: registry/standards.yaml
-updated: "2026-10-07"
+updated: "2026-11-18"
 coverage_kpi:
-  registry_total: 533
-  matrix_entries: 533
+  registry_total: 534
+  matrix_entries: 534
   matrix_coverage: "100%"
   enforced_target: "je Wartungszyklus steigend (REQ-IMP-007)"
   hinweis: "Wertigkeit der 21 SCR-0045-Detail-Eintraege bleibt; Familien-Evidence konsolidiert"
@@ -4422,4 +4422,13 @@ standards:
     implementation:
       status: reference
       evidence: "Legacy-Serie (atc/): durch ATC-STD-000ff superseded; historische Referenz konserviert"
+    independence: L1
+
+  - standard: ATC-OS-SEC-UPDATE-001
+    version: "1.0.0"
+    applicability: MANDATORY
+    implementation:
+      status: specification_only
+      evidence: "Referenz-Durchsetzung der Pruefordnung in components/update-authority (11-stufige Entscheidung, 17 Tests) - das ist REQ-BSU-004/005/013/014/019, nicht der ganze Standard"
+      note: "Offen: TUF-Metadaten-Rollen (REQ-BSU-012), Health-Check nach Apply (REQ-BSU-007), Rollback-Orchestrierung (REQ-BSU-008), koordinierte Protokollaktivierung (REQ-BSU-011), GATE-BSU-05..08. Kein IMPLEMENTED ohne diese Nachweise."
     independence: L1

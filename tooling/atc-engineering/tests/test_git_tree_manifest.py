@@ -20,7 +20,12 @@ def fixture():
             {"path": "src", "mode": "040000", "type": "tree", "sha": "d" * 40},
             {"path": "src/lib.py", "mode": "100644", "type": "blob", "sha": file_sha},
             {"path": "vendor", "mode": "040000", "type": "tree", "sha": "e" * 40},
-            {"path": "vendor/dep", "mode": "160000", "type": "commit", "sha": submodule_sha},
+            {
+                "path": "vendor/dep",
+                "mode": "160000",
+                "type": "commit",
+                "sha": submodule_sha,
+            },
         ],
     }
     inventory = {

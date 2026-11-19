@@ -23,7 +23,7 @@ Fungible Token Standard — ATCLang-natives Token-Interface analog ERC-20. Trans
 
 ### Module
 
-```
+```text
 modules/contracts/token.atc — Token-Contract-Template
 ```
 
@@ -67,7 +67,7 @@ decimals: 18 | mintable: true | burnable: true | pausable: true | max_supply: op
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-89.atc    # Unit-Tests
 └── test_atc-89_integration.atc  # Integration-Tests

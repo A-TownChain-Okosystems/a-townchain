@@ -2,9 +2,10 @@
 # gateway/middleware/auth.py
 # API Key Authentifizierung
 
-from functools import wraps
-from flask import request, jsonify
 import os
+from functools import wraps
+
+from flask import jsonify, request
 
 VALID_KEYS = set(os.getenv("API_KEYS", "atc-dev-key-2025").split(","))
 

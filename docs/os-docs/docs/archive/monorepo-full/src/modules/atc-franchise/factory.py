@@ -4,10 +4,12 @@ Franchise Factory — ATC-9900 DAO Standard
 Dezentrales Business-Ökosystem auf A-TownChain.
 Jede Franchise ist eine Mini-DAO mit eigenem Token, Governance, Vault.
 """
-import hashlib, time, json, uuid
-from dataclasses import dataclass, field, asdict
+import hashlib
+import time
+from dataclasses import dataclass, field
+from enum import Enum
 from typing import Dict, List, Optional
-from enum import Enum, auto
+
 
 class FranchiseStatus(Enum):
     PROPOSAL  = "proposal"

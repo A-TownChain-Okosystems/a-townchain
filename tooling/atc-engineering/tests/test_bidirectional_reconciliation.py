@@ -2,7 +2,9 @@ import importlib.util
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "validate_bidirectional_reconciliation.py"
+SCRIPT = (
+    Path(__file__).resolve().parents[1] / "scripts" / "validate_bidirectional_reconciliation.py"
+)
 SPEC = importlib.util.spec_from_file_location("validate_bidirectional_reconciliation", SCRIPT)
 module = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(module)
@@ -15,11 +17,18 @@ def inventory():
         "repository": "owner/repo",
         "observed_commit_sha": "a" * 40,
         "files": [{"path": "src.py", "blob_sha": "b" * 40, "status": "ANALYSED"}],
-        "symbols": [{
-            "symbol_id": "symbol-1", "path": "src.py", "source_blob_sha": "b" * 40,
-            "signature": "def run(x)", "qualified_name": "run", "symbol_kind": "function",
-            "source_start_line": 1, "source_end_line": 2,
-        }],
+        "symbols": [
+            {
+                "symbol_id": "symbol-1",
+                "path": "src.py",
+                "source_blob_sha": "b" * 40,
+                "signature": "def run(x)",
+                "qualified_name": "run",
+                "symbol_kind": "function",
+                "source_start_line": 1,
+                "source_end_line": 2,
+            }
+        ],
         "exclusions": [],
         "parser_coverage": {
             fmt: {
@@ -56,7 +65,10 @@ class BidirectionalReconciliationTests(unittest.TestCase):
 
     def test_heuristic_parser_cannot_be_authoritative(self):
         source, catalog = inventory(), inventory()
-        source["parser_coverage"]["rust"] = {"parser_mode": "heuristic_regex", "status": "HEURISTIC_PARTIAL"}
+        source["parser_coverage"]["rust"] = {
+            "parser_mode": "heuristic_regex",
+            "status": "HEURISTIC_PARTIAL",
+        }
         report = module.reconcile(source, catalog)
         self.assertIn("PARSER_NOT_AUTHORITATIVE", {item["code"] for item in report["findings"]})
 
@@ -64,13 +76,19 @@ class BidirectionalReconciliationTests(unittest.TestCase):
         source, catalog = inventory(), inventory()
         catalog["symbols"] = []
         report = module.reconcile(source, catalog)
-        self.assertIn("SOURCE_DECLARATION_MISSING_FROM_CATALOG", {item["code"] for item in report["findings"]})
+        self.assertIn(
+            "SOURCE_DECLARATION_MISSING_FROM_CATALOG",
+            {item["code"] for item in report["findings"]},
+        )
 
     def test_orphan_catalog_entry_blocks(self):
         source, catalog = inventory(), inventory()
         source["symbols"] = []
         report = module.reconcile(source, catalog)
-        self.assertIn("CATALOG_ENTRY_WITHOUT_SOURCE_DECLARATION", {item["code"] for item in report["findings"]})
+        self.assertIn(
+            "CATALOG_ENTRY_WITHOUT_SOURCE_DECLARATION",
+            {item["code"] for item in report["findings"]},
+        )
 
     def test_blob_mismatch_blocks(self):
         source, catalog = inventory(), inventory()
@@ -78,13 +96,14 @@ class BidirectionalReconciliationTests(unittest.TestCase):
         report = module.reconcile(source, catalog)
         self.assertIn("UNEXPLAINED_FILE_DELTA", {item["code"] for item in report["findings"]})
 
-
     def test_reviewed_expected_file_delta_is_exactly_bound_to_both_inventories(self):
         source = inventory()
         catalog = inventory()
         source["observed_commit_sha"] = "a" * 40
         catalog["observed_commit_sha"] = "b" * 40
-        catalog["files"].append({"path": "docs/new.json", "blob_sha": "c" * 40, "status": "ANALYSED"})
+        catalog["files"].append(
+            {"path": "docs/new.json", "blob_sha": "c" * 40, "status": "ANALYSED"}
+        )
         evidence = ["https://github.com/owner/repo/compare/" + "a" * 40 + "..." + "b" * 40]
         contract = {
             "repository": "owner/repo",
@@ -93,12 +112,16 @@ class BidirectionalReconciliationTests(unittest.TestCase):
             "status": "REVIEWED_EXPECTED_CHANGE_SET",
             "merge_approval": "NOT_GRANTED",
             "evidence": evidence,
-            "expected_deltas": [{
-                "path": "docs/new.json", "change_type": "added",
-                "source_blob_sha": None, "catalog_blob_sha": "c" * 40,
-                "rationale": "A reviewed catalog-only manifest addition.",
-                "evidence": evidence,
-            }],
+            "expected_deltas": [
+                {
+                    "path": "docs/new.json",
+                    "change_type": "added",
+                    "source_blob_sha": None,
+                    "catalog_blob_sha": "c" * 40,
+                    "rationale": "A reviewed catalog-only manifest addition.",
+                    "evidence": evidence,
+                }
+            ],
         }
         report = module.reconcile(source, catalog, contract)
         self.assertEqual(report["status"], "RECONCILED")
@@ -109,7 +132,9 @@ class BidirectionalReconciliationTests(unittest.TestCase):
         catalog = inventory()
         source["observed_commit_sha"] = "a" * 40
         catalog["observed_commit_sha"] = "b" * 40
-        catalog["files"].append({"path": "unexpected.json", "blob_sha": "c" * 40, "status": "ANALYSED"})
+        catalog["files"].append(
+            {"path": "unexpected.json", "blob_sha": "c" * 40, "status": "ANALYSED"}
+        )
         contract = {
             "repository": "owner/repo",
             "source_commit_sha": "a" * 40,
@@ -127,9 +152,14 @@ class BidirectionalReconciliationTests(unittest.TestCase):
         source = inventory()
         catalog = inventory()
         exclusion = {
-            "exclusion_id": "e" * 64, "repository": "owner/repo", "path": "src.py",
-            "reason_code": "POLICY", "category": "policy", "reason": "test",
-            "rationale": "reviewed test rationale", "source_blob_sha": "b" * 40,
+            "exclusion_id": "e" * 64,
+            "repository": "owner/repo",
+            "path": "src.py",
+            "reason_code": "POLICY",
+            "category": "policy",
+            "reason": "test",
+            "rationale": "reviewed test rationale",
+            "source_blob_sha": "b" * 40,
             "evidence": [{"reference": "src.py#" + "b" * 40}],
         }
         source["exclusions"] = [dict(exclusion)]
@@ -137,6 +167,7 @@ class BidirectionalReconciliationTests(unittest.TestCase):
         report = module.reconcile(source, catalog)
         self.assertEqual(report["status"], "BLOCKED")
         self.assertIn("EXCLUSION_BINDING_MISMATCH", {item["code"] for item in report["findings"]})
+
 
 if __name__ == "__main__":
     unittest.main()

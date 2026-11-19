@@ -11,12 +11,15 @@
   },
   "dependencies": {
     "react": "^19.3",
-    "ethers": "^6",
-    "typescript": "^7"
+    "ethers": "^6"
   },
   "devDependencies": {
-    "@types/node": "^26",
     "@types/jest": "^30",
-    "jest": "^30"
+    "@types/node": "^26",
+    "jest": "^30",
+    "typescript": "^7"
+  },
+  "overrides": {
+    "glob": "^14.0.2"
   }
 }

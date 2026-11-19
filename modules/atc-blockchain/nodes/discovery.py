@@ -6,6 +6,7 @@ Ermöglicht neuen Nodes, den Bootstrap-Node zu finden und sich im Netzwerk zu re
 
 import json
 import logging
+import os
 import socket
 import threading
 import time
@@ -13,6 +14,17 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+
+def _resolve_bind_host() -> str:
+    """Bind-Adresse fuer Listener (ATC-STD-300 DTC, CodeQL py/bind-socket-all-interfaces).
+
+    Standard ist Loopback: kein unbeabsichtigtes Exponieren des Dienstes.
+    Echter Netzwerkbetrieb (Bootstrap/Validator) muss ausdruecklich opt-in sein:
+    ATC_P2P_BIND=0.0.0.0 (bzw. "::"). Siehe docs/REPOSITORY_STANDARD.md.
+    """
+    host = os.environ.get("ATC_P2P_BIND", "127.0.0.1").strip()
+    return host or "127.0.0.1"
 
 
 @dataclass
@@ -89,7 +101,7 @@ class NodeDiscovery:
             return
 
         try:
-            self.sock.bind(("0.0.0.0", self.discovery_port))
+            self.sock.bind((_resolve_bind_host(), self.discovery_port))
             self._running = True
             logger.info(f"Discovery-Service gestartet auf Port {self.discovery_port}")
 
@@ -118,7 +130,7 @@ class NodeDiscovery:
         self._running = False
         try:
             self.sock.close()
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — bewusst: optionale Pfade duerfen nicht abbrechen
             pass
         logger.info(f"Discovery-Service für {self.node_id} gestoppt")
 
@@ -144,7 +156,7 @@ class NodeDiscovery:
                 discovery_port = port + self.discovery_port_offset
                 self.sock.sendto(msg, (host, discovery_port))
                 logger.debug(f"ANNOUNCE an {host}:{discovery_port} gesendet")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 logger.error(f"Fehler beim ANNOUNCE an {bootstrap}: {e}")
 
     def listen(self) -> None:
@@ -156,7 +168,7 @@ class NodeDiscovery:
                 self._handle(msg, addr)
             except json.JSONDecodeError:
                 logger.warning(f"Ungültige JSON von {addr}")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 if self._running:
                     logger.error(f"Fehler in Discovery-Listener: {e}")
 
@@ -234,7 +246,7 @@ class NodeDiscovery:
         ).encode()
         try:
             self.sock.sendto(msg, addr)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             logger.error(f"Fehler beim Senden der PEER_LIST an {addr}: {e}")
 
     def health_check(self) -> None:
@@ -265,9 +277,9 @@ class NodeDiscovery:
                                 peer_info.port + self.discovery_port_offset,
                             ),
                         )
-                    except Exception as e:
+                    except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                         logger.debug(f"Fehler beim Senden von PING an {nid}: {e}")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
                 logger.error(f"Fehler in Health-Check: {e}")
 
     def _auto_announce(self) -> None:
@@ -292,7 +304,7 @@ class NodeDiscovery:
             with open(path, "w") as f:
                 json.dump(peers_dict, f, indent=2)
             logger.info(f"Peers gespeichert: {path}")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             logger.error(f"Fehler beim Speichern von Peers: {e}")
 
     def load_peers(self, path: str = "data/peers.json") -> None:
@@ -306,7 +318,7 @@ class NodeDiscovery:
             logger.info(f"Peers geladen: {path} ({len(self.peers)} Peers)")
         except FileNotFoundError:
             logger.debug(f"Keine Peer-Datei gefunden: {path}")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             logger.error(f"Fehler beim Laden von Peers: {e}")
 
     def get_status(self) -> dict:

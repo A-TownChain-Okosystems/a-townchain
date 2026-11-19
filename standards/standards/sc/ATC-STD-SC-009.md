@@ -36,8 +36,9 @@ Gilt fuer alle Contracts mit administrativen Funktionen; verstaerkt ATC-STD-203 
 ## 1. Schutz-Pflicht (REQ-SC-026)
 
 Administrative Funktionen MUessen durch Modifier/Checks geschuetzt sein, z. B. ```solidity
-modifier onlyGovernance() { require(msg.sender == governance, "NOT_GOVERNANCE"); _; }
-```
+modifier onlyGovernance() { require(msg.sender == governance, "NOT_GOVERNANCE");_; }
+
+```text
 
 
 ## 2. Rollen-Enum (REQ-SC-027)

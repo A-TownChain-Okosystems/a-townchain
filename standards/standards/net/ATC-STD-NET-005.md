@@ -27,7 +27,6 @@ standard:
 
 ---
 
-
 ## Abstract
 
 Die Genesis ist die Wurzel des Netzwerks — je Stufe mit unterschiedlicher
@@ -59,7 +58,6 @@ Nach dem Moment: Genesis ist unveraenderlich (NET-003 REQ-NET-021).
 Chain-IDs werden zentral in registry/networks.yaml allokiert (naechste
 freie Nummer, SCR-0001-Prozess). Mainnet 658467 ist reserviert (AD-004).
 Devnet-/Testnet-IDs sind bis zur Genesis-Erstellung aenderbar.
-
 
 - **Genesis-Parameter-Pflichten:** Konsens-Parameter, Gas-Limits und Fee-Strukturen MUESSEN explizit und verifizierbar in `genesis.json` hinterlegt sein (REQ-NET-045).
 - **Genesis-Verifikations-Schritte:** Eine deterministische Genesis-Bytecode-Hash-Validierung MUSS vor jedem Einsatz durchgeführt werden (REQ-NET-046).
@@ -116,5 +114,4 @@ Vertraege, ATVM-Verifier + License Gate als Trust Boundary).
 | Zustand | Wert |
 |---|---|
 | Standard-Status | SPECIFIED — retro-aktiv erfasst (Meta-Sweep 08.09.2026, SCR-0047) |
-| Autoritativ | Implementierungs-Status gemaess ATC-STD-IMPLEMENTATION-001 §3/§4 in `registry/standard-implementation.yaml` (SSOT); Detail-Erfassung laeuft via Coverage-Programm gemaess ATC-STD-IMPLEMENTATION-001 §6 |
-Zusätzliche Sicherheitsregel: Sämtliche Sicherheitsvorgaben der jeweiligen Stufe MUESSEN zwingend eingehalten werden; ein fehlerhafter Zustand auf Mainnet MUSS das Release-Gate unverzüglich stoppen.
+| Autoritativ | Implementierungs-Status gemaess ATC-STD-IMPLEMENTATION-001 §3/§4 in `registry/standard-implementation.yaml` (SSOT); Detail-Erfassung laeuft via Coverage-Programm gemaess ATC-STD-IMPLEMENTATION-001 §6 Zusätzliche Sicherheitsregel: Sämtliche Sicherheitsvorgaben der jeweiligen Stufe MUESSEN zwingend eingehalten werden; ein fehlerhafter Zustand auf Mainnet MUSS das Release-Gate unverzüglich stoppen. |

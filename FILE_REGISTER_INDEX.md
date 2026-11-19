@@ -1,11 +1,11 @@
 # 📑 File Register Index — a-townchain
 
-> Vollständige Dateiliste. Erzeugt 2026-11-12 23:37 UTC+2 aus `origin/main` @ `49da88f1`.
+> Vollständige Dateiliste. Erzeugt 2026-11-18 13:17 UTC+2 aus `origin/main` @ `5a9add0e2`.
 > Lesbare Kennzahlen: [`FILE_REGISTER.md`](FILE_REGISTER.md).
 
-**Total: 11431 Dateien**
+**Total: 11439 Dateien**
 
-## docs (5114)
+## docs (5117)
 
 - `docs/ATC-MONETARY-POLICY-INTEGRATION.md`
 - `docs/CODEGEN_G11_SCOPE.md`
@@ -20,6 +20,7 @@
 - `docs/audits/ATCLANG-VM-CHAIN-INTEGRATION-2026-11-11.md`
 - `docs/audits/CONTRACT-EXECUTION-INVENTORY-2026-11-12.md`
 - `docs/audits/CONTRACT-INTEGRITY-2026-11-08.md`
+- `docs/audits/E2-C-1-EVIDENCE-2026-11-13.md`
 - `docs/audits/EXEC-ATCLANG-COMPILER-AUDIT-2026-11-12.md`
 - `docs/audits/EXEC-DEPENDENCY-INVENTORY-2026-11-12.md`
 - `docs/audits/EXEC-MAPPING-INVENTORY-2026-11-11.md`
@@ -27,6 +28,8 @@
 - `docs/audits/EXEC-TRANSACTION-PATH-2026-11-12.md`
 - `docs/audits/GOVERNANCE-FINDING-FAMILY-400-2026-11-12.md`
 - `docs/audits/INTEGRATION-MATRIX-2026-11-09.md`
+- `docs/audits/OPCODE-SSOT-E2-C-RESOLUTION-2026-11-13.md`
+- `docs/audits/OPCODE-SSOT-INVENTORY-2026-11-13.md`
 - `docs/audits/REPOSITORY-AUDIT-2026-09-16.md`
 - `docs/audits/SB-01-SCHRITTOBERGRENZE-ENTWURF-2026-11-09.md`
 - `docs/audits/SYSTEM-INTEGRATION-2026-11-11.md`
@@ -5122,7 +5125,7 @@
 - `docs/os-docs/wiki/windows-edition-wiki/STATUS.md`
 - `docs/zkp/PROOF_SYSTEM_SELECTION_MATRIX.md`
 
-## standards (2175)
+## standards (2176)
 
 - `standards/.atc/compliance.yaml`
 - `standards/.atc/discovery/baseline.json`
@@ -5314,6 +5317,7 @@
 - `standards/atc/candidates/ATC-STD-410-CANDIDATE.md`
 - `standards/atc/candidates/KAI-OS-READINESS-001-CANDIDATE.md`
 - `standards/atc/conformance/admission-codes.json`
+- `standards/atc/conformance/bc001-opcodes.json`
 - `standards/atc/conformance/identity-value-vectors.json`
 - `standards/atc/conformance/stage1-parser-corpus.json`
 - `standards/atc/conformance/stage1-vectors.json`
@@ -10333,7 +10337,7 @@
 - `apps/atc-storage/tests/TESTPLAN.md`
 - `apps/atc-storage/tools/determinism_check.py`
 
-## ai (506)
+## ai (508)
 
 - `ai/atclang/.atc/compliance.yaml`
 - `ai/atclang/.atc/evidence/evidence.yaml`
@@ -10428,6 +10432,7 @@
 - `ai/atclang/crates/atc-core/src/vm.rs`
 - `ai/atclang/crates/atc-core/tests/cli.rs`
 - `ai/atclang/crates/atc-core/tests/cli_contract_rejection.rs`
+- `ai/atclang/crates/atc-core/tests/contract_e1_failclosed.rs`
 - `ai/atclang/crates/atc-core/tests/contract_lowering.rs`
 - `ai/atclang/crates/atc-core/tests/contract_sources.rs`
 - `ai/atclang/crates/atc-core/tests/differential.rs`
@@ -10439,6 +10444,7 @@
 - `ai/atclang/docs/ATCLANG_1.0_RELEASE_GATE.md`
 - `ai/atclang/docs/ATCLANG_BASELINE_V1.md`
 - `ai/atclang/docs/ENGINEERING_AUDIT.md`
+- `ai/atclang/docs/EXECUTION_STATE_MODEL.md`
 - `ai/atclang/docs/REPOSITORY_STANDARD.md`
 - `ai/atclang/docs/audits/REPOSITORY-AUDIT-2026-09-16.md`
 - `ai/atclang/docs/history/CLOSURE-REGISTER-2026-09-16.md`
@@ -11380,7 +11386,7 @@
 - `kernel/atc-shivacore/sdk/src/syscall.rs`
 - `kernel/atc-shivacore/tools/determinism_check.py`
 
-## tools (28)
+## tools (30)
 
 - `tools/atc-sc-validator/audit_contract_copies.py`
 - `tools/atc-sc-validator/check_contract_registry.py`
@@ -11391,6 +11397,7 @@
 - `tools/atc_reference_decoder.py`
 - `tools/build_parser_corpus.py`
 - `tools/check_admission_codes.py`
+- `tools/check_bc001_opcodes.py`
 - `tools/check_build_coverage.py`
 - `tools/check_parser_corpus.py`
 - `tools/check_stage1_vectors.py`
@@ -11406,6 +11413,7 @@
 - `tools/integration_graph_baseline.json`
 - `tools/linkcheck.py`
 - `tools/tests/test_admission_codes.py`
+- `tools/tests/test_bc001_opcodes.py`
 - `tools/tests/test_build_coverage.py`
 - `tools/tests/test_decision_register.py`
 - `tools/tests/test_integration_graph.py`

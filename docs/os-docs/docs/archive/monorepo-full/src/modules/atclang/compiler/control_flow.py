@@ -32,18 +32,18 @@ Designziele:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable, List, Optional, Sequence, Tuple
+from typing import Any, Callable, List, Optional, Sequence
 
 from atclang.vm.atcvm import OP, Instruction
 
 try:
     from atclang.parser.ast_nodes import (
         ASTNode,
-        IfStatement,
-        WhileStatement,
-        ForStatement,
         BreakStatement,
         ContinueStatement,
+        ForStatement,
+        IfStatement,
+        WhileStatement,
     )
 except ImportError:  # pragma: no cover
     ASTNode = Any

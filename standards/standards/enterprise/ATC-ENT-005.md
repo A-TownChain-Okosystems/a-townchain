@@ -78,6 +78,7 @@ Enterprise-Transaktionen: Buchungs- und Audit-Trails unveraenderbar (append-only
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-280ff (Security-Familie), ATC-ENT-001 · INFORMATIVE: Registry-Kategorie enterprise
+
 ## 5. Verbindliche Richtlinien-Governance-Regeln
 
 1. Neue Unternehmensrichtlinien MUSS in der zentralen Richtlinien-Registry mit einer eindeutigen ID (POL-NNNN) erfasst werden.
@@ -111,9 +112,11 @@ Richtlinien bilden die regulatorische Leitplanke für den gesamten Betrieb. Unge
 ## 10. References
 
 ### Normative Referenzen
+
 - **ATC-STD-000**: Verfassung der A-TownChain Ökosystems
 
 ### Informative Referenzen
+
 - **SCR-0041**: Owner-Auftrag zur Batch-Elaboration dünner Standards
 - **ATC-AAS-012**: Referenzierter Standard im ATC-Regelwerk
 - **ATC-AAS-014**: Referenzierter Standard im ATC-Regelwerk

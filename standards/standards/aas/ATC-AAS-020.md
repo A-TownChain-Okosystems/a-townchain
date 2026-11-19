@@ -34,7 +34,7 @@ Nicht-Gilt: menschliche Rollen (ATC-ENT-002); Mainnet-Betrieb (ATC-STD-NET).
 
 ## 1. Fehlerzustände
 
-```
+```text
 FAILED             — Ausführung fehlgeschlagen
 BLOCKED            — extern/philosophisch blockiert (Finding, Konflikt, Frist)
 NEEDS-HUMAN        — Owner-Entscheidung zwingend (AI-DEV-011 §2)
@@ -78,6 +78,7 @@ Agenten-spezifisch: Agent-Identitaet via AGENT_MANIFEST verifizierbar; Permissio
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-201..203, ATC-AAS-001 · INFORMATIVE: AGENT_MANIFEST.md v3.1.7, Registry-Kategorie aas
+
 ## 4. Ergänzende Verbindliche Betriebs- und Governance-Regeln
 
 1. Tritt ein unbehebbarer Fehler auf, MUSS der Agent sofort den Zustand `ROLLBACK-REQUIRED` oder `FAILED` einnehmen.

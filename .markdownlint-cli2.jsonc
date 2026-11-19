@@ -1,0 +1,41 @@
+{
+  // Markdown-Scope + Regelsatz (SCR-0146, Owner-Entscheidung 18.11.2026)
+  // Basis: Org-Policy .github/policies/markdownlint/.markdownlint-cli2.jsonc
+  // (identischer Regelsatz). Eine einzige, begruendete Abweichung:
+  // MD025.front_matter_title = "" — unsere Dokumente tragen den Titel im
+  // YAML-Frontmatter UND als H1; ohne diese Einstellung wertet markdownlint
+  // den Frontmatter-Titel als erste H1 und meldet die echte H1 als Duplikat.
+  // Kein Regelausfall: MD025 bleibt aktiv, nur die Titelquelle ist definiert.
+  "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint-cli2/main/schema/markdownlint-cli2-config-schema.json",
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD024": { "siblings_only": true },
+    // MD003 bleibt aktiv; Stil explizit ATX, weil YAML-Frontmatter bei der
+    // Setext-Erkennung als Ueberschrift gelesen werden kann.
+    "MD003": { "style": "atx" },
+    "MD025": { "front_matter_title": "" },
+    "MD029": false,
+    "MD033": false,
+    "MD036": false,
+    "MD041": false,
+    "MD060": false
+  },
+  // Importierte Fremdbestaende werden nicht gelintet: docs/os-docs (Snapshot des
+  // aufgeloesten Docs-Repos, SCR-0127) und .org-github-policy (zur Laufzeit
+  // geklonte Org-Policy, nicht Inhalt dieses Repositories). Beide werden von
+  // ihren Eigentuemern gepflegt; Befunde dort sind keine Fehler dieses Repos.
+  // ai/, apps/, components/, kernel/ und modules/ sind importierte Modul- und
+  // App-Bestaende (SCR-0127-Konsolidierung). Sie werden gebaut, aber ihre
+  // Dokumentation ist nicht der Dokumentationsbestand dieses Repositories.
+  "ignores": [
+    "docs/os-docs/**",
+    ".org-github-policy/**",
+    "ai/**",
+    "apps/**",
+    "components/**",
+    "kernel/**",
+    "modules/**"
+  ],
+  "noProgress": true
+}

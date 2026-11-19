@@ -1,6 +1,7 @@
 # SCR-0051 — Bereitliegender Workflow-Patch (Owner-Aktion wegen GH013)
 
 ## Status
+
 **BEREIT — wartet auf Owner-Anwendung.** Der OAuth-Push der Workflow-Datei
 wurde per Repository-Regel abgelehnt (GH013: kein `workflow`-Scope, kongruent
 zu Finding F-010). Zwei Wege zur Aktivierung:
@@ -31,6 +32,7 @@ fertigen Patch selbst.
 ```
 
 ## Wirkung
+
 - Jeder Push/PR auf atc-standards prueft automatisch alle Standard-Dateien
   auf vollstaendige Metadaten (MD-A..MD-F, SCR-0050): Frontmatter, 10
   Pflichtfelder, Wertvalidierung, ID-/Kategorie-Konsistenz. Funde = CI rot.

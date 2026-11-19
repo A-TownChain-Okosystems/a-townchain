@@ -1,0 +1,57 @@
+# Ruff Code Quality — Scope: eigener Python-Quellcode (SCR-0146, Owner-Entscheidung 18.11.2026)
+#
+# Regelsatz und Ruff-Version bleiben die Org-Policy (identischer Policy-SHA wie im
+# Reusable-Workflow). Einzige Abweichung: der importierte Dokumentations-Snapshot
+# docs/os-docs/** wird ausgeschlossen. Begruendung: dieser Baum ist die unveraenderte
+# Kopie des aufgeloesten Docs-Repos (SCR-0127), wird nicht gebaut und nicht
+# ausgeliefert; die kanonische Implementierung liegt in modules/, apps/, components/.
+# Kein Regelausfall: alle uebrigen Pfade werden mit unveraendertem Profil geprueft.
+name: Ruff Code Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# WICHTIG: --exclude ist eine Komma-Liste, kein wiederholbares Flag. Zwei Flags
+# fuehren dazu, dass Ruff nur einen Wert auswertet und docs/os-docs mitprueft.
+env:
+  POLICY_DIR: .org-github-policy
+  RUFF_POLICY_SHA: 7994fca8b24aef3572be1fa44adaf9c59fc13eb8
+  # Importierter Doku-Snapshot — nicht Teil des Builds (SCR-0127)
+  DOC_SNAPSHOT: docs/os-docs
+
+jobs:
+  ruff:
+    name: Ruff
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+
+      - name: Checkout organization Ruff policy
+        uses: actions/checkout@v4
+        with:
+          repository: A-TownChain-Okosystems/.github
+          ref: 7994fca8b24aef3572be1fa44adaf9c59fc13eb8
+          path: ${{ env.POLICY_DIR }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pinned Ruff
+        run: python -m pip install --disable-pip-version-check --no-input ruff==0.16.7
+
+      - name: Ruff lint (eigener Quellcode)
+        run: ruff check . --exclude "$POLICY_DIR,$DOC_SNAPSHOT" --config "$POLICY_DIR/ruff.toml"
+
+      - name: Ruff format check (eigener Quellcode)
+        run: ruff format --check . --exclude "$POLICY_DIR,$DOC_SNAPSHOT" --config "$POLICY_DIR/ruff.toml"

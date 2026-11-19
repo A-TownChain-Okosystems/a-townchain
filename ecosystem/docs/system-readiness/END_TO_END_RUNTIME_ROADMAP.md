@@ -26,6 +26,7 @@ Imported subtree snapshots are not canonical implementations. Do not add replace
 ## 3. Phases and acceptance criteria
 
 ### Phase 0 — Inventory and architecture reconciliation
+
 - Record canonical default branch and exact HEAD SHA for each source repository.
 - Compare imported subtree provenance with canonical source SHAs.
 - Map each runtime component to its owner, ABI/API, dependency and security boundary.
@@ -34,6 +35,7 @@ Imported subtree snapshots are not canonical implementations. Do not add replace
 **Gate G0:** ownership map and SHA reconciliation are complete, and all gaps have owners.
 
 ### Phase 1 — ShivaCore kernel boot and memory safety
+
 - Build the canonical kernel using the repository's prescribed Rust toolchain and feature set.
 - Run unit, integration, formatting, lint and static checks without weakening gates.
 - Verify UEFI/QEMU boot and record serial/log evidence.
@@ -43,6 +45,7 @@ Imported subtree snapshots are not canonical implementations. Do not add replace
 **Gate G1:** exact-SHA build/tests and boot evidence pass; remaining blockers and residuals are explicit.
 
 ### Phase 2 — GlobusOS service space
+
 - Verify init/boot orchestration and service manager.
 - Define versioned IPC/API contracts and explicit service capabilities.
 - Verify storage/filesystem, network, identity, logging, health checks, dependency order and bounded restart/recovery.
@@ -51,6 +54,7 @@ Imported subtree snapshots are not canonical implementations. Do not add replace
 **Gate G2:** reproducible boot reaches a usable user space; required services start, communicate, stop and recover under tests.
 
 ### Phase 3 — Integrated operating-system acceptance
+
 - Run a boot-to-user-space test in QEMU with a defined success signal and timeout.
 - Verify persistent data survives reboot.
 - Inject controlled service failures and verify isolation/recovery.
@@ -59,6 +63,7 @@ Imported subtree snapshots are not canonical implementations. Do not add replace
 **Gate G2A:** end-to-end OS acceptance passes on a pinned source set.
 
 ### Phase 4 — A-TownChain runtime
+
 - Build and test the canonical chain/node, algorithm and ATC-VM from their SSOT locations.
 - Verify chain ID/configuration binding, transaction signature and encoding rules, block validation and deterministic state transitions.
 - Verify durable persistence, restart recovery, peer synchronization and multi-node consensus/finality.
@@ -67,6 +72,7 @@ Imported subtree snapshots are not canonical implementations. Do not add replace
 **Gate G3:** local and multi-node test evidence passes for the exact source SHAs. A single-node test is not evidence of distributed consensus.
 
 ### Phase 5 — Aurora AI runtime
+
 - Load a versioned model through the designated runtime and record model/runtime identifiers.
 - Verify inference and resource limits on the declared target (CPU first; GPU/NPU only where supported).
 - Enforce the action path: Intent/Proposal → Policy → Capability Check → Approval where required → Tool → Service Boundary → Audit.
@@ -76,6 +82,7 @@ Imported subtree snapshots are not canonical implementations. Do not add replace
 **Gate G4:** inference and approved tools pass tests, and unauthorized actions are rejected.
 
 ### Phase 6 — Toolchain, ABI and release reproducibility
+
 - Pin compiler/toolchain and dependency versions.
 - Validate versioned ABI/API contracts and compatibility tests.
 - Build release artifacts from a clean, documented source state.
@@ -83,6 +90,7 @@ Imported subtree snapshots are not canonical implementations. Do not add replace
 - Verify update, rollback and recovery behavior.
 
 ### Phase 7 — Full-system release candidate
+
 - Pin all participating repository SHAs and relevant configuration/model digests.
 - Run the complete boot → services → chain → AI-tool integration test.
 - Produce one evidence index linking every required gate to workflow run, job, step, exit status and logs.
@@ -93,6 +101,7 @@ Imported subtree snapshots are not canonical implementations. Do not add replace
 ## 4. Evidence contract
 
 Every gate record must contain:
+
 - gate ID and component;
 - status: `IMPLEMENTED`, `VERIFIED`, `BLOCKED`, or `RESIDUAL`;
 - exact source commit SHA(s);

@@ -3,9 +3,13 @@
 ShivaOS IPC — Inter-Process Communication (ATS-1003)
 Message-Passing zwischen Kernel-Prozessen (kein Shared Memory).
 """
-import threading, queue, time, uuid, logging
+import logging
+import queue
+import threading
+import time
+import uuid
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Any, Callable
+from typing import Any, Callable, Dict, Optional
 
 logger = logging.getLogger("shivaos.ipc")
 

@@ -21,6 +21,7 @@ Aufruf:
     python3 tools/check_build_coverage.py --write     # neue Manifeste ergaenzen
     python3 tools/check_build_coverage.py --strict    # offene Befunde = Fehler
 """
+
 from __future__ import annotations
 
 import argparse
@@ -75,7 +76,9 @@ def schreibe_registry(eintraege: list[dict]) -> None:
     with REGISTRY.open("w", encoding="utf-8") as f:
         f.write(kopf + "manifests:\n")
         for e in sorted(eintraege, key=lambda x: x["path"]):
-            f.write(f'  - path: "{e["path"]}"\n    status: {e["status"]}\n    reason: "{e["reason"]}"\n')
+            f.write(
+                f'  - path: "{e["path"]}"\n    status: {e["status"]}\n    reason: "{e["reason"]}"\n'
+            )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -100,12 +103,13 @@ def main(argv: list[str] | None = None) -> int:
                     wurzel = str(kandidat)
                     break
             if wurzel != ".":
-                status = (
-                    "nested_workspace" if wurzel == pfad else "nested_workspace_member"
-                )
+                status = "nested_workspace" if wurzel == pfad else "nested_workspace_member"
                 grund = f"Build-Wurzelbaum: {wurzel}"
             else:
-                status, grund = "unverified_build", "neu; Pruefstrategie festzulegen (G-01)"
+                status, grund = (
+                    "unverified_build",
+                    "neu; Pruefstrategie festzulegen (G-01)",
+                )
             eintraege.append({"path": pfad, "status": status, "reason": grund})
         schreibe_registry(eintraege)
         bekannt = {e["path"] for e in eintraege}
@@ -125,19 +129,20 @@ def main(argv: list[str] | None = None) -> int:
         if e.get("status") == "workspace_member" and not ist_mitglied:
             fehler.append(f"R3 {e['path']} als Mitglied gefuehrt, steht aber nicht in Cargo.toml")
         if ist_mitglied and e.get("status") not in ("workspace_member",):
-            fehler.append(f"R3 {e['path']} ist Workspace-Mitglied, aber als {e.get('status')} gefuehrt")
+            fehler.append(
+                f"R3 {e['path']} ist Workspace-Mitglied, aber als {e.get('status')} gefuehrt"
+            )
         if e.get("status") == "nested_workspace":
             c = ROOT / e["path"] / "Cargo.toml"
             if not c.exists() or "[workspace]" not in c.read_text(encoding="utf-8"):
                 fehler.append(f"R4 {e['path']} hat keinen eigenen [workspace]")
-        if e.get("status") == "nested_workspace_member":
-            if not any(
-                (ROOT / a / "Cargo.toml").exists()
-                and "[workspace]" in (ROOT / a / "Cargo.toml").read_text(encoding="utf-8")
-                for a in [*Path(e["path"]).parents]
-                if str(a) != "."
-            ):
-                fehler.append(f"R4 {e['path']} liegt in keinem verschachtelten Workspace")
+        if e.get("status") == "nested_workspace_member" and not any(
+            (ROOT / a / "Cargo.toml").exists()
+            and "[workspace]" in (ROOT / a / "Cargo.toml").read_text(encoding="utf-8")
+            for a in [*Path(e["path"]).parents]
+            if str(a) != "."
+        ):
+            fehler.append(f"R4 {e['path']} liegt in keinem verschachtelten Workspace")
 
     for m in mitglieder:  # R3 rueckwaerts
         if m not in bekannt:

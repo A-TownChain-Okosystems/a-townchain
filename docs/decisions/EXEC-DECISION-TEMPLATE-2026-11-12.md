@@ -209,7 +209,7 @@ Folgen, Rueckwaertskompatibilitaet, Migrationsverfahren und Akzeptanztests).
 Die Stufe-1-Kennungen sind dort eigenstaendig, weil E-1 in dieser Vorlage die
 Aufruftiefe bezeichnet und die Identitaetsfrage nicht derselbe Gegenstand ist.
 
-```
+```text
 Stufe 1 (heute entscheidbar)
   B-2 Magic und Hash-Namen      unabhaengig
   E-1 Aufruftiefe (Wert)        unabhaengig, Verifikation spaeter

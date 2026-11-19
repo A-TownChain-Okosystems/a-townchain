@@ -64,7 +64,11 @@ def broken_links(root: Path) -> list[dict]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Prueft relative Markdown-Links.")
-    parser.add_argument("--root", default=None, help="Wurzel (Standard: zwei Ebenen ueber diesem Skript)")
+    parser.add_argument(
+        "--root",
+        default=None,
+        help="Wurzel (Standard: zwei Ebenen ueber diesem Skript)",
+    )
     parser.add_argument("--quiet", action="store_true", help="nur Zusammenfassung")
     args = parser.parse_args(argv)
 
@@ -75,7 +79,9 @@ def main(argv: list[str] | None = None) -> int:
         for f in findings:
             print(f"{f['file']}:{f['line']}  [{f['text']}]({f['target']})")
 
-    print(f"Markdown-Link-Pruefung ({root.name}): {len(md_files(root))} Dateien, {len(findings)} tote relative Links")
+    print(
+        f"Markdown-Link-Pruefung ({root.name}): {len(md_files(root))} Dateien, {len(findings)} tote relative Links"
+    )
     return 1 if findings else 0
 
 

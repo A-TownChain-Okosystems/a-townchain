@@ -27,7 +27,7 @@ Gefunden wurde der Wert in genau zwei von fünf Kopien von `atc8300.atc`:
 Nach der Korrektur tragen alle fünf Kopien denselben Inhalt
 (`sha256 527771e5e352f7…`):
 
-```
+```text
 ai/atclang/examples/atc8300.atc
 apps/atc-contracts/atc8300/atc8300.atc
 apps/atc-contracts/modules/atc-contracts/atc8300/atc8300.atc
@@ -115,7 +115,7 @@ gatekonform gesetzt.
 
 ## 6. Messwerte nach den Änderungen
 
-```
+```text
 atc check apps/atc-contracts      0 Fehler, 18 Warnungen (50 Dateien, 33 Verträge)
 atc check components/contracts    0 Fehler, 18 Warnungen (46 Dateien, 29 Verträge)
 Registry-Gate                     16 Einträge, 16 Quellen, GATE PASS, 0 Befunde

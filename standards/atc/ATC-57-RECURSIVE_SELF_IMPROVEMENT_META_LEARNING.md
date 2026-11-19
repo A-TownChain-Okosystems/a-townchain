@@ -93,7 +93,6 @@ Dieser Standard erweitert das KAI-OS um eine fundamentale neue Fähigkeit und is
 
 *Automatisch generiert aus ATC-57.docx durch Aurora (MasterBrain · Base44) · 05.07.2026*
 
-
 ---
 
 ## Ergänzung — Gas-Costs, Testing & Sprint-Zuweisung
@@ -104,7 +103,8 @@ Dieser Standard erweitert das KAI-OS um eine fundamentale neue Fähigkeit und is
 
 | Operation | Gas-Cost |
 |-----------|----------|
-| core_operation | variable | verify: 5000 | sync: 2000 |
+| core_operation | variable |
+| verify: 5000 | sync: 2000 |
 | verify | 5000 |
 | sync | 2000 |
 | configure | 1000 |

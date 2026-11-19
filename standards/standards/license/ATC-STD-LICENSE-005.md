@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-LICENSE-005
   title: "Third-Party License Management Standard"
@@ -21,7 +22,7 @@ standard:
   related_standards: []
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-LICENSE-005 — Third-Party License Management Standard (v1.1.0, APPROVED)
 
@@ -111,5 +112,4 @@ rechtliche Prüfung wird empfohlen und ist als ausstehend dokumentiert.
 | Zustand | Wert |
 |---|---|
 | Standard-Status | SPECIFIED — retro-aktiv erfasst (Meta-Sweep 08.09.2026, SCR-0047) |
-| Autoritativ | Implementierungs-Status gemaess ATC-STD-IMPLEMENTATION-001 §3/§4 in `registry/standard-implementation.yaml` (SSOT); Detail-Erfassung laeuft via Coverage-Programm gemaess ATC-STD-IMPLEMENTATION-001 §6 |
-Erweiterter Schutz: Jegliche Unklarheiten oder Verstöße gegen Lizenzbestimmungen MUESSEN unverzüglich als Severity S1 eingestuft werden. Unberechtigte Lizenzänderungen oder gefälschte Manifeste MUESSEN das Release-Gate blockieren.
+| Autoritativ | Implementierungs-Status gemaess ATC-STD-IMPLEMENTATION-001 §3/§4 in `registry/standard-implementation.yaml` (SSOT); Detail-Erfassung laeuft via Coverage-Programm gemaess ATC-STD-IMPLEMENTATION-001 §6 Erweiterter Schutz: Jegliche Unklarheiten oder Verstöße gegen Lizenzbestimmungen MUESSEN unverzüglich als Severity S1 eingestuft werden. Unberechtigte Lizenzänderungen oder gefälschte Manifeste MUESSEN das Release-Gate blockieren. |

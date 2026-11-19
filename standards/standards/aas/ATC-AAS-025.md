@@ -91,6 +91,7 @@ Agenten-spezifisch: Agent-Identitaet via AGENT_MANIFEST verifizierbar; Permissio
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-201..203, ATC-AAS-001 · INFORMATIVE: AGENT_MANIFEST.md v3.1.7, Registry-Kategorie aas
+
 ## 5. Ergänzende Verbindliche Betriebs- und Governance-Regeln
 
 1. Jedes R2+-Repository MUSS ein vollständiges Repository-Manifest unter `.github/ai/repository.yaml` enthalten.

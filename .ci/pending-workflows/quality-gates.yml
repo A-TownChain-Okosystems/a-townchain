@@ -1,0 +1,39 @@
+# Quality Gates — drei Ebenen (SCR-0147)
+#
+# Ebene 1 und 2 laufen bei jedem Push und Pull Request, Ebene 3 zusaetzlich
+# woechentlich, weil sie Zustaendigkeiten prueft, die sich selten aendern.
+# Der Bericht wird an den Commit-SHA gebunden als Artefakt abgelegt.
+name: Quality Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality Gate (L1-L3)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned tooling
+        run: |
+          python -m pip install --disable-pip-version-check --no-input ruff==0.16.7 pyyaml
+      - name: Quality Gate
+        run: python3 tools/quality/atc_quality.py --out "artifacts/quality/report-${GITHUB_SHA}.json"
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-report-${{ github.sha }}
+          path: artifacts/quality/

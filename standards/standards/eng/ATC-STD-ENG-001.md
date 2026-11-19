@@ -69,7 +69,7 @@ Jedes Repository hat genau eine Systemverantwortung ( siehe Architekturbaum, Anh
 Ein Repository DARF NICHT die Aufgaben eines anderen übernehmen.
 Entscheidungsfluss bei AI-Komponenten ist verpflichtend:
 
-```
+```text
 Aurora AI → Vorschlag → ATC → deterministische Entscheidung → State Transition → Blockchain State
 ```
 
@@ -91,7 +91,7 @@ arithmetic, execution, gas, storage, serialization, errors.
 Fehler dürfen NIEMALS versteckt werden. In produktivem Consensus-/Security-Code ist
 `unwrap()` / `panic!()` / leere `except` VERBOTEN. Fehlerverarbeitung folgt der Kette:
 
-```
+```text
 Fehler → klassifizieren → dokumentieren → behandeln → testen → Regressionstest
 ```
 

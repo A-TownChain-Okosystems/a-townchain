@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-ERR-011
   title: "Fix Verification"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-ERR-011 — Fix Verification (v1.0.0, CANDIDATE)
 
@@ -26,9 +27,11 @@ standard:
 > decken den Fehler-PROZESS ab; ERR deckt die systemische PROPAGATION ab.
 
 ## Zweck
+
 Die Korrektur wird validiert — ein Fix gilt erst mit bestandenem Gate als umgesetzt.
 
 ## Kernregeln
+
 - Fix-Verifikation = BUG-003 Fix-Lifecycle-Gate PLUS Build/Test-Gate
   (REPO-MAINT-001 §13): Install/Build/Unit/Integration/Lint/Type/Security.
 - Die Verifikation MUSS ALLE im Propagation-Scan (ERR-004) gefundenen Stellen
@@ -44,6 +47,7 @@ Die Korrektur wird validiert — ein Fix gilt erst mit bestandenem Gate als umge
 | REQ-ER-111 | Verifikation deckt alle Scan-Treffer, nicht nur die Fundstelle |
 
 ## Implementierungsstatus
+
 PARTIAL — Evidence: atc-contracts Bugfix (GovernanceContract.name()) mit 59/59 Tests
 verifiziert (Issue #99).
 
@@ -52,8 +56,10 @@ verifiziert (Issue #99).
 Fix-Verifikation fuer S4-Repos (atc-shivacore, atc-node, atc-vm, atc-algorithm, atc-zkp, atc-contracts) zusaetzlich mit Security-Scan (ATC-STD-203).
 
 ## Changelog
+
 | 1.0.0 | 2026-09-08 | Initiale Fassung (SCR-0044) |
 
 ## References
+
 NORMATIV: ATC-STD-BUG-003, ATC-STD-ERR-004/-008, ATC-STD-REPO-MAINT-001 §13 ·
 INFORMATIVE: SCR-0044, Issue #99

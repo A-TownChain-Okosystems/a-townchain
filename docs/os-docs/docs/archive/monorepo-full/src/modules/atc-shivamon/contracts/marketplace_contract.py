@@ -11,10 +11,11 @@ Features:
   - get_listings: Aktive Listings filtern + sortieren
   - Preis-Orakel: ATC/USD Referenz
 """
-import time, hashlib
-from dataclasses import dataclass, field
+import hashlib
+import time
+from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+
 from blockchain.contracts.base.base_contract import BaseContract
 
 

@@ -11,7 +11,7 @@
 
 ## Prozess (Änderungsmanagement, §14)
 
-```
+```text
 Änderung → Impressumsquelle aktualisieren → Review → Legal/Compliance Check → Versionierung
 → Betroffene Websites/Repositories aktualisieren → Consistency Check → Release
 ```

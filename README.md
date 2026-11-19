@@ -1,7 +1,7 @@
 # ATC A-TownChain
 
 > **ATC COMPLIANCE: R4 · Standard ATC-STD-201 v1.0.1 · GATE: AUDITED (09.09.2026, Score 94/100) · README: ATC-STD-README-001 CONFORM**
-
+>
 > A-TownChain is the canonical chain/orchestration integration layer of the A-TownChain ecosystem. Imported component implementations retain their standalone repositories as Source of Truth; **this repository is not production-ready and has no approved Mainnet date.**
 
 **Project:** a-townchain  
@@ -115,7 +115,6 @@ a-townchain ist das kanonische **Blockchain-Integrationsmonorepo** des A-TownCha
 | atc-oracle | `components/oracle` | Oracle Infrastructure |
 | atc-storage | `components/storage` | Blockchain Storage |
 
-
 ## Requirements
 
 - **Rust:** 1.70+
@@ -127,16 +126,27 @@ a-townchain ist das kanonische **Blockchain-Integrationsmonorepo** des A-TownCha
 ```bash
 git clone https://github.com/A-TownChain-Okosystems/a-townchain.git
 cd a-townchain
-pip install -r modules/atcnet/requirements.txt
+./build.sh
 ```
+
+`build.sh` prueft die Voraussetzungen und baut das Node-Binary `target/release/atc-node`.
+Fuer den kompletten Workspace und die Apps: `./build.sh --all`. Nur pruefen: `./build.sh --check`.
 
 ## Usage
 
-Starten einer Test-Node-Instanz im Testnet-/Development-Modus:
+Devnet starten und pruefen:
 
 ```bash
-python3 modules/atcnet/node.py --chain-id 658467 --port 8333
+./start.sh              # ein Node, RPC auf 127.0.0.1:39471
+./start.sh --nodes 3    # drei Nodes (RPC 39471, 39481, 39491)
+./tools/devnet/smoke.sh # prueft RPC und ob der Konsens Bloecke finalisiert
+./tools/devnet/e2e.sh   # beweist Finalisierung und Neustart
+./start.sh stop
 ```
+
+Docker-Weg: `docker compose -f docker-compose.devnet.yml up --build`.
+
+Schritt fuer Schritt: [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
 ## Development
 

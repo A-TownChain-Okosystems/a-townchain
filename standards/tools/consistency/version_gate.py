@@ -82,7 +82,7 @@ def main():
             else:
                 with open(os.path.join(args.local, repo, "README.md"), encoding="utf-8") as f:
                     readme = f.read()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
             warns.append(f"{repo}: README nicht lesbar ({e})")
             continue
         seen = set()

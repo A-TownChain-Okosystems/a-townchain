@@ -4,7 +4,7 @@
 
 from collections import defaultdict
 from time import time
-from flask import request, jsonify
+
 
 class RateLimiter:
     def __init__(self, max_requests=100, window=60):

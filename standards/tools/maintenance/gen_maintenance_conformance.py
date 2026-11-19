@@ -74,7 +74,7 @@ GEN_NOTE = "GENERIERT aus standards/maintenance/ + registry/standards.yaml — n
 
 def main():
     reg = yaml.safe_load(
-        io.open(os.path.join(BASE, "registry", "standards.yaml"), encoding="utf-8")
+        io.open(os.path.join(BASE, "registry", "standards.yaml"), encoding="utf-8")  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     )
     reg_ids = {s["id"]: s for s in reg["standards"] if s.get("category") == "maint"}
     standards = []
@@ -85,7 +85,7 @@ def main():
             sys.exit(f"FEHLER: {md_path} fehlt")
         if sid not in reg_ids:
             sys.exit(f"FEHLER: {sid} nicht in Registry")
-        md = io.open(md_path, encoding="utf-8").read()
+        md = io.open(md_path, encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         reqs = re.findall(r"\| (REQ-MAINT-\d{3}) \|", md)
         group, prio, domain, role = META[nr]
         standards.append(
@@ -134,7 +134,7 @@ def main():
         )
 
     # 2) Requirements-Registry aus den YAML-Bloecken in MAINT-000 §6 parsen
-    md0 = io.open(os.path.join(MD_DIR, "ATC-STD-MAINT-000.md"), encoding="utf-8").read()
+    md0 = io.open(os.path.join(MD_DIR, "ATC-STD-MAINT-000.md"), encoding="utf-8").read()  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     blocks = re.findall(r"```yaml\n(requirement:.*?)```", md0, re.S)
     reqdefs, seen = [], set()
     for b in blocks:
@@ -176,8 +176,10 @@ def main():
         "<!-- " + GEN_NOTE + " -->",
         "",
         "**Parent Standard:** ATC-STD-MAINT-000 \u2014 normative Governance & Contract Layer.  ",
-        f"**Standards:** {len(standards)} (P0: {sum(1 for s in standards if s['priority_kai_os'] == 'P0')}, "
-        f"P1: {sum(1 for s in standards if s['priority_kai_os'] == 'P1')}, P2: {sum(1 for s in standards if s['priority_kai_os'] == 'P2')})  ",
+        (
+            f"**Standards:** {len(standards)} (P0: {sum(1 for s in standards if s['priority_kai_os'] == 'P0')}, "
+            f"P1: {sum(1 for s in standards if s['priority_kai_os'] == 'P1')}, P2: {sum(1 for s in standards if s['priority_kai_os'] == 'P2')})  "
+        ),
         f"**REQs gesamt:** {sum(s['req_count'] for s in standards)}  ",
         "**Conformance-SSOT:** registry/maintenance-conformance.yaml \u00b7 **Requirements-Registry:** registry/maintenance-requirements.yaml",
         "",

@@ -98,7 +98,7 @@ def security_scan(root: str, rel: str) -> Optional[str]:
         return None
     try:
         text = data.decode("utf-8", errors="ignore")
-    except Exception:
+    except Exception:  # noqa: BLE001 — bewusst: Grenzschicht/Cli darf fremde Fehler nicht eskalieren
         return None
     for rx in SECRET_CONTENT:
         m = rx.search(text)
@@ -125,6 +125,7 @@ def main() -> int:
             cwd=root,
             capture_output=True,
             text=True,
+            check=False,
         ).stdout.split()
         files = [f for f in out if f]
     else:

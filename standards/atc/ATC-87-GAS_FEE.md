@@ -23,7 +23,7 @@ Gas Fee Model — EIP-1559-basiertes Gebührenmodell mit Base-Fee + Priority-Fee
 
 ### Module
 
-```
+```text
 modules/economy/gas.atc — Gas-Berechnung
 modules/economy/fee_market.atc — Base-Fee-Adjustment
 ```
@@ -66,7 +66,7 @@ target_gas: 15000000 | max_gas: 30000000 | base_fee_max_change: 12.5% | elastici
 
 ### Test-Dateien
 
-```
+```text
 tests/consensus/
 ├── test_atc-87.atc    # Unit-Tests
 └── test_atc-87_integration.atc  # Integration-Tests

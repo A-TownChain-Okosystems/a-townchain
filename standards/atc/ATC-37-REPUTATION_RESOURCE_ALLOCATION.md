@@ -1,4 +1,5 @@
 # ATC-37 — Decentralized Reputation-Based Resource Allocation Protocol
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-37
 > **Tier:** 5 (User & Application Layer)
@@ -27,6 +28,7 @@ werden. ATC-37 ist der Algorithmus, der dies ohne zentrale Instanz steuert.
 ## 1. Kernkonzepte
 
 ### 1.1 Reputations-gewichtete Quoten
+
 Anstatt Ressourcen "wer zuerst kommt, maehlt zuerst" zu vergeben, erhaelt jeder
 Nutzer/Agent basierend auf seinem ATC-30-Reputations-Score ein dynamisches
 Kontingent. Ein Akteur mit hoher Reputation (z. B. ein bewaehrter KI-
@@ -34,12 +36,14 @@ Entwickler oder ein langjaehriger Node-Betreiber) hat eine hoehere Prioritaet
 bei der Ressourcenanforderung.
 
 **Implementation:** PARTIAL — Basis da
+
 - Orchestrator (`orchestrator.py`) mit Node-Capability-Matching und Prioritaet
 - ATC-30 Reputation-System (konzeptionell) als Grundlage
 - Circuit-Breaker fuer ueberlastete Nodes
 - **Geplant:** Reputation-gewichtete Quoten pro Nutzer/Agent
 
 ### 1.2 Adaptive Angebotssteuerung
+
 ATC-37 ueberwacht die Auslastung des gesamten Netzwerks. Wenn Ressourcen knapp
 werden (z. B. bei einer hohen Anzahl von KI-Anfragen), werden die Zugangsschwellen
 fuer Ressourcen automatisch angehoben. Nur Nutzer mit einer entsprechenden
@@ -51,6 +55,7 @@ ATC-06 (Latency) — Netzwerk-Auslastungs-Metriken.
 > **Geplant:** Adaptive Thresholds basierend auf Netzwerk-Load
 
 ### 1.3 Governance-gesteuerte Allokations-Logik
+
 Die DAO (ATC-17) kann via ATC-37-Proposals bestimmen, welche Arten von Aufgaben
 oder Nutzertypen "systemkritisch" sind und daher vorrangig behandelt werden
 sollen (z. B. eine Priorisierung von medizinischen Forschungs-KI-Aufgaben
@@ -63,11 +68,13 @@ gegenueber Gaming-Anfragen).
 ## 2. Warum ATC-37 fuer KAI-OS essenziell ist
 
 ### 2.1 Schutz vor Denial-of-Service (DoS) Angriffen
+
 Indem Ressourcen nur an Teilnehmer mit ausreichender Reputation vergeben werden,
 macht ATC-37 das KAI-OS extrem widerstandsfaehig gegen Angriffe. Ein Angreifer
 ohne Reputation bekame schlicht keine Ressourcen zugewiesen.
 
 ### 2.2 Effizienz durch Priorisierung
+
 KI-Agenten, die kritische Inferenz-Aufgaben (Tier 4) bearbeiten, erhalten durch
 ATC-37 garantierte Rechenzeit-Slots, waehrend weniger dringende
 Hintergrundaufgaben (wie das Indexieren von Daten) warten muessen.
@@ -75,6 +82,7 @@ Hintergrundaufgaben (wie das Indexieren von Daten) warten muessen.
 **Bezug:** ATC-24 (Task Orchestration) — Scheduler nutzt ATC-37-Quoten.
 
 ### 2.3 Anreiz zur guten Mitarbeit
+
 Da ein guter ATC-30-Score direkt in bessere Ressourcen-Zugaenge (ATC-37)
 uebersetzt wird, haben alle Akteure einen starken oekonomischen Anreiz, sich im
 Oekosystem "gut" zu verhalten.
@@ -86,27 +94,33 @@ Oekosystem "gut" zu verhalten.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-30 (Reputation-Scoring)
+
 ATC-30 liefert die Kennzahl; ATC-37 ist der Mechanismus, der diese Kennzahl in
 die tatsaechliche Nutzung von Ressourcen umwandelt.
 
 > ATC-30 = Score berechnen. ATC-37 = Score in Quoten umsetzen.
 
 ### 3.2 ATC-24 (Task Orchestration)
+
 Der Scheduler nutzt ATC-37-Quoten, um zu entscheiden, welcher Inferenz-Auftrag
 auf einen freien Node geladen wird.
 
 ### 3.3 ATC-31 (Tensor Compute Distribution)
+
 Wenn mehrere Anfragen um die gleichen GPU-Ressourcen konkurrieren, nutzt ATC-31
 die Zuweisungsregeln aus ATC-37, um die Tensor-Last fair aufzuteilen.
 
 ### 3.4 ATC-17 (DAO Governance)
+
 DAO bestimmt Prioritaets-Klassen und Allokations-Parameter.
 
 ### 3.5 ATC-11 (Fungible Token)
+
 ATC-11 Token als "Skin in the Game" — hoeherer Stake = hoeheres Quoten-
 Kontingent (gekoppelt mit ATC-30).
 
 ### 3.6 ATC-29 (Marketplace)
+
 Ressourcen-Quoten koennen im Marketplace gehandelt werden — Quota-Transfer.
 
 ---
@@ -164,7 +178,7 @@ Ressourcen-Quoten koennen im Marketplace gehandelt werden — Quota-Transfer.
 
 ## 7. Ressourcen-Allokations-Algorithmus
 
-```
+```text
 ATC-37 RESOURCE ALLOCATION
 ├── Input
 │   ├── ATC-30 Reputation Score (0.0 - 1.0)
@@ -191,8 +205,9 @@ ATC-37 RESOURCE ALLOCATION
     └── On-Chain Log (ATC-04 DAG)
 ```
 
-### Free-Tier fuer neue Nutzer:
-```
+### Free-Tier fuer neue Nutzer
+
+```text
 Neuer Nutzer (Reputation = 0):
   -> Free-Tier Kontingent (minimale Ressourcen)
   -> Sandbox-Starter-Reputation (0.3 initial)
@@ -204,7 +219,7 @@ Neuer Nutzer (Reputation = 0):
 
 ## 8. Tier 5 Fortschritt
 
-```
+```text
 TIER 5 — USER & APPLICATION (ATC-32+)
 ├── ATC-32  UX & Interface Abstraction       PARTIAL
 ├── ATC-33  AI Feedback & RLHF               PARTIAL KONZEPTIONELL
@@ -222,7 +237,6 @@ TIER 5 — USER & APPLICATION (ATC-32+)
 *Dieses Dokument wurde aus der urspruenglichen Atc-37.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:53 | Aurora (Superagent)*
-
 
 ---
 

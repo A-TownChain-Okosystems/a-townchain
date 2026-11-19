@@ -1,4 +1,5 @@
 """Tests fuer die Governance-Regel G-01 (Build-Abdeckung)."""
+
 import importlib.util
 from pathlib import Path
 

@@ -11,6 +11,7 @@ Target architecture: ATC-L2 as a rollup settling to A-TownChain L1.
 **Normative proof-model constraint:** `ATC-STD-ZKP-008 v1.1.0` is marked approved/normative and explicitly requires cryptographic validity proofs for state-root transitions. Therefore the current standards baseline points to a **validity-proof (ZK) rollup**, not an unconstrained choice between optimistic and validity proofs. Any change to that direction requires a formal standards change. However, the implementation is not ready to proceed to production: the inspected ZKP verifier/SNARK source files are explicitly planned/not implemented.
 
 Still unresolved:
+
 - Batch commitment format and canonical state-root semantics
 - Data-availability mechanism and retention guarantees
 - Sequencer failure handling, forced inclusion, and censorship recovery
@@ -35,16 +36,17 @@ No production bridge transfers or security guarantees may be enabled or claimed 
 | Ecosystem layer model | `ARCHITECTURE.md` | `ea3a93cdb6f66eb33caf8fd7715e184fd524b27e` | Current model defines L2 as blockchain core/consensus, L3 as deterministic execution, L4 as scaling/rollups. Protocol L1/L2 must be distinguished from internal responsibility layers. | RESIDUAL |
 
 Source links:
-- https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/modules/atc-zkp/Cargo.toml
-- https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/modules/atc-zkp/src/verifier.rs
-- https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/modules/atc-zkp/src/snarks.rs
-- https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/components/interop/modules/atc-bridge/proofs/state_proof.atc
-- https://github.com/A-TownChain-Okosystems/atc-standards/blob/68448117334b49729f423f1648f9a960f4411220/standards/zkp/ATC-STD-ZKP-008.md
-- https://github.com/A-TownChain-Okosystems/a-townchain/blob/a5e689671b1870699c7a1750f8a166e83590a41c/modules/atc-blockchain/kernel/src/blockchain.rs
-- https://github.com/A-TownChain-Okosystems/a-townchain/blob/a5e689671b1870699c7a1750f8a166e83590a41c/components/node/src/chain.rs
-- https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/components/zkp/docs/ZKP_ARCHITECTURE.md
-- https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/modules/atc-blockchain/consensus/consensus.atc
-- https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/blob/main/ARCHITECTURE.md
+
+- <https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/modules/atc-zkp/Cargo.toml>
+- <https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/modules/atc-zkp/src/verifier.rs>
+- <https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/modules/atc-zkp/src/snarks.rs>
+- <https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/components/interop/modules/atc-bridge/proofs/state_proof.atc>
+- <https://github.com/A-TownChain-Okosystems/atc-standards/blob/68448117334b49729f423f1648f9a960f4411220/standards/zkp/ATC-STD-ZKP-008.md>
+- <https://github.com/A-TownChain-Okosystems/a-townchain/blob/a5e689671b1870699c7a1750f8a166e83590a41c/modules/atc-blockchain/kernel/src/blockchain.rs>
+- <https://github.com/A-TownChain-Okosystems/a-townchain/blob/a5e689671b1870699c7a1750f8a166e83590a41c/components/node/src/chain.rs>
+- <https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/components/zkp/docs/ZKP_ARCHITECTURE.md>
+- <https://github.com/A-TownChain-Okosystems/a-townchain/blob/main/modules/atc-blockchain/consensus/consensus.atc>
+- <https://github.com/A-TownChain-Okosystems/a-townchain-ecosystem/blob/main/ARCHITECTURE.md>
 
 ## Required evidence before runtime implementation
 

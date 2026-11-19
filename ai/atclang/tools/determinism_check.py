@@ -122,7 +122,7 @@ def scan_sources(root, lang):
 def run_tests(cmd, cwd):
     env = dict(os.environ)
     env["PYTHONHASHSEED"] = "0"  # Hash-Determinismus normalisieren
-    p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, env=env)
+    p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, env=env, check=False)
     return normalize_output(p.stdout + p.stderr)
 
 

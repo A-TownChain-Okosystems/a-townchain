@@ -251,9 +251,13 @@ class TestDependencyGuard:
         assert m.key(base[0]) == ("cargo", "a", "1.0.0")
         assert set(m.fingerprint(base)) == {("cargo", "a", "1.0.0"), ("cargo", "b", "2.0.0")}
         added, removed, changed = m.compare_nodes(base, head)
-        assert {n["name"] for n in added} == {"a", "c"}  # a: neue Version = neuer Key
-        assert {n["name"] for n in removed} == {"a", "b"}  # a@1.0.0-Key entfaellt
-        assert any(c["to"]["name"] == "a" for c in changed)
+        # Vertrag (SCR-0145): Identitaet ist (ecosystem, name); ein Versionswechsel
+        # erscheint ausschliesslich als "changed", nicht zusaetzlich in added/removed.
+        assert {n["name"] for n in added} == {"c"}
+        assert {n["name"] for n in removed} == {"b"}
+        assert len(changed) == 1
+        assert changed[0]["from"]["name"] == "a" and changed[0]["from"]["version"] == "1.0.0"
+        assert changed[0]["to"]["name"] == "a" and changed[0]["to"]["version"] == "1.1.0"
 
     def test_semver_pep440_version_cmp(self):
         m = load("tools/dependency_guard.py")

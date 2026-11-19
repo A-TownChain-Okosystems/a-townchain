@@ -54,11 +54,11 @@ Version: 0.3.0
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from atclang.parser.ast_nodes import (
-    ASTNode,
     Assignment,
+    ASTNode,
     BinaryOp,
     BoolLiteral,
     BreakStatement,
@@ -67,6 +67,7 @@ from atclang.parser.ast_nodes import (
     ContinueStatement,
     ContractDef,
     DotAccess,
+    EmitStatement,
     EnumDef,
     ExprStatement,
     FloatLiteral,
@@ -83,7 +84,6 @@ from atclang.parser.ast_nodes import (
     MapLiteral,
     NamespaceAccess,
     NullLiteral,
-    Parameter,
     Program,
     RequireStatement,
     ReturnStatement,
@@ -98,11 +98,8 @@ from atclang.parser.ast_nodes import (
     UnaryOp,
     WalletDef,
     WhileStatement,
-    EmitStatement,
 )
-
-from atclang.vm.atcvm import Instruction, OP
-
+from atclang.vm.atcvm import OP, Instruction
 
 # ============================================================================
 # BYTECODE FORMAT

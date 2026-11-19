@@ -14,8 +14,8 @@ v2-Verbesserungen gegenueber v1 (SCR-0126):
 Fail-closed: Exit 0 nur wenn (a) keine nicht-allowlisteten Fundstellen und
 (b) zwei identische Testlaeufe (Evidenz per Byte-Vergleich, REQ-ENG-012).
 """
+
 import argparse
-import io
 import os
 import re
 import subprocess
@@ -49,7 +49,7 @@ def load_allowlist(root):
     if not os.path.exists(path):
         return []
     entries = []
-    with io.open(path, encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         for line in f:
             m = re.match(r"\s*-\s*file:\s*(\S+)", line)
             if m:
@@ -65,13 +65,20 @@ def code_view_py(path):
     """Liefert je Zeilennummer die 'Code-Ansicht': Tokens ohne Strings/Kommentare."""
     views = {}
     try:
-        with io.open(path, encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             toks = list(tokenize.generate_tokens(f.readline))
     except (SyntaxError, tokenize.TokenError, UnicodeDecodeError):
         return None  # unparsebar -> vom Syntax-/Test-Gate abgedeckt, hier ueberspringen
     for tok in toks:
-        if tok.type in (tokenize.COMMENT, tokenize.NL, tokenize.NEWLINE, tokenize.INDENT,
-                        tokenize.DEDENT, tokenize.ENCODING, tokenize.ENDMARKER):
+        if tok.type in (
+            tokenize.COMMENT,
+            tokenize.NL,
+            tokenize.NEWLINE,
+            tokenize.INDENT,
+            tokenize.DEDENT,
+            tokenize.ENCODING,
+            tokenize.ENDMARKER,
+        ):
             continue
         views.setdefault(tok.start[0], []).append(tok.string)
     return {ln: " ".join(parts) for ln, parts in views.items()}
@@ -80,7 +87,7 @@ def code_view_py(path):
 def code_view_rust(path):
     """Rust: Zeilenkommentare und String-Literale heuristisch entfernen."""
     views = {}
-    with io.open(path, encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         for ln, raw in enumerate(f, 1):
             line = raw
             if "//" in line:
@@ -114,7 +121,7 @@ def scan_sources(root, lang):
 def run_tests(cmd, cwd):
     env = dict(os.environ)
     env["PYTHONHASHSEED"] = "0"  # Hash-Determinismus normalisieren
-    p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, env=env)
+    p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, env=env, check=False)
     return p.stdout + p.stderr
 
 
@@ -126,7 +133,9 @@ def main():
     root = os.getcwd()
     ok = True
 
-    print("== Saeule 1: Verbotene Nichtdeterminismus-Quellen (v2: Code-Tokens, Allowlist-geprueft) ==")
+    print(
+        "== Saeule 1: Verbotene Nichtdeterminismus-Quellen (v2: Code-Tokens, Allowlist-geprueft) =="
+    )
     findings = scan_sources(root, args.lang)
     allow = load_allowlist(root)
     allow_keys = {(e["file"], e.get("line")) for e in allow if e.get("line")}
@@ -141,7 +150,9 @@ def main():
         print(f"  => {len(unallowed)} nicht-allowlistete Fundstelle(n) — FAIL (REQ-ENG-002)")
         ok = False
     elif allowed:
-        print(f"  OK: {len(allowed)} allowlistete Fundstelle(n) — Allowlist iterativ auf 0 reduzieren (SCR-0126)")
+        print(
+            f"  OK: {len(allowed)} allowlistete Fundstelle(n) — Allowlist iterativ auf 0 reduzieren (SCR-0126)"
+        )
     else:
         print("  OK: keine Wall-Clock/RNG-Fundstellen im Code")
 
@@ -152,7 +163,9 @@ def main():
         if out1 == out2:
             print("  OK: zwei identische Testlaeufe (Evidenz per Byte-Vergleich)")
         else:
-            print("  FINDING: Testausgaben unterscheiden sich zwischen Lauf 1 und Lauf 2 — nichtdeterministisch!")
+            print(
+                "  FINDING: Testausgaben unterscheiden sich zwischen Lauf 1 und Lauf 2 — nichtdeterministisch!"
+            )
             ok = False
     else:
         print("== Saeule 2: kein Test-Kommando angegeben — uebersprungen ==")

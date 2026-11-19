@@ -3,6 +3,7 @@
 
 from .ecdsa import ECDSAKeyPair
 
+
 def generate_keypair():
     """Erzeugt ein ECDSA-Schlüsselpaar (delegiert an ECDSAKeyPair)."""
     return ECDSAKeyPair.generate_keypair()

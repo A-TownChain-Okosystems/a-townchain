@@ -30,6 +30,7 @@ STATUS, registry.lock, standards.yaml. Konflikt-Auflösung ist NICHT
 mechanisierbar.
 
 Deshalb verbindlich:
+
 1. Kein Tiefe-Revert ohne Review jedes Konflikts (M1-Klassifizierung).
 2. Alternativpfad: `git reset --hard <tag>` auf Scratch-Branch, Validator,
    dann als Revert-Commit dokumentieren; anschließend Folgeschritte
@@ -40,6 +41,7 @@ Deshalb verbindlich:
 ## Verfahren C — Restore-Zustand verifizieren
 
 Nach jedem Rollback:
+
 ```bash
 python3 tools/atc-std-validator/validate_all.py        # muss ALL COMPLIANT sein
 grep -c "status: approved" registry/standards.yaml    # erwarteter Zaehler pruefen

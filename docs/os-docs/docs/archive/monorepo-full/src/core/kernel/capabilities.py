@@ -15,10 +15,10 @@ aber ohne Hardware-/TEE-Abhaengigkeiten):
     vorbei am Manager.
   - Delegation kann Rechte nur EINSCHRAENKEN, nie erweitern.
 """
-from dataclasses import dataclass, field
-from enum import Flag, auto
-from typing import Dict, Set, Optional
 import uuid
+from dataclasses import dataclass
+from enum import Flag, auto
+from typing import Dict, Optional, Set
 
 
 class Right(Flag):

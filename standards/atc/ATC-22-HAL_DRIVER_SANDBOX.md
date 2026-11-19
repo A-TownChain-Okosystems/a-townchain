@@ -1,4 +1,5 @@
 # ATC-22 — Hardware Abstraction Layer (HAL) & Deterministic Driver Sandboxing
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-22
 > **Tier:** 3 (Operating System Infrastructure)
@@ -25,6 +26,7 @@ oder den Determinismus zu gefaehrden.
 ## 1. Kernkonzepte
 
 ### 1.1 Hardware-Abstraktion
+
 ATC-22 entkoppelt die Anwendung von der spezifischen Hardware. Ein KI-Modell
 (Tier 4) muss nicht wissen, ob es auf einer NVIDIA-GPU mit CUDA oder einem
 Apple-Silicon-Chip laeuft. Der HAL bietet ein standardisiertes Interface
@@ -32,6 +34,7 @@ Apple-Silicon-Chip laeuft. Der HAL bietet ein standardisiertes Interface
 Sprache uebersetzt.
 
 **Aktueller Stand:** Teilweise implementiert
+
 - AI-Kernel (`ai_kernel.py`) mit LLMRouter abstrahiert KI-Modelle
 - Orchestrator (`orchestrator.py`) verteilt Tasks an verfuegbare Nodes
 - **Geplant:** Standardisiertes HAL Interface (`compute_tensor_op`)
@@ -46,6 +49,7 @@ class HardwareAbstractionLayer:
 ```
 
 ### 1.2 Deterministic Driver Sandboxing
+
 Treiber sind oft die groesste Sicherheitsluecke in Betriebssystemen. ATC-22
 erzwingt, dass Treiber in einer Sandbox laufen. Selbst wenn ein Treiber
 fehlerhaft ist oder manipuliert wird, kann er nicht auf den restlichen
@@ -56,6 +60,7 @@ laeuft ohne Driver-Sandboxing. Konzept fuer Wasm-basierte Treiber-Sandbox
 geplant (Verbindung zu ATC-21).
 
 ### 1.3 Hardware-Flags & Capabilities
+
 ATC-22 erlaubt es jedem Node, bei seiner Initialisierung seine Hardware-
 Faehigkeiten (z. B. "Unterstuetzt FP16-Tensor-Berechnungen") zu veroeffentlichen.
 Das Betriebssystem weiss dadurch immer, welche Aufgaben (Inferenz-Tasks) ein
@@ -69,6 +74,7 @@ verteilt Tasks entsprechend. Health-Check-Mechanismus fuer Node-Status.
 ## 2. Warum ATC-22 fuer KAI-OS essenziell ist
 
 ### 2.1 Portabilitaet fuer KI-Modelle
+
 Damit das KAI-OS auf tausenden verschiedenen privaten Geraeten laufen kann,
 muss es mit unterschiedlicher Hardware umgehen koennen. ATC-22 stellt sicher,
 dass dieselbe Inferenz-Logik auf einem Gaming-PC ebenso funktioniert wie auf
@@ -78,17 +84,20 @@ einem spezialisierten KI-Server.
 HAL wuerde hardware-spezifische Optimierung ermoeglichen.
 
 ### 2.2 Determinismus trotz Hardware-Unterschieden
+
 Dies ist die groesste Herausforderung. ATC-22 definiert, wie Berechnungen auf
 unterschiedlicher Hardware so "normalisiert" werden, dass das Ergebnis — trotz
 hardware-spezifischer Optimierungen — mathematisch identisch bleibt
 (entscheidend fuer den Konsens nach ATC-14).
 
 **Konzept:**
+
 - Deterministisches Rounding (IEEE 754 mit festen Modus)
 - FP16/FP32 Normalisierung
 - Hardware-spezifische Optimierungen mit garantiert identischem Ergebnis
 
 ### 2.3 Effizienz (Zero-Copy)
+
 Der HAL ermoeglicht den direkten Zugriff auf den Grafikspeicher (VRAM), ohne
 dass Daten unnoetig zwischen CPU-RAM und GPU-RAM hin- und herkopiert werden
 muessen.
@@ -98,15 +107,18 @@ muessen.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-21 (Wasm Engine)
+
 ATC-21 schickt den Berechnungsbefehl, ATC-22 fuehrt ihn auf der Hardware aus.
 
 ### 3.2 ATC-14 (Deterministic Execution)
+
 Da unterschiedliche Hardware unterschiedliche Rundungsfehler bei
 Fliesskommazahlen produzieren kann, definiert ATC-22 praezise Regeln, wie
 Hardware-Berechnungen gerundet werden muessen, um den geforderten globalen
 Determinismus zu wahren.
 
 ### 3.3 ATC-31 (Tensor Compute Distribution)
+
 Bei der Suche nach geeigneten Nodes fuer eine KI-Aufgabe prueft das Netzwerk
 die "Capability-Flags", die durch den HAL (ATC-22) jedes Nodes bereitgestellt
 werden.
@@ -114,6 +126,7 @@ werden.
 > ATC-31 ist ein zukuenftiger Standard — Tensor Compute Distribution.
 
 ### 3.4 ATC-15 (Proof-of-AI Mining)
+
 ATC-15 Mining erfordert GPU/CPU Zugriff. ATC-22 stellt die HAL-Schnittstelle
 fuer Proof-of-AI Inferenz-Leistung bereit.
 
@@ -173,13 +186,15 @@ fuer Proof-of-AI Inferenz-Leistung bereit.
 
 ## 7. Flieskomma-Determinismus — Die Kern-Herausforderung
 
-### Problem:
+### Problem
+
 Unterschiedliche GPU-Architekturen (NVIDIA CUDA, Apple Metal, AMD ROCm)
 produzieren unterschiedliche Rundungsfehler bei Fliesskomma-Berechnungen. Das
 bricht den Konsens (ATC-14) — Nodes wuerden unterschiedliche Ergebnisse
 berechnen.
 
-### Loesung (geplant):
+### Loesung (geplant)
+
 1. **Deterministisches Rounding:** IEEE 754 Round-To-Nearest-Even als Standard
 2. **Precision-Locking:** FP16 oder FP32 fest vorgegeben, keine Mixed-Precision
 3. **Reference Implementation:** CPU-Software als Gold-Standard
@@ -191,7 +206,6 @@ berechnen.
 *Dieses Dokument wurde aus der urspruenglichen Atc-22.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:19 | Aurora (Superagent)*
-
 
 ---
 

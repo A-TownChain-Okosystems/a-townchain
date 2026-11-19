@@ -1,12 +1,15 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
-import sys, math, random, os, time
-from PyQt6 import QtWidgets, QtCore, QtGui
-from PyQt6.QtOpenGLWidgets import QOpenGLWidget
+import math
+import os
+import random
+import sys
+
 from OpenGL.GL import *
-from OpenGL.GLU import *
 from OpenGL.GL.shaders import compileProgram, compileShader
+from OpenGL.GLU import *
 from PIL import Image
-import numpy as np
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 
 BASE_PATH     = os.path.dirname(os.path.abspath(__file__))
 SHADERS_PATH  = os.path.join(BASE_PATH, "shaders")

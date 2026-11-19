@@ -1,0 +1,210 @@
+# GENERIERT von backlog/tools/resolve_evidence.py — nicht manuell bearbeiten.
+generated_at: '2022-01-01T05:00:00+00:00'
+organisation: A-TownChain-Okosystems
+resolved: 31
+unresolved: 6
+tasks:
+  ATC-TASK-P0-101:
+    resolved: false
+    reason: kein evidence_head im Register
+  ATC-TASK-P0-102:
+    resolved: false
+    reason: kein evidence_head im Register
+  BLK-P0-01:
+    resolved: true
+    repo: a-townchain
+    sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+    committed: '2026-11-17T09:17:26Z'
+    resolved_from: 5a9add0e24
+  BLK-P0-02:
+    resolved: true
+    repo: a-townchain
+    sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+    committed: '2026-11-17T09:17:26Z'
+    resolved_from: 5a9add0e24
+  BLK-P0-03:
+    resolved: true
+    repo: a-townchain
+    sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+    committed: '2026-11-17T09:17:26Z'
+    resolved_from: 5a9add0e24
+  BLK-P0-04:
+    resolved: true
+    repo: a-townchain-ecosystem
+    sha: e18bdb90dbdd35d7ebf287162511cf4752c7c2bd
+    committed: '2026-11-14T22:15:48Z'
+    resolved_from: e18bdb90db
+  ATC-TASK-P1-101:
+    resolved: false
+    reason: kein evidence_head im Register
+  ATC-TASK-P1-102:
+    resolved: false
+    reason: kein evidence_head im Register
+  ATC-TASK-P1-103:
+    resolved: false
+    reason: kein evidence_head im Register
+  BLK-P1-05:
+    resolved: true
+    repo: atc-standards
+    sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+    committed: '2026-11-17T11:27:46Z'
+    resolved_from: 5ef28537b8
+  BLK-P1-06:
+    resolved: true
+    repo: a-townchain-ecosystem
+    sha: e18bdb90dbdd35d7ebf287162511cf4752c7c2bd
+    committed: '2026-11-14T22:15:48Z'
+    resolved_from: e18bdb90db
+  BLK-P1-07:
+    resolved: true
+    repo: a-townchain
+    sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+    committed: '2026-11-17T09:17:26Z'
+    resolved_from: 5a9add0e24
+  BLK-P1-08:
+    resolved: true
+    repo: a-townchain
+    sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+    committed: '2026-11-17T09:17:26Z'
+    resolved_from: 5a9add0e24
+  BLK-P1-09:
+    resolved: true
+    repo: a-townchain
+    sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+    committed: '2026-11-17T09:17:26Z'
+    resolved_from: 5a9add0e24
+  BLK-P1-04:
+    resolved: true
+    repo: atc-standards
+    sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+    committed: '2026-11-17T11:27:46Z'
+    resolved_from: 5ef28537b8
+  BLK-P1-10:
+    resolved: true
+    repo: a-townchain
+    sha: e923e89cdd83cedd2fe03d41ad12758b48341240
+    committed: '2026-11-17T17:30:11Z'
+    resolved_from: e923e89cd
+  BLK-P1-11:
+    resolved: true
+    repo: a-townchain
+    sha: 3c7b4efa07776929bbb0eefe7e90c70ab6131641
+    committed: '2026-11-17T17:28:27Z'
+    resolved_from: 3c7b4efa0
+  BLK-P1-12:
+    resolved: true
+    repo: a-townchain
+    sha: 3c7b4efa07776929bbb0eefe7e90c70ab6131641
+    committed: '2026-11-17T17:28:27Z'
+    resolved_from: 3c7b4efa0
+  BLK-P1-13:
+    resolved: true
+    repo: a-townchain
+    sha: 9ebc6dec64fdb1f95d46eb5631aa4203017257a0
+    committed: '2026-11-17T17:34:34Z'
+    resolved_from: 9ebc6dec6
+  BLK-P1-14:
+    resolved: true
+    repo: a-townchain
+    sha: e923e89cdd83cedd2fe03d41ad12758b48341240
+    committed: '2026-11-17T17:30:11Z'
+    resolved_from: e923e89cd
+  BLK-P1-01:
+    resolved: true
+    repo: globus-os
+    sha: a38738dfcd91125fb00317b93aacb342b4515e2a
+    committed: '2026-11-16T19:05:52Z'
+    resolved_from: a38738dfcd
+  BLK-P1-02:
+    resolved: true
+    repo: globus-os
+    sha: a38738dfcd91125fb00317b93aacb342b4515e2a
+    committed: '2026-11-16T19:05:52Z'
+    resolved_from: a38738dfcd
+  BLK-P1-03:
+    resolved: true
+    repo: globus-os
+    sha: a38738dfcd91125fb00317b93aacb342b4515e2a
+    committed: '2026-11-16T19:05:52Z'
+    resolved_from: a38738dfcd
+  ATC-TASK-P2-101:
+    resolved: false
+    reason: kein evidence_head im Register
+  BLK-P2-02:
+    resolved: true
+    repo: atc-standards
+    sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+    committed: '2026-11-17T11:27:46Z'
+    resolved_from: 5ef28537b8
+  BLK-P2-03:
+    resolved: true
+    repo: .github
+    sha: 7f76c5092ceeadb2bd5be4cc4a1161decd53f1a8
+    committed: '2026-11-16T18:55:26Z'
+    resolved_from: 7f76c5092c
+  BLK-P2-08:
+    resolved: true
+    repo: atc-standards
+    sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+    committed: '2026-11-17T11:27:46Z'
+    resolved_from: 5ef28537b8
+  BLK-P2-09:
+    resolved: true
+    repo: atc-standards
+    sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+    committed: '2026-11-17T11:27:46Z'
+    resolved_from: 5ef28537b8
+  BLK-P2-10:
+    resolved: true
+    repo: atc-standards
+    sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+    committed: '2026-11-17T11:27:46Z'
+    resolved_from: 5ef28537b8
+  BLK-P2-11:
+    resolved: true
+    repo: a-townchain-ecosystem
+    sha: e18bdb90dbdd35d7ebf287162511cf4752c7c2bd
+    committed: '2026-11-14T22:15:48Z'
+    resolved_from: e18bdb90db
+  BLK-P2-12:
+    resolved: true
+    repo: a-townchain-ecosystem
+    sha: 7603cf641ef19a759fb644211a21e6fab6d54934
+    committed: '2026-11-17T13:52:49Z'
+    resolved_from: 7603cf641
+  BLK-P2-01:
+    resolved: true
+    repo: atc-standards
+    sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+    committed: '2026-11-17T11:27:46Z'
+    resolved_from: 5ef28537b8
+  BLK-P2-13:
+    resolved: true
+    repo: globus-os
+    sha: cb605552f623efca084e60e8110e4a64e0aec91e
+    committed: '2026-11-15T01:24:04Z'
+    resolved_from: cb60555
+  BLK-P2-04:
+    resolved: true
+    repo: aurora-ai
+    sha: 2855956b32fd47c8ba9d688493834601aaf50434
+    committed: '2026-11-14T22:14:47Z'
+    resolved_from: 2855956b32
+  BLK-P2-05:
+    resolved: true
+    repo: genesis-engine
+    sha: 3c2be8c11c00bf5b6a1a4de87760004e9c5d35ef
+    committed: '2026-10-23T16:19:36Z'
+    resolved_from: 3c2be8c11c
+  BLK-P2-06:
+    resolved: true
+    repo: a-townchain
+    sha: 5a9add0e2414900a24cb6d183b9a19bb6d20a557
+    committed: '2026-11-17T09:17:26Z'
+    resolved_from: 5a9add0e24
+  BLK-P2-07:
+    resolved: true
+    repo: atc-standards
+    sha: 5ef28537b8d076dd9548b86ca53819d869a34d1a
+    committed: '2026-11-17T11:27:46Z'
+    resolved_from: 5ef28537b8

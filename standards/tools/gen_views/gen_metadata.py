@@ -19,15 +19,15 @@ STAMP = "GENERATED-BY tools/gen_views/gen_metadata.py (ATC-STD-LIB-001 sec.6 Pha
 
 
 def main():
-    reg = yaml.safe_load(open(REG, encoding="utf-8"))
+    reg = yaml.safe_load(open(REG, encoding="utf-8"))  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     try:
-        deps = (yaml.safe_load(open(DEPS, encoding="utf-8")) or {}).get("standards", {})
+        deps = (yaml.safe_load(open(DEPS, encoding="utf-8")) or {}).get("standards", {})  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
     except FileNotFoundError:
         deps = {}
     try:
         impl = {
             e.get("id"): e
-            for e in yaml.safe_load(open(IMPL, encoding="utf-8")).get("standards", [])
+            for e in yaml.safe_load(open(IMPL, encoding="utf-8")).get("standards", [])  # noqa: SIM115 — bewusst: Dateihandle wird an Aufrufer uebergeben
         }
     except FileNotFoundError:
         impl = {}

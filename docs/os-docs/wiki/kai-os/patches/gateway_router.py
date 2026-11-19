@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 # gateway/router.py -- FIX(#20): forward() vollstaendig
 import requests
-from flask import jsonify, Response
+from flask import Response, jsonify
 
 SERVICES = {
     "status":       "http://localhost:8080/api/status",

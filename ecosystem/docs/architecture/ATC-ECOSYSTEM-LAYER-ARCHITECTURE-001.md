@@ -83,6 +83,7 @@ The full sub-layer decomposition for each layer is defined in [ATC-LAYER-REGISTR
 Every component and function MUST have at least the following fields:
 
 ### Identity
+
 - **Stable ID** (e.g., `COMP-SHIVA`, `FN-SHIVA-001`)
 - **Name** (canonical name)
 - **Description** (what it does)
@@ -91,6 +92,7 @@ Every component and function MUST have at least the following fields:
 - **Status** (one of the binding status values below)
 
 ### Architecture
+
 - **Primary Layer** (L0-L10 or X1-X8)
 - **Sub-Layer** (e.g., `L2.4` for Capabilities & Sandboxing)
 - **Parent-ID** (for sub-components)
@@ -98,6 +100,7 @@ Every component and function MUST have at least the following fields:
 - **Responsibility Scope** (what the component is responsible for)
 
 ### SSOT
+
 - **Canonical Repository** (e.g., `A-TownChain-Okosystems/globus-os`)
 - **Path** (e.g., `modules/atc-shivacore/kernel/`)
 - **Symbol** (function/class name)
@@ -105,6 +108,7 @@ Every component and function MUST have at least the following fields:
 - **Blob-SHA** (exact file blob)
 
 ### Contracts
+
 - **Signature** (function signature)
 - **Inputs** (expected inputs)
 - **Outputs** (expected outputs)
@@ -114,6 +118,7 @@ Every component and function MUST have at least the following fields:
 - **Postconditions** (must-be-true-after)
 
 ### Security
+
 - **Permissions** (required capabilities)
 - **Capabilities** (granted capabilities)
 - **Trust Boundary** (what trust level is required)
@@ -121,6 +126,7 @@ Every component and function MUST have at least the following fields:
 - **Audit Requirements** (required audits)
 
 ### Dependencies
+
 - **Prerequisites** (what must be installed/running)
 - **Dependencies** (other components this depends on)
 - **Callers** (what calls this component)
@@ -128,6 +134,7 @@ Every component and function MUST have at least the following fields:
 - **Protocol Versions** (communication protocol versions)
 
 ### Platform
+
 - **Installation Models** (A/B/C/D, at least one)
 - **GlobusOS Native** (yes/no)
 - **Windows** (compatible as host application: yes/no)
@@ -138,6 +145,7 @@ Every component and function MUST have at least the following fields:
 - **Install Mode** (bare-metal, package, container, bundle)
 
 ### Evidence
+
 - **Test References** (test files and test names)
 - **CI Runs** (workflow run IDs, all bound to exact SHA)
 - **Artifacts** (build artifacts and their hashes)
@@ -271,6 +279,7 @@ Rust `no_std` capability microkernel with minimal TCB. Security model: least pri
 ## 9. Architecture Reference Model
 
 This document is the layer architecture companion to:
+
 - **ATC_ARCHITECTURE_REFERENCE_MODEL.md v0.1.0** (a-townchain-os-docs, Commit 20bcb4d) — Layer comparison model targeting the total stack (a-townchain-os = L7 integration, no core implementation)
 
 The architecture presented here is the **proposed overall plan**. It is not yet proof that all layers are already registered in the GitHub catalog or fully implemented. Status claims follow the binding status values in Section 4 and the evidence classification defined at the top of this document.

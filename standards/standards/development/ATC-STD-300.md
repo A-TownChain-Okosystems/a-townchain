@@ -20,6 +20,7 @@ standard:
 ---
 
 # ATC-STD-300 — Development & Project Management Standard (v1.0.0, APPROVED)
+>
 > **Status:** APPROVED (Owner-Sammelfreigabe 07.09.2026, ATC-STD-000 §9) — normativ in Kraft| **Datum:** 07.09.2026 | **Autor:** Michael Wroblewski (Owner), Aurora (Superagent)
 > **Standard-ID:** ATC-STD-300 | **Scope:** Alle A-TownChain-Repositories und Entwicklungsprojekte
 > **Referenzen:** ATC-STD-000 (Governance), ATC-STD-201/-202/-203 (Repository-Serie), AD-023 (Quality-Driven), AD-026 (Bauhierarchie)
@@ -79,7 +80,7 @@ wird projektitern referenziert); historische Archivbestaende
 
 Die primäre Kette lautet:
 
-```
+```text
 STANDARD → REQUIREMENT → ROADMAP → SPRINT → TODO → IMPLEMENTATION
         → TEST → REVIEW → GATE → RELEASE → WIKI
 ```
@@ -109,7 +110,7 @@ Jedes Artefakt MUSS entlang dieser Kette rueckfuehrbar sein (REQ-STD-301).
 
 Das Wiki stellt den kanonisch dokumentierten **Ist-Zustand** dar.
 
-```
+```text
 wiki/
 ├── architecture/  ├── standards/      ├── requirements/
 ├── protocols/     ├── specifications/ ├── apis/
@@ -215,7 +216,7 @@ Diese beiden Begriffe MUESSEN getrennt bleiben (REQ-STD-308):
 
 Beispielkette:
 
-```
+```text
 F-017 → CR-000031 → TODO-000512 → PR-000872 → TEST-000921 → GATE-000314
 ```
 
@@ -307,7 +308,7 @@ decision: APPROVED
 
 Ein Release MUSS rueckwaerts vollstaendig nachvollziehbar sein:
 
-```
+```text
 REL-1.2.0
   ├── GATE-000314
   ├── PR-00872, PR-00873
@@ -325,7 +326,7 @@ ausgeliefert wurde (REQ-STD-314).
 Die Registry ist die zentrale maschinenlesbare Verknuepfung
 (REQ-STD-315 — kein Eintrag = kein Artefakt):
 
-```
+```text
 registry/
 ├── standards.yaml        ├── requirements.yaml   ├── roadmap.yaml
 ├── sprints.yaml         ├── todos.yaml          ├── issues.yaml
@@ -370,7 +371,7 @@ laufen (REQ-STD-317). Er prueft normativ (REQ-STD-320):
 
 Ergebnisformat:
 
-```
+```text
 ┌───────────────────────────────┐
 │ ATC DEVELOPMENT CONSISTENCY   │
 ├───────────────────────────────┤
@@ -390,7 +391,7 @@ Ergebnisformat:
 > gates. The Wiki MUST represent the verified current state and MUST NOT
 > be used as a substitute for roadmap, task, requirement, or change
 > management.
-
+>
 > **DE:** Jede Implementierung MUSS auf ein freigegebenes Requirement oder
 > eine ausdruecklich freigegebene Wartungsaufgabe zurueckfuehrbar sein.
 > Jeder Release MUSS auf Implementierung, Verifikationsnachweise und die
@@ -454,6 +455,7 @@ REQ-STD-302/-018/-019 (Wiki-Wahrheit) erfolgt durch Realitaets-Audits.
 ## 26. References
 
 **NORMATIVE**
+
 - ATC-STD-000 — Standards Governance & Specification Standard (Verfassung)
 - ATC-STD-201 — Repository Structure Standard
 - ATC-STD-202 — Repository Naming & Classification Standard
@@ -461,6 +463,7 @@ REQ-STD-302/-018/-019 (Wiki-Wahrheit) erfolgt durch Realitaets-Audits.
 - RFC 2119 / RFC 8174 — Key words for use in RFCs (MUST/SHOULD/MAY)
 
 **INFORMATIVE**
+
 - AD-023 — Quality-Driven Development (kein Launch-Termin)
 - AD-026 — Bauhierarchie L0-L7
 - AD-040/AD-041 — Bug- & Netz-Standard-Serien (Prozess-Praezedenz)

@@ -29,24 +29,34 @@ class Response:
 def fixture_responses():
     return {
         "/actions/runs/123": {
-            "id": 123, "head_sha": SHA, "status": "completed", "conclusion": "success"
+            "id": 123,
+            "head_sha": SHA,
+            "status": "completed",
+            "conclusion": "success",
         },
         "/actions/runs/123/jobs?per_page=100": {
             "total_count": 1,
-            "jobs": [{
-                "id": 456, "name": "contract-tests", "head_sha": SHA,
-                "status": "completed", "conclusion": "success",
-                "steps": [{
-                    "name": "verify-status-contract", "status": "completed", "conclusion": "success"
-                }],
-            }]
+            "jobs": [
+                {
+                    "id": 456,
+                    "name": "contract-tests",
+                    "head_sha": SHA,
+                    "status": "completed",
+                    "conclusion": "success",
+                    "steps": [
+                        {
+                            "name": "verify-status-contract",
+                            "status": "completed",
+                            "conclusion": "success",
+                        }
+                    ],
+                }
+            ],
         },
         "/actions/jobs/456/logs": LOGS,
         "/actions/runs/123/artifacts?per_page=100": {
             "total_count": 1,
-            "artifacts": [{
-                "id": 789, "expired": False, "workflow_run": {"id": 123}
-            }]
+            "artifacts": [{"id": 789, "expired": False, "workflow_run": {"id": 123}}],
         },
         "/actions/artifacts/789/zip": ARCHIVE,
     }
@@ -57,12 +67,18 @@ def valid_claim():
         "status": "VERIFIED",
         "decision": "PASS",
         "checked_commit_sha": SHA,
-        "evidence": [{
-            "evidence_id": "e1", "head_sha": SHA, "workflow_run_id": 123,
-            "job": "contract-tests", "step": "verify-status-contract",
-            "log_sha256": hashlib.sha256(LOGS).hexdigest(),
-            "artifact_id": 789, "artifact_sha256": hashlib.sha256(ARCHIVE).hexdigest(),
-        }],
+        "evidence": [
+            {
+                "evidence_id": "e1",
+                "head_sha": SHA,
+                "workflow_run_id": 123,
+                "job": "contract-tests",
+                "step": "verify-status-contract",
+                "log_sha256": hashlib.sha256(LOGS).hexdigest(),
+                "artifact_id": 789,
+                "artifact_sha256": hashlib.sha256(ARCHIVE).hexdigest(),
+            }
+        ],
     }
 
 
@@ -125,8 +141,12 @@ class VerifyExternalEvidenceTests(unittest.TestCase):
 
     def test_failed_step_blocks(self):
         responses = fixture_responses()
-        responses["/actions/runs/123/jobs?per_page=100"]["jobs"][0]["steps"][0]["conclusion"] = "failure"
-        with self.assertRaisesRegex(EvidenceVerificationError, "step did not complete successfully"):
+        responses["/actions/runs/123/jobs?per_page=100"]["jobs"][0]["steps"][0]["conclusion"] = (
+            "failure"
+        )
+        with self.assertRaisesRegex(
+            EvidenceVerificationError, "step did not complete successfully"
+        ):
             verifier(responses).verify_claim(valid_claim())
 
     def test_missing_logs_blocks(self):
@@ -151,6 +171,7 @@ class VerifyExternalEvidenceTests(unittest.TestCase):
     def test_unavailable_endpoint_blocks_closed(self):
         def unavailable(request, timeout=30):
             raise OSError("simulated unavailable endpoint")
+
         subject = GitHubActionsEvidenceVerifier("owner/repo", "test-token", opener=unavailable)
         with self.assertRaisesRegex(EvidenceVerificationError, "endpoint unavailable"):
             subject.verify_claim(valid_claim())

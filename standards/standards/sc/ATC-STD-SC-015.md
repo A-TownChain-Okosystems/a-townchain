@@ -47,9 +47,6 @@ Bridges MUESSEN Replay Protection (Nonce-Tracking) und Finality-Regeln erzwingen
 Deposit → Verification → Message → Consensus → Destination Verification → Execution
 ```
 
-
-
-
 ## 4. Eindeutige Nachrichten-ID und Nonce-Verwaltung (REQ-SC-107)
 
 Jede Bridge-Nachricht MUSS eine kryptografisch eindeutige Message-ID tragen.

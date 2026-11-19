@@ -1,4 +1,5 @@
 # ATC-29 — Decentralized AI Marketplace & Model Registry
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 3.0 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-29
 > **Tier:** 4 (Decentralized AI / Inferenz-Layer)
@@ -27,24 +28,28 @@ den "AI App Store" von KAI-OS.
 ## 1. Kernkonzepte
 
 ### 1.1 Modell-Registry (On-Chain)
+
 Jeder KI-Agent oder Entwickler kann ein Modell in der Registry anmelden. Diese
 Registrierung enthaelt den kryptografischen Fingerabdruck (gemaess ATC-27), die
 Lizenzbedingungen und die Zugriffsparameter. Der Eintrag erfolgt unveraenderlich
 im Ledger.
 
 **Implementation:** PARTIAL — Basis da
+
 - Smart Contract Registry (`smart_contract_registry.py`) fuer Contract-Verwaltung
 - Marketplace Contract (`marketplace_contract.py`) — Issue #13 abgeschlossen
 - ATC-04 DAG fuer On-Chain Registrierung
 - **Geplant:** KI-Modell-spezifische Registry mit ATC-27 Fingerprint
 
 ### 1.2 Service-Abonnement & Inferenz-Gebuehren
+
 ATC-29 definiert, wie Nutzer oder andere Agenten fuer die Nutzung eines Modells
 bezahlen. Dies geschieht oft ueber Smart Contracts, die automatisch Gebuehren
 (in Token gemaess ATC-11) von der anfragenden Partei an den Modellbesitzer
 ausschuettet, sobald die Inferenz erfolgreich abgeschlossen wurde.
 
 **Implementation:** PARTIAL — Basis da
+
 - ATC-11 Token (ATCoin) als Zahlungsmittel implementiert
 - Smart Contracts koennen Zahlungen verarbeiten
 - LLMRouter mit Per-User API-Key Strategy (Issue #2)
@@ -60,6 +65,7 @@ ausschuettet, sobald die Inferenz erfolgreich abgeschlossen wurde.
 ```
 
 ### 1.3 Governance der Modelle
+
 Da Modelle "Produkte" im KAI-OS-Marktplatz sind, koennen ihre Eigenschaften
 (Preis, Zugriffsbeschraenkungen) durch Governance-Abstimmungen (ATC-17)
 beeinflusst werden, oder die Community kann als Ganzes entscheiden, bestimmte
@@ -73,6 +79,7 @@ beeinflussen, Preise festlegen oder Core-Set-Modelle bestimmen.
 ## 2. Warum ATC-29 fuer KAI-OS essenziell ist
 
 ### 2.1 Monetarisierung fuer KI-Entwickler
+
 Entwickler haben einen direkten Anreiz, leistungsfaehige KI-Modelle fuer das
 KAI-OS zu erstellen, da sie durch ATC-29 automatisch an jeder Inferenz-Nutzung
 verdienen koennen.
@@ -81,6 +88,7 @@ verdienen koennen.
 ATC-29 erweitert dies auf Modell-Eigentuemer.
 
 ### 2.2 Service-Discovery
+
 Ein Anwender, der eine spezielle KI-Aufgabe loesen moechte (z. B. "Analysiere
 mein privates Finanz-Portfolio"), kann ueber den Marktplatz nach ATC-29-
 konformen Agenten suchen, die genau diese Faehigkeiten besitzen.
@@ -89,6 +97,7 @@ konformen Agenten suchen, die genau diese Faehigkeiten besitzen.
 implementiert. ATC-29 erweitert dies zum Marketplace.
 
 ### 2.3 Rechtssicherheit
+
 Ueber ATC-29 werden Nutzungsrechte und Lizenzen fuer KI-Modelle On-Chain
 verankert. Dies ist entscheidend fuer Unternehmen, die KI-Dienste in ihre
 eigenen Produkte einbauen wollen und nachweisen muessen, dass sie das Modell
@@ -99,29 +108,35 @@ legal nutzen.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-27 (Model Auditing)
+
 Ein Modell darf nur dann im Marktplatz gelistet werden, wenn sein
 Fingerabdruck durch den Audit-Prozess von ATC-27 bestaetigt wurde.
 
 > ATC-27 = Modell ist unmanipuliert. ATC-29 = Modell ist handelbar.
 
 ### 3.2 ATC-11 (Fungible Assets)
+
 Die Zahlungen fuer Inferenz-Leistung im Marktplatz erfolgen in Token, die
 diesem Standard entsprechen (ATCoin).
 
 ### 3.3 ATC-13 (Fractional Asset Ownership)
+
 ATC-29 ermoeglicht es, dass ein besonders wertvolles KI-Modell (z. B. ein
 Large Language Model) von einer Gruppe von Investoren (via ATC-13) gehalten
 wird, die sich die laufenden Einnahmen aus dem Marktplatz teilen.
 
 ### 3.4 ATC-19 (AMM)
+
 ATC-19 AMM Pools koennen fuer automatische Preisbildung von Inferenz-Diensten
 genutzt werden. Dynamic Pricing basierend auf Angebot/Nachfrage.
 
 ### 3.5 ATC-24 (Task Orchestration)
+
 ATC-24 verteilt die Aufgaben. ATC-29 definiert, wie die dafuer genutzten
 Modelle abgerechnet werden.
 
 ### 3.6 ATC-28 (Federated Learning)
+
 Durch ATC-28 verbesserte Modelle koennen neue Versionen im Marktplatz
 veroeffentlichen. ATC-27 auditiert die neue Version, ATC-29 listet sie.
 
@@ -184,7 +199,7 @@ veroeffentlichen. ATC-27 auditiert die neue Version, ATC-29 listet sie.
 
 ## 7. AI App Store Architektur
 
-```
+```text
 AI APP STORE (ATC-29)
 ├── Model Registry (On-Chain)
 │   ├── Modell A (Fingerprint, Lizenz, Preis)
@@ -213,7 +228,6 @@ AI APP STORE (ATC-29)
 *Dieses Dokument wurde aus der urspruenglichen Atc-29.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 22:36 | Aurora (Superagent)*
-
 
 ---
 

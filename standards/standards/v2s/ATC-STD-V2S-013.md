@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-V2S-013
   title: "Validation Standard Standard"
@@ -16,7 +17,7 @@ standard:
   effective_date: "2026-09-08"
   review_date: "2027-09-08"
   license: "Copyright (c) 2026 Michael Wroblewski"
-----
+---
 
 # ATC-STD-V2S-013 — Validation Standard Standard (v1.0.0, CANDIDATE)
 

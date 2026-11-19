@@ -78,6 +78,7 @@ Keine Zugangsdaten in Artefakten; Security-Review-Pflicht bei sicherheitsrelevan
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-203, ATC-STD-AI-DEV-001 · INFORMATIVE: Roadmap MK8 (Security), Model-Registry
+
 ## 5. Verbindliche Erweiterungsregeln
 
 - 5.1 Jeder Agent MUSS die Repo-Exklusivität beachten und darf ausschließlich auf dem ihm zugewiesenen Repository operieren.
@@ -114,9 +115,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 10. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-AI-DEV-001
 - ATC-STD-AI-DEV-012
@@ -158,9 +161,11 @@ Jegliche Feststellung einer Abweichung MUSS unverzüglich als strukturierte Fehl
 ## 16. References
 
 **NORMATIVE:**
+
 - ATC-STD-000 — Standards Governance & Specification Standard
 
 **INFORMATIVE:**
+
 - SCR-0041 — Standards Consolidation & Elaboration
 - ATC-STD-AI-DEV-001
 - ATC-STD-AI-DEV-012

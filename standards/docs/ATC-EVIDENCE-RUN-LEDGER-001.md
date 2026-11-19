@@ -18,7 +18,7 @@ keine konkurrierende Wahrheitsquellen).
 
 Primäridentität je konkreter Ausführungsversuch ist der zusammengesetzte Schlüssel:
 
-```
+```text
 (repository, workflow, run_id, run_attempt)
 ```
 
@@ -48,7 +48,7 @@ werden nur IDs, SHAs und optional Artefakt-Hashes.
 
 ## 4. State Machine
 
-```
+```text
 REGISTERED → RUNNING → ANALYZED → VERIFIED → RESIDUAL
                 │           │
                 ├──────────►│──► BLOCKED
@@ -70,7 +70,7 @@ REGISTERED → RUNNING → ANALYZED → VERIFIED → RESIDUAL
 
 Ein Fehler heilt NICHT durch den nächsten grünen Run aus. Kette:
 
-```
+```text
 Run N → FAILED → Fix-Commit → Run N+1 (neu registriert) → ANALYZED → VERIFIED
 ```
 
@@ -131,6 +131,7 @@ abgeleitet werden — sonst reimplementiert der Ledger implizit GREEN=VERIFIED.
 ## 7. RESIDUAL-Pflichtfelder
 
 RESIDUAL nur als terminaler Verdict MIT:
+
 - `residual_findings: [F-…]` — alle P ≥ 2 (nicht-blockierend),
 - Clearing-Referenz: welcher künftige Befund/Lauf sie auflöst.
 

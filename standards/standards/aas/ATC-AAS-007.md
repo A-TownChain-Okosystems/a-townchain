@@ -76,6 +76,7 @@ Agenten-spezifisch: Agent-Identitaet via AGENT_MANIFEST verifizierbar; Permissio
 ## References
 
 NORMATIV: ATC-STD-000, ATC-STD-201..203, ATC-AAS-001 · INFORMATIVE: AGENT_MANIFEST.md v3.1.7, Registry-Kategorie aas
+
 ## 3. Ergänzende Verbindliche Betriebs- und Governance-Regeln
 
 1. Tasks MÜSSEN alle geforderten Pflichtfelder aus AI-DEV-004 §1 sowie die spezifischen Zusatzfelder vollständig aufweisen.

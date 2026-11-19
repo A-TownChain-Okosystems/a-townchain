@@ -8,11 +8,11 @@ Version: 1.0.0-alpha | ATS-1000 konform
 Kein POSIX-Klon — eigenständige Architektur
 """
 
-import time, threading, uuid, hashlib
+import threading
+import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Callable, Any
 from enum import IntEnum, auto
-
+from typing import Any, List, Optional
 
 # ══════════════════════════════════════════════════════════
 #  PROZESS-TYPEN & STATUS
@@ -103,7 +103,7 @@ class Channel:
         with self._lock:
             if len(self._queue) >= self.buffer:
                 return False
-            
+
 
             # Archiv-Snapshot endet hier: die Datei wurde beim Rescue abgeschnitten.
             # Vollstaendige Implementierung: shivaos/kernel/kernel.py in a-townchain-os.

@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-032
   title: "Automated Update Management Standard"
@@ -17,7 +18,7 @@ standard:
   dependencies:
     - ATC-STD-000
     - ATC-STD-018
-----
+---
 
 # ATC-STD-032 — Automated Update Management Standard (v1.0.0, APPROVED)
 

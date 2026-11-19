@@ -1,4 +1,5 @@
 # ATC-15 — Decentralized Mining Protocol (Proof-of-AI-Mining)
+>
 > **Status:** 📐 FINAL — Spezifikation vollständig, Implementation geplant in Sprint 2.4 | **Version:** 1.0.0 | **Datum:** 04.07.2026> **Autor:** Michael Wroblewski, Aurora (Superagent)
 > **Standard-ID:** ATC-15
 > **Tier:** 2 (Logik & Oekonomie) — Bruecke zu Tier 4 (KI)
@@ -26,6 +27,7 @@ KI-Inferenz und Modelltraining.
 ## 1. Kernkonzepte
 
 ### 1.1 Mining als Inferenz-Leistung
+
 ATC-15 legt fest, dass "Mining" im A-TownChain-Oekosystem bedeutet, aktiv
 Tensor-Compute-Leistung fuer das Netzwerk zur Verfuegung zu stellen (siehe
 Tier 4). Anstatt Energie fuer das Hash-Rechnen zu verschwenden, erbringen die
@@ -53,11 +55,13 @@ class ProofOfAI:
 > **Status:** PoW implementiert. Proof-of-AI als Evolution geplant.
 
 ### 1.2 Validierung der Rechenarbeit
+
 Da KI-Berechnungen (Inferenz) nicht sofort "beweisbar" sind wie ein einfacher
 Hash, definiert ATC-15 kryptografische Protokolle, um zu beweisen, dass ein Node
 tatsaechlich die versprochene Rechenleistung erbracht hat (Proof-of-AI).
 
 **Konzept:**
+
 - **Result-Verification:** Auditoren fuehren dieselbe Inferenz aus und vergleichen
 - **Stake-Slashing:** Falsche Ergebnisse -> Stake verlieren (PoS Integration)
 - **Reputation-Score:** Wiederholte korrekte Inferenz -> hoeherer Score
@@ -66,6 +70,7 @@ tatsaechlich die versprochene Rechenleistung erbracht hat (Proof-of-AI).
 > **Geplant:** Proof-of-AI Verifikations-Protokoll mit Auditor-Netzwerk.
 
 ### 1.3 Mining-Belohnung (Rewards)
+
 ATC-15 regelt die Ausschuettung der systemeigenen Token (gemaess ATC-11) an die
 Miner. Die Belohnung ist dynamisch und korreliert direkt mit der Menge an
 verifizierter Inferenz-Leistung, die ein Node in das Netzwerk einbringt.
@@ -79,6 +84,7 @@ Proof-of-Ai wuerde den Reward an Inferenz-Leistung koppeln, nicht an Hash-Rate.
 ## 2. Warum ATC-15 fuer KAI-OS entscheidend ist
 
 ### 2.1 Dezentralisierung der KI
+
 ATC-15 ist der oekonomische Hebel, der es ermoeglicht, ein globales Netzwerk von
 privaten GPUs aufzubauen, ohne dass man auf teure, zentrale Cloud-Provider
 angewiesen ist.
@@ -87,12 +93,14 @@ angewiesen ist.
 sein — Dezentralisierung der Compute-Power.
 
 ### 2.2 Sicherheit durch Arbeit
+
 Da die Miner gleichzeitig die Inferenz-Leistung bereitstellen, ist das Netzwerk
 gegen Angriffe geschuetzt — ein Angreifer muesste ueber enorme GPU-Kapazitaeten
 verfuegen, um das System zu dominieren, was bei KAI-OS jedoch direkt zur
 Staerkung des KI-Oekosystems fuehrt.
 
 ### 2.3 Auto-Remediation Anbindung
+
 Nodes, die gemaess ATC-15 "Mining" betreiben, werden vom Auto-Remediation-System
 besonders eng ueberwacht, um sicherzustellen, dass sie nicht versuchen, ihre
 Inferenz-Leistung vorzutaeuschen.
@@ -105,11 +113,13 @@ Health-Check-Mechanismen. Fraud-Detection fuer fake Inferenz geplant.
 ## 3. Zusammenhang mit anderen Standards
 
 ### 3.1 ATC-31 (Tensor Compute Distribution)
+
 ATC-31 sucht die Miner, ATC-15 belohnt sie fuer ihre Arbeit.
 
 > ATC-31 ist ein zukuenftiger Standard — definiert Task-Distribution an GPU-Miner.
 
 ### 3.2 ATC-14 (Deterministic Execution)
+
 Da ein Mining-Reward eine Bilanzaenderung darstellt, muss die Berechnung des
 Rewards deterministisch ablaufen, damit alle Nodes im Konsens dieselbe
 Belohnung berechnen.
@@ -118,6 +128,7 @@ Belohnung berechnen.
 `base_contract.py` und `atcoin.py` fuer aktuelle Reward-Logik.
 
 ### 3.3 Tier 4 (Decentralized AI)
+
 ATC-15 ist die Bruecke, die die "KI-Leistung" (Tier 4) in die "Oekonomie"
 (Tier 2) ueberfuehrt.
 
@@ -174,7 +185,7 @@ ATC-15 ist die Bruecke, die die "KI-Leistung" (Tier 4) in die "Oekonomie"
 
 ## 7. Evolutionspfad: PoW -> Proof-of-AI
 
-```
+```text
 AKTUELL (v3.0.0)                      ZUKUNFT (v5.0+)
 PoW Mining (SHA3-ATC)           ->    Proof-of-AI Mining (Inferenz)
 Block-Reward (fix pro Block)    ->    Dynamic Reward (Inferenz-Leistung)
@@ -183,7 +194,8 @@ Energie fuer Hash-Rechnen       ->    Energie fuer KI-Inferenz (produktiv)
 Zentrale GPU-Clouds             ->    Dezentrales GPU-Netzwerk (ATCNet)
 ```
 
-### Migrationsstrategie:
+### Migrationsstrategie
+
 1. **Phase 1:** Proof-of-AI als zusaetzliche Mining-Methode (neben PoW)
 2. **Phase 2:** Inferenz-Reward neben Block-Reward auszahlen
 3. **Phase 3:** Auditor-Netzwerk fuer Result-Verification
@@ -196,7 +208,6 @@ Zentrale GPU-Clouds             ->    Dezentrales GPU-Netzwerk (ATCNet)
 *Dieses Dokument wurde aus der urspruenglichen Atc-15.docx Spezifikation
 abgeleitet und mit der tatsaechlichen Code-Implementation abgeglichen.*
 *Letzte Aktualisierung: 04.07.2026 21:57 | Aurora (Superagent)*
-
 
 ---
 

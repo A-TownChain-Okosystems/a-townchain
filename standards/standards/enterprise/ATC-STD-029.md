@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-029
   title: "Threat Modeling Standard"
@@ -18,7 +19,7 @@ standard:
     - ATC-STD-000
     - ATC-STD-018
     - ATC-STD-028
-----
+---
 
 # ATC-STD-029 — Threat Modeling (v1.0.0, APPROVED)
 

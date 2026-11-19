@@ -8,8 +8,9 @@
 #   VALIDATOR — nimmt am PoS Konsens teil
 #   MINER   — führt PoW aus
 
-import hashlib, time, json, threading
+import time
 from enum import Enum
+
 
 class NodeType(Enum):
     FULL      = "full"

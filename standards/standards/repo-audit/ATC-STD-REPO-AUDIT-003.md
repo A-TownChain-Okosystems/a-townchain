@@ -1,4 +1,5 @@
 ---
+
 standard:
   id: ATC-STD-REPO-AUDIT-003
   title: "Automatisierter ATC Repository Auditor — verbindliche Spezifikation des KI-/Automatisierungsagenten für reproduzierbare Repository-Audits: Mandat, Pipeline, Befugnisse, Gates, Report-Erzeugung"
@@ -31,7 +32,7 @@ standard:
     - ATC-STD-204
   license: "Copyright (c) 2026 Michael Wroblewski"
   applies_to: "Alle ATC-Repositories"
-----
+---
 
 # ATC-STD-REPO-AUDIT-003 — Automatisierter ATC Repository Auditor (v1.0.0, APPROVED)
 

@@ -6,7 +6,7 @@ Rendert alle Entities mit Position + Sprite als farbige Rechtecke.
 Bewusst simpel gehalten: kein Asset-Pipeline, keine Shader — nur der
 Beweis, dass ECS World -> sichtbares Bild funktioniert.
 """
-from core.ecs import World, Position, Sprite
+from core.ecs import Position, Sprite, World
 
 
 class Renderer2D:
