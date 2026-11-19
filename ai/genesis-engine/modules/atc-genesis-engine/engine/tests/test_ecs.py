@@ -1,9 +1,11 @@
 # Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 """Unit-Tests fuer den ECS-Kern. Kein pygame noetig — reine Logik."""
-import sys, os
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from core.ecs import World, Position, Velocity, Sprite, MovementSystem
+from core.ecs import MovementSystem, Position, Velocity, World
 
 
 def test_create_and_destroy_entity():
