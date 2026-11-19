@@ -650,3 +650,14 @@ entries:
     pattern: "Wall-Clock"
     justification: "JWT iat/exp MUSS echte Zeit tragen, sonst lehnt GitHub das App-Token ab; das Skript laeuft nur im CI, erzeugt keine Artefakte und keine Build-Ausgabe"
     scr: "SCR-0147"
+  # -- Backlog-Generatoren: Provenienz-Zeitstempel, kein Build-Artefakt --
+  - file: backlog/tools/build_backlog.py
+    line: 37
+    pattern: "Wall-Clock"
+    justification: "generated_at ist Provenienz-Angabe des Backlogs, nicht Teil eines Build-Ergebnisses; mit SOURCE_DATE_EPOCH ist die Ausgabe byte-identisch"
+    scr: "SCR-0149"
+  - file: backlog/tools/verify_org.py
+    line: 70
+    pattern: "Wall-Clock"
+    justification: "queried_at belegt, wann die Organisationszahlen abgefragt wurden; ein fixierter Wert waere eine Falschangabe. Mit SOURCE_DATE_EPOCH reproduzierbar"
+    scr: "SCR-0149"

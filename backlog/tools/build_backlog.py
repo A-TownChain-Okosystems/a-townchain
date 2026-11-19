@@ -29,6 +29,14 @@ PHASES = {
 }
 
 
+def _timestamp():
+    """Provenienz-Zeitstempel. Mit SOURCE_DATE_EPOCH reproduzierbar."""
+    epoch = os.environ.get("SOURCE_DATE_EPOCH")
+    if epoch and epoch.isdigit():
+        return datetime.fromtimestamp(int(epoch), timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
 def load(name):
     with open(os.path.join(ROOT, name), encoding="utf-8") as f:
         return yaml.safe_load(f)
@@ -113,7 +121,7 @@ def main():
         "schema_version": "1.0.0",
         "document_id": "ATC-MASTER-BACKLOG-001",
         "title": "Repositoryuebergreifendes Master-Backlog",
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "generated_at": _timestamp(),
         "generated_by": "backlog/tools/build_backlog.py",
         "sources": {
             "register": {

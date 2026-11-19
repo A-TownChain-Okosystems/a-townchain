@@ -63,7 +63,11 @@ def main():
                 "committed": c["commit"]["committer"]["date"],
             }
 
-    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    epoch = os.environ.get("SOURCE_DATE_EPOCH")
+    if epoch and epoch.isdigit():
+        now = datetime.fromtimestamp(int(epoch), timezone.utc).isoformat(timespec="seconds")
+    else:
+        now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     lines = [
         "# GENERIERT von backlog/tools/verify_org.py — nicht manuell bearbeiten.",
         f'queried_at: "{now}"',
