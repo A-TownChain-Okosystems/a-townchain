@@ -5,7 +5,7 @@ version: 1.2.0
 status: active
 owner: A-TownChain-Okosystems
 created: 2026-09-08
-updated: 2026-11-11
+updated: 2026-11-19
 standard: ATC-STD-MD-001
 ---
 
@@ -23,7 +23,22 @@ standard: ATC-STD-MD-001
 | Conformance | IN PROGRESS |
 | Production Readiness | NO-GO |
 | Mainnet Date | NONE APPROVED |
-| Current Documentation Update | 2026-09-29 |
+| Current Documentation Update | 2026-11-19 |
+
+## Stand 19.11.2026 (verifiziert)
+
+| Vorgang | Ergebnis |
+|---|---|
+| SCR-0148 Fehlerwelle | 8 Codefehler behoben (apps/atc-ide 7 TypeScript, atc-governance 1 Warnung); tsc 0 Fehler, vite build gruen |
+| Produktionsabhaengigkeiten | 13 Live-Pakete: 0 critical, 0 high; Build-Werkzeuge aus `dependencies` entfernt |
+| Kritische Advisories | 11 -> 5 im Repo; die verbleibenden fuenf sind gepatcht und fallen beim Merge von PR #118 |
+| ATC-OS-SEC-UPDATE-001 | §9-Freigabe 18.11.2026, APPROVED, normativ wirksam; Implementierungsstatus `specification_only` (TUF-Rollen, Health-Check, Rollback-Orchestrierung, koordinierte Aktivierung offen) |
+| Registry | 534 Standards (507 APPROVED / 27 CANDIDATE), Validator ALL COMPLIANT, Qualitaets-Gate Ebene 1-3 PASS |
+| CI PR #118 | 20 gruen, 1 uebersprungen, CodeQL rot: 58 Befunde ausschliesslich in `docs/os-docs/**`; der `init`-Schritt laedt `.github/codeql/codeql-config.yml` nicht, es fehlt `config-file` und dafuer `workflow`-Scope |
+
+Unveraendert: Security NOT AUDITED, Production Readiness NO-GO, kein
+release-candidate-gruener SHA. Die Angaben oben sind Zwischenstaende, keine
+Freigabe.
 
 ## Status Summary
 

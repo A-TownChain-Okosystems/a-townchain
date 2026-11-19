@@ -8,11 +8,17 @@
 
 ---
 
-## Governance-Standards (registry/standards.yaml — SSOT, Stand 08.09.2026 (regeneriert))
+## Governance-Standards (Auszug aus registry/standards.yaml — SSOT)
+
+> Kuratierte Auswahl, zuletzt ergaenzt 19.11.2026. Die vollstaendige,
+> generierte Liste aller 534 Standards steht in `INDEX.md` (Generator
+> `tools/index/gen_index.py`); diese Datei bleibt der historische Bestand
+> und die Governance-Auswahl.
 
 | ID | Titel | Status | Version | Kategorie |
 |----|-------|--------|---------|-----------|
 | ATC-STD-000 | Standards Governance & Specification Standard | approved | 1.2.0 | governance |
+| ATC-OS-SEC-UPDATE-001 | Blockchain Automatic Security Updates | approved | 1.0.0 | security |
 | ATC-STD-114 | Git Standard | candidate | 1.0.0 | repository |
 | ATC-STD-201 | Repository Structure Standard | approved | 1.0.1 | repository |
 | ATC-STD-202 | Repository Naming & Classification Standard | approved | 1.1.0 | repository |
