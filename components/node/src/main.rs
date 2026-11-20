@@ -72,7 +72,16 @@ fn main() -> std::io::Result<()> {
         let mut engine = ConsensusEngine::devnet(3);
         let mut ledger = TxLedger::new();
         {
-            let mut st = konsens_status.lock().expect("Status-Lock vergiftet");
+            // Vergifteter Status-Lock darf den Node nicht beenden: fail closed,
+            // wie beim Chain-Lock. Ein panic in einem Hintergrund-Thread ist kein
+            // Sicherheitszustand, sondern ein undefinierter.
+            let mut st = match konsens_status.lock() {
+                Ok(guard) => guard,
+                Err(_) => {
+                    eprintln!("node: status mutex poisoned, consensus status unavailable");
+                    return;
+                }
+            };
             st.validators = engine.validator_set().active_validators().len();
             st.quorum_power = engine.required_power();
             st.height = konsens_kette
