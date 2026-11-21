@@ -111,19 +111,20 @@ def fingerprint(nodes):
 
 
 def compare_nodes(base, head):
-    b, h = fingerprint(base), fingerprint(head)
-    added = sorted([h[k] for k in set(h) - set(b)], key=key)
-    removed = sorted([b[k] for k in set(b) - set(h)], key=key)
+    """Paketbestand vergleichen: added, removed, changed.
+
+    Klassifikation je (ecosystem, name). Eine reine Versionsaenderung ist ein
+    Wechsel (changed), kein Zugang plus Abgang: der fruehere Schluessel enthielt
+    die Version, wodurch jedes Upgrade doppelt als added und removed erschien.
+    """
+    bi = {(x.get("ecosystem"), x.get("name")): x for x in base}
+    hi = {(x.get("ecosystem"), x.get("name")): x for x in head}
+    added = sorted([hi[k] for k in hi if k not in bi], key=key)
+    removed = sorted([bi[k] for k in bi if k not in hi], key=key)
     changed = []
-    for bv in b.values():
-        for x in h.values():
-            if (
-                x.get("ecosystem") == bv.get("ecosystem")
-                and x.get("name") == bv.get("name")
-                and x.get("version") != bv.get("version")
-                and key(x) not in b
-            ):
-                changed.append({"from": bv, "to": x})
+    for k in sorted(hi, key=lambda z: tuple(str(p) for p in z)):
+        if k in bi and hi[k].get("version") != bi[k].get("version"):
+            changed.append({"from": bi[k], "to": hi[k]})
     return added, removed, changed
 
 
@@ -216,6 +217,23 @@ def validate_advisory_payload(payload):
                 errors.append(f"advisory[{i}].affected[{j}] missing package")
             if not isinstance(x.get("ranges"), list) or not isinstance(x.get("versions"), list):
                 errors.append(f"advisory[{i}].affected[{j}] invalid range/version lists")
+            for k, r in enumerate(x.get("ranges") or []):
+                if (
+                    not isinstance(r, dict)
+                    or not isinstance(r.get("type"), str)
+                    or not r.get("type")
+                    or not isinstance(r.get("events"), list)
+                    or not r.get("events")
+                ):
+                    errors.append(
+                        f"advisory[{i}].affected[{j}].ranges[{k}] invalid type/events"
+                    )
+                    continue
+                for m, ev in enumerate(r["events"]):
+                    if not isinstance(ev, dict) or not any(
+                        t in ev for t in ("introduced", "fixed", "last_affected")
+                    ):
+                        errors.append(f"advisory[{i}].affected[{j}].ranges[{k}].events[{m}] invalid event")
     return errors
 
 
@@ -264,34 +282,63 @@ def version_cmp(a, b, eco):
 
 
 def event_range_match(version, events, ecosystem):
+    """OSV-Ereigniskette auswerten (zustandsbehaftet, Intervalle werden fortgeschrieben).
+
+    Ein Ereignis allein entscheidet nichts: erst die Reihenfolge introduced ->
+    fixed/last_affected ergibt ein Intervall. Die fruehere Fassung pruefte jedes
+    Ereignis isoliert und meldete deshalb Versionen als betroffen, die eine
+    Fix-Grenze bereits ueberschritten hatten.
+    """
     if not events:
         return False, "unknown"
     if (pep440(version) if ecosystem == "python" else semver(version)) is None:
         return False, "unsupported"
+    affected = False
+    seen_introduced = False
     for ev in events:
-        intro = ev.get("introduced")
-        if intro not in (None, "0"):
+        if not isinstance(ev, dict):
+            return False, "unsupported"
+        if "introduced" in ev:
+            seen_introduced = True
+            intro = ev.get("introduced")
+            if intro in (None, "0"):
+                affected = True
+                continue
             c = version_cmp(version, intro, ecosystem)
             if c is None:
                 return False, "unsupported"
-            if c < 0:
+            if c >= 0:
+                affected = True
+            continue
+        if "fixed" in ev:
+            fixed = ev.get("fixed")
+            if not seen_introduced:
+                # Ereignisliste ohne introduced: untere Grenze ist offen (OSV: "0").
+                affected = True
+                seen_introduced = True
+            if not fixed:
                 continue
-        fixed = ev.get("fixed")
-        if fixed:
             c = version_cmp(version, fixed, ecosystem)
             if c is None:
                 return False, "unsupported"
             if c >= 0:
+                affected = False
+            continue
+        if "last_affected" in ev:
+            last = ev.get("last_affected")
+            if not seen_introduced:
+                affected = True
+                seen_introduced = True
+            if not last:
                 continue
-        last = ev.get("last_affected")
-        if last:
             c = version_cmp(version, last, ecosystem)
             if c is None:
                 return False, "unsupported"
             if c > 0:
-                continue
-        return True, "range"
-    return False, "range"
+                affected = False
+            continue
+        return False, "unsupported"
+    return (True, "range") if affected else (False, "range")
 
 
 def range_match(version, ranges, ecosystem):
@@ -332,7 +379,7 @@ def advisory_matches(n, ad):
 
 
 _EXPECTED_BASE_UNPINNED_RE = re.compile(
-    r"^.+requirements(?:-[^/]+)?\.txt:\d+: "
+    r"^(?:[^\s:]+/)?requirements(?:-[^/]+)?\.txt:\d+: "
     r"unpinned/unsupported requirement: "
     r"[A-Za-z0-9_.-]+(?:[<>=!~]=?[^;\s]+(?:,[<>=!~]=?[^;\s]+)*)?$"
 )
