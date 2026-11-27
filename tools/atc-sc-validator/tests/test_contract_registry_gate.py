@@ -12,7 +12,6 @@ import importlib.util
 import sys
 from pathlib import Path
 
-import pytest
 
 TOOL = Path(__file__).resolve().parents[1] / "check_contract_registry.py"
 
